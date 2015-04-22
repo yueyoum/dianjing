@@ -24,31 +24,66 @@ def compile_protobuf():
         sys.exit(1)
 
 
-def generate_message_id_dict():
-    template = """
+class Gen(object):
+    def __init__(self):
+        self.f = "protomsg/__init__.py"
+        # info = [(id, file, protocolname, path)]
+        self.info = []
+
+        tree = et.ElementTree(file="protobuf/define.xml")
+        doc = tree.getroot()
+
+        protocols = doc.findall("file")
+        for p in protocols:
+            file_name = p.attrib['name']
+            for c in p.getchildren():
+                attr = c.attrib
+                self.info.append((attr['type'], file_name, attr['name'], attr.get('command', '')))
+
+
+    def generate_message_id_dict(self):
+        template = """
 MESSAGE_TO_ID = {
 %s
 }"""
 
-    tree = et.ElementTree(file="protobuf/define.xml")
-    doc = tree.getroot()
+        message_ids = []
+        for _id, _, _name, _ in self.info:
+            message_ids.append('    "{0}": {1},'.format(_name, _id))
 
-    protocols = doc.findall("namespace/namespace/protocol")
+        content = template % "\n".join(message_ids)
 
-    message_ids = []
-    for p in protocols:
-        attrib = p.attrib
-        message_ids.append('    "{0}": {1},'.format(attrib['name'], attrib['type']))
+        with open(self.f, 'w') as f:
+            f.write(content)
 
-    content = template % "\n".join(message_ids)
+    def generate_path_message_dict(self):
+        template = """
+PATH_TO_MESSAGE = {
+%s
+}"""
+        path_messages = []
+        for _id, _file, _name, _path in self.info:
+            if not _path:
+                continue
 
-    with open("protomsg/__init__.py", 'w') as f:
-        f.write(content)
+            path_messages.append('    "{0}": ["{1}", "{2}"],'.format(_path, _file, _name))
+
+        content = template % "\n".join(path_messages)
+
+        with open(self.f, 'a') as f:
+            f.write(content)
+
+    @classmethod
+    def gen(cls):
+        self = cls()
+        self.generate_message_id_dict()
+        self.generate_path_message_dict()
 
 
 if __name__ == "__main__":
     path = os.path.dirname(os.path.realpath(__file__))
     os.chdir(path)
     compile_protobuf()
-    generate_message_id_dict()
+
+    Gen.gen()
 

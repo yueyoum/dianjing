@@ -15,3 +15,11 @@ MESSAGE_TO_ID = {
     "CreateClubRequest": 401,
     "CreateClubResponse": 402,
 }
+PATH_TO_MESSAGE = {
+    "/servers/": ["server", "GetServerListRequest"],
+    "/start/": ["server", "StartGameRequest"],
+    "/account/register/": ["account", "RegisterRequest"],
+    "/account/login/": ["account", "LoginRequest"],
+    "/character/create/": ["character", "CreateCharacterRequest"],
+    "/club/create/": ["club", "CreateClubRequest"],
+}

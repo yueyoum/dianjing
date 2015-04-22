@@ -12,14 +12,14 @@ from google.protobuf import descriptor_pb2
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='account.proto',
-  package='Dianjing.protocol.account',
-  serialized_pb='\n\raccount.proto\x12\x19\x44ianjing.protocol.account\"1\n\x0eRegularAccount\x12\r\n\x05\x65mail\x18\x01 \x02(\t\x12\x10\n\x08password\x18\x02 \x02(\t\"<\n\x0cThirdAccount\x12\x10\n\x08platform\x18\x01 \x02(\t\x12\x0b\n\x03uid\x18\x02 \x02(\t\x12\r\n\x05param\x18\x03 \x01(\t\"\xe0\x01\n\x07\x41\x63\x63ount\x12:\n\x02tp\x18\x01 \x02(\x0e\x32..Dianjing.protocol.account.Account.AccountType\x12:\n\x07regular\x18\x02 \x01(\x0b\x32).Dianjing.protocol.account.RegularAccount\x12\x36\n\x05third\x18\x03 \x01(\x0b\x32\'.Dianjing.protocol.account.ThirdAccount\"%\n\x0b\x41\x63\x63ountType\x12\x0b\n\x07REGULAR\x10\x01\x12\t\n\x05THIRD\x10\x02\"^\n\x0fRegisterRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12:\n\x07\x61\x63\x63ount\x18\x02 \x02(\x0b\x32).Dianjing.protocol.account.RegularAccount\"l\n\x10RegisterResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12:\n\x07\x61\x63\x63ount\x18\x03 \x01(\x0b\x32).Dianjing.protocol.account.RegularAccount\"T\n\x0cLoginRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x33\n\x07\x61\x63\x63ount\x18\x02 \x02(\x0b\x32\".Dianjing.protocol.account.Account\"-\n\rLoginResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+  package='Dianjing.protocol',
+  serialized_pb='\n\raccount.proto\x12\x11\x44ianjing.protocol\"1\n\x0eRegularAccount\x12\r\n\x05\x65mail\x18\x01 \x02(\t\x12\x10\n\x08password\x18\x02 \x02(\t\"<\n\x0cThirdAccount\x12\x10\n\x08platform\x18\x01 \x02(\t\x12\x0b\n\x03uid\x18\x02 \x02(\t\x12\r\n\x05param\x18\x03 \x01(\t\"\xc8\x01\n\x07\x41\x63\x63ount\x12\x32\n\x02tp\x18\x01 \x02(\x0e\x32&.Dianjing.protocol.Account.AccountType\x12\x32\n\x07regular\x18\x02 \x01(\x0b\x32!.Dianjing.protocol.RegularAccount\x12.\n\x05third\x18\x03 \x01(\x0b\x32\x1f.Dianjing.protocol.ThirdAccount\"%\n\x0b\x41\x63\x63ountType\x12\x0b\n\x07REGULAR\x10\x01\x12\t\n\x05THIRD\x10\x02\"V\n\x0fRegisterRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x32\n\x07\x61\x63\x63ount\x18\x02 \x02(\x0b\x32!.Dianjing.protocol.RegularAccount\"d\n\x10RegisterResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x32\n\x07\x61\x63\x63ount\x18\x03 \x01(\x0b\x32!.Dianjing.protocol.RegularAccount\"L\n\x0cLoginRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12+\n\x07\x61\x63\x63ount\x18\x02 \x02(\x0b\x32\x1a.Dianjing.protocol.Account\"-\n\rLoginResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
 
 
 
 _ACCOUNT_ACCOUNTTYPE = _descriptor.EnumDescriptor(
   name='AccountType',
-  full_name='Dianjing.protocol.account.Account.AccountType',
+  full_name='Dianjing.protocol.Account.AccountType',
   filename=None,
   file=DESCRIPTOR,
   values=[
@@ -34,27 +34,27 @@ _ACCOUNT_ACCOUNTTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=345,
-  serialized_end=382,
+  serialized_start=313,
+  serialized_end=350,
 )
 
 
 _REGULARACCOUNT = _descriptor.Descriptor(
   name='RegularAccount',
-  full_name='Dianjing.protocol.account.RegularAccount',
+  full_name='Dianjing.protocol.RegularAccount',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='email', full_name='Dianjing.protocol.account.RegularAccount.email', index=0,
+      name='email', full_name='Dianjing.protocol.RegularAccount.email', index=0,
       number=1, type=9, cpp_type=9, label=2,
       has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='password', full_name='Dianjing.protocol.account.RegularAccount.password', index=1,
+      name='password', full_name='Dianjing.protocol.RegularAccount.password', index=1,
       number=2, type=9, cpp_type=9, label=2,
       has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
@@ -69,34 +69,34 @@ _REGULARACCOUNT = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=44,
-  serialized_end=93,
+  serialized_start=36,
+  serialized_end=85,
 )
 
 
 _THIRDACCOUNT = _descriptor.Descriptor(
   name='ThirdAccount',
-  full_name='Dianjing.protocol.account.ThirdAccount',
+  full_name='Dianjing.protocol.ThirdAccount',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='platform', full_name='Dianjing.protocol.account.ThirdAccount.platform', index=0,
+      name='platform', full_name='Dianjing.protocol.ThirdAccount.platform', index=0,
       number=1, type=9, cpp_type=9, label=2,
       has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='uid', full_name='Dianjing.protocol.account.ThirdAccount.uid', index=1,
+      name='uid', full_name='Dianjing.protocol.ThirdAccount.uid', index=1,
       number=2, type=9, cpp_type=9, label=2,
       has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='param', full_name='Dianjing.protocol.account.ThirdAccount.param', index=2,
+      name='param', full_name='Dianjing.protocol.ThirdAccount.param', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
@@ -111,34 +111,34 @@ _THIRDACCOUNT = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=95,
-  serialized_end=155,
+  serialized_start=87,
+  serialized_end=147,
 )
 
 
 _ACCOUNT = _descriptor.Descriptor(
   name='Account',
-  full_name='Dianjing.protocol.account.Account',
+  full_name='Dianjing.protocol.Account',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='tp', full_name='Dianjing.protocol.account.Account.tp', index=0,
+      name='tp', full_name='Dianjing.protocol.Account.tp', index=0,
       number=1, type=14, cpp_type=8, label=2,
       has_default_value=False, default_value=1,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='regular', full_name='Dianjing.protocol.account.Account.regular', index=1,
+      name='regular', full_name='Dianjing.protocol.Account.regular', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='third', full_name='Dianjing.protocol.account.Account.third', index=2,
+      name='third', full_name='Dianjing.protocol.Account.third', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -154,27 +154,27 @@ _ACCOUNT = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=158,
-  serialized_end=382,
+  serialized_start=150,
+  serialized_end=350,
 )
 
 
 _REGISTERREQUEST = _descriptor.Descriptor(
   name='RegisterRequest',
-  full_name='Dianjing.protocol.account.RegisterRequest',
+  full_name='Dianjing.protocol.RegisterRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.account.RegisterRequest.session', index=0,
+      name='session', full_name='Dianjing.protocol.RegisterRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value="",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='account', full_name='Dianjing.protocol.account.RegisterRequest.account', index=1,
+      name='account', full_name='Dianjing.protocol.RegisterRequest.account', index=1,
       number=2, type=11, cpp_type=10, label=2,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -189,34 +189,34 @@ _REGISTERREQUEST = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=384,
-  serialized_end=478,
+  serialized_start=352,
+  serialized_end=438,
 )
 
 
 _REGISTERRESPONSE = _descriptor.Descriptor(
   name='RegisterResponse',
-  full_name='Dianjing.protocol.account.RegisterResponse',
+  full_name='Dianjing.protocol.RegisterResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='ret', full_name='Dianjing.protocol.account.RegisterResponse.ret', index=0,
+      name='ret', full_name='Dianjing.protocol.RegisterResponse.ret', index=0,
       number=1, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.account.RegisterResponse.session', index=1,
+      name='session', full_name='Dianjing.protocol.RegisterResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value="",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='account', full_name='Dianjing.protocol.account.RegisterResponse.account', index=2,
+      name='account', full_name='Dianjing.protocol.RegisterResponse.account', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -231,27 +231,27 @@ _REGISTERRESPONSE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=480,
-  serialized_end=588,
+  serialized_start=440,
+  serialized_end=540,
 )
 
 
 _LOGINREQUEST = _descriptor.Descriptor(
   name='LoginRequest',
-  full_name='Dianjing.protocol.account.LoginRequest',
+  full_name='Dianjing.protocol.LoginRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.account.LoginRequest.session', index=0,
+      name='session', full_name='Dianjing.protocol.LoginRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value="",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='account', full_name='Dianjing.protocol.account.LoginRequest.account', index=1,
+      name='account', full_name='Dianjing.protocol.LoginRequest.account', index=1,
       number=2, type=11, cpp_type=10, label=2,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -266,27 +266,27 @@ _LOGINREQUEST = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=590,
-  serialized_end=674,
+  serialized_start=542,
+  serialized_end=618,
 )
 
 
 _LOGINRESPONSE = _descriptor.Descriptor(
   name='LoginResponse',
-  full_name='Dianjing.protocol.account.LoginResponse',
+  full_name='Dianjing.protocol.LoginResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='ret', full_name='Dianjing.protocol.account.LoginResponse.ret', index=0,
+      name='ret', full_name='Dianjing.protocol.LoginResponse.ret', index=0,
       number=1, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.account.LoginResponse.session', index=1,
+      name='session', full_name='Dianjing.protocol.LoginResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value="",
       message_type=None, enum_type=None, containing_type=None,
@@ -301,8 +301,8 @@ _LOGINRESPONSE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=676,
-  serialized_end=721,
+  serialized_start=620,
+  serialized_end=665,
 )
 
 _ACCOUNT.fields_by_name['tp'].enum_type = _ACCOUNT_ACCOUNTTYPE
@@ -324,43 +324,43 @@ class RegularAccount(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _REGULARACCOUNT
 
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.account.RegularAccount)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.RegularAccount)
 
 class ThirdAccount(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _THIRDACCOUNT
 
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.account.ThirdAccount)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ThirdAccount)
 
 class Account(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _ACCOUNT
 
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.account.Account)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.Account)
 
 class RegisterRequest(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _REGISTERREQUEST
 
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.account.RegisterRequest)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.RegisterRequest)
 
 class RegisterResponse(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _REGISTERRESPONSE
 
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.account.RegisterResponse)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.RegisterResponse)
 
 class LoginRequest(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _LOGINREQUEST
 
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.account.LoginRequest)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.LoginRequest)
 
 class LoginResponse(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _LOGINRESPONSE
 
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.account.LoginResponse)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.LoginResponse)
 
 
 # @@protoc_insertion_point(module_scope)

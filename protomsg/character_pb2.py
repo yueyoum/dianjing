@@ -13,28 +13,28 @@ import common_pb2
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='character.proto',
-  package='Dianjing.protocol.character',
-  serialized_pb='\n\x0f\x63haracter.proto\x12\x1b\x44ianjing.protocol.character\x1a\x0c\x63ommon.proto\"%\n\tCharacter\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\"X\n\x0f\x43haracterNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x34\n\x04\x63har\x18\x02 \x02(\x0b\x32&.Dianjing.protocol.character.Character\"7\n\x16\x43reateCharacterRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\"l\n\x17\x43reateCharacterResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x33\n\x04next\x18\x03 \x01(\x0e\x32%.Dianjing.protocol.common.NextOperate')
+  package='Dianjing.protocol',
+  serialized_pb='\n\x0f\x63haracter.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"%\n\tCharacter\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\"N\n\x0f\x43haracterNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12*\n\x04\x63har\x18\x02 \x02(\x0b\x32\x1c.Dianjing.protocol.Character\"7\n\x16\x43reateCharacterRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\"e\n\x17\x43reateCharacterResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12,\n\x04next\x18\x03 \x01(\x0e\x32\x1e.Dianjing.protocol.NextOperate')
 
 
 
 
 _CHARACTER = _descriptor.Descriptor(
   name='Character',
-  full_name='Dianjing.protocol.character.Character',
+  full_name='Dianjing.protocol.Character',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='id', full_name='Dianjing.protocol.character.Character.id', index=0,
+      name='id', full_name='Dianjing.protocol.Character.id', index=0,
       number=1, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='name', full_name='Dianjing.protocol.character.Character.name', index=1,
+      name='name', full_name='Dianjing.protocol.Character.name', index=1,
       number=2, type=9, cpp_type=9, label=2,
       has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
@@ -49,27 +49,27 @@ _CHARACTER = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=62,
-  serialized_end=99,
+  serialized_start=52,
+  serialized_end=89,
 )
 
 
 _CHARACTERNOTIFY = _descriptor.Descriptor(
   name='CharacterNotify',
-  full_name='Dianjing.protocol.character.CharacterNotify',
+  full_name='Dianjing.protocol.CharacterNotify',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.character.CharacterNotify.session', index=0,
+      name='session', full_name='Dianjing.protocol.CharacterNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value="",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='char', full_name='Dianjing.protocol.character.CharacterNotify.char', index=1,
+      name='char', full_name='Dianjing.protocol.CharacterNotify.char', index=1,
       number=2, type=11, cpp_type=10, label=2,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -84,27 +84,27 @@ _CHARACTERNOTIFY = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=101,
-  serialized_end=189,
+  serialized_start=91,
+  serialized_end=169,
 )
 
 
 _CREATECHARACTERREQUEST = _descriptor.Descriptor(
   name='CreateCharacterRequest',
-  full_name='Dianjing.protocol.character.CreateCharacterRequest',
+  full_name='Dianjing.protocol.CreateCharacterRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.character.CreateCharacterRequest.session', index=0,
+      name='session', full_name='Dianjing.protocol.CreateCharacterRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value="",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='name', full_name='Dianjing.protocol.character.CreateCharacterRequest.name', index=1,
+      name='name', full_name='Dianjing.protocol.CreateCharacterRequest.name', index=1,
       number=2, type=9, cpp_type=9, label=2,
       has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
@@ -119,34 +119,34 @@ _CREATECHARACTERREQUEST = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=191,
-  serialized_end=246,
+  serialized_start=171,
+  serialized_end=226,
 )
 
 
 _CREATECHARACTERRESPONSE = _descriptor.Descriptor(
   name='CreateCharacterResponse',
-  full_name='Dianjing.protocol.character.CreateCharacterResponse',
+  full_name='Dianjing.protocol.CreateCharacterResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='ret', full_name='Dianjing.protocol.character.CreateCharacterResponse.ret', index=0,
+      name='ret', full_name='Dianjing.protocol.CreateCharacterResponse.ret', index=0,
       number=1, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.character.CreateCharacterResponse.session', index=1,
+      name='session', full_name='Dianjing.protocol.CreateCharacterResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value="",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='next', full_name='Dianjing.protocol.character.CreateCharacterResponse.next', index=2,
+      name='next', full_name='Dianjing.protocol.CreateCharacterResponse.next', index=2,
       number=3, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=1,
       message_type=None, enum_type=None, containing_type=None,
@@ -161,8 +161,8 @@ _CREATECHARACTERRESPONSE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=248,
-  serialized_end=356,
+  serialized_start=228,
+  serialized_end=329,
 )
 
 _CHARACTERNOTIFY.fields_by_name['char'].message_type = _CHARACTER
@@ -176,25 +176,25 @@ class Character(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _CHARACTER
 
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.character.Character)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.Character)
 
 class CharacterNotify(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _CHARACTERNOTIFY
 
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.character.CharacterNotify)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.CharacterNotify)
 
 class CreateCharacterRequest(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _CREATECHARACTERREQUEST
 
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.character.CreateCharacterRequest)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.CreateCharacterRequest)
 
 class CreateCharacterResponse(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _CREATECHARACTERRESPONSE
 
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.character.CreateCharacterResponse)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.CreateCharacterResponse)
 
 
 # @@protoc_insertion_point(module_scope)

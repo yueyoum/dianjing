@@ -13,12 +13,12 @@ from google.protobuf import descriptor_pb2
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='common.proto',
-  package='Dianjing.protocol.common',
-  serialized_pb='\n\x0c\x63ommon.proto\x12\x18\x44ianjing.protocol.common*C\n\x0bNextOperate\x12\n\n\x06OPT_OK\x10\x01\x12\x13\n\x0fOPT_CREATE_CHAR\x10\x02\x12\x13\n\x0fOPT_CREATE_CLUB\x10\x03')
+  package='Dianjing.protocol',
+  serialized_pb='\n\x0c\x63ommon.proto\x12\x11\x44ianjing.protocol*C\n\x0bNextOperate\x12\n\n\x06OPT_OK\x10\x01\x12\x13\n\x0fOPT_CREATE_CHAR\x10\x02\x12\x13\n\x0fOPT_CREATE_CLUB\x10\x03')
 
 _NEXTOPERATE = _descriptor.EnumDescriptor(
   name='NextOperate',
-  full_name='Dianjing.protocol.common.NextOperate',
+  full_name='Dianjing.protocol.NextOperate',
   filename=None,
   file=DESCRIPTOR,
   values=[
@@ -37,8 +37,8 @@ _NEXTOPERATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=42,
-  serialized_end=109,
+  serialized_start=35,
+  serialized_end=102,
 )
 
 NextOperate = enum_type_wrapper.EnumTypeWrapper(_NEXTOPERATE)
