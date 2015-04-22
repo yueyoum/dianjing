@@ -8,12 +8,13 @@ from google.protobuf import descriptor_pb2
 # @@protoc_insertion_point(imports)
 
 
+import common_pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='character.proto',
   package='Dianjing.protocol.character',
-  serialized_pb='\n\x0f\x63haracter.proto\x12\x1b\x44ianjing.protocol.character\"%\n\tCharacter\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\"X\n\x0f\x43haracterNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x34\n\x04\x63har\x18\x02 \x02(\x0b\x32&.Dianjing.protocol.character.Character\"7\n\x16\x43reateCharacterRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\"7\n\x17\x43reateCharacterResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+  serialized_pb='\n\x0f\x63haracter.proto\x12\x1b\x44ianjing.protocol.character\x1a\x0c\x63ommon.proto\"%\n\tCharacter\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\"X\n\x0f\x43haracterNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x34\n\x04\x63har\x18\x02 \x02(\x0b\x32&.Dianjing.protocol.character.Character\"7\n\x16\x43reateCharacterRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\"l\n\x17\x43reateCharacterResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x33\n\x04next\x18\x03 \x01(\x0e\x32%.Dianjing.protocol.common.NextOperate')
 
 
 
@@ -48,8 +49,8 @@ _CHARACTER = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=48,
-  serialized_end=85,
+  serialized_start=62,
+  serialized_end=99,
 )
 
 
@@ -83,8 +84,8 @@ _CHARACTERNOTIFY = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=87,
-  serialized_end=175,
+  serialized_start=101,
+  serialized_end=189,
 )
 
 
@@ -118,8 +119,8 @@ _CREATECHARACTERREQUEST = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=177,
-  serialized_end=232,
+  serialized_start=191,
+  serialized_end=246,
 )
 
 
@@ -144,6 +145,13 @@ _CREATECHARACTERRESPONSE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='next', full_name='Dianjing.protocol.character.CreateCharacterResponse.next', index=2,
+      number=3, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=1,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -153,11 +161,12 @@ _CREATECHARACTERRESPONSE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=234,
-  serialized_end=289,
+  serialized_start=248,
+  serialized_end=356,
 )
 
 _CHARACTERNOTIFY.fields_by_name['char'].message_type = _CHARACTER
+_CREATECHARACTERRESPONSE.fields_by_name['next'].enum_type = common_pb2._NEXTOPERATE
 DESCRIPTOR.message_types_by_name['Character'] = _CHARACTER
 DESCRIPTOR.message_types_by_name['CharacterNotify'] = _CHARACTERNOTIFY
 DESCRIPTOR.message_types_by_name['CreateCharacterRequest'] = _CREATECHARACTERREQUEST

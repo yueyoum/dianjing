@@ -13,7 +13,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='account.proto',
   package='Dianjing.protocol.account',
-  serialized_pb='\n\raccount.proto\x12\x19\x44ianjing.protocol.account\"!\n\x10\x41nonymousAccount\x12\r\n\x05token\x18\x01 \x02(\t\"1\n\x0eRegularAccount\x12\r\n\x05\x65mail\x18\x01 \x02(\t\x12\x10\n\x08password\x18\x02 \x02(\t\"<\n\x0cThirdAccount\x12\x10\n\x08platform\x18\x01 \x02(\t\x12\x0b\n\x03uid\x18\x02 \x02(\t\x12\r\n\x05param\x18\x03 \x01(\t\"\xbe\x02\n\x07\x41\x63\x63ount\x12:\n\x02tp\x18\x01 \x02(\x0e\x32..Dianjing.protocol.account.Account.AccountType\x12>\n\tanonymous\x18\x02 \x01(\x0b\x32+.Dianjing.protocol.account.AnonymousAccount\x12:\n\x07regular\x18\x03 \x01(\x0b\x32).Dianjing.protocol.account.RegularAccount\x12\x36\n\x05third\x18\x04 \x01(\x0b\x32\'.Dianjing.protocol.account.ThirdAccount\"C\n\x0b\x41\x63\x63ountType\x12\r\n\tNOACCOUNT\x10\x00\x12\r\n\tANONYMOUS\x10\x01\x12\x0b\n\x07REGULAR\x10\x02\x12\t\n\x05THIRD\x10\x03\"^\n\x0fRegisterRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12:\n\x07\x61\x63\x63ount\x18\x02 \x02(\x0b\x32).Dianjing.protocol.account.RegularAccount\"l\n\x10RegisterResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12:\n\x07\x61\x63\x63ount\x18\x03 \x01(\x0b\x32).Dianjing.protocol.account.RegularAccount\"T\n\x0cLoginRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x33\n\x07\x61\x63\x63ount\x18\x02 \x02(\x0b\x32\".Dianjing.protocol.account.Account\"\xae\x01\n\rLoginResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x44\n\x04step\x18\x03 \x01(\x0e\x32\x36.Dianjing.protocol.account.LoginResponse.LoginNextStep\"9\n\rLoginNextStep\x12\x06\n\x02OK\x10\x01\x12\x0f\n\x0b\x43REATE_CHAR\x10\x02\x12\x0f\n\x0b\x43REATE_CLUB\x10\x03')
+  serialized_pb='\n\raccount.proto\x12\x19\x44ianjing.protocol.account\"1\n\x0eRegularAccount\x12\r\n\x05\x65mail\x18\x01 \x02(\t\x12\x10\n\x08password\x18\x02 \x02(\t\"<\n\x0cThirdAccount\x12\x10\n\x08platform\x18\x01 \x02(\t\x12\x0b\n\x03uid\x18\x02 \x02(\t\x12\r\n\x05param\x18\x03 \x01(\t\"\xe0\x01\n\x07\x41\x63\x63ount\x12:\n\x02tp\x18\x01 \x02(\x0e\x32..Dianjing.protocol.account.Account.AccountType\x12:\n\x07regular\x18\x02 \x01(\x0b\x32).Dianjing.protocol.account.RegularAccount\x12\x36\n\x05third\x18\x03 \x01(\x0b\x32\'.Dianjing.protocol.account.ThirdAccount\"%\n\x0b\x41\x63\x63ountType\x12\x0b\n\x07REGULAR\x10\x01\x12\t\n\x05THIRD\x10\x02\"^\n\x0fRegisterRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12:\n\x07\x61\x63\x63ount\x18\x02 \x02(\x0b\x32).Dianjing.protocol.account.RegularAccount\"l\n\x10RegisterResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12:\n\x07\x61\x63\x63ount\x18\x03 \x01(\x0b\x32).Dianjing.protocol.account.RegularAccount\"T\n\x0cLoginRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x33\n\x07\x61\x63\x63ount\x18\x02 \x02(\x0b\x32\".Dianjing.protocol.account.Account\"-\n\rLoginResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
 
 
 
@@ -24,79 +24,18 @@ _ACCOUNT_ACCOUNTTYPE = _descriptor.EnumDescriptor(
   file=DESCRIPTOR,
   values=[
     _descriptor.EnumValueDescriptor(
-      name='NOACCOUNT', index=0, number=0,
+      name='REGULAR', index=0, number=1,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='ANONYMOUS', index=1, number=1,
-      options=None,
-      type=None),
-    _descriptor.EnumValueDescriptor(
-      name='REGULAR', index=2, number=2,
-      options=None,
-      type=None),
-    _descriptor.EnumValueDescriptor(
-      name='THIRD', index=3, number=3,
+      name='THIRD', index=1, number=2,
       options=None,
       type=None),
   ],
   containing_type=None,
   options=None,
-  serialized_start=444,
-  serialized_end=511,
-)
-
-_LOGINRESPONSE_LOGINNEXTSTEP = _descriptor.EnumDescriptor(
-  name='LoginNextStep',
-  full_name='Dianjing.protocol.account.LoginResponse.LoginNextStep',
-  filename=None,
-  file=DESCRIPTOR,
-  values=[
-    _descriptor.EnumValueDescriptor(
-      name='OK', index=0, number=1,
-      options=None,
-      type=None),
-    _descriptor.EnumValueDescriptor(
-      name='CREATE_CHAR', index=1, number=2,
-      options=None,
-      type=None),
-    _descriptor.EnumValueDescriptor(
-      name='CREATE_CLUB', index=2, number=3,
-      options=None,
-      type=None),
-  ],
-  containing_type=None,
-  options=None,
-  serialized_start=923,
-  serialized_end=980,
-)
-
-
-_ANONYMOUSACCOUNT = _descriptor.Descriptor(
-  name='AnonymousAccount',
-  full_name='Dianjing.protocol.account.AnonymousAccount',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='token', full_name='Dianjing.protocol.account.AnonymousAccount.token', index=0,
-      number=1, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=44,
-  serialized_end=77,
+  serialized_start=345,
+  serialized_end=382,
 )
 
 
@@ -130,8 +69,8 @@ _REGULARACCOUNT = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=79,
-  serialized_end=128,
+  serialized_start=44,
+  serialized_end=93,
 )
 
 
@@ -172,8 +111,8 @@ _THIRDACCOUNT = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=130,
-  serialized_end=190,
+  serialized_start=95,
+  serialized_end=155,
 )
 
 
@@ -187,27 +126,20 @@ _ACCOUNT = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='tp', full_name='Dianjing.protocol.account.Account.tp', index=0,
       number=1, type=14, cpp_type=8, label=2,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=1,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='anonymous', full_name='Dianjing.protocol.account.Account.anonymous', index=1,
+      name='regular', full_name='Dianjing.protocol.account.Account.regular', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='regular', full_name='Dianjing.protocol.account.Account.regular', index=2,
+      name='third', full_name='Dianjing.protocol.account.Account.third', index=2,
       number=3, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='third', full_name='Dianjing.protocol.account.Account.third', index=3,
-      number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -222,8 +154,8 @@ _ACCOUNT = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=193,
-  serialized_end=511,
+  serialized_start=158,
+  serialized_end=382,
 )
 
 
@@ -257,8 +189,8 @@ _REGISTERREQUEST = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=513,
-  serialized_end=607,
+  serialized_start=384,
+  serialized_end=478,
 )
 
 
@@ -299,8 +231,8 @@ _REGISTERRESPONSE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=609,
-  serialized_end=717,
+  serialized_start=480,
+  serialized_end=588,
 )
 
 
@@ -334,8 +266,8 @@ _LOGINREQUEST = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=719,
-  serialized_end=803,
+  serialized_start=590,
+  serialized_end=674,
 )
 
 
@@ -360,38 +292,26 @@ _LOGINRESPONSE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
-    _descriptor.FieldDescriptor(
-      name='step', full_name='Dianjing.protocol.account.LoginResponse.step', index=2,
-      number=3, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=1,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
-    _LOGINRESPONSE_LOGINNEXTSTEP,
   ],
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=806,
-  serialized_end=980,
+  serialized_start=676,
+  serialized_end=721,
 )
 
 _ACCOUNT.fields_by_name['tp'].enum_type = _ACCOUNT_ACCOUNTTYPE
-_ACCOUNT.fields_by_name['anonymous'].message_type = _ANONYMOUSACCOUNT
 _ACCOUNT.fields_by_name['regular'].message_type = _REGULARACCOUNT
 _ACCOUNT.fields_by_name['third'].message_type = _THIRDACCOUNT
 _ACCOUNT_ACCOUNTTYPE.containing_type = _ACCOUNT;
 _REGISTERREQUEST.fields_by_name['account'].message_type = _REGULARACCOUNT
 _REGISTERRESPONSE.fields_by_name['account'].message_type = _REGULARACCOUNT
 _LOGINREQUEST.fields_by_name['account'].message_type = _ACCOUNT
-_LOGINRESPONSE.fields_by_name['step'].enum_type = _LOGINRESPONSE_LOGINNEXTSTEP
-_LOGINRESPONSE_LOGINNEXTSTEP.containing_type = _LOGINRESPONSE;
-DESCRIPTOR.message_types_by_name['AnonymousAccount'] = _ANONYMOUSACCOUNT
 DESCRIPTOR.message_types_by_name['RegularAccount'] = _REGULARACCOUNT
 DESCRIPTOR.message_types_by_name['ThirdAccount'] = _THIRDACCOUNT
 DESCRIPTOR.message_types_by_name['Account'] = _ACCOUNT
@@ -399,12 +319,6 @@ DESCRIPTOR.message_types_by_name['RegisterRequest'] = _REGISTERREQUEST
 DESCRIPTOR.message_types_by_name['RegisterResponse'] = _REGISTERRESPONSE
 DESCRIPTOR.message_types_by_name['LoginRequest'] = _LOGINREQUEST
 DESCRIPTOR.message_types_by_name['LoginResponse'] = _LOGINRESPONSE
-
-class AnonymousAccount(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _ANONYMOUSACCOUNT
-
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.account.AnonymousAccount)
 
 class RegularAccount(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType

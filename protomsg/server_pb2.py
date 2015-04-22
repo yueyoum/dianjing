@@ -8,12 +8,13 @@ from google.protobuf import descriptor_pb2
 # @@protoc_insertion_point(imports)
 
 
+import common_pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='server.proto',
   package='Dianjing.protocol.server',
-  serialized_pb='\n\x0cserver.proto\x12\x18\x44ianjing.protocol.server\"\x83\x01\n\x06Server\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\x12=\n\x06status\x18\x03 \x02(\x0e\x32-.Dianjing.protocol.server.Server.ServerStatus\" \n\x0cServerStatus\x12\x07\n\x03NEW\x10\x01\x12\x07\n\x03HOT\x10\x02\"\'\n\x14GetServerListRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"h\n\x15GetServerListResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x31\n\x07servers\x18\x03 \x03(\x0b\x32 .Dianjing.protocol.server.Server')
+  serialized_pb='\n\x0cserver.proto\x12\x18\x44ianjing.protocol.server\x1a\x0c\x63ommon.proto\"\x83\x01\n\x06Server\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\x12=\n\x06status\x18\x03 \x02(\x0e\x32-.Dianjing.protocol.server.Server.ServerStatus\" \n\x0cServerStatus\x12\x07\n\x03NEW\x10\x01\x12\x07\n\x03HOT\x10\x02\"\'\n\x14GetServerListRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\x83\x01\n\x15GetServerListResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x31\n\x07servers\x18\x03 \x03(\x0b\x32 .Dianjing.protocol.server.Server\x12\x19\n\x11recent_server_ids\x18\x04 \x03(\x05\"6\n\x10StartGameRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tserver_id\x18\x02 \x02(\x05\"f\n\x11StartGameResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x33\n\x04next\x18\x03 \x01(\x0e\x32%.Dianjing.protocol.common.NextOperate')
 
 
 
@@ -34,8 +35,8 @@ _SERVER_SERVERSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=142,
-  serialized_end=174,
+  serialized_start=156,
+  serialized_end=188,
 )
 
 
@@ -77,8 +78,8 @@ _SERVER = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=43,
-  serialized_end=174,
+  serialized_start=57,
+  serialized_end=188,
 )
 
 
@@ -105,8 +106,8 @@ _GETSERVERLISTREQUEST = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=176,
-  serialized_end=215,
+  serialized_start=190,
+  serialized_end=229,
 )
 
 
@@ -138,6 +139,13 @@ _GETSERVERLISTRESPONSE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='recent_server_ids', full_name='Dianjing.protocol.server.GetServerListResponse.recent_server_ids', index=3,
+      number=4, type=5, cpp_type=1, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -147,16 +155,96 @@ _GETSERVERLISTRESPONSE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=217,
-  serialized_end=321,
+  serialized_start=232,
+  serialized_end=363,
+)
+
+
+_STARTGAMEREQUEST = _descriptor.Descriptor(
+  name='StartGameRequest',
+  full_name='Dianjing.protocol.server.StartGameRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.server.StartGameRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value="",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='server_id', full_name='Dianjing.protocol.server.StartGameRequest.server_id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=365,
+  serialized_end=419,
+)
+
+
+_STARTGAMERESPONSE = _descriptor.Descriptor(
+  name='StartGameResponse',
+  full_name='Dianjing.protocol.server.StartGameResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.server.StartGameResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.server.StartGameResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value="",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='next', full_name='Dianjing.protocol.server.StartGameResponse.next', index=2,
+      number=3, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=1,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=421,
+  serialized_end=523,
 )
 
 _SERVER.fields_by_name['status'].enum_type = _SERVER_SERVERSTATUS
 _SERVER_SERVERSTATUS.containing_type = _SERVER;
 _GETSERVERLISTRESPONSE.fields_by_name['servers'].message_type = _SERVER
+_STARTGAMERESPONSE.fields_by_name['next'].enum_type = common_pb2._NEXTOPERATE
 DESCRIPTOR.message_types_by_name['Server'] = _SERVER
 DESCRIPTOR.message_types_by_name['GetServerListRequest'] = _GETSERVERLISTREQUEST
 DESCRIPTOR.message_types_by_name['GetServerListResponse'] = _GETSERVERLISTRESPONSE
+DESCRIPTOR.message_types_by_name['StartGameRequest'] = _STARTGAMEREQUEST
+DESCRIPTOR.message_types_by_name['StartGameResponse'] = _STARTGAMERESPONSE
 
 class Server(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
@@ -175,6 +263,18 @@ class GetServerListResponse(_message.Message):
   DESCRIPTOR = _GETSERVERLISTRESPONSE
 
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.server.GetServerListResponse)
+
+class StartGameRequest(_message.Message):
+  __metaclass__ = _reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _STARTGAMEREQUEST
+
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.server.StartGameRequest)
+
+class StartGameResponse(_message.Message):
+  __metaclass__ = _reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _STARTGAMERESPONSE
+
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.server.StartGameResponse)
 
 
 # @@protoc_insertion_point(module_scope)

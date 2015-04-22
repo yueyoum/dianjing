@@ -2,6 +2,8 @@
 MESSAGE_TO_ID = {
     "GetServerListRequest": 100,
     "GetServerListResponse": 101,
+    "StartGameRequest": 102,
+    "StartGameResponse": 103,
     "RegisterRequest": 200,
     "RegisterResponse": 201,
     "LoginRequest": 202,
