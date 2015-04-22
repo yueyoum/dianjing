@@ -5,7 +5,7 @@ from apps.server.models import Server
 @admin.register(Server)
 class ServerAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'name', 'status', 'Characters'
+        'id', 'name', 'status', 'open_at', 'Characters'
     )
 
     def Characters(self, obj):
