@@ -17,7 +17,7 @@ def register(name, password):
         with transaction.atomic():
             account = AccountRegular.objects.create(name=name, passwd=password)
     except IntegrityError:
-        raise GameException(0, 1)
+        raise GameException(1)
 
     return account
 
@@ -26,12 +26,13 @@ def regular_login(name, password):
     try:
         account = AccountRegular.objects.select_related('account').get(name=name)
     except AccountRegular.DoesNotExist:
-        raise GameException(0, 1)
+        raise GameException(1)
 
     if account.passwd != password:
-        raise GameException(0, 1)
+        raise GameException(1)
 
     return account
+
 
 def third_login(platform, uid, param):
     raise NotImplementedError()

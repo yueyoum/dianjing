@@ -11,14 +11,23 @@ from utils import crypto
 
 class GameSession(object):
     def __init__(self, **kwargs):
-        self.kwargs = kwargs
+        self.__dict__['kwargs'] = kwargs
 
     def __getattr__(self, item):
         return self.kwargs[item]
 
+    def __setattr__(self, key, value):
+        self.__dict__['kwargs'][key] = value
+
+
+    def serialize(self):
+        return GameSession.dumps(**self.kwargs)
 
     @classmethod
     def dumps(cls, **kwargs):
+        if not kwargs:
+            raise RuntimeError("No kwargs to dumps")
+
         data = json.dumps(kwargs)
         return crypto.encrypt(data)
 

@@ -5,23 +5,19 @@ from apps.character.models import Character
 from apps.club.models import Club
 
 from utils.http import ProtobufResponse
-from utils.session import GameSession
 
 from protomsg.club_pb2 import CreateClubResponse
 
 def create(request):
-    req = request._proto
+    name = request._proto.name
+    flag = request._proto.flag
 
-    name = req.name
-    flag = req.flag
-
-    session = GameSession.loads(req.session)
-
+    session = request._game_session
     server_id = session.server_id
     char_id = session.char_id
 
     if Club.objects.filter(char_id=char_id).exists():
-        raise GameException(char_id, 3)
+        raise GameException(3)
 
     char_name = Character.objects.get(id=char_id).name
 
@@ -34,15 +30,12 @@ def create(request):
             flag=flag
         )
     except IntegrityError as e:
-        print "===="
-        print e
-        raise GameException(char_id, 4)
+        raise GameException(4)
 
-    session_kwargs = session.kwargs
-    session_kwargs['club_id'] = club.id
 
-    session = GameSession.dumps(session_kwargs)
+    session.club_id = club.id
 
     response = CreateClubResponse()
     response.ret = 0
-    return ProtobufResponse(response, session=session)
+    response.session = session.serialize()
+    return ProtobufResponse(response)
