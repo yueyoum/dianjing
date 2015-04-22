@@ -17,24 +17,23 @@ NUM_FILED = struct.Struct('>i')
 
 
 class ProtobufResponse(object):
-    __slots__ = ['char_id', 'msg',]
-    def __new__(cls, char_id, msg, session=""):
-        obj = ProtobufResponse(char_id, msg, session=session)
+    __slots__ = ['msg',]
+    def __new__(cls, msg, session=""):
+        obj = ProtobufResponse(msg, session=session)
         data = obj.pack()
-        other_data = obj.get_other_data()
-        num_of_msgs = len(other_data) + 1
+        # other_data = obj.get_other_data()
+        # num_of_msgs = len(other_data) + 1
+        #
+        # result = '%s%s%s' % (
+        #     NUM_FILED.pack(num_of_msgs),
+        #     data,
+        #     ''.join(other_data)
+        # )
 
-        result = '%s%s%s' % (
-            NUM_FILED.pack(num_of_msgs),
-            data,
-            ''.join(other_data)
-        )
-
-        return HttpResponse(result, content_type='text/plain')
+        return HttpResponse(data, content_type='text/plain')
 
 
-    def __init__(self, char_id, msg, session=""):
-        self.char_id = char_id
+    def __init__(self, msg, session=""):
         msg.session = session
         self.msg = msg
 

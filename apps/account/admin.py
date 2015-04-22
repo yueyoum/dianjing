@@ -5,17 +5,15 @@ from apps.account.models import (
 )
 
 
-
 @admin.register(Account)
 class AccountAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'tp', 'Name', 'Password', 'Token', 'Platform', 'Puid',
-        'register_at', 'last_login', 'last_server_id', 'all_server_ids',
-        'login_times',
+        'id', 'tp', 'Name', 'Password', 'Platform', 'Puid',
+        'register_at', 'last_login', 'last_server_id', 'login_times',
     )
 
     readonly_fields = (
-        'tp', 'last_server_id', 'all_server_ids', 'login_times'
+        'tp', 'register_at', 'last_login', 'last_server_id', 'login_times',
     )
 
     ordering = ('-last_login',)
@@ -30,10 +28,6 @@ class AccountAdmin(admin.ModelAdmin):
             return obj.info_regular.passwd
         return ''
 
-    def Token(self, obj):
-        if obj.tp == 'anonymous':
-            return obj.info_anonymous.id
-        return ''
 
     def Platform(self, obj):
         if obj.tp == 'third':

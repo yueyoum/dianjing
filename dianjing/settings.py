@@ -45,6 +45,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'dianjing.middleware.GameRequestMiddleware',
+    'dianjing.middleware.GameExceptionMiddleware',
 )
 
 ROOT_URLCONF = 'dianjing.urls'
@@ -142,3 +144,5 @@ LOGGING = {
 
 DATETIME_FORMAT = "Y-m-d H:i:s"
 
+AES_KEY = '1234567890abcdef'
+AES_CBC_IV = '1234567890abcdef'
