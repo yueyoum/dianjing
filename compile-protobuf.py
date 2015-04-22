@@ -38,7 +38,11 @@ class Gen(object):
             file_name = p.attrib['name']
             for c in p.getchildren():
                 attr = c.attrib
-                self.info.append((attr['type'], file_name, attr['name'], attr.get('command', '')))
+                path = attr.get("command", "")
+                if path and not path.startswith("/game/"):
+                    raise Exception("Invalid Path: {0}".format(path))
+
+                self.info.append((attr['type'], file_name, attr['name'], path))
 
 
     def generate_message_id_dict(self):

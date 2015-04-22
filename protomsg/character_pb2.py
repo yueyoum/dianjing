@@ -14,7 +14,7 @@ import common_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='character.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\x0f\x63haracter.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"%\n\tCharacter\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\"N\n\x0f\x43haracterNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12*\n\x04\x63har\x18\x02 \x02(\x0b\x32\x1c.Dianjing.protocol.Character\"7\n\x16\x43reateCharacterRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\"e\n\x17\x43reateCharacterResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12,\n\x04next\x18\x03 \x01(\x0e\x32\x1e.Dianjing.protocol.NextOperate')
+  serialized_pb='\n\x0f\x63haracter.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"%\n\tCharacter\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\"N\n\x0f\x43haracterNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12*\n\x04\x63har\x18\x02 \x02(\x0b\x32\x1c.Dianjing.protocol.Character\"7\n\x16\x43reateCharacterRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\"m\n\x17\x43reateCharacterResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x34\n\x04next\x18\x03 \x01(\x0e\x32\x1e.Dianjing.protocol.NextOperate:\x06OPT_OK')
 
 
 
@@ -148,7 +148,7 @@ _CREATECHARACTERRESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='next', full_name='Dianjing.protocol.CreateCharacterResponse.next', index=2,
       number=3, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=1,
+      has_default_value=True, default_value=1,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -162,7 +162,7 @@ _CREATECHARACTERRESPONSE = _descriptor.Descriptor(
   is_extendable=False,
   extension_ranges=[],
   serialized_start=228,
-  serialized_end=329,
+  serialized_end=337,
 )
 
 _CHARACTERNOTIFY.fields_by_name['char'].message_type = _CHARACTER
