@@ -27,7 +27,6 @@ def compile_protobuf():
 class Gen(object):
     def __init__(self):
         self.f = "protomsg/__init__.py"
-        # info = [(id, file, protocolname, path)]
         self.info = []
 
         tree = et.ElementTree(file="protobuf/define.xml")
@@ -42,7 +41,8 @@ class Gen(object):
                 if path and not path.startswith("/game/"):
                     raise Exception("Invalid Path: {0}".format(path))
 
-                self.info.append((attr['type'], file_name, attr['name'], path))
+                attr['file'] = file_name
+                self.info.append(attr)
 
 
     def generate_message_id_dict(self):
@@ -52,36 +52,67 @@ MESSAGE_TO_ID = {
 }"""
 
         message_ids = []
-        for _id, _, _name, _ in self.info:
-            message_ids.append('    "{0}": {1},'.format(_name, _id))
+        for info in self.info:
+            message_ids.append('    "{0}": {1},'.format(info['name'], info['type']))
 
         content = template % "\n".join(message_ids)
 
         with open(self.f, 'w') as f:
             f.write(content)
 
-    def generate_path_message_dict(self):
+    def generate_path_request_dict(self):
         template = """
-PATH_TO_MESSAGE = {
+PATH_TO_REQUEST = {
 %s
 }"""
-        path_messages = []
-        for _id, _file, _name, _path in self.info:
-            if not _path:
+        path_requests = []
+        for info in self.info:
+            if not info.get("command", ""):
                 continue
 
-            path_messages.append('    "{0}": ["{1}", "{2}"],'.format(_path, _file, _name))
+            path_requests.append('    "{0}": ["{1}", "{2}"],'.format(info["command"], info["file"], info["name"]))
 
-        content = template % "\n".join(path_messages)
+        content = template % "\n".join(path_requests)
 
         with open(self.f, 'a') as f:
             f.write(content)
+
+    def generate_path_response_dict(self):
+        template = """
+PATH_TO_RESPONSE = {
+%s
+}"""
+
+        id_path_dict = {}
+        for info in self.info:
+            path = info.get('command', "")
+            if not path:
+                continue
+
+            id_path_dict[info['type']] = path
+
+        path_responses = []
+        for info in self.info:
+            reqtype = info.get("reqtype", "")
+            if not reqtype:
+                continue
+
+            path = id_path_dict[reqtype]
+
+            path_responses.append('    "{0}": ["{1}", "{2}"],'.format(path, info["file"], info["name"]))
+
+        content = template % "\n".join(path_responses)
+
+        with open(self.f, 'a') as f:
+            f.write(content)
+
 
     @classmethod
     def gen(cls):
         self = cls()
         self.generate_message_id_dict()
-        self.generate_path_message_dict()
+        self.generate_path_request_dict()
+        self.generate_path_response_dict()
 
 
 if __name__ == "__main__":

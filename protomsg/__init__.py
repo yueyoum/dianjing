@@ -15,11 +15,19 @@ MESSAGE_TO_ID = {
     "CreateClubRequest": 401,
     "CreateClubResponse": 402,
 }
-PATH_TO_MESSAGE = {
+PATH_TO_REQUEST = {
     "/game/servers/": ["server", "GetServerListRequest"],
     "/game/start/": ["server", "StartGameRequest"],
     "/game/account/register/": ["account", "RegisterRequest"],
     "/game/account/login/": ["account", "LoginRequest"],
     "/game/character/create/": ["character", "CreateCharacterRequest"],
     "/game/club/create/": ["club", "CreateClubRequest"],
+}
+PATH_TO_RESPONSE = {
+    "/game/servers/": ["server", "GetServerListResponse"],
+    "/game/start/": ["server", "StartGameResponse"],
+    "/game/account/register/": ["account", "RegisterResponse"],
+    "/game/account/login/": ["account", "LoginResponse"],
+    "/game/character/create/": ["character", "CreateCharacterResponse"],
+    "/game/club/create/": ["club", "CreateClubResponse"],
 }
