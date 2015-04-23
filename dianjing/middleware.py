@@ -29,7 +29,8 @@ class GameRequestMiddleware(object):
             return HttpResponse(status=403)
 
         try:
-            data = request.body[4:]
+            # body 格式：  数量 ID 长度 真实数据
+            data = request.body[12:] # 去掉 数量 ID 长度
             msg_file, msg_name = PATH_TO_REQUEST[request.path]
             msg_module = __import__('protomsg.{0}_pb2'.format(msg_file), fromlist=['*'])
 
