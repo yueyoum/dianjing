@@ -1,4 +1,8 @@
 # Created by .ignore support plugin (hsz.mobi)
+#
+
+# project
+settings.py
 
 ### Vim template
 [._]*.s[a-w][a-z]
