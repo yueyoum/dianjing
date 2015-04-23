@@ -18,6 +18,8 @@ NUM_FILED = struct.Struct('>i')
 
 class ProtobufResponse(object):
     def __new__(cls, msg):
+        if not msg.session:
+            msg.session = ""
         data = ProtobufResponse.pack(msg)
         return HttpResponse(data, content_type='text/plain')
 
