@@ -1,6 +1,7 @@
 
 import arrow
 
+from dianjing.exception import GameException
 from utils.http import ProtobufResponse
 from protomsg.server_pb2 import GetServerListResponse, StartGameResponse
 from protomsg.common_pb2 import OPT_OK, OPT_CREATE_CHAR, OPT_CREATE_CLUB
@@ -8,6 +9,9 @@ from protomsg.common_pb2 import OPT_OK, OPT_CREATE_CHAR, OPT_CREATE_CLUB
 from apps.server.models import Server
 from apps.character.models import Character
 from apps.club.models import Club
+
+from config import CONFIG
+
 
 def get_server_list(request):
     now = arrow.utcnow().format("YYYY-MM-DD HH:mm:ssZ")
@@ -33,6 +37,9 @@ def start_game(request):
     session = request._game_session
     account_id = session.account_id
     server_id = req.server_id
+
+    if not Server.objects.filter(id=server_id).exists():
+        raise GameException( CONFIG.ERRORMSG["BAD_MESSAGE"].id )
 
     response = StartGameResponse()
     response.ret = 0

@@ -5,6 +5,7 @@ from apps.character.models import Character
 from apps.club.models import Club
 
 from utils.http import ProtobufResponse
+from config import CONFIG
 
 from protomsg.club_pb2 import CreateClubResponse
 
@@ -17,7 +18,7 @@ def create(request):
     char_id = session.char_id
 
     if Club.objects.filter(char_id=char_id).exists():
-        raise GameException(3)
+        raise GameException( CONFIG.ERRORMSG["CLUB_ALREAD_CREATED"].id )
 
     char_name = Character.objects.get(id=char_id).name
 
@@ -30,7 +31,7 @@ def create(request):
             flag=flag
         )
     except IntegrityError as e:
-        raise GameException(4)
+        raise GameException( CONFIG.ERRORMSG["CLUB_NAME_TAKEN"].id )
 
 
     session.club_id = club.id

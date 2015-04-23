@@ -7,14 +7,12 @@ from utils.session import GameSession
 from apps.account.core import register as register_func
 from apps.account.core import regular_login, third_login
 
+
 from protomsg.account_pb2 import Account as MsgAccount, RegisterResponse, LoginResponse
 
 def register(request):
     name = request._proto.account.email
     password = request._proto.account.password
-
-    if not name or not password:
-        raise GameException(1)
 
     account = register_func(name, password)
 
