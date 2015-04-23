@@ -111,6 +111,7 @@ class GameExceptionMiddleware(object):
 
         proto = msg()
         proto.ret = exception.error_id
+        proto.session = ""
 
         return ProtobufResponse(proto)
 
