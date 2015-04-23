@@ -13,6 +13,9 @@ def register(request):
     name = request._proto.account.email
     password = request._proto.account.password
 
+    if not name or not password:
+        raise GameException(1)
+
     account = register_func(name, password)
 
     response = RegisterResponse()
