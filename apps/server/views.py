@@ -10,7 +10,7 @@ from apps.character.models import Character
 from apps.club.models import Club
 
 def get_server_list(request):
-    now = arrow.utcnow().format("YYYY-MM-DD HH:mm:ss")
+    now = arrow.utcnow().format("YYYY-MM-DD HH:mm:ssZ")
 
     servers = Server.objects.filter(open_at__gte=now)
     response = GetServerListResponse()

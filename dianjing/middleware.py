@@ -51,7 +51,8 @@ class GameRequestMiddleware(object):
 
         request._proto = proto
         request._game_session = session
-
+        print proto
+        print session.kwargs
 
 
 class GameResponseMiddleware(object):
