@@ -152,3 +152,5 @@ DATETIME_FORMAT = "Y-m-d H:i:s"
 
 AES_KEY = '1234567890abcdef'
 AES_CBC_IV = '1234567890abcdef'
+
+CONFIG_ZIP_FILE = "config.zip"
