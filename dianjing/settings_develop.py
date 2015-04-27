@@ -25,7 +25,10 @@ SECRET_KEY = 'rgmth63^*at+bt=xh9uqtu9ndv@s*0z54-990yg3-!v8$m0t-1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+if DEBUG:
+    ALLOWED_HOSTS = []
+else:
+    ALLOWED_HOSTS = '*'
 
 
 # Application definition
@@ -141,12 +144,17 @@ LOGGING = {
     },
     'loggers': {
         'django.request': {
-            'handlers': ['console', 'mail_admins'],
+            'handlers': [],
             'level': 'ERROR',
             'propagate': True,
         },
     }
 }
+
+
+if not DEBUG:
+    LOGGING['loggers']['django.request']['handlers'].extend(['console', 'mail_admins'])
+
 
 DATETIME_FORMAT = "Y-m-d H:i:s"
 
