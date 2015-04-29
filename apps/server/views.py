@@ -16,7 +16,7 @@ from config import CONFIG
 def get_server_list(request):
     now = arrow.utcnow().format("YYYY-MM-DD HH:mm:ssZ")
 
-    servers = Server.objects.filter(open_at__gte=now)
+    servers = Server.objects.filter(open_at__lte=now)
     response = GetServerListResponse()
     response.ret = 0
     for server in servers:
