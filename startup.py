@@ -7,8 +7,10 @@ Description:
 
 """
 
-from config import _load_config
-
 
 def start():
+    import signals
+    from config import _load_config
+
     _load_config()
+

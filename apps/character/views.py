@@ -2,7 +2,7 @@
 from django.db import IntegrityError
 from dianjing.exception import GameException
 from apps.character.models import Character
-
+from apps.character.core import CharacterManager
 from utils.http import ProtobufResponse
 
 from protomsg.character_pb2 import CreateCharacterResponse
@@ -39,6 +39,7 @@ def create(request):
             raise GameException( CONFIG.ERRORMSG["CHAR_ALREAD_CREATED"].id )
         raise GameException( CONFIG.ERRORMSG["CHAR_NAME_TAKEN"].id )
 
+    CharacterManager(char.id).send_notify()
 
     session.char_id = char.id
 

@@ -14,6 +14,12 @@ MESSAGE_TO_ID = {
     "ClubNotify": 400,
     "CreateClubRequest": 401,
     "CreateClubResponse": 402,
+    "StaffNotify": 500,
+    "StaffRemoveNotify": 501,
+    "StaffTrainingRequest": 502,
+    "StaffTrainingResponse": 503,
+    "StaffTrainingGetRewardRequest": 504,
+    "StaffTrainingGetRewardResponse": 505,
 }
 PATH_TO_REQUEST = {
     "/game/servers/": ["server", "GetServerListRequest"],
@@ -22,6 +28,8 @@ PATH_TO_REQUEST = {
     "/game/account/login/": ["account", "LoginRequest"],
     "/game/character/create/": ["character", "CreateCharacterRequest"],
     "/game/club/create/": ["club", "CreateClubRequest"],
+    "/game/staff/training/": ["staff", "StaffTrainingRequest"],
+    "/game/staff/training/getreward/": ["staff", "StaffTrainingGetRewardRequest"],
 }
 PATH_TO_RESPONSE = {
     "/game/servers/": ["server", "GetServerListResponse"],
@@ -30,4 +38,6 @@ PATH_TO_RESPONSE = {
     "/game/account/login/": ["account", "LoginResponse"],
     "/game/character/create/": ["character", "CreateCharacterResponse"],
     "/game/club/create/": ["club", "CreateClubResponse"],
+    "/game/staff/training/": ["staff", "StaffTrainingResponse"],
+    "/game/staff/training/getreward/": ["staff", "StaffTrainingGetRewardResponse"],
 }

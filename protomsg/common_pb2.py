@@ -14,7 +14,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='common.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\x0c\x63ommon.proto\x12\x11\x44ianjing.protocol*C\n\x0bNextOperate\x12\n\n\x06OPT_OK\x10\x01\x12\x13\n\x0fOPT_CREATE_CHAR\x10\x02\x12\x13\n\x0fOPT_CREATE_CLUB\x10\x03')
+  serialized_pb='\n\x0c\x63ommon.proto\x12\x11\x44ianjing.protocol*C\n\x0bNextOperate\x12\n\n\x06OPT_OK\x10\x01\x12\x13\n\x0fOPT_CREATE_CHAR\x10\x02\x12\x13\n\x0fOPT_CREATE_CLUB\x10\x03*3\n\x06\x41\x63tion\x12\x0c\n\x08\x41\x43T_INIT\x10\x01\x12\x0b\n\x07\x41\x43T_ADD\x10\x02\x12\x0e\n\nACT_UPDATE\x10\x03')
 
 _NEXTOPERATE = _descriptor.EnumDescriptor(
   name='NextOperate',
@@ -42,9 +42,38 @@ _NEXTOPERATE = _descriptor.EnumDescriptor(
 )
 
 NextOperate = enum_type_wrapper.EnumTypeWrapper(_NEXTOPERATE)
+_ACTION = _descriptor.EnumDescriptor(
+  name='Action',
+  full_name='Dianjing.protocol.Action',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='ACT_INIT', index=0, number=1,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='ACT_ADD', index=1, number=2,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='ACT_UPDATE', index=2, number=3,
+      options=None,
+      type=None),
+  ],
+  containing_type=None,
+  options=None,
+  serialized_start=104,
+  serialized_end=155,
+)
+
+Action = enum_type_wrapper.EnumTypeWrapper(_ACTION)
 OPT_OK = 1
 OPT_CREATE_CHAR = 2
 OPT_CREATE_CLUB = 3
+ACT_INIT = 1
+ACT_ADD = 2
+ACT_UPDATE = 3
 
 
 

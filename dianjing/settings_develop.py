@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     'apps.server',
     'apps.character',
     'apps.club',
+    'apps.staff',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -160,5 +161,8 @@ DATETIME_FORMAT = "Y-m-d H:i:s"
 
 AES_KEY = '1234567890abcdef'
 AES_CBC_IV = '1234567890abcdef'
+
+REDIS_HOST = "127.0.0.1"
+REDIS_PORT = 6379
 
 CONFIG_ZIP_FILE = "config.zip"

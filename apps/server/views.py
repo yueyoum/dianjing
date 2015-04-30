@@ -12,6 +12,8 @@ from apps.club.models import Club
 
 from config import CONFIG
 
+from core.signals import game_start_signal
+
 
 def get_server_list(request):
     now = arrow.utcnow().format("YYYY-MM-DD HH:mm:ssZ")
@@ -62,6 +64,11 @@ def start_game(request):
         response.next = OPT_CREATE_CLUB
         response.session = session.serialize()
         return ProtobufResponse(response)
+
+    game_start_signal.send(
+        sender=None,
+        char_id=char_id,
+    )
 
     session.club_id = club.id
 

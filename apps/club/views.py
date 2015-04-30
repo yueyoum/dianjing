@@ -9,6 +9,8 @@ from config import CONFIG
 
 from protomsg.club_pb2 import CreateClubResponse
 
+from core.signals import game_start_signal
+
 def create(request):
     name = request._proto.name
     flag = request._proto.flag
@@ -18,7 +20,7 @@ def create(request):
     char_id = session.char_id
 
     if Club.objects.filter(char_id=char_id).exists():
-        raise GameException( CONFIG.ERRORMSG["CLUB_ALREAD_CREATED"].id )
+        raise GameException( CONFIG.ERRORMSG["CLUB_ALREADY_CREATED"].id )
 
     char_name = Character.objects.get(id=char_id).name
 
@@ -33,6 +35,16 @@ def create(request):
     except IntegrityError as e:
         raise GameException( CONFIG.ERRORMSG["CLUB_NAME_TAKEN"].id )
 
+    # XXX for develop
+    from apps.staff.core import StaffManager
+    StaffManager(char_id).add(1, send_notify=False)
+    StaffManager(char_id).add(2, send_notify=False)
+    # XXX
+
+    game_start_signal.send(
+        sender=None,
+        char_id=char_id,
+    )
 
     session.club_id = club.id
 

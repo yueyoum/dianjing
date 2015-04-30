@@ -1,7 +1,10 @@
+# -*- coding: utf-8 -*-
+
 from django.db import models
 
 class Club(models.Model):
-    char_id = models.IntegerField(db_index=True)
+    char_id = models.IntegerField(unique=True)
+    # char_name 这个冗余数据是为了减少查询
     char_name = models.CharField(max_length=32)
     server_id = models.IntegerField()
 

@@ -14,7 +14,7 @@ from django.http import HttpResponse
 from dianjing.exception import GameException
 from utils.http import ProtobufResponse
 from utils.session import GameSession
-from utils.http import NUM_FILED
+from utils.message import NUM_FILED, MessagePipe
 
 from protomsg import PATH_TO_REQUEST, PATH_TO_RESPONSE
 
@@ -70,13 +70,11 @@ class GameResponseMiddleware(object):
         except:
             char_id = None
 
-
         # XXX
         if char_id:
-            other_msgs = []
+            other_msgs = MessagePipe(char_id).get()
         else:
             other_msgs = []
-
 
         num_of_msgs = len(other_msgs) + 1
 
@@ -87,7 +85,6 @@ class GameResponseMiddleware(object):
         )
 
         return HttpResponse(result, content_type='text/plain')
-
 
 
 class GameExceptionMiddleware(object):
