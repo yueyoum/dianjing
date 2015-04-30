@@ -9,8 +9,10 @@ Description:
 
 
 def start():
+    from core.db import redis_client
+    redis_client.ping()
+
     import signals
     from config import _load_config
 
     _load_config()
-
