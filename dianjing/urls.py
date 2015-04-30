@@ -5,6 +5,7 @@ import apps.account.views
 import apps.server.views
 import apps.character.views
 import apps.club.views
+import apps.staff.views
 
 urlpatterns = [
     # Examples:
@@ -22,4 +23,6 @@ urlpatterns = [
     url(r'^game/character/create/$', apps.character.views.create),
 
     url(r'^game/club/create/$', apps.club.views.create),
+
+    url(r'^game/staff/training/$', apps.staff.views.training_start),
 ]
