@@ -267,17 +267,19 @@ class Staff(object):
                 else:
                     msg_training.status = ProtocolStaff.TrainingSlot.TS_QUEUE
 
-            msg_training.tid = tid
+            msg_training.id = tid
             msg_training.end_at = end_at
 
         for i in range(len(msg.training_slots)):
             if msg.training_slots[i].status == ProtocolStaff.TrainingSlot.TS_QUEUE:
                 msg.training_slots[i].end_at += msg.training_slots[i-1].end_at
 
-        # FIXME
-        for i in range(3):
-            msg_training = msg.training_slots.add()
-            msg_training.status = ProtocolStaff.TrainingSlot.TS_EMPTY
+        # FIXME slot_amount
+        slot_amount = 3
+        if len(msg.training_slots) < slot_amount:
+            for i in range(slot_amount - len(msg.training_slots)):
+                msg_training = msg.training_slots.add()
+                msg_training.status = ProtocolStaff.TrainingSlot.TS_EMPTY
 
         return msg
 
