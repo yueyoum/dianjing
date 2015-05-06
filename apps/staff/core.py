@@ -248,7 +248,7 @@ class Staff(object):
         msg.status = self.status
 
         for k in StaffProperty.NAME_DICT.keys():
-            setattr(msg, k, getattr(self, k))
+            setattr(msg, k, int(getattr(self, k)))
 
         for k, v in self.skills:
             msg_skill = msg.skills.add()
