@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunSQL(
-            "alter table staff_training modify id bigint(20) not null",
-            "alter table staff_training modify id int(11) not null",
+            "alter table staff_training modify id bigint(20) not null auto_increment",
+            "alter table staff_training modify id int(11) not null auto_increment",
         )
     ]
