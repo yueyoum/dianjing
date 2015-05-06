@@ -12,7 +12,7 @@ from apps.club.models import Club
 
 from config import CONFIG
 
-from core.signals import game_start_signal
+from component.signals import game_start_signal
 
 
 def get_server_list(request):

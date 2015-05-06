@@ -8,7 +8,7 @@ Description:
 """
 import struct
 
-from core.db import redis_client
+from component.db import redis_client
 from protomsg import MESSAGE_TO_ID
 
 

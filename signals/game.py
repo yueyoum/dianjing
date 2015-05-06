@@ -7,7 +7,7 @@ Description:
 
 """
 
-from core.signals import game_start_signal
+from component.signals import game_start_signal
 from apps.character.core import CharacterManager
 from apps.club.core import ClubManager
 from apps.staff.core import StaffManager

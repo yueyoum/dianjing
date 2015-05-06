@@ -9,7 +9,7 @@ from config import CONFIG
 
 from protomsg.club_pb2 import CreateClubResponse
 
-from core.signals import game_start_signal
+from component.signals import game_start_signal
 
 def create(request):
     name = request._proto.name
