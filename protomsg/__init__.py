@@ -1,5 +1,6 @@
 
 MESSAGE_TO_ID = {
+    "UTCNotify": 10,
     "GetServerListRequest": 100,
     "GetServerListResponse": 101,
     "StartGameRequest": 102,
@@ -23,6 +24,7 @@ MESSAGE_TO_ID = {
 }
 
 ID_TO_MESSAGE = {
+    10: "UTCNotify",
     100: "GetServerListRequest",
     101: "GetServerListResponse",
     102: "StartGameRequest",

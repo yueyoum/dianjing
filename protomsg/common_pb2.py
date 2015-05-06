@@ -14,7 +14,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='common.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\x0c\x63ommon.proto\x12\x11\x44ianjing.protocol*C\n\x0bNextOperate\x12\n\n\x06OPT_OK\x10\x01\x12\x13\n\x0fOPT_CREATE_CHAR\x10\x02\x12\x13\n\x0fOPT_CREATE_CLUB\x10\x03*3\n\x06\x41\x63tion\x12\x0c\n\x08\x41\x43T_INIT\x10\x01\x12\x0b\n\x07\x41\x43T_ADD\x10\x02\x12\x0e\n\nACT_UPDATE\x10\x03')
+  serialized_pb='\n\x0c\x63ommon.proto\x12\x11\x44ianjing.protocol\"/\n\tUTCNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\ttimestamp\x18\x02 \x02(\x03*C\n\x0bNextOperate\x12\n\n\x06OPT_OK\x10\x01\x12\x13\n\x0fOPT_CREATE_CHAR\x10\x02\x12\x13\n\x0fOPT_CREATE_CLUB\x10\x03*3\n\x06\x41\x63tion\x12\x0c\n\x08\x41\x43T_INIT\x10\x01\x12\x0b\n\x07\x41\x43T_ADD\x10\x02\x12\x0e\n\nACT_UPDATE\x10\x03')
 
 _NEXTOPERATE = _descriptor.EnumDescriptor(
   name='NextOperate',
@@ -37,8 +37,8 @@ _NEXTOPERATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=35,
-  serialized_end=102,
+  serialized_start=84,
+  serialized_end=151,
 )
 
 NextOperate = enum_type_wrapper.EnumTypeWrapper(_NEXTOPERATE)
@@ -63,8 +63,8 @@ _ACTION = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=104,
-  serialized_end=155,
+  serialized_start=153,
+  serialized_end=204,
 )
 
 Action = enum_type_wrapper.EnumTypeWrapper(_ACTION)
@@ -76,6 +76,48 @@ ACT_ADD = 2
 ACT_UPDATE = 3
 
 
+
+_UTCNOTIFY = _descriptor.Descriptor(
+  name='UTCNotify',
+  full_name='Dianjing.protocol.UTCNotify',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.UTCNotify.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value="",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='timestamp', full_name='Dianjing.protocol.UTCNotify.timestamp', index=1,
+      number=2, type=3, cpp_type=2, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=35,
+  serialized_end=82,
+)
+
+DESCRIPTOR.message_types_by_name['UTCNotify'] = _UTCNOTIFY
+
+class UTCNotify(_message.Message):
+  __metaclass__ = _reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _UTCNOTIFY
+
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.UTCNotify)
 
 
 # @@protoc_insertion_point(module_scope)
