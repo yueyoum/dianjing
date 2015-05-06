@@ -4,7 +4,7 @@ from django.db import models
 from apps.staff.property import StaffProperty
 
 class Staff(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     char_id = models.IntegerField()
     oid = models.IntegerField()
 
@@ -28,7 +28,7 @@ class Staff(models.Model):
 
 
 class StaffTraining(models.Model):
-    id = models.BigIntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     staff_id = models.IntegerField()
     training_id = models.IntegerField()
 
