@@ -28,7 +28,7 @@ class Staff(models.Model):
 
 
 class StaffTraining(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.BigIntegerField(primary_key=True)
     staff_id = models.IntegerField()
     training_id = models.IntegerField()
 

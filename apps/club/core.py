@@ -18,6 +18,12 @@ class ClubManager(object):
         self.char_id = char_id
         self.club = ModelClub.objects.get(char_id=char_id)
 
+    def add(self, **kwargs):
+        gold = kwargs.get('gold', 0)
+        self.club.gold += gold
+        self.club.save()
+        self.send_notify()
+
     def send_notify(self):
         msg = ClubNotify()
         msg.club.id = self.club.id
