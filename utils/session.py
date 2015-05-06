@@ -36,3 +36,7 @@ class GameSession(object):
         data = crypto.decrypt(data)
         data = json.loads(data)
         return cls(**data)
+
+    @classmethod
+    def empty(cls):
+        return cls()

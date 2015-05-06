@@ -40,7 +40,9 @@ class GameRequestMiddleware(object):
             proto.ParseFromString(data)
 
             session = proto.session
-            if msg_name not in ["RegisterRequest", "LoginRequest"]:
+            if msg_name in ["RegisterRequest", "LoginRequest"]:
+                session = GameSession.empty()
+            else:
                 # 其他消息都应该有session
                 session = GameSession.loads(session)
 
