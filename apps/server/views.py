@@ -72,6 +72,8 @@ def start_game(request):
 
     session.club_id = club.id
 
+    request._game_session = session
+
     response.next = OPT_OK
     response.session = session.serialize()
     return ProtobufResponse(response)

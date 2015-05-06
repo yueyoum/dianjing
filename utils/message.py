@@ -35,8 +35,6 @@ class MessageFactory(object):
         return packed
 
 
-
-
 class MessagePipe(object):
     __slots__ = ['char_id', 'key']
     def __init__(self, char_id):
@@ -56,10 +54,11 @@ class MessagePipe(object):
 
     def get(self):
         with redis_client.pipeline() as p:
-            data = p.lrange(self.key, 0, -1)
+            p.lrange(self.key, 0, -1)
             p.delete(self.key)
+            result = p.execute()
 
-        return data
+        return result[0]
 
     def clean(self):
         redis_client.delete(self.key)
