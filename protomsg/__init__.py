@@ -21,6 +21,30 @@ MESSAGE_TO_ID = {
     "StaffTrainingGetRewardRequest": 504,
     "StaffTrainingGetRewardResponse": 505,
 }
+
+ID_TO_MESSAGE = {
+    100: "GetServerListRequest",
+    101: "GetServerListResponse",
+    102: "StartGameRequest",
+    103: "StartGameResponse",
+    200: "RegisterRequest",
+    201: "RegisterResponse",
+    202: "LoginRequest",
+    203: "LoginResponse",
+    300: "CharacterNotify",
+    301: "CreateCharacterRequest",
+    302: "CreateCharacterResponse",
+    400: "ClubNotify",
+    401: "CreateClubRequest",
+    402: "CreateClubResponse",
+    500: "StaffNotify",
+    501: "StaffRemoveNotify",
+    502: "StaffTrainingRequest",
+    503: "StaffTrainingResponse",
+    504: "StaffTrainingGetRewardRequest",
+    505: "StaffTrainingGetRewardResponse",
+}
+
 PATH_TO_REQUEST = {
     "/game/servers/": ["server", "GetServerListRequest"],
     "/game/start/": ["server", "StartGameRequest"],
@@ -31,6 +55,7 @@ PATH_TO_REQUEST = {
     "/game/staff/training/": ["staff", "StaffTrainingRequest"],
     "/game/staff/training/getreward/": ["staff", "StaffTrainingGetRewardRequest"],
 }
+
 PATH_TO_RESPONSE = {
     "/game/servers/": ["server", "GetServerListResponse"],
     "/game/start/": ["server", "StartGameResponse"],

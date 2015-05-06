@@ -49,7 +49,8 @@ class Gen(object):
         template = """
 MESSAGE_TO_ID = {
 %s
-}"""
+}
+"""
 
         message_ids = []
         for info in self.info:
@@ -60,11 +61,28 @@ MESSAGE_TO_ID = {
         with open(self.f, 'w') as f:
             f.write(content)
 
+    def generate_id_message_dict(self):
+        template = """
+ID_TO_MESSAGE = {
+%s
+}
+"""
+
+        id_messages = []
+        for info in self.info:
+            id_messages.append('    {0}: "{1}",'.format(info['type'], info['name']))
+
+        content = template % "\n".join(id_messages)
+
+        with open(self.f, 'a') as f:
+            f.write(content)
+
     def generate_path_request_dict(self):
         template = """
 PATH_TO_REQUEST = {
 %s
-}"""
+}
+"""
         path_requests = []
         for info in self.info:
             if not info.get("command", ""):
@@ -81,7 +99,8 @@ PATH_TO_REQUEST = {
         template = """
 PATH_TO_RESPONSE = {
 %s
-}"""
+}
+"""
 
         id_path_dict = {}
         for info in self.info:
@@ -111,6 +130,7 @@ PATH_TO_RESPONSE = {
     def gen(cls):
         self = cls()
         self.generate_message_id_dict()
+        self.generate_id_message_dict()
         self.generate_path_request_dict()
         self.generate_path_response_dict()
 
