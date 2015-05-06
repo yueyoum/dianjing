@@ -16,7 +16,7 @@ from utils.http import ProtobufResponse
 from utils.session import GameSession
 from utils.message import NUM_FILED, MessagePipe
 
-from protomsg import PATH_TO_REQUEST, PATH_TO_RESPONSE
+from protomsg import PATH_TO_REQUEST, PATH_TO_RESPONSE, ID_TO_MESSAGE
 
 
 class GameRequestMiddleware(object):
@@ -72,16 +72,26 @@ class GameResponseMiddleware(object):
 
         # XXX
         if char_id:
-            other_msgs = MessagePipe(char_id).get()
+            all_msgs = MessagePipe(char_id).get()
         else:
-            other_msgs = []
+            all_msgs = []
 
-        num_of_msgs = len(other_msgs) + 1
+        all_msgs.insert(0, response.content)
 
-        result = '%s%s%s' % (
+        # FOR DEBUG
+        _msg_names = []
+        for _msg in all_msgs:
+            _msg_id = NUM_FILED.unpack(_msg[:4])[0]
+            _msg_names.append(ID_TO_MESSAGE[_msg_id])
+
+        print _msg_names
+        # END DEBUG
+
+        num_of_msgs = len(all_msgs)
+
+        result = '%s%s' % (
             NUM_FILED.pack(num_of_msgs),
-            response.content,
-            ''.join(other_msgs)
+            ''.join(all_msgs)
         )
 
         return HttpResponse(result, content_type='text/plain')
