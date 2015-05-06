@@ -83,9 +83,9 @@ class StaffManager(object):
         MessagePipe(self.char_id).put(msg=msg)
 
 
-    def training_get_reward(self, staff_id, training_id):
+    def training_get_reward(self, slot_id):
         try:
-            tr = ModelStaffTraining.objects.get(staff_id=staff_id, training_id=training_id)
+            tr = ModelStaffTraining.objects.get(id=slot_id)
         except ModelStaffTraining.DoesNotExist:
             raise GameException( CONFIG.ERRORMSG["TRAINING_NOT_EXIST"].id )
 
@@ -93,6 +93,8 @@ class StaffManager(object):
         if not info.is_end:
             raise GameException( CONFIG.ERRORMSG["TRAINING_NOT_FINISHED"].id )
 
+        staff_id = tr.staff_id
+        training_id = tr.training_id
         # delete this training
         tr.delete()
 
@@ -162,13 +164,13 @@ class Staff(object):
 
 
     def get_trainings_info(self):
-        # trainings = [(id, end_at, is_end)]
+        # trainings = [(slot_id, training_id, end_at, is_end)]
         trainings = []
         for tr in ModelStaffTraining.objects.filter(staff_id=self.id).order_by('start_at'):
             info = TrainingInfo(tr.training_id, tr.start_at)
 
             trainings.append(
-                (tr.training_id, info.end_at, info.is_end)
+                (tr.id, tr.training_id, info.end_at, info.is_end)
             )
 
         return trainings
@@ -256,7 +258,7 @@ class Staff(object):
             msg_skill.level = v
 
         _in_training = True
-        for tid, end_at, is_end in self.get_trainings_info():
+        for slot_id, training_id, end_at, is_end in self.get_trainings_info():
             msg_training = msg.training_slots.add()
             if is_end:
                 msg_training.status = ProtocolStaff.TrainingSlot.TS_FINISHED
@@ -267,7 +269,8 @@ class Staff(object):
                 else:
                     msg_training.status = ProtocolStaff.TrainingSlot.TS_QUEUE
 
-            msg_training.id = tid
+            msg_training.slot_id = slot_id
+            msg_training.training_id = training_id
             msg_training.end_at = end_at
 
         for i in range(len(msg.training_slots)):

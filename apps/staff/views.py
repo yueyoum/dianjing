@@ -20,13 +20,12 @@ def training_start(request):
 
 def training_get_reward(request):
     req = request._proto
-    staff_id = req.staff_id
-    training_id = req.training_id
+    slot_id = req.slot_id
 
     session = request._game_session
     char_id = session.char_id
 
-    StaffManager(char_id).training_get_reward(staff_id, training_id)
+    StaffManager(char_id).training_get_reward(slot_id)
 
     response = StaffTrainingGetRewardResponse()
     response.ret = 0
