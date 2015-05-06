@@ -51,6 +51,7 @@ class MessagePipe(object):
         with redis_client.pipeline() as p:
             p.rpush(self.key, data)
             p.expire(self.key, EXPIRE)
+            p.execute()
 
     def get(self):
         with redis_client.pipeline() as p:

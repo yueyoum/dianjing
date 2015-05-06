@@ -37,4 +37,7 @@ class ClubManager(object):
         msg.club.gold = self.club.gold
         msg.club.sycee = self.club.sycee
 
+        # TODO
+        msg.club.max_renown = 1000
+
         MessagePipe(self.char_id).put(msg)
