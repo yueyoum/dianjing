@@ -25,5 +25,5 @@ urlpatterns = [
     url(r'^game/club/create/$', apps.club.views.create),
 
     url(r'^game/staff/training/$', apps.staff.views.training_start),
-    url(r'^game/staff/getreward/$', apps.staff.views.training_get_reward),
+    url(r'^game/staff/training/getreward/$', apps.staff.views.training_get_reward),
 ]
