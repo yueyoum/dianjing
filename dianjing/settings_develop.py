@@ -46,6 +46,7 @@ INSTALLED_APPS = (
     'apps.character',
     'apps.club',
     'apps.staff',
+    'apps.league',
 )
 
 MIDDLEWARE_CLASSES = (
