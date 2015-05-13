@@ -73,8 +73,8 @@ class LeagueBattle(models.Model):
     league_order = models.IntegerField(db_index=True)
 
     # 对抗的俱乐部 如果为0表示为NPC，否则从ClubInfo中获取信息
-    club_one = models.IntegerField(default=0)
-    club_two = models.IntegerField(default=0)
+    club_one = models.BigIntegerField(default=0)
+    club_two = models.BigIntegerField(default=0)
 
     # 如果是NPC，从NPCInfo中获取信息
     npc_one = models.BigIntegerField(default=0)
