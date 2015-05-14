@@ -14,6 +14,7 @@ import random
 import arrow
 
 from django.conf import settings
+from django.db.models import Q
 
 from apps.league.models import (
     LeagueGame,
@@ -101,7 +102,7 @@ class GameEntry(object):
             self.order = GameEntry.current_order()
             LeagueGame.objects.create(current_order=self.order)
         else:
-            self.order = LeagueGame.objects.order_by('-id').first().current_order
+            self.order = LeagueGame.objects.order_by('-id')[0:1][0].current_order
 
 
     def add_to_already_started_league(self, club_id):
@@ -110,8 +111,63 @@ class GameEntry(object):
 
         ge = GroupEntry(self.server_id, 1)
         ge.add_club(club_id)
-        ge.finish(order=self.order)
+        ge.finish()
 
+        # 已经打过的，要填充假数据
+        old_battles = LeagueBattle.objects.filter(
+            Q(league_group=ge.id) & Q(league_order__lt=self.order)
+        ).order_by('league_order')
+
+
+        class _Info(object):
+            __slots__ = ['battle_times', 'win_times', 'score']
+            def __init__(self):
+                self.battle_times = 0
+                self.win_times = 0
+                self.score = 0
+
+        club_info = {}
+        npc_info = {}
+
+        def update_info(tp, _id, win):
+            if tp == 1:
+                if _id not in club_info:
+                    club_info[_id] = _Info()
+
+                club_info[_id].battle_times += 1
+                if win:
+                    club_info[_id].win_times += 1
+            else:
+                if _id not in npc_info:
+                    npc_info[_id] = _Info()
+
+                npc_info[_id].battle_times += 1
+                if win:
+                    npc_info[_id].win_times += 1
+
+            # TODO score
+
+
+        for b in old_battles:
+            pairs = LeaguePair.objects.filter(league_battle=b.id)
+            for pair in pairs:
+                pair.win_one = random.choice([True, False])
+                pair.save()
+
+                update_info(pair.club_one_type, pair.club_one, pair.win_one)
+                update_info(pair.club_two_type, pair.club_two, not pair.win_one)
+
+        for k, v in club_info.iteritems():
+            obj = LeagueClubInfo.objects.get(id=k)
+            obj.battle_times += v.battle_times
+            obj.win_times += v.win_times
+            obj.save()
+
+        for k, v in npc_info.iteritems():
+            obj = LeagueNPCInfo.objects.get(id=k)
+            obj.battle_times += v.battle_times
+            obj.win_times += v.win_times
+            obj.save()
 
 
 
@@ -199,7 +255,7 @@ class GroupEntry(object):
             raise GroupEntry.ClubAddFinish()
 
 
-    def finish(self, order=1):
+    def finish(self):
         # 添加结束，加入NPC
         # order 表示正要开始第几场
         if not self.club_ids:
