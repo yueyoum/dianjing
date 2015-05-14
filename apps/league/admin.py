@@ -4,6 +4,7 @@ from apps.league.models import (
     LeagueGame,
     LeagueGroup,
     LeagueBattle,
+    LeaguePair,
     LeagueClubInfo,
     LeagueNPCInfo,
 )
@@ -15,22 +16,28 @@ class LeagueGameAdmin(admin.ModelAdmin):
 
 @admin.register(LeagueGroup)
 class LeagueGroupAdmin(admin.ModelAdmin):
-    list_display = ('id', 'level')
+    list_display = ('id', 'server_id', 'level')
 
 
 @admin.register(LeagueBattle)
 class LeagueBattleAdmin(admin.ModelAdmin):
-    list_display = ('id', 'league_group', 'league_order', 'club_one', 'club_two', 'npc_one', 'npc_two')
+    list_display = ('id', 'league_group', 'league_order')
+
+
+@admin.register(LeaguePair)
+class LeaguePairAdmin(admin.ModelAdmin):
+    list_display = ('id', 'league_battle', 'club_one', 'club_two', 'npc_one', 'npc_two', 'win_one')
 
 
 @admin.register(LeagueClubInfo)
 class LeagueClubInfoAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'club_id', 'group_id', 'battle_times', 'score'
+        'id', 'club_id', 'group_id', 'battle_times', 'win_times', 'score'
     )
 
 @admin.register(LeagueNPCInfo)
 class LeagueNPCInfoAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'club_name', 'manager_name', 'npc_id', 'staffs_info'
+        'id', 'group_id', 'club_name', 'manager_name', 'staffs_info',
+        'battle_times', 'win_times', 'score',
     )

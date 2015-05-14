@@ -17,10 +17,6 @@ class Migration(migrations.Migration):
                 ('id', utils.dbfields.BigAutoField(serialize=False, primary_key=True)),
                 ('league_group', models.BigIntegerField(db_index=True)),
                 ('league_order', models.IntegerField(db_index=True)),
-                ('club_one', models.IntegerField(default=0)),
-                ('club_two', models.IntegerField(default=0)),
-                ('npc_one', models.BigIntegerField(default=0)),
-                ('npc_two', models.BigIntegerField(default=0)),
             ],
             options={
                 'db_table': 'league_battle',
@@ -33,9 +29,10 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', utils.dbfields.BigAutoField(serialize=False, primary_key=True)),
                 ('club_id', models.IntegerField(db_index=True)),
-                ('group_id', models.BigIntegerField()),
-                ('battle_times', models.IntegerField()),
-                ('score', models.IntegerField()),
+                ('group_id', models.BigIntegerField(db_index=True)),
+                ('battle_times', models.IntegerField(default=0)),
+                ('win_times', models.IntegerField(default=0)),
+                ('score', models.IntegerField(default=0)),
             ],
             options={
                 'db_table': 'league_club_info',
@@ -61,6 +58,7 @@ class Migration(migrations.Migration):
             name='LeagueGroup',
             fields=[
                 ('id', utils.dbfields.BigAutoField(serialize=False, primary_key=True)),
+                ('server_id', models.IntegerField(db_index=True)),
                 ('level', models.IntegerField()),
             ],
             options={
@@ -73,15 +71,35 @@ class Migration(migrations.Migration):
             name='LeagueNPCInfo',
             fields=[
                 ('id', utils.dbfields.BigAutoField(serialize=False, primary_key=True)),
+                ('group_id', models.BigIntegerField(db_index=True)),
                 ('club_name', models.CharField(max_length=255)),
                 ('manager_name', models.CharField(max_length=255)),
-                ('npc_id', models.IntegerField()),
                 ('staffs_info', models.TextField()),
+                ('battle_times', models.IntegerField(default=0)),
+                ('win_times', models.IntegerField(default=0)),
+                ('score', models.IntegerField(default=0)),
             ],
             options={
                 'db_table': 'league_npc_info',
                 'verbose_name': 'NPC Info',
                 'verbose_name_plural': 'NPC Info',
+            },
+        ),
+        migrations.CreateModel(
+            name='LeaguePair',
+            fields=[
+                ('id', utils.dbfields.BigAutoField(serialize=False, primary_key=True)),
+                ('league_battle', models.BigIntegerField(db_index=True)),
+                ('club_one', models.BigIntegerField(default=0)),
+                ('club_two', models.BigIntegerField(default=0)),
+                ('npc_one', models.BigIntegerField(default=0)),
+                ('npc_two', models.BigIntegerField(default=0)),
+                ('win_one', models.BooleanField(default=False)),
+            ],
+            options={
+                'db_table': 'league_pair',
+                'verbose_name': 'League Pair',
+                'verbose_name_plural': 'League Pair',
             },
         ),
     ]

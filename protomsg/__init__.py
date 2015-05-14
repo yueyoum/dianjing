@@ -21,6 +21,7 @@ MESSAGE_TO_ID = {
     "StaffTrainingResponse": 503,
     "StaffTrainingGetRewardRequest": 504,
     "StaffTrainingGetRewardResponse": 505,
+    "LeagueNotify": 600,
 }
 
 ID_TO_MESSAGE = {
@@ -45,6 +46,7 @@ ID_TO_MESSAGE = {
     503: "StaffTrainingResponse",
     504: "StaffTrainingGetRewardRequest",
     505: "StaffTrainingGetRewardResponse",
+    600: "LeagueNotify",
 }
 
 PATH_TO_REQUEST = {

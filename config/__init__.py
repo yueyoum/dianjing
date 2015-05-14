@@ -49,6 +49,10 @@ def _load_config():
                     setattr(obj, k, v)
 
                 attr_value[d['fields']['error_index']] = obj
+
+        if attr_name == "NPC_CLUB_NAME" or attr_name == "NPC_MANAGER_NAME":
+            attr_value = [d['fields']['name'] for d in data]
+
         else:
             for d in data:
                 obj = _Config()
@@ -64,5 +68,4 @@ def _load_config():
     CONFIG = type('CONFIG', (object,), attr_dict)
 
     print "LOAD CONFIG DONE. {0}".format(settings.CONFIG_ZIP_FILE)
-
 
