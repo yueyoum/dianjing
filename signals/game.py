@@ -13,14 +13,12 @@ from component.signals import game_start_signal
 from apps.character.core import CharacterManager
 from apps.club.core import ClubManager
 from apps.staff.core import StaffManager
+from apps.league.core import League
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
 
-def start(char_id, **kwargs):
-    if not char_id:
-        return
-
+def start(server_id, char_id, club_id, **kwargs):
     msg = UTCNotify()
     msg.timestamp = arrow.utcnow().timestamp
     MessagePipe(char_id).put(msg=msg)
@@ -28,6 +26,7 @@ def start(char_id, **kwargs):
     CharacterManager(char_id).send_notify()
     ClubManager(char_id).send_notify()
     StaffManager(char_id).send_notify()
+    League(server_id, char_id, club_id).send_notify()
 
 
 game_start_signal.connect(

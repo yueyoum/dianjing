@@ -9,4 +9,4 @@ Description:
 
 from django.dispatch import Signal
 
-game_start_signal = Signal(providing_args=['char_id'])
+game_start_signal = Signal(providing_args=['server_id', 'char_id', 'club_id'])

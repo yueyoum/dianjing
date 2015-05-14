@@ -118,7 +118,7 @@ class LeagueClubInfo(models.Model):
     # 但只会属于一个 小组 LeagueGroup
     # 不过 那两场 LeagueBattle 肯定是属于同一个 LeagueGroup的
     # 这里记录冗余的 group_id 是为了从 club_id 直接查询到 其 group_id
-    group_id = models.UUIDField()
+    group_id = models.UUIDField(db_index=True)
 
     # 已战斗次数
     battle_times = models.IntegerField(default=0)
@@ -138,7 +138,7 @@ class LeagueNPCInfo(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
 
     # 这里记录 小组ID 是因为同一小组中的NPC不能重民
-    group_id = models.UUIDField()
+    group_id = models.UUIDField(db_index=True)
 
     club_name = models.CharField(max_length=255)
     manager_name = models.CharField(max_length=255)

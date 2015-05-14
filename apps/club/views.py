@@ -43,7 +43,9 @@ def create(request):
 
     game_start_signal.send(
         sender=None,
+        server_id=server_id,
         char_id=char_id,
+        club_id=club.id,
     )
 
     session.club_id = club.id

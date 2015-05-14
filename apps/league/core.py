@@ -26,9 +26,12 @@ from apps.league.models import (
 )
 from apps.club.models import Club
 
+from utils.message import MessagePipe
+
+from config import CONFIG
 
 from protomsg.league_pb2 import LeagueNotify
-from config import CONFIG
+from protomsg.common_pb2 import CLUB_TYPE_NPC, CLUB_TYPE_REAL
 
 
 TIME_ZONE = settings.TIME_ZONE
@@ -42,7 +45,8 @@ class GameEntry(object):
     # 一场联赛
 
     @staticmethod
-    def current_order():
+    def find_order():
+        # 根据时间找到目前应该打第几场
         def start_time_of_this_day(start_time):
             date_string = "%s %s" % ( now.format("YYYY-MM-DD"), start_time )
             return arrow.get(date_string).replace(tzinfo=TIME_ZONE)
@@ -62,6 +66,16 @@ class GameEntry(object):
 
         return passed_times + 2
 
+
+    @staticmethod
+    def current_order():
+        if LeagueGame.objects.count() == 0:
+            order = GameEntry.find_order()
+            LeagueGame.objects.create(current_order=order)
+        else:
+            order = LeagueGame.objects.order_by('-id')[0:1][0].current_order
+
+        return order
 
 
     @staticmethod
@@ -96,13 +110,7 @@ class GameEntry(object):
 
     def __init__(self, server_id):
         self.server_id = server_id
-
-        if LeagueGame.objects.count() == 0:
-            # 这是第一个进游戏的人
-            self.order = GameEntry.current_order()
-            LeagueGame.objects.create(current_order=self.order)
-        else:
-            self.order = LeagueGame.objects.order_by('-id')[0:1][0].current_order
+        self.order = GameEntry.current_order()
 
 
     def add_to_already_started_league(self, club_id):
@@ -168,6 +176,8 @@ class GameEntry(object):
             obj.battle_times += v.battle_times
             obj.win_times += v.win_times
             obj.save()
+
+        return ge.id
 
 
 
@@ -401,14 +411,75 @@ class League(object):
 
 
     def load_info(self):
+        ge = GameEntry(self.server_id)
+
         try:
             club_info = LeagueClubInfo.objects.get(club_id=self.club_id)
+            group_id = club_info.group_id
         except LeagueClubInfo.DoesNotExist:
-            ge = GameEntry(self.server_id)
-            ge.add_to_already_started_league(self.club_id)
+            group_id = ge.add_to_already_started_league(self.club_id)
 
+        self.order = ge.order
+        self.group_id = group_id
+
+
+    def get_clubs(self):
+        clubs = LeagueClubInfo.objects.filter(group_id=self.group_id)
+        npcs = LeagueNPCInfo.objects.filter(group_id=self.group_id)
+
+        result = []
+        result.extend(list(clubs))
+        result.extend((list(npcs)))
+
+        # TODO 排序
+        return result
 
 
     def send_notify(self):
         msg = LeagueNotify()
+        msg.league.level = 1
+        msg.league.current_order = self.order
 
+        def _find_info_from_ranks(_id):
+            for _rank in msg.league.ranks:
+                if _rank.id == _id:
+                    return _rank
+
+        clubs = self.get_clubs()
+        for c in clubs:
+            msg_rank = msg.league.ranks.add()
+            msg_rank.id = str(c.id)
+            msg_rank.battle_times = c.battle_times
+            msg_rank.score = c.score
+            if c.battle_times:
+                msg_rank.winning_rate = int(c.win_times * 1.0 / c.battle_times * 100)
+            else:
+                msg_rank.winning_rate = 0
+
+            if isinstance(c, LeagueClubInfo):
+                msg_rank.tp = CLUB_TYPE_REAL
+                msg_rank.name = Club.objects.get(id=c.club_id).name
+            else:
+                msg_rank.tp = CLUB_TYPE_NPC
+                msg_rank.name = c.club_name
+
+        battles = LeagueBattle.objects.filter(league_group=self.group_id).order_by('league_order')
+        for b in battles:
+            paris = LeaguePair.objects.filter(league_battle=b.id)
+            for p in paris:
+                msg_pair = msg.league.pairs.add()
+                msg_pair.start_at = 0
+
+                info_one = _find_info_from_ranks(str(p.club_one))
+                msg_pair.club_one.id = info_one.id
+                msg_pair.club_one.name = info_one.name
+                msg_pair.club_one.tp = info_one.tp
+                msg_pair.club_one.win = False
+
+                info_two = _find_info_from_ranks(str(p.club_two))
+                msg_pair.club_two.id = info_two.id
+                msg_pair.club_two.name = info_two.name
+                msg_pair.club_two.tp = info_two.tp
+                msg_pair.club_two.win = False
+
+        MessagePipe(self.char_id).put(msg=msg)
