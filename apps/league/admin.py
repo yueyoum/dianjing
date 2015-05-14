@@ -26,7 +26,10 @@ class LeagueBattleAdmin(admin.ModelAdmin):
 
 @admin.register(LeaguePair)
 class LeaguePairAdmin(admin.ModelAdmin):
-    list_display = ('id', 'league_battle', 'club_one', 'club_two', 'npc_one', 'npc_two', 'win_one')
+    list_display = (
+        'id', 'league_battle', 'club_one', 'club_two',
+        'club_one_type', 'club_two_type', 'win_one'
+    )
 
 
 @admin.register(LeagueClubInfo)
@@ -38,6 +41,6 @@ class LeagueClubInfoAdmin(admin.ModelAdmin):
 @admin.register(LeagueNPCInfo)
 class LeagueNPCInfoAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'group_id', 'club_name', 'manager_name', 'staffs_info',
+        'id', 'group_id', 'club_name', 'manager_name', 'staffs',
         'battle_times', 'win_times', 'score',
     )

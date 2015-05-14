@@ -7,6 +7,7 @@ Description:
 
 """
 
+import uuid
 import json
 import random
 
@@ -79,14 +80,11 @@ class GameEntry(object):
         # TODO 小组级别
         clubs = Club.objects.filter(server_id=server_id).values_list('id', flat=True)
 
-        print "clubs =", clubs
-
         ge = GroupEntry(server_id, 1)
         for c in clubs:
             try:
                 ge.add_club(c)
             except GroupEntry.ClubAddFinish:
-                print "GroupEntry AddFinish"
                 ge.finish()
 
                 # new group
@@ -134,28 +132,29 @@ class GroupEntry(object):
 
         self.id = self.group.id
 
+        self.club_ids = []
         self.clubs = []
+
+        self.npc_taken_club_name = set()
+        self.npc_taken_manager_name = set()
 
 
     def create_npc(self):
-        npc_info = LeagueNPCInfo.objects.filter(group_id=self.id)
-        taken_club_name = []
-        taken_manager_name = []
-        for n in npc_info:
-            taken_club_name.append(n.club_name)
-            taken_manager_name.append(n.manager_name)
-
-        NPC_CLUB_NAME = CONFIG.NPC_CLUB_NAME[:]
+        # 随机取club name
         npc_club_name = ""
+        NPC_CLUB_NAME = CONFIG.NPC_CLUB_NAME[:]
         while True:
             if not NPC_CLUB_NAME:
                 raise RuntimeError("Not Available NPC_CLUB_NAME")
 
             npc_club_name = random.choice(NPC_CLUB_NAME)
             NPC_CLUB_NAME.remove(npc_club_name)
-            if npc_club_name not in taken_club_name:
+            if npc_club_name not in self.npc_taken_club_name:
                 break
 
+        self.npc_taken_club_name.add(npc_club_name)
+
+        # 随机取manager name
         npc_manager_name = ""
         NPC_MANAGER_NAME = CONFIG.NPC_MANAGER_NAME[:]
         while True:
@@ -164,8 +163,10 @@ class GroupEntry(object):
 
             npc_manager_name = random.choice(NPC_MANAGER_NAME)
             NPC_MANAGER_NAME.remove(npc_manager_name)
-            if npc_manager_name not in taken_manager_name:
+            if npc_manager_name not in self.npc_taken_manager_name:
                 break
+
+        self.npc_taken_manager_name.add(npc_manager_name)
 
         npc_club = random.choice(CONFIG.NPC_CLUB.values())
 
@@ -188,37 +189,49 @@ class GroupEntry(object):
 
             staffs[i] = p
 
-        npc = LeagueNPCInfo.objects.create(
-            group_id=self.id,
-            club_name=npc_club_name,
-            manager_name=npc_manager_name,
-            staffs_info=json.dumps(staffs)
-        )
-
-        return npc
+        return (npc_club_name, npc_manager_name, json.dumps(staffs))
 
 
     def add_club(self, club_id):
-        club_info = LeagueClubInfo.objects.create(
-            club_id=club_id,
-            group_id=self.id,
-        )
+        self.club_ids.append(club_id)
 
-        self.clubs.append(club_info)
-
-        if len(self.clubs) >= MAX_REAL_CLUBS_IN_ONE_CLUB:
+        if len(self.club_ids) >= MAX_REAL_CLUBS_IN_ONE_CLUB:
             raise GroupEntry.ClubAddFinish()
 
 
     def finish(self, order=1):
         # 添加结束，加入NPC
         # order 表示正要开始第几场
-        if not self.clubs:
+        if not self.club_ids:
             return
 
+        club_objs = [
+            LeagueClubInfo(
+                id=str(uuid.uuid4()),
+                club_id=club_id,
+                group_id=self.id,
+            ) for club_id in self.club_ids
+        ]
+
+        self.clubs = LeagueClubInfo.objects.bulk_create(club_objs)
+
+        npc_objs = []
         npc_need_amount = MAX_CLUBS_IN_ONE_CLUB - len(self.clubs)
         for i in range(npc_need_amount):
-            self.clubs.append(self.create_npc())
+            npc_club_name, npc_manager_name, npc_staffs = self.create_npc()
+            npc_objs.append(
+                LeagueNPCInfo(
+                    id=str(uuid.uuid4()),
+                    group_id=self.id,
+                    club_name=npc_club_name,
+                    manager_name=npc_manager_name,
+                    staffs=npc_staffs
+                )
+            )
+
+        npcs = LeagueNPCInfo.objects.bulk_create(npc_objs)
+
+        self.clubs.extend(npcs)
 
         # 真实和npc club 都添加完毕后
         # 开始在小组内匹配
@@ -226,18 +239,9 @@ class GroupEntry(object):
 
         battles = self.arrangement()
 
-        # save
-        for index, bs in enumerate(battles):
-            this_order = index + 1
-
-            be = BattleEntry.create(self.id, this_order)
-            for club_one, club_two in bs:
-                if this_order < order:
-                    win_one = random.choice([True, False])
-                else:
-                    win_one = None
-
-                be.add_pair(club_one, club_two, win_one)
+        bm = BattleManager(self.id)
+        bm.add(battles)
+        bm.create()
 
 
     def arrangement(self):
@@ -262,12 +266,14 @@ class GroupEntry(object):
         # pprint.pprint(battles)
         #
 
+        random.shuffle(self.clubs)
+
         battles = []
         for day in range(7):
             this = []
             for i in range(MAX_CLUBS_IN_ONE_CLUB):
                 j = i + 1 + day
-                if j >= MAX_CLUBS_IN_ONE_CLUB:
+                while j >= MAX_CLUBS_IN_ONE_CLUB:
                     j -= MAX_CLUBS_IN_ONE_CLUB
 
                 this.append((self.clubs[i], self.clubs[j]))
@@ -279,58 +285,52 @@ class GroupEntry(object):
         return battles
 
 
-class BattleEntry(object):
-    # 一次战斗
-    @classmethod
-    def create(cls, group_id, order):
-        b = LeagueBattle.objects.create(
-            league_group=group_id,
-            league_order=order
-        )
 
-        return cls(b.id)
+class BattleManager(object):
+    def __init__(self, group_id):
+        self.group_id = group_id
+        self.battles = []
 
 
-    def __init__(self, battle_id):
-        self.id = battle_id
-
-    def add_pair(self, club_one, club_two, win_one=None):
-        # win_one = None  还没开始打
-        # win_one = True  打过了， club_one 赢
-        # win_one = False 打过了， club_two 赢
-        kwargs = {
-            'league_battle': self.id,
-        }
-
-        if win_one is not None:
-            kwargs['win_one'] = win_one
-            club_one.battle_times += 1
-            club_two.battle_times += 1
-
-        if win_one is True:
-            club_one.win_times += 1
-            # TODO score
-        elif win_one is False:
-            club_two.win_times += 1
-            # TODO score
-
-        club_one.save()
-        club_two.save()
+    def add(self, battles):
+        self.battles = battles
 
 
-        if isinstance(club_one, LeagueClubInfo):
-            kwargs['club_one'] = club_one.id
-        else:
-            kwargs['npc_one'] = club_one.id
+    def create(self):
+        battle_objs = [
+            LeagueBattle(
+                id=uuid.uuid4(),
+                league_group=self.group_id,
+                league_order=i+1
+            ) for i in range(len(self.battles))
+        ]
 
-        if isinstance(club_two, LeagueClubInfo):
-            kwargs['club_two'] = club_two.id
-        else:
-            kwargs['npc_two'] = club_two.id
+        LeagueBattle.objects.bulk_create(battle_objs)
 
-        pair = LeaguePair.objects.create(**kwargs)
-        return pair
+        pair_objs = []
+        for index, pairs in enumerate(self.battles):
+            for club_one, club_two in pairs:
+                if isinstance(club_one, LeagueClubInfo):
+                    club_one_type = 1
+                else:
+                    club_one_type = 2
 
+                if isinstance(club_two, LeagueClubInfo):
+                    club_two_type = 1
+                else:
+                    club_two_type = 2
+
+                obj = LeaguePair(
+                    league_battle=battle_objs[index].id,
+                    club_one=club_one.id,
+                    club_two=club_two.id,
+                    club_one_type=club_one_type,
+                    club_two_type=club_two_type,
+                )
+
+                pair_objs.append(obj)
+
+        LeaguePair.objects.bulk_create(pair_objs)
 
 
 

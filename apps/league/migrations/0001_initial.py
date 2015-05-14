@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import utils.dbfields
+import uuid
 
 
 class Migration(migrations.Migration):
@@ -14,8 +15,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LeagueBattle',
             fields=[
-                ('id', utils.dbfields.BigAutoField(serialize=False, primary_key=True)),
-                ('league_group', models.BigIntegerField(db_index=True)),
+                ('id', models.UUIDField(default=uuid.uuid4, serialize=False, primary_key=True)),
+                ('league_group', models.UUIDField(db_index=True)),
                 ('league_order', models.IntegerField(db_index=True)),
             ],
             options={
@@ -27,9 +28,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LeagueClubInfo',
             fields=[
-                ('id', utils.dbfields.BigAutoField(serialize=False, primary_key=True)),
+                ('id', models.UUIDField(default=uuid.uuid4, serialize=False, primary_key=True)),
                 ('club_id', models.IntegerField(db_index=True)),
-                ('group_id', models.BigIntegerField(db_index=True)),
+                ('group_id', models.UUIDField()),
                 ('battle_times', models.IntegerField(default=0)),
                 ('win_times', models.IntegerField(default=0)),
                 ('score', models.IntegerField(default=0)),
@@ -48,7 +49,6 @@ class Migration(migrations.Migration):
                 ('create_at', models.DateTimeField(auto_now_add=True)),
             ],
             options={
-                'ordering': ('-id',),
                 'db_table': 'league_game',
                 'verbose_name': 'League Game',
                 'verbose_name_plural': 'League Game',
@@ -57,7 +57,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LeagueGroup',
             fields=[
-                ('id', utils.dbfields.BigAutoField(serialize=False, primary_key=True)),
+                ('id', models.UUIDField(default=uuid.uuid4, serialize=False, primary_key=True)),
                 ('server_id', models.IntegerField(db_index=True)),
                 ('level', models.IntegerField()),
             ],
@@ -70,11 +70,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LeagueNPCInfo',
             fields=[
-                ('id', utils.dbfields.BigAutoField(serialize=False, primary_key=True)),
-                ('group_id', models.BigIntegerField(db_index=True)),
+                ('id', models.UUIDField(default=uuid.uuid4, serialize=False, primary_key=True)),
+                ('group_id', models.UUIDField()),
                 ('club_name', models.CharField(max_length=255)),
                 ('manager_name', models.CharField(max_length=255)),
-                ('staffs_info', models.TextField()),
+                ('staffs', models.TextField()),
                 ('battle_times', models.IntegerField(default=0)),
                 ('win_times', models.IntegerField(default=0)),
                 ('score', models.IntegerField(default=0)),
@@ -88,12 +88,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LeaguePair',
             fields=[
-                ('id', utils.dbfields.BigAutoField(serialize=False, primary_key=True)),
-                ('league_battle', models.BigIntegerField(db_index=True)),
-                ('club_one', models.BigIntegerField(default=0)),
-                ('club_two', models.BigIntegerField(default=0)),
-                ('npc_one', models.BigIntegerField(default=0)),
-                ('npc_two', models.BigIntegerField(default=0)),
+                ('id', models.UUIDField(default=uuid.uuid4, serialize=False, primary_key=True)),
+                ('league_battle', models.UUIDField(db_index=True)),
+                ('club_one', models.UUIDField()),
+                ('club_two', models.UUIDField()),
+                ('club_one_type', models.SmallIntegerField()),
+                ('club_two_type', models.SmallIntegerField()),
                 ('win_one', models.BooleanField(default=False)),
             ],
             options={

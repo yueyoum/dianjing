@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import uuid
+
 from django.db import models
 
 from utils.dbfields import BigAutoField
@@ -52,7 +54,6 @@ class LeagueGame(models.Model):
 
     class Meta:
         db_table = "league_game"
-        ordering = ('-id',)
         verbose_name = "League Game"
         verbose_name_plural = "League Game"
 
@@ -61,7 +62,7 @@ class LeagueGroup(models.Model):
     # 联赛小组
     # 俱乐部是分配到小组中进行比赛的。
     # 每个小组14个队伍（包括NPC俱乐部）
-    id = BigAutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     server_id = models.IntegerField(db_index=True)
     # 此小组所属的级别
     level = models.IntegerField()
@@ -74,8 +75,8 @@ class LeagueGroup(models.Model):
 
 class LeagueBattle(models.Model):
     # 时间点开始的比赛
-    id = BigAutoField(primary_key=True)
-    league_group = models.BigIntegerField(db_index=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    league_group = models.UUIDField(db_index=True)
     # 排序
     league_order = models.IntegerField(db_index=True)
 
@@ -88,18 +89,18 @@ class LeagueBattle(models.Model):
 class LeaguePair(models.Model):
     # 小组中，一场比赛
     # 对抗双方 是两支俱乐部（包括NPC俱乐部）
-    id = BigAutoField(primary_key=True)
-    league_battle = models.BigIntegerField(db_index=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    league_battle = models.UUIDField(db_index=True)
 
     # 对抗的俱乐部 如果为0表示为NPC，否则从ClubInfo中获取信息
-    club_one = models.BigIntegerField(default=0)
-    club_two = models.BigIntegerField(default=0)
+    club_one = models.UUIDField()
+    club_two = models.UUIDField()
 
-    # 如果是NPC，从NPCInfo中获取信息
-    npc_one = models.BigIntegerField(default=0)
-    npc_two = models.BigIntegerField(default=0)
+    # 1 club， 2 npc
+    club_one_type = models.SmallIntegerField()
+    club_two_type = models.SmallIntegerField()
 
-    # club_one 或者 npc_one 赢？
+    # club_one 赢？
     win_one = models.BooleanField(default=False)
 
     class Meta:
@@ -109,7 +110,7 @@ class LeaguePair(models.Model):
 
 
 class LeagueClubInfo(models.Model):
-    id = BigAutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     club_id = models.IntegerField(db_index=True)
 
     # 此club属于的小组。
@@ -117,7 +118,7 @@ class LeagueClubInfo(models.Model):
     # 但只会属于一个 小组 LeagueGroup
     # 不过 那两场 LeagueBattle 肯定是属于同一个 LeagueGroup的
     # 这里记录冗余的 group_id 是为了从 club_id 直接查询到 其 group_id
-    group_id = models.BigIntegerField(db_index=True)
+    group_id = models.UUIDField()
 
     # 已战斗次数
     battle_times = models.IntegerField(default=0)
@@ -134,16 +135,16 @@ class LeagueClubInfo(models.Model):
 
 class LeagueNPCInfo(models.Model):
     # NPC俱乐部信息
-    id = BigAutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
 
     # 这里记录 小组ID 是因为同一小组中的NPC不能重民
-    group_id = models.BigIntegerField(db_index=True)
+    group_id = models.UUIDField()
 
     club_name = models.CharField(max_length=255)
     manager_name = models.CharField(max_length=255)
 
     # 员工信息
-    staffs_info = models.TextField()
+    staffs = models.TextField()
 
     battle_times = models.IntegerField(default=0)
     win_times = models.IntegerField(default=0)
