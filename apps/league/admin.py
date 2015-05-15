@@ -1,3 +1,8 @@
+
+import arrow
+
+from django.conf import settings
+
 from django.contrib import admin
 
 from apps.league.models import (
@@ -21,8 +26,13 @@ class LeagueGroupAdmin(admin.ModelAdmin):
 
 @admin.register(LeagueBattle)
 class LeagueBattleAdmin(admin.ModelAdmin):
-    list_display = ('id', 'league_group', 'league_order')
+    list_display = ('id', 'league_group', 'league_order', 'BattleAt')
     search_fields = ('league_group',)
+
+
+    def BattleAt(self, obj):
+        return arrow.get(obj.battle_at).to(settings.TIME_ZONE).format("YYYY-MM-DD HH:mm:ss")
+
 
 
 @admin.register(LeaguePair)

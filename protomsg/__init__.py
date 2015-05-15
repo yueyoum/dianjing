@@ -22,6 +22,10 @@ MESSAGE_TO_ID = {
     "StaffTrainingGetRewardRequest": 504,
     "StaffTrainingGetRewardResponse": 505,
     "LeagueNotify": 600,
+    "LeagueGetStatisticsRequest": 601,
+    "LeagueGetStatisticsResponse": 602,
+    "LeagueGetBattleLogRequest": 603,
+    "LeagueGetBattleLogResponse": 604,
 }
 
 ID_TO_MESSAGE = {
@@ -47,6 +51,10 @@ ID_TO_MESSAGE = {
     504: "StaffTrainingGetRewardRequest",
     505: "StaffTrainingGetRewardResponse",
     600: "LeagueNotify",
+    601: "LeagueGetStatisticsRequest",
+    602: "LeagueGetStatisticsResponse",
+    603: "LeagueGetBattleLogRequest",
+    604: "LeagueGetBattleLogResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -58,6 +66,8 @@ PATH_TO_REQUEST = {
     "/game/club/create/": ["club", "CreateClubRequest"],
     "/game/staff/training/": ["staff", "StaffTrainingRequest"],
     "/game/staff/training/getreward/": ["staff", "StaffTrainingGetRewardRequest"],
+    "/game/league/statistics/": ["league", "LeagueGetStatisticsRequest"],
+    "/game/league/log/": ["league", "LeagueGetBattleLogRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -69,4 +79,6 @@ PATH_TO_RESPONSE = {
     "/game/club/create/": ["club", "CreateClubResponse"],
     "/game/staff/training/": ["staff", "StaffTrainingResponse"],
     "/game/staff/training/getreward/": ["staff", "StaffTrainingGetRewardResponse"],
+    "/game/league/statistics/": ["league", "LeagueGetStatisticsResponse"],
+    "/game/league/log/": ["league", "LeagueGetBattleLogResponse"],
 }

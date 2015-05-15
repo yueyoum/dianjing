@@ -362,14 +362,50 @@ class BattleManager(object):
         self.battles = battles
 
 
+    def find_battle_time(self, order):
+        now = arrow.utcnow().to(TIME_ZONE)
+        # 一天打两次
+        days, rest = divmod(order, 2)
+
+        # 要调整的天数
+        # 0 是周一
+        # 周一 减去 今天的天数， 然后加上已经过去的天数
+        change_days = 0 - now.weekday() + days
+
+        if rest == 0:
+            # 如果刚好除尽，也就是 order为 2, 4, 6 这样的情况
+            # 就是应该要打当天第二场
+            # 此时对应的 days 分别是 1, 2, 3
+            # 但其实是当天第二场，所以 days 还得 减1
+            change_days -= 1
+            time_str = settings.LEAGUE_START_TIME_TWO
+        else:
+            # order 为 1, 3, 5 的情况
+            # 此时 days, rest 分别是 (0, 1), (1, 1), (2, 1)
+            # 也就是当天第一场， change_days不用处理
+            time_str = settings.LEAGUE_START_TIME_ONE
+
+        date_str = "%s %s" % (
+            now.replace(days=change_days).format("YYYY-MM-DD"),
+            time_str
+        )
+
+        return arrow.get(date_str).timestamp
+
+
     def create(self):
-        battle_objs = [
-            LeagueBattle(
-                id=uuid.uuid4(),
-                league_group=self.group_id,
-                league_order=i+1
-            ) for i in range(len(self.battles))
-        ]
+        battle_objs = []
+
+        for i in range(len(self.battles)):
+            battle_at = self.find_battle_time(i+1)
+            battle_objs.append(
+                LeagueBattle(
+                    id=uuid.uuid4(),
+                    league_group=self.group_id,
+                    league_order=i+1,
+                    battle_at=battle_at,
+                )
+            )
 
         LeagueBattle.objects.bulk_create(battle_objs)
 
@@ -468,7 +504,7 @@ class League(object):
             paris = LeaguePair.objects.filter(league_battle=b.id)
             for p in paris:
                 msg_pair = msg.league.pairs.add()
-                msg_pair.start_at = 0
+                msg_pair.start_at = b.battle_at
 
                 info_one = _find_info_from_ranks(str(p.club_one))
                 msg_pair.club_one.id = info_one.id

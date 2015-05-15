@@ -79,6 +79,10 @@ class LeagueBattle(models.Model):
     league_group = models.UUIDField(db_index=True)
     # 排序
     league_order = models.IntegerField(db_index=True)
+    # UTC timestamp
+    # 不用这个查询，仅仅是记录时间
+    battle_at = models.IntegerField()
+
 
     class Meta:
         db_table = 'league_battle'
