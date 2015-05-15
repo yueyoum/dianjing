@@ -28,7 +28,7 @@ class Staff(models.Model):
     class Meta:
         db_table = 'staff'
         unique_together = (
-            ('char_id', 'oid'),
+            ('club_id', 'oid'),
         )
 
 
