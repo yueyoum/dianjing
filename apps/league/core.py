@@ -555,7 +555,8 @@ class League(object):
             paris = LeaguePair.objects.filter(league_battle=b.id)
             for p in paris:
                 msg_pair = msg.league.pairs.add()
-                msg_pair.start_at = b.battle_at
+                msg_pair.pair_id = str(p.id)
+                msg_pair.battle_at = b.battle_at
 
                 info_one = _find_info_from_ranks(str(p.club_one))
                 msg_pair.club_one.id = info_one.id
