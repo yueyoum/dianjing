@@ -13,6 +13,7 @@ import arrow
 
 from dianjing.exception import GameException
 
+from apps.club.models import Club
 from apps.staff.models import Staff as ModelStaff, StaffTraining as ModelStaffTraining
 from apps.staff.property import StaffProperty
 from utils.message import MessagePipe
@@ -29,6 +30,7 @@ MAX_STATUS = max(CONFIG.STAFF_STATUS.keys())
 class StaffManager(object):
     def __init__(self, char_id):
         self.char_id = char_id
+        self.club_id = Club.objects.get(char_id=self.char_id).id
 
 
     def add(self, oid, send_notify=True):
@@ -37,7 +39,7 @@ class StaffManager(object):
 
         try:
             s = ModelStaff.objects.create(
-                char_id=self.char_id,
+                club_id=self.club_id,
                 oid=oid,
             )
         except:
