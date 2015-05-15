@@ -115,7 +115,7 @@ class StaffManager(object):
     def send_notify(self):
         msg = StaffNotify()
         msg.act = ACT_INIT
-        for s in ModelStaff.objects.filter(char_id=self.char_id):
+        for s in ModelStaff.objects.filter(club_id=self.club_id):
             msg_staff = msg.staffs.add()
             msg_staff.MergeFrom( Staff.new(self.char_id, s.id).make_protocol_msg() )
 
