@@ -5,7 +5,9 @@ from apps.staff.property import StaffProperty
 
 class Staff(models.Model):
     id = models.AutoField(primary_key=True)
-    char_id = models.IntegerField()
+    club_id = models.IntegerField(db_index=True)
+    in_battle = models.BooleanField(default=False)
+
     oid = models.IntegerField()
 
     level = models.IntegerField(default=1)
@@ -19,6 +21,9 @@ class Staff(models.Model):
     property_add = models.CharField(max_length=255, default=StaffProperty.DEFAULT_PROPERTY_ADD)
     # 技能，同样
     skills = models.CharField(max_length=255, default='{}')
+
+    # 胜率 {'t': 50, 'z': 50, 'p': 50}
+    winning_rate = models.CharField(max_length=255, default='{"p": 0, "z": 0, "t": 0}')
 
     class Meta:
         db_table = 'staff'

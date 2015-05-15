@@ -5,8 +5,8 @@ from apps.staff.models import Staff, StaffTraining
 @admin.register(Staff)
 class StaffAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'char_id', 'oid', 'level', 'exp', 'status', 'create_at',
-        'property_add', 'skills'
+        'id', 'club_id', 'in_battle', 'oid', 'level', 'exp', 'status', 'create_at',
+        'property_add', 'skills', 'winning_rate'
     )
 
 @admin.register(StaffTraining)

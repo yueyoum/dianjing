@@ -6,6 +6,7 @@ import apps.server.views
 import apps.character.views
 import apps.club.views
 import apps.staff.views
+import apps.league.views
 
 urlpatterns = [
     # Examples:
@@ -26,4 +27,7 @@ urlpatterns = [
 
     url(r'^game/staff/training/$', apps.staff.views.training_start),
     url(r'^game/staff/training/getreward/$', apps.staff.views.training_get_reward),
+
+    url(r'^game/league/statistics/$', apps.league.views.get_statistics),
+    url(r'^game/league/log/$', apps.league.views.get_battle_log),
 ]

@@ -25,6 +25,7 @@ from apps.league.models import (
     LeagueNPCInfo,
 )
 from apps.club.models import Club
+from apps.staff.models import Staff
 
 from utils.message import MessagePipe
 
@@ -479,6 +480,46 @@ class League(object):
 
         # TODO 排序
         return result
+
+
+    def get_club_statistics(self, club_info_id):
+        club_id = LeagueClubInfo.objects.get(id=club_info_id).club_id
+
+        # FIXME only select in battle staffs
+        staffs = Staff.objects.filter(club_id=club_id)
+
+        statistics = []
+        for s in staffs:
+            statistics.append( (s.oid, json.loads(s.winning_rate)) )
+
+        return statistics
+
+
+    def get_npc_statistics(self, npc_info_id):
+        npc = LeagueNPCInfo.objects.get(id=npc_info_id)
+        staffs = json.loads(npc.staffs)
+
+        statistics = []
+        for k, v in staffs.iteritems():
+            statistics.append( (int(k), {'t': 50, 'z': 50, 'p': 50}) )
+
+        return statistics
+
+
+    def get_battle_log(self, pair_id):
+        pair = LeaguePair.objects.get(id=pair_id)
+        battle = LeagueBattle.objects.get(id=pair.league_battle)
+
+        if arrow.utcnow().timestamp < battle.battle_at:
+            return []
+
+        # FIXME fake data
+        logs = [
+            [(1, 1, True),  (2, 2, False)],
+            [(3, 1, False), (4, 1, True)]
+        ]
+
+        return logs
 
 
     def send_notify(self):
