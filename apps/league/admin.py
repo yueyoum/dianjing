@@ -1,8 +1,6 @@
 
 import arrow
 
-from django.conf import settings
-
 from django.contrib import admin
 
 from apps.league.models import (
@@ -31,7 +29,7 @@ class LeagueBattleAdmin(admin.ModelAdmin):
 
 
     def BattleAt(self, obj):
-        return arrow.get(obj.battle_at).to(settings.TIME_ZONE).format("YYYY-MM-DD HH:mm:ss")
+        return arrow.get(obj.battle_at).format("YYYY-MM-DD HH:mm:ss")
 
 
 

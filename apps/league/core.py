@@ -77,6 +77,15 @@ class GameEntry(object):
 
         return order
 
+    @staticmethod
+    def clean():
+        LeagueGame.objects.all().delete()
+        LeagueGroup.objects.all().delete()
+        LeagueBattle.objects.all().delete()
+        LeaguePair.objects.all().delete()
+        LeagueClubInfo.objects.all().delete()
+        LeagueNPCInfo.objects.all().delete()
+
 
     @staticmethod
     def new(server_id):
@@ -89,7 +98,8 @@ class GameEntry(object):
 
 
         # 新的一场联赛
-        LeagueGame.objects.create()
+        order = GameEntry.find_order()
+        LeagueGame.objects.create(current_order=order)
 
         # 分组
         # TODO 小组级别
