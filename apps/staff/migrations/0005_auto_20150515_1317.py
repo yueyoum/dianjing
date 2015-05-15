@@ -13,12 +13,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='staff',
-            name='club_id',
-            field=models.IntegerField(default=0, db_index=True),
-            preserve_default=False,
-        ),
-        migrations.AddField(
-            model_name='staff',
             name='in_battle',
             field=models.BooleanField(default=False),
         ),
@@ -27,12 +21,5 @@ class Migration(migrations.Migration):
             name='winning_rate',
             field=models.CharField(default=b'{"p": 0, "z": 0, "t": 0}', max_length=255),
         ),
-        migrations.AlterUniqueTogether(
-            name='staff',
-            unique_together=set([('club_id', 'oid')]),
-        ),
-        migrations.RemoveField(
-            model_name='staff',
-            name='char_id',
-        ),
+
     ]
