@@ -22,13 +22,13 @@ def get_statistics(request):
         statistics = l.get_npc_statistics(req.id)
 
     response = LeagueGetStatisticsResponse()
-    request.ret = 0
+    response.ret = 0
     for oid, winning_rate in statistics:
         response_s = response.statistics.add()
         response_s.staff_oid = oid
-        response_s.winning_rate_terran = winning_rate['t']
-        response_s.winning_rate_zerg = winning_rate['z']
-        response_s.winning_rate_protoss = winning_rate['p']
+        response_s.winning_rate_to_terran = winning_rate['t']
+        response_s.winning_rate_to_zerg = winning_rate['z']
+        response_s.winning_rate_to_protoss = winning_rate['p']
 
     return ProtobufResponse(response)
 
@@ -53,7 +53,7 @@ def get_battle_log(request):
         response_log.club_one_staff.win = club_one
 
         response_log.club_two_staff.staff_oid, \
-        response_log.club_one_staff.level, \
+        response_log.club_two_staff.level, \
         response_log.club_two_staff.win = club_two
 
     return ProtobufResponse(response)
