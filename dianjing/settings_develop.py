@@ -170,3 +170,5 @@ CONFIG_ZIP_FILE = "config.zip"
 
 LEAGUE_START_TIME_ONE = "12:30:00"
 LEAGUE_START_TIME_TWO = "22:00:00"
+
+LOG_PATH = os.path.join(BASE_DIR, 'logs')

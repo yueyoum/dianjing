@@ -1,5 +1,3 @@
-from django.shortcuts import render
-
 from apps.league.core import League
 
 from utils.http import ProtobufResponse

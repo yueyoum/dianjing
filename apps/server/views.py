@@ -1,5 +1,4 @@
 
-import arrow
 
 from dianjing.exception import GameException
 from utils.http import ProtobufResponse
@@ -16,9 +15,7 @@ from component.signals import game_start_signal
 
 
 def get_server_list(request):
-    now = arrow.utcnow().format("YYYY-MM-DD HH:mm:ssZ")
-
-    servers = Server.objects.filter(open_at__lte=now)
+    servers = Server.opened_servers()
     response = GetServerListResponse()
     response.ret = 0
     for server in servers:

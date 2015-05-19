@@ -6,3 +6,4 @@ protobuf==2.5.0
 redis==2.10.3
 hiredis==0.2.0
 sqlparse==0.1.15
+uwsgidecorators==1.1.0

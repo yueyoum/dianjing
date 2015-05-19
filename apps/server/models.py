@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import arrow
+
 from django.db import models
 
 class Server(models.Model):
@@ -17,3 +19,8 @@ class Server(models.Model):
     class Meta:
         db_table = 'server'
 
+    @classmethod
+    def opened_servers(cls):
+        now = arrow.utcnow().format("YYYY-MM-DD HH:mm:ssZ")
+        servers = cls.objects.filter(open_at__lte=now)
+        return servers

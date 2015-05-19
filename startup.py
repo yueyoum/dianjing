@@ -16,3 +16,5 @@ def start():
     _load_config()
 
     import signals
+    import cronjob
+

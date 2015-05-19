@@ -22,10 +22,9 @@ from utils.dbfields import BigAutoField
 #      +--------------------------+                     +------------------------+
 #      |                          |                     |                        |
 # +--------------+    ...  +--------------+     +--------------+    ...   +--------------+
-# | LeaguePair   |         | LeaguePair   |     | LeaguePair   |          | LeaguePair   |
+# | LeagueBattle |         | LeagueBattle |     | LeagueBattle |          | LeagueBattle |
 # +--------------+         +--------------+     +--------------+          +--------------+
 # | 一次比赛 #1   |         | 一次比赛 #14  |     | 一次比赛 #1    |         | 一次比赛 #14   |
-# | club vs club |         | club vs club |     | club vs club  |         | club vs club |
 # +--------------+         +--------------+     +--------------+          +--------------+
 #       |
 # +--------------+
@@ -38,8 +37,8 @@ from utils.dbfields import BigAutoField
 # 一场联赛是由很多小组赛组成的
 # 小组根据俱乐部等级分组
 # 每个小组有14支俱乐部 （包括NPC）
-# 这14支俱乐部 分配为 14场比赛，每支俱乐部每天要参与两场比赛
-# 每天 定时开启两场比赛，刚好一周14场
+# 这14支俱乐部每天要参与两场比赛，每个俱乐部与另外两个比赛，每天都和不同的比
+# 每天 定时开启两次比赛
 # 每天该开始哪场比赛由 LeagueGame 中的 current_order 确定
 # 每周刷新的时候， LeagueGroup, LeagueBattle, LeaguePair, LeagueClubInfo, LeagueNPCInfo 都需要清空
 
@@ -74,7 +73,7 @@ class LeagueGroup(models.Model):
 
 
 class LeagueBattle(models.Model):
-    # 时间点开始的比赛
+    # 定时开始的比赛
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     league_group = models.UUIDField(db_index=True)
     # 排序
@@ -120,7 +119,7 @@ class LeagueClubInfo(models.Model):
     # 此club属于的小组。
     # 一个club会属于两场 LeagueBattle
     # 但只会属于一个 小组 LeagueGroup
-    # 不过 那两场 LeagueBattle 肯定是属于同一个 LeagueGroup的
+    # 而且那两场 LeagueBattle 肯定是属于同一个 LeagueGroup的
     # 这里记录冗余的 group_id 是为了从 club_id 直接查询到 其 group_id
     group_id = models.UUIDField(db_index=True)
 
@@ -141,7 +140,7 @@ class LeagueNPCInfo(models.Model):
     # NPC俱乐部信息
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
 
-    # 这里记录 小组ID 是因为同一小组中的NPC不能重民
+    # 这里记录 小组ID 是因为同一小组中的NPC不能重名
     group_id = models.UUIDField(db_index=True)
 
     club_name = models.CharField(max_length=255)
