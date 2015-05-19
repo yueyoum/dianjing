@@ -3,6 +3,7 @@
 
 # project
 settings.py
+static
 
 ### Vim template
 [._]*.s[a-w][a-z]
