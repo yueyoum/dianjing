@@ -62,22 +62,23 @@ def league_battle(signum):
 
 
     for b in battles:
-        pair = LeaguePair.objects.get(league_battle=b.id)
-        # TODO real battle
-        win_one = random.choice([True, False])
+        pairs = LeaguePair.objects.filter(league_battle=b.id)
+        for pair in pairs:
+            # TODO real battle
+            win_one = random.choice([True, False])
 
-        pair.win_one = win_one
-        pair.save()
+            pair.win_one = win_one
+            pair.save()
 
-        if pair.club_one_type == 1:
-            club_info_saver(LeagueClubInfo, pair.club_one, pair.win_one)
-        else:
-            club_info_saver(LeagueNPCInfo, pair.club_one, pair.win_one)
+            if pair.club_one_type == 1:
+                club_info_saver(LeagueClubInfo, pair.club_one, pair.win_one)
+            else:
+                club_info_saver(LeagueNPCInfo, pair.club_one, pair.win_one)
 
-        if pair.club_two_type == 1:
-            club_info_saver(LeagueClubInfo, pair.club_one, not pair.win_one)
-        else:
-            club_info_saver(LeagueNPCInfo, pair.club_two, not pair.win_one)
+            if pair.club_two_type == 1:
+                club_info_saver(LeagueClubInfo, pair.club_one, not pair.win_one)
+            else:
+                club_info_saver(LeagueNPCInfo, pair.club_two, not pair.win_one)
 
     game = LeagueGame.objects.order_by('-id')[0:1][0]
     game.current_order += 1
