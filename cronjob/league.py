@@ -87,5 +87,5 @@ def league_battle(signum):
     logger.write("League Battle Finish.")
 
 
-uwsgidecorators.cron(START_TIME_ONE[1], START_TIME_ONE[0], -1, -1, -1)(league_battle)
-uwsgidecorators.cron(START_TIME_TWO[1], START_TIME_TWO[0], -1, -1, -1)(league_battle)
+uwsgidecorators.cron(int(START_TIME_ONE[1]), int(START_TIME_ONE[0]), -1, -1, -1)(league_battle)
+uwsgidecorators.cron(int(START_TIME_TWO[1]), int(START_TIME_TWO[0]), -1, -1, -1)(league_battle)
