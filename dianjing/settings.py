@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'rgmth63^*at+bt=xh9uqtu9ndv@s*0z54-990yg3-!v8$m0t-1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 if DEBUG:
     ALLOWED_HOSTS = []
@@ -41,12 +41,12 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'apps.account',
     'apps.server',
+    'apps.account',
     'apps.character',
-    'apps.club',
-    'apps.staff',
-    'apps.league',
+    # 'apps.club',
+    # 'apps.staff',
+    # 'apps.league',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -84,25 +84,12 @@ WSGI_APPLICATION = 'dianjing.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME':  'dianjing',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': '127.0.0.1',
-        'PORT': 3306,
-        'CONN_MAX_AGE': 0,
-    },
-}
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
 LANGUAGE_CODE = 'zh-CN'
 
-TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -158,18 +145,46 @@ LOGGING = {
 if not DEBUG:
     LOGGING['loggers']['django.request']['handlers'].extend(['console', 'mail_admins'])
 
+LOG_PATH = os.path.join(BASE_DIR, 'logs')
 
 DATETIME_FORMAT = "Y-m-d H:i:s"
 
-AES_KEY = '1234567890abcdef'
-AES_CBC_IV = '1234567890abcdef'
 
-REDIS_HOST = "127.0.0.1"
-REDIS_PORT = 6379
+# project config
+import xml.etree.ElementTree as et
+tree = et.ElementTree(file=os.path.join(BASE_DIR, 'settings.xml'))
+doc = tree.getroot()
 
-CONFIG_ZIP_FILE = "config.zip"
+MYSQL_HOST = doc.find('mysql/host').text
+MYSQL_PORT = int( doc.find('mysql/port').text )
+MYSQL_DATABASE = doc.find('mysql/database').text
+MYSQL_USER = doc.find('mysql/user').text
+MYSQL_PASSWORD = doc.find('mysql/password').text
 
-LEAGUE_START_TIME_ONE = "12:30:00"
-LEAGUE_START_TIME_TWO = "22:00:00"
 
-LOG_PATH = os.path.join(BASE_DIR, 'logs')
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME':  MYSQL_DATABASE,
+        'USER': MYSQL_USER,
+        'PASSWORD': MYSQL_PASSWORD,
+        'HOST': MYSQL_HOST,
+        'PORT': MYSQL_PORT,
+        'CONN_MAX_AGE': 0,
+    },
+}
+
+
+TIME_ZONE = doc.find('timezone').text
+
+
+AES_KEY = doc.find('crypto/key').text
+AES_CBC_IV = doc.find('crypto/iv').text
+
+REDIS_HOST = doc.find('redis/host').text
+REDIS_PORT = int( doc.find('redis/port').text )
+REDIS_CACHE_SECONDS = int( doc.find('redis/cache-seconds').text )
+
+del doc
+del tree
+del et

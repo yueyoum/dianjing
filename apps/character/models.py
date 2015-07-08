@@ -6,9 +6,12 @@ class Character(models.Model):
     name = models.CharField(max_length=32, db_index=True)
     create_at = models.DateTimeField(auto_now_add=True, db_index=True)
 
+    club_name = models.CharField(max_length=32, null=True)
+
     class Meta:
         db_table = 'char_'
         unique_together = (
             ('account_id', 'server_id'),
             ('server_id', 'name'),
+            ('club_name', 'server_id')
         )

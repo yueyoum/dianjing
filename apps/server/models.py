@@ -16,6 +16,10 @@ class Server(models.Model):
 
     open_at = models.DateTimeField(db_index=True)
 
+    mongo_host = models.CharField(max_length=16)
+    mongo_port = models.IntegerField()
+    mongo_db = models.CharField(max_length=16)
+
     class Meta:
         db_table = 'server'
 

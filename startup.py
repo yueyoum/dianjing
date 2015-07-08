@@ -7,13 +7,12 @@ Description:
 
 """
 
+def setup():
+    from core.db import mongo_connect
+    mongo_connect()
 
-def start():
-    from component.db import redis_client
-    redis_client.ping()
-
-    from config import _load_config
-    _load_config()
+    from config import load_config
+    load_config()
 
     import signals
     import cronjob

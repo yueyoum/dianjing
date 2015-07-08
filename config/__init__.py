@@ -20,7 +20,7 @@ class _Config(object):
     pass
 
 
-def _load_config():
+def load_config():
     global CONFIG
     if CONFIG is not None:
         return
@@ -28,7 +28,7 @@ def _load_config():
 
     attr_dict = {}
 
-    z = zipfile.ZipFile(os.path.join(settings.BASE_DIR, 'config', settings.CONFIG_ZIP_FILE))
+    z = zipfile.ZipFile(os.path.join(settings.BASE_DIR, 'config', 'config.zip'))
     for item in z.namelist():
 
         name, ext = os.path.splitext(item)
@@ -67,5 +67,5 @@ def _load_config():
 
     CONFIG = type('CONFIG', (object,), attr_dict)
 
-    print "LOAD CONFIG DONE. {0}".format(settings.CONFIG_ZIP_FILE)
+    print "LOAD CONFIG DONE"
 

@@ -18,6 +18,7 @@ class Migration(migrations.Migration):
                 ('server_id', models.IntegerField()),
                 ('name', models.CharField(max_length=32, db_index=True)),
                 ('create_at', models.DateTimeField(auto_now_add=True, db_index=True)),
+                ('club_name', models.CharField(max_length=32, null=True)),
             ],
             options={
                 'db_table': 'char_',
@@ -25,6 +26,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='character',
-            unique_together=set([('server_id', 'name'), ('account_id', 'server_id')]),
+            unique_together=set([('server_id', 'name'), ('account_id', 'server_id'), ('club_name', 'server_id')]),
         ),
     ]

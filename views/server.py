@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+"""
+Author:         Wang Chao <yueyoum@gmail.com>
+Filename:       server
+Date Created:   2015-07-02 18:20
+Description:
+
+"""
 
 
 from dianjing.exception import GameException
@@ -7,11 +15,10 @@ from protomsg.common_pb2 import OPT_OK, OPT_CREATE_CHAR, OPT_CREATE_CLUB
 
 from apps.server.models import Server
 from apps.character.models import Character
-from apps.club.models import Club
 
 from config import CONFIG
 
-from component.signals import game_start_signal
+from core.signals import game_start_signal
 
 
 def get_server_list(request):
@@ -23,9 +30,6 @@ def get_server_list(request):
         s.id = server.id
         s.name = server.name
         s.status = server.status
-
-    # XXX
-    response.recent_server_ids.append(1)
 
     return ProtobufResponse(response)
 
@@ -55,9 +59,7 @@ def start_game(request):
     char_id = char.id
     session.char_id = char_id
 
-    try:
-        club = Club.objects.get(char_id=char_id)
-    except Club.DoesNotExist:
+    if not char.club_name:
         response.next = OPT_CREATE_CLUB
         response.session = session.serialize()
         return ProtobufResponse(response)
@@ -66,10 +68,7 @@ def start_game(request):
         sender=None,
         server_id=server_id,
         char_id=char_id,
-        club_id=club.id
     )
-
-    session.club_id = club.id
 
     response.next = OPT_OK
     response.session = session.serialize()

@@ -24,7 +24,6 @@ from apps.league.models import (
     LeagueClubInfo,
     LeagueNPCInfo,
 )
-from apps.club.models import Club
 from apps.staff.models import Staff
 
 from utils.message import MessagePipe
@@ -104,19 +103,19 @@ class GameEntry(object):
 
         # 分组
         # TODO 小组级别
-        clubs = Club.objects.filter(server_id=server_id).values_list('id', flat=True)
+        # clubs = Club.objects.filter(server_id=server_id).values_list('id', flat=True)
+        #
+        # ge = GroupEntry(server_id, 1)
+        # for c in clubs:
+        #     try:
+        #         ge.add_club(c)
+        #     except GroupEntry.ClubAddFinish:
+        #         ge.finish()
+        #
+        #         # new group
+        #         ge = GroupEntry(server_id, 1)
 
-        ge = GroupEntry(server_id, 1)
-        for c in clubs:
-            try:
-                ge.add_club(c)
-            except GroupEntry.ClubAddFinish:
-                ge.finish()
-
-                # new group
-                ge = GroupEntry(server_id, 1)
-
-        ge.finish()
+        # ge.finish()
 
 
     def __init__(self, server_id):
@@ -542,13 +541,13 @@ class League(object):
                 msg_rank.winning_rate = int(c.win_times * 1.0 / c.battle_times * 100)
             else:
                 msg_rank.winning_rate = 0
-
-            if isinstance(c, LeagueClubInfo):
-                msg_rank.tp = CLUB_TYPE_REAL
-                msg_rank.name = Club.objects.get(id=c.club_id).name
-            else:
-                msg_rank.tp = CLUB_TYPE_NPC
-                msg_rank.name = c.club_name
+            #
+            # if isinstance(c, LeagueClubInfo):
+            #     msg_rank.tp = CLUB_TYPE_REAL
+            #     msg_rank.name = Club.objects.get(id=c.club_id).name
+            # else:
+            #     msg_rank.tp = CLUB_TYPE_NPC
+            #     msg_rank.name = c.club_name
 
         battles = LeagueBattle.objects.filter(league_group=self.group_id).order_by('league_order')
         for b in battles:

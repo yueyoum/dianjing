@@ -9,24 +9,32 @@ Description:
 
 import arrow
 
-from component.signals import game_start_signal
-from apps.character.core import CharacterManager
-from apps.club.core import ClubManager
-from apps.staff.core import StaffManager
-from apps.league.core import League
+from core.signals import game_start_signal
+from core.club import ClubManager
+from core.db import get_mongo_db
+
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
+from protomsg.character_pb2 import CharacterNotify
 
-def start(server_id, char_id, club_id, **kwargs):
+
+def start(server_id, char_id, **kwargs):
     msg = UTCNotify()
     msg.timestamp = arrow.utcnow().timestamp
     MessagePipe(char_id).put(msg=msg)
 
-    CharacterManager(char_id).send_notify()
+    mongo = get_mongo_db(server_id)
+    char = mongo.character.find_one({'_id': char_id}, {'name': 1})
+
+    notify = CharacterNotify()
+    notify.char.id = char.id
+    notify.char.name = char.name
+    MessagePipe(char.id).put(msg=notify)
+
     ClubManager(char_id).send_notify()
-    StaffManager(char_id).send_notify()
-    League(server_id, char_id, club_id).send_notify()
+
+
 
 
 game_start_signal.connect(

@@ -15,6 +15,7 @@ MODE = AES.MODE_CBC
 KEY = settings.AES_KEY
 IV = settings.AES_CBC_IV
 
+
 class BadEncryptedText(Exception):
     pass
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <timezone>Asia/Shanghai</timezone>
+
+    <mysql>
+        <host>127.0.0.1</host>
+        <port>3306</port>
+        <database>dianjing</database>
+        <user>root</user>
+        <password>root</password>
+    </mysql>
+
+    <crypto>
+        <key>1234567890abcdef</key>
+        <iv>1234567890abcdef</iv>
+    </crypto>
+
+    <redis>
+        <host>127.0.0.1</host>
+        <port>6379</port>
+    </redis>
+</config>

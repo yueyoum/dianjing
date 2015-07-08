@@ -187,7 +187,7 @@ class Staff(object):
 
 
     def add_reward_from_training(self, training_id):
-        from apps.club.core import ClubManager
+        from core.club import ClubManager
 
         training = CONFIG.TRAINING[training_id]
 

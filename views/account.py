@@ -1,14 +1,22 @@
+# -*- coding: utf-8 -*-
+"""
+Author:         Wang Chao <yueyoum@gmail.com>
+Filename:       account
+Date Created:   2015-07-02 18:23
+Description:
+
+"""
+
 
 from dianjing.exception import GameException
 
 from utils.http import ProtobufResponse
 from utils.session import GameSession
 
-from apps.account.core import register as register_func
-from apps.account.core import regular_login, third_login
-
+from core.account import register as register_func, regular_login, third_login
 
 from protomsg.account_pb2 import Account as MsgAccount, RegisterResponse, LoginResponse
+
 
 def register(request):
     name = request._proto.account.email
@@ -25,12 +33,12 @@ def register(request):
 
 
 def login(request):
-    req = request._proto.account
+    account = request._proto.account
 
-    if req.tp == MsgAccount.REGULAR:
-        account = regular_login(req.regular.email, req.regular.password)
-    elif req.tp == MsgAccount.THIRD:
-        account = third_login(req.third.platform, req.third.uid, req.third.param)
+    if account.tp == MsgAccount.REGULAR:
+        account = regular_login(account.regular.email, account.regular.password)
+    elif account.tp == MsgAccount.THIRD:
+        account = third_login(account.third.platform, account.third.uid, account.third.param)
     else:
         raise GameException(1)
 
@@ -38,7 +46,7 @@ def login(request):
     response = LoginResponse()
     response.ret = 0
     response.session = GameSession.dumps(account_id=account.account.id)
-    response.account.MergeFrom(req)
+    response.account.MergeFrom(account)
 
     return ProtobufResponse(response)
 

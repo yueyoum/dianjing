@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 Author:         Wang Chao <yueyoum@gmail.com>
-Filename:       core
-Date Created:   2015-04-22 14:25
+Filename:       account
+Date Created:   2015-07-01 15:35
 Description:
 
 """
+
 
 from django.db import transaction, IntegrityError
 
@@ -42,5 +43,4 @@ def regular_login(name, password):
 
 def third_login(platform, uid, param):
     raise NotImplementedError()
-
 

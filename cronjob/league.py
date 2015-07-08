@@ -6,26 +6,22 @@ Date Created:   2015-05-18 15:28
 Description:
 
 """
-import random
 
+
+import random
 import uwsgidecorators
 
-from django.conf import settings
-
-from utils.log import Logger
+from cronjob.log import Logger
 
 from apps.league.core import GameEntry
 from apps.league.models import LeagueGame, LeagueBattle, LeaguePair, LeagueClubInfo, LeagueNPCInfo
 from apps.server.models import Server
 
 
-START_TIME_ONE = settings.LEAGUE_START_TIME_ONE.split(':')
-START_TIME_TWO = settings.LEAGUE_START_TIME_TWO.split(':')
-
 
 # 每周创建新的联赛
-@uwsgidecorators.cron(0, 0, -1, -1, 1)
-def league_new(signum):
+# @uwsgidecorators.cron(0, 0, -1, -1, 1)
+def league_new(*args):
     logger = Logger("league_new")
 
     servers = Server.opened_servers()
@@ -41,7 +37,7 @@ def league_new(signum):
 
 
 # 每天定时开启的比赛
-def league_battle(signum):
+def league_battle():
     logger = Logger("league_battle")
 
     current_order = GameEntry.current_order()
@@ -86,7 +82,3 @@ def league_battle(signum):
 
     logger.write("League Battle Finish.")
     logger.close()
-
-
-uwsgidecorators.cron(int(START_TIME_ONE[1]), int(START_TIME_ONE[0]), -1, -1, -1)(league_battle)
-uwsgidecorators.cron(int(START_TIME_TWO[1]), int(START_TIME_TWO[0]), -1, -1, -1)(league_battle)
