@@ -12,6 +12,7 @@ import json
 import zipfile
 from django.conf import settings
 
+from config.staff import ConfigStaff
 
 CONFIG = None
 
@@ -63,6 +64,10 @@ def load_config():
                 attr_value[obj.id] = obj
 
         attr_dict[attr_name] = attr_value
+
+        # ===
+        if attr_name == 'STAFF':
+            ConfigStaff.initialize(data)
 
 
     CONFIG = type('CONFIG', (object,), attr_dict)
