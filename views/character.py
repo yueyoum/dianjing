@@ -51,9 +51,6 @@ def create(request):
             raise GameException( CONFIG.ERRORMSG["CHAR_ALREAD_CREATED"].id )
         raise GameException( CONFIG.ERRORMSG["CHAR_NAME_TAKEN"].id )
 
-    mongo = get_mongo_db(server_id)
-    mongo.character.insert({'_id': char.id, 'name': name})
-
     char_created_signal.send(
         sender=None,
         char_id=char.id,

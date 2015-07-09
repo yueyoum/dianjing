@@ -9,6 +9,8 @@ Description:
 
 
 from django.db import IntegrityError
+from django.db import transaction
+
 from dianjing.exception import GameException
 from apps.character.models import Character
 
@@ -32,30 +34,30 @@ def create(request):
     if char.club_name:
         raise GameException( CONFIG.ERRORMSG["CLUB_ALREADY_CREATED"].id )
 
-    try:
-        char.club_name = name
-        char.save()
-    except IntegrityError as e:
-        raise GameException( CONFIG.ERRORMSG["CLUB_NAME_TAKEN"].id )
 
-    mongo = get_mongo_db(server_id)
-    mongo.character.update_one(
-        {'_id': char_id},
-        {
-            '$set': {
-                'club': {
-                    'name': name,
-                    'flag': flag,
-                    'level': 1,
-                    'renown': 0,
-                    'vip': 0,
-                    'exp': 0,
-                    'gold': 0,
-                    'sycee': 0
-                }
+    with transaction.atomic():
+        try:
+            char.club_name = name
+            char.save()
+        except IntegrityError:
+            raise GameException( CONFIG.ERRORMSG["CLUB_NAME_TAKEN"].id )
+
+        mongo = get_mongo_db(server_id)
+        mongo.character.insert_one({
+            '_id': char_id,
+            'name': char.name,
+            'club': {
+                'name': name,
+                'flag': flag,
+                'level': 1,
+                'renown': 0,
+                'vip': 0,
+                'exp': 0,
+                'gold': 0,
+                'sycee': 0
             }
-        }
-    )
+        })
+
 
     game_start_signal.send(
         sender=None,

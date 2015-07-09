@@ -46,7 +46,7 @@ def login(request):
     response = LoginResponse()
     response.ret = 0
     response.session = GameSession.dumps(account_id=account.account.id)
-    response.account.MergeFrom(account)
+    response.account.MergeFrom(request._proto.account)
 
     return ProtobufResponse(response)
 

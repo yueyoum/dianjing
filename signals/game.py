@@ -28,13 +28,11 @@ def start(server_id, char_id, **kwargs):
     char = mongo.character.find_one({'_id': char_id}, {'name': 1})
 
     notify = CharacterNotify()
-    notify.char.id = char.id
-    notify.char.name = char.name
-    MessagePipe(char.id).put(msg=notify)
+    notify.char.id = char_id
+    notify.char.name = char['name']
+    MessagePipe(char_id).put(msg=notify)
 
-    ClubManager(char_id).send_notify()
-
-
+    ClubManager(server_id, char_id).send_notify()
 
 
 game_start_signal.connect(
