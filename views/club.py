@@ -21,6 +21,7 @@ from protomsg.club_pb2 import CreateClubResponse
 
 from core.signals import game_start_signal
 from core.db import get_mongo_db
+from core.mongo import Document
 
 def create(request):
     name = request._proto.name
@@ -42,21 +43,14 @@ def create(request):
         except IntegrityError:
             raise GameException( CONFIG.ERRORMSG["CLUB_NAME_TAKEN"].id )
 
+        doc = Document.get("character")
+        doc['_id'] = char_id
+        doc['name'] = char.name
+        doc['club']['name'] = name,
+        doc['club']['flag'] = flag
+
         mongo = get_mongo_db(server_id)
-        mongo.character.insert_one({
-            '_id': char_id,
-            'name': char.name,
-            'club': {
-                'name': name,
-                'flag': flag,
-                'level': 1,
-                'renown': 0,
-                'vip': 0,
-                'exp': 0,
-                'gold': 0,
-                'sycee': 0
-            }
-        })
+        mongo.character.insert_one(doc)
 
 
     game_start_signal.send(

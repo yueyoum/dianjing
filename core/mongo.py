@@ -7,23 +7,35 @@ Description:
 
 """
 
-from core.db import get_mongo_db
-
-class Field(object):
+class Null(object):
     pass
 
-class ValueField(Field):
-    pass
+null = Null()
 
-class ListField(Field):
-    pass
 
-class DictField(Field):
-    pass
+DEFAULT_CHARACTER_DOCUMENT = {
+    '_id': null,
+    'name': null,
+
+    'club': {
+        'name': null,
+        'flag': null,
+        'level': 1,
+        'renown': 0,
+        'vip': 0,
+        'exp': 0,
+        'gold': 0,
+        'diamond': 0,
+    }
+}
+
 
 class Document(object):
-    class Meta:
-        collection_name = None
-        index = []
-        unique = []
+    DOCUMENTS = {
+        "character": DEFAULT_CHARACTER_DOCUMENT
+    }
+
+    @classmethod
+    def get(cls, name):
+        return cls.DOCUMENTS[name].copy()
 
