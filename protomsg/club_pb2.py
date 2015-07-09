@@ -13,7 +13,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='club.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\nclub.proto\x12\x11\x44ianjing.protocol\"\xa9\x01\n\x04\x43lub\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0f\n\x07manager\x18\x03 \x02(\t\x12\x0c\n\x04\x66lag\x18\x04 \x02(\x05\x12\r\n\x05level\x18\x05 \x02(\x05\x12\x0e\n\x06renown\x18\x06 \x02(\x05\x12\x0b\n\x03vip\x18\x07 \x02(\x05\x12\x0b\n\x03\x65xp\x18\x08 \x02(\x05\x12\x0c\n\x04gold\x18\t \x02(\x05\x12\r\n\x05sycee\x18\n \x02(\x05\x12\x12\n\nmax_renown\x18\x0b \x02(\x05\"D\n\nClubNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12%\n\x04\x63lub\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\"@\n\x11\x43reateClubRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\"2\n\x12\x43reateClubResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+  serialized_pb='\n\nclub.proto\x12\x11\x44ianjing.protocol\"\xab\x01\n\x04\x43lub\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0f\n\x07manager\x18\x03 \x02(\t\x12\x0c\n\x04\x66lag\x18\x04 \x02(\x05\x12\r\n\x05level\x18\x05 \x02(\x05\x12\x0e\n\x06renown\x18\x06 \x02(\x05\x12\x0b\n\x03vip\x18\x07 \x02(\x05\x12\x0b\n\x03\x65xp\x18\x08 \x02(\x05\x12\x0c\n\x04gold\x18\t \x02(\x05\x12\x0f\n\x07\x64iamond\x18\n \x02(\x05\x12\x12\n\nmax_renown\x18\x0b \x02(\x05\"D\n\nClubNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12%\n\x04\x63lub\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\"@\n\x11\x43reateClubRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\"2\n\x12\x43reateClubResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
 
 
 
@@ -89,7 +89,7 @@ _CLUB = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='sycee', full_name='Dianjing.protocol.Club.sycee', index=9,
+      name='diamond', full_name='Dianjing.protocol.Club.diamond', index=9,
       number=10, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -112,7 +112,7 @@ _CLUB = _descriptor.Descriptor(
   is_extendable=False,
   extension_ranges=[],
   serialized_start=34,
-  serialized_end=203,
+  serialized_end=205,
 )
 
 
@@ -146,8 +146,8 @@ _CLUBNOTIFY = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=205,
-  serialized_end=273,
+  serialized_start=207,
+  serialized_end=275,
 )
 
 
@@ -188,8 +188,8 @@ _CREATECLUBREQUEST = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=275,
-  serialized_end=339,
+  serialized_start=277,
+  serialized_end=341,
 )
 
 
@@ -223,8 +223,8 @@ _CREATECLUBRESPONSE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=341,
-  serialized_end=391,
+  serialized_start=343,
+  serialized_end=393,
 )
 
 _CLUBNOTIFY.fields_by_name['club'].message_type = _CLUB
