@@ -46,7 +46,7 @@ def create(request):
         doc = Document.get("character")
         doc['_id'] = char_id
         doc['name'] = char.name
-        doc['club']['name'] = name,
+        doc['club']['name'] = name
         doc['club']['flag'] = flag
 
         mongo = get_mongo_db(server_id)

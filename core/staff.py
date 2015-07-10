@@ -79,7 +79,7 @@ class StaffRecruit(object):
                 }}
             )
 
-        self.send_notify(staffs=staffs)
+        self.send_notify(staffs=staffs, tp=tp)
 
 
     def recruit(self, staff_id):
@@ -92,17 +92,20 @@ class StaffRecruit(object):
         self.send_notify()
 
 
-    def send_notify(self, staffs=None):
+    def send_notify(self, staffs=None, tp=None):
         if not staffs:
             staffs = self.get_normal_staff()
             if not staffs:
                 # 取common中的人气推荐
                 staffs = self.get_hot_staff()
+        else:
+            tp = self.mongo.recruit.find_one({'_id': self.char_id}, {'tp': 1})['tp']
 
         char = self.mongo.character.find_one({'_id': self.char_id}, {'staffs': 1})
         already_recruited_staffs = char.get('staffs', {})
 
         notify = StaffRecruitNotify()
+        notify.tp = tp
         for s in staffs:
             r = notify.recruits.add()
             r.staff_id = s
