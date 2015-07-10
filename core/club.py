@@ -37,7 +37,7 @@ class ClubManager(object):
         msg.club.vip = club['vip']
         msg.club.exp = club['exp']
         msg.club.gold = club['gold']
-        msg.club.diamond = club['diamond']
+        msg.club.diamond = int(club['diamond'])
 
         # TODO
         msg.club.max_renown = 1000
