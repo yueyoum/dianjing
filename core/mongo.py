@@ -12,6 +12,10 @@ class Null(object):
 
 null = Null()
 
+DEFAULT_COMMON_DOCUMENT = {
+    '_id': null,
+    'value': null,
+}
 
 DEFAULT_CHARACTER_DOCUMENT = {
     '_id': null,
@@ -26,13 +30,24 @@ DEFAULT_CHARACTER_DOCUMENT = {
         'exp': 0,
         'gold': 0,
         'diamond': 0,
-    }
+    },
+
+    'staffs': {}
+}
+
+DEFAULT_RECRUIT_DOCUMENT = {
+    '_id': null,
+    'tp': null,
+    'staffs': [],
+    'times': {}
 }
 
 
 class Document(object):
     DOCUMENTS = {
-        "character": DEFAULT_CHARACTER_DOCUMENT
+        "common": DEFAULT_COMMON_DOCUMENT,
+        "character": DEFAULT_CHARACTER_DOCUMENT,
+        "recruit": DEFAULT_RECRUIT_DOCUMENT,
     }
 
     @classmethod

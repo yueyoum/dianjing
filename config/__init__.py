@@ -12,7 +12,7 @@ import json
 import zipfile
 from django.conf import settings
 
-from config.staff import ConfigStaff
+from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit
 
 CONFIG = None
 
@@ -68,6 +68,10 @@ def load_config():
         # ===
         if attr_name == 'STAFF':
             ConfigStaff.initialize(data)
+        elif attr_name == 'STAFF_HOT':
+            ConfigStaffHot.initialize(data)
+        elif attr_name == 'STAFF_RECRUIT':
+            ConfigStaffRecruit.initialize(data)
 
 
     CONFIG = type('CONFIG', (object,), attr_dict)

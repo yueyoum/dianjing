@@ -14,7 +14,6 @@ from apps.character.models import Character
 from utils.http import ProtobufResponse
 from utils.message import MessagePipe
 
-from core.db import get_mongo_db
 from core.signals import char_created_signal
 
 from protomsg.character_pb2 import CreateCharacterResponse, CharacterNotify
