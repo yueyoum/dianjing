@@ -11,6 +11,7 @@ import arrow
 
 from core.signals import game_start_signal
 from core.club import ClubManager
+from core.staff import StaffRecruit
 from core.db import get_mongo_db
 
 
@@ -33,6 +34,7 @@ def start(server_id, char_id, **kwargs):
     MessagePipe(char_id).put(msg=notify)
 
     ClubManager(server_id, char_id).send_notify()
+    StaffRecruit(server_id, char_id).send_notify()
 
 
 game_start_signal.connect(

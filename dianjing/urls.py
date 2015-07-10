@@ -19,6 +19,9 @@ urlpatterns = [
 
     url(r'^game/club/create/$', 'views.club.create'),
 
+    url(r'^game/staff/recruit/refresh/$', 'views.staff.recruit_refresh'),
+    url(r'^game/staff/recruit/$', 'views.staff.recruit_staff'),
+
     # url(r'^game/staff/training/$', apps.staff.views.training_start),
     # url(r'^game/staff/training/getreward/$', apps.staff.views.training_get_reward),
     #
