@@ -37,7 +37,7 @@ def load_config():
         if not content:
             continue
 
-        data = json.loads(z.open(item).read())
+        data = json.loads(content)
 
         attr_name = name.upper()
         attr_value = {}
