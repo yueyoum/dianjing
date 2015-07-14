@@ -54,7 +54,7 @@ class StaffRecruit(object):
             staffs = self.get_hot_staff()
             self.mongo.recruit.update_one(
                 {'_id': self.char_id},
-                {'$set': {'tp': tp}}
+                {'$set': {'tp': tp}, '$unset': {'staffs': 1}}
             )
         else:
             if tp == 2:
@@ -73,10 +73,7 @@ class StaffRecruit(object):
 
             self.mongo.recruit.update_one(
                 {'_id': self.char_id},
-                {'$set': {
-                    {'tp': tp},
-                    {'staffs': staffs}
-                }}
+                {'$set': {'tp': tp, 'staffs': staffs}}
             )
 
         self.send_notify(staffs=staffs, tp=tp)
