@@ -98,7 +98,7 @@ class StaffRecruit(object):
             if not staffs:
                 # 取common中的人气推荐
                 staffs = self.get_hot_staff()
-        else:
+
             tp = self.mongo.recruit.find_one({'_id': self.char_id}, {'tp': 1})['tp']
 
         char = self.mongo.character.find_one({'_id': self.char_id}, {'staffs': 1})

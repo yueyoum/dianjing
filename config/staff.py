@@ -63,7 +63,7 @@ class StaffRecruit(object):
                 continue
 
             staffs.append((s['quality'], value))
-        
+
         return staffs
 
 
