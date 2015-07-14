@@ -86,7 +86,7 @@ class StaffRecruit(object):
         # TODO check
         self.mongo.character.update_one(
             {'_id': self.char_id},
-            {'$set': {'staffs.{0}'.format(staff_id), {}}}
+            {'$set': {'staffs.{0}'.format(staff_id): {}}}
         )
 
         self.send_notify()
