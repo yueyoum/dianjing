@@ -35,6 +35,14 @@ DEFAULT_CHARACTER_DOCUMENT = {
     'staffs': {}
 }
 
+DEFAULT_STAFF_DOCUMENT = {
+    'exp': 0,
+    'level': 1,
+    'status': 3,
+    'skills': [],
+    'trainings': [],
+}
+
 DEFAULT_RECRUIT_DOCUMENT = {
     '_id': null,
     'tp': null,
@@ -47,6 +55,7 @@ class Document(object):
     DOCUMENTS = {
         "common": DEFAULT_COMMON_DOCUMENT,
         "character": DEFAULT_CHARACTER_DOCUMENT,
+        "staff": DEFAULT_STAFF_DOCUMENT,
         "recruit": DEFAULT_RECRUIT_DOCUMENT,
     }
 

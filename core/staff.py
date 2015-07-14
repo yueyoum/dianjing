@@ -13,7 +13,8 @@ from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit
 
 from utils.message import MessagePipe
 
-from protomsg.staff_pb2 import StaffRecruitNotify
+from protomsg.staff_pb2 import StaffRecruitNotify, StaffNotify
+from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE, ACT_ADD
 
 class StaffRecruit(object):
     def __init__(self, server_id, char_id):
@@ -81,11 +82,7 @@ class StaffRecruit(object):
 
     def recruit(self, staff_id):
         # TODO check
-        self.mongo.character.update_one(
-            {'_id': self.char_id},
-            {'$set': {'staffs.{0}'.format(staff_id): {}}}
-        )
-
+        StaffManger(self.server_id, self.char_id).add(staff_id)
         self.send_notify()
 
 
@@ -110,3 +107,53 @@ class StaffRecruit(object):
 
         MessagePipe(self.char_id).put(msg=notify)
 
+
+class StaffManger(object):
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+        self.mongo = get_mongo_db(server_id)
+
+
+    def add(self, staff_id):
+        doc = Document.get('staff')
+
+        self.mongo.character.update_one(
+            {'_id': self.char_id},
+            {'$set': {'staffs.{0}'.format(staff_id): doc}}
+        )
+
+        self.send_notify(act=ACT_ADD, staffs={staff_id: doc})
+
+
+
+    def msg_staff(self, msg, sid, staff):
+        msg.id = sid
+        # TODO
+        msg.level = 1
+        msg.cur_exp = 0
+        msg.max_exp = 100
+        msg.status = 1
+
+        msg.jingong = 10
+        msg.qianzhi = 10
+        msg.xintai = 10
+        msg.baobing = 10
+        msg.fangshou = 10
+        msg.yunying = 10
+        msg.yishi = 10
+        msg.caozuo = 10
+
+
+    def send_notify(self, act=ACT_INIT, staffs=None):
+        if not staffs:
+            char = self.mongo.character.find_one({'_id': self.char_id}, {'staffs': 1})
+            staffs = char.get('staffs', {})
+
+        notify = StaffNotify()
+        notify.act = act
+        for k, v in staffs.iteritems():
+            s = notify.staffs.add()
+            self.msg_staff(s, int(k), v)
+
+        MessagePipe(self.char_id).put(msg=notify)

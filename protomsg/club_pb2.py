@@ -8,12 +8,13 @@ from google.protobuf import descriptor_pb2
 # @@protoc_insertion_point(imports)
 
 
+import common_pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='club.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\nclub.proto\x12\x11\x44ianjing.protocol\"\xab\x01\n\x04\x43lub\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0f\n\x07manager\x18\x03 \x02(\t\x12\x0c\n\x04\x66lag\x18\x04 \x02(\x05\x12\r\n\x05level\x18\x05 \x02(\x05\x12\x0e\n\x06renown\x18\x06 \x02(\x05\x12\x0b\n\x03vip\x18\x07 \x02(\x05\x12\x0b\n\x03\x65xp\x18\x08 \x02(\x05\x12\x0c\n\x04gold\x18\t \x02(\x05\x12\x0f\n\x07\x64iamond\x18\n \x02(\x05\x12\x12\n\nmax_renown\x18\x0b \x02(\x05\"D\n\nClubNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12%\n\x04\x63lub\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\"@\n\x11\x43reateClubRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\"2\n\x12\x43reateClubResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+  serialized_pb='\n\nclub.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xf3\x01\n\x04\x43lub\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0f\n\x07manager\x18\x03 \x02(\t\x12\x0c\n\x04\x66lag\x18\x04 \x02(\x05\x12\r\n\x05level\x18\x05 \x02(\x05\x12\x0e\n\x06renown\x18\x06 \x02(\x05\x12\x0b\n\x03vip\x18\x07 \x02(\x05\x12\x0b\n\x03\x65xp\x18\x08 \x02(\x05\x12\x0c\n\x04gold\x18\t \x02(\x05\x12\x0f\n\x07\x64iamond\x18\n \x02(\x05\x12\x12\n\nmax_renown\x18\x0b \x02(\x05\x12\x36\n\x0cmatch_staffs\x18\x0c \x03(\x0b\x32 .Dianjing.protocol.StaffBaseInfo\x12\x0e\n\x06policy\x18\r \x01(\x05\"D\n\nClubNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12%\n\x04\x63lub\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\"@\n\x11\x43reateClubRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\"2\n\x12\x43reateClubResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
 
 
 
@@ -102,6 +103,20 @@ _CLUB = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='match_staffs', full_name='Dianjing.protocol.Club.match_staffs', index=11,
+      number=12, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='policy', full_name='Dianjing.protocol.Club.policy', index=12,
+      number=13, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -111,8 +126,8 @@ _CLUB = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=34,
-  serialized_end=205,
+  serialized_start=48,
+  serialized_end=291,
 )
 
 
@@ -146,8 +161,8 @@ _CLUBNOTIFY = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=207,
-  serialized_end=275,
+  serialized_start=293,
+  serialized_end=361,
 )
 
 
@@ -188,8 +203,8 @@ _CREATECLUBREQUEST = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=277,
-  serialized_end=341,
+  serialized_start=363,
+  serialized_end=427,
 )
 
 
@@ -223,10 +238,11 @@ _CREATECLUBRESPONSE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=343,
-  serialized_end=393,
+  serialized_start=429,
+  serialized_end=479,
 )
 
+_CLUB.fields_by_name['match_staffs'].message_type = common_pb2._STAFFBASEINFO
 _CLUBNOTIFY.fields_by_name['club'].message_type = _CLUB
 DESCRIPTOR.message_types_by_name['Club'] = _CLUB
 DESCRIPTOR.message_types_by_name['ClubNotify'] = _CLUBNOTIFY
