@@ -41,7 +41,7 @@ class Club(AbstractClub):
         self.gold = club['gold']
         # FIXME
         self.diamond = int(club['diamond'])
-        self.policy = club.get('policy', 0)
+        self.policy = club.get('policy', 1)
 
         self.match_staffs = club.get('match_staffs', [])
         self.tibu_staffs = club.get('tibu_staffs', [])

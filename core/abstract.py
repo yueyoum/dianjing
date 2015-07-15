@@ -69,7 +69,7 @@ class AbstractClub(object):
         msg.gold = self.gold
         msg.diamond = self.diamond
         msg.max_renown = self.get_max_renown()
-        msg.policy = self.get_max_renown()
+        msg.policy = self.policy
 
         match_staffs = self.match_staffs[:]
         while len(match_staffs) < 5:
