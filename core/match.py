@@ -87,8 +87,11 @@ class Match(object):
         unit_one = MatchUnit.get(self.staff_one.race, self.round_index)
         unit_two = MatchUnit.get(self.staff_two.race, self.round_index)
 
-        unit_one_des = ConfigUnit.get(unit_one).des[str(self.policy_one)]
-        unit_two_des = ConfigUnit.get(unit_two).des[str(self.policy_two)]
+        # unit_one_des = ConfigUnit.get(unit_one).des[str(self.policy_one)]
+        # unit_two_des = ConfigUnit.get(unit_two).des[str(self.policy_two)]
+
+        unit_one_des = ConfigUnit.get(unit_one).des[str(1)]
+        unit_two_des = ConfigUnit.get(unit_two).des[str(1)]
 
         msg.staff_one.unit_id = unit_one
         msg.staff_one.unit_des = random.randint(0, len(unit_one_des)-1)
@@ -101,7 +104,7 @@ class Match(object):
 
         XA = 0
         XB = 0
-        M = 1
+        M = 0
 
         PA = self.staff_one.jingong + self.staff_one.baobing + self.staff_one.caozuo + \
              self.staff_one.qianzhi + self.staff_one.fangshou + self.staff_one.yunying
@@ -113,7 +116,7 @@ class Match(object):
 
         JB = (self.staff_two.xintai + self.staff_two.yishi + XB) * M
 
-        S = PA + PB
+        S = PA + JA + PB + JB
 
         Y = (((PA + JA) - (PB + JB)) / float(S)) * 100
 
@@ -125,8 +128,8 @@ class Match(object):
             self.advantage_one += Y
             self.advantage_two -= Y
 
-        msg.staff_one.advantage_end = self.advantage_one
-        msg.staff_two.advantage_end = self.advantage_two
+        msg.staff_one.advantage_end = int(self.advantage_one)
+        msg.staff_two.advantage_end = int(self.advantage_two)
 
         return msg
 

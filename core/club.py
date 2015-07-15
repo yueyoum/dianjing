@@ -28,7 +28,7 @@ class Club(AbstractClub):
     def load_data(self):
         char = self.mongo.character.find_one({'_id': self.char_id}, {'club': 1, 'name': 1, 'staffs': 1})
         club = char['club']
-        staffs = char['staffs']
+        staffs = char.get('staffs', {})
 
         self.id = self.char_id
         self.name = club['name']
