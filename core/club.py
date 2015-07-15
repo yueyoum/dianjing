@@ -48,7 +48,7 @@ class ClubManager(object):
 
 
     def send_notify(self):
-        char = self.mongo.character.find_one({'_id': self.char_id}, {'club': 1})
+        char = self.mongo.character.find_one({'_id': self.char_id}, {'club': 1, 'name': 1})
         club = char['club']
 
         msg = ClubNotify()
@@ -75,7 +75,7 @@ class ClubManager(object):
             tibu_staffs.append(0)
 
         for i in chain(match_staffs, tibu_staffs):
-            msg_match_staff = msg.match_staffs.add()
+            msg_match_staff = msg.club.match_staffs.add()
             if i == 0:
                 msg_match_staff.id = 0
                 msg_match_staff.level = 0
@@ -85,6 +85,6 @@ class ClubManager(object):
 
         policy = club.get('policy', 0)
         if policy:
-            msg.policy = policy
+            msg.club.policy = policy
 
         MessagePipe(self.char_id).put(msg)
