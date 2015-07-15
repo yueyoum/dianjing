@@ -12,7 +12,7 @@ from core.db import get_mongo_db
 from core.staff import Staff
 from utils.message import MessagePipe
 
-
+from protomsg.club_pb2 import ClubNotify
 
 class Club(AbstractClub):
     def __init__(self, server_id, char_id):
@@ -82,4 +82,6 @@ class Club(AbstractClub):
 
     def send_notify(self):
         msg = self.make_protomsg()
-        MessagePipe(self.char_id).put(msg)
+        notify = ClubNotify()
+        notify.club.MergeFrom(msg)
+        MessagePipe(self.char_id).put(notify)
