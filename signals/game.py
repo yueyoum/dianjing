@@ -12,6 +12,7 @@ import arrow
 from core.signals import game_start_signal
 from core.club import Club
 from core.staff import StaffRecruit, StaffManger
+from core.challenge import Challenge
 from core.db import get_mongo_db
 
 
@@ -36,6 +37,8 @@ def start(server_id, char_id, **kwargs):
     Club(server_id, char_id).send_notify()
     StaffRecruit(server_id, char_id).send_notify()
     StaffManger(server_id, char_id).send_notify()
+
+    Challenge(server_id, char_id).send_notify()
 
 
 game_start_signal.connect(

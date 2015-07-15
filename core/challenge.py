@@ -74,6 +74,14 @@ class Challenge(object):
 
         return challenge_id
 
+    def set_next_match_id(self, challenge_id):
+        next_id = ConfigChallengeMatch.get(challenge_id).next_id
+        self.mongo.character.update_one(
+            {'_id': self.char_id},
+            {'$set': {'challenge_id': next_id}}
+        )
+        return next_id
+
 
     def start(self):
         challenge_id = self.get_match_id()
@@ -86,11 +94,14 @@ class Challenge(object):
         match = ClubMatch(club_one, club_two)
 
         msg = match.start()
+        next_id = self.set_next_match_id(challenge_id)
+        self.send_notify(challenge_id=next_id)
         return msg
 
 
-    def send_notify(self):
-        challenge_id = self.get_match_id()
+    def send_notify(self, challenge_id=None):
+        if challenge_id is None:
+            challenge_id = self.get_match_id()
 
         notify = ChallengeNotify()
         notify.id = challenge_id
