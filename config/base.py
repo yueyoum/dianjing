@@ -29,6 +29,11 @@ class ConfigBase(object):
             cls.INSTANCES[s.id] = s
 
     @classmethod
+    def all_values(cls):
+        return cls.INSTANCES.values()
+
+
+    @classmethod
     def get(cls, id):
         return cls.INSTANCES[id]
 

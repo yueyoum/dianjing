@@ -13,6 +13,8 @@ import zipfile
 from django.conf import settings
 
 from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit
+from config.challenge import ConfigChallengeType, ConfigChallengeMatch
+from config.unit import ConfigUnit
 
 CONFIG = None
 
@@ -72,6 +74,12 @@ def load_config():
             ConfigStaffHot.initialize(data)
         elif attr_name == 'STAFF_RECRUIT':
             ConfigStaffRecruit.initialize(data)
+        elif attr_name == 'CHALLENGE_TYPE':
+            ConfigChallengeType.initialize(data)
+        elif attr_name == 'CHALLENGE_MATCH':
+            ConfigChallengeMatch.initialize(data)
+        elif attr_name == 'UNIT':
+            ConfigUnit.initialize(data)
 
 
     CONFIG = type('CONFIG', (object,), attr_dict)

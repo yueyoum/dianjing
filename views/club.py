@@ -20,7 +20,7 @@ from config import CONFIG
 from core.signals import game_start_signal
 from core.db import get_mongo_db
 from core.mongo import Document
-from core.club import ClubManager
+from core.club import Club
 
 from protomsg.club_pb2 import (
     CreateClubResponse,
@@ -77,7 +77,7 @@ def set_policy(request):
     char_id = request._game_session.char_id
     policy = request._proto.policy_id
 
-    club = ClubManager(server_id, char_id)
+    club = Club(server_id, char_id)
     club.set_policy(policy)
 
     response = ClubSetPolicyResponse()
@@ -90,7 +90,7 @@ def set_match_staffs(request):
     char_id = request._game_session.char_id
     staff_ids = request._proto.staff_ids
 
-    club = ClubManager(server_id, char_id)
+    club = Club(server_id, char_id)
     club.set_match_staffs(staff_ids)
 
     response = ClubSetMatchStaffResponse()

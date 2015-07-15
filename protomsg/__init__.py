@@ -35,6 +35,9 @@ MESSAGE_TO_ID = {
     "LeagueGetStatisticsResponse": 602,
     "LeagueGetBattleLogRequest": 603,
     "LeagueGetBattleLogResponse": 604,
+    "ChallengeNotify": 700,
+    "ChallengeStartRequest": 701,
+    "ChallengeStartResponse": 702,
 }
 
 ID_TO_MESSAGE = {
@@ -73,6 +76,9 @@ ID_TO_MESSAGE = {
     602: "LeagueGetStatisticsResponse",
     603: "LeagueGetBattleLogRequest",
     604: "LeagueGetBattleLogResponse",
+    700: "ChallengeNotify",
+    701: "ChallengeStartRequest",
+    702: "ChallengeStartResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -90,6 +96,7 @@ PATH_TO_REQUEST = {
     "/game/staff/recruit/": ["staff", "StaffRecruitRequest"],
     "/game/league/statistics/": ["league", "LeagueGetStatisticsRequest"],
     "/game/league/log/": ["league", "LeagueGetBattleLogRequest"],
+    "/game/challenge/start/": ["challenge", "ChallengeStartRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -107,4 +114,5 @@ PATH_TO_RESPONSE = {
     "/game/staff/recruit/": ["staff", "StaffRecruitResponse"],
     "/game/league/statistics/": ["league", "LeagueGetStatisticsResponse"],
     "/game/league/log/": ["league", "LeagueGetBattleLogResponse"],
+    "/game/challenge/start/": ["challenge", "ChallengeStartResponse"],
 }

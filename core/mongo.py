@@ -7,6 +7,8 @@ Description:
 
 """
 
+from config import ConfigChallengeMatch
+
 class Null(object):
     pass
 
@@ -36,7 +38,9 @@ DEFAULT_CHARACTER_DOCUMENT = {
         'tibu_staffs': []
     },
 
-    'staffs': {}
+    'staffs': {},
+    # 挑战赛ID
+    'challenge_id': ConfigChallengeMatch.FIRST_ID
 }
 
 DEFAULT_STAFF_DOCUMENT = {

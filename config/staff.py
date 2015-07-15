@@ -25,6 +25,33 @@ class Staff(object):
         'caozuo', 'caozuo_grow',
     ]
 
+    def __init__(self):
+        self.id = None
+        self.name = None
+        self.nation = None
+        self.race = None
+        self.quality = None
+        self.buy_type = None
+        self.buy_cost = None
+        self.can_recruit = None
+
+        self.jingong = None
+        self.jingong_grow = None
+        self.qianzhi = None
+        self.qianzhi_grow = None
+        self.xintai = None
+        self.xintai_grow = None
+        self.baobing = None
+        self.baobing_grow = None
+        self.fangshou = None
+        self.fangshou_grow = None
+        self.yunying = None
+        self.yunying_grow = None
+        self.yishi = None
+        self.yishi_grow = None
+        self.caozuo = None
+        self.caozuo_grow = None
+
 
 
 

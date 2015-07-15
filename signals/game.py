@@ -10,7 +10,7 @@ Description:
 import arrow
 
 from core.signals import game_start_signal
-from core.club import ClubManager
+from core.club import Club
 from core.staff import StaffRecruit, StaffManger
 from core.db import get_mongo_db
 
@@ -33,7 +33,7 @@ def start(server_id, char_id, **kwargs):
     notify.char.name = char['name']
     MessagePipe(char_id).put(msg=notify)
 
-    ClubManager(server_id, char_id).send_notify()
+    Club(server_id, char_id).send_notify()
     StaffRecruit(server_id, char_id).send_notify()
     StaffManger(server_id, char_id).send_notify()
 

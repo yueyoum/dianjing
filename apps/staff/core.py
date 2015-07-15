@@ -187,7 +187,7 @@ class Staff(object):
 
 
     def add_reward_from_training(self, training_id):
-        from core.club import ClubManager
+        from core.club import Club
 
         training = CONFIG.TRAINING[training_id]
 
@@ -199,7 +199,7 @@ class Staff(object):
             staff.save()
         elif training.reward_type == 2:
             # 软妹币
-            ClubManager(self.char_id).add(gold=training.reward_value)
+            Club(self.char_id).add(gold=training.reward_value)
         elif training.reward_type == 3:
             # 状态
             staff.status += training.reward_value

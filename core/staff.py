@@ -7,6 +7,7 @@ Description:
 
 """
 
+from core.abstract import AbstractStaff
 from core.db import get_mongo_db
 from core.mongo import Document
 from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit
@@ -15,6 +16,36 @@ from utils.message import MessagePipe
 
 from protomsg.staff_pb2 import StaffRecruitNotify, StaffNotify
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE, ACT_ADD
+
+class Staff(AbstractStaff):
+    __slots__ = [
+        'id', 'level', 'exp', 'status',
+        'jingong', 'qianzhi', 'xintai', 'baobing',
+        'fangshou', 'yunying', 'yishi', 'caozuo',
+        'skills'
+    ]
+
+    def __init__(self, id, data):
+        super(Staff, self).__init__()
+
+        self.id = id
+        self.level = data.get('level', 1)
+        self.exp = data.get('exp', 0)
+        # TODO 默认status
+        self.status = data.get('status', 3)
+
+        config_staff = ConfigStaff.get(self.id)
+        self.race = config_staff.race
+
+        self.jingong = config_staff.jingong + config_staff.jingong_grow * self.level + data.get('jingong', 0)
+        self.qianzhi = config_staff.qianzhi + config_staff.caozuo_grow * self.level + data.get('qianzhi', 0)
+        self.xintai = config_staff.xintai + config_staff.xintai_grow * self.level + data.get('xintai', 0)
+        self.baobing = config_staff.baobing + config_staff.baobing_grow * self.level + data.get('baobing', 0)
+        self.fangshou = config_staff.fangshou + config_staff.fangshou_grow * self.level + data.get('fangshou', 0)
+        self.yunying = config_staff.yunying + config_staff.yunying_grow * self.level + data.get('yunying', 0)
+        self.yishi = config_staff.yishi + config_staff.yunying_grow * self.level + data.get('yishi', 0)
+        self.caozuo = config_staff.caozuo + config_staff.caozuo_grow * self.level + data.get('caozuo', 0)
+
 
 class StaffRecruit(object):
     def __init__(self, server_id, char_id):
