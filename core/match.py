@@ -215,16 +215,10 @@ class ClubMatch(object):
             else:
                 club_two_winning_times += 1
 
-            if club_one_winning_times >= 3:
-                msg.club_one_win = True
-                break
-
-            if club_two_winning_times >= 3:
-                msg.club_two_win = True
-                break
+        if club_one_winning_times >= 3:
+            msg.club_one_win = True
+        else:
+            msg.club_two_win = True
 
         return msg
-
-
-
 
