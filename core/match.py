@@ -94,12 +94,12 @@ class Match(object):
         unit_two_des = ConfigUnit.get(unit_two).des[str(1)]
 
         msg.staff_one.unit_id = unit_one
-        msg.staff_one.unit_des = random.randint(0, len(unit_one_des)-1)
-        msg.staff_one.advantage_begin = self.advantage_one
+        msg.staff_one.unit_des = random.randint(0, len(unit_one_des[self.round_index])-1)
+        msg.staff_one.advantage_begin = int(self.advantage_one)
 
         msg.staff_two.unit_id = unit_two
-        msg.staff_two.unit_des = random.randint(0, len(unit_two_des)-1)
-        msg.staff_two.advantage_begin = self.advantage_two
+        msg.staff_two.unit_des = random.randint(0, len(unit_two_des[self.round_index])-1)
+        msg.staff_two.advantage_begin = int(self.advantage_two)
 
 
         XA = 0
@@ -141,7 +141,8 @@ class Match(object):
 
         for i in range(1, 4):
             round_msg = self.round()
-            msg.MergeFrom(round_msg)
+            msg_round = msg.rounds.add()
+            msg_round.MergeFrom(round_msg)
 
             if self.advantage_one >= 90:
                 self.winning = self.staff_one
