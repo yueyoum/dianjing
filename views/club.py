@@ -17,11 +17,18 @@ from apps.character.models import Character
 from utils.http import ProtobufResponse
 from config import CONFIG
 
-from protomsg.club_pb2 import CreateClubResponse
-
 from core.signals import game_start_signal
 from core.db import get_mongo_db
 from core.mongo import Document
+from core.club import ClubManager
+
+from protomsg.club_pb2 import (
+    CreateClubResponse,
+    ClubSetPolicyResponse,
+    ClubSetMatchStaffResponse
+)
+
+
 
 def create(request):
     name = request._proto.name
@@ -63,3 +70,30 @@ def create(request):
     response.ret = 0
     response.session = session.serialize()
     return ProtobufResponse(response)
+
+
+def set_policy(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+    policy = request._proto.policy_id
+
+    club = ClubManager(server_id, char_id)
+    club.set_policy(policy)
+
+    response = ClubSetPolicyResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+
+def set_match_staffs(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+    staff_ids = request._proto.staff_ids
+
+    club = ClubManager(server_id, char_id)
+    club.set_match_staffs(staff_ids)
+
+    response = ClubSetMatchStaffResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+

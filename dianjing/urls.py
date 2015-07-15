@@ -18,6 +18,8 @@ urlpatterns = [
     url(r'^game/character/create/$', 'views.character.create'),
 
     url(r'^game/club/create/$', 'views.club.create'),
+    url(r'^game/club/policy/$', 'views.club.set_policy'),
+    url(r'^game/club/matchstaff/$', 'views.club.set_match_staffs'),
 
     url(r'^game/staff/recruit/refresh/$', 'views.staff.recruit_refresh'),
     url(r'^game/staff/recruit/$', 'views.staff.recruit_staff'),

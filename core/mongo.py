@@ -30,6 +30,10 @@ DEFAULT_CHARACTER_DOCUMENT = {
         'exp': 0,
         'gold': 0,
         'diamond': 0,
+
+        'policy': 0,
+        'match_staffs': [],
+        'tibu_staffs': []
     },
 
     'staffs': {}
