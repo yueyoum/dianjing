@@ -14,7 +14,7 @@ import club_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='match.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\x0bmatch.proto\x12\x11\x44ianjing.protocol\x1a\nclub.proto\"\xc9\x01\n\x05Round\x12\x31\n\tstaff_one\x18\x01 \x02(\x0b\x32\x1e.Dianjing.protocol.Round.Staff\x12\x31\n\tstaff_two\x18\x02 \x02(\x0b\x32\x1e.Dianjing.protocol.Round.Staff\x1aZ\n\x05Staff\x12\x0f\n\x07unit_id\x18\x01 \x02(\x05\x12\x10\n\x08unit_des\x18\x02 \x02(\x05\x12\x17\n\x0f\x61\x64vantage_begin\x18\x03 \x02(\x05\x12\x15\n\radvantage_end\x18\x04 \x02(\x05\"t\n\x05Match\x12\x14\n\x0cstaff_one_id\x18\x01 \x02(\x05\x12\x14\n\x0cstaff_two_id\x18\x02 \x02(\x05\x12(\n\x06rounds\x18\x03 \x03(\x0b\x32\x18.Dianjing.protocol.Round\x12\x15\n\rstaff_one_win\x18\x04 \x02(\x08\"\xa0\x01\n\tClubMatch\x12)\n\x08\x63lub_one\x18\x01 \x02(\x0b\x32\x17.Dianjing.protocol.Club\x12)\n\x08\x63lub_two\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\x12\'\n\x05match\x18\x03 \x03(\x0b\x32\x18.Dianjing.protocol.Match\x12\x14\n\x0c\x63lub_one_win\x18\x04 \x02(\x08')
+  serialized_pb='\n\x0bmatch.proto\x12\x11\x44ianjing.protocol\x1a\nclub.proto\"\xde\x01\n\x05Round\x12\x13\n\x0bround_index\x18\x01 \x02(\x05\x12\x31\n\tstaff_one\x18\x02 \x02(\x0b\x32\x1e.Dianjing.protocol.Round.Staff\x12\x31\n\tstaff_two\x18\x03 \x02(\x0b\x32\x1e.Dianjing.protocol.Round.Staff\x1aZ\n\x05Staff\x12\x0f\n\x07unit_id\x18\x01 \x02(\x05\x12\x10\n\x08unit_des\x18\x02 \x02(\x05\x12\x17\n\x0f\x61\x64vantage_begin\x18\x03 \x02(\x05\x12\x15\n\radvantage_end\x18\x04 \x02(\x05\"t\n\x05Match\x12\x14\n\x0cstaff_one_id\x18\x01 \x02(\x05\x12\x14\n\x0cstaff_two_id\x18\x02 \x02(\x05\x12(\n\x06rounds\x18\x03 \x03(\x0b\x32\x18.Dianjing.protocol.Round\x12\x15\n\rstaff_one_win\x18\x04 \x02(\x08\"\xa0\x01\n\tClubMatch\x12)\n\x08\x63lub_one\x18\x01 \x02(\x0b\x32\x17.Dianjing.protocol.Club\x12)\n\x08\x63lub_two\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\x12\'\n\x05match\x18\x03 \x03(\x0b\x32\x18.Dianjing.protocol.Match\x12\x14\n\x0c\x63lub_one_win\x18\x04 \x02(\x08')
 
 
 
@@ -63,8 +63,8 @@ _ROUND_STAFF = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=158,
-  serialized_end=248,
+  serialized_start=179,
+  serialized_end=269,
 )
 
 _ROUND = _descriptor.Descriptor(
@@ -75,15 +75,22 @@ _ROUND = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='staff_one', full_name='Dianjing.protocol.Round.staff_one', index=0,
-      number=1, type=11, cpp_type=10, label=2,
+      name='round_index', full_name='Dianjing.protocol.Round.round_index', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='staff_one', full_name='Dianjing.protocol.Round.staff_one', index=1,
+      number=2, type=11, cpp_type=10, label=2,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='staff_two', full_name='Dianjing.protocol.Round.staff_two', index=1,
-      number=2, type=11, cpp_type=10, label=2,
+      name='staff_two', full_name='Dianjing.protocol.Round.staff_two', index=2,
+      number=3, type=11, cpp_type=10, label=2,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -98,7 +105,7 @@ _ROUND = _descriptor.Descriptor(
   is_extendable=False,
   extension_ranges=[],
   serialized_start=47,
-  serialized_end=248,
+  serialized_end=269,
 )
 
 
@@ -146,8 +153,8 @@ _MATCH = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=250,
-  serialized_end=366,
+  serialized_start=271,
+  serialized_end=387,
 )
 
 
@@ -195,8 +202,8 @@ _CLUBMATCH = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=369,
-  serialized_end=529,
+  serialized_start=390,
+  serialized_end=550,
 )
 
 _ROUND_STAFF.containing_type = _ROUND;

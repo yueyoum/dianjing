@@ -76,13 +76,14 @@ class Match(object):
         self.advantage_one = 50
         self.advantage_two = 50
 
-        self.round_index = 1
+        self.round_index = 0
         self.winning = None
 
 
     def round(self):
         # TODO skill
         msg = MessageRound()
+        msg.round_index = self.round_index
 
         unit_one = MatchUnit.get(self.staff_one.race, self.round_index)
         unit_two = MatchUnit.get(self.staff_two.race, self.round_index)
@@ -184,13 +185,6 @@ class ClubMatch(object):
         """
         self.club_one = club_one
         self.club_two = club_two
-
-        for s in self.club_one.staffs.values():
-            s.advantage_value = 50
-
-        for s in self.club_two.staffs.values():
-            s.advantage_value = 50
-
 
     def start(self):
         msg = MessageClubMatch()
