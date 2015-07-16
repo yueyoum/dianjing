@@ -48,8 +48,12 @@ class ChallengeNPCClub(AbstractClub):
         strength = ConfigChallengeMatch.get(challenge_match_id).strength
 
         self.id = challenge_match_id
-        self.match_staffs = ConfigChallengeMatch.get(challenge_match_id).staffs
-        self.policy = ConfigChallengeMatch.get(challenge_match_id).policy
+
+        config = ConfigChallengeMatch.get(challenge_match_id)
+        self.match_staffs = config.staffs
+        self.policy = config.policy
+        self.name = config.club_name
+        self.flag = config.club_flag
 
         for i in self.match_staffs:
             self.staffs[i] = ChallengeNPCStaff(i, level, strength)

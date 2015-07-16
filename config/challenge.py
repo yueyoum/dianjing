@@ -16,7 +16,8 @@ class ChallengeType(object):
 
 class ChallengeMatch(object):
     __slots__ = [
-        'id', 'next_id', 'tp', 'policy', 'level', 'strength', 'staffs'
+        'id', 'next_id', 'tp', 'policy', 'level', 'strength', 'staffs',
+        'club_name', 'club_flag'
     ]
 
     def __init__(self):
@@ -27,6 +28,8 @@ class ChallengeMatch(object):
         self.level = None
         self.strength = None
         self.staffs = None
+        self.club_name = None
+        self.club_flag = None
     
 
 class ConfigChallengeType(ConfigBase):
