@@ -8,6 +8,7 @@ Description:
 """
 
 from config import ConfigChallengeMatch
+from config import ConfigBuilding
 
 class Null(object):
     pass
@@ -58,6 +59,10 @@ DEFAULT_RECRUIT_DOCUMENT = {
     'times': {}
 }
 
+DEFAULT_BUILDING_DOCUMENT = {
+    '_id': null,
+    'buildings': {str(i): 1 for i in ConfigBuilding.can_level_up_building_ids()}
+}
 
 class Document(object):
     DOCUMENTS = {
@@ -65,6 +70,7 @@ class Document(object):
         "character": DEFAULT_CHARACTER_DOCUMENT,
         "staff": DEFAULT_STAFF_DOCUMENT,
         "recruit": DEFAULT_RECRUIT_DOCUMENT,
+        "building": DEFAULT_BUILDING_DOCUMENT,
     }
 
     @classmethod

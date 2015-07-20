@@ -67,4 +67,12 @@ class ConfigBuilding(ConfigBase):
         """
         return super(ConfigBuilding, cls).get(id)
 
+    @classmethod
+    def can_level_up_building_ids(cls):
+        res = []
+        for k, v in cls.INSTANCES.iteritems():
+            if v.max_levels:
+                res.append(int(k))
+
+        return res
 
