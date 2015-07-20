@@ -8,9 +8,14 @@ Description:
 """
 
 from utils.http import ProtobufResponse
-from core.staff import StaffRecruit
+from core.staff import StaffRecruit, StaffManger
 
-from protomsg.staff_pb2 import StaffRecruitRefreshResponse, StaffRecruitResponse
+from protomsg.staff_pb2 import (
+    StaffRecruitRefreshResponse,
+    StaffRecruitResponse,
+    StaffTrainingResponse,
+    StaffTrainingGetRewardResponse,
+)
 
 
 def recruit_refresh(request):
@@ -37,5 +42,34 @@ def recruit_staff(request):
     recruit.recruit(staff_id)
 
     response = StaffRecruitResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+
+def training_start(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    staff_id = request._proto.staff_id
+    training_id = request._proto.training_id
+
+    sm = StaffManger(server_id, char_id)
+    sm.training_start(staff_id, training_id)
+
+    response = StaffTrainingResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+def training_get_reward(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    staff_id = request._proto.staff_id
+    slot_id = request._proto.slot_id
+
+    sm = StaffManger(server_id, char_id)
+    sm.training_get_reward(staff_id, slot_id)
+
+    response = StaffTrainingGetRewardResponse()
     response.ret = 0
     return ProtobufResponse(response)

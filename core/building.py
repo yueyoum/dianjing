@@ -29,6 +29,15 @@ class BuildingManager(object):
             self.mongo.building.insert_one(doc)
 
 
+    def buy_training(self, training_id):
+        # TODO cost
+        # TODO check training_id exists?
+        self.mongo.character.update_one(
+            {'_id': self.char_id},
+            {'$push': {'own_training_ids', training_id}}
+        )
+
+
     def level_up(self, building_id):
         # TODO error
         # TODO cost

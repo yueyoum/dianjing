@@ -13,7 +13,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='building.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\x0e\x62uilding.proto\x12\x11\x44ianjing.protocol\"\x87\x01\n\x0e\x42uildingNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12=\n\tbuildings\x18\x02 \x03(\x0b\x32*.Dianjing.protocol.BuildingNotify.Building\x1a%\n\x08\x42uilding\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\"5\n\x16\x42uildingLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"7\n\x17\x42uildingLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+  serialized_pb='\n\x0e\x62uilding.proto\x12\x11\x44ianjing.protocol\"\x87\x01\n\x0e\x42uildingNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12=\n\tbuildings\x18\x02 \x03(\x0b\x32*.Dianjing.protocol.BuildingNotify.Building\x1a%\n\x08\x42uilding\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\"5\n\x16\x42uildingLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"7\n\x17\x42uildingLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"1\n\x12TrainingBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"3\n\x13TrainingBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
 
 
 
@@ -156,11 +156,83 @@ _BUILDINGLEVELUPRESPONSE = _descriptor.Descriptor(
   serialized_end=285,
 )
 
+
+_TRAININGBUYREQUEST = _descriptor.Descriptor(
+  name='TrainingBuyRequest',
+  full_name='Dianjing.protocol.TrainingBuyRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TrainingBuyRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value="",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.TrainingBuyRequest.id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=287,
+  serialized_end=336,
+)
+
+
+_TRAININGBUYRESPONSE = _descriptor.Descriptor(
+  name='TrainingBuyResponse',
+  full_name='Dianjing.protocol.TrainingBuyResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.TrainingBuyResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TrainingBuyResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value="",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=338,
+  serialized_end=389,
+)
+
 _BUILDINGNOTIFY_BUILDING.containing_type = _BUILDINGNOTIFY;
 _BUILDINGNOTIFY.fields_by_name['buildings'].message_type = _BUILDINGNOTIFY_BUILDING
 DESCRIPTOR.message_types_by_name['BuildingNotify'] = _BUILDINGNOTIFY
 DESCRIPTOR.message_types_by_name['BuildingLevelUpRequest'] = _BUILDINGLEVELUPREQUEST
 DESCRIPTOR.message_types_by_name['BuildingLevelUpResponse'] = _BUILDINGLEVELUPRESPONSE
+DESCRIPTOR.message_types_by_name['TrainingBuyRequest'] = _TRAININGBUYREQUEST
+DESCRIPTOR.message_types_by_name['TrainingBuyResponse'] = _TRAININGBUYRESPONSE
 
 class BuildingNotify(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
@@ -185,6 +257,18 @@ class BuildingLevelUpResponse(_message.Message):
   DESCRIPTOR = _BUILDINGLEVELUPRESPONSE
 
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.BuildingLevelUpResponse)
+
+class TrainingBuyRequest(_message.Message):
+  __metaclass__ = _reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _TRAININGBUYREQUEST
+
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingBuyRequest)
+
+class TrainingBuyResponse(_message.Message):
+  __metaclass__ = _reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _TRAININGBUYRESPONSE
+
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingBuyResponse)
 
 
 # @@protoc_insertion_point(module_scope)

@@ -41,6 +41,8 @@ MESSAGE_TO_ID = {
     "BuildingNotify": 800,
     "BuildingLevelUpRequest": 801,
     "BuildingLevelUpResponse": 802,
+    "TrainingBuyRequest": 803,
+    "TrainingBuyResponse": 804,
 }
 
 ID_TO_MESSAGE = {
@@ -85,6 +87,8 @@ ID_TO_MESSAGE = {
     800: "BuildingNotify",
     801: "BuildingLevelUpRequest",
     802: "BuildingLevelUpResponse",
+    803: "TrainingBuyRequest",
+    804: "TrainingBuyResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -104,6 +108,7 @@ PATH_TO_REQUEST = {
     "/game/league/log/": ["league", "LeagueGetBattleLogRequest"],
     "/game/challenge/start/": ["challenge", "ChallengeStartRequest"],
     "/game/building/levelup/": ["building", "BuildingLevelUpRequest"],
+    "/game/building/training/buy/": ["building", "TrainingBuyRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -123,4 +128,5 @@ PATH_TO_RESPONSE = {
     "/game/league/log/": ["league", "LeagueGetBattleLogResponse"],
     "/game/challenge/start/": ["challenge", "ChallengeStartResponse"],
     "/game/building/levelup/": ["building", "BuildingLevelUpResponse"],
+    "/game/building/training/buy/": ["building", "TrainingBuyResponse"],
 }

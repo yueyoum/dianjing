@@ -7,6 +7,8 @@ Description:
 
 """
 
+import arrow
+
 from core.abstract import AbstractStaff
 from core.db import get_mongo_db
 from core.mongo import Document
@@ -154,8 +156,42 @@ class StaffManger(object):
             {'$set': {'staffs.{0}'.format(staff_id): doc}}
         )
 
-        self.send_notify(act=ACT_ADD, staffs={staff_id: doc})
+        self.send_notify(act=ACT_ADD, staff_ids=[staff_id])
 
+
+    def training_start(self, staff_id, training_id):
+        # TODO check training_id own ?
+        # TODO check staff exists ?
+
+        data = {
+            'training_id': training_id,
+            'start_at': arrow.utcnow().timestamp
+        }
+
+        key = 'staffs.{0}.trainings'.format(staff_id)
+
+        self.mongo.character.update_one(
+            {'_id': self.char_id},
+            {'$push', {key: data}}
+        )
+
+        self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
+
+
+    def training_get_reward(self, staff_id, slot_id):
+        # TODO
+        key = "staffs.{0}.trainings".format(staff_id)
+
+        char = self.mongo.character.find_one({'_id': self.char_id}, {key: 1})
+        trainings = char['staffs'][str(staff_id)]['trainings']
+        trainings.pop(slot_id)
+
+        self.mongo.character.update_one(
+            {'_id': self.char_id},
+            {'$set': {key: trainings}}
+        )
+
+        self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
 
 
     def msg_staff(self, msg, sid, staff):
@@ -175,11 +211,25 @@ class StaffManger(object):
         msg.yishi = 10
         msg.caozuo = 10
 
+        slot_id = 1
+        for training in staff.get('training', []):
+            msg_training_slot = msg.training_slots.add()
+            # TODO
+            msg_training_slot.status = 4
+            msg_training_slot.slot_id = slot_id
+            msg_training_slot.training_id = training['training_id']
+            # TODO
+            msg_training_slot.end_at = arrow.utcnow().timestamp + 300
 
-    def send_notify(self, act=ACT_INIT, staffs=None):
-        if not staffs:
-            char = self.mongo.character.find_one({'_id': self.char_id}, {'staffs': 1})
-            staffs = char.get('staffs', {})
+
+    def send_notify(self, act=ACT_INIT, staff_ids=None):
+        if not staff_ids:
+            projection = {'staffs': 1}
+        else:
+            projection = {'staffs.{0}'.format(i) for i in staff_ids}
+
+        char = self.mongo.character.find_one({'_id': self.char_id}, projection)
+        staffs = char.get('staffs', {})
 
         notify = StaffNotify()
         notify.act = act
