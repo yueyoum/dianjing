@@ -15,6 +15,9 @@ from django.conf import settings
 from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit
 from config.challenge import ConfigChallengeType, ConfigChallengeMatch
 from config.unit import ConfigUnit
+from config.building import ConfigBuilding
+from config.package import ConfigPackage
+from config.training import ConfigTraining
 
 CONFIG = None
 
@@ -80,6 +83,12 @@ def load_config():
             ConfigChallengeMatch.initialize(data)
         elif attr_name == 'UNIT':
             ConfigUnit.initialize(data)
+        elif attr_name == 'BUILDING':
+            ConfigBuilding.initialize(data)
+        elif attr_name == 'PACKAGE':
+            ConfigPackage.initialize(data)
+        elif attr_name == 'TRAINING':
+            ConfigTraining.initialize(data)
 
 
     CONFIG = type('CONFIG', (object,), attr_dict)
