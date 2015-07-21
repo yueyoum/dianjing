@@ -246,22 +246,38 @@ class StaffManger(object):
         msg.yishi = 10
         msg.caozuo = 10
 
-        slot_id = 1
-        for training in staff.get('training', []):
+        training = staff.get('training', [])
+        for i in range(5):
             msg_training_slot = msg.training_slots.add()
-            # TODO
-            msg_training_slot.status = 4
-            msg_training_slot.slot_id = slot_id
-            msg_training_slot.training_id = training['training_id']
-            # TODO
-            msg_training_slot.end_at = arrow.utcnow().timestamp + 300
+            msg_training_slot.slot_id = i+1
+
+            try:
+                tr = training[i]
+                msg_training_slot.training_id = tr['training_id']
+                msg_training_slot.end_at = tr['start_at'] + ConfigTraining.get(tr['training_id']).minutes * 60
+                if msg_training_slot.end_at <= arrow.utcnow().timestamp:
+                    msg_training_slot.status = 5
+                else:
+                    msg_training_slot.status = 4
+
+            except IndexError:
+                msg_training_slot.status = 2
+
+        # 只有一个处于正在训练的状态
+        in_queue = False
+        for i in msg.training_slots:
+            if i.status == 4:
+                if not in_queue:
+                    in_queue = True
+                else:
+                    i.status = 3
 
 
     def send_notify(self, act=ACT_INIT, staff_ids=None):
         if not staff_ids:
             projection = {'staffs': 1}
         else:
-            projection = {'staffs.{0}'.format(i) for i in staff_ids}
+            projection = {'staffs.{0}'.format(i): 1 for i in staff_ids}
 
         char = self.mongo.character.find_one({'_id': self.char_id}, projection)
         staffs = char.get('staffs', {})

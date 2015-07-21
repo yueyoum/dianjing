@@ -69,7 +69,7 @@ class BuildingManager(object):
             if not b.max_levels:
                 notify_building.level = 0
             else:
-                notify_building.level = buildings['builds'].get(str(b.id), 1)
+                notify_building.level = buildings['buildings'].get(str(b.id), 1)
 
         MessagePipe(self.char_id).put(msg=notify)
 
