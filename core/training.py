@@ -25,7 +25,7 @@ class Training(object):
         # TODO cost
         # TODO check training_id exists?
 
-        key = "own_trainings.{0}"
+        key = "own_trainings.{0}".format(training_id)
         char = self.mongo.character.find_one(
             {'_id': self.char_id},
             {key: 1}

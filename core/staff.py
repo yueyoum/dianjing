@@ -174,7 +174,7 @@ class StaffManger(object):
 
         self.mongo.character.update_one(
             {'_id': self.char_id},
-            {'$push', {key: data}}
+            {'$push': {key: data}}
         )
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
@@ -211,9 +211,9 @@ class StaffManger(object):
         caozuo = kwargs.get('caozuo', 0)
 
         # TODO level up
-        self.mongo.character.update_one({
-            '_id': self.char_id,
-            '$inc': {
+        self.mongo.character.update_one(
+            {'_id': self.char_id},
+            {'$inc': {
                 'staffs.{0}.exp'.format(staff_id): exp,
                 'staffs.{0}.jingong'.format(staff_id): jingong,
                 'staffs.{0}.qianzhi'.format(staff_id): qianzhi,
@@ -223,8 +223,8 @@ class StaffManger(object):
                 'staffs.{0}.yunying'.format(staff_id): yunying,
                 'staffs.{0}.yishi'.format(staff_id): yishi,
                 'staffs.{0}.caozuo'.format(staff_id): caozuo,
-            }
-        })
+            }}
+        )
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
 
@@ -246,7 +246,7 @@ class StaffManger(object):
         msg.yishi = 10
         msg.caozuo = 10
 
-        training = staff.get('training', [])
+        training = staff.get('trainings', [])
         for i in range(5):
             msg_training_slot = msg.training_slots.add()
             msg_training_slot.slot_id = i+1
