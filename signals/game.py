@@ -41,7 +41,7 @@ def start(server_id, char_id, **kwargs):
     StaffManger(server_id, char_id).send_notify()
 
     Challenge(server_id, char_id).send_notify()
-    BuildingManager(server_id, char_id).server_id()
+    BuildingManager(server_id, char_id).send_notify()
 
 
 game_start_signal.connect(

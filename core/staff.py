@@ -12,7 +12,9 @@ import arrow
 from core.abstract import AbstractStaff
 from core.db import get_mongo_db
 from core.mongo import Document
-from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit
+from core.resource import Resource
+
+from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigTraining
 
 from utils.message import MessagePipe
 
@@ -184,12 +186,45 @@ class StaffManger(object):
 
         char = self.mongo.character.find_one({'_id': self.char_id}, {key: 1})
         trainings = char['staffs'][str(staff_id)]['trainings']
-        trainings.pop(slot_id)
+        data =  trainings.pop(slot_id)
 
         self.mongo.character.update_one(
             {'_id': self.char_id},
             {'$set': {key: trainings}}
         )
+
+        self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
+
+        package_id = ConfigTraining.get(data['training_id']).package
+        Resource(self.server_id, self.char_id).add_from_package_id(package_id, staff_id)
+
+
+    def update(self, staff_id, **kwargs):
+        exp = kwargs.get('exp', 0)
+        jingong = kwargs.get('jingong', 0)
+        qianzhi = kwargs.get('qianzhi', 0)
+        xintai = kwargs.get('xintai', 0)
+        baobing = kwargs.get('baobing', 0)
+        fangshou = kwargs.get('fangshou', 0)
+        yunying = kwargs.get('yunying', 0)
+        yishi = kwargs.get('yishi', 0)
+        caozuo = kwargs.get('caozuo', 0)
+
+        # TODO level up
+        self.mongo.character.update_one({
+            '_id': self.char_id,
+            '$inc': {
+                'staffs.{0}.exp'.format(staff_id): exp,
+                'staffs.{0}.jingong'.format(staff_id): jingong,
+                'staffs.{0}.qianzhi'.format(staff_id): qianzhi,
+                'staffs.{0}.xintai'.format(staff_id): xintai,
+                'staffs.{0}.baobing'.format(staff_id): baobing,
+                'staffs.{0}.fangshou'.format(staff_id): fangshou,
+                'staffs.{0}.yunying'.format(staff_id): yunying,
+                'staffs.{0}.yishi'.format(staff_id): yishi,
+                'staffs.{0}.caozuo'.format(staff_id): caozuo,
+            }
+        })
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
 

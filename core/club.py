@@ -80,6 +80,30 @@ class Club(AbstractClub):
         self.send_notify()
 
 
+    def update(self, **kwargs):
+        renown = kwargs.get('renown', 0)
+        gold = kwargs.get('gold', 0)
+        diamond = kwargs.get('diamond', 0)
+
+
+        self.renown += renown
+        # TODO level up
+        self.gold += gold
+        self.diamond += diamond
+
+
+        self.mongo.character.update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'club.renown': self.renown,
+                'club.gold': self.gold,
+                'club.diamond': self.diamond,
+            }}
+        )
+
+        self.send_notify()
+
+
     def send_notify(self):
         msg = self.make_protomsg()
         notify = ClubNotify()

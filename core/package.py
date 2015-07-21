@@ -38,6 +38,11 @@ class Package(object):
         self.staff_exp = 0
         self.club_renown = 0
 
+    @property
+    def attrs(self):
+        return {k: getattr(self, k) for k in self.ATTRS}
+
+
     @classmethod
     def generate(cls, pid):
         """
@@ -92,3 +97,10 @@ class Package(object):
         return p
 
 
+    @classmethod
+    def new(cls, **kwargs):
+        p = cls()
+        for k, v in kwargs.iteritems():
+            setattr(p, k, v)
+
+        return p
