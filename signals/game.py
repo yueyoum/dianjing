@@ -25,6 +25,8 @@ from protomsg.character_pb2 import CharacterNotify
 
 
 def start(server_id, char_id, **kwargs):
+    MessagePipe(char_id).clean()
+
     msg = UTCNotify()
     msg.timestamp = arrow.utcnow().timestamp
     MessagePipe(char_id).put(msg=msg)
