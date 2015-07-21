@@ -249,7 +249,7 @@ class StaffManger(object):
         training = staff.get('trainings', [])
         for i in range(5):
             msg_training_slot = msg.training_slots.add()
-            msg_training_slot.slot_id = i+1
+            msg_training_slot.slot_id = i
 
             try:
                 tr = training[i]
