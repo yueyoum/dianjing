@@ -19,7 +19,7 @@ from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigTraini
 from utils.message import MessagePipe
 
 from protomsg.staff_pb2 import StaffRecruitNotify, StaffNotify
-from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE, ACT_ADD
+from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 class Staff(AbstractStaff):
     __slots__ = [
@@ -158,7 +158,7 @@ class StaffManger(object):
             {'$set': {'staffs.{0}'.format(staff_id): doc}}
         )
 
-        self.send_notify(act=ACT_ADD, staff_ids=[staff_id])
+        self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
 
 
     def training_start(self, staff_id, training_id):

@@ -27,9 +27,11 @@ urlpatterns = [
     url(r'^game/challenge/start/$', 'views.challenge.start'),
 
     url(r'^game/building/levelup/$', 'views.building.levelup'),
-    url(r'^game/building/training/buy/$', 'views.building.training_buy'),
 
-    url(r'^game/staff/training/$', 'views.staff.training_start'),
+    url(r'^game/training/buy/$', 'views.training.buy'),
+
+    url(r'^game/staff/training/$', 'views.training.training'),
+
     url(r'^game/staff/training/getreward/$', 'views.staff.training_get_reward'),
     #
     # url(r'^game/league/statistics/$', apps.league.views.get_statistics),

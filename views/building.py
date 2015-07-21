@@ -11,7 +11,7 @@ from core.building import BuildingManager
 
 from utils.http import ProtobufResponse
 
-from protomsg.building_pb2 import BuildingLevelUpResponse, TrainingBuyResponse
+from protomsg.building_pb2 import BuildingLevelUpResponse
 
 def levelup(request):
     server_id = request._game_session.server_id
@@ -26,16 +26,3 @@ def levelup(request):
     response.ret = 0
     return ProtobufResponse(response)
 
-
-def training_buy(request):
-    server_id = request._game_session.server_id
-    char_id = request._game_session.char_id
-
-    training_id = request._proto.id
-
-    bm = BuildingManager(server_id, char_id)
-    bm.buy_training(training_id)
-
-    response = TrainingBuyResponse()
-    response.ret = 0
-    return ProtobufResponse(response)

@@ -14,7 +14,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='common.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\x0c\x63ommon.proto\x12\x11\x44ianjing.protocol\"/\n\tUTCNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\ttimestamp\x18\x02 \x02(\x03\"*\n\rStaffBaseInfo\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05*C\n\x0bNextOperate\x12\n\n\x06OPT_OK\x10\x01\x12\x13\n\x0fOPT_CREATE_CHAR\x10\x02\x12\x13\n\x0fOPT_CREATE_CLUB\x10\x03*3\n\x06\x41\x63tion\x12\x0c\n\x08\x41\x43T_INIT\x10\x01\x12\x0b\n\x07\x41\x43T_ADD\x10\x02\x12\x0e\n\nACT_UPDATE\x10\x03*\xc1\x01\n\x0bLeagueLevel\x12\x12\n\x0eLEAGUE_LEVEL_1\x10\x01\x12\x12\n\x0eLEAGUE_LEVEL_2\x10\x02\x12\x12\n\x0eLEAGUE_LEVEL_3\x10\x03\x12\x12\n\x0eLEAGUE_LEVEL_4\x10\x04\x12\x12\n\x0eLEAGUE_LEVEL_5\x10\x05\x12\x12\n\x0eLEAGUE_LEVEL_6\x10\x06\x12\x12\n\x0eLEAGUE_LEVEL_7\x10\x07\x12\x12\n\x0eLEAGUE_LEVEL_8\x10\x08\x12\x12\n\x0eLEAGUE_LEVEL_9\x10\t*1\n\x08\x43lubType\x12\x12\n\x0e\x43LUB_TYPE_REAL\x10\x01\x12\x11\n\rCLUB_TYPE_NPC\x10\x02')
+  serialized_pb='\n\x0c\x63ommon.proto\x12\x11\x44ianjing.protocol\"/\n\tUTCNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\ttimestamp\x18\x02 \x02(\x03\"*\n\rStaffBaseInfo\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05*C\n\x0bNextOperate\x12\n\n\x06OPT_OK\x10\x01\x12\x13\n\x0fOPT_CREATE_CHAR\x10\x02\x12\x13\n\x0fOPT_CREATE_CLUB\x10\x03*&\n\x06\x41\x63tion\x12\x0c\n\x08\x41\x43T_INIT\x10\x01\x12\x0e\n\nACT_UPDATE\x10\x02*\xc1\x01\n\x0bLeagueLevel\x12\x12\n\x0eLEAGUE_LEVEL_1\x10\x01\x12\x12\n\x0eLEAGUE_LEVEL_2\x10\x02\x12\x12\n\x0eLEAGUE_LEVEL_3\x10\x03\x12\x12\n\x0eLEAGUE_LEVEL_4\x10\x04\x12\x12\n\x0eLEAGUE_LEVEL_5\x10\x05\x12\x12\n\x0eLEAGUE_LEVEL_6\x10\x06\x12\x12\n\x0eLEAGUE_LEVEL_7\x10\x07\x12\x12\n\x0eLEAGUE_LEVEL_8\x10\x08\x12\x12\n\x0eLEAGUE_LEVEL_9\x10\t*1\n\x08\x43lubType\x12\x12\n\x0e\x43LUB_TYPE_REAL\x10\x01\x12\x11\n\rCLUB_TYPE_NPC\x10\x02')
 
 _NEXTOPERATE = _descriptor.EnumDescriptor(
   name='NextOperate',
@@ -53,18 +53,14 @@ _ACTION = _descriptor.EnumDescriptor(
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='ACT_ADD', index=1, number=2,
-      options=None,
-      type=None),
-    _descriptor.EnumValueDescriptor(
-      name='ACT_UPDATE', index=2, number=3,
+      name='ACT_UPDATE', index=1, number=2,
       options=None,
       type=None),
   ],
   containing_type=None,
   options=None,
   serialized_start=197,
-  serialized_end=248,
+  serialized_end=235,
 )
 
 Action = enum_type_wrapper.EnumTypeWrapper(_ACTION)
@@ -113,8 +109,8 @@ _LEAGUELEVEL = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=251,
-  serialized_end=444,
+  serialized_start=238,
+  serialized_end=431,
 )
 
 LeagueLevel = enum_type_wrapper.EnumTypeWrapper(_LEAGUELEVEL)
@@ -135,8 +131,8 @@ _CLUBTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=446,
-  serialized_end=495,
+  serialized_start=433,
+  serialized_end=482,
 )
 
 ClubType = enum_type_wrapper.EnumTypeWrapper(_CLUBTYPE)
@@ -144,8 +140,7 @@ OPT_OK = 1
 OPT_CREATE_CHAR = 2
 OPT_CREATE_CLUB = 3
 ACT_INIT = 1
-ACT_ADD = 2
-ACT_UPDATE = 3
+ACT_UPDATE = 2
 LEAGUE_LEVEL_1 = 1
 LEAGUE_LEVEL_2 = 2
 LEAGUE_LEVEL_3 = 3

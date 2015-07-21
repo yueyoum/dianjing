@@ -43,7 +43,7 @@ DEFAULT_CHARACTER_DOCUMENT = {
     # 挑战赛ID
     'challenge_id': ConfigChallengeMatch.FIRST_ID,
     # 拥有的训练ID列表
-    'own_training_ids': [],
+    'own_trainings': {},
 }
 
 DEFAULT_STAFF_DOCUMENT = {
