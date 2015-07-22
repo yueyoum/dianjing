@@ -24,7 +24,7 @@ from apps.league.models import (
     LeagueClubInfo,
     LeagueNPCInfo,
 )
-from apps.staff.models import Staff
+# from apps.staff.models import Staff
 
 from utils.message import MessagePipe
 
@@ -485,13 +485,13 @@ class League(object):
         club_id = LeagueClubInfo.objects.get(id=club_info_id).club_id
 
         # FIXME only select in battle staffs
-        staffs = Staff.objects.filter(club_id=club_id)
-
-        statistics = []
-        for s in staffs:
-            statistics.append( (s.oid, json.loads(s.winning_rate)) )
-
-        return statistics
+        # staffs = Staff.objects.filter(club_id=club_id)
+        #
+        # statistics = []
+        # for s in staffs:
+        #     statistics.append( (s.oid, json.loads(s.winning_rate)) )
+        #
+        # return statistics
 
 
     def get_npc_statistics(self, npc_info_id):

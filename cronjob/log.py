@@ -26,7 +26,7 @@ class Logger(object):
 
         self.name = name
         self.f = open(os.path.join(settings.LOG_PATH, self.name), 'a')
-        print "==== CRON START {0} {1} ====".format(self.now, self.name)
+        print "==== CRON START  {0} [{1}] ====".format(self.now, self.name)
 
     @property
     def now(self):
@@ -38,4 +38,4 @@ class Logger(object):
 
     def close(self):
         self.f.close()
-        print "==== CRON FINISH {0} {1} ====".format(self.now, self.name)
+        print "==== CRON FINISH {0} [{1}] ====".format(self.now, self.name)

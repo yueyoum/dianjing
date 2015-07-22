@@ -9,12 +9,13 @@ from google.protobuf import descriptor_pb2
 
 
 import common_pb2
+import match_pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='league.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\x0cleague.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xca\x04\n\x06League\x12-\n\x05level\x18\x01 \x02(\x0e\x32\x1e.Dianjing.protocol.LeagueLevel\x12\x15\n\rcurrent_order\x18\x02 \x02(\x05\x12\x33\n\x05ranks\x18\x03 \x03(\x0b\x32$.Dianjing.protocol.League.LeagueRank\x12\x33\n\x05pairs\x18\x04 \x03(\x0b\x32$.Dianjing.protocol.League.LeaguePair\x1a\x8a\x01\n\nLeagueRank\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\'\n\x02tp\x18\x03 \x02(\x0e\x32\x1b.Dianjing.protocol.ClubType\x12\x14\n\x0c\x62\x61ttle_times\x18\x04 \x02(\x05\x12\r\n\x05score\x18\x05 \x02(\x05\x12\x14\n\x0cwinning_rate\x18\x06 \x02(\x05\x1a\x82\x02\n\nLeaguePair\x12\x0f\n\x07pair_id\x18\x01 \x02(\t\x12;\n\x08\x63lub_one\x18\x02 \x02(\x0b\x32).Dianjing.protocol.League.LeaguePair.Club\x12;\n\x08\x63lub_two\x18\x03 \x02(\x0b\x32).Dianjing.protocol.League.LeaguePair.Club\x12\x11\n\tbattle_at\x18\x04 \x02(\x05\x1aV\n\x04\x43lub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\'\n\x02tp\x18\x03 \x02(\x0e\x32\x1b.Dianjing.protocol.ClubType\x12\x0b\n\x03win\x18\x04 \x02(\x08\"J\n\x0cLeagueNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12)\n\x06league\x18\x02 \x02(\x0b\x32\x19.Dianjing.protocol.League\"b\n\x1aLeagueGetStatisticsRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\x12\'\n\x02tp\x18\x03 \x02(\x0e\x32\x1b.Dianjing.protocol.ClubType\"\x97\x02\n\x1bLeagueGetStatisticsResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12S\n\nstatistics\x18\x03 \x03(\x0b\x32?.Dianjing.protocol.LeagueGetStatisticsResponse.LeagueStatistics\x1a\x84\x01\n\x10LeagueStatistics\x12\x11\n\tstaff_oid\x18\x01 \x02(\x05\x12\x1e\n\x16winning_rate_to_terran\x18\x02 \x02(\x05\x12\x1c\n\x14winning_rate_to_zerg\x18\x03 \x02(\x05\x12\x1f\n\x17winning_rate_to_protoss\x18\x04 \x02(\x05\"=\n\x19LeagueGetBattleLogRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07pair_id\x18\x02 \x02(\t\"\x9f\x03\n\x1aLeagueGetBattleLogResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12K\n\x04logs\x18\x03 \x03(\x0b\x32=.Dianjing.protocol.LeagueGetBattleLogResponse.LeagueBattleLog\x1a\x95\x02\n\x0fLeagueBattleLog\x12\x61\n\x0e\x63lub_one_staff\x18\x01 \x02(\x0b\x32I.Dianjing.protocol.LeagueGetBattleLogResponse.LeagueBattleLog.LeagueStaff\x12\x61\n\x0e\x63lub_two_staff\x18\x02 \x02(\x0b\x32I.Dianjing.protocol.LeagueGetBattleLogResponse.LeagueBattleLog.LeagueStaff\x1a<\n\x0bLeagueStaff\x12\x11\n\tstaff_oid\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0b\n\x03win\x18\x03 \x02(\x08')
+  serialized_pb='\n\x0cleague.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\x0bmatch.proto\"\xf7\x03\n\x06League\x12-\n\x05level\x18\x01 \x02(\x0e\x32\x1e.Dianjing.protocol.LeagueLevel\x12\x15\n\rcurrent_order\x18\x02 \x02(\x05\x12\x33\n\x05ranks\x18\x03 \x03(\x0b\x32$.Dianjing.protocol.League.LeagueRank\x12\x33\n\x05pairs\x18\x04 \x03(\x0b\x32$.Dianjing.protocol.League.LeaguePair\x1a\x61\n\nLeagueRank\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x14\n\x0c\x62\x61ttle_times\x18\x03 \x02(\x05\x12\r\n\x05score\x18\x04 \x02(\x05\x12\x14\n\x0cwinning_rate\x18\x05 \x02(\x05\x1a\xd9\x01\n\nLeaguePair\x12\x0f\n\x07pair_id\x18\x01 \x02(\t\x12;\n\x08\x63lub_one\x18\x02 \x02(\x0b\x32).Dianjing.protocol.League.LeaguePair.Club\x12;\n\x08\x63lub_two\x18\x03 \x02(\x0b\x32).Dianjing.protocol.League.LeaguePair.Club\x12\x11\n\tbattle_at\x18\x04 \x02(\x05\x1a-\n\x04\x43lub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0b\n\x03win\x18\x03 \x02(\x08\"J\n\x0cLeagueNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12)\n\x06league\x18\x02 \x02(\x0b\x32\x19.Dianjing.protocol.League\"9\n\x1aLeagueGetStatisticsRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"\x96\x02\n\x1bLeagueGetStatisticsResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12S\n\nstatistics\x18\x03 \x03(\x0b\x32?.Dianjing.protocol.LeagueGetStatisticsResponse.LeagueStatistics\x1a\x83\x01\n\x10LeagueStatistics\x12\x10\n\x08staff_id\x18\x01 \x02(\x05\x12\x1e\n\x16winning_rate_to_terran\x18\x02 \x02(\x05\x12\x1c\n\x14winning_rate_to_zerg\x18\x03 \x02(\x05\x12\x1f\n\x17winning_rate_to_protoss\x18\x04 \x02(\x05\"=\n\x19LeagueGetBattleLogRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07pair_id\x18\x02 \x02(\t\"k\n\x1aLeagueGetBattleLogResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12/\n\tmatch_log\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch')
 
 
 
@@ -41,29 +42,22 @@ _LEAGUE_LEAGUERANK = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='tp', full_name='Dianjing.protocol.League.LeagueRank.tp', index=2,
-      number=3, type=14, cpp_type=8, label=2,
-      has_default_value=False, default_value=1,
+      name='battle_times', full_name='Dianjing.protocol.League.LeagueRank.battle_times', index=2,
+      number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='battle_times', full_name='Dianjing.protocol.League.LeagueRank.battle_times', index=3,
+      name='score', full_name='Dianjing.protocol.League.LeagueRank.score', index=3,
       number=4, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='score', full_name='Dianjing.protocol.League.LeagueRank.score', index=4,
+      name='winning_rate', full_name='Dianjing.protocol.League.LeagueRank.winning_rate', index=4,
       number=5, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='winning_rate', full_name='Dianjing.protocol.League.LeagueRank.winning_rate', index=5,
-      number=6, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -77,8 +71,8 @@ _LEAGUE_LEAGUERANK = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=237,
-  serialized_end=375,
+  serialized_start=249,
+  serialized_end=346,
 )
 
 _LEAGUE_LEAGUEPAIR_CLUB = _descriptor.Descriptor(
@@ -103,15 +97,8 @@ _LEAGUE_LEAGUEPAIR_CLUB = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='tp', full_name='Dianjing.protocol.League.LeaguePair.Club.tp', index=2,
-      number=3, type=14, cpp_type=8, label=2,
-      has_default_value=False, default_value=1,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='win', full_name='Dianjing.protocol.League.LeaguePair.Club.win', index=3,
-      number=4, type=8, cpp_type=7, label=2,
+      name='win', full_name='Dianjing.protocol.League.LeaguePair.Club.win', index=2,
+      number=3, type=8, cpp_type=7, label=2,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -125,8 +112,8 @@ _LEAGUE_LEAGUEPAIR_CLUB = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=550,
-  serialized_end=636,
+  serialized_start=521,
+  serialized_end=566,
 )
 
 _LEAGUE_LEAGUEPAIR = _descriptor.Descriptor(
@@ -173,8 +160,8 @@ _LEAGUE_LEAGUEPAIR = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=378,
-  serialized_end=636,
+  serialized_start=349,
+  serialized_end=566,
 )
 
 _LEAGUE = _descriptor.Descriptor(
@@ -221,8 +208,8 @@ _LEAGUE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=50,
-  serialized_end=636,
+  serialized_start=63,
+  serialized_end=566,
 )
 
 
@@ -256,8 +243,8 @@ _LEAGUENOTIFY = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=638,
-  serialized_end=712,
+  serialized_start=568,
+  serialized_end=642,
 )
 
 
@@ -282,13 +269,6 @@ _LEAGUEGETSTATISTICSREQUEST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
-    _descriptor.FieldDescriptor(
-      name='tp', full_name='Dianjing.protocol.LeagueGetStatisticsRequest.tp', index=2,
-      number=3, type=14, cpp_type=8, label=2,
-      has_default_value=False, default_value=1,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
   ],
   extensions=[
   ],
@@ -298,8 +278,8 @@ _LEAGUEGETSTATISTICSREQUEST = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=714,
-  serialized_end=812,
+  serialized_start=644,
+  serialized_end=701,
 )
 
 
@@ -311,7 +291,7 @@ _LEAGUEGETSTATISTICSRESPONSE_LEAGUESTATISTICS = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='staff_oid', full_name='Dianjing.protocol.LeagueGetStatisticsResponse.LeagueStatistics.staff_oid', index=0,
+      name='staff_id', full_name='Dianjing.protocol.LeagueGetStatisticsResponse.LeagueStatistics.staff_id', index=0,
       number=1, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -347,8 +327,8 @@ _LEAGUEGETSTATISTICSRESPONSE_LEAGUESTATISTICS = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=962,
-  serialized_end=1094,
+  serialized_start=851,
+  serialized_end=982,
 )
 
 _LEAGUEGETSTATISTICSRESPONSE = _descriptor.Descriptor(
@@ -388,8 +368,8 @@ _LEAGUEGETSTATISTICSRESPONSE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=815,
-  serialized_end=1094,
+  serialized_start=704,
+  serialized_end=982,
 )
 
 
@@ -423,85 +403,10 @@ _LEAGUEGETBATTLELOGREQUEST = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1096,
-  serialized_end=1157,
+  serialized_start=984,
+  serialized_end=1045,
 )
 
-
-_LEAGUEGETBATTLELOGRESPONSE_LEAGUEBATTLELOG_LEAGUESTAFF = _descriptor.Descriptor(
-  name='LeagueStaff',
-  full_name='Dianjing.protocol.LeagueGetBattleLogResponse.LeagueBattleLog.LeagueStaff',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='staff_oid', full_name='Dianjing.protocol.LeagueGetBattleLogResponse.LeagueBattleLog.LeagueStaff.staff_oid', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='level', full_name='Dianjing.protocol.LeagueGetBattleLogResponse.LeagueBattleLog.LeagueStaff.level', index=1,
-      number=2, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='win', full_name='Dianjing.protocol.LeagueGetBattleLogResponse.LeagueBattleLog.LeagueStaff.win', index=2,
-      number=3, type=8, cpp_type=7, label=2,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=1515,
-  serialized_end=1575,
-)
-
-_LEAGUEGETBATTLELOGRESPONSE_LEAGUEBATTLELOG = _descriptor.Descriptor(
-  name='LeagueBattleLog',
-  full_name='Dianjing.protocol.LeagueGetBattleLogResponse.LeagueBattleLog',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='club_one_staff', full_name='Dianjing.protocol.LeagueGetBattleLogResponse.LeagueBattleLog.club_one_staff', index=0,
-      number=1, type=11, cpp_type=10, label=2,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='club_two_staff', full_name='Dianjing.protocol.LeagueGetBattleLogResponse.LeagueBattleLog.club_two_staff', index=1,
-      number=2, type=11, cpp_type=10, label=2,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[_LEAGUEGETBATTLELOGRESPONSE_LEAGUEBATTLELOG_LEAGUESTAFF, ],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=1298,
-  serialized_end=1575,
-)
 
 _LEAGUEGETBATTLELOGRESPONSE = _descriptor.Descriptor(
   name='LeagueGetBattleLogResponse',
@@ -525,28 +430,26 @@ _LEAGUEGETBATTLELOGRESPONSE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='logs', full_name='Dianjing.protocol.LeagueGetBattleLogResponse.logs', index=2,
-      number=3, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
+      name='match_log', full_name='Dianjing.protocol.LeagueGetBattleLogResponse.match_log', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[_LEAGUEGETBATTLELOGRESPONSE_LEAGUEBATTLELOG, ],
+  nested_types=[],
   enum_types=[
   ],
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1160,
-  serialized_end=1575,
+  serialized_start=1047,
+  serialized_end=1154,
 )
 
-_LEAGUE_LEAGUERANK.fields_by_name['tp'].enum_type = common_pb2._CLUBTYPE
 _LEAGUE_LEAGUERANK.containing_type = _LEAGUE;
-_LEAGUE_LEAGUEPAIR_CLUB.fields_by_name['tp'].enum_type = common_pb2._CLUBTYPE
 _LEAGUE_LEAGUEPAIR_CLUB.containing_type = _LEAGUE_LEAGUEPAIR;
 _LEAGUE_LEAGUEPAIR.fields_by_name['club_one'].message_type = _LEAGUE_LEAGUEPAIR_CLUB
 _LEAGUE_LEAGUEPAIR.fields_by_name['club_two'].message_type = _LEAGUE_LEAGUEPAIR_CLUB
@@ -555,14 +458,9 @@ _LEAGUE.fields_by_name['level'].enum_type = common_pb2._LEAGUELEVEL
 _LEAGUE.fields_by_name['ranks'].message_type = _LEAGUE_LEAGUERANK
 _LEAGUE.fields_by_name['pairs'].message_type = _LEAGUE_LEAGUEPAIR
 _LEAGUENOTIFY.fields_by_name['league'].message_type = _LEAGUE
-_LEAGUEGETSTATISTICSREQUEST.fields_by_name['tp'].enum_type = common_pb2._CLUBTYPE
 _LEAGUEGETSTATISTICSRESPONSE_LEAGUESTATISTICS.containing_type = _LEAGUEGETSTATISTICSRESPONSE;
 _LEAGUEGETSTATISTICSRESPONSE.fields_by_name['statistics'].message_type = _LEAGUEGETSTATISTICSRESPONSE_LEAGUESTATISTICS
-_LEAGUEGETBATTLELOGRESPONSE_LEAGUEBATTLELOG_LEAGUESTAFF.containing_type = _LEAGUEGETBATTLELOGRESPONSE_LEAGUEBATTLELOG;
-_LEAGUEGETBATTLELOGRESPONSE_LEAGUEBATTLELOG.fields_by_name['club_one_staff'].message_type = _LEAGUEGETBATTLELOGRESPONSE_LEAGUEBATTLELOG_LEAGUESTAFF
-_LEAGUEGETBATTLELOGRESPONSE_LEAGUEBATTLELOG.fields_by_name['club_two_staff'].message_type = _LEAGUEGETBATTLELOGRESPONSE_LEAGUEBATTLELOG_LEAGUESTAFF
-_LEAGUEGETBATTLELOGRESPONSE_LEAGUEBATTLELOG.containing_type = _LEAGUEGETBATTLELOGRESPONSE;
-_LEAGUEGETBATTLELOGRESPONSE.fields_by_name['logs'].message_type = _LEAGUEGETBATTLELOGRESPONSE_LEAGUEBATTLELOG
+_LEAGUEGETBATTLELOGRESPONSE.fields_by_name['match_log'].message_type = match_pb2._CLUBMATCH
 DESCRIPTOR.message_types_by_name['League'] = _LEAGUE
 DESCRIPTOR.message_types_by_name['LeagueNotify'] = _LEAGUENOTIFY
 DESCRIPTOR.message_types_by_name['LeagueGetStatisticsRequest'] = _LEAGUEGETSTATISTICSREQUEST
@@ -626,18 +524,6 @@ class LeagueGetBattleLogRequest(_message.Message):
 
 class LeagueGetBattleLogResponse(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
-
-  class LeagueBattleLog(_message.Message):
-    __metaclass__ = _reflection.GeneratedProtocolMessageType
-
-    class LeagueStaff(_message.Message):
-      __metaclass__ = _reflection.GeneratedProtocolMessageType
-      DESCRIPTOR = _LEAGUEGETBATTLELOGRESPONSE_LEAGUEBATTLELOG_LEAGUESTAFF
-
-      # @@protoc_insertion_point(class_scope:Dianjing.protocol.LeagueGetBattleLogResponse.LeagueBattleLog.LeagueStaff)
-    DESCRIPTOR = _LEAGUEGETBATTLELOGRESPONSE_LEAGUEBATTLELOG
-
-    # @@protoc_insertion_point(class_scope:Dianjing.protocol.LeagueGetBattleLogResponse.LeagueBattleLog)
   DESCRIPTOR = _LEAGUEGETBATTLELOGRESPONSE
 
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.LeagueGetBattleLogResponse)

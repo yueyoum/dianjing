@@ -18,6 +18,7 @@ from config.unit import ConfigUnit
 from config.building import ConfigBuilding
 from config.package import ConfigPackage
 from config.training import ConfigTraining
+from config.npc import ConfigNPC
 
 CONFIG = None
 
@@ -89,6 +90,12 @@ def load_config():
             ConfigPackage.initialize(data)
         elif attr_name == 'TRAINING':
             ConfigTraining.initialize(data)
+        elif attr_name == 'NPC_CLUB':
+            ConfigNPC.initialize(data)
+        elif attr_name == 'NPC_CLUB_NAME':
+            ConfigNPC.initialize_club_names(data)
+        elif attr_name == 'NPC_MANAGER_NAME':
+            ConfigNPC.initialize_manager_name(data)
 
 
     CONFIG = type('CONFIG', (object,), attr_dict)
