@@ -122,6 +122,11 @@ class ConfigStaff(ConfigBase):
         data = cls.filter(**condition)
         return random.sample(data.keys(), amount)
 
+    @classmethod
+    def random_ids(cls, amount):
+        return random.sample(cls.INSTANCES.keys(), amount)
+
+
 
 
 class ConfigStaffHot(ConfigBase):
