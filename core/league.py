@@ -507,7 +507,7 @@ class LeagueClub(object):
     def __new__(cls, server_id, club):
         # club 是存在mongo中的数据
         if club['club_id']:
-            return Club(server_id, club)
+            return Club(server_id, club['club_id'])
 
         return LeagueNPCClub(club['club_name'], club['manager_name'], club['staffs'])
 
@@ -527,7 +527,6 @@ class League(object):
 
         self.group_id = group_id
         self.order = LeagueGame.find_order()
-
 
 
     def send_notify(self):
@@ -550,7 +549,7 @@ class League(object):
         for k, v in league_group['clubs'].iteritems():
             league_club_id = "{0}:{1}".format(self.group_id, k)
 
-            notify_club = notify.clubs.add()
+            notify_club = notify.league.clubs.add()
             notify_club.league_club_id = league_club_id
             notify_club.club.MergeFrom( LeagueClub(self.server_id, v).make_protomsg() )
 
@@ -561,7 +560,7 @@ class League(object):
         for league_club_id, match_times, win_times, score in rank_info:
             notify_rank = notify.league.ranks.add()
 
-            notify_rank.id = league_club_id
+            notify_rank.league_club_id = league_club_id
             notify_rank.battle_times = match_times
             notify_rank.score = score
 
