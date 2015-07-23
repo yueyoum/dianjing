@@ -383,8 +383,8 @@ class League(object):
 
 
         def _set_msg_pair_club(msg_club, club_internal_id, club_win):
-            msg_club.id = clubs[ v[club_internal_id] ]['league_club_id']
-            msg_club.name = clubs[ v[club_internal_id] ]['name']
+            msg_club.id = clubs[ str(club_internal_id) ]['league_club_id']
+            msg_club.name = clubs[ str(club_internal_id) ]['name']
             msg_club.win = club_win
 
         # pairs
