@@ -79,12 +79,14 @@ class Club(AbstractClub):
             }}
         )
 
-        match_staffs_set_done_signal.send(
-            sender=None,
-            server_id=self.server_id,
-            char_id=self.char_id,
-            match_staffs=match_staffs
-        )
+        if all([i != 0 for i in match_staffs]):
+            # set done
+            match_staffs_set_done_signal.send(
+                sender=None,
+                server_id=self.server_id,
+                char_id=self.char_id,
+                match_staffs=match_staffs
+            )
 
         self.load_data()
         self.send_notify()
