@@ -23,7 +23,7 @@ Description:
 #      +--------------------------+                     +------------------------+
 #      |                          |                     |                        |
 # +--------------+    ...  +--------------+     +--------------+    ...   +--------------+
-# | LeagueBattle |         | LeagueBattle |     | LeagueBattle |          | LeagueBattle |
+# | LeagueEvent  |         | LeagueEvent  |     | LeagueEvent  |          | LeagueEvent  |
 # +--------------+         +--------------+     +--------------+          +--------------+
 # | 一次比赛 #1   |         | 一次比赛 #14   |     | 一次比赛 #1   |          | 一次比赛 #14   |
 # +--------------+         +--------------+     +--------------+          +--------------+
@@ -31,17 +31,17 @@ Description:
 # +--------------+
 # | LeaguePair   |
 # +--------------+          ......
-# | 许多对俱乐部   |
+# |   7对俱乐部   |
 # +--------------+
 #
 #
-# 一场联赛是由很多小组赛组成的
+# 一场联赛是由很多小组赛组成的 Group
 # 小组根据俱乐部等级分组
 # 每个小组有14支俱乐部 （包括NPC）
 # 这14支俱乐部每天要参与两场比赛，每个俱乐部与另外两个比赛，每天都和不同的比
 # 每天 定时开启两次比赛
-# 每天该开始哪场比赛由 LeagueGame 中的 current_order 确定
-# 每周刷新的时候， LeagueGroup, LeagueBattle, LeaguePair, LeagueClubInfo, LeagueNPCInfo 都需要清空
+# 每天该开始哪场比赛由 LeagueGame 中的 find_order 确定
+# 每周刷新的时候直接清空以前的记录，并生成新记录
 
 import uuid
 import random
@@ -56,6 +56,8 @@ from core.mongo import Document
 from config.settings import LEAGUE_START_TIME_ONE, LEAGUE_START_TIME_TWO
 from config.npc import ConfigNPC
 
+from utils.message import MessagePipe
+
 from protomsg.league_pb2 import LeagueNotify
 
 TIME_ZONE = settings.TIME_ZONE
@@ -66,7 +68,7 @@ GROUP_MAX_REAL_CLUBS_AMOUNT = 12
 
 def time_string_to_datetime(day_text, time_text):
     text = "%s %s" % (day_text, time_text)
-    return arrow.get(text).replace(tzinfo=TIME_ZONE)
+    return arrow.get(text).to(TIME_ZONE)
 
 def make_id():
     return str(uuid.uuid4())
@@ -141,6 +143,7 @@ class LeagueGame(object):
 
         # TODO 分组级别
         # TODO 死号
+        # TODO 如何根据server_id来将定时任务分配到多台机器上
 
         mongo = get_mongo_db(server_id)
         chars = mongo.character.find({}, {'_id': 1})
@@ -332,25 +335,69 @@ class League(object):
         group_id = char.get('league_group', "")
 
         if not group_id:
-            pass
+            raise RuntimeError("no group...")
 
         self.group_id = group_id
         self.order = LeagueGame.find_order()
 
 
 
-
-
-
-
-
-
     def send_notify(self):
         league_group = self.mongo.league_group.find_one({'_id': self.group_id})
+        league_events = self.mongo.league_event.find({'_id': {'$in': league_group['events']}})
+
+        events = {e['_id']: e for e in league_events}
+
+        # 将club信息缓存在这里，方便后续查找
+        clubs = {}
 
         notify = LeagueNotify()
-        notify.league.level = 1
+        notify.league.level = league_group['level']
         notify.league.current_order = LeagueGame.find_order()
 
+        # ranks
+        for k, v in league_group['clubs'].iteritems():
+            league_club_id = "{0}:{1}".format(self.group_id, k)
+            if v['club_id']:
+                # real club
+                char = self.mongo.character.find_one({'_id': v['club_id']}, {'club.name': 1})
+                name = char['club']['name']
+            else:
+                name = v['club_name']
 
+            notify_rank = notify.league.ranks.add()
+            notify_rank.id = league_club_id
+            notify_rank.name = name
+            notify_rank.battle_times = v['match_times']
+            notify_rank.score = v['score']
+
+            if v['match_times']:
+                notify_rank.winning_rate = int(v['win_times'] * 1.0 / v['match_times'] * 100)
+            else:
+                notify_rank.winning_rate = 0
+
+            clubs[k] = {
+                'league_club_id': league_club_id,
+                'name': name
+            }
+
+
+        def _set_msg_pair_club(msg_club, club_internal_id, club_win):
+            msg_club.id = clubs[ v[club_internal_id] ]['league_club_id']
+            msg_club.name = clubs[ v[club_internal_id] ]['name']
+            msg_club.win = club_win
+
+        # pairs
+        for event_id in league_group['events']:
+            e = events[event_id]
+
+            for k, v in e['pairs'].iteritems():
+                notify_pair = notify.league.pairs.add()
+                notify_pair.pair_id = "{0}:{1}".format(event_id, k)
+                notify_pair.battle_at = arrow.get(e['start_at']).timestamp
+
+                _set_msg_pair_club(notify_pair.club_one, v['club_one'], v['club_one_win'])
+                _set_msg_pair_club(notify_pair.club_two, v['club_two'], not v['club_one_win'])
+
+        MessagePipe(self.char_id).put(msg=notify)
 
