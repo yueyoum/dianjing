@@ -34,6 +34,6 @@ urlpatterns = [
 
     url(r'^game/staff/training/getreward/$', 'views.staff.training_get_reward'),
     #
-    # url(r'^game/league/statistics/$', apps.league.views.get_statistics),
-    # url(r'^game/league/log/$', apps.league.views.get_battle_log),
+    url(r'^game/league/statistics/$', 'views.league.get_statistics'),
+    url(r'^game/league/log/$', 'views.league.get_log'),
 ]

@@ -266,8 +266,7 @@ class LeagueGame(object):
 
         LeagueGame.start_match(server_id, group_ids=[g.id])
 
-        return g.id
-
+        League(server_id, club_id).send_notify()
 
     @staticmethod
     def start_match(server_id, group_ids=None, order=None):
@@ -510,6 +509,38 @@ class League(object):
         self.group_id = char.get('league_group', "")
 
         self.order = LeagueGame.find_order()
+
+
+    def get_statistics(self, league_club_id):
+        group_id, club_id = league_club_id.split(':')
+
+        league_group = self.mongo.league_group.find_one(
+            {'_id': group_id},
+            {'clubs.{0}'.format(club_id): 1}
+        )
+
+        club_info = league_group['clubs'][club_id]
+
+        # FIXME
+        winning_rate = {
+            't': 10,
+            'z': 10,
+            'p': 10,
+        }
+
+        return [(i, winning_rate) for i in range(10, 16)]
+
+
+    def get_log(self, pair_id):
+        event_id, x = pair_id.split(':')
+
+        league_event = self.mongo.league_group.find_one(
+            {'_id': event_id},
+            {'pairs.{0}.log'.format(x): 1}
+        )
+
+        log = league_event['pairs'][x]['log']
+        return base64.b64decode(log)
 
 
     def send_notify(self):
