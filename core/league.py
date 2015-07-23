@@ -116,6 +116,17 @@ class LeagueNPCClub(AbstractClub):
             self.staffs[s['id']] = LeagueNPCStaff(s)
 
 
+
+class LeagueClub(object):
+    def __new__(cls, server_id, club):
+        # club 是存在mongo中的数据
+        if club['club_id']:
+            return Club(server_id, club['club_id'])
+
+        return LeagueNPCClub(club['club_name'], club['manager_name'], club['staffs'])
+
+
+
 class LeagueMatch(object):
     # 一对俱乐部比赛
     def __init__(self, server_id, club_one, club_two):
@@ -124,19 +135,8 @@ class LeagueMatch(object):
         self.club_two = club_two
 
     def start(self):
-        if self.club_one['club_id']:
-            # real club
-            club_one = Club(self.server_id, self.club_one['club_id'])
-        else:
-            # npc
-            club_one = LeagueNPCClub(self.club_one['club_name'], self.club_one['manager_name'], self.club_one['staffs'])
-
-
-        if self.club_two['club_id']:
-            club_two = Club(self.server_id, self.club_two['club_id'])
-        else:
-            club_two = LeagueNPCClub(self.club_two['club_name'], self.club_two['manager_name'], self.club_two['staffs'])
-
+        club_one = LeagueClub(self.server_id, self.club_one)
+        club_two = LeagueClub(self.server_id, self.club_two)
 
         match = ClubMatch(club_one, club_two)
         msg = match.start()
@@ -257,33 +257,23 @@ class LeagueGame(object):
         g.add(club_id)
         g.finish()
 
-        order = LeagueGame.find_order()
-        passed_events = g.event_docs[:order]
+        LeagueGame.start_match(server_id, group_ids=[g.id])
 
-        class _Info(object):
-            __slots__ = ['match_times', 'win_times', 'score']
-            def __init__(self):
-                self.match_times = 0
-                self.win_times = 0
-                self.score = 0
-
-        clubs = {}
-        # 更新后的 pair. 用来批量更新 league_event. event_id: {}
-        pairs = {}
-
-        for event in passed_events:
-            this_pairs = {}
-            for k, pair in event['pairs'].iteritems():
-                pass
+        return g.id
 
 
     @staticmethod
-    def start_match(server_id):
+    def start_match(server_id, group_ids=None, order=None):
         # 开始一场比赛
-        order = LeagueGame.find_order()
-
         mongo = get_mongo_db(server_id)
-        league_groups = mongo.league_group.find()
+
+        if not order:
+            order = LeagueGame.find_order()
+
+        if group_ids:
+            league_groups = mongo.league_group.find({'_id': {'$in': group_ids}})
+        else:
+            league_groups = mongo.league_group.find()
 
         for g in league_groups:
             event_id = g['events'][order]
@@ -503,15 +493,6 @@ class LeagueGroup(object):
         )
 
 
-class LeagueClub(object):
-    def __new__(cls, server_id, club):
-        # club 是存在mongo中的数据
-        if club['club_id']:
-            return Club(server_id, club['club_id'])
-
-        return LeagueNPCClub(club['club_name'], club['manager_name'], club['staffs'])
-
-
 
 class League(object):
     def __init__(self, server_id, char_id):
@@ -523,7 +504,7 @@ class League(object):
         group_id = char.get('league_group', "")
 
         if not group_id:
-            raise RuntimeError("no group...")
+            group_id = LeagueGame.join_already_started_league(server_id, char_id)
 
         self.group_id = group_id
         self.order = LeagueGame.find_order()
