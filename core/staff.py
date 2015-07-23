@@ -66,11 +66,9 @@ class StaffRecruit(object):
             doc['tp'] = 1
             self.mongo.recruit.insert_one(doc)
 
-
     def get_normal_staff(self):
         data = self.mongo.recruit.find_one({'_id': self.char_id}, {'staffs': 1})
         return data.get('staffs', [])
-
 
     def get_hot_staff(self):
         data = self.mongo.common.find_one({'_id': 'recruit_hot'}, {'value': 1})
@@ -84,7 +82,6 @@ class StaffRecruit(object):
             return staffs
 
         return data['value']
-
 
     def refresh(self, tp):
         if tp == 1:
@@ -115,16 +112,13 @@ class StaffRecruit(object):
 
         self.send_notify(staffs=staffs, tp=tp)
 
-
     def recruit(self, staff_id):
-        # TODO check if exist
-        staffs = self.mongo.character.distinct("staffs.".format(staff_id), {'_id': self.char_id})
-        if staffs:
-            raise GameException(CONFIG.ERRORMSG["BAD_MESSAGE"].id)
+        # TODO check if staff exist
+        if StaffManger(self.server_id, self.char_id).staff_exist(staff_id):
+            raise GameException(CONFIG.ERRORMSG["STAFF_EXIST"].id)
 
         StaffManger(self.server_id, self.char_id).add(staff_id)
         self.send_notify()
-
 
     def send_notify(self, staffs=None, tp=None):
         if not staffs:
@@ -148,12 +142,12 @@ class StaffRecruit(object):
         MessagePipe(self.char_id).put(msg=notify)
 
 
+
 class StaffManger(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
         self.mongo = get_mongo_db(server_id)
-
 
     def add(self, staff_id):
         doc = Document.get('staff')
@@ -165,10 +159,14 @@ class StaffManger(object):
 
         self.send_notify(act=ACT_ADD, staff_ids=[staff_id])
 
-
     def training_start(self, staff_id, training_id):
         # TODO check training_id own ?
+        if not self.training_exist(training_id):
+            raise GameException(CONFIG.ERRORMSG["ERROR_TRAINING_ID"].id)
         # TODO check staff exists ?
+        if not self.staff_exist(staff_id):
+            raise GameException(CONFIG.ERRORMSG["STAFF_NOT_EXIST"].id)
+        # TODO check training num full ?
 
         data = {
             'training_id': training_id,
@@ -184,14 +182,13 @@ class StaffManger(object):
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
 
-
     def training_get_reward(self, staff_id, slot_id):
-        # TODO
+        # TODO check training finish ?
         key = "staffs.{0}.trainings".format(staff_id)
 
         char = self.mongo.character.find_one({'_id': self.char_id}, {key: 1})
         trainings = char['staffs'][str(staff_id)]['trainings']
-        data =  trainings.pop(slot_id)
+        data = trainings.pop(slot_id)
 
         self.mongo.character.update_one(
             {'_id': self.char_id},
@@ -202,7 +199,6 @@ class StaffManger(object):
 
         package_id = ConfigTraining.get(data['training_id']).package
         Resource(self.server_id, self.char_id).add_from_package_id(package_id, staff_id)
-
 
     def update(self, staff_id, **kwargs):
         exp = kwargs.get('exp', 0)
@@ -233,7 +229,6 @@ class StaffManger(object):
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
 
-
     def msg_staff(self, msg, sid, staff):
         msg.id = sid
         # TODO
@@ -261,7 +256,6 @@ class StaffManger(object):
             # TODO
             msg_training_slot.end_at = arrow.utcnow().timestamp + 300
 
-
     def send_notify(self, act=ACT_INIT, staff_ids=None):
         if not staff_ids:
             projection = {'staffs': 1}
@@ -278,3 +272,15 @@ class StaffManger(object):
             self.msg_staff(s, int(k), v)
 
         MessagePipe(self.char_id).put(msg=notify)
+
+    def staff_exist(self, staff_id):
+        staffs = self.mongo.character.distinct("staffs.{0}".format(staff_id), {'_id': self.char_id})
+        if staffs:
+            return True
+        return False
+
+    def training_exist(self, training_id):
+        training = self.mongo.character.distinct("own_training_ids.{0}".format(training_id), {'_id': self.char_id})
+        if training:
+            return True
+        return False
