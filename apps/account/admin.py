@@ -11,11 +11,11 @@ from apps.account.models import (
 class AccountAdmin(admin.ModelAdmin):
     list_display = (
         'id', 'tp', 'Name', 'Password', 'Platform', 'Puid',
-        'register_at', 'last_login', 'last_server_id', 'login_times',
+        'register_at', 'last_login', 'login_times',
     )
 
     readonly_fields = (
-        'tp', 'register_at', 'last_login', 'last_server_id', 'login_times',
+        'tp', 'register_at', 'last_login', 'login_times',
     )
 
     ordering = ('-last_login',)
