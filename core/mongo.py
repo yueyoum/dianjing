@@ -39,6 +39,7 @@ DEFAULT_CHARACTER_DOCUMENT = {
         'tibu_staffs': []
     },
 
+    # 员工列表
     'staffs': {},
     # 挑战赛ID
     'challenge_id': ConfigChallengeMatch.FIRST_ID,

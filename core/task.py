@@ -23,10 +23,14 @@ class TaskManage(object):
             doc['status'] = TaskStatus[0]
             self.mongo.task.insert_one(doc)
 
-    def task_process_mark(self):
+    def task_process_mark(self, id, num):
         pass
 
-    def task_notify(self):
+    def send_notify(self):
+        #msg = self.make_protomsg()
+        #notify = ClubNotify()
+        #notify.club.MergeFrom(msg)
+        #MessagePipe(self.char_id).put(notify)
         pass
 
     def get_reward(self):

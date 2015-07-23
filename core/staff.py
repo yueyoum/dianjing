@@ -8,13 +8,15 @@ Description:
 """
 
 import arrow
+from dianjing.exception import GameException
 
 from core.abstract import AbstractStaff
-from core.db import get_mongo_db
+from core.d13b import get_mongo_db
 from core.mongo import Document
 from core.resource import Resource
 
-from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigTraining
+
+from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigTraining, CONFIG
 
 from utils.message import MessagePipe
 
@@ -32,14 +34,14 @@ class Staff(AbstractStaff):
     def __init__(self, id, data):
         super(Staff, self).__init__()
 
-        self.id = id
-        self.level = data.get('level', 1)
-        self.exp = data.get('exp', 0)
+        self.id = id                                # 员工id
+        self.level = data.get('level', 1)           # 员工等级
+        self.exp = data.get('exp', 0)               # 员工经验
         # TODO 默认status
-        self.status = data.get('status', 3)
+        self.status = data.get('status', 3)         # 状态 1:恶劣 2:低迷 3:一般 4:良好 5:优秀 6:GOD
 
         config_staff = ConfigStaff.get(self.id)
-        self.race = config_staff.race
+        self.race = config_staff.race                # 种族
 
         self.jingong = config_staff.jingong + config_staff.jingong_grow * self.level + data.get('jingong', 0)
         self.qianzhi = config_staff.qianzhi + config_staff.caozuo_grow * self.level + data.get('qianzhi', 0)
@@ -55,7 +57,6 @@ class StaffRecruit(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-
         self.mongo = get_mongo_db(self.server_id)
 
         data = self.mongo.recruit.find_one({'_id': self.char_id}, {'_id': 1})
@@ -116,7 +117,11 @@ class StaffRecruit(object):
 
 
     def recruit(self, staff_id):
-        # TODO check
+        # TODO check if exist
+        staffs = self.mongo.character.distinct("staffs.".format(staff_id), {'_id': self.char_id})
+        if staffs:
+            raise GameException(CONFIG.ERRORMSG["BAD_MESSAGE"].id)
+
         StaffManger(self.server_id, self.char_id).add(staff_id)
         self.send_notify()
 

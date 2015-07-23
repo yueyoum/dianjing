@@ -30,21 +30,21 @@ class Club(AbstractClub):
         club = char['club']
         staffs = char.get('staffs', {})
 
-        self.id = self.char_id
-        self.name = club['name']
-        self.manager_name = char['name']
-        self.flag = club['flag']
-        self.level = club['level']
-        self.renown = club['renown']
-        self.vip = club['vip']
-        self.exp = club['exp']
-        self.gold = club['gold']
+        self.id = self.char_id                  # 玩家ID
+        self.name = club['name']                # 俱乐部名
+        self.manager_name = char['name']        # 角色名
+        self.flag = club['flag']                # 俱乐部旗帜
+        self.level = club['level']              # 俱乐部等级
+        self.renown = club['renown']            # 俱乐部声望
+        self.vip = club['vip']                  # vip等级
+        self.exp = club['exp']                  # 俱乐部经验
+        self.gold = club['gold']                # 游戏币
         # FIXME
-        self.diamond = int(club['diamond'])
-        self.policy = club.get('policy', 1)
+        self.diamond = int(club['diamond'])     # 钻石
+        self.policy = club.get('policy', 1)     # 战术
 
-        self.match_staffs = club.get('match_staffs', [])
-        self.tibu_staffs = club.get('tibu_staffs', [])
+        self.match_staffs = club.get('match_staffs', [])    # 出战员工
+        self.tibu_staffs = club.get('tibu_staffs', [])      # 替补员工
 
         for k, v in staffs.iteritems():
             self.staffs[int(k)] = Staff(int(k), v)
@@ -54,7 +54,7 @@ class Club(AbstractClub):
         # TODO check
         self.mongo.character.update_one(
             {'_id': self.char_id},
-            {'$set': {'club.policy': policy}}
+            {'$set': {'club. ': policy}}
         )
 
         self.policy = policy
@@ -84,7 +84,6 @@ class Club(AbstractClub):
         renown = kwargs.get('renown', 0)
         gold = kwargs.get('gold', 0)
         diamond = kwargs.get('diamond', 0)
-
 
         self.renown += renown
         # TODO level up
