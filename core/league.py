@@ -234,11 +234,16 @@ class LeagueGame(object):
 
         mongo = get_mongo_db(server_id)
         # TODO 判断size 是否要建立索引？
-        chars = mongo.character.find({'club.match_staffs': {'$size': 5}}, {'_id': 1})
+        chars = mongo.character.find({'club.match_staffs': {'$size': 5}}, {'club.match_staffs': 1})
 
         g = LeagueGroup(server_id, 1)
 
         for c in chars:
+            # FIXME 这只是一个 workaround...
+            # 应该在前面避免出现非法 match_staffs 的情况
+            if 0 in c['club']['match_staffs']:
+                continue
+
             try:
                 g.add(c['_id'])
             except LeagueGroup.ClubAddFinish:
