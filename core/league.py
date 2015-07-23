@@ -45,6 +45,7 @@ Description:
 
 import uuid
 import random
+import base64
 
 import arrow
 
@@ -300,10 +301,10 @@ class LeagueGame(object):
                 msg = match.start()
 
                 pairs[k]['club_one_win'] = msg.club_one_win
-                pairs[k]['log'] = msg.SerializeToString()
+                pairs[k]['log'] = base64.b64encode(msg.SerializeToString())
 
             group_clubs_updater = {}
-            for k, v in clubs.iteritems:
+            for k, v in clubs.iteritems():
                 group_clubs_updater["clubs.{0}.match_times".format(k)] = v['match_times']
                 group_clubs_updater["clubs.{0}.win_times".format(k)] = v['win_times']
                 group_clubs_updater["clubs.{0}.score".format(k)] = v['score']
@@ -506,16 +507,15 @@ class League(object):
         self.mongo = get_mongo_db(server_id)
 
         char = self.mongo.character.find_one({'_id': self.char_id}, {'league_group': 1})
-        group_id = char.get('league_group', "")
+        self.group_id = char.get('league_group', "")
 
-        if not group_id:
-            group_id = LeagueGame.join_already_started_league(server_id, char_id)
-
-        self.group_id = group_id
         self.order = LeagueGame.find_order()
 
 
     def send_notify(self):
+        if not self.group_id:
+            return
+
         league_group = self.mongo.league_group.find_one({'_id': self.group_id})
         league_events = self.mongo.league_event.find({'_id': {'$in': league_group['events']}})
 

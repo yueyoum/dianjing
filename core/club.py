@@ -10,6 +10,8 @@ Description:
 from core.abstract import AbstractClub
 from core.db import get_mongo_db
 from core.staff import Staff
+from core.signals import match_staffs_set_done_signal
+
 from utils.message import MessagePipe
 
 from protomsg.club_pb2 import ClubNotify
@@ -60,6 +62,7 @@ class Club(AbstractClub):
         self.policy = policy
         self.send_notify()
 
+
     def set_match_staffs(self, staff_ids):
         # TODO check
         if len(staff_ids) != 10:
@@ -74,6 +77,13 @@ class Club(AbstractClub):
                 'club.match_staffs': match_staffs,
                 'club.tibu_staffs': tibu_staffs
             }}
+        )
+
+        match_staffs_set_done_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            match_staffs=match_staffs
         )
 
         self.load_data()
