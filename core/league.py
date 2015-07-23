@@ -219,9 +219,9 @@ class LeagueGame(object):
     def clean(server_id):
         mongo = get_mongo_db(server_id)
 
+        mongo.character.update_many({}, {"$unset": {"league_group": 1}})
         mongo.league_group.drop()
         mongo.league_event.drop()
-
 
 
     @staticmethod
