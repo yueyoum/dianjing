@@ -233,7 +233,8 @@ class LeagueGame(object):
         # TODO 如何根据server_id来将定时任务分配到多台机器上
 
         mongo = get_mongo_db(server_id)
-        chars = mongo.character.find({}, {'_id': 1})
+        # TODO 判断size 是否要建立索引？
+        chars = mongo.character.find({'club.match_staffs': {'$size': 5}}, {'_id': 1})
 
         g = LeagueGroup(server_id, 1)
 
@@ -320,7 +321,6 @@ class LeagueGame(object):
                 {'_id': event_id},
                 {'$set': event_pairs_updater}
             )
-
 
 
 
