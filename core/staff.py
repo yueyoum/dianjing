@@ -114,6 +114,7 @@ class StaffRecruit(object):
 
         self.send_notify(staffs=staffs, tp=tp)
 
+
     def recruit(self, staff_id):
         # TODO check if staff exist
         if StaffManger(self.server_id, self.char_id).staff_exist(staff_id):
@@ -129,7 +130,9 @@ class StaffRecruit(object):
 
         with Resource(self.char_id, self.server_id).check(needs):
             StaffManger(self.server_id, self.char_id).add(staff_id)
+
         self.send_notify()
+
 
     def send_notify(self, staffs=None, tp=None):
         if not staffs:
@@ -176,10 +179,10 @@ class StaffManger(object):
 
     def training_start(self, staff_id, training_id):
         # TODO check training_id own ?
-        if not self.training_exist(training_id):
-            raise GameException(CONFIG.ERRORMSG["ERROR_TRAINING_ID"].id)
+        if not self._check_training_exist(training_id):
+            raise GameException(CONFIG.ERRORMSG["TRAINING_NOT_EXIST"].id)
         # TODO check staff exists ?
-        if not self.staff_exist(staff_id):
+        if not self._check_staff_exist(staff_id):
             raise GameException(CONFIG.ERRORMSG["STAFF_NOT_EXIST"].id)
         # TODO check training num full ?
 
@@ -204,6 +207,9 @@ class StaffManger(object):
         char = self.mongo.character.find_one({'_id': self.char_id}, {key: 1})
         trainings = char['staffs'][str(staff_id)]['trainings']
         data = trainings.pop(slot_id)
+
+        if not self._check_training_finish(data):
+            raise GameException(CONFIG.ERRORMSG['TRAINING_NOT_FINISHED'].id)
 
         self.mongo.character.update_one(
             {'_id': self.char_id},
@@ -304,14 +310,21 @@ class StaffManger(object):
 
         MessagePipe(self.char_id).put(msg=notify)
 
-    def staff_exist(self, staff_id):
+    def _check_staff_exist(self, staff_id):
         staffs = self.mongo.character.find_one({'_id': self.char_id}, {'staffs.{0}'.format(staff_id)})
         if staffs:
             return True
         return False
 
-    def training_exist(self, training_id):
+    def _check_training_exist(self, training_id):
         training = self.mongo.character.find_one({'_id': self.char_id}, {"own_training_ids.{0}".format(training_id)})
         if training:
+            return True
+        return False
+
+    def _check_training_finish(self, data):
+        config = ConfigTraining.get(data['training_id'])
+        now = arrow.utcnow().timestamp
+        if (now - data['start_at']) > (config.minutes * 60):
             return True
         return False
