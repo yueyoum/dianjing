@@ -58,9 +58,9 @@ class SkillManager(object):
 
         race = ConfigStaff.get(staff_id).race
         race_skills = ConfigSkill.filter(race=race)
-        race_skill_ids = [s.id for s in race_skills]
+        race_skill_ids = race_skills.keys()
 
-        while len(new_skills) < 5:
+        while len(new_skills) < 4:
             # TODO ...
             picked_skill = random.choice(race_skill_ids)
             race_skill_ids.remove(picked_skill)
