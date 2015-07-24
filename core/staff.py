@@ -8,13 +8,16 @@ Description:
 """
 
 import arrow
+from dianjing.exception import GameException
 
 from core.abstract import AbstractStaff
-from core.db import get_mongo_db
+from core.d13b import get_mongo_db
 from core.mongo import Document
 from core.resource import Resource
+from core.club import Club
 
-from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigTraining
+
+from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigTraining, CONFIG
 
 from utils.message import MessagePipe
 
@@ -32,14 +35,14 @@ class Staff(AbstractStaff):
     def __init__(self, id, data):
         super(Staff, self).__init__()
 
-        self.id = id
-        self.level = data.get('level', 1)
-        self.exp = data.get('exp', 0)
+        self.id = id                                # 员工id
+        self.level = data.get('level', 1)           # 员工等级
+        self.exp = data.get('exp', 0)               # 员工经验
         # TODO 默认status
-        self.status = data.get('status', 3)
+        self.status = data.get('status', 3)         # 状态 1:恶劣 2:低迷 3:一般 4:良好 5:优秀 6:GOD
 
         config_staff = ConfigStaff.get(self.id)
-        self.race = config_staff.race
+        self.race = config_staff.race                # 种族
 
         self.jingong = config_staff.jingong + config_staff.jingong_grow * self.level + data.get('jingong', 0)
         self.qianzhi = config_staff.qianzhi + config_staff.caozuo_grow * self.level + data.get('qianzhi', 0)
@@ -55,7 +58,6 @@ class StaffRecruit(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-
         self.mongo = get_mongo_db(self.server_id)
 
         data = self.mongo.recruit.find_one({'_id': self.char_id}, {'_id': 1})
@@ -65,11 +67,9 @@ class StaffRecruit(object):
             doc['tp'] = 1
             self.mongo.recruit.insert_one(doc)
 
-
     def get_normal_staff(self):
         data = self.mongo.recruit.find_one({'_id': self.char_id}, {'staffs': 1})
         return data.get('staffs', [])
-
 
     def get_hot_staff(self):
         data = self.mongo.common.find_one({'_id': 'recruit_hot'}, {'value': 1})
@@ -84,8 +84,8 @@ class StaffRecruit(object):
 
         return data['value']
 
-
     def refresh(self, tp):
+        # 1:热门  2:普通  3:白金  4:钻石
         if tp == 1:
             staffs = self.get_hot_staff()
             self.mongo.recruit.update_one(
@@ -114,12 +114,22 @@ class StaffRecruit(object):
 
         self.send_notify(staffs=staffs, tp=tp)
 
-
     def recruit(self, staff_id):
-        # TODO check
-        StaffManger(self.server_id, self.char_id).add(staff_id)
-        self.send_notify()
+        # TODO check if staff exist
+        if StaffManger(self.server_id, self.char_id).staff_exist(staff_id):
+            raise GameException(CONFIG.ERRORMSG["STAFF_EXIST"].id)
 
+        # TODO check pay enough ?
+        staff = ConfigStaff.get(staff_id)
+        # 1:gold    2:diamond
+        if staff.buy_type == 1:
+            needs = {'gold': -staff.buy_cost}
+        else:
+            needs = {'diamond': -staff.buy_cost}
+
+        with Resource(self.char_id, self.server_id).check(needs):
+            StaffManger(self.server_id, self.char_id).add(staff_id)
+        self.send_notify()
 
     def send_notify(self, staffs=None, tp=None):
         if not staffs:
@@ -143,12 +153,12 @@ class StaffRecruit(object):
         MessagePipe(self.char_id).put(msg=notify)
 
 
+
 class StaffManger(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
         self.mongo = get_mongo_db(server_id)
-
 
     def add(self, staff_id):
         doc = Document.get('staff')
@@ -164,10 +174,14 @@ class StaffManger(object):
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
 
-
     def training_start(self, staff_id, training_id):
         # TODO check training_id own ?
+        if not self.training_exist(training_id):
+            raise GameException(CONFIG.ERRORMSG["ERROR_TRAINING_ID"].id)
         # TODO check staff exists ?
+        if not self.staff_exist(staff_id):
+            raise GameException(CONFIG.ERRORMSG["STAFF_NOT_EXIST"].id)
+        # TODO check training num full ?
 
         data = {
             'training_id': training_id,
@@ -183,14 +197,13 @@ class StaffManger(object):
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
 
-
     def training_get_reward(self, staff_id, slot_id):
-        # TODO
+        # TODO check training finish ?
         key = "staffs.{0}.trainings".format(staff_id)
 
         char = self.mongo.character.find_one({'_id': self.char_id}, {key: 1})
         trainings = char['staffs'][str(staff_id)]['trainings']
-        data =  trainings.pop(slot_id)
+        data = trainings.pop(slot_id)
 
         self.mongo.character.update_one(
             {'_id': self.char_id},
@@ -201,7 +214,6 @@ class StaffManger(object):
 
         package_id = ConfigTraining.get(data['training_id']).package
         Resource(self.server_id, self.char_id).add_from_package_id(package_id, staff_id)
-
 
     def update(self, staff_id, **kwargs):
         exp = kwargs.get('exp', 0)
@@ -231,7 +243,6 @@ class StaffManger(object):
         )
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
-
 
     def msg_staff(self, msg, sid, staff):
         msg.id = sid
@@ -276,7 +287,6 @@ class StaffManger(object):
                 else:
                     i.status = 3
 
-
     def send_notify(self, act=ACT_INIT, staff_ids=None):
         if not staff_ids:
             projection = {'staffs': 1}
@@ -293,3 +303,15 @@ class StaffManger(object):
             self.msg_staff(s, int(k), v)
 
         MessagePipe(self.char_id).put(msg=notify)
+
+    def staff_exist(self, staff_id):
+        staffs = self.mongo.character.find_one({'_id': self.char_id}, {'staffs.{0}'.format(staff_id)})
+        if staffs:
+            return True
+        return False
+
+    def training_exist(self, training_id):
+        training = self.mongo.character.find_one({'_id': self.char_id}, {"own_training_ids.{0}".format(training_id)})
+        if training:
+            return True
+        return False
