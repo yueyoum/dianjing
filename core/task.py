@@ -27,14 +27,11 @@ class TaskManage(object):
         pass
 
     def send_notify(self):
-        #msg = self.make_protomsg()
-        #notify = ClubNotify()
-        #notify.club.MergeFrom(msg)
-        #MessagePipe(self.char_id).put(notify)
         pass
 
     def get_reward(self):
         pass
 
     def update(self):
+        self.mongo.update()
         pass
