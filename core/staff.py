@@ -14,6 +14,7 @@ from core.abstract import AbstractStaff
 from core.d13b import get_mongo_db
 from core.mongo import Document
 from core.resource import Resource
+from core.club import Club
 
 
 from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigTraining, CONFIG
@@ -116,6 +117,25 @@ class StaffRecruit(object):
         # TODO check if staff exist
         if StaffManger(self.server_id, self.char_id).staff_exist(staff_id):
             raise GameException(CONFIG.ERRORMSG["STAFF_EXIST"].id)
+
+        # TODO check pay enough ?
+        club = Club(self.server_id, self.char_id).load_data()
+        staff = ConfigStaff.get(staff_id)
+        # 1:gold    2:diamond
+        if staff.buy_type == 1:
+            if club.gold > staff.buy_cost:
+                try:
+                    pass
+            else:
+                raise GameException(CONFIG.ERRORMSG['GOLD_NOT_ENOUGH'].id)
+
+        elif staff.buy_type == 2:
+            if club.diamond > staff.buy_cost:
+                pass
+            else:
+                raise GameException(CONFIG.ERRORMSG['DIAMOND_NOT_ENOUGH'].id)
+        else:
+            raise GameException(CONFIG.ERRORMSG["ERROR_CONFIG"].id)
 
         StaffManger(self.server_id, self.char_id).add(staff_id)
         self.send_notify()
@@ -274,13 +294,13 @@ class StaffManger(object):
         MessagePipe(self.char_id).put(msg=notify)
 
     def staff_exist(self, staff_id):
-        staffs = self.mongo.character.distinct("staffs.{0}".format(staff_id), {'_id': self.char_id})
+        staffs = self.mongo.character.find_one({'_id': self.char_id}, {'staffs.{0}'.format(staff_id)})
         if staffs:
             return True
         return False
 
     def training_exist(self, training_id):
-        training = self.mongo.character.distinct("own_training_ids.{0}".format(training_id), {'_id': self.char_id})
+        training = self.mongo.character.find_one({'_id': self.char_id}, {"own_training_ids.{0}".format(training_id)})
         if training:
             return True
         return False
