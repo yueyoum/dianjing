@@ -13,6 +13,7 @@ from core.abstract import AbstractStaff
 from core.db import get_mongo_db
 from core.mongo import Document
 from core.resource import Resource
+from core.skill import SkillManager
 
 from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigTraining
 
@@ -163,6 +164,7 @@ class StaffManger(object):
         )
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
+        SkillManager(self.server_id, self.char_id).send_notify(act=ACT_UPDATE, staff_id=staff_id)
 
 
     def training_start(self, staff_id, training_id):
