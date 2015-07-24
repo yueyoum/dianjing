@@ -85,6 +85,7 @@ class StaffRecruit(object):
         return data['value']
 
     def refresh(self, tp):
+        # 1:热门  2:普通  3:白金  4:钻石
         if tp == 1:
             staffs = self.get_hot_staff()
             self.mongo.recruit.update_one(
@@ -119,25 +120,15 @@ class StaffRecruit(object):
             raise GameException(CONFIG.ERRORMSG["STAFF_EXIST"].id)
 
         # TODO check pay enough ?
-        club = Club(self.server_id, self.char_id).load_data()
         staff = ConfigStaff.get(staff_id)
         # 1:gold    2:diamond
         if staff.buy_type == 1:
-            if club.gold > staff.buy_cost:
-                try:
-                    pass
-            else:
-                raise GameException(CONFIG.ERRORMSG['GOLD_NOT_ENOUGH'].id)
-
-        elif staff.buy_type == 2:
-            if club.diamond > staff.buy_cost:
-                pass
-            else:
-                raise GameException(CONFIG.ERRORMSG['DIAMOND_NOT_ENOUGH'].id)
+            needs = {'gold': -staff.buy_cost}
         else:
-            raise GameException(CONFIG.ERRORMSG["ERROR_CONFIG"].id)
+            needs = {'diamond': -staff.buy_cost}
 
-        StaffManger(self.server_id, self.char_id).add(staff_id)
+        with Resource(self.char_id, self.server_id).check(needs):
+            StaffManger(self.server_id, self.char_id).add(staff_id)
         self.send_notify()
 
     def send_notify(self, staffs=None, tp=None):
