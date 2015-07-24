@@ -45,6 +45,11 @@ MESSAGE_TO_ID = {
     "TrainingRemoveNotify": 901,
     "TrainingBuyRequest": 902,
     "TrainingBuyResponse": 903,
+    "SkillNotify": 1000,
+    "SkillLockToggleRequest": 1001,
+    "SkillLockToggleResponse": 1002,
+    "SkillWashRequest": 1003,
+    "SkillWashResponse": 1004,
 }
 
 ID_TO_MESSAGE = {
@@ -93,6 +98,11 @@ ID_TO_MESSAGE = {
     901: "TrainingRemoveNotify",
     902: "TrainingBuyRequest",
     903: "TrainingBuyResponse",
+    1000: "SkillNotify",
+    1001: "SkillLockToggleRequest",
+    1002: "SkillLockToggleResponse",
+    1003: "SkillWashRequest",
+    1004: "SkillWashResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -113,6 +123,8 @@ PATH_TO_REQUEST = {
     "/game/challenge/start/": ["challenge", "ChallengeStartRequest"],
     "/game/building/levelup/": ["building", "BuildingLevelUpRequest"],
     "/game/training/buy/": ["training", "TrainingBuyRequest"],
+    "/game/skill/locktoggle/": ["skill", "SkillLockToggleRequest"],
+    "/game/skill/wash/": ["skill", "SkillWashRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -133,4 +145,6 @@ PATH_TO_RESPONSE = {
     "/game/challenge/start/": ["challenge", "ChallengeStartResponse"],
     "/game/building/levelup/": ["building", "BuildingLevelUpResponse"],
     "/game/training/buy/": ["training", "TrainingBuyResponse"],
+    "/game/skill/locktoggle/": ["skill", "SkillLockToggleResponse"],
+    "/game/skill/wash/": ["skill", "SkillWashResponse"],
 }

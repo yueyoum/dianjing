@@ -36,4 +36,8 @@ urlpatterns = [
     #
     url(r'^game/league/statistics/$', 'views.league.get_statistics'),
     url(r'^game/league/log/$', 'views.league.get_log'),
+
+    url(r'^game/skill/locktoggle/$', 'views.skill.lock_toggle'),
+    url(r'^game/skill/wash/$', 'views.skill.wash'),
 ]
+

@@ -23,6 +23,8 @@ class Staff(object):
         'yunying', 'yunying_grow',
         'yishi', 'yishi_grow',
         'caozuo', 'caozuo_grow',
+        'skill_ids',
+        'qianban_ids',
     ]
 
     def __init__(self):
@@ -52,6 +54,8 @@ class Staff(object):
         self.caozuo = None
         self.caozuo_grow = None
 
+        self.skill_ids = None
+        self.qianban_ids = None
 
 
 

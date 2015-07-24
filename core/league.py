@@ -534,7 +534,7 @@ class League(object):
     def get_log(self, pair_id):
         event_id, x = pair_id.split(':')
 
-        league_event = self.mongo.league_group.find_one(
+        league_event = self.mongo.league_event.find_one(
             {'_id': event_id},
             {'pairs.{0}.log'.format(x): 1}
         )

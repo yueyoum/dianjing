@@ -52,9 +52,16 @@ DEFAULT_STAFF_DOCUMENT = {
     'exp': 0,
     'level': 1,
     'status': 3,
-    'skills': [],
+    'skills': {},
     'trainings': [],
 }
+
+# 嵌入上staff中
+DEFAULT_SKILL_DOCUMENT = {
+    'level': 1,
+    'locked': 0
+}
+
 
 DEFAULT_RECRUIT_DOCUMENT = {
     '_id': null,
@@ -131,6 +138,7 @@ class Document(object):
         "common": DEFAULT_COMMON_DOCUMENT,
         "character": DEFAULT_CHARACTER_DOCUMENT,
         "staff": DEFAULT_STAFF_DOCUMENT,
+        "skill": DEFAULT_SKILL_DOCUMENT,
         "recruit": DEFAULT_RECRUIT_DOCUMENT,
         "building": DEFAULT_BUILDING_DOCUMENT,
 

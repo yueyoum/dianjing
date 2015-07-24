@@ -152,6 +152,10 @@ class StaffManger(object):
 
     def add(self, staff_id):
         doc = Document.get('staff')
+        default_skills = ConfigStaff.get(staff_id).skill_ids
+
+        skills = {str(sid): Document.get('skill') for sid in default_skills}
+        doc['skills'] = skills
 
         self.mongo.character.update_one(
             {'_id': self.char_id},

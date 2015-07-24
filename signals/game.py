@@ -12,6 +12,7 @@ import arrow
 from core.signals import game_start_signal
 from core.club import Club
 from core.staff import StaffRecruit, StaffManger
+from core.skill import SkillManager
 from core.challenge import Challenge
 from core.building import BuildingManager
 from core.training import Training
@@ -43,6 +44,7 @@ def start(server_id, char_id, **kwargs):
     Club(server_id, char_id).send_notify()
     StaffRecruit(server_id, char_id).send_notify()
     StaffManger(server_id, char_id).send_notify()
+    SkillManager(server_id, char_id).send_notify()
 
     Challenge(server_id, char_id).send_notify()
     BuildingManager(server_id, char_id).send_notify()
