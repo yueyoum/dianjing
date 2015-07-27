@@ -8,13 +8,13 @@ Description:
 """
 
 import arrow
+
 from dianjing.exception import GameException
 
 from core.abstract import AbstractStaff
-from core.d13b import get_mongo_db
+from core.db import get_mongo_db
 from core.mongo import Document
 from core.resource import Resource
-from core.club import Club
 from core.skill import SkillManager
 
 from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigTraining, CONFIG
@@ -316,13 +316,13 @@ class StaffManger(object):
         MessagePipe(self.char_id).put(msg=notify)
 
     def check_staff_exist(self, staff_id):
-        staffs = self.mongo.character.find_one({'_id': self.char_id}, {'staffs.{0}'.format(staff_id)})
-        if staffs:
+        staffs = self.mongo.character.find_one({'_id': self.char_id}, {'staffs.{0}'.format(staff_id): 1, '_id': 0})
+        if not staffs['staff_id']:
             return True
         return False
 
     def _check_training_exist(self, training_id):
-        training = self.mongo.character.find_one({'_id': self.char_id}, {"own_training_ids.{0}".format(training_id)})
+        training = self.mongo.character.find_one({'_id': self.char_id}, {"own_training_ids.{0}".format(training_id): 1})
         if training:
             return True
         return False
