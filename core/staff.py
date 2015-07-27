@@ -17,7 +17,7 @@ from core.mongo import Document
 from core.resource import Resource
 from core.skill import SkillManager
 
-from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigTraining, CONFIG
+from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigTraining, ConfigErrorMessage
 
 from utils.message import MessagePipe
 
@@ -118,11 +118,11 @@ class StaffRecruit(object):
     def recruit(self, staff_id):
         # TODO check have staff exist
         if StaffManger(self.server_id, self.char_id).check_staff_exist(staff_id):
-            raise GameException(CONFIG.ERRORMSG["STAFF_ALREADY_HAVE"].id)
+            raise GameException(ConfigErrorMessage.get_error_id('STAFF_ALREADY_HAVE'))
 
         # TODO check staff exist
         if not ConfigStaff.get(staff_id):
-            raise GameException(CONFIG.ERRORMSG["ERROR_STAFF_ID"].id)
+            raise GameException(ConfigErrorMessage.get_error_id('ERROR_STAFF_ID'))
 
         # TODO check pay enough
         staff = ConfigStaff.get(staff_id)
@@ -185,10 +185,10 @@ class StaffManger(object):
     def training_start(self, staff_id, training_id):
         # TODO check training_id own ?
         if not self._check_training_exist(training_id):
-            raise GameException(CONFIG.ERRORMSG["TRAINING_NOT_EXIST"].id)
+            raise GameException(ConfigErrorMessage.get_error_id('TRAINING_NOT_EXIST'))
         # TODO check staff exists ?
         if not self.check_staff_exist(staff_id):
-            raise GameException(CONFIG.ERRORMSG["STAFF_NOT_EXIST"].id)
+            raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
         # TODO check training num full ?
 
         data = {
@@ -214,7 +214,7 @@ class StaffManger(object):
 
         # TODO check training finish
         if not self._check_training_finish(data):
-            raise GameException(CONFIG.ERRORMSG['TRAINING_NOT_FINISHED'].id)
+            raise GameException(ConfigErrorMessage.get_error_id('TRAINING_NOT_FINISHED'))
 
         self.mongo.character.update_one(
             {'_id': self.char_id},
@@ -317,13 +317,13 @@ class StaffManger(object):
 
     def check_staff_exist(self, staff_id):
         staffs = self.mongo.character.find_one({'_id': self.char_id}, {'staffs.{0}'.format(staff_id): 1, '_id': 0})
-        if not staffs['staff_id']:
+        if staffs['staff_id']:
             return True
         return False
 
     def _check_training_exist(self, training_id):
-        training = self.mongo.character.find_one({'_id': self.char_id}, {"own_training_ids.{0}".format(training_id): 1})
-        if training:
+        training = self.mongo.character.find_one({'_id': self.char_id}, {"own_trainings.{0}".format(training_id): 1})
+        if training['own_trainings']:
             return True
         return False
 

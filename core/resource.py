@@ -11,7 +11,7 @@ from core.base import STAFF_ATTRS
 from core.package import Package
 from core.club import Club
 from dianjing.exception import GameException
-from config import CONFIG
+from config import ConfigErrorMessage
 
 
 class Resource(object):
@@ -103,9 +103,9 @@ class Resource(object):
         club = Club(self.server_id, self.char_id)
 
         if abs(gold) > club.gold and gold < 0:
-            raise GameException(CONFIG.ERRORMSG['NOT_ENOUGH_GOLD'])
+            raise GameException(ConfigErrorMessage.get_error_id('NOT_ENOUGH_GOLD'))
         elif abs(diamond) > club.diamond and diamond < 0:
-            raise GameException(CONFIG.ERRORMSG['NOT_ENOUGH_DIAMOND'])
+            raise GameException(ConfigErrorMessage.get_error_id('NOT_ENOUGH_DIAMOND'))
 
         yield
 

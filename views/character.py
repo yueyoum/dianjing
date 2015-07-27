@@ -19,7 +19,7 @@ from core.signals import char_created_signal
 from protomsg.character_pb2 import CreateCharacterResponse, CharacterNotify
 from protomsg.common_pb2 import OPT_CREATE_CLUB
 
-from config import CONFIG
+from config import ConfigErrorMessage
 
 
 
@@ -30,9 +30,9 @@ def create(request):
     name = req.name
 
     if not name:
-        raise GameException( CONFIG.ERRORMSG["BAD_MESSAGE"].id )
+        raise GameException( ConfigErrorMessage.get_error_id('BAD_MESSAGE') )
     if len(name) > CHAR_NAME_MAX_LENGTH:
-        raise GameException( CONFIG.ERRORMSG["CHAR_NAME_TOO_LONG"].id )
+        raise GameException( ConfigErrorMessage.get_error_id('CHAR_NAME_TOO_LONG') )
 
     session = request._game_session
 
@@ -47,8 +47,8 @@ def create(request):
         )
     except IntegrityError as e:
         if 'account_id' in e.args[1]:
-            raise GameException( CONFIG.ERRORMSG["CHAR_ALREAD_CREATED"].id )
-        raise GameException( CONFIG.ERRORMSG["CHAR_NAME_TAKEN"].id )
+            raise GameException( ConfigErrorMessage.get_error_id('CHAR_ALREAD_CREATED') )
+        raise GameException( ConfigErrorMessage.get_error_id('CHAR_NAME_TAKEN') )
 
     char_created_signal.send(
         sender=None,

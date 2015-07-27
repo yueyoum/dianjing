@@ -15,7 +15,7 @@ from dianjing.exception import GameException
 from apps.character.models import Character
 
 from utils.http import ProtobufResponse
-from config import CONFIG
+from config import ConfigErrorMessage
 
 from core.signals import game_start_signal
 from core.db import get_mongo_db
@@ -40,7 +40,7 @@ def create(request):
 
     char = Character.objects.get(id=char_id)
     if char.club_name:
-        raise GameException( CONFIG.ERRORMSG["CLUB_ALREADY_CREATED"].id )
+        raise GameException( ConfigErrorMessage.get_error_id('CLUB_ALREADY_CREATED') )
 
 
     with transaction.atomic():
@@ -48,7 +48,7 @@ def create(request):
             char.club_name = name
             char.save()
         except IntegrityError:
-            raise GameException( CONFIG.ERRORMSG["CLUB_NAME_TAKEN"].id )
+            raise GameException( ConfigErrorMessage.get_error_id('CLUB_NAME_TAKEN') )
 
         doc = Document.get("character")
         doc['_id'] = char_id
