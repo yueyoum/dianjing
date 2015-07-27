@@ -12,6 +12,7 @@ import json
 import zipfile
 from django.conf import settings
 
+from config.errormsg import ConfigErrorMessage
 from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit
 from config.challenge import ConfigChallengeType, ConfigChallengeMatch
 from config.unit import ConfigUnit
@@ -49,31 +50,20 @@ def load_config():
         attr_name = name.upper()
         attr_value = {}
 
-        if attr_name == 'ERRORMSG':
-            for d in data:
-                obj = _Config()
-                obj.id = d['pk']
-                for k, v in d['fields'].iteritems():
-                    setattr(obj, k, v)
+        for d in data:
+            obj = _Config()
+            obj.id = d['pk']
+            for k, v in d['fields'].iteritems():
+                setattr(obj, k, v)
 
-                attr_value[d['fields']['error_index']] = obj
-
-        if attr_name == "NPC_CLUB_NAME" or attr_name == "NPC_MANAGER_NAME":
-            attr_value = [d['fields']['name'] for d in data]
-
-        else:
-            for d in data:
-                obj = _Config()
-                obj.id = d['pk']
-                for k, v in d['fields'].iteritems():
-                    setattr(obj, k, v)
-
-                attr_value[obj.id] = obj
+            attr_value[obj.id] = obj
 
         attr_dict[attr_name] = attr_value
 
         # ===
-        if attr_name == 'STAFF':
+        if attr_name == 'ERRORMSG':
+            ConfigErrorMessage.initialize(data)
+        elif attr_name == 'STAFF':
             ConfigStaff.initialize(data)
         elif attr_name == 'STAFF_HOT':
             ConfigStaffHot.initialize(data)
