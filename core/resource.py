@@ -80,10 +80,10 @@ class Resource(object):
         return data
 
 
-    def _pre_call_list(self, **kwargs):
+    def _pre_call_list(self, data):
         call_list = []
-        if kwargs['gold'] or kwargs['diamond']:
-            call_list.append(self._club_check(self.char_id, self.server_id, kwargs['gold'], kwargs['diamond']))
+        if data['gold'] or data['diamond']:
+            call_list.append(self._club_check(self.char_id, self.server_id, data['gold'], data['diamond']))
 
         for cb in call_list:
             cb.next()
@@ -101,13 +101,14 @@ class Resource(object):
 
     def _club_check(self, gold=0, diamond=0):
         club = Club(self.server_id, self.char_id)
-        if gold > club['gold']:
+
+        if abs(gold) > club.gold and gold < 0:
             raise GameException(CONFIG.ERRORMSG['NOT_ENOUGH_GOLD'])
-        elif diamond > club['diamond']:
+        elif abs(diamond) > club.diamond and diamond < 0:
             raise GameException(CONFIG.ERRORMSG['NOT_ENOUGH_DIAMOND'])
 
         yield
 
-        data = {'gold': gold, 'diamond':diamond}
+        data = {'gold': gold, 'diamond': diamond}
         club.update(data)
         club.send_notify()

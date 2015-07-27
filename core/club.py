@@ -7,14 +7,21 @@ Description:
 
 """
 
+from config.unit import ConfigUnit
+from config import CONFIG
+
 from core.abstract import AbstractClub
 from core.db import get_mongo_db
 from core.staff import Staff
 from core.signals import match_staffs_set_done_signal
+from core.staff import StaffManger
+
+from dianjing.exception import GameException
 
 from utils.message import MessagePipe
 
 from protomsg.club_pb2 import ClubNotify
+
 
 class Club(AbstractClub):
     def __init__(self, server_id, char_id):
@@ -54,6 +61,9 @@ class Club(AbstractClub):
 
     def set_policy(self, policy):
         # TODO check
+        if not ConfigUnit.get(policy):
+            raise GameException(CONFIG.ERROEMSG['ERROR_POLICY_ID'].id)
+
         self.mongo.character.update_one(
             {'_id': self.char_id},
             {'$set': {'club. ': policy}}
@@ -65,6 +75,10 @@ class Club(AbstractClub):
 
     def set_match_staffs(self, staff_ids):
         # TODO check
+        for staff_id in staff_ids:
+            if not StaffManger(self.server_id, self.char_id).check_staff_exist(staff_id):
+                raise GameException(CONFIG.ERROEMSG['STAFF_NOT_EXIST'].id)
+        
         if len(staff_ids) != 10:
             raise RuntimeError("staff_ids is not 10 elements")
 
