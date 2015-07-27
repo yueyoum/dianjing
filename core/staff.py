@@ -180,7 +180,7 @@ class StaffManger(object):
         )
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
-        SkillManager(self.server_id, self.char_id).send_notify(act=ACT_UPDATE, staff_id=staff_id)
+        SkillManager(self.server_id, self.char_id).send_notify(act=ACT_INIT, staff_id=staff_id)
 
     def training_start(self, staff_id, training_id):
         # TODO check training_id own ?

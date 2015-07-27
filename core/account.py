@@ -12,31 +12,31 @@ from django.db import transaction, IntegrityError
 
 from dianjing.exception import GameException
 from apps.account.models import AccountRegular
-from config import CONFIG
+from config import ConfigErrorMessage
 
 def register(name, password):
     if not name or not password:
-        raise GameException( CONFIG.ERRORMSG["BAD_MESSAGE"].id )
+        raise GameException( ConfigErrorMessage.get_error_id("BAD_MESSAGE") )
     try:
         with transaction.atomic():
             account = AccountRegular.objects.create(name=name, passwd=password)
     except IntegrityError:
-        raise GameException( CONFIG.ERRORMSG["ACCOUNT_NAME_TAKEN"].id )
+        raise GameException( ConfigErrorMessage.get_error_id("ACCOUNT_NAME_TAKEN") )
 
     return account
 
 
 def regular_login(name, password):
     if not name or not password:
-        raise GameException( CONFIG.ERRORMSG["BAD_MESSAGE"].id )
+        raise GameException( ConfigErrorMessage.get_error_id("BAD_MESSAGE") )
 
     try:
         account = AccountRegular.objects.select_related('account').get(name=name)
     except AccountRegular.DoesNotExist:
-        raise GameException( CONFIG.ERRORMSG["ACCOUNT_CANNOT_FIND_NAME"].id )
+        raise GameException( ConfigErrorMessage.get_error_id("ACCOUNT_CANNOT_FIND_NAME") )
 
     if account.passwd != password:
-        raise GameException( CONFIG.ERRORMSG["ACCOUNT_WRONG_PASSWORD"].id )
+        raise GameException( ConfigErrorMessage.get_error_id("ACCOUNT_WRONG_PASSWORD") )
 
     return account
 
