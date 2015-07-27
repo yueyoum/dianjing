@@ -19,9 +19,9 @@ class Task(object):
 class ConfigTask(ConfigBase):
     # 类实体
     EntityClass = Task
-    # 接口
+
     INSTANCES = {}
-    # 文件
+    # 过滤缓存
     FILTER_CACHE = {}
 
     @classmethod
