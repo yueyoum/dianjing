@@ -63,3 +63,9 @@ class ConfigBase(object):
             if getattr(obj, k) != v:
                 return False
             return True
+
+    @classmethod
+    def check(cls, id):
+        if id in cls.INSTANCES.keys():
+            return True
+        return False

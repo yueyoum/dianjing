@@ -7,7 +7,7 @@ Description:
 
 """
 
-from config.unit import ConfigUnit
+from config.unit import ConfigPolicy
 from config import ConfigErrorMessage
 
 from core.abstract import AbstractClub
@@ -61,12 +61,12 @@ class Club(AbstractClub):
 
     def set_policy(self, policy):
         # TODO check
-        if not ConfigUnit.get(policy):
-            raise GameException(ConfigErrorMessage.get_error_id('ERROR_POLICY_ID'))
+        if not ConfigPolicy.check(policy):
+            raise GameException(ConfigErrorMessage.get_error_id('POLICY_NOT_EXIST'))
 
         self.mongo.character.update_one(
             {'_id': self.char_id},
-            {'$set': {'club. ': policy}}
+            {'$set': {'club.policy': policy}}
         )
 
         self.policy = policy

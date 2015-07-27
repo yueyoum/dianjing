@@ -130,6 +130,14 @@ class ConfigStaff(ConfigBase):
     def random_ids(cls, amount):
         return random.sample(cls.INSTANCES.keys(), amount)
 
+    @classmethod
+    def check(cls, id):
+        """
+
+        :param id:
+        :return:
+        """
+        return super(ConfigStaff, cls).check(id)
 
 
 

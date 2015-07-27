@@ -116,13 +116,13 @@ class StaffRecruit(object):
 
 
     def recruit(self, staff_id):
-        # TODO check have staff exist
+        # TODO check staff have
         if StaffManger(self.server_id, self.char_id).check_staff_exist(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id('STAFF_ALREADY_HAVE'))
 
         # TODO check staff exist
-        if not ConfigStaff.get(staff_id):
-            raise GameException(ConfigErrorMessage.get_error_id('ERROR_STAFF_ID'))
+        if not ConfigStaff.check(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
 
         # TODO check pay enough
         staff = ConfigStaff.get(staff_id)
