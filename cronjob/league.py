@@ -7,29 +7,30 @@ Description:
 
 """
 
-
-import random
+import arrow
 import uwsgidecorators
 
-from cronjob.log import Logger
+from django.conf import settings
 
-from apps.league.core import GameEntry
-from apps.league.models import LeagueGame, LeagueBattle, LeaguePair, LeagueClubInfo, LeagueNPCInfo
+from cronjob.log import Logger
 from apps.server.models import Server
 
+from core.league import LeagueGame
 
+from config.settings import LEAGUE_START_TIME_ONE, LEAGUE_START_TIME_TWO
+
+time_one = arrow.get(LEAGUE_START_TIME_ONE, "HH:mm:ssZ").to(settings.TIME_ZONE)
+time_two = arrow.get(LEAGUE_START_TIME_TWO, "HH:mm:ssZ").to(settings.TIME_ZONE)
 
 # 每周创建新的联赛
-# @uwsgidecorators.cron(0, 0, -1, -1, 1)
+@uwsgidecorators.cron(0, 0, -1, -1, 1, target="mule")
 def league_new(*args):
     logger = Logger("league_new")
 
     servers = Server.opened_servers()
     for s in servers:
         logger.write("server {0} start".format(s.id))
-
-        GameEntry.new(s.id)
-
+        LeagueGame.new(s.id)
         logger.write("server {0} finish".format(s.id))
 
     logger.write("done")
@@ -37,48 +38,18 @@ def league_new(*args):
 
 
 # 每天定时开启的比赛
-def league_battle():
+def league_match(*args):
     logger = Logger("league_battle")
 
-    current_order = GameEntry.current_order()
-    battles = LeagueBattle.objects.filter(league_order=current_order)
+    servers = Server.opened_servers()
+    for s in servers:
+        logger.write("server {0} start".format(s.id))
+        LeagueGame.start_match(s.id)
+        logger.write("server {0} finish".format(s.id))
 
-    logger.write("League Battle Start. Order: {0}, Battles: {1}".format(current_order, battles.count()))
-
-
-    def club_info_saver(Model, info_id, win):
-        club = Model.objects.get(id=info_id)
-        club.battle_times += 1
-        if win:
-            club.win_times += 1
-            # FIXME score
-            club.score += 10
-
-        club.save()
-
-
-    for b in battles:
-        pairs = LeaguePair.objects.filter(league_battle=b.id)
-        for pair in pairs:
-            # TODO real battle
-            win_one = random.choice([True, False])
-
-            pair.win_one = win_one
-            pair.save()
-
-            if pair.club_one_type == 1:
-                club_info_saver(LeagueClubInfo, pair.club_one, pair.win_one)
-            else:
-                club_info_saver(LeagueNPCInfo, pair.club_one, pair.win_one)
-
-            if pair.club_two_type == 1:
-                club_info_saver(LeagueClubInfo, pair.club_two, not pair.win_one)
-            else:
-                club_info_saver(LeagueNPCInfo, pair.club_two, not pair.win_one)
-
-    game = LeagueGame.objects.order_by('-id')[0:1][0]
-    game.current_order += 1
-    game.save()
-
-    logger.write("League Battle Finish.")
+    logger.write("done")
     logger.close()
+
+
+uwsgidecorators.cron(time_one.minute, time_one.hour, -1, -1, -1, target="mule")
+uwsgidecorators.cron(time_two.minute, time_two.hour, -1, -1, -1, target="mule")
