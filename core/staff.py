@@ -8,13 +8,13 @@ Description:
 """
 
 import arrow
+
 from dianjing.exception import GameException
 
 from core.abstract import AbstractStaff
-from core.d13b import get_mongo_db
+from core.db import get_mongo_db
 from core.mongo import Document
 from core.resource import Resource
-from core.club import Club
 from core.skill import SkillManager
 
 from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigTraining, CONFIG
