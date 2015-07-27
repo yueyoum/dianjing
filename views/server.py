@@ -16,7 +16,7 @@ from protomsg.common_pb2 import OPT_OK, OPT_CREATE_CHAR, OPT_CREATE_CLUB
 from apps.server.models import Server
 from apps.character.models import Character
 
-from config import CONFIG
+from config import ConfigErrorMessage
 
 from core.signals import game_start_signal
 
@@ -42,7 +42,7 @@ def start_game(request):
     server_id = req.server_id
 
     if not Server.objects.filter(id=server_id).exists():
-        raise GameException( CONFIG.ERRORMSG["BAD_MESSAGE"].id )
+        raise GameException( ConfigErrorMessage.get_error_id("BAD_MESSAGE") )
 
     response = StartGameResponse()
     response.ret = 0
