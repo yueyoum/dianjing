@@ -51,5 +51,5 @@ def league_match(*args):
     logger.close()
 
 
-uwsgidecorators.cron(time_one.minute, time_one.hour, -1, -1, -1, target="mule")
-uwsgidecorators.cron(time_two.minute, time_two.hour, -1, -1, -1, target="mule")
+uwsgidecorators.cron(time_one.minute, time_one.hour, -1, -1, -1, target="mule")(league_match)
+uwsgidecorators.cron(time_two.minute, time_two.hour, -1, -1, -1, target="mule")(league_match)
