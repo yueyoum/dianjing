@@ -14,8 +14,6 @@ from core.abstract import AbstractStaff
 from core.d13b import get_mongo_db
 from core.mongo import Document
 from core.resource import Resource
-from core.club import Club
-
 
 from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigTraining, CONFIG
 
@@ -116,11 +114,15 @@ class StaffRecruit(object):
 
 
     def recruit(self, staff_id):
-        # TODO check if staff exist
-        if StaffManger(self.server_id, self.char_id).staff_exist(staff_id):
-            raise GameException(CONFIG.ERRORMSG["STAFF_EXIST"].id)
+        # TODO check have staff exist
+        if StaffManger(self.server_id, self.char_id).check_staff_exist(staff_id):
+            raise GameException(CONFIG.ERRORMSG["STAFF_ALREADY_HAVE"].id)
 
-        # TODO check pay enough ?
+        # TODO check staff exist
+        if not ConfigStaff.get(staff_id):
+            raise GameException(CONFIG.ERRORMSG["ERROR_STAFF_ID"].id)
+
+        # TODO check pay enough
         staff = ConfigStaff.get(staff_id)
         # 1:gold    2:diamond
         if staff.buy_type == 1:
@@ -182,7 +184,7 @@ class StaffManger(object):
         if not self._check_training_exist(training_id):
             raise GameException(CONFIG.ERRORMSG["TRAINING_NOT_EXIST"].id)
         # TODO check staff exists ?
-        if not self._check_staff_exist(staff_id):
+        if not self.check_staff_exist(staff_id):
             raise GameException(CONFIG.ERRORMSG["STAFF_NOT_EXIST"].id)
         # TODO check training num full ?
 
@@ -201,13 +203,13 @@ class StaffManger(object):
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
 
     def training_get_reward(self, staff_id, slot_id):
-        # TODO check training finish ?
         key = "staffs.{0}.trainings".format(staff_id)
 
         char = self.mongo.character.find_one({'_id': self.char_id}, {key: 1})
         trainings = char['staffs'][str(staff_id)]['trainings']
         data = trainings.pop(slot_id)
 
+        # TODO check training finish
         if not self._check_training_finish(data):
             raise GameException(CONFIG.ERRORMSG['TRAINING_NOT_FINISHED'].id)
 
@@ -310,7 +312,7 @@ class StaffManger(object):
 
         MessagePipe(self.char_id).put(msg=notify)
 
-    def _check_staff_exist(self, staff_id):
+    def check_staff_exist(self, staff_id):
         staffs = self.mongo.character.find_one({'_id': self.char_id}, {'staffs.{0}'.format(staff_id)})
         if staffs:
             return True
