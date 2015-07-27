@@ -7,13 +7,15 @@ Description:
 
 """
 
+from dianjing.exception import GameException
+
 from core.abstract import AbstractClub, AbstractStaff
 from core.db import get_mongo_db
 from core.club import Club
 from core.match import ClubMatch
 
 from utils.message import MessagePipe
-from config import ConfigChallengeMatch, ConfigStaff
+from config import ConfigChallengeMatch, ConfigStaff, ConfigErrorMessage
 
 from protomsg.challenge_pb2 import ChallengeNotify
 
@@ -94,6 +96,10 @@ class Challenge(object):
             raise RuntimeError("all finished!")
 
         club_one = Club(self.server_id, self.char_id)
+
+        if not club_one.match_staffs_ready():
+            raise GameException( ConfigErrorMessage.get_error_id("MATCH_STAFF_NOT_READY") )
+
         club_two = ChallengeNPCClub(challenge_id)
         match = ClubMatch(club_one, club_two)
 

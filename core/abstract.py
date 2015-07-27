@@ -53,6 +53,10 @@ class AbstractClub(object):
         self.policy = 0
 
 
+    def match_staffs_ready(self):
+        return len(self.match_staffs) == 5
+
+
     def get_max_renown(self):
         return 0
 
