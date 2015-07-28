@@ -13,6 +13,7 @@ from core.staff import Staff
 from core.signals import match_staffs_set_done_signal
 
 from utils.message import MessagePipe
+from config import ConfigClubLevel
 
 from protomsg.club_pb2 import ClubNotify
 
@@ -97,16 +98,23 @@ class Club(AbstractClub):
         gold = kwargs.get('gold', 0)
         diamond = kwargs.get('diamond', 0)
 
-
-        self.renown += renown
-        # TODO level up
         self.gold += gold
         self.diamond += diamond
+
+        next_level_id = ConfigClubLevel.get(self.level).next_level_id
+        if next_level_id:
+            self.renown += renown
+
+            need_renown = ConfigClubLevel.get(self.level).renown
+            if self.renown >= need_renown:
+                self.renown -= need_renown
+                self.level = next_level_id
 
 
         self.mongo.character.update_one(
             {'_id': self.char_id},
             {'$set': {
+                'club.level': self.level,
                 'club.renown': self.renown,
                 'club.gold': self.gold,
                 'club.diamond': self.diamond,

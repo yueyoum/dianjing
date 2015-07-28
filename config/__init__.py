@@ -21,6 +21,7 @@ from config.package import ConfigPackage
 from config.training import ConfigTraining
 from config.npc import ConfigNPC
 from config.skill import ConfigSkill
+from config.club import ConfigClubLevel
 
 CONFIG = None
 
@@ -89,6 +90,8 @@ def load_config():
             ConfigNPC.initialize_manager_name(data)
         elif attr_name == 'SKILL':
             ConfigSkill.initialize(data)
+        elif attr_name == 'CLUB_LEVEL':
+            ConfigClubLevel.initialize(data)
 
 
     CONFIG = type('CONFIG', (object,), attr_dict)
