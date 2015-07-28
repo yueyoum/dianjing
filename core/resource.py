@@ -27,6 +27,7 @@ class Resource(object):
 
 
     def add_from_package_id(self, package_id, staff_id=None):
+
         p = Package.generate(package_id)
         self.add_package(p, staff_id=staff_id)
 

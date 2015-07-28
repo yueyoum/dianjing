@@ -32,4 +32,12 @@ class ConfigTask(ConfigBase):
         """
         return super(ConfigTask, cls).get(id)
 
+    @classmethod
+    def check(cls, id):
+        """
+
+        :param id:
+        :return:
+        """
+        return super(ConfigTask, cls).check(id)
 
