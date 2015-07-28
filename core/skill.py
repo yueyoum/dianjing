@@ -28,6 +28,18 @@ class SkillManager(object):
         self.mongo = get_mongo_db(server_id)
 
 
+    def add_level(self, staff_id, skill_id, level_addition):
+        # TODO check
+
+        key = "staffs.{0}.skills.{1}.level".format(staff_id, skill_id, level_addition)
+        self.mongo.character.update_one(
+            {'_id': self.char_id},
+            {'$inc': {key: level_addition}}
+        )
+
+        self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
+
+
     def lock_toggle(self, staff_id, skill_id):
         # TODO check staff, skill exists?
 

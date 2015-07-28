@@ -201,8 +201,12 @@ class StaffManger(object):
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
 
-        package_id = ConfigTraining.get(data['training_id']).package
-        Resource(self.server_id, self.char_id).add_from_package_id(package_id, staff_id)
+        config_training = ConfigTraining.get(data['training_id'])
+        if config_training.tp == 3:
+            # 技能
+            SkillManager(self.server_id, self.char_id).add_level(staff_id, config_training.skill_id, config_training.skill_level)
+        else:
+            Resource(self.server_id, self.char_id).add_from_package_id(config_training.package, staff_id)
 
 
     def update(self, staff_id, **kwargs):
