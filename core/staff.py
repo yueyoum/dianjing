@@ -15,7 +15,7 @@ from core.mongo import Document
 from core.resource import Resource
 from core.skill import SkillManager
 
-from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigTraining
+from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigTraining, ConfigStaffLevel
 
 from utils.message import MessagePipe
 
@@ -216,11 +216,27 @@ class StaffManger(object):
         yishi = kwargs.get('yishi', 0)
         caozuo = kwargs.get('caozuo', 0)
 
-        # TODO level up
+        char = self.mongo.character.find_one({'_id': self.char_id}, {'staffs.{0}'.format(staff_id): 1})
+        this_staff = char['staffs'][str(staff_id)]
+
+        next_level = ConfigStaffLevel.get(this_staff['level']).next_level
+        if next_level:
+            new_exp = this_staff['exp'] + exp
+            level_up_need_exp = ConfigStaffLevel.get(this_staff['level']).exp[ConfigStaff.get(staff_id).quality]
+            if new_exp >= level_up_need_exp:
+                new_exp -= level_up_need_exp
+                new_level = next_level
+            else:
+                new_level = this_staff['level']
+        else:
+            new_exp = this_staff['exp']
+            new_level = this_staff['level']
+
         self.mongo.character.update_one(
             {'_id': self.char_id},
             {'$inc': {
-                'staffs.{0}.exp'.format(staff_id): exp,
+                'staffs.{0}.exp'.format(staff_id): new_exp,
+                'staffs.{0}.level'.format(staff_id): new_level,
                 'staffs.{0}.jingong'.format(staff_id): jingong,
                 'staffs.{0}.qianzhi'.format(staff_id): qianzhi,
                 'staffs.{0}.xintai'.format(staff_id): xintai,
@@ -235,24 +251,25 @@ class StaffManger(object):
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
 
 
-    def msg_staff(self, msg, sid, staff):
-        msg.id = sid
-        # TODO
-        msg.level = 1
-        msg.cur_exp = 0
-        msg.max_exp = 100
-        msg.status = 1
+    def msg_staff(self, msg, sid, staff_data):
+        staff = Staff(sid, staff_data)
 
-        msg.jingong = 10
-        msg.qianzhi = 10
-        msg.xintai = 10
-        msg.baobing = 10
-        msg.fangshou = 10
-        msg.yunying = 10
-        msg.yishi = 10
-        msg.caozuo = 10
+        msg.id = staff.id
+        msg.level = staff.level
+        msg.cur_exp = staff.exp
+        msg.max_exp = ConfigStaffLevel.get(staff.level).exp
+        msg.status = staff.status
 
-        training = staff.get('trainings', [])
+        msg.jingong = staff.jingong
+        msg.qianzhi = staff.qianzhi
+        msg.xintai = staff.xintai
+        msg.baobing = staff.baobing
+        msg.fangshou = staff.fangshou
+        msg.yunying = staff.yunying
+        msg.yishi = staff.yishi
+        msg.caozuo = staff.caozuo
+
+        training = staff_data.get('trainings', [])
         for i in range(5):
             msg_training_slot = msg.training_slots.add()
             msg_training_slot.slot_id = i

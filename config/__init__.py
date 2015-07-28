@@ -13,7 +13,7 @@ import zipfile
 from django.conf import settings
 
 from config.errormsg import ConfigErrorMessage
-from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit
+from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigStaffLevel
 from config.challenge import ConfigChallengeType, ConfigChallengeMatch
 from config.unit import ConfigUnit
 from config.building import ConfigBuilding
@@ -70,6 +70,8 @@ def load_config():
             ConfigStaffHot.initialize(data)
         elif attr_name == 'STAFF_RECRUIT':
             ConfigStaffRecruit.initialize(data)
+        elif attr_name == 'STAFF_LEVEL':
+            ConfigStaffLevel.initialize(data)
         elif attr_name == 'CHALLENGE_TYPE':
             ConfigChallengeType.initialize(data)
         elif attr_name == 'CHALLENGE_MATCH':
