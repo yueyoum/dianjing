@@ -19,7 +19,7 @@ from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigTraini
 
 from utils.message import MessagePipe
 
-from protomsg.staff_pb2 import StaffRecruitNotify, StaffNotify
+from protomsg.staff_pb2 import StaffRecruitNotify, StaffNotify, StaffRemoveNotify
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 class Staff(AbstractStaff):
@@ -165,6 +165,18 @@ class StaffManger(object):
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
         SkillManager(self.server_id, self.char_id).send_notify(act=ACT_INIT, staff_id=staff_id)
+
+
+    def remove(self, staff_id):
+        self.mongo.character.update_one(
+            {'_id': self.char_id},
+            {'$unset': {'staffs.{0}'.format(staff_id): 1}}
+        )
+
+        notify = StaffRemoveNotify()
+        notify.id.append(staff_id)
+
+        MessagePipe(self.char_id).put(msg=notify)
 
 
     def training_start(self, staff_id, training_id):

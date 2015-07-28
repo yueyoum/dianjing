@@ -23,6 +23,7 @@ urlpatterns = [
 
     url(r'^game/staff/recruit/refresh/$', 'views.staff.recruit_refresh'),
     url(r'^game/staff/recruit/$', 'views.staff.recruit_staff'),
+    url(r'^game/staff/fire/$', 'views.staff.fire'),
 
     url(r'^game/challenge/start/$', 'views.challenge.start'),
 

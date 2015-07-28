@@ -14,6 +14,7 @@ from protomsg.staff_pb2 import (
     StaffRecruitRefreshResponse,
     StaffRecruitResponse,
     StaffTrainingGetRewardResponse,
+    StaffFireResponse,
 )
 
 
@@ -41,6 +42,20 @@ def recruit_staff(request):
     recruit.recruit(staff_id)
 
     response = StaffRecruitResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+
+def fire(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    staff_id = request._proto.staff_id
+
+    sm = StaffManger(server_id, char_id)
+    sm.remove(staff_id)
+
+    response = StaffFireResponse()
     response.ret = 0
     return ProtobufResponse(response)
 
