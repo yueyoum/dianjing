@@ -52,6 +52,11 @@ MESSAGE_TO_ID = {
     "SkillLockToggleResponse": 1002,
     "SkillWashRequest": 1003,
     "SkillWashResponse": 1004,
+    "TaskNotify": 1100,
+    "TaskAcquireRequest": 1101,
+    "TaskAcquireResponse": 1102,
+    "TaskGetRewardRequest": 1103,
+    "TaskGetRewardResponse": 1104,
 }
 
 ID_TO_MESSAGE = {
@@ -107,6 +112,11 @@ ID_TO_MESSAGE = {
     1002: "SkillLockToggleResponse",
     1003: "SkillWashRequest",
     1004: "SkillWashResponse",
+    1100: "TaskNotify",
+    1101: "TaskAcquireRequest",
+    1102: "TaskAcquireResponse",
+    1103: "TaskGetRewardRequest",
+    1104: "TaskGetRewardResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -130,6 +140,8 @@ PATH_TO_REQUEST = {
     "/game/training/buy/": ["training", "TrainingBuyRequest"],
     "/game/skill/locktoggle/": ["skill", "SkillLockToggleRequest"],
     "/game/skill/wash/": ["skill", "SkillWashRequest"],
+    "/game/task/acquire/": ["task", "TaskAcquireRequest"],
+    "/game/task/getreward/": ["task", "TaskGetRewardRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -153,4 +165,6 @@ PATH_TO_RESPONSE = {
     "/game/training/buy/": ["training", "TrainingBuyResponse"],
     "/game/skill/locktoggle/": ["skill", "SkillLockToggleResponse"],
     "/game/skill/wash/": ["skill", "SkillWashResponse"],
+    "/game/task/acquire/": ["task", "TaskAcquireResponse"],
+    "/game/task/getreward/": ["task", "TaskGetRewardResponse"],
 }
