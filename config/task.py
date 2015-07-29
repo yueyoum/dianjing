@@ -5,7 +5,7 @@ import random
 
 class Task(object):
     __slots__ = ['id', 'name', 'level', 'des',
-                 'tp', 'num', 'reward']
+                 'tp', 'num', 'package']
 
     def __init__(self):
         self.id = None
@@ -14,7 +14,7 @@ class Task(object):
         self.des = None
         self.tp = None
         self.num = None
-        self.reward = None
+        self.package = None
 
 class ConfigTask(ConfigBase):
     # 类实体

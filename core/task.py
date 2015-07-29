@@ -7,7 +7,12 @@ from config.task import ConfigTask
 from config import ConfigErrorMessage
 from core.resource import Resource
 from dianjing.exception import GameException
+from protomsg.task_pb2 import TaskNotify
+from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
+from utils.message import MessagePipe
 
+class Task(object):
+    pass
 
 class TaskManage(object):
     def __init__(self, server_id, char_id):
@@ -17,7 +22,7 @@ class TaskManage(object):
 
         data = self.mongo.task.find_one({'_id': self.char_id})
         if not data:
-            doc = {'_id': None, 'received': {}, 'finished': [], 'rewarded': []}
+            doc = {'_id': self.char_id, 'tasks': {}}
             self.mongo.task.insert_one(doc)
 
 
@@ -27,79 +32,78 @@ class TaskManage(object):
             raise GameException(ConfigErrorMessage.get_error_id('TASK_NOT_EXIST'))
 
         club = self.mongo.character.find_on({'_id': self.char_id}, {'club': 1})
-        if club['level'] < task.level:
+        if club['club']['level'] < task.level:
             raise GameException(ConfigErrorMessage.get_error_id('CLUB_LEVEL_NOT_ENOUGH'))
 
-        doc = {'{0}'.format(task_id): 0}
+        doc = {
+            'num': 0,
+            'status': 1,
+        }
         self.mongo.task.update(
             {'_id': self.char_id},
-            {'$set': {'received.{0}'.format(task_id): doc}}
+            {'$set': {'tasks.{0}'.format(task_id): doc}}
         )
+        self.send_notify(ACT_UPDATE, task_id)
 
 
     def get_reward(self, task_id):
-        # TODO check if in finished list
-        finished = self.mongo.task.find_one({'_id': self.char_id}, {'finished': 1})
-        if task_id not in finished['finished']:
-            raise GameException(ConfigErrorMessage.get_error_id('FINISH_TASK_NOT_FOUND'))
+
+        # TODO check task finish
+        task = self.mongo.task.find_one({'_id': self.char_id}, {'tasks.{0}'.format(task_id): 1})
+        if task['tasks']['{0}'.format(task_id)]['status'] != 2:
+            raise GameException(ConfigErrorMessage.get_error_id('TASK_NOT_FINISH'))
         # TODO add rewarded
         config = ConfigTask.get(task_id)
-        package_id = config['task']['reward']
-        Resource(self.server_id, self.char_id).add_from_package_id(package_id)
 
-        finished['finished'].remove(task_id)
+        Resource(self.server_id, self.char_id).add_from_package_id(config['package'])
         self.mongo.task.update(
             {'_id': self.char_id},
-            {'$set': {'finished': finished['finished']}}
+            {'$set': {'tasks.{0}.status'.format(task_id): 3}}
         )
-
-        rewarded = self.mongo.task.find_one({'_id': self.char_id}, {'rewarded': 1})
-        rewarded['rewarded'].append(task_id)
-        self.mongo.task.update(
-            {'_id': self.char_id},
-            {'$set': {'rewarded': rewarded['rewarded']}}
-        )
+        self.send_notify(ACT_UPDATE, task_id)
 
 
-    def send_notify(self):
-        pass
+    def send_notify(self, act=ACT_INIT, task_ids=None):
+        if not task_ids:
+            projection = {'tasks': 1}
+        else:
+            projection = {'tasks.{0}'.format(i): 1 for i in task_ids}
+
+        data = self.mongo.task.find_one({'_id': self.char_id}, projection)
+        tasks = data.get('tasks', {})
+
+        notify = TaskNotify()
+        notify.act = act
+        for k, v in tasks.iteritems():
+            s = notify.tasks.add()
+            s.id = int(k)
+            s.num = v['num']
+            s.status = v['status']
+
+        MessagePipe(self.char_id).put(msg=notify)
 
 
     def update(self, **kwargs):
         task_id = kwargs.get('id', 0)
-        doc = {
-            'num': kwargs.get('num'),
-        }
-        data = self.mongo.task.find_one({'_id': self.char_id}, {'received.{0}'.format(task_id): 1})
-        doc['num'] += data['received']['{0}'.format(task_id)]['num']
+        num = kwargs.get('num', 0)
+        task = self.mongo.task.find_one({'_id': self.char_id}, {'tasks.{0}'.format(task_id): 1})
+        num += task['tasks']['{0}'.format(task_id)]['num']
 
         # Tips//status: 0==received  1==finished  2==rewarded
-        if self._check_finish(task_id, doc['num']):
-            finished = self.mongo.task.find_one({'_id': self.char_id}, {'finished': 1})
-            finished['finished'].append(doc['id'])
-            self.mongo.task.update(
-                {'_id': self.char_id},
-                {'$set': {'finished': finished['finished']}}
-            )
-
-            received = self.mongo.task.find_one({'_id': self.char_id}, {'received': 1})
-            del received['received']['{0}'.format(task_id)]
-            self.mongo.task.update(
-                {'_id': self.char_id},
-                {'$set': {'received': received['received']}}
-            )
-        else:
-            self.mongo.task.update(
-                {'_id': self.char_id},
-                {'$set': {'received.{0}'.format(task_id): doc}}
-            )
-
-
-    def _check_finish(self, task_id, num):
         config = ConfigTask.get(task_id)
-        if num >= config.task.num:
-            return True
-        return False
+        if num >= config['num']:
+            num = config['num']
+            self.mongo.task.update(
+                {'_id': self.char_id},
+                {'$set': {'tasks.{0}.status'.format(task_id): 2}}
+            )
+
+        self.mongo.task.update(
+            {'_id': self.char_id},
+            {'$set': {'tasks.{0}.num'.format(task_id): num}}
+        )
+
+        self.send_notify(ACT_UPDATE, task_id)
 
 
     def clear(self):

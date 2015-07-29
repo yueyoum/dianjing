@@ -14,7 +14,7 @@ import common_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='character.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\x0f\x63haracter.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"%\n\tCharacter\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\"N\n\x0f\x43haracterNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12*\n\x04\x63har\x18\x02 \x02(\x0b\x32\x1c.Dianjing.protocol.Character\"7\n\x16\x43reateCharacterRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\"m\n\x17\x43reateCharacterResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x34\n\x04next\x18\x03 \x01(\x0e\x32\x1e.Dianjing.protocol.NextOperate:\x06OPT_OK')
+  serialized_pb='\n\x0f\x63haracter.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"s\n\tCharacter\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0e\n\x06\x61vatar\x18\x03 \x02(\t\x12\x0e\n\x06gender\x18\x04 \x02(\x05\x12\x0b\n\x03\x61ge\x18\x05 \x02(\x05\x12\x12\n\nprofession\x18\x06 \x02(\x05\x12\x0b\n\x03\x64\x65s\x18\x07 \x02(\x05\"N\n\x0f\x43haracterNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12*\n\x04\x63har\x18\x02 \x02(\x0b\x32\x1c.Dianjing.protocol.Character\"7\n\x16\x43reateCharacterRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\"m\n\x17\x43reateCharacterResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x34\n\x04next\x18\x03 \x01(\x0e\x32\x1e.Dianjing.protocol.NextOperate:\x06OPT_OK')
 
 
 
@@ -40,6 +40,41 @@ _CHARACTER = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='avatar', full_name='Dianjing.protocol.Character.avatar', index=2,
+      number=3, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='gender', full_name='Dianjing.protocol.Character.gender', index=3,
+      number=4, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='age', full_name='Dianjing.protocol.Character.age', index=4,
+      number=5, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='profession', full_name='Dianjing.protocol.Character.profession', index=5,
+      number=6, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='des', full_name='Dianjing.protocol.Character.des', index=6,
+      number=7, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -50,7 +85,7 @@ _CHARACTER = _descriptor.Descriptor(
   is_extendable=False,
   extension_ranges=[],
   serialized_start=52,
-  serialized_end=89,
+  serialized_end=167,
 )
 
 
@@ -84,8 +119,8 @@ _CHARACTERNOTIFY = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=91,
-  serialized_end=169,
+  serialized_start=169,
+  serialized_end=247,
 )
 
 
@@ -119,8 +154,8 @@ _CREATECHARACTERREQUEST = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=171,
-  serialized_end=226,
+  serialized_start=249,
+  serialized_end=304,
 )
 
 
@@ -161,8 +196,8 @@ _CREATECHARACTERRESPONSE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=228,
-  serialized_end=337,
+  serialized_start=306,
+  serialized_end=415,
 )
 
 _CHARACTERNOTIFY.fields_by_name['char'].message_type = _CHARACTER
