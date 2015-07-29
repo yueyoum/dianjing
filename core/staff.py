@@ -41,6 +41,7 @@ class Staff(AbstractStaff):
 
         config_staff = ConfigStaff.get(self.id)
         self.race = config_staff.race
+        self.quality = config_staff.quality
 
         self.jingong = config_staff.jingong + config_staff.jingong_grow * self.level + data.get('jingong', 0)
         self.qianzhi = config_staff.qianzhi + config_staff.caozuo_grow * self.level + data.get('qianzhi', 0)
@@ -273,7 +274,7 @@ class StaffManger(object):
         msg.id = staff.id
         msg.level = staff.level
         msg.cur_exp = staff.exp
-        msg.max_exp = ConfigStaffLevel.get(staff.level).exp
+        msg.max_exp = ConfigStaffLevel.get(staff.level).exp[staff.quality]
         msg.status = staff.status
 
         msg.jingong = staff.jingong
