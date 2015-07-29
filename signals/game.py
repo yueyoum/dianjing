@@ -10,6 +10,7 @@ Description:
 import arrow
 
 from core.signals import game_start_signal
+from core.character import Character
 from core.club import Club
 from core.staff import StaffRecruit, StaffManger
 from core.skill import SkillManager
@@ -17,13 +18,12 @@ from core.challenge import Challenge
 from core.building import BuildingManager
 from core.training import Training
 from core.league import League
+from core.friend import FriendManager
 
-from core.db import get_mongo_db
 
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
-from protomsg.character_pb2 import CharacterNotify
 
 
 def start(server_id, char_id, **kwargs):
@@ -33,13 +33,7 @@ def start(server_id, char_id, **kwargs):
     msg.timestamp = arrow.utcnow().timestamp
     MessagePipe(char_id).put(msg=msg)
 
-    mongo = get_mongo_db(server_id)
-    char = mongo.character.find_one({'_id': char_id}, {'name': 1})
-
-    notify = CharacterNotify()
-    notify.char.id = char_id
-    notify.char.name = char['name']
-    MessagePipe(char_id).put(msg=notify)
+    Character(server_id, char_id).send_notify()
 
     Club(server_id, char_id).send_notify()
     StaffRecruit(server_id, char_id).send_notify()
@@ -50,6 +44,7 @@ def start(server_id, char_id, **kwargs):
     BuildingManager(server_id, char_id).send_notify()
     Training(server_id, char_id).send_notify()
     League(server_id, char_id).send_notify()
+    FriendManager(server_id, char_id).send_notify()
 
 
 game_start_signal.connect(
