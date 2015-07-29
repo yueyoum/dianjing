@@ -42,7 +42,7 @@ def start_game(request):
     server_id = req.server_id
 
     if not Server.objects.filter(id=server_id).exists():
-        raise GameException( ConfigErrorMessage.get_error_id('BAD_MESSAGE') )
+        raise GameException( ConfigErrorMessage.get_error_id("BAD_MESSAGE") )
 
     response = StartGameResponse()
     response.ret = 0

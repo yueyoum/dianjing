@@ -17,11 +17,12 @@ from core.mongo import Document
 from core.resource import Resource
 from core.skill import SkillManager
 
-from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigTraining, ConfigErrorMessage
+
+from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigTraining, ConfigStaffLevel,ConfigErrorMessage
 
 from utils.message import MessagePipe
 
-from protomsg.staff_pb2 import StaffRecruitNotify, StaffNotify
+from protomsg.staff_pb2 import StaffRecruitNotify, StaffNotify, StaffRemoveNotify
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 class Staff(AbstractStaff):
@@ -42,7 +43,8 @@ class Staff(AbstractStaff):
         self.status = data.get('status', 3)         # 状态 1:恶劣 2:低迷 3:一般 4:良好 5:优秀 6:GOD
 
         config_staff = ConfigStaff.get(self.id)
-        self.race = config_staff.race                # 种族
+        self.race = config_staff.race
+        self.quality = config_staff.quality
 
         self.jingong = config_staff.jingong + config_staff.jingong_grow * self.level + data.get('jingong', 0)
         self.qianzhi = config_staff.qianzhi + config_staff.caozuo_grow * self.level + data.get('qianzhi', 0)
@@ -182,6 +184,19 @@ class StaffManger(object):
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
         SkillManager(self.server_id, self.char_id).send_notify(act=ACT_INIT, staff_id=staff_id)
 
+
+    def remove(self, staff_id):
+        self.mongo.character.update_one(
+            {'_id': self.char_id},
+            {'$unset': {'staffs.{0}'.format(staff_id): 1}}
+        )
+
+        notify = StaffRemoveNotify()
+        notify.id.append(staff_id)
+
+        MessagePipe(self.char_id).put(msg=notify)
+
+
     def training_start(self, staff_id, training_id):
         # TODO check training_id own ?
         if not self._check_training_exist(training_id):
@@ -223,8 +238,12 @@ class StaffManger(object):
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
 
-        package_id = ConfigTraining.get(data['training_id']).package
-        Resource(self.server_id, self.char_id).add_from_package_id(package_id, staff_id)
+        config_training = ConfigTraining.get(data['training_id'])
+        if config_training.tp == 3:
+            # 技能
+            SkillManager(self.server_id, self.char_id).add_level(staff_id, config_training.skill_id, config_training.skill_level)
+        else:
+            Resource(self.server_id, self.char_id).add_from_package_id(config_training.package, staff_id)
 
     def update(self, staff_id, **kwargs):
         exp = kwargs.get('exp', 0)
@@ -237,11 +256,27 @@ class StaffManger(object):
         yishi = kwargs.get('yishi', 0)
         caozuo = kwargs.get('caozuo', 0)
 
-        # TODO level up
+        char = self.mongo.character.find_one({'_id': self.char_id}, {'staffs.{0}'.format(staff_id): 1})
+        this_staff = char['staffs'][str(staff_id)]
+
+        next_level = ConfigStaffLevel.get(this_staff['level']).next_level
+        if next_level:
+            new_exp = this_staff['exp'] + exp
+            level_up_need_exp = ConfigStaffLevel.get(this_staff['level']).exp[ConfigStaff.get(staff_id).quality]
+            if new_exp >= level_up_need_exp:
+                new_exp -= level_up_need_exp
+                new_level = next_level
+            else:
+                new_level = this_staff['level']
+        else:
+            new_exp = this_staff['exp']
+            new_level = this_staff['level']
+
         self.mongo.character.update_one(
             {'_id': self.char_id},
             {'$inc': {
-                'staffs.{0}.exp'.format(staff_id): exp,
+                'staffs.{0}.exp'.format(staff_id): new_exp,
+                'staffs.{0}.level'.format(staff_id): new_level,
                 'staffs.{0}.jingong'.format(staff_id): jingong,
                 'staffs.{0}.qianzhi'.format(staff_id): qianzhi,
                 'staffs.{0}.xintai'.format(staff_id): xintai,
@@ -255,24 +290,25 @@ class StaffManger(object):
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
 
-    def msg_staff(self, msg, sid, staff):
-        msg.id = sid
-        # TODO
-        msg.level = 1
-        msg.cur_exp = 0
-        msg.max_exp = 100
-        msg.status = 1
+    def msg_staff(self, msg, sid, staff_data):
+        staff = Staff(sid, staff_data)
 
-        msg.jingong = 10
-        msg.qianzhi = 10
-        msg.xintai = 10
-        msg.baobing = 10
-        msg.fangshou = 10
-        msg.yunying = 10
-        msg.yishi = 10
-        msg.caozuo = 10
+        msg.id = staff.id
+        msg.level = staff.level
+        msg.cur_exp = staff.exp
+        msg.max_exp = ConfigStaffLevel.get(staff.level).exp[staff.quality]
+        msg.status = staff.status
 
-        training = staff.get('trainings', [])
+        msg.jingong = int(staff.jingong)
+        msg.qianzhi = int(staff.qianzhi)
+        msg.xintai = int(staff.xintai)
+        msg.baobing = int(staff.baobing)
+        msg.fangshou = int(staff.fangshou)
+        msg.yunying = int(staff.yunying)
+        msg.yishi = int(staff.yishi)
+        msg.caozuo = int(staff.caozuo)
+
+        training = staff_data.get('trainings', [])
         for i in range(5):
             msg_training_slot = msg.training_slots.add()
             msg_training_slot.slot_id = i

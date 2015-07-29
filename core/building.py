@@ -44,18 +44,21 @@ class BuildingManager(object):
 
         self.mongo.building.update_one(
             {'_id': self.char_id},
-            {'$inc': {'building.{0}'.format(building_id): 1}}
+            {'$inc': {'buildings.{0}'.format(building_id): 1}}
         )
 
         self.send_notify()
 
 
-    def send_notify(self):
+    def send_notify(self, building_ids=None):
         notify = BuildingNotify()
 
         buildings = self.mongo.building.find_one({'_id': self.char_id}, {'buildings': 1})
 
         for b in ConfigBuilding.all_values():
+            if building_ids and b.id not in building_ids:
+                continue
+
             notify_building = notify.buildings.add()
             notify_building.id = b.id
             if not b.max_levels:

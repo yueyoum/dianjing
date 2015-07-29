@@ -19,6 +19,7 @@ class AbstractStaff(object):
         self.level = None
         self.exp = None
         self.status = None
+        self.quality = None
 
         self.jingong = None
         self.qianzhi = None

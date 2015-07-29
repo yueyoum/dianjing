@@ -98,6 +98,13 @@ class StaffRecruit(object):
         return staffs
 
 
+class StaffLevel(object):
+    __slots__ = ['id', 'exp', 'next_level']
+    def __init__(self):
+        self.id = 0
+        self.exp = {}
+        self.next_level = 0
+
 
 class ConfigStaff(ConfigBase):
     EntityClass = Staff
@@ -182,3 +189,33 @@ class ConfigStaffRecruit(ConfigBase):
         :rtype: StaffRecruit
         """
         return super(ConfigStaffRecruit, cls).get(id)
+
+
+class ConfigStaffLevel(ConfigBase):
+    EntityClass = StaffLevel
+    
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigStaffLevel, cls).initialize(fixture)
+
+        instances = cls.INSTANCES.items()
+        instances.sort(key=lambda item: item[0])
+
+        length = len(instances)
+        for i in range(length):
+            if i+1 == length:
+                instances[i][1].next_level = None
+            else:
+                instances[i][1].next_level = instances[i+1][0]
+
+
+    @classmethod
+    def get(cls, id):
+        """
+
+        :rtype : StaffLevel
+        """
+        return super(ConfigStaffLevel, cls).get(id)

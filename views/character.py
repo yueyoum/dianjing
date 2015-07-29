@@ -30,9 +30,9 @@ def create(request):
     name = req.name
 
     if not name:
-        raise GameException( ConfigErrorMessage.get_error_id('BAD_MESSAGE') )
+        raise GameException( ConfigErrorMessage.get_error_id("BAD_MESSAGE") )
     if len(name) > CHAR_NAME_MAX_LENGTH:
-        raise GameException( ConfigErrorMessage.get_error_id('CHAR_NAME_TOO_LONG') )
+        raise GameException( ConfigErrorMessage.get_error_id("CHAR_NAME_TOO_LONG") )
 
     session = request._game_session
 
@@ -47,8 +47,8 @@ def create(request):
         )
     except IntegrityError as e:
         if 'account_id' in e.args[1]:
-            raise GameException( ConfigErrorMessage.get_error_id('CHAR_ALREAD_CREATED') )
-        raise GameException( ConfigErrorMessage.get_error_id('CHAR_NAME_TAKEN') )
+            raise GameException( ConfigErrorMessage.get_error_id("CHAR_ALREADY_CREATED") )
+        raise GameException( ConfigErrorMessage.get_error_id("CHAR_NAME_TAKEN") )
 
     char_created_signal.send(
         sender=None,

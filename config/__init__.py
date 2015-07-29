@@ -13,7 +13,7 @@ import zipfile
 from django.conf import settings
 
 from config.errormsg import ConfigErrorMessage
-from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit
+from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigStaffLevel
 from config.challenge import ConfigChallengeType, ConfigChallengeMatch
 from config.unit import ConfigUnit, ConfigPolicy
 from config.building import ConfigBuilding
@@ -22,6 +22,8 @@ from config.training import ConfigTraining
 from config.npc import ConfigNPC
 from config.skill import ConfigSkill
 from config.task import ConfigTask
+from config.club import ConfigClubLevel
+
 
 CONFIG = None
 
@@ -70,6 +72,8 @@ def load_config():
             ConfigStaffHot.initialize(data)
         elif attr_name == 'STAFF_RECRUIT':
             ConfigStaffRecruit.initialize(data)
+        elif attr_name == 'STAFF_LEVEL':
+            ConfigStaffLevel.initialize(data)
         elif attr_name == 'CHALLENGE_TYPE':
             ConfigChallengeType.initialize(data)
         elif attr_name == 'CHALLENGE_MATCH':
@@ -94,7 +98,8 @@ def load_config():
             ConfigPolicy.initialize(data)
         elif attr_name == 'TASK':
             ConfigTask.initialize(data)
-
+        elif attr_name == 'CLUB_LEVEL':
+            ConfigClubLevel.initialize(data)
 
 
     CONFIG = type('CONFIG', (object,), attr_dict)

@@ -14,6 +14,7 @@ class Training(object):
         'id', 'building', 'need_building_level', 'tp',
         'cost_type', 'cost_value', 'minutes',
         'package',
+        'skill_id', 'skill_level',
     ]
     
     def __init__(self):
@@ -25,6 +26,8 @@ class Training(object):
         self.cost_value = 0
         self.minutes = 0
         self.package = 0
+        self.skill_id = 0
+        self.skill_level = 0
 
 
 class ConfigTraining(ConfigBase):
