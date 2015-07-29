@@ -277,14 +277,14 @@ class StaffManger(object):
         msg.max_exp = ConfigStaffLevel.get(staff.level).exp[staff.quality]
         msg.status = staff.status
 
-        msg.jingong = staff.jingong
-        msg.qianzhi = staff.qianzhi
-        msg.xintai = staff.xintai
-        msg.baobing = staff.baobing
-        msg.fangshou = staff.fangshou
-        msg.yunying = staff.yunying
-        msg.yishi = staff.yishi
-        msg.caozuo = staff.caozuo
+        msg.jingong = int(staff.jingong)
+        msg.qianzhi = int(staff.qianzhi)
+        msg.xintai = int(staff.xintai)
+        msg.baobing = int(staff.baobing)
+        msg.fangshou = int(staff.fangshou)
+        msg.yunying = int(staff.yunying)
+        msg.yishi = int(staff.yishi)
+        msg.caozuo = int(staff.caozuo)
 
         training = staff_data.get('trainings', [])
         for i in range(5):
