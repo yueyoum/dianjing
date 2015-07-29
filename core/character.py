@@ -33,7 +33,7 @@ class Character(object):
         msg.gender = 1
         msg.age = 19
         msg.profession = 1
-        msg.des = "哈哈哈哈"
+        msg.des = u"哈哈哈哈"
 
         return msg
 

@@ -50,7 +50,7 @@ class FriendManager(object):
 
         self.mongo = get_mongo_db(server_id)
 
-        doc = self.mongo.friend.find_one({'_id': 1}, {'_id': 1})
+        doc = self.mongo.friend.find_one({'_id': char_id}, {'_id': 1})
         if not doc:
             doc = Document.get("friend")
             doc['_id'] = self.char_id
@@ -150,6 +150,7 @@ class FriendManager(object):
         )
 
         self.send_remove_notify(char_id)
+        FriendManager(self.server_id, char_id).someone_remove_me(self.char_id)
 
 
     def someone_remove_me(self, from_id):
@@ -196,7 +197,7 @@ class FriendManager(object):
             {'$set': {key: new_status}}
         )
 
-        self.send_notify(self, ids=[from_id])
+        self.send_notify(act=ACT_UPDATE, ids=[from_id])
 
     def send_remove_notify(self, friend_id):
         notify = FriendRemoveNotify()

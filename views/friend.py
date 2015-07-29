@@ -14,7 +14,7 @@ from core.friend import FriendManager
 from protomsg.friend_pb2 import (
     FriendGetInfoResponse,
     FriendAddResponse,
-    FriendRemoveNotify,
+    FriendRemoveResponse,
     FriendAcceptResponse,
     FriendMatchResponse,
 )
@@ -62,7 +62,7 @@ def remove(request):
     fm = FriendManager(server_id, char_id)
     fm.remove(friend_id)
 
-    response = FriendRemoveNotify()
+    response = FriendRemoveResponse()
     response.ret = 0
     return ProtobufResponse(response)
 
