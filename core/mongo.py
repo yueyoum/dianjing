@@ -77,6 +77,14 @@ DEFAULT_BUILDING_DOCUMENT = {
 }
 
 
+# 好友
+DEFAULT_FRIEND_DOCUMENT = {
+    '_id': null,
+    # id: status
+    'friends': {}
+}
+
+
 # 联赛
 DEFAULT_LEAGUE_GROUP_DOCUMENT = {
     '_id': null,
@@ -142,6 +150,7 @@ class Document(object):
         "skill": DEFAULT_SKILL_DOCUMENT,
         "recruit": DEFAULT_RECRUIT_DOCUMENT,
         "building": DEFAULT_BUILDING_DOCUMENT,
+        "friend": DEFAULT_FRIEND_DOCUMENT,
 
         "league_group": DEFAULT_LEAGUE_GROUP_DOCUMENT,
         "league_event": DEFAULT_LEAGUE_EVENT_DOCUMENT,

@@ -40,5 +40,11 @@ urlpatterns = [
 
     url(r'^game/skill/locktoggle/$', 'views.skill.lock_toggle'),
     url(r'^game/skill/wash/$', 'views.skill.wash'),
+
+    url(r'^game/friend/info/$', 'views.friend.get_info'),
+    url(r'^game/friend/add/$', 'views.friend.add'),
+    url(r'^game/friend/remove/$', 'views.friend.remove'),
+    url(r'^game/friend/accept/$', 'views.friend.accept'),
+    url(r'^game/friend/match/$', 'views.friend.match'),
 ]
 

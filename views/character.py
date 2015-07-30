@@ -10,13 +10,13 @@ Description:
 
 from django.db import IntegrityError
 from dianjing.exception import GameException
-from apps.character.models import Character
+from apps.character.models import Character as ModelCharacter
 from utils.http import ProtobufResponse
-from utils.message import MessagePipe
 
 from core.signals import char_created_signal
+from core.character import Character
 
-from protomsg.character_pb2 import CreateCharacterResponse, CharacterNotify
+from protomsg.character_pb2 import CreateCharacterResponse
 from protomsg.common_pb2 import OPT_CREATE_CLUB
 
 from config import ConfigErrorMessage
@@ -40,7 +40,7 @@ def create(request):
     server_id = session.server_id
 
     try:
-        char = Character.objects.create(
+        char = ModelCharacter.objects.create(
             account_id=account_id,
             server_id=server_id,
             name=name,
@@ -56,11 +56,8 @@ def create(request):
         char_name=name
     )
 
-    notify = CharacterNotify()
-    notify.char.id = char.id
-    notify.char.name = name
+    Character(server_id, char.id).send_notify(name=name)
 
-    MessagePipe(char.id).put(msg=notify)
 
     session.char_id = char.id
 
