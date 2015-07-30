@@ -62,7 +62,7 @@ class Club(AbstractClub):
 
     def set_policy(self, policy):
         # TODO check
-        if not ConfigPolicy.check(policy):
+        if not ConfigPolicy.get(policy):
             raise GameException(ConfigErrorMessage.get_error_id('POLICY_NOT_EXIST'))
 
         self.mongo.character.update_one(
@@ -76,9 +76,8 @@ class Club(AbstractClub):
 
     def set_match_staffs(self, staff_ids):
         # TODO check
-        for staff_id in staff_ids:
-            if not StaffManger(self.server_id, self.char_id).check_staff_exist(staff_id):
-                raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
+        if not StaffManger(self.server_id, self.char_id).check_staff_owned(staff_ids):
+            raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
         
         if len(staff_ids) != 10:
             raise RuntimeError("staff_ids is not 10 elements")

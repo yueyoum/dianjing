@@ -84,7 +84,7 @@ class Resource(object):
     def _pre_call_list(self, data):
         call_list = []
         if data['gold'] or data['diamond']:
-            call_list.append(self._club_check(self.char_id, self.server_id, data['gold'], data['diamond']))
+            call_list.append(self._club_resource_check(self.char_id, self.server_id, data['gold'], data['diamond']))
 
         for cb in call_list:
             cb.next()
@@ -100,7 +100,7 @@ class Resource(object):
                 pass
 
 
-    def _club_check(self, gold=0, diamond=0):
+    def _club_resource_check(self, gold=0, diamond=0):
         club = Club(self.server_id, self.char_id)
 
         if abs(gold) > club.gold and gold < 0:

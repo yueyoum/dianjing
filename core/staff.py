@@ -16,9 +16,10 @@ from core.db import get_mongo_db
 from core.mongo import Document
 from core.resource import Resource
 from core.skill import SkillManager
-
-
-from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigTraining, ConfigStaffLevel,ConfigErrorMessage
+from config import (
+    ConfigStaff, ConfigStaffHot, ConfigStaffRecruit,
+    ConfigTraining, ConfigStaffLevel, ConfigErrorMessage
+)
 
 from utils.message import MessagePipe
 
@@ -119,11 +120,11 @@ class StaffRecruit(object):
 
     def recruit(self, staff_id):
         # TODO check staff have
-        if StaffManger(self.server_id, self.char_id).check_staff_exist(staff_id):
+        if StaffManger(self.server_id, self.char_id).check_staff_owned(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id('STAFF_ALREADY_HAVE'))
 
         # TODO check staff exist
-        if not ConfigStaff.check(staff_id):
+        if not ConfigStaff.get(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
 
         # TODO check pay enough
@@ -199,10 +200,10 @@ class StaffManger(object):
 
     def training_start(self, staff_id, training_id):
         # TODO check training_id own ?
-        if not self._check_training_exist(training_id):
+        if not self._check_training_owned(training_id):
             raise GameException(ConfigErrorMessage.get_error_id('TRAINING_NOT_EXIST'))
         # TODO check staff exists ?
-        if not self.check_staff_exist(staff_id):
+        if not self.check_staff_owned(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
         # TODO check training num full ?
 
@@ -351,21 +352,37 @@ class StaffManger(object):
 
         MessagePipe(self.char_id).put(msg=notify)
 
-    def check_staff_exist(self, staff_id):
-        staffs = self.mongo.character.find_one({'_id': self.char_id}, {'staffs.{0}'.format(staff_id): 1, '_id': 0})
-        if staffs['staff_id']:
-            return True
-        return False
+    def check_staff_owned(self, staff_ids):
+        if isinstance(staff_ids, int):
+            temp = [str(staff_ids)]
+        else:
+            temp = staff_ids
 
-    def _check_training_exist(self, training_id):
-        training = self.mongo.character.find_one({'_id': self.char_id}, {"own_trainings.{0}".format(training_id): 1})
-        if training['own_trainings']:
-            return True
-        return False
+        char = self.mongo.character.find_one({'_id': self.char_id}, {'staffs': 1})
+        staffs = char['staffs']
+        for staff_id in temp:
+            if staff_id not in staffs.keys():
+                return False
+
+        return True
+
+    def _check_training_owned(self, training_ids):
+        if isinstance(training_ids, int):
+            temp = [str(training_ids)]
+        else:
+            temp = training_ids
+
+        char = self.mongo.character.find_one({'_id': self.char_id}, {"own_trainings": 1})
+        trainings = char['own_trainings']
+        for training_id in temp:
+            if training_id not in trainings.keys():
+                return False
+
+        return True
 
     def _check_training_finish(self, data):
         config = ConfigTraining.get(data['training_id'])
         now = arrow.utcnow().timestamp
-        if (now - data['start_at']) > (config.minutes * 60):
+        if (now - data['start_at']) > (config['minutes'] * 60):
             return True
         return False

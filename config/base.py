@@ -35,7 +35,10 @@ class ConfigBase(object):
 
     @classmethod
     def get(cls, id):
-        return cls.INSTANCES[id]
+        if id in cls.INSTANCES.keys():
+            return cls.INSTANCES[id]
+        else:
+            return None
 
 
     @classmethod
@@ -63,9 +66,3 @@ class ConfigBase(object):
             if getattr(obj, k) != v:
                 return False
             return True
-
-    @classmethod
-    def check(cls, id):
-        if id in cls.INSTANCES.keys():
-            return True
-        return False

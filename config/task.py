@@ -28,16 +28,7 @@ class ConfigTask(ConfigBase):
     def get(cls, id):
         """
 
-        :rtype : Unit
+        :rtype : Task
         """
         return super(ConfigTask, cls).get(id)
-
-    @classmethod
-    def check(cls, id):
-        """
-
-        :param id:
-        :return:
-        """
-        return super(ConfigTask, cls).check(id)
 

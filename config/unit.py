@@ -65,13 +65,4 @@ class ConfigPolicy(ConfigBase):
         """
         return super(ConfigPolicy, cls).get(id)
 
-    @classmethod
-    def check(cls, id):
-        """
-
-        :param id:
-        :return:
-        """
-        return super(ConfigPolicy, cls).check(id)
-
 

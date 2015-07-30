@@ -11,8 +11,24 @@ from protomsg.task_pb2 import TaskNotify
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 from utils.message import MessagePipe
 
-class Task(object):
-    pass
+class TaskRefresh(object):
+    def __init__(self, server_id):
+        self.server = server_id
+        self.mongo = get_mongo_db(server_id)
+        data = self.mongo.common.find_one({'_id': 'task'}, {'tasks': 1})
+        if not data:
+            doc = {
+                '_id': 'task',
+                'tasks': [],
+            }
+            self.mongo.common.insert_one(doc)
+
+
+    def task_refresh(self):
+        pass
+
+
+
 
 class TaskManage(object):
     def __init__(self, server_id, char_id):
@@ -109,6 +125,18 @@ class TaskManage(object):
     def clear(self):
         # TODO clear task data
         self.mongo.task.delete_one({'_id': self.char_id})
+
+    def refresh(self):
+        club = self.mongo.character.find_one({'_id': self.char_id}, {'club': 1})
+        lv = club['club']['level']
+        task_config = ConfigTask.get_all()
+        for k, v in task_config.iteritems():
+            if lv > 0:
+                self.mongo.task.update(
+                    {'_id': self.char_id},
+                    {'$set'}
+                )
+
 
 
 
