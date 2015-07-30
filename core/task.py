@@ -1,11 +1,15 @@
 __author__ = 'hikaly'
 
 # -*- coding:utf-8 -*-
+import random
 
-from core.db import get_mongo_db
 from config.task import ConfigTask
 from config import ConfigErrorMessage
+from config.building import ConfigBuilding, Building
+
+from core.db import get_mongo_db
 from core.resource import Resource
+
 from dianjing.exception import GameException
 from protomsg.task_pb2 import TaskNotify
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
@@ -16,6 +20,8 @@ TASK_STATUS_DOING = 1
 TASK_STATUS_FINISH = 2
 TASK_STATUS_END = 3
 
+
+
 class TaskRefresh(object):
     def __init__(self, server_id):
         self.server = server_id
@@ -24,13 +30,31 @@ class TaskRefresh(object):
         if not data:
             doc = {
                 '_id': 'task',
-                'tasks': [],
+                'tasks': {},
             }
             self.mongo.common.insert_one(doc)
 
 
     def task_refresh(self):
-        pass
+        task_centre = ConfigBuilding.get(4)
+
+        task_dict = {}
+        for lv in range(1, task_centre.max_levels+1):
+            level_tasks = ConfigTask.filter(lv)
+            task_dict[lv] = level_tasks.keys()
+
+        for i in range(1, task_centre.max_levels+1):
+            task_num = task_centre.get_level(i).value1
+            level_tasks = ConfigTask.filter(level=task_centre.get_level(i).level)
+
+            while task_num:
+                task_list.append()
+                task_num -= 1
+
+            self.mongo.common.update(
+                {'_id': 'task'},
+                {'$set': {'tasks.{0}'.format(i): task_list}}
+            )
 
 
 
