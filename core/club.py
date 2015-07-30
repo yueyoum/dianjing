@@ -7,15 +7,22 @@ Description:
 
 """
 
+from config.unit import ConfigPolicy
+from config import ConfigErrorMessage
+
 from core.abstract import AbstractClub
 from core.db import get_mongo_db
 from core.staff import Staff
 from core.signals import match_staffs_set_done_signal
+from core.staff import StaffManger
+
+from dianjing.exception import GameException
 
 from utils.message import MessagePipe
 from config import ConfigClubLevel
 
 from protomsg.club_pb2 import ClubNotify
+
 
 class Club(AbstractClub):
     def __init__(self, server_id, char_id):
@@ -33,21 +40,21 @@ class Club(AbstractClub):
         club = char['club']
         staffs = char.get('staffs', {})
 
-        self.id = self.char_id
-        self.name = club['name']
-        self.manager_name = char['name']
-        self.flag = club['flag']
-        self.level = club['level']
-        self.renown = club['renown']
-        self.vip = club['vip']
-        self.exp = club['exp']
-        self.gold = club['gold']
+        self.id = self.char_id                  # 玩家ID
+        self.name = club['name']                # 俱乐部名
+        self.manager_name = char['name']        # 角色名
+        self.flag = club['flag']                # 俱乐部旗帜
+        self.level = club['level']              # 俱乐部等级
+        self.renown = club['renown']            # 俱乐部声望
+        self.vip = club['vip']                  # vip等级
+        self.exp = club['exp']                  # 俱乐部经验
+        self.gold = club['gold']                # 游戏币
         # FIXME
-        self.diamond = int(club['diamond'])
-        self.policy = club.get('policy', 1)
+        self.diamond = int(club['diamond'])     # 钻石
+        self.policy = club.get('policy', 1)     # 战术
 
-        self.match_staffs = club.get('match_staffs', [])
-        self.tibu_staffs = club.get('tibu_staffs', [])
+        self.match_staffs = club.get('match_staffs', [])    # 出战员工
+        self.tibu_staffs = club.get('tibu_staffs', [])      # 替补员工
 
         for k, v in staffs.iteritems():
             self.staffs[int(k)] = Staff(int(k), v)
@@ -55,6 +62,9 @@ class Club(AbstractClub):
 
     def set_policy(self, policy):
         # TODO check
+        if not ConfigPolicy.get(policy):
+            raise GameException(ConfigErrorMessage.get_error_id('POLICY_NOT_EXIST'))
+
         self.mongo.character.update_one(
             {'_id': self.char_id},
             {'$set': {'club.policy': policy}}
@@ -66,6 +76,9 @@ class Club(AbstractClub):
 
     def set_match_staffs(self, staff_ids):
         # TODO check
+        if not StaffManger(self.server_id, self.char_id).check_staff_owned(staff_ids):
+            raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
+        
         if len(staff_ids) != 10:
             raise RuntimeError("staff_ids is not 10 elements")
 

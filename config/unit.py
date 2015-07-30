@@ -39,3 +39,30 @@ class ConfigUnit(ConfigBase):
         """
         return super(ConfigUnit, cls).get(id)
 
+
+class Policy(object):
+    __slots__ = [
+        'id', 'name', 'advantage_add_round', 'advantage_add_value'
+    ]
+
+    def __init__(self):
+        self.id = None                          # 战术ID
+        self.name = None                        # 战术名
+        self.advantage_add_round = None         # 加成轮次
+        self.advantage_add_value = None         # 加成值
+
+
+class ConfigPolicy(ConfigBase):
+    EntityClass = Policy
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, id):
+        """
+
+        :rtype : Unit
+        """
+        return super(ConfigPolicy, cls).get(id)
+
+

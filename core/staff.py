@@ -9,13 +9,17 @@ Description:
 
 import arrow
 
+from dianjing.exception import GameException
+
 from core.abstract import AbstractStaff
 from core.db import get_mongo_db
 from core.mongo import Document
 from core.resource import Resource
 from core.skill import SkillManager
-
-from config import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigTraining, ConfigStaffLevel
+from config import (
+    ConfigStaff, ConfigStaffHot, ConfigStaffRecruit,
+    ConfigTraining, ConfigStaffLevel, ConfigErrorMessage
+)
 
 from utils.message import MessagePipe
 
@@ -33,11 +37,11 @@ class Staff(AbstractStaff):
     def __init__(self, id, data):
         super(Staff, self).__init__()
 
-        self.id = id
-        self.level = data.get('level', 1)
-        self.exp = data.get('exp', 0)
+        self.id = id                                # 员工id
+        self.level = data.get('level', 1)           # 员工等级
+        self.exp = data.get('exp', 0)               # 员工经验
         # TODO 默认status
-        self.status = data.get('status', 3)
+        self.status = data.get('status', 3)         # 状态 1:恶劣 2:低迷 3:一般 4:良好 5:优秀 6:GOD
 
         config_staff = ConfigStaff.get(self.id)
         self.race = config_staff.race
@@ -57,7 +61,6 @@ class StaffRecruit(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-
         self.mongo = get_mongo_db(self.server_id)
 
         data = self.mongo.recruit.find_one({'_id': self.char_id}, {'_id': 1})
@@ -67,11 +70,9 @@ class StaffRecruit(object):
             doc['tp'] = 1
             self.mongo.recruit.insert_one(doc)
 
-
     def get_normal_staff(self):
         data = self.mongo.recruit.find_one({'_id': self.char_id}, {'staffs': 1})
         return data.get('staffs', [])
-
 
     def get_hot_staff(self):
         data = self.mongo.common.find_one({'_id': 'recruit_hot'}, {'value': 1})
@@ -86,8 +87,8 @@ class StaffRecruit(object):
 
         return data['value']
 
-
     def refresh(self, tp):
+        # 1:热门  2:普通  3:白金  4:钻石
         if tp == 1:
             staffs = self.get_hot_staff()
             self.mongo.recruit.update_one(
@@ -118,8 +119,25 @@ class StaffRecruit(object):
 
 
     def recruit(self, staff_id):
-        # TODO check
-        StaffManger(self.server_id, self.char_id).add(staff_id)
+        # TODO check staff have
+        if StaffManger(self.server_id, self.char_id).check_staff_owned(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id('STAFF_ALREADY_HAVE'))
+
+        # TODO check staff exist
+        if not ConfigStaff.get(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
+
+        # TODO check pay enough
+        staff = ConfigStaff.get(staff_id)
+        # 1:gold    2:diamond
+        if staff.buy_type == 1:
+            needs = {'gold': -staff.buy_cost}
+        else:
+            needs = {'diamond': -staff.buy_cost}
+
+        with Resource(self.char_id, self.server_id).check(needs):
+            StaffManger(self.server_id, self.char_id).add(staff_id)
+
         self.send_notify()
 
 
@@ -145,12 +163,12 @@ class StaffRecruit(object):
         MessagePipe(self.char_id).put(msg=notify)
 
 
+
 class StaffManger(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
         self.mongo = get_mongo_db(server_id)
-
 
     def add(self, staff_id):
         doc = Document.get('staff')
@@ -182,7 +200,12 @@ class StaffManger(object):
 
     def training_start(self, staff_id, training_id):
         # TODO check training_id own ?
+        if not self._check_training_owned(training_id):
+            raise GameException(ConfigErrorMessage.get_error_id('TRAINING_NOT_EXIST'))
         # TODO check staff exists ?
+        if not self.check_staff_owned(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
+        # TODO check training num full ?
 
         data = {
             'training_id': training_id,
@@ -198,14 +221,16 @@ class StaffManger(object):
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
 
-
     def training_get_reward(self, staff_id, slot_id):
-        # TODO
         key = "staffs.{0}.trainings".format(staff_id)
 
         char = self.mongo.character.find_one({'_id': self.char_id}, {key: 1})
         trainings = char['staffs'][str(staff_id)]['trainings']
-        data =  trainings.pop(slot_id)
+        data = trainings.pop(slot_id)
+
+        # TODO check training finish
+        if not self._check_training_finish(data):
+            raise GameException(ConfigErrorMessage.get_error_id('TRAINING_NOT_FINISHED'))
 
         self.mongo.character.update_one(
             {'_id': self.char_id},
@@ -220,7 +245,6 @@ class StaffManger(object):
             SkillManager(self.server_id, self.char_id).add_level(staff_id, config_training.skill_id, config_training.skill_level)
         else:
             Resource(self.server_id, self.char_id).add_from_package_id(config_training.package, staff_id)
-
 
     def update(self, staff_id, **kwargs):
         exp = kwargs.get('exp', 0)
@@ -267,7 +291,6 @@ class StaffManger(object):
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
 
-
     def msg_staff(self, msg, sid, staff_data):
         staff = Staff(sid, staff_data)
 
@@ -312,7 +335,6 @@ class StaffManger(object):
                 else:
                     i.status = 3
 
-
     def send_notify(self, act=ACT_INIT, staff_ids=None):
         if not staff_ids:
             projection = {'staffs': 1}
@@ -329,3 +351,38 @@ class StaffManger(object):
             self.msg_staff(s, int(k), v)
 
         MessagePipe(self.char_id).put(msg=notify)
+
+    def check_staff_owned(self, staff_ids):
+        if isinstance(staff_ids, int):
+            temp = [str(staff_ids)]
+        else:
+            temp = staff_ids
+
+        char = self.mongo.character.find_one({'_id': self.char_id}, {'staffs': 1})
+        staffs = char['staffs']
+        for staff_id in temp:
+            if staff_id not in staffs.keys():
+                return False
+
+        return True
+
+    def _check_training_owned(self, training_ids):
+        if isinstance(training_ids, int):
+            temp = [str(training_ids)]
+        else:
+            temp = training_ids
+
+        char = self.mongo.character.find_one({'_id': self.char_id}, {"own_trainings": 1})
+        trainings = char['own_trainings']
+        for training_id in temp:
+            if training_id not in trainings.keys():
+                return False
+
+        return True
+
+    def _check_training_finish(self, data):
+        config = ConfigTraining.get(data['training_id'])
+        now = arrow.utcnow().timestamp
+        if (now - data['start_at']) > (config['minutes'] * 60):
+            return True
+        return False

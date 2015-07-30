@@ -15,13 +15,15 @@ from django.conf import settings
 from config.errormsg import ConfigErrorMessage
 from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigStaffLevel
 from config.challenge import ConfigChallengeType, ConfigChallengeMatch
-from config.unit import ConfigUnit
+from config.unit import ConfigUnit, ConfigPolicy
 from config.building import ConfigBuilding
 from config.package import ConfigPackage
 from config.training import ConfigTraining
 from config.npc import ConfigNPC
 from config.skill import ConfigSkill
+from config.task import ConfigTask
 from config.club import ConfigClubLevel
+
 
 CONFIG = None
 
@@ -92,6 +94,10 @@ def load_config():
             ConfigNPC.initialize_manager_name(data)
         elif attr_name == 'SKILL':
             ConfigSkill.initialize(data)
+        elif attr_name == 'POLICY':
+            ConfigPolicy.initialize(data)
+        elif attr_name == 'TASK':
+            ConfigTask.initialize(data)
         elif attr_name == 'CLUB_LEVEL':
             ConfigClubLevel.initialize(data)
 

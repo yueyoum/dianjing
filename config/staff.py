@@ -137,9 +137,6 @@ class ConfigStaff(ConfigBase):
     def random_ids(cls, amount):
         return random.sample(cls.INSTANCES.keys(), amount)
 
-
-
-
 class ConfigStaffHot(ConfigBase):
     EntityClass = StaffHot
 
