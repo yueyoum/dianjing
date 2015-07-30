@@ -9,7 +9,7 @@ Description:
 
 from utils.http import ProtobufResponse
 
-from core.mail import Mail
+from core.mail import MailManager
 
 from protomsg.mail_pb2 import (
     MailSendResponse,
@@ -26,7 +26,7 @@ def send(request):
     to_id = request._proto.to_id
     content = request._proto.content
 
-    m = Mail(server_id, char_id)
+    m = MailManager(server_id, char_id)
     m.send(to_id, content)
 
     response = MailSendResponse()
@@ -40,7 +40,7 @@ def read(request):
 
     id = request._proto.id
 
-    m = Mail(server_id, char_id)
+    m = MailManager(server_id, char_id)
     m.read(id)
 
     response = MailOpenResponse()
@@ -54,7 +54,7 @@ def delete(request):
 
     id = request._proto.id
 
-    m = Mail(server_id, char_id)
+    m = MailManager(server_id, char_id)
     m.delete(id)
 
     response = MailDeleteResponse()
@@ -68,7 +68,7 @@ def get_attachment(request):
 
     id = request._proto.id
 
-    m = Mail(server_id, char_id)
+    m = MailManager(server_id, char_id)
     package = m.get_attachment(id)
 
     response = MailGetAttachmentResponse()

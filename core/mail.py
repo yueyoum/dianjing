@@ -27,7 +27,7 @@ from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
 
 
-class Mail(object):
+class MailManager(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
@@ -46,7 +46,7 @@ class Mail(object):
             raise GameException( ConfigErrorMessage.get_error_id("CHAR_NOT_EXIST") )
 
         title = u"来自 {0} 的邮件".format(char['name'])
-        Mail(self.server_id, to_id).add(title, content, from_id=self.char_id)
+        MailManager(self.server_id, to_id).add(title, content, from_id=self.char_id)
 
 
     def add(self, title, content, attachment="", from_id=0):
