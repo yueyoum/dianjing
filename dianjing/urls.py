@@ -46,5 +46,10 @@ urlpatterns = [
     url(r'^game/friend/remove/$', 'views.friend.remove'),
     url(r'^game/friend/accept/$', 'views.friend.accept'),
     url(r'^game/friend/match/$', 'views.friend.match'),
+
+    url(r'^game/mail/send/$', 'views.mail.send'),
+    url(r'^game/mail/open/$', 'views.mail.read'),
+    url(r'^game/mail/delete/$', 'views.mail.delete'),
+    url(r'^game/mail/getattachment/$', 'views.mail.get_attachment'),
 ]
 

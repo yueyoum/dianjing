@@ -7,22 +7,22 @@ Description:
 
 """
 
+import base64
 import random
 
+from core.base import STAFF_ATTRS
 from config import ConfigPackage
 
+from protomsg.package_pb2 import Package as MsgPackage
+
 class Package(object):
-    __slots__ = [
-        'jingong', 'qianzhi', 'xintai', 'baobing',
-        'fangshou', 'yunying', 'yishi', 'caozuo',
+    __slots__ = STAFF_ATTRS + [
         'gold', 'diamond',
         'staff_exp', 'club_renown',
+        'trainings',
     ]
 
-    ATTRS = [
-        'jingong', 'qianzhi', 'xintai', 'baobing',
-        'fangshou', 'yunying', 'yishi', 'caozuo',
-    ]
+    ATTRS = STAFF_ATTRS
 
     def __init__(self):
         self.jingong = 0
@@ -37,6 +37,8 @@ class Package(object):
         self.diamond = 0
         self.staff_exp = 0
         self.club_renown = 0
+        self.trainings = []
+
 
     @property
     def attrs(self):
@@ -62,6 +64,10 @@ class Package(object):
 
         p = cls()
 
+        # 训练(道具)
+        p.trainings = config.trainings
+
+        # 软妹币，钻石，经验，荣耀
         set_value('gold', config.gold)
         set_value('diamond', config.diamond)
         set_value('staff_exp', config.staff_exp)
@@ -102,5 +108,41 @@ class Package(object):
         p = cls()
         for k, v in kwargs.iteritems():
             setattr(p, k, v)
+
+        return p
+
+
+    def make_protomsg(self):
+        msg = MsgPackage()
+
+        for key in self.__slots__:
+            if key != 'trainings':
+                setattr(msg, key, getattr(self, key))
+
+        for tid, amount in self.trainings:
+            msg_training = msg.trainings.add()
+            msg_training.id = tid
+            msg_training.amount = amount
+
+        return msg
+
+    def dumps(self):
+        data = self.make_protomsg().SerializeToString()
+        return base64.b64encode(data)
+
+    @classmethod
+    def loads(cls, data):
+        data = base64.b64decode(data)
+        msg = MsgPackage()
+        msg.ParseFromString(data)
+
+        p = cls()
+
+        for key in cls.__slots__:
+            if key != 'trainings':
+                setattr(p, key, getattr(msg, key))
+
+        for tr in msg.trainings:
+            p.trainings.append((tr.id, tr.amount))
 
         return p

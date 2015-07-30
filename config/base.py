@@ -35,10 +35,8 @@ class ConfigBase(object):
 
     @classmethod
     def get(cls, id):
-        if id in cls.INSTANCES.keys():
-            return cls.INSTANCES[id]
-        else:
-            return None
+        return cls.INSTANCES.get(id, None)
+
 
 
     @classmethod

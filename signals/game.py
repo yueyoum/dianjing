@@ -19,6 +19,7 @@ from core.building import BuildingManager
 from core.training import Training
 from core.league import League
 from core.friend import FriendManager
+from core.mail import MailManager
 
 
 
@@ -45,6 +46,7 @@ def start(server_id, char_id, **kwargs):
     Training(server_id, char_id).send_notify()
     League(server_id, char_id).send_notify()
     FriendManager(server_id, char_id).send_notify()
+    MailManager(server_id, char_id).send_notify()
 
 
 game_start_signal.connect(
