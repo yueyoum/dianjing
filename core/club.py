@@ -7,9 +7,6 @@ Description:
 
 """
 
-from config.unit import ConfigPolicy
-from config import ConfigErrorMessage
-
 from core.abstract import AbstractClub
 from core.db import get_mongo_db
 from core.staff import Staff
@@ -19,7 +16,13 @@ from core.staff import StaffManger
 from dianjing.exception import GameException
 
 from utils.message import MessagePipe
-from config import ConfigClubLevel
+
+from config import (
+    ConfigClubLevel,
+    ConfigPolicy,
+    ConfigErrorMessage
+)
+
 
 from protomsg.club_pb2 import ClubNotify
 
@@ -76,7 +79,7 @@ class Club(AbstractClub):
 
     def set_match_staffs(self, staff_ids):
         # TODO check
-        if not StaffManger(self.server_id, self.char_id).check_staff_owned(staff_ids):
+        if not StaffManger(self.server_id, self.char_id).has_staff(staff_ids):
             raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
         
         if len(staff_ids) != 10:

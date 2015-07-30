@@ -7,10 +7,14 @@ Description:
 
 """
 
+from dianjing.exception import GameException
+
 from core.db import get_mongo_db
 from core.staff import StaffManger
 
 from utils.message import MessagePipe
+
+from config import ConfigErrorMessage
 
 from protomsg.training_pb2 import TrainingNotify, TrainingRemoveNotify
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
@@ -20,6 +24,19 @@ class Training(object):
         self.server_id = server_id
         self.char_id = char_id
         self.mongo = get_mongo_db(server_id)
+
+    def has_training(self, training_ids):
+        if not isinstance(training_ids, (list, tuple)):
+            training_ids = [training_ids]
+
+        projection = {"own_trainings.{0}".format(i) for i in training_ids}
+        char = self.mongo.character.find_one({'_id': self.char_id}, projection)
+        for tid in training_ids:
+            if str(tid) not in char['own_trainings']:
+                return False
+
+        return True
+
 
     def buy(self, training_id):
         # TODO cost
@@ -41,9 +58,8 @@ class Training(object):
 
         self.send_notify(act=ACT_UPDATE, trainings={training_id: new_amount})
 
-    def use(self, staff_id, training_id):
-        # TODO check
 
+    def use(self, staff_id, training_id):
         key = "own_trainings.{0}".format(training_id)
         char = self.mongo.character.find_one(
             {'_id': self.char_id},
@@ -52,9 +68,12 @@ class Training(object):
 
         amount = char.get('own_trainings', {}).get(str(training_id), 0)
         if amount <= 0:
-            raise RuntimeError("NO AMOUNT!!!")
+            raise GameException( ConfigErrorMessage.get_error_id("TRAINING_NOT_EXIST") )
 
         sm = StaffManger(self.server_id, self.char_id)
+        if not sm.has_staff(staff_id):
+            raise GameException( ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST") )
+
         sm.training_start(staff_id, training_id)
 
         new_amount = amount - 1

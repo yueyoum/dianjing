@@ -61,7 +61,7 @@ class ConfigPolicy(ConfigBase):
     def get(cls, id):
         """
 
-        :rtype : Unit
+        :rtype : Policy
         """
         return super(ConfigPolicy, cls).get(id)
 

@@ -7,9 +7,10 @@ Description:
 
 """
 
+from contextlib import contextmanager
+
 from core.base import STAFF_ATTRS
 from core.package import Package
-from core.club import Club
 from dianjing.exception import GameException
 from config import ConfigErrorMessage
 
@@ -62,15 +63,14 @@ class Resource(object):
             sm.update(staff_id, **staff_data)
 
 
-
+    @contextmanager
     def check(self, **kwargs):
-        data = self.data_analysis(kwargs)
-        call_list = self._pre_call_list(data)
+        data = self.data_analysis(**kwargs)
+        check_list = self._pre_check_list(data)
 
         yield
 
-        self._yield_check(call_list)
-
+        self._post_check(check_list)
 
 
     def data_analysis(self, **kwargs):
@@ -81,19 +81,19 @@ class Resource(object):
         return data
 
 
-    def _pre_call_list(self, data):
-        call_list = []
+    def _pre_check_list(self, data):
+        check_list = []
         if data['gold'] or data['diamond']:
-            call_list.append(self._club_resource_check(self.char_id, self.server_id, data['gold'], data['diamond']))
+            check_list.append(self._club_resource_check(data['gold'], data['diamond']))
 
-        for cb in call_list:
+        for cb in check_list:
             cb.next()
 
-        return call_list
+        return check_list
 
 
-    def _yield_check(self, call_list):
-        for func in call_list:
+    def _post_check(self, check_list):
+        for func in check_list:
             try:
                 func.next()
             except StopIteration:
@@ -101,6 +101,8 @@ class Resource(object):
 
 
     def _club_resource_check(self, gold=0, diamond=0):
+        from core.club import Club
+
         club = Club(self.server_id, self.char_id)
 
         if abs(gold) > club.gold and gold < 0:
@@ -110,6 +112,4 @@ class Resource(object):
 
         yield
 
-        data = {'gold': gold, 'diamond': diamond}
-        club.update(data)
-        club.send_notify()
+        club.update(gold=gold, diamond=diamond)
