@@ -83,6 +83,21 @@ DEFAULT_FRIEND_DOCUMENT = {
     'friends': {}
 }
 
+MAIL_DOCUMENT = {
+    '_id': null,
+    'mails': {}
+}
+
+MAIL_EMBEDDED_DOCUMENT = {
+    # from_id 为0表示系统邮件， >0 表示来自这个id的玩家
+    'from_id': null,
+    'title': null,
+    'content': null,
+    'has_read': False,
+    'create_at': null,
+    'attachment': ""
+}
+
 
 # 联赛
 DEFAULT_LEAGUE_GROUP_DOCUMENT = {
@@ -150,6 +165,8 @@ class Document(object):
         "recruit": DEFAULT_RECRUIT_DOCUMENT,
         "building": DEFAULT_BUILDING_DOCUMENT,
         "friend": DEFAULT_FRIEND_DOCUMENT,
+        "mail": MAIL_DOCUMENT,
+        "mail.embedded": MAIL_EMBEDDED_DOCUMENT,
 
         "league_group": DEFAULT_LEAGUE_GROUP_DOCUMENT,
         "league_event": DEFAULT_LEAGUE_EVENT_DOCUMENT,

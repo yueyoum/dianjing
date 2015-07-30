@@ -15,6 +15,7 @@ class Package(object):
                  'fangshou', 'yunying', 'yishi', 'caozuo',
                  'gold', 'diamond',
                  'staff_exp', 'club_renown',
+                 'trainings',
                  ]
     
     def __init__(self):
@@ -37,6 +38,8 @@ class Package(object):
         
         self.staff_exp = 0
         self.club_renown = 0
+
+        self.trainings = []
 
 
 class ConfigPackage(ConfigBase):

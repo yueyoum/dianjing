@@ -69,6 +69,16 @@ MESSAGE_TO_ID = {
     "FriendMatchResponse": 1209,
     "FriendAcceptRequest": 1210,
     "FriendAcceptResponse": 1211,
+    "MailNotify": 1300,
+    "MailRemoveNotify": 1301,
+    "MailSendRequest": 1302,
+    "MailSendResponse": 1303,
+    "MailOpenRequest": 1304,
+    "MailOpenResponse": 1305,
+    "MailDeleteRequest": 1306,
+    "MailDeleteResponse": 1307,
+    "MailGetAttachmentRequest": 1308,
+    "MailGetAttachmentResponse": 1309,
 }
 
 ID_TO_MESSAGE = {
@@ -141,6 +151,16 @@ ID_TO_MESSAGE = {
     1209: "FriendMatchResponse",
     1210: "FriendAcceptRequest",
     1211: "FriendAcceptResponse",
+    1300: "MailNotify",
+    1301: "MailRemoveNotify",
+    1302: "MailSendRequest",
+    1303: "MailSendResponse",
+    1304: "MailOpenRequest",
+    1305: "MailOpenResponse",
+    1306: "MailDeleteRequest",
+    1307: "MailDeleteResponse",
+    1308: "MailGetAttachmentRequest",
+    1309: "MailGetAttachmentResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -171,6 +191,10 @@ PATH_TO_REQUEST = {
     "/game/friend/remove/": ["friend", "FriendRemoveRequest"],
     "/game/friend/match/": ["friend", "FriendMatchRequest"],
     "/game/friend/accept/": ["friend", "FriendAcceptRequest"],
+    "/game/mail/send/": ["mail", "MailSendRequest"],
+    "/game/mail/open/": ["mail", "MailOpenRequest"],
+    "/game/mail/delete/": ["mail", "MailDeleteRequest"],
+    "/game/mail/getattachment/": ["mail", "MailGetAttachmentRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -201,4 +225,8 @@ PATH_TO_RESPONSE = {
     "/game/friend/remove/": ["friend", "FriendRemoveResponse"],
     "/game/friend/match/": ["friend", "FriendMatchResponse"],
     "/game/friend/accept/": ["friend", "FriendAcceptResponse"],
+    "/game/mail/send/": ["mail", "MailSendResponse"],
+    "/game/mail/open/": ["mail", "MailOpenResponse"],
+    "/game/mail/delete/": ["mail", "MailDeleteResponse"],
+    "/game/mail/getattachment/": ["mail", "MailGetAttachmentResponse"],
 }
