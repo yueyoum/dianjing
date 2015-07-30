@@ -19,12 +19,16 @@ class Character(object):
         self.char_id = char_id
         self.mongo = get_mongo_db(server_id)
 
-    def make_protomsg(self):
-        char = self.mongo.character.find_one(
-            {'_id': self.char_id},
-            # TODO field
-            {'name': 1}
-        )
+    def make_protomsg(self, **kwargs):
+        if kwargs:
+            char = kwargs
+        else:
+            char = self.mongo.character.find_one(
+                {'_id': self.char_id},
+                # TODO field
+                {'name': 1}
+            )
+
         msg = MsgCharacter()
         msg.id = self.char_id
         msg.name = char['name']
@@ -37,8 +41,8 @@ class Character(object):
 
         return msg
 
-    def send_notify(self):
+    def send_notify(self, **kwargs):
         notify = CharacterNotify()
-        notify.char.MergeFrom(self.make_protomsg())
+        notify.char.MergeFrom(self.make_protomsg(**kwargs))
 
         MessagePipe(self.char_id).put(msg=notify)

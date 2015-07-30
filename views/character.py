@@ -56,7 +56,7 @@ def create(request):
         char_name=name
     )
 
-    Character(server_id, char.id).send_notify()
+    Character(server_id, char.id).send_notify(name=name)
 
 
     session.char_id = char.id
