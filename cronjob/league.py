@@ -7,10 +7,13 @@ Description:
 
 """
 
+import traceback
+
 import arrow
 import uwsgidecorators
 
 from django.conf import settings
+from django.db import connection
 
 from cronjob.log import Logger
 from apps.server.models import Server
@@ -27,28 +30,38 @@ time_two = arrow.get(LEAGUE_START_TIME_TWO, "HH:mm:ssZ").to(settings.TIME_ZONE)
 def league_new(*args):
     logger = Logger("league_new")
 
-    servers = Server.opened_servers()
-    for s in servers:
-        logger.write("server {0} start".format(s.id))
-        LeagueGame.new(s.id)
-        logger.write("server {0} finish".format(s.id))
-
-    logger.write("done")
-    logger.close()
+    try:
+        connection.close()
+        servers = Server.opened_servers()
+        for s in servers:
+            logger.write("server {0} start".format(s.id))
+            LeagueGame.new(s.id)
+            logger.write("server {0} finish".format(s.id))
+    except:
+        logger.write(traceback.format_exc())
+    else:
+        logger.write("done")
+    finally:
+        logger.close()
 
 
 # 每天定时开启的比赛
 def league_match(*args):
-    logger = Logger("league_battle")
+    logger = Logger("league_match")
 
-    servers = Server.opened_servers()
-    for s in servers:
-        logger.write("server {0} start".format(s.id))
-        LeagueGame.start_match(s.id)
-        logger.write("server {0} finish".format(s.id))
-
-    logger.write("done")
-    logger.close()
+    try:
+        connection.close()
+        servers = Server.opened_servers()
+        for s in servers:
+            logger.write("server {0} start".format(s.id))
+            LeagueGame.start_match(s.id)
+            logger.write("server {0} finish".format(s.id))
+    except:
+        logger.write(traceback.format_exc())
+    else:
+        logger.write("done")
+    finally:
+        logger.close()
 
 
 uwsgidecorators.cron(time_one.minute, time_one.hour, -1, -1, -1, target="mule")(league_match)
