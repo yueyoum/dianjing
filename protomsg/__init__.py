@@ -67,6 +67,8 @@ MESSAGE_TO_ID = {
     "FriendRemoveResponse": 1207,
     "FriendMatchRequest": 1208,
     "FriendMatchResponse": 1209,
+    "FriendAcceptRequest": 1210,
+    "FriendAcceptResponse": 1211,
 }
 
 ID_TO_MESSAGE = {
@@ -137,6 +139,8 @@ ID_TO_MESSAGE = {
     1207: "FriendRemoveResponse",
     1208: "FriendMatchRequest",
     1209: "FriendMatchResponse",
+    1210: "FriendAcceptRequest",
+    1211: "FriendAcceptResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -166,6 +170,7 @@ PATH_TO_REQUEST = {
     "/game/friend/add/": ["friend", "FriendAddRequest"],
     "/game/friend/remove/": ["friend", "FriendRemoveRequest"],
     "/game/friend/match/": ["friend", "FriendMatchRequest"],
+    "/game/friend/accept/": ["friend", "FriendAcceptRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -195,4 +200,5 @@ PATH_TO_RESPONSE = {
     "/game/friend/add/": ["friend", "FriendAddResponse"],
     "/game/friend/remove/": ["friend", "FriendRemoveResponse"],
     "/game/friend/match/": ["friend", "FriendMatchResponse"],
+    "/game/friend/accept/": ["friend", "FriendAcceptResponse"],
 }

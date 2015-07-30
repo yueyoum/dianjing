@@ -18,7 +18,7 @@ import match_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='friend.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\x0c\x66riend.proto\x12\x11\x44ianjing.protocol\x1a\x0f\x63haracter.proto\x1a\nclub.proto\x1a\x0c\x63ommon.proto\x1a\x0bmatch.proto\"\xb3\x02\n\x0c\x46riendNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x37\n\x07\x66riends\x18\x03 \x03(\x0b\x32&.Dianjing.protocol.FriendNotify.Friend\x1a\xb0\x01\n\x06\x46riend\x12/\n\x06status\x18\x01 \x02(\x0e\x32\x1f.Dianjing.protocol.FriendStatus\x12\n\n\x02id\x18\x02 \x02(\x05\x12\x0c\n\x04name\x18\x03 \x02(\t\x12\x0e\n\x06\x61vatar\x18\x04 \x02(\t\x12\x11\n\tclub_name\x18\x05 \x02(\t\x12\x11\n\tclub_flag\x18\x06 \x02(\x05\x12\x11\n\tclub_gold\x18\x07 \x02(\x05\x12\x12\n\nclub_level\x18\x08 \x02(\x05\"2\n\x12\x46riendRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\x05\"3\n\x14\x46riendGetInfoRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"\x88\x01\n\x15\x46riendGetInfoResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12*\n\x04\x63har\x18\x03 \x02(\x0b\x32\x1c.Dianjing.protocol.Character\x12%\n\x04\x63lub\x18\x04 \x02(\x0b\x32\x17.Dianjing.protocol.Club\"1\n\x10\x46riendAddRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\"1\n\x11\x46riendAddResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"2\n\x13\x46riendRemoveRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"4\n\x14\x46riendRemoveResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"1\n\x12\x46riendMatchRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"`\n\x13\x46riendMatchResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch*i\n\x0c\x46riendStatus\x12\x0e\n\nFRIEND_NOT\x10\x01\x12\x1c\n\x18\x46RIEND_NEED_PEER_CONFIRM\x10\x02\x12\x1c\n\x18\x46RIEND_NEED_SELF_CONFIRM\x10\x03\x12\r\n\tFRIEND_OK\x10\x04')
+  serialized_pb='\n\x0c\x66riend.proto\x12\x11\x44ianjing.protocol\x1a\x0f\x63haracter.proto\x1a\nclub.proto\x1a\x0c\x63ommon.proto\x1a\x0bmatch.proto\"\xb3\x02\n\x0c\x46riendNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x37\n\x07\x66riends\x18\x03 \x03(\x0b\x32&.Dianjing.protocol.FriendNotify.Friend\x1a\xb0\x01\n\x06\x46riend\x12/\n\x06status\x18\x01 \x02(\x0e\x32\x1f.Dianjing.protocol.FriendStatus\x12\n\n\x02id\x18\x02 \x02(\x05\x12\x0c\n\x04name\x18\x03 \x02(\t\x12\x0e\n\x06\x61vatar\x18\x04 \x02(\t\x12\x11\n\tclub_name\x18\x05 \x02(\t\x12\x11\n\tclub_flag\x18\x06 \x02(\x05\x12\x11\n\tclub_gold\x18\x07 \x02(\x05\x12\x12\n\nclub_level\x18\x08 \x02(\x05\"2\n\x12\x46riendRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\x05\"3\n\x14\x46riendGetInfoRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"\x88\x01\n\x15\x46riendGetInfoResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12*\n\x04\x63har\x18\x03 \x02(\x0b\x32\x1c.Dianjing.protocol.Character\x12%\n\x04\x63lub\x18\x04 \x02(\x0b\x32\x17.Dianjing.protocol.Club\"1\n\x10\x46riendAddRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\"1\n\x11\x46riendAddResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"2\n\x13\x46riendRemoveRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"4\n\x14\x46riendRemoveResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"2\n\x13\x46riendAcceptRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"4\n\x14\x46riendAcceptResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"1\n\x12\x46riendMatchRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"`\n\x13\x46riendMatchResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch*i\n\x0c\x46riendStatus\x12\x0e\n\nFRIEND_NOT\x10\x01\x12\x1c\n\x18\x46RIEND_NEED_PEER_CONFIRM\x10\x02\x12\x1c\n\x18\x46RIEND_NEED_SELF_CONFIRM\x10\x03\x12\r\n\tFRIEND_OK\x10\x04')
 
 _FRIENDSTATUS = _descriptor.EnumDescriptor(
   name='FriendStatus',
@@ -45,8 +45,8 @@ _FRIENDSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1002,
-  serialized_end=1107,
+  serialized_start=1108,
+  serialized_end=1213,
 )
 
 FriendStatus = enum_type_wrapper.EnumTypeWrapper(_FRIENDSTATUS)
@@ -434,6 +434,76 @@ _FRIENDREMOVERESPONSE = _descriptor.Descriptor(
 )
 
 
+_FRIENDACCEPTREQUEST = _descriptor.Descriptor(
+  name='FriendAcceptRequest',
+  full_name='Dianjing.protocol.FriendAcceptRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.FriendAcceptRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value="",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.FriendAcceptRequest.id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=853,
+  serialized_end=903,
+)
+
+
+_FRIENDACCEPTRESPONSE = _descriptor.Descriptor(
+  name='FriendAcceptResponse',
+  full_name='Dianjing.protocol.FriendAcceptResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.FriendAcceptResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.FriendAcceptResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value="",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=905,
+  serialized_end=957,
+)
+
+
 _FRIENDMATCHREQUEST = _descriptor.Descriptor(
   name='FriendMatchRequest',
   full_name='Dianjing.protocol.FriendMatchRequest',
@@ -464,8 +534,8 @@ _FRIENDMATCHREQUEST = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=853,
-  serialized_end=902,
+  serialized_start=959,
+  serialized_end=1008,
 )
 
 
@@ -506,8 +576,8 @@ _FRIENDMATCHRESPONSE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=904,
-  serialized_end=1000,
+  serialized_start=1010,
+  serialized_end=1106,
 )
 
 _FRIENDNOTIFY_FRIEND.fields_by_name['status'].enum_type = _FRIENDSTATUS
@@ -525,6 +595,8 @@ DESCRIPTOR.message_types_by_name['FriendAddRequest'] = _FRIENDADDREQUEST
 DESCRIPTOR.message_types_by_name['FriendAddResponse'] = _FRIENDADDRESPONSE
 DESCRIPTOR.message_types_by_name['FriendRemoveRequest'] = _FRIENDREMOVEREQUEST
 DESCRIPTOR.message_types_by_name['FriendRemoveResponse'] = _FRIENDREMOVERESPONSE
+DESCRIPTOR.message_types_by_name['FriendAcceptRequest'] = _FRIENDACCEPTREQUEST
+DESCRIPTOR.message_types_by_name['FriendAcceptResponse'] = _FRIENDACCEPTRESPONSE
 DESCRIPTOR.message_types_by_name['FriendMatchRequest'] = _FRIENDMATCHREQUEST
 DESCRIPTOR.message_types_by_name['FriendMatchResponse'] = _FRIENDMATCHRESPONSE
 
@@ -581,6 +653,18 @@ class FriendRemoveResponse(_message.Message):
   DESCRIPTOR = _FRIENDREMOVERESPONSE
 
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.FriendRemoveResponse)
+
+class FriendAcceptRequest(_message.Message):
+  __metaclass__ = _reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _FRIENDACCEPTREQUEST
+
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.FriendAcceptRequest)
+
+class FriendAcceptResponse(_message.Message):
+  __metaclass__ = _reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _FRIENDACCEPTRESPONSE
+
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.FriendAcceptResponse)
 
 class FriendMatchRequest(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
