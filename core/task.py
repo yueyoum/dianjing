@@ -46,10 +46,11 @@ class TaskRefresh(object):
 
             j = i
             list_temp = []
-            while task_num:
+            while task_num and j:
                 for v in task_dict[j]:
-                    list_temp.append(v)
-                    task_num -= 1
+                    if task_num:
+                        list_temp.append(v)
+                        task_num -= 1
                 j -= 1
 
             self.mongo.common.update(
