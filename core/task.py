@@ -1,7 +1,6 @@
 __author__ = 'hikaly'
 
 # -*- coding:utf-8 -*-
-import random
 
 from config.task import ConfigTask
 from config import ConfigErrorMessage
