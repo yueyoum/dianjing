@@ -64,8 +64,8 @@ class FriendManager(object):
         if str(friend_id) not in doc['friends']:
             raise GameException(ConfigErrorMessage.get_error_id("FRIEND_NOT_EXIST"))
 
-        char = Character(self.server_id, self.char_id)
-        club = Club(self.server_id, self.char_id)
+        char = Character(self.server_id, friend_id)
+        club = Club(self.server_id, friend_id)
         return (char, club)
 
 
