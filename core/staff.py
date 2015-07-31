@@ -131,7 +131,7 @@ class StaffRecruit(object):
         else:
             needs = {'diamond': -staff.buy_cost}
 
-        with Resource(self.char_id, self.server_id).check(**needs):
+        with Resource(self.server_id, self.char_id).check(**needs):
             StaffManger(self.server_id, self.char_id).add(staff_id)
 
         self.send_notify()
