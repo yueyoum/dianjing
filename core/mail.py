@@ -61,7 +61,7 @@ class MailManager(object):
 
         self.mongo.mail.update_one(
             {'_id': self.char_id},
-            {'$set': {'mails{0}'.format(mid): doc}}
+            {'$set': {'mails.{0}'.format(mid): doc}}
         )
 
         self.send_notify(act=ACT_UPDATE, ids=[mid])
@@ -127,7 +127,7 @@ class MailManager(object):
 
     def send_notify(self, act=ACT_INIT, ids=None):
         if ids:
-            projection = {"mails".format(i): 1 for i in ids}
+            projection = {"mails.{0}".format(i): 1 for i in ids}
         else:
             projection = {"mails": 1}
 
