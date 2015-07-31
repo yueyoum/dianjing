@@ -20,7 +20,7 @@ TASK_STATUS_DOING = 1
 TASK_STATUS_FINISH = 2
 TASK_STATUS_END = 3
 
-
+TASK_CENTRE_ID = 4
 
 class TaskRefresh(object):
     def __init__(self, server_id):
@@ -36,26 +36,27 @@ class TaskRefresh(object):
 
 
     def task_refresh(self):
-        task_centre = ConfigBuilding.get(4)
-
+        task_centre = ConfigBuilding.get(TASK_CENTRE_ID)
         task_dict = {}
+
         for lv in range(1, task_centre.max_levels+1):
-            level_tasks = ConfigTask.filter(lv)
-            task_dict[lv] = level_tasks.keys()
+            task_dict[lv] = ConfigTask.filter(level=lv).keys()
 
         for i in range(1, task_centre.max_levels+1):
             task_num = task_centre.get_level(i).value1
-            level_tasks = ConfigTask.filter(level=task_centre.get_level(i).level)
 
+            j = i
+            list_temp = []
             while task_num:
-                task_list.append()
-                task_num -= 1
+                for v in task_dict[j]:
+                    list_temp.append(v)
+                    task_num -= 1
+                j -= 1
 
             self.mongo.common.update(
-                {'_id': 'task'},
-                {'$set': {'tasks.{0}'.format(i): task_list}}
+                {'_id': 'tasks'},
+                {'$set': {'level.{0}'.format(i): list_temp}}
             )
-
 
 
 
@@ -151,13 +152,25 @@ class TaskManage(object):
 
         self.send_notify(ACT_UPDATE, [task_id])
 
-
     def clear(self):
         # TODO clear task data
         self.mongo.task.delete_one({'_id': self.char_id})
 
     def refresh(self):
-        pass
+        char = self.mongo.character.find_on({'_id': self.char_id}, {'club': 1})
+        club_lv = char['club']['level']
+        tasks = self.mongo.common.find_one({'_id': 'tasks'}, {'level.{0}'.format(club_lv): 1})
+        task_ids = tasks[str(club_lv)]
+
+        doc = {
+            'num': 0,
+            'status': TASK_STATUS_UNRECEIVED,
+        }
+        for task_id in task_ids:
+            self.mongo.task.update(
+                {'_id': self.char_id},
+                {'$set': {'task.{0}'.format(task_id): doc}}
+            )
 
 
 
