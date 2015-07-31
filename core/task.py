@@ -4,11 +4,10 @@ __author__ = 'hikaly'
 
 from config.task import ConfigTask
 from config import ConfigErrorMessage
-from config.building import ConfigBuilding, Building
+from config.building import ConfigBuilding
 
 from core.db import get_mongo_db
 from core.resource import Resource
-
 from dianjing.exception import GameException
 from protomsg.task_pb2 import TaskNotify
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
@@ -18,7 +17,6 @@ TASK_STATUS_UNRECEIVED = 0
 TASK_STATUS_DOING = 1
 TASK_STATUS_FINISH = 2
 TASK_STATUS_END = 3
-
 TASK_CENTRE_ID = 4
 
 class TaskRefresh(object):
@@ -32,7 +30,6 @@ class TaskRefresh(object):
                 'tasks': {},
             }
             self.mongo.common.insert_one(doc)
-
 
     def task_refresh(self):
         task_centre = ConfigBuilding.get(TASK_CENTRE_ID)
@@ -58,8 +55,6 @@ class TaskRefresh(object):
                 {'$set': {'level.{0}'.format(i): list_temp}}
             )
 
-
-
 class TaskManage(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
@@ -70,7 +65,6 @@ class TaskManage(object):
         if not data:
             doc = {'_id': self.char_id, 'tasks': {}}
             self.mongo.task.insert_one(doc)
-
 
     def receive(self, task_id):
         task = ConfigTask.get(task_id)
@@ -91,24 +85,22 @@ class TaskManage(object):
         )
         self.send_notify(ACT_UPDATE, [task_id])
 
-
     def get_reward(self, task_id):
 
-        # TODO check task finish
+        # check task finish
         task = self.mongo.task.find_one({'_id': self.char_id}, {'tasks.{0}'.format(task_id): 1})
         if task['tasks'][str(task_id)]['status'] != 2:
             raise GameException(ConfigErrorMessage.get_error_id('TASK_NOT_FINISH'))
-        # TODO add rewarded
+        # add rewarded
         config = ConfigTask.get(task_id)
 
-        Resource(self.server_id, self.char_id).add_from_package_id(config['package'])
+        Resource(self.server_id, self.char_id).add_from_package_id(config.package)
         self.mongo.task.update(
             {'_id': self.char_id},
             {'$set': {'tasks.{0}.status'.format(task_id): TASK_STATUS_END}}
         )
 
         self.send_notify(ACT_UPDATE, [task_id])
-
 
     def send_notify(self, act=ACT_INIT, task_ids=None):
         if not task_ids:
@@ -129,7 +121,6 @@ class TaskManage(object):
 
         MessagePipe(self.char_id).put(msg=notify)
 
-
     def update(self, **kwargs):
         task_id = kwargs.get('id', 0)
         num = kwargs.get('num', 0)
@@ -138,8 +129,8 @@ class TaskManage(object):
 
         # Tips//status: 0==received  1==finished  2==rewarded
         config = ConfigTask.get(task_id)
-        if num >= config['num']:
-            num = config['num']
+        if num >= config.num:
+            num = config.num
             self.mongo.task.update(
                 {'_id': self.char_id},
                 {'$set': {'tasks.{0}.status'.format(task_id): TASK_STATUS_FINISH}}
@@ -153,7 +144,7 @@ class TaskManage(object):
         self.send_notify(ACT_UPDATE, [task_id])
 
     def clear(self):
-        # TODO clear task data
+        # clear task data
         self.mongo.task.delete_one({'_id': self.char_id})
 
     def refresh(self):
@@ -171,7 +162,3 @@ class TaskManage(object):
                 {'_id': self.char_id},
                 {'$set': {'task.{0}'.format(task_id): doc}}
             )
-
-
-
-
