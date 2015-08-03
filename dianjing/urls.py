@@ -52,7 +52,7 @@ urlpatterns = [
     url(r'^game/mail/delete/$', 'views.mail.delete'),
     url(r'^game/mail/getattachment/$', 'views.mail.get_attachment'),
 
-    url(r'^game/task/receive/$', 'views.task.receive'),
-    url(r'^game/task/reward/$', 'views.task.reward'),
+    url(r'^game/task/acquire/$', 'views.task.receive'),
+    url(r'^game/task/getreward/$', 'views.task.reward'),
 ]
 
