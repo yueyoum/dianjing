@@ -14,6 +14,8 @@ from core.db import get_mongo_db
 from core.club import Club
 from core.match import ClubMatch
 
+from core.signals import challenge_match_signal
+
 from utils.message import MessagePipe
 from config import ConfigChallengeMatch, ConfigStaff, ConfigErrorMessage
 
@@ -106,6 +108,15 @@ class Challenge(object):
         msg = match.start()
         next_id = self.set_next_match_id(challenge_id)
         self.send_notify(challenge_id=next_id)
+
+        challenge_match_signal.send(
+            sender=None,
+            server_id=self.char_id,
+            char_id=self.char_id,
+            challenge_id=challenge_id,
+            win=msg.club_one_win,
+        )
+
         return msg
 
 
