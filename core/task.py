@@ -50,7 +50,7 @@ class TaskRefresh(object):
 
 
     def refresh(self):
-        data = {}
+        levels = {}
         task_center = ConfigBuilding.get(TASK_CENTRE_ID)
         for i in range(1, task_center.max_levels+1):
             task_num = task_center.get_level(i).value1
@@ -60,11 +60,11 @@ class TaskRefresh(object):
             except ValueError:
                 task_ids = TASK_LEVEL_IDS_DICT[i]
 
-            data['levels.{0}'.format(i)] = task_ids
+            levels[str(i)] = task_ids
 
         self.mongo.common.update_one(
             {'_id':  self.TASK_COMMON_MONGO_ID},
-            {'$set': data},
+            {'$set': {'levels': levels}},
             upsert=True
         )
 
