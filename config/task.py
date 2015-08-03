@@ -4,17 +4,21 @@ from config.base import ConfigBase
 import random
 
 class Task(object):
-    __slots__ = ['id', 'name', 'level', 'des',
-                 'tp', 'num', 'package']
+    __slots__ = ['id', 'name', 'level',
+                 'tp', 'num', 'reward']
 
     def __init__(self):
         self.id = None
         self.name = None
         self.level = None
-        self.des = None
         self.tp = None
         self.num = None
-        self.package = None
+        self.reward = None
+
+    @property
+    def package(self):
+        return self.reward
+
 
 class ConfigTask(ConfigBase):
     # 类实体

@@ -111,7 +111,7 @@ class Challenge(object):
 
         challenge_match_signal.send(
             sender=None,
-            server_id=self.char_id,
+            server_id=self.server_id,
             char_id=self.char_id,
             challenge_id=challenge_id,
             win=msg.club_one_win,
