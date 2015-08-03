@@ -9,6 +9,8 @@ urlpatterns = [
 
     url(r'^admin/', include(admin.site.urls)),
 
+    url(r'^game/sync/$', 'views.sync.sync'),
+
     url(r'^game/account/register/$', 'views.account.register'),
     url(r'^game/account/login/$', 'views.account.login'),
 
