@@ -99,18 +99,18 @@ MAIL_EMBEDDED_DOCUMENT = {
     'attachment': ""
 }
 
-TASK_DOCUMENT = {
+TASK_COMMON_DOCUMENT = {
     '_id': 'task',
-    'tasks': {},
+    'levels': {},
 }
 
-CHARACTER_TASK_DOCUMENT = {
+TASK_CHAR_DOCUMENT = {
     '_id': null,
     'tasks': {}
 }
 
 
-TASK_EMBEDDED_DOCUMENT = {
+TASK_CHAR_EMBEDDED_DOCUMENT = {
     'num': 0,
     'status': 0,
 }
@@ -185,9 +185,9 @@ class Document(object):
         "mail": MAIL_DOCUMENT,
         "mail.embedded": MAIL_EMBEDDED_DOCUMENT,
 
-        "task": TASK_DOCUMENT,
-        "char_task": CHARACTER_TASK_DOCUMENT,
-        "task.embedded": TASK_EMBEDDED_DOCUMENT,
+        "task.common": TASK_COMMON_DOCUMENT,
+        "task.char": TASK_CHAR_DOCUMENT,
+        "task.char.embedded": TASK_CHAR_EMBEDDED_DOCUMENT,
 
         "league_group": DEFAULT_LEAGUE_GROUP_DOCUMENT,
         "league_event": DEFAULT_LEAGUE_EVENT_DOCUMENT,

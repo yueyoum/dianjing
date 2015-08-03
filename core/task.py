@@ -2,6 +2,7 @@
 
 __author__ = 'hikaly'
 
+import random
 
 from dianjing.exception import GameException
 
@@ -22,41 +23,69 @@ TASK_STATUS_UNRECEIVED = 0
 TASK_STATUS_DOING = 1
 TASK_STATUS_FINISH = 2
 TASK_STATUS_END = 3
+
+
 TASK_CENTRE_ID = 4
+# 每个等级要刷新的任务数量
+TASK_REFRESH_AMOUNT_PER_LEVEL = 10
+
+
+TASK_LEVEL_IDS_DICT = {
+    lv: ConfigTask.filter(level=lv).keys() for lv in range(1, ConfigBuilding.get(TASK_CENTRE_ID).max_levels+1)
+    }
+
 
 class TaskRefresh(object):
+    TASK_COMMON_MONGO_ID = 'task'
+
     def __init__(self, server_id):
         self.server = server_id
         self.mongo = get_mongo_db(server_id)
-        data = self.mongo.common.find_one({'_id': 'task'}, {'tasks': 1})
-        if not data:
-            doc = Document.get('task')
-            self.mongo.common.insert_one(doc)
 
-    def task_refresh(self):
-        task_centre = ConfigBuilding.get(TASK_CENTRE_ID)
-        task_dict = {}
 
-        for lv in range(1, task_centre.max_levels+1):
-            task_dict[lv] = ConfigTask.filter(level=lv).keys()
+    @classmethod
+    def cron_job(cls, server_id):
+        self = cls(server_id)
+        self.refresh()
 
-        for i in range(1, task_centre.max_levels+1):
-            task_num = task_centre.get_level(i).value1
-            j = i
-            list_temp = []
-            while task_num and j:
-                for v in task_dict[j]:
-                    if task_num:
-                        list_temp.append(v)
-                        task_num -= 1
-                    else:
-                        break
-                j -= 1
 
-            self.mongo.common.update(
-                {'_id': 'tasks'},
-                {'$set': {'level.{0}'.format(i): list_temp}}
-            )
+    def refresh(self):
+        data = {}
+        task_center = ConfigBuilding.get(TASK_CENTRE_ID)
+        for i in range(1, task_center.max_levels+1):
+            task_num = task_center.get_level(i).value1
+
+            try:
+                task_ids = random.sample(TASK_LEVEL_IDS_DICT[i], task_num)
+            except ValueError:
+                task_ids = TASK_LEVEL_IDS_DICT[i]
+
+            data['levels.{0}'.format(i)] = task_ids
+
+        self.mongo.common.update_one(
+            {'_id':  self.TASK_COMMON_MONGO_ID},
+            {'$set': data},
+            upsert=True
+        )
+
+    def get_task_ids(self, building_level):
+        doc = self.mongo.common.find_one(
+            {'_id': self.TASK_COMMON_MONGO_ID},
+            {'levels.{0}'.format(building_level): 1}
+        )
+
+        def get():
+            return doc.get('levels', {}).get(str(building_level), [])
+
+        task_ids = get()
+        if not task_ids:
+            self.refresh()
+
+        task_ids = get()
+        if not task_ids:
+            raise RuntimeError("can not get task.common for building_level {0}".format(building_level))
+
+        return task_ids
 
 
 
@@ -68,10 +97,13 @@ class TaskManage(object):
 
         doc = self.mongo.task.find_one({'_id': self.char_id}, {'_id': 1})
         if not doc:
-            doc = Document.get("task")
-            doc['_id'] = self.char_id
-            self.mongo.task.insert_one(doc)
             self.refresh()
+
+    @classmethod
+    def clean(cls, server_id):
+        mongo = get_mongo_db(server_id)
+        mongo.task.drop()
+
 
     def receive(self, task_id):
         task = ConfigTask.get(task_id)
@@ -90,7 +122,7 @@ class TaskManage(object):
         if str(task_id) in task['tasks']:
             raise GameException(ConfigErrorMessage.get_error_id("TASK_ALREADY_DOING"))
 
-        doc = Document.get("task.embedded")
+        doc = Document.get("task.char.embedded")
         doc['status'] = TASK_STATUS_DOING
 
         self.mongo.task.update_one(
@@ -164,21 +196,25 @@ class TaskManage(object):
 
         self.send_notify(ACT_UPDATE, [task_id])
 
-    def clear(self):
-        # clear task data
-        self.mongo.task.drop()
 
     def refresh(self):
-        char = self.mongo.character.find_on({'_id': self.char_id}, {'club': 1})
-        club_lv = char['club']['level']
-        tasks = self.mongo.common.find_one({'_id': 'tasks'}, {'level.{0}'.format(club_lv): 1})
-        task_ids = tasks[str(club_lv)]
+        task_doc = Document.get("task.char")
+        task_doc['_id'] = self.char_id
 
-        doc = Document.get("task.embedded")
-        doc['status'] = TASK_STATUS_UNRECEIVED
+        building_doc = self.mongo.building.find_one(
+            {'_id': self.char_id},
+            {'buildings.{0}'.format(TASK_CENTRE_ID): 1}
+        )
 
-        for task_id in task_ids:
-            self.mongo.task.update(
-                {'_id': self.char_id},
-                {'$set': {'task.{0}'.format(task_id): doc}}
-            )
+        level = building_doc['buildings'].get(str(TASK_CENTRE_ID), 1)
+        task_ids = TaskRefresh(self.server_id).get_task_ids(level)
+
+        new_tasks_doc = Document.get("task.char.embedded")
+        new_tasks_doc['status'] = TASK_STATUS_UNRECEIVED
+
+        new_tasks = {'tasks.{0}'.format(task_id): new_tasks_doc for task_id in task_ids}
+
+        self.mongo.task.update_one(
+            {'_id': self.char_id},
+            {'$set': {'tasks': new_tasks}}
+        )
