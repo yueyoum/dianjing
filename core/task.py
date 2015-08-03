@@ -30,10 +30,7 @@ class TaskRefresh(object):
         self.mongo = get_mongo_db(server_id)
         data = self.mongo.common.find_one({'_id': 'task'}, {'tasks': 1})
         if not data:
-            doc = {
-                '_id': 'task',
-                'tasks': {},
-            }
+            doc = Document.get('task')
             self.mongo.common.insert_one(doc)
 
     def task_refresh(self):
@@ -45,7 +42,6 @@ class TaskRefresh(object):
 
         for i in range(1, task_centre.max_levels+1):
             task_num = task_centre.get_level(i).value1
-
             j = i
             list_temp = []
             while task_num and j:
@@ -60,6 +56,8 @@ class TaskRefresh(object):
                 {'$set': {'level.{0}'.format(i): list_temp}}
             )
 
+
+
 class TaskManage(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
@@ -71,6 +69,7 @@ class TaskManage(object):
             doc = Document.get("task")
             doc['_id'] = self.char_id
             self.mongo.task.insert_one(doc)
+            self.refresh()
 
     def receive(self, task_id):
         task = ConfigTask.get(task_id)
@@ -88,7 +87,6 @@ class TaskManage(object):
 
         if str(task_id) in task['tasks']:
             raise GameException(ConfigErrorMessage.get_error_id("TASK_ALREADY_DOING"))
-
 
         doc = Document.get("task.embedded")
         doc['status'] = TASK_STATUS_DOING
@@ -166,7 +164,7 @@ class TaskManage(object):
 
     def clear(self):
         # clear task data
-        self.mongo.task.delete_one({'_id': self.char_id})
+        self.mongo.task.drop()
 
     def refresh(self):
         char = self.mongo.character.find_on({'_id': self.char_id}, {'club': 1})
@@ -174,10 +172,9 @@ class TaskManage(object):
         tasks = self.mongo.common.find_one({'_id': 'tasks'}, {'level.{0}'.format(club_lv): 1})
         task_ids = tasks[str(club_lv)]
 
-        doc = {
-            'num': 0,
-            'status': TASK_STATUS_UNRECEIVED,
-        }
+        doc = Document.get("task.embedded")
+        doc['status'] = TASK_STATUS_UNRECEIVED
+
         for task_id in task_ids:
             self.mongo.task.update(
                 {'_id': self.char_id},

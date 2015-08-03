@@ -100,6 +100,11 @@ MAIL_EMBEDDED_DOCUMENT = {
 }
 
 TASK_DOCUMENT = {
+    '_id': 'task',
+    'tasks': {},
+}
+
+CHARACTER_TASK_DOCUMENT = {
     '_id': null,
     'tasks': {}
 }
@@ -179,7 +184,9 @@ class Document(object):
         "friend": DEFAULT_FRIEND_DOCUMENT,
         "mail": MAIL_DOCUMENT,
         "mail.embedded": MAIL_EMBEDDED_DOCUMENT,
+
         "task": TASK_DOCUMENT,
+        "char_task": CHARACTER_TASK_DOCUMENT,
         "task.embedded": TASK_EMBEDDED_DOCUMENT,
 
         "league_group": DEFAULT_LEAGUE_GROUP_DOCUMENT,
