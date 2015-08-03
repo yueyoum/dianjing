@@ -1,17 +1,22 @@
-__author__ = 'hikaly'
-
 # -*- coding:utf-8 -*-
 
-from config.task import ConfigTask
-from config import ConfigErrorMessage
-from config.building import ConfigBuilding
+__author__ = 'hikaly'
+
+
+from dianjing.exception import GameException
 
 from core.db import get_mongo_db
+from core.mongo import Document
 from core.resource import Resource
-from dianjing.exception import GameException
+
+from config import ConfigErrorMessage
+from config.task import ConfigTask
+from config.building import ConfigBuilding
+
+from utils.message import MessagePipe
+
 from protomsg.task_pb2 import TaskNotify
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
-from utils.message import MessagePipe
 
 TASK_STATUS_UNRECEIVED = 0
 TASK_STATUS_DOING = 1
@@ -61,9 +66,10 @@ class TaskManage(object):
         self.char_id = char_id
         self.mongo = get_mongo_db(self.server_id)
 
-        data = self.mongo.task.find_one({'_id': self.char_id})
-        if not data:
-            doc = {'_id': self.char_id, 'tasks': {}}
+        doc = self.mongo.task.find_one({'_id': self.char_id}, {'_id': 1})
+        if not doc:
+            doc = Document.get("task")
+            doc['_id'] = self.char_id
             self.mongo.task.insert_one(doc)
 
     def receive(self, task_id):
@@ -71,31 +77,45 @@ class TaskManage(object):
         if not task:
             raise GameException(ConfigErrorMessage.get_error_id('TASK_NOT_EXIST'))
 
-        club = self.mongo.character.find_on({'_id': self.char_id}, {'club': 1})
-        if club['club']['level'] < task.level:
+        char = self.mongo.character.find_one({'_id': self.char_id}, {'club.level': 1})
+        if char['club']['level'] < task.level:
             raise GameException(ConfigErrorMessage.get_error_id('CLUB_LEVEL_NOT_ENOUGH'))
 
-        doc = {
-            'num': 0,
-            'status': TASK_STATUS_DOING,
-        }
-        self.mongo.task.update(
+        task = self.mongo.task.find_one(
+            {'_id': self.char_id},
+            {'tasks.{0}'.format(task_id): 1}
+        )
+
+        if str(task_id) in task['tasks']:
+            raise GameException(ConfigErrorMessage.get_error_id("TASK_ALREADY_DOING"))
+
+
+        doc = Document.get("task.embedded")
+        doc['status'] = TASK_STATUS_DOING
+
+        self.mongo.task.update_one(
             {'_id': self.char_id},
             {'$set': {'tasks.{0}'.format(task_id): doc}}
         )
         self.send_notify(ACT_UPDATE, [task_id])
 
     def get_reward(self, task_id):
-
         # check task finish
         task = self.mongo.task.find_one({'_id': self.char_id}, {'tasks.{0}'.format(task_id): 1})
-        if task['tasks'][str(task_id)]['status'] != 2:
-            raise GameException(ConfigErrorMessage.get_error_id('TASK_NOT_FINISH'))
-        # add rewarded
-        config = ConfigTask.get(task_id)
 
+        this_task = task['tasks'].get(str(task_id), None)
+        if not this_task:
+            raise GameException(ConfigErrorMessage.get_error_id("TASK_NOT_EXIST"))
+
+        if this_task['status'] == TASK_STATUS_DOING:
+            raise GameException(ConfigErrorMessage.get_error_id("TASK_NOT_DONE"))
+
+        if this_task['status'] == TASK_STATUS_END:
+            raise GameException(ConfigErrorMessage.get_error_id("TASK_ALREADY_GET_REWARD"))
+
+        config = ConfigTask.get(task_id)
         Resource(self.server_id, self.char_id).add_from_package_id(config.package)
-        self.mongo.task.update(
+        self.mongo.task.update_one(
             {'_id': self.char_id},
             {'$set': {'tasks.{0}.status'.format(task_id): TASK_STATUS_END}}
         )
@@ -122,23 +142,24 @@ class TaskManage(object):
         MessagePipe(self.char_id).put(msg=notify)
 
     def update(self, **kwargs):
-        task_id = kwargs.get('id', 0)
+        task_id = kwargs.get('task_id', 0)
         num = kwargs.get('num', 0)
-        task = self.mongo.task.find_one({'_id': self.char_id}, {'tasks.{0}'.format(task_id): 1})
-        num += task['tasks'][str(task_id)]['num']
 
-        # Tips//status: 0==received  1==finished  2==rewarded
+        task = self.mongo.task.find_one({'_id': self.char_id}, {'tasks.{0}'.format(task_id): 1})
+        if str(task_id) not in task['tasks']:
+            # 没有接此任务
+            return
+
+        num += task['tasks'][str(task_id)]['num']
+        updater = {'tasks.{0}.num'.format(task_id): num}
+
         config = ConfigTask.get(task_id)
         if num >= config.num:
-            num = config.num
-            self.mongo.task.update(
-                {'_id': self.char_id},
-                {'$set': {'tasks.{0}.status'.format(task_id): TASK_STATUS_FINISH}}
-            )
+            updater['tasks.{0}.status'.format(task_id)] = TASK_STATUS_FINISH
 
-        self.mongo.task.update(
+        self.mongo.task.update_one(
             {'_id': self.char_id},
-            {'$set': {'tasks.{0}.num'.format(task_id): num}}
+            {'$set': updater}
         )
 
         self.send_notify(ACT_UPDATE, [task_id])
