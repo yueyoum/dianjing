@@ -122,7 +122,7 @@ class TaskManager(object):
             {'tasks.{0}'.format(task_id): 1}
         )
 
-        if str(task_id) in task['tasks']:
+        if task['tasks'].get(str(task_id), {}).get('status', None) != TASK_STATUS_UNRECEIVED:
             raise GameException(ConfigErrorMessage.get_error_id("TASK_ALREADY_DOING"))
 
         doc = Document.get("task.char.embedded")
