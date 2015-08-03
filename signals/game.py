@@ -21,7 +21,7 @@ from core.league import League
 from core.friend import FriendManager
 from core.mail import MailManager
 from core.task import TaskManager
-
+from core.chat import Chat
 
 
 from utils.message import MessagePipe
@@ -49,6 +49,8 @@ def start(server_id, char_id, **kwargs):
     FriendManager(server_id, char_id).send_notify()
     MailManager(server_id, char_id).send_notify()
     TaskManager(server_id, char_id).send_notify()
+
+    Chat(server_id, char_id).send_notify()
 
 game_start_signal.connect(
     start,

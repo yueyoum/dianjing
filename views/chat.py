@@ -1,0 +1,29 @@
+# -*- coding: utf-8 -*-
+"""
+Author:         Wang Chao <yueyoum@gmail.com>
+Filename:       chat
+Date Created:   2015-08-03 18:21
+Description:
+
+"""
+
+from utils.http import ProtobufResponse
+
+from core.chat import Chat
+
+from protomsg.chat_pb2 import ChatSendResponse
+
+
+def send(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    channel = request._proto.channel
+    msg = request._proto.msg
+
+    chat = Chat(server_id, char_id)
+    chat.send(channel, msg)
+
+    response = ChatSendResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
