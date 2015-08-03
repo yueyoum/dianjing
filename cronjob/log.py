@@ -36,6 +36,13 @@ class Logger(object):
     def write(self, text):
         self.f.write("{0} {1}\n".format(self.now, text))
 
+    def error(self, text):
+        # TODO send mail
+        self.write("==== ERROR ====")
+        self.write(text)
+        self.write("==== ===== ====")
+
+
     def close(self):
         self.f.close()
         print "==== CRON FINISH {0} [{1}] ====".format(self.now, self.name)

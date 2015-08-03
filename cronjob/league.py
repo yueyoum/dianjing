@@ -29,6 +29,7 @@ time_two = arrow.get(LEAGUE_START_TIME_TWO, "HH:mm:ssZ").to(settings.TIME_ZONE)
 @uwsgidecorators.cron(0, 0, -1, -1, 1, target="mule")
 def league_new(*args):
     logger = Logger("league_new")
+    logger.write("Start")
 
     try:
         connection.close()
@@ -38,9 +39,9 @@ def league_new(*args):
             LeagueGame.new(s.id)
             logger.write("server {0} finish".format(s.id))
     except:
-        logger.write(traceback.format_exc())
+        logger.error(traceback.format_exc())
     else:
-        logger.write("done")
+        logger.write("Done")
     finally:
         logger.close()
 
@@ -48,6 +49,7 @@ def league_new(*args):
 # 每天定时开启的比赛
 def league_match(*args):
     logger = Logger("league_match")
+    logger.write("Start")
 
     try:
         connection.close()
@@ -57,9 +59,9 @@ def league_match(*args):
             LeagueGame.start_match(s.id)
             logger.write("server {0} finish".format(s.id))
     except:
-        logger.write(traceback.format_exc())
+        logger.error(traceback.format_exc())
     else:
-        logger.write("done")
+        logger.write("Done")
     finally:
         logger.close()
 
