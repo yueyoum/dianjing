@@ -89,7 +89,7 @@ class TaskRefresh(object):
 
 
 
-class TaskManage(object):
+class TaskManager(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
