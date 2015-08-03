@@ -18,6 +18,7 @@ from config import ConfigErrorMessage
 
 
 from protomsg.chat_pb2 import CHAT_CHANNEL_PUBLIC, CHAT_CHANNEL_UNION, ChatNotify, ChatMessage
+from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
 
 class Chat(object):
@@ -59,6 +60,7 @@ class Chat(object):
 
         # TODO performance
         notify = ChatNotify()
+        notify.act = ACT_UPDATE
         notify_msg = notify.msgs.add()
         notify_msg.MergeFrom(msg)
 
@@ -68,6 +70,7 @@ class Chat(object):
 
     def send_notify(self):
         notify = ChatNotify()
+        notify.act = ACT_INIT
 
         msgs = self.mongo.common.find_one({'_id': self.CHAT_COMMON_MONGO_ID}, {'chats': 1})
         for m in msgs:
