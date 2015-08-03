@@ -1,6 +1,8 @@
 
 MESSAGE_TO_ID = {
     "UTCNotify": 10,
+    "SyncRequest": 11,
+    "SyncResponse": 12,
     "GetServerListRequest": 100,
     "GetServerListResponse": 101,
     "StartGameRequest": 102,
@@ -79,10 +81,15 @@ MESSAGE_TO_ID = {
     "MailDeleteResponse": 1307,
     "MailGetAttachmentRequest": 1308,
     "MailGetAttachmentResponse": 1309,
+    "ChatNotify": 1400,
+    "ChatSendRequest": 1401,
+    "ChatSendResponse": 1402,
 }
 
 ID_TO_MESSAGE = {
     10: "UTCNotify",
+    11: "SyncRequest",
+    12: "SyncResponse",
     100: "GetServerListRequest",
     101: "GetServerListResponse",
     102: "StartGameRequest",
@@ -161,9 +168,13 @@ ID_TO_MESSAGE = {
     1307: "MailDeleteResponse",
     1308: "MailGetAttachmentRequest",
     1309: "MailGetAttachmentResponse",
+    1400: "ChatNotify",
+    1401: "ChatSendRequest",
+    1402: "ChatSendResponse",
 }
 
 PATH_TO_REQUEST = {
+    "/game/sync/": ["common", "SyncRequest"],
     "/game/servers/": ["server", "GetServerListRequest"],
     "/game/start/": ["server", "StartGameRequest"],
     "/game/account/register/": ["account", "RegisterRequest"],
@@ -195,9 +206,11 @@ PATH_TO_REQUEST = {
     "/game/mail/open/": ["mail", "MailOpenRequest"],
     "/game/mail/delete/": ["mail", "MailDeleteRequest"],
     "/game/mail/getattachment/": ["mail", "MailGetAttachmentRequest"],
+    "/game/chat/send/": ["chat", "ChatSendRequest"],
 }
 
 PATH_TO_RESPONSE = {
+    "/game/sync/": ["common", "SyncResponse"],
     "/game/servers/": ["server", "GetServerListResponse"],
     "/game/start/": ["server", "StartGameResponse"],
     "/game/account/register/": ["account", "RegisterResponse"],
@@ -229,4 +242,5 @@ PATH_TO_RESPONSE = {
     "/game/mail/open/": ["mail", "MailOpenResponse"],
     "/game/mail/delete/": ["mail", "MailDeleteResponse"],
     "/game/mail/getattachment/": ["mail", "MailGetAttachmentResponse"],
+    "/game/chat/send/": ["chat", "ChatSendResponse"],
 }
