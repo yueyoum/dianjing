@@ -148,7 +148,7 @@ class TaskManage(object):
         task = self.mongo.task.find_one({'_id': self.char_id}, {'tasks.{0}'.format(task_id): 1})
         if str(task_id) not in task['tasks']:
             # 没有接此任务
-            raise GameException(ConfigErrorMessage.get_error_id(''))
+            raise GameException(ConfigErrorMessage.get_error_id('TASK_NOT_FIND'))
 
         num += task['tasks'][str(task_id)]['num']
         updater = {'tasks.{0}.num'.format(task_id): num}
