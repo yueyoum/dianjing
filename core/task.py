@@ -49,6 +49,8 @@ class TaskRefresh(object):
                     if task_num:
                         list_temp.append(v)
                         task_num -= 1
+                    else:
+                        break
                 j -= 1
 
             self.mongo.common.update(
@@ -146,7 +148,7 @@ class TaskManage(object):
         task = self.mongo.task.find_one({'_id': self.char_id}, {'tasks.{0}'.format(task_id): 1})
         if str(task_id) not in task['tasks']:
             # 没有接此任务
-            return
+            raise GameException(ConfigErrorMessage.get_error_id(''))
 
         num += task['tasks'][str(task_id)]['num']
         updater = {'tasks.{0}.num'.format(task_id): num}
