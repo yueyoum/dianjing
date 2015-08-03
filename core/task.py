@@ -69,12 +69,15 @@ class TaskRefresh(object):
         )
 
     def get_task_ids(self, building_level):
-        doc = self.mongo.common.find_one(
-            {'_id': self.TASK_COMMON_MONGO_ID},
-            {'levels.{0}'.format(building_level): 1}
-        )
-
         def get():
+            doc = self.mongo.common.find_one(
+                {'_id': self.TASK_COMMON_MONGO_ID},
+                {'levels.{0}'.format(building_level): 1}
+            )
+
+            if not doc:
+                return []
+
             return doc.get('levels', {}).get(str(building_level), [])
 
         task_ids = get()
@@ -166,7 +169,7 @@ class TaskManager(object):
         notify = TaskNotify()
         notify.act = act
         for k, v in tasks.iteritems():
-            s = notify.tasks.add()
+            s = notify.task.add()
             s.id = int(k)
             s.num = v['num']
             s.status = v['status']
@@ -212,9 +215,10 @@ class TaskManager(object):
         new_tasks_doc = Document.get("task.char.embedded")
         new_tasks_doc['status'] = TASK_STATUS_UNRECEIVED
 
-        new_tasks = {'tasks.{0}'.format(task_id): new_tasks_doc for task_id in task_ids}
+        new_tasks = {str(task_id): new_tasks_doc for task_id in task_ids}
 
         self.mongo.task.update_one(
             {'_id': self.char_id},
-            {'$set': {'tasks': new_tasks}}
+            {'$set': {'tasks': new_tasks}},
+            upsert=True
         )
