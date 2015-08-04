@@ -22,6 +22,7 @@ from core.friend import FriendManager
 from core.mail import MailManager
 from core.task import TaskManager
 from core.chat import Chat
+from core.notification import Notification
 
 
 from utils.message import MessagePipe
@@ -51,6 +52,8 @@ def start(server_id, char_id, **kwargs):
     TaskManager(server_id, char_id).send_notify()
 
     Chat(server_id, char_id).send_notify()
+
+    Notification(server_id, char_id).send_notify()
 
 game_start_signal.connect(
     start,

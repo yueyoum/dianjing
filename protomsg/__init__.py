@@ -84,6 +84,7 @@ MESSAGE_TO_ID = {
     "ChatNotify": 1400,
     "ChatSendRequest": 1401,
     "ChatSendResponse": 1402,
+    "NotificationNotify": 1500,
 }
 
 ID_TO_MESSAGE = {
@@ -171,6 +172,7 @@ ID_TO_MESSAGE = {
     1400: "ChatNotify",
     1401: "ChatSendRequest",
     1402: "ChatSendResponse",
+    1500: "NotificationNotify",
 }
 
 PATH_TO_REQUEST = {
