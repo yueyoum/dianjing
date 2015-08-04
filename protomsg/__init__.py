@@ -85,6 +85,9 @@ MESSAGE_TO_ID = {
     "ChatSendRequest": 1401,
     "ChatSendResponse": 1402,
     "NotificationNotify": 1500,
+    "NotificationOpenRequest": 1501,
+    "NotificationOpenResponse": 1502,
+    "FinanceStatisticsNotify": 1600,
 }
 
 ID_TO_MESSAGE = {
@@ -173,6 +176,9 @@ ID_TO_MESSAGE = {
     1401: "ChatSendRequest",
     1402: "ChatSendResponse",
     1500: "NotificationNotify",
+    1501: "NotificationOpenRequest",
+    1502: "NotificationOpenResponse",
+    1600: "FinanceStatisticsNotify",
 }
 
 PATH_TO_REQUEST = {
@@ -209,6 +215,7 @@ PATH_TO_REQUEST = {
     "/game/mail/delete/": ["mail", "MailDeleteRequest"],
     "/game/mail/getattachment/": ["mail", "MailGetAttachmentRequest"],
     "/game/chat/send/": ["chat", "ChatSendRequest"],
+    "/game/notification/open/": ["notification", "NotificationOpenRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -245,4 +252,5 @@ PATH_TO_RESPONSE = {
     "/game/mail/delete/": ["mail", "MailDeleteResponse"],
     "/game/mail/getattachment/": ["mail", "MailGetAttachmentResponse"],
     "/game/chat/send/": ["chat", "ChatSendResponse"],
+    "/game/notification/open/": ["notification", "NotificationOpenResponse"],
 }

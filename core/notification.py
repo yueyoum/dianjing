@@ -7,6 +7,7 @@ Description:
 
 """
 
+import random
 import arrow
 
 from core.db import MongoDB
@@ -24,8 +25,12 @@ class Notification(object):
         self.mongo = MongoDB.get(server_id)
 
 
+    def open(self, noti_id):
+        # TODO
+        self.send_notify(act=ACT_UPDATE)
 
-    def send_notify(self):
+
+    def send_notify(self, act=ACT_INIT):
         # TODO read data
         data = {
             1: [u"哈哈哈", u"100", u"199", u"29"],
@@ -35,12 +40,14 @@ class Notification(object):
         }
 
         notify = NotificationNotify()
-        notify.act = ACT_INIT
+        notify.act = act
 
         for k, v in data.items():
             notify_noti = notify.notifications.add()
+            notify_noti.id = str(k)
             notify_noti.timestamp = arrow.utcnow().timestamp
             notify_noti.tp = k
             notify_noti.args.extend(v)
+            notify_noti.opened = random.choice([True, False])
 
         MessagePipe(self.char_id).put(msg=notify)

@@ -58,5 +58,7 @@ urlpatterns = [
     url(r'^game/task/getreward/$', 'views.task.reward'),
 
     url(r'^game/chat/send/$', 'views.chat.send'),
+
+    url(r'game/notification/open/$', 'views.notification.open'),
 ]
 
