@@ -72,10 +72,14 @@ class Chat(object):
         notify = ChatNotify()
         notify.act = ACT_INIT
 
-        msgs = self.mongo.common.find_one({'_id': self.CHAT_COMMON_MONGO_ID}, {'chats': 1})
-        for m in msgs:
+        doc = self.mongo.common.find_one({'_id': self.CHAT_COMMON_MONGO_ID}, {'chats': 1})
+        chats = doc.get('chats', [])
+        if not chats:
+            return
+
+        for c in chats:
             notify_msg = notify.msgs.add()
-            notify_msg.MergeFromString(base64.b64decode(m))
+            notify_msg.MergeFromString(base64.b64decode(c))
 
         MessagePipe(self.char_id).put(msg=notify)
 
