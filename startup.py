@@ -7,13 +7,17 @@ Description:
 
 """
 
+from django.conf import settings
+
 def setup():
-    from core.db import mongo_connect
-    mongo_connect()
+    from core.db import connect
+    connect()
 
     from config import load_config
     load_config()
 
     import signals
-    import cronjob
+
+    if not settings.TEST:
+        import cronjob
 

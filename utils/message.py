@@ -8,7 +8,7 @@ Description:
 """
 import struct
 
-from core.db import redis_client
+from core.db import RedisDB
 from protomsg import MESSAGE_TO_ID
 
 
@@ -48,13 +48,13 @@ class MessagePipe(object):
 
         assert data is not None
 
-        with redis_client.pipeline() as p:
+        with RedisDB.get().pipeline() as p:
             p.rpush(self.key, data)
             p.expire(self.key, EXPIRE)
             p.execute()
 
     def get(self):
-        with redis_client.pipeline() as p:
+        with RedisDB.get().pipeline() as p:
             p.lrange(self.key, 0, -1)
             p.delete(self.key)
             result = p.execute()
@@ -62,5 +62,5 @@ class MessagePipe(object):
         return result[0]
 
     def clean(self):
-        redis_client.delete(self.key)
+        RedisDB.get().delete(self.key)
 

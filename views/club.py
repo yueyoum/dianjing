@@ -12,14 +12,13 @@ from django.db import IntegrityError
 from django.db import transaction
 
 from dianjing.exception import GameException
-from apps.character.models import Character
+from apps.character.models import Character as ModelCharacter
 
 from utils.http import ProtobufResponse
 from config import ConfigErrorMessage
 
 from core.signals import game_start_signal
-from core.db import get_mongo_db
-from core.mongo import Document
+from core.character import Character
 from core.club import Club
 
 from protomsg.club_pb2 import (
@@ -38,7 +37,7 @@ def create(request):
     server_id = session.server_id
     char_id = session.char_id
 
-    char = Character.objects.get(id=char_id)
+    char = ModelCharacter.objects.get(id=char_id)
     if char.club_name:
         raise GameException( ConfigErrorMessage.get_error_id("CLUB_ALREADY_CREATED") )
 
@@ -50,15 +49,7 @@ def create(request):
         except IntegrityError:
             raise GameException( ConfigErrorMessage.get_error_id("CLUB_NAME_TAKEN") )
 
-        doc = Document.get("character")
-        doc['_id'] = char_id
-        doc['name'] = char.name
-        doc['club']['name'] = name
-        doc['club']['flag'] = flag
-
-        mongo = get_mongo_db(server_id)
-        mongo.character.insert_one(doc)
-
+        Character.create(server_id, char_id, char.name, name, flag)
 
     game_start_signal.send(
         sender=None,

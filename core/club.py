@@ -27,6 +27,10 @@ from config import (
 from protomsg.club_pb2 import ClubNotify
 
 
+def club_level_up_need_renown(level):
+    return ConfigClubLevel.get(level).renown
+
+
 class Club(AbstractClub):
     def __init__(self, server_id, char_id):
         super(Club, self).__init__()
@@ -64,7 +68,6 @@ class Club(AbstractClub):
 
 
     def set_policy(self, policy):
-        # TODO check
         if not ConfigPolicy.get(policy):
             raise GameException(ConfigErrorMessage.get_error_id('POLICY_NOT_EXIST'))
 
@@ -116,15 +119,26 @@ class Club(AbstractClub):
 
         self.gold += gold
         self.diamond += diamond
+        self.renown += renown
 
-        next_level_id = ConfigClubLevel.get(self.level).next_level_id
-        if next_level_id:
-            self.renown += renown
+        # update
+        while True:
+            next_level_id = ConfigClubLevel.get(self.level).next_level_id
+            if not next_level_id:
+                break
 
-            need_renown = ConfigClubLevel.get(self.level).renown
-            if self.renown >= need_renown:
-                self.renown -= need_renown
-                self.level = next_level_id
+            need_renown = club_level_up_need_renown(self.level)
+            if self.renown < need_renown:
+                break
+
+            self.renown -= need_renown
+            self.level += 1
+
+        # cap the max level renown
+        if not ConfigClubLevel.get(self.level).next_level_id:
+            this_renown = club_level_up_need_renown(self.level)
+            if self.renown >= this_renown:
+                self.renown = this_renown - 1
 
 
         self.mongo.character.update_one(
