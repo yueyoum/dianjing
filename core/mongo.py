@@ -15,12 +15,14 @@ class Null(object):
 
 null = Null()
 
-DEFAULT_COMMON_DOCUMENT = {
+# 公共数据
+COMMON_DOCUMENT = {
     '_id': null,
     'value': null,
 }
 
-DEFAULT_CHARACTER_DOCUMENT = {
+# 角色
+CHARACTER_DOCUMENT = {
     '_id': null,
     'name': null,
 
@@ -39,17 +41,23 @@ DEFAULT_CHARACTER_DOCUMENT = {
         'tibu_staffs': []
     },
 
-    # 员工列表
-    'staffs': {},
     # 挑战赛ID
     'challenge_id': ConfigChallengeMatch.FIRST_ID,
-    # 拥有的训练ID列表
-    'own_trainings': {},
     # 所属联赛小组
     'league_group': 0,
 }
 
-DEFAULT_STAFF_DOCUMENT = {
+
+STAFF_DOCUMENT = {
+    '_id': null,
+    # 员工， 定义见下面的 STAFF_EMBEDDED
+    'staffs': {},
+    # 拥有的训练
+    'trainings': []
+}
+
+
+STAFF_EMBEDDED_DOCUMENT = {
     'exp': 0,
     'level': 1,
     'status': 3,
@@ -57,17 +65,19 @@ DEFAULT_STAFF_DOCUMENT = {
     'trainings': [],
 }
 
-# 嵌入上staff中
-DEFAULT_SKILL_DOCUMENT = {
+# 嵌入staff中
+STAFF_EMBEDDED_SKILL_DOCUMENT = {
     'level': 1,
     'locked': 0
 }
 
-
-DEFAULT_RECRUIT_DOCUMENT = {
+# 招募刷新
+RECRUIT_DOCUMENT = {
     '_id': null,
     'tp': null,
+    # staffs 记录刷新出来的员工
     'staffs': [],
+    # times 记录刷新次数 tp: times
     'times': {}
 }
 
@@ -175,11 +185,12 @@ DEFAULT_LEAGUE_CLUB_DOCUMENT = {
 
 class Document(object):
     DOCUMENTS = {
-        "common": DEFAULT_COMMON_DOCUMENT,
-        "character": DEFAULT_CHARACTER_DOCUMENT,
-        "staff": DEFAULT_STAFF_DOCUMENT,
-        "skill": DEFAULT_SKILL_DOCUMENT,
-        "recruit": DEFAULT_RECRUIT_DOCUMENT,
+        "common": COMMON_DOCUMENT,
+        "character": CHARACTER_DOCUMENT,
+        "staff": STAFF_DOCUMENT,
+        "staff.embedded": STAFF_EMBEDDED_DOCUMENT,
+        "skill.embedded": STAFF_EMBEDDED_SKILL_DOCUMENT,
+        "recruit": RECRUIT_DOCUMENT,
         "building": DEFAULT_BUILDING_DOCUMENT,
         "friend": DEFAULT_FRIEND_DOCUMENT,
         "mail": MAIL_DOCUMENT,

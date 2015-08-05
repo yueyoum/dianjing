@@ -13,10 +13,12 @@ from dianjing.exception import GameException
 
 from core.base import STAFF_ATTRS
 from core.abstract import AbstractStaff
-from core.db import get_mongo_db
+from core.db import MongoDB
 from core.mongo import Document
 from core.resource import Resource
+from core.common import Common
 from core.skill import SkillManager
+
 from config import (
     ConfigStaff, ConfigStaffHot, ConfigStaffRecruit,
     ConfigTraining, ConfigStaffLevel, ConfigErrorMessage
@@ -25,6 +27,7 @@ from config import (
 from utils.message import MessagePipe
 
 from protomsg.staff_pb2 import StaffRecruitNotify, StaffNotify, StaffRemoveNotify
+from protomsg.staff_pb2 import RECRUIT_DIAMOND, RECRUIT_GOLD, RECRUIT_HOT, RECRUIT_NORMAL
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 class Staff(AbstractStaff):
@@ -57,75 +60,97 @@ class StaffRecruit(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-        self.mongo = get_mongo_db(self.server_id)
+        self.mongo = MongoDB.get(server_id)
 
-        data = self.mongo.recruit.find_one({'_id': self.char_id}, {'_id': 1})
-        if not data:
+        doc = self.mongo.recruit.find_one({'_id': self.char_id}, {'_id': 1})
+        if not doc:
             doc = Document.get("recruit")
             doc['_id'] = self.char_id
-            doc['tp'] = 1
+            doc['tp'] = RECRUIT_HOT
             self.mongo.recruit.insert_one(doc)
 
-    def get_normal_staff(self):
-        data = self.mongo.recruit.find_one({'_id': self.char_id}, {'staffs': 1})
-        return data.get('staffs', [])
 
-    def get_hot_staff(self):
-        data = self.mongo.common.find_one({'_id': 'recruit_hot'}, {'value': 1})
-        if not data or not data.get('value', []):
+    def get_self_refreshed_staffs(self):
+        data = self.mongo.recruit.find_one({'_id': self.char_id}, {'staffs': 1, 'tp': 1})
+        tp = data.get('tp', RECRUIT_HOT)
+        if tp == RECRUIT_HOT:
+            return []
+
+        return data['staffs']
+
+
+    def get_hot_staffs(self):
+        recruit_hot_mongo_key = 'recruit_hot'
+
+        data = Common.get(self.server_id, recruit_hot_mongo_key)
+        if not data:
             staffs = ConfigStaffHot.random_three()
-            self.mongo.common.update_one(
-                {'_id': 'recruit_hot'},
-                {'$set': {'value': staffs}},
-                upsert=True
-            )
+            Common.set(self.server_id, recruit_hot_mongo_key, staffs)
             return staffs
 
-        return data['value']
+        return data
+
 
     def refresh(self, tp):
-        # 1:热门  2:普通  3:白金  4:钻石
-        if tp == 1:
-            staffs = self.get_hot_staff()
-            self.mongo.recruit.update_one(
-                {'_id': self.char_id},
-                {'$set': {'tp': tp}, '$unset': {'staffs': 1}}
-            )
+        if tp == RECRUIT_HOT:
+            staffs = self.get_hot_staffs()
         else:
-            if tp == 2:
+            if tp == RECRUIT_NORMAL:
                 refresh_id = 1
-            elif tp == 3:
+            elif tp == RECRUIT_GOLD:
                 refresh_id = 2
-            elif tp == 4:
+            elif tp == RECRUIT_DIAMOND:
                 refresh_id = 3
             else:
-                raise RuntimeError()
+                raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-            result = ConfigStaffRecruit.get(refresh_id).get_refreshed_staffs()
-            staffs = []
-            for quality, amount in result:
-                staffs.extend( ConfigStaff.get_random_ids_by_condition(amount, quality=quality) )
+            config = ConfigStaffRecruit.get(refresh_id)
+            if config.cost_type == 1:
+                cost = {'gold': -config.cost_value}
+            else:
+                cost = {'diamond': -config.cost_value}
 
-            self.mongo.recruit.update_one(
+            doc = self.mongo.recruit.find_one(
                 {'_id': self.char_id},
-                {'$set': {'tp': tp, 'staffs': staffs}}
+                {'times.{0}'.format(refresh_id): 1}
             )
+
+            times = doc['times'].get(str(refresh_id), 0)
+            is_first = False
+            is_lucky = False
+            if times == 0:
+                is_first = True
+            else:
+                if times % config.lucky_times == 0:
+                    is_lucky = True
+
+            with Resource(self.server_id, self.char_id).check(**cost):
+                result = ConfigStaffRecruit.get(refresh_id).get_refreshed_staffs(first=is_first, lucky=is_lucky)
+                staffs = []
+                for quality, amount in result:
+                    staffs.extend( ConfigStaff.get_random_ids_by_condition(amount, quality=quality) )
+
+
+        self.mongo.recruit.update_one(
+            {'_id': self.char_id},
+            {
+                '$set': {'tp': tp, 'staffs': staffs},
+                '$inc': {'times.{0}'.format(tp): 1}
+            }
+        )
 
         self.send_notify(staffs=staffs, tp=tp)
 
 
     def recruit(self, staff_id):
-        # check staff have
-        if StaffManger(self.server_id, self.char_id).has_staff(staff_id):
-            raise GameException(ConfigErrorMessage.get_error_id('STAFF_ALREADY_HAVE'))
-
-        # check staff exist
         if not ConfigStaff.get(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
 
-        # check pay enough
+        if StaffManger(self.server_id, self.char_id).has_staff(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id('STAFF_ALREADY_HAVE'))
+
+
         staff = ConfigStaff.get(staff_id)
-        # 1:gold    2:diamond
         if staff.buy_type == 1:
             needs = {'gold': -staff.buy_cost}
         else:
@@ -139,15 +164,16 @@ class StaffRecruit(object):
 
     def send_notify(self, staffs=None, tp=None):
         if not staffs:
-            staffs = self.get_normal_staff()
+            staffs = self.get_self_refreshed_staffs()
             if not staffs:
                 # 取common中的人气推荐
-                staffs = self.get_hot_staff()
+                staffs = self.get_hot_staffs()
+                tp = RECRUIT_HOT
+            else:
+                tp = self.mongo.recruit.find_one({'_id': self.char_id}, {'tp': 1})['tp']
 
-            tp = self.mongo.recruit.find_one({'_id': self.char_id}, {'tp': 1})['tp']
 
-        char = self.mongo.character.find_one({'_id': self.char_id}, {'staffs': 1})
-        already_recruited_staffs = char.get('staffs', {})
+        already_recruited_staffs = StaffManger(self.server_id, self.char_id).get_all_staff_ids()
 
         notify = StaffRecruitNotify()
         notify.tp = tp
@@ -164,26 +190,69 @@ class StaffManger(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-        self.mongo = get_mongo_db(server_id)
+        self.mongo = MongoDB.get(server_id)
+
+        doc = self.mongo.staff.find_one({'_id': self.char_id}, {'_id': 1})
+        if not doc:
+            doc = Document.get("staff")
+            doc['_id'] = self.char_id
+            self.mongo.staff.insert_one(doc)
+
+
+    def get_all_staff_ids(self):
+        doc = self.mongo.staff.find_one({'_id': self.char_id}, {'staffs': 1})
+        if not doc:
+            return []
+
+        staffs = doc.get('staffs', {})
+        return [int(i) for i in staffs.keys()]
+
+
+    def has_staff(self, staff_ids):
+        if not isinstance(staff_ids, (list, tuple)):
+            staff_ids = [staff_ids]
+
+        projection = {'staffs.{0}'.format(i): 1 for i in staff_ids}
+
+        doc = self.mongo.staff.find_one({'_id': self.char_id}, projection)
+        if not doc:
+            return False
+
+        for staff_id in staff_ids:
+            if str(staff_id) not in doc['staffs']:
+                return False
+
+        return True
+
 
     def add(self, staff_id):
-        doc = Document.get('staff')
+        if not ConfigStaff.get(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
+
+        if self.has_staff(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_ALREADY_HAVE"))
+
+        doc = Document.get('staff.embedded')
         default_skills = ConfigStaff.get(staff_id).skill_ids
 
-        skills = {str(sid): Document.get('skill') for sid in default_skills}
+        skills = {str(sid): Document.get('skill.embedded') for sid in default_skills}
         doc['skills'] = skills
 
-        self.mongo.character.update_one(
+        self.mongo.staff.update_one(
             {'_id': self.char_id},
-            {'$set': {'staffs.{0}'.format(staff_id): doc}}
+            {'$set': {'staffs.{0}'.format(staff_id): doc}},
         )
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
-        SkillManager(self.server_id, self.char_id).send_notify(act=ACT_INIT, staff_id=staff_id)
+        SkillManager(self.server_id, self.char_id).send_notify(staff_id=staff_id)
 
 
     def remove(self, staff_id):
-        self.mongo.character.update_one(
+        if not self.has_staff(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
+
+
+        self.mongo.staff.update_one(
             {'_id': self.char_id},
             {'$unset': {'staffs.{0}'.format(staff_id): 1}}
         )
@@ -206,7 +275,7 @@ class StaffManger(object):
 
         key = 'staffs.{0}.trainings'.format(staff_id)
 
-        self.mongo.character.update_one(
+        self.mongo.staff.update_one(
             {'_id': self.char_id},
             {'$push': {key: data}}
         )
@@ -221,7 +290,7 @@ class StaffManger(object):
 
         key = "staffs.{0}.trainings".format(staff_id)
 
-        char = self.mongo.character.find_one({'_id': self.char_id}, {key: 1})
+        char = self.mongo.staff.find_one({'_id': self.char_id}, {key: 1})
         trainings = char['staffs'][str(staff_id)]['trainings']
         data = trainings[slot_id]
 
@@ -231,7 +300,7 @@ class StaffManger(object):
 
         trainings.pop(slot_id)
 
-        self.mongo.character.update_one(
+        self.mongo.staff.update_one(
             {'_id': self.char_id},
             {'$set': {key: trainings}}
         )
@@ -256,7 +325,7 @@ class StaffManger(object):
         yishi = kwargs.get('yishi', 0)
         caozuo = kwargs.get('caozuo', 0)
 
-        char = self.mongo.character.find_one({'_id': self.char_id}, {'staffs.{0}'.format(staff_id): 1})
+        char = self.mongo.staff.find_one({'_id': self.char_id}, {'staffs.{0}'.format(staff_id): 1})
         this_staff = char['staffs'][str(staff_id)]
 
         next_level = ConfigStaffLevel.get(this_staff['level']).next_level
@@ -272,7 +341,7 @@ class StaffManger(object):
             new_exp = this_staff['exp']
             new_level = this_staff['level']
 
-        self.mongo.character.update_one(
+        self.mongo.staff.update_one(
             {'_id': self.char_id},
             {'$inc': {
                 'staffs.{0}.exp'.format(staff_id): new_exp,
@@ -341,8 +410,8 @@ class StaffManger(object):
         else:
             projection = {'staffs.{0}'.format(i): 1 for i in staff_ids}
 
-        char = self.mongo.character.find_one({'_id': self.char_id}, projection)
-        staffs = char.get('staffs', {})
+        doc = self.mongo.staff.find_one({'_id': self.char_id}, projection)
+        staffs = doc.get('staffs', {})
 
         notify = StaffNotify()
         notify.act = act
@@ -351,20 +420,6 @@ class StaffManger(object):
             self.msg_staff(s, int(k), v)
 
         MessagePipe(self.char_id).put(msg=notify)
-
-
-    def has_staff(self, staff_ids):
-        if not isinstance(staff_ids, (list, tuple)):
-            staff_ids = [staff_ids]
-
-        projection = {'staffs.{0}'.format(i): 1 for i in staff_ids}
-
-        char = self.mongo.character.find_one({'_id': self.char_id}, projection)
-        for staff_id in staff_ids:
-            if str(staff_id) not in char['staffs']:
-                return False
-
-        return True
 
 
     def is_training_finish(self, training_id, start_at):

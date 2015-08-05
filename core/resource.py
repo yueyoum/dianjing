@@ -106,9 +106,9 @@ class Resource(object):
         club = Club(self.server_id, self.char_id)
 
         if abs(gold) > club.gold and gold < 0:
-            raise GameException(ConfigErrorMessage.get_error_id('NOT_ENOUGH_GOLD'))
+            raise GameException(ConfigErrorMessage.get_error_id('GOLD_NOT_ENOUGH'))
         elif abs(diamond) > club.diamond and diamond < 0:
-            raise GameException(ConfigErrorMessage.get_error_id('NOT_ENOUGH_DIAMOND'))
+            raise GameException(ConfigErrorMessage.get_error_id('DIAMOND_NOT_ENOUGH'))
 
         yield
 

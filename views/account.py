@@ -14,6 +14,7 @@ from utils.http import ProtobufResponse
 from utils.session import GameSession
 
 from core.account import register as register_func, regular_login, third_login
+from config import ConfigErrorMessage
 
 from protomsg.account_pb2 import Account as MsgAccount, RegisterResponse, LoginResponse
 
@@ -40,7 +41,7 @@ def login(request):
     elif account.tp == MsgAccount.THIRD:
         account = third_login(account.third.platform, account.third.uid, account.third.param)
     else:
-        raise GameException(1)
+        raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
 
     response = LoginResponse()
@@ -49,5 +50,4 @@ def login(request):
     response.account.MergeFrom(request._proto.account)
 
     return ProtobufResponse(response)
-
 

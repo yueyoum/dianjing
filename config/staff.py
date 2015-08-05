@@ -74,6 +74,14 @@ class StaffRecruit(object):
     KEY_LUCKY = "lucky_amount"
     KEY_NORMAL = "normal_amount"
 
+    def __init__(self):
+        self.id = None
+        self.name = None
+        self.lucky_times = None
+        self.cost_type = None
+        self.cost_value = None
+        self.staff_settings = None
+
 
     def get_refreshed_staffs(self, first=False, lucky=False):
         """
