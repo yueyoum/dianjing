@@ -10,7 +10,6 @@ Description:
 import os
 import json
 import zipfile
-from django.conf import settings
 
 from config.errormsg import ConfigErrorMessage
 from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigStaffLevel
@@ -33,10 +32,11 @@ class _Config(object):
 
 
 def load_config():
+    from django.conf import settings
+
     global CONFIG
     if CONFIG is not None:
         return
-
 
     attr_dict = {}
 

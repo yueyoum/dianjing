@@ -135,18 +135,20 @@ TASK_CHAR_EMBEDDED_DOCUMENT = {
 
 
 # 联赛
-DEFAULT_LEAGUE_GROUP_DOCUMENT = {
+LEAGUE_GROUP_DOCUMENT = {
     '_id': null,
     'level': null,
     # clubs 记录了这个小组中的14个club 信息
+    # 见下面的 LEAGUE_EMBEDDED_CLUB_DOCUMENT
     'clubs': {},
     # events 是记录的一组一组的比赛，一共14场
     # 要打哪一场是根据 LeagueGame.find_order() 来决定的，
+    # 这里没记录是的 gevent_id
     'events': [],
 }
 
 # 每天定时打的比赛，其中有7对俱乐部比赛
-DEFAULT_LEAGUE_EVENT_DOCUMENT = {
+LEAGUE_EVENT_DOCUMENT = {
     '_id': null,
     # 开始的时间，UTC时间戳
     'start_at': 0,
@@ -156,7 +158,7 @@ DEFAULT_LEAGUE_EVENT_DOCUMENT = {
 
 # pair 嵌入到上面 event 中的 pairs
 # 理由和下面一样
-DEFAULT_LEAGUE_PAIR_DOCUMENT = {
+LEAGUE_EVENT_EMBEDDED_PAIR_DOCUMENT = {
     'club_one': null,
     'club_two': null,
     'club_one_win': False,
@@ -173,11 +175,11 @@ DEFAULT_LEAGUE_PAIR_DOCUMENT = {
 # 每次 取完 group 和 pair 后，还有 额外的14次IO
 # 如果 有大量的分组 (group)，那么这个IO开销将是很消耗系统资源的
 # 如果嵌套起来， 那么只有两次IO
-# 因为取 group 的时候，这些 clubs信息也一起返回了
+# 因为取 group 的时候，这些 clubs 信息也一起返回了
 # 但是要注意协议中ID的处理
 # 而且 一个group中 club 只有14个，其大小是比较小的
 # 所以可以嵌入
-DEFAULT_LEAGUE_CLUB_DOCUMENT = {
+LEAGUE_EMBEDDED_CLUB_DOCUMENT = {
     # club_id 为 0 表示为npc
     'club_id': 0,
     'match_times': 0,
@@ -212,10 +214,10 @@ class Document(object):
         "task.char": TASK_CHAR_DOCUMENT,
         "task.char.embedded": TASK_CHAR_EMBEDDED_DOCUMENT,
 
-        "league_group": DEFAULT_LEAGUE_GROUP_DOCUMENT,
-        "league_event": DEFAULT_LEAGUE_EVENT_DOCUMENT,
-        "league_pair": DEFAULT_LEAGUE_PAIR_DOCUMENT,
-        "league_club": DEFAULT_LEAGUE_CLUB_DOCUMENT,
+        "league.group": LEAGUE_GROUP_DOCUMENT,
+        "league.event": LEAGUE_EVENT_DOCUMENT,
+        "league.pair": LEAGUE_EVENT_EMBEDDED_PAIR_DOCUMENT,
+        "league.club": LEAGUE_EMBEDDED_CLUB_DOCUMENT,
     }
 
     @classmethod
