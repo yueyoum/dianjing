@@ -163,8 +163,10 @@ class TestTask(object):
         task_data = MongoDB.get(test_server_id).task.find_one({'_id': test_char_id},
                                                               {'tasks.{0}'.format(test_char_id): 1})
         task = task_data['tasks'][str(test_char_id)]
-        print task
         assert task['status'] == 2
 
     def test_get_task_ids(self):
         pass
+
+
+
