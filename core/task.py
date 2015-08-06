@@ -9,6 +9,7 @@ from dianjing.exception import GameException
 from core.db import get_mongo_db
 from core.mongo import Document
 from core.resource import Resource
+from core.building import BuildingManager
 
 from config import ConfigErrorMessage
 from config.task import ConfigTask
@@ -202,12 +203,7 @@ class TaskManager(object):
         task_doc = Document.get("task.char")
         task_doc['_id'] = self.char_id
 
-        building_doc = self.mongo.building.find_one(
-            {'_id': self.char_id},
-            {'buildings.{0}'.format(TASK_CENTRE_ID): 1}
-        )
-
-        level = building_doc['buildings'].get(str(TASK_CENTRE_ID), 1)
+        level = BuildingManager(self.server_id, self.char_id).get_level(TASK_CENTRE_ID)
         task_ids = TaskRefresh(self.server_id).get_task_ids(level)
 
         new_tasks_doc = Document.get("task.char.embedded")

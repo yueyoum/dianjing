@@ -15,12 +15,14 @@ class Null(object):
 
 null = Null()
 
-DEFAULT_COMMON_DOCUMENT = {
+# 公共数据
+COMMON_DOCUMENT = {
     '_id': null,
     'value': null,
 }
 
-DEFAULT_CHARACTER_DOCUMENT = {
+# 角色
+CHARACTER_DOCUMENT = {
     '_id': null,
     'name': null,
 
@@ -39,17 +41,23 @@ DEFAULT_CHARACTER_DOCUMENT = {
         'tibu_staffs': []
     },
 
-    # 员工列表
-    'staffs': {},
     # 挑战赛ID
     'challenge_id': ConfigChallengeMatch.FIRST_ID,
-    # 拥有的训练ID列表
-    'own_trainings': {},
     # 所属联赛小组
     'league_group': 0,
 }
 
-DEFAULT_STAFF_DOCUMENT = {
+
+STAFF_DOCUMENT = {
+    '_id': null,
+    # 员工， 定义见下面的 STAFF_EMBEDDED
+    'staffs': {},
+    # 拥有的训练
+    'trainings': {}
+}
+
+
+STAFF_EMBEDDED_DOCUMENT = {
     'exp': 0,
     'level': 1,
     'status': 3,
@@ -57,21 +65,31 @@ DEFAULT_STAFF_DOCUMENT = {
     'trainings': [],
 }
 
-# 嵌入上staff中
-DEFAULT_SKILL_DOCUMENT = {
+# 嵌入staff中
+STAFF_EMBEDDED_SKILL_DOCUMENT = {
     'level': 1,
     'locked': 0
 }
 
 
-DEFAULT_RECRUIT_DOCUMENT = {
+# 嵌入staff中
+STAFF_EMBEDDED_TRAININGS_DOCUMENT = {
+    'training_id': null,
+    'start_at': null
+}
+
+# 招募刷新
+RECRUIT_DOCUMENT = {
     '_id': null,
     'tp': null,
+    # staffs 记录刷新出来的员工
     'staffs': [],
+    # times 记录刷新次数 tp: times
     'times': {}
 }
 
-DEFAULT_BUILDING_DOCUMENT = {
+# 建筑
+BUILDING_DOCUMENT = {
     '_id': null,
     'buildings': {str(i): 1 for i in ConfigBuilding.can_level_up_building_ids()}
 }
@@ -117,18 +135,20 @@ TASK_CHAR_EMBEDDED_DOCUMENT = {
 
 
 # 联赛
-DEFAULT_LEAGUE_GROUP_DOCUMENT = {
+LEAGUE_GROUP_DOCUMENT = {
     '_id': null,
     'level': null,
     # clubs 记录了这个小组中的14个club 信息
+    # 见下面的 LEAGUE_EMBEDDED_CLUB_DOCUMENT
     'clubs': {},
     # events 是记录的一组一组的比赛，一共14场
     # 要打哪一场是根据 LeagueGame.find_order() 来决定的，
+    # 这里没记录是的 gevent_id
     'events': [],
 }
 
 # 每天定时打的比赛，其中有7对俱乐部比赛
-DEFAULT_LEAGUE_EVENT_DOCUMENT = {
+LEAGUE_EVENT_DOCUMENT = {
     '_id': null,
     # 开始的时间，UTC时间戳
     'start_at': 0,
@@ -138,7 +158,7 @@ DEFAULT_LEAGUE_EVENT_DOCUMENT = {
 
 # pair 嵌入到上面 event 中的 pairs
 # 理由和下面一样
-DEFAULT_LEAGUE_PAIR_DOCUMENT = {
+LEAGUE_EVENT_EMBEDDED_PAIR_DOCUMENT = {
     'club_one': null,
     'club_two': null,
     'club_one_win': False,
@@ -155,11 +175,11 @@ DEFAULT_LEAGUE_PAIR_DOCUMENT = {
 # 每次 取完 group 和 pair 后，还有 额外的14次IO
 # 如果 有大量的分组 (group)，那么这个IO开销将是很消耗系统资源的
 # 如果嵌套起来， 那么只有两次IO
-# 因为取 group 的时候，这些 clubs信息也一起返回了
+# 因为取 group 的时候，这些 clubs 信息也一起返回了
 # 但是要注意协议中ID的处理
 # 而且 一个group中 club 只有14个，其大小是比较小的
 # 所以可以嵌入
-DEFAULT_LEAGUE_CLUB_DOCUMENT = {
+LEAGUE_EMBEDDED_CLUB_DOCUMENT = {
     # club_id 为 0 表示为npc
     'club_id': 0,
     'match_times': 0,
@@ -175,12 +195,17 @@ DEFAULT_LEAGUE_CLUB_DOCUMENT = {
 
 class Document(object):
     DOCUMENTS = {
-        "common": DEFAULT_COMMON_DOCUMENT,
-        "character": DEFAULT_CHARACTER_DOCUMENT,
-        "staff": DEFAULT_STAFF_DOCUMENT,
-        "skill": DEFAULT_SKILL_DOCUMENT,
-        "recruit": DEFAULT_RECRUIT_DOCUMENT,
-        "building": DEFAULT_BUILDING_DOCUMENT,
+        "common": COMMON_DOCUMENT,
+        "character": CHARACTER_DOCUMENT,
+
+        "staff": STAFF_DOCUMENT,
+        "staff.embedded": STAFF_EMBEDDED_DOCUMENT,
+        "skill.embedded": STAFF_EMBEDDED_SKILL_DOCUMENT,
+        "training.embedded": STAFF_EMBEDDED_TRAININGS_DOCUMENT,
+
+
+        "recruit": RECRUIT_DOCUMENT,
+        "building": BUILDING_DOCUMENT,
         "friend": DEFAULT_FRIEND_DOCUMENT,
         "mail": MAIL_DOCUMENT,
         "mail.embedded": MAIL_EMBEDDED_DOCUMENT,
@@ -189,13 +214,16 @@ class Document(object):
         "task.char": TASK_CHAR_DOCUMENT,
         "task.char.embedded": TASK_CHAR_EMBEDDED_DOCUMENT,
 
-        "league_group": DEFAULT_LEAGUE_GROUP_DOCUMENT,
-        "league_event": DEFAULT_LEAGUE_EVENT_DOCUMENT,
-        "league_pair": DEFAULT_LEAGUE_PAIR_DOCUMENT,
-        "league_club": DEFAULT_LEAGUE_CLUB_DOCUMENT,
+        "league.group": LEAGUE_GROUP_DOCUMENT,
+        "league.event": LEAGUE_EVENT_DOCUMENT,
+        "league.pair": LEAGUE_EVENT_EMBEDDED_PAIR_DOCUMENT,
+        "league.club": LEAGUE_EMBEDDED_CLUB_DOCUMENT,
     }
 
     @classmethod
     def get(cls, name):
         return cls.DOCUMENTS[name].copy()
 
+
+
+MONGO_COMMON_KEY_RECRUIT_HOT = 'recruit_hot'

@@ -51,28 +51,31 @@ import arrow
 
 from django.conf import settings
 
-from core.db import get_mongo_db
+from dianjing.exception import GameException
+
+from core.db import MongoDB
 from core.mongo import Document
 from core.club import Club
 from core.match import ClubMatch
 from core.abstract import AbstractClub, AbstractStaff
 
 from config.settings import LEAGUE_START_TIME_ONE, LEAGUE_START_TIME_TWO
-from config import ConfigNPC, ConfigStaff
+from config import ConfigNPC, ConfigStaff, ConfigErrorMessage
 
 from utils.message import MessagePipe
 
 from protomsg.league_pb2 import LeagueNotify
 
-TIME_ZONE = settings.TIME_ZONE
 
 GROUP_CLUBS_AMOUNT = 14
 GROUP_MAX_REAL_CLUBS_AMOUNT = 12
 
+ARROW_FORMAT = "YYYY-MM-DD HH:mm:ssZ"
+
 
 def time_string_to_datetime(day_text, time_text):
     text = "%s %s" % (day_text, time_text)
-    return arrow.get(text).to(TIME_ZONE)
+    return arrow.get(text).to(settings.TIME_ZONE)
 
 def make_id():
     return str(uuid.uuid4())
@@ -110,8 +113,6 @@ class LeagueNPCClub(AbstractClub):
         self.flag = 1
         self.policy = 1
 
-        self.match_staffs = [s['id'] for s in staffs]
-
         for s in staffs:
             self.match_staffs.append(s['id'])
             self.staffs[s['id']] = LeagueNPCStaff(s)
@@ -131,6 +132,7 @@ class LeagueClub(object):
 class LeagueMatch(object):
     # 一对俱乐部比赛
     def __init__(self, server_id, club_one, club_two):
+        # club_one, club_two 是存在mongodb中的数据
         self.server_id = server_id
         self.club_one = club_one
         self.club_two = club_two
@@ -157,14 +159,13 @@ class LeagueMatch(object):
 
 
 
-
 class LeagueGame(object):
     # 每周的联赛
 
     @staticmethod
     def find_order():
         # 确定当前应该打第几场
-        now = arrow.utcnow().to(TIME_ZONE)
+        now = arrow.utcnow().to(settings.TIME_ZONE)
         now_day_text = now.format("YYYY-MM-DD")
 
         weekday = now.weekday()
@@ -184,7 +185,7 @@ class LeagueGame(object):
     @staticmethod
     def find_match_time(order):
         # 根据场次返回开始时间
-        now = arrow.utcnow().to(TIME_ZONE)
+        now = arrow.utcnow().to(settings.TIME_ZONE)
 
         # 一天打两次
         days, rest = divmod(order, 2)
@@ -206,18 +207,18 @@ class LeagueGame(object):
             # 也就是当天/第二天第一场
             time_text = LEAGUE_START_TIME_ONE
 
-        date_text = "{0} {1}+08:00".format(
+        date_text = "{0} {1}".format(
             now.replace(days=change_days).format("YYYY-MM-DD"),
             time_text
         )
 
-        return arrow.get(date_text)
+        return arrow.get(date_text).replace(tzinfo=settings.TIME_ZONE)
 
 
 
     @staticmethod
     def clean(server_id):
-        mongo = get_mongo_db(server_id)
+        mongo = MongoDB.get(server_id)
 
         mongo.character.update_many({}, {"$unset": {"league_group": 1}})
         mongo.league_group.drop()
@@ -233,15 +234,14 @@ class LeagueGame(object):
         # TODO 死号
         # TODO 如何根据server_id来将定时任务分配到多台机器上
 
-        mongo = get_mongo_db(server_id)
+        mongo = MongoDB.get(server_id)
         # TODO 判断size 是否要建立索引？
         chars = mongo.character.find({'club.match_staffs': {'$size': 5}}, {'club.match_staffs': 1})
 
+        # TODO league level
         g = LeagueGroup(server_id, 1)
 
         for c in chars:
-            # FIXME 这只是一个 workaround...
-            # 应该在前面避免出现非法 match_staffs 的情况
             if 0 in c['club']['match_staffs']:
                 continue
 
@@ -265,13 +265,13 @@ class LeagueGame(object):
         g.finish()
 
         LeagueGame.start_match(server_id, group_ids=[g.id])
-
         League(server_id, club_id).send_notify()
+
 
     @staticmethod
     def start_match(server_id, group_ids=None, order=None):
         # 开始一场比赛
-        mongo = get_mongo_db(server_id)
+        mongo = MongoDB.get(server_id)
 
         if not order:
             order = LeagueGame.find_order()
@@ -340,7 +340,7 @@ class LeagueGroup(object):
 
         self.server_id = server_id
         self.level = level
-        self.mongo = get_mongo_db(server_id)
+        self.mongo = MongoDB.get(server_id)
 
         self.real_clubs = []
         self.all_clubs = {}
@@ -365,7 +365,7 @@ class LeagueGroup(object):
 
 
         def make_real_club_doc(club_id):
-            club = Document.get("league_club")
+            club = Document.get("league.club")
             club['club_id'] = club_id
             return club
 
@@ -375,7 +375,7 @@ class LeagueGroup(object):
 
             :type npc: config.npc.NPC
             """
-            club = Document.get("league_club")
+            club = Document.get("league.club")
             club['club_id'] = 0
 
             club['club_name'] = npc.name
@@ -465,16 +465,16 @@ class LeagueGroup(object):
     def save(self, match):
 
         def make_pair_doc(club_one, club_two):
-            doc = Document.get("league_pair")
+            doc = Document.get("league.pair")
             doc['club_one'] = club_one
             doc['club_two'] = club_two
             return doc
 
 
         for index, event in enumerate(match):
-            edoc = Document.get("league_event")
+            edoc = Document.get("league.event")
             edoc['_id'] = make_id()
-            edoc['start_at'] = LeagueGame.find_match_time(index+1).format("YYYY-MM-DD HH:mm:ssZ")
+            edoc['start_at'] = LeagueGame.find_match_time(index+1).format(ARROW_FORMAT)
 
             pair_docs = [make_pair_doc(one, two) for one, two in event]
             edoc['pairs'] = {str(i+1): pair_docs[i] for i in range(len(pair_docs))}
@@ -482,7 +482,7 @@ class LeagueGroup(object):
             self.event_docs.append(edoc)
 
 
-        group_doc = Document.get("league_group")
+        group_doc = Document.get("league.group")
         group_doc['_id'] = self.id
         group_doc['level'] = self.level
         group_doc['clubs'] = self.all_clubs
@@ -503,10 +503,10 @@ class League(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-        self.mongo = get_mongo_db(server_id)
+        self.mongo = MongoDB.get(server_id)
 
-        char = self.mongo.character.find_one({'_id': self.char_id}, {'league_group': 1})
-        self.group_id = char.get('league_group', "")
+        doc = self.mongo.character.find_one({'_id': self.char_id}, {'league_group': 1})
+        self.group_id = doc.get('league_group', "")
 
         self.order = LeagueGame.find_order()
 
@@ -519,9 +519,12 @@ class League(object):
             {'clubs.{0}'.format(club_id): 1}
         )
 
+        if not league_group or club_id not in league_group['clubs']:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
         club_info = league_group['clubs'][club_id]
 
-        # FIXME
+        # TODO real data
         winning_rate = {
             't': 10,
             'z': 10,
@@ -531,15 +534,21 @@ class League(object):
         return [(i, winning_rate) for i in range(10, 16)]
 
 
-    def get_log(self, pair_id):
-        event_id, x = pair_id.split(':')
+    def get_log(self, league_pair_id):
+        event_id, pair_id = league_pair_id.split(':')
 
         league_event = self.mongo.league_event.find_one(
             {'_id': event_id},
-            {'pairs.{0}.log'.format(x): 1}
+            {'pairs.{0}.log'.format(pair_id): 1}
         )
 
-        log = league_event['pairs'][x]['log']
+        if not league_event or pair_id not in league_event['pairs']:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
+        log = league_event['pairs'][pair_id]['log']
+        if not log:
+            raise GameException(ConfigErrorMessage.get_error_id("LEAGUE_NO_LOG"))
+
         return base64.b64decode(log)
 
 
@@ -551,9 +560,6 @@ class League(object):
         league_events = self.mongo.league_event.find({'_id': {'$in': league_group['events']}})
 
         events = {e['_id']: e for e in league_events}
-        #
-        # # 将club信息缓存在这里，方便后续查找
-        # clubs = {}
 
         notify = LeagueNotify()
         notify.league.level = league_group['level']
@@ -591,7 +597,7 @@ class League(object):
             e = events[event_id]
 
             notify_event = notify.league.events.add()
-            notify_event.battle_at = arrow.get(e['start_at']).timestamp
+            notify_event.battle_at = arrow.get(e['start_at'], ARROW_FORMAT).timestamp
             notify_event.finished = e['finished']
 
             for k, v in e['pairs'].iteritems():

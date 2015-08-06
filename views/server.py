@@ -6,20 +6,19 @@ Date Created:   2015-07-02 18:20
 Description:
 
 """
-
+from utils.http import ProtobufResponse
 
 from dianjing.exception import GameException
-from utils.http import ProtobufResponse
-from protomsg.server_pb2 import GetServerListResponse, StartGameResponse
-from protomsg.common_pb2 import OPT_OK, OPT_CREATE_CHAR, OPT_CREATE_CLUB
 
 from apps.server.models import Server
 from apps.character.models import Character
 
-from config import ConfigErrorMessage
-
 from core.signals import game_start_signal
 
+from config import ConfigErrorMessage
+
+from protomsg.server_pb2 import GetServerListResponse, StartGameResponse
+from protomsg.common_pb2 import OPT_OK, OPT_CREATE_CHAR, OPT_CREATE_CLUB
 
 def get_server_list(request):
     servers = Server.opened_servers()

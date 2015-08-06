@@ -55,7 +55,7 @@ class AbstractClub(object):
 
 
     def match_staffs_ready(self):
-        return len(self.match_staffs) == 5
+        return len(self.match_staffs) == 5 and all([i!=0 for i in self.match_staffs])
 
 
     def get_max_renown(self):

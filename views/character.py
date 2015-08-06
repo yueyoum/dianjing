@@ -6,28 +6,26 @@ Date Created:   2015-07-02 18:26
 Description:
 
 """
-
-
 from django.db import IntegrityError
+
+
+from utils.http import ProtobufResponse
+
 from dianjing.exception import GameException
 from apps.character.models import Character as ModelCharacter
-from utils.http import ProtobufResponse
 
 from core.signals import char_created_signal
 from core.character import Character
 
+from config import ConfigErrorMessage
+from config.settings import CHAR_NAME_MAX_LENGTH
+
 from protomsg.character_pb2 import CreateCharacterResponse
 from protomsg.common_pb2 import OPT_CREATE_CLUB
 
-from config import ConfigErrorMessage
-
-
-
-CHAR_NAME_MAX_LENGTH = 7
 
 def create(request):
-    req = request._proto
-    name = req.name
+    name = request._proto.name
 
     if not name:
         raise GameException( ConfigErrorMessage.get_error_id("BAD_MESSAGE") )
