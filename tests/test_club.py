@@ -12,22 +12,27 @@ import random
 from dianjing.exception import GameException
 
 from core.club import Club, club_level_up_need_renown
+from core.staff import StaffManger
 from core.db import MongoDB
 
-from config import ConfigPolicy, ConfigErrorMessage
+from config import ConfigPolicy, ConfigErrorMessage, ConfigStaff
 
 class TestClub(object):
     def reset(self):
-        mongo = MongoDB.get(1)
-        mongo.character.update_one(
+        MongoDB.get(1).character.update_one(
             {'_id': 1},
             {'$set': {
                 'club.gold': 0,
                 'club.diamond': 0,
                 'club.level': 1,
-                'club.renown': 0
+                'club.renown': 0,
+                'club.match_staffs': [],
+                'club.tibu_staffs': []
             }}
         )
+
+        MongoDB.get(1).staff.delete_one({'_id': 1})
+
 
     def setUp(self):
         self.reset()
@@ -109,3 +114,31 @@ class TestClub(object):
         doc = MongoDB.get(1).character.find_one({'_id': 1}, {'club': 1})
         assert doc['club']['level'] == 5
         assert club.level == 5
+
+
+    def test_set_staffs_not_own(self):
+        staff_ids = random.sample(ConfigStaff.INSTANCES.keys(), 10)
+        try:
+            Club(1, 1).set_match_staffs(staff_ids)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST")
+        else:
+            raise RuntimeError("can not be here!")
+
+
+    def test_set_staffs(self):
+        staff_ids = random.sample(ConfigStaff.INSTANCES.keys(), 10)
+        sm = StaffManger(1, 1)
+        for sid in staff_ids:
+            sm.add(sid)
+
+        Club(1, 1).set_match_staffs(staff_ids)
+
+        assert len(Club(1, 1).match_staffs) == 5
+        assert len(Club(1, 1).tibu_staffs) == 5
+
+        for c in Club(1, 1).match_staffs:
+            assert c != 0
+
+        for c in Club(1, 1).tibu_staffs:
+            assert c != 0

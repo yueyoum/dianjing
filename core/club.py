@@ -43,13 +43,14 @@ class Club(AbstractClub):
 
 
     def load_data(self):
-        char = self.mongo.character.find_one({'_id': self.char_id}, {'club': 1, 'name': 1, 'staffs': 1})
-        club = char['club']
-        staffs = char.get('staffs', {})
+        char_doc = self.mongo.character.find_one({'_id': self.char_id}, {'club': 1, 'name': 1})
+
+        club = char_doc['club']
+        staffs = StaffManger(self.server_id, self.char_id).get_all_staffs()
 
         self.id = self.char_id                  # 玩家ID
         self.name = club['name']                # 俱乐部名
-        self.manager_name = char['name']        # 角色名
+        self.manager_name = char_doc['name']        # 角色名
         self.flag = club['flag']                # 俱乐部旗帜
         self.level = club['level']              # 俱乐部等级
         self.renown = club['renown']            # 俱乐部声望
@@ -81,12 +82,11 @@ class Club(AbstractClub):
 
 
     def set_match_staffs(self, staff_ids):
-        # TODO check
+        if len(staff_ids) != 10:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
         if not StaffManger(self.server_id, self.char_id).has_staff(staff_ids):
             raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
-        
-        if len(staff_ids) != 10:
-            raise RuntimeError("staff_ids is not 10 elements")
 
         match_staffs = staff_ids[:5]
         tibu_staffs = staff_ids[5:]

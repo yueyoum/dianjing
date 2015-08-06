@@ -26,9 +26,10 @@ from config import (
 
 from utils.message import MessagePipe
 
-from protomsg.staff_pb2 import StaffRecruitNotify, StaffNotify, StaffRemoveNotify
+from protomsg.staff_pb2 import StaffRecruitNotify, StaffNotify, StaffRemoveNotify, Staff as MsgStaff
 from protomsg.staff_pb2 import RECRUIT_DIAMOND, RECRUIT_GOLD, RECRUIT_HOT, RECRUIT_NORMAL
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
+
 
 class Staff(AbstractStaff):
     __slots__ = ['id', 'level', 'exp', 'status', 'skills'] + STAFF_ATTRS
@@ -200,12 +201,12 @@ class StaffManger(object):
 
 
     def get_all_staff_ids(self):
-        doc = self.mongo.staff.find_one({'_id': self.char_id}, {'staffs': 1})
-        if not doc:
-            return []
+        return [int(i) for i in self.get_all_staffs().keys()]
 
-        staffs = doc.get('staffs', {})
-        return [int(i) for i in staffs.keys()]
+
+    def get_all_staffs(self):
+        doc = self.mongo.staff.find_one({'_id': self.char_id}, {'staffs': 1})
+        return doc['staffs']
 
 
     def has_staff(self, staff_ids):
@@ -218,8 +219,10 @@ class StaffManger(object):
         if not doc:
             return False
 
+        staffs = doc.get('staffs', {})
+
         for staff_id in staff_ids:
-            if str(staff_id) not in doc['staffs']:
+            if str(staff_id) not in staffs:
                 return False
 
         return True
@@ -267,17 +270,15 @@ class StaffManger(object):
         # training_start 是在 外部 Training.use 中调用的，
         # 已经在外部做了错误检测。这里不用对 staff_id, 和 training_id 再次检查了
         # TODO check training num full ?
-
-        data = {
-            'training_id': training_id,
-            'start_at': arrow.utcnow().timestamp
-        }
+        doc = Document.get("training.embedded")
+        doc['training_id'] = training_id
+        doc['start_at'] = arrow.utcnow().timestamp
 
         key = 'staffs.{0}.trainings'.format(staff_id)
 
         self.mongo.staff.update_one(
             {'_id': self.char_id},
-            {'$push': {key: data}}
+            {'$push': {key: doc}}
         )
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
@@ -292,10 +293,14 @@ class StaffManger(object):
 
         char = self.mongo.staff.find_one({'_id': self.char_id}, {key: 1})
         trainings = char['staffs'][str(staff_id)]['trainings']
-        data = trainings[slot_id]
+
+        try:
+            data = trainings[slot_id]
+        except IndexError:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_NOT_EXIST"))
 
 
-        if not self.is_training_finish(data['training_id'], data['start_at']):
+        if not self.is_training_finished(data['training_id'], data['start_at']):
             raise GameException(ConfigErrorMessage.get_error_id('TRAINING_NOT_FINISHED'))
 
         trainings.pop(slot_id)
@@ -305,14 +310,16 @@ class StaffManger(object):
             {'$set': {key: trainings}}
         )
 
-        self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
-
         config_training = ConfigTraining.get(data['training_id'])
         if config_training.tp == 3:
             # 技能
             SkillManager(self.server_id, self.char_id).add_level(staff_id, config_training.skill_id, config_training.skill_level)
         else:
             Resource(self.server_id, self.char_id).add_from_package_id(config_training.package, staff_id)
+
+        self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
+
+
 
     def update(self, staff_id, **kwargs):
         exp = kwargs.get('exp', 0)
@@ -387,21 +394,21 @@ class StaffManger(object):
                 msg_training_slot.training_id = tr['training_id']
                 msg_training_slot.end_at = tr['start_at'] + ConfigTraining.get(tr['training_id']).minutes * 60
                 if msg_training_slot.end_at <= arrow.utcnow().timestamp:
-                    msg_training_slot.status = 5
+                    msg_training_slot.status = MsgStaff.TrainingSlot.TS_FINISHED
                 else:
-                    msg_training_slot.status = 4
+                    msg_training_slot.status = MsgStaff.TrainingSlot.TS_TRAINING
 
             except IndexError:
-                msg_training_slot.status = 2
+                msg_training_slot.status = MsgStaff.TrainingSlot.TS_EMPTY
 
         # 只有一个处于正在训练的状态
         in_queue = False
         for i in msg.training_slots:
-            if i.status == 4:
+            if i.status == MsgStaff.TrainingSlot.TS_TRAINING:
                 if not in_queue:
                     in_queue = True
                 else:
-                    i.status = 3
+                    i.status = MsgStaff.TrainingSlot.TS_QUEUE
 
 
     def send_notify(self, act=ACT_INIT, staff_ids=None):
@@ -422,7 +429,7 @@ class StaffManger(object):
         MessagePipe(self.char_id).put(msg=notify)
 
 
-    def is_training_finish(self, training_id, start_at):
+    def is_training_finished(self, training_id, start_at):
         now = arrow.utcnow().timestamp
         return now - start_at > ConfigTraining.get(training_id).minutes * 60
 

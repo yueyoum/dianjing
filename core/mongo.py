@@ -53,7 +53,7 @@ STAFF_DOCUMENT = {
     # 员工， 定义见下面的 STAFF_EMBEDDED
     'staffs': {},
     # 拥有的训练
-    'trainings': []
+    'trainings': {}
 }
 
 
@@ -69,6 +69,13 @@ STAFF_EMBEDDED_DOCUMENT = {
 STAFF_EMBEDDED_SKILL_DOCUMENT = {
     'level': 1,
     'locked': 0
+}
+
+
+# 嵌入staff中
+STAFF_EMBEDDED_TRAININGS_DOCUMENT = {
+    'training_id': null,
+    'start_at': null
 }
 
 # 招募刷新
@@ -187,9 +194,13 @@ class Document(object):
     DOCUMENTS = {
         "common": COMMON_DOCUMENT,
         "character": CHARACTER_DOCUMENT,
+
         "staff": STAFF_DOCUMENT,
         "staff.embedded": STAFF_EMBEDDED_DOCUMENT,
         "skill.embedded": STAFF_EMBEDDED_SKILL_DOCUMENT,
+        "training.embedded": STAFF_EMBEDDED_TRAININGS_DOCUMENT,
+
+
         "recruit": RECRUIT_DOCUMENT,
         "building": DEFAULT_BUILDING_DOCUMENT,
         "friend": DEFAULT_FRIEND_DOCUMENT,
