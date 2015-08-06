@@ -13,11 +13,10 @@ import arrow
 import uwsgidecorators
 
 from django.conf import settings
-from django.db import connection
 
 from cronjob.log import Logger
-from apps.server.models import Server
 
+from core.db import MongoDB
 from core.league import LeagueGame
 
 from config.settings import LEAGUE_START_TIME_ONE, LEAGUE_START_TIME_TWO
@@ -32,8 +31,7 @@ def league_new(*args):
     logger.write("Start")
 
     try:
-        connection.close()
-        servers = Server.opened_servers()
+        servers = MongoDB.server_ids()
         for s in servers:
             logger.write("server {0} start".format(s.id))
             LeagueGame.new(s.id)
@@ -52,8 +50,7 @@ def league_match(*args):
     logger.write("Start")
 
     try:
-        connection.close()
-        servers = Server.opened_servers()
+        servers = MongoDB.server_ids()
         for s in servers:
             logger.write("server {0} start".format(s.id))
             LeagueGame.start_match(s.id)

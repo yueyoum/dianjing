@@ -145,6 +145,8 @@ class StaffRecruit(object):
 
         self.send_notify(staffs=staffs, tp=tp)
 
+        return staffs
+
 
     def recruit(self, staff_id):
         if not ConfigStaff.get(staff_id):
@@ -152,6 +154,13 @@ class StaffRecruit(object):
 
         if StaffManger(self.server_id, self.char_id).has_staff(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id('STAFF_ALREADY_HAVE'))
+
+        recruit_list = self.get_self_refreshed_staffs()
+        if not recruit_list:
+            recruit_list = self.get_hot_staffs()
+
+        if staff_id not in recruit_list:
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_RECRUIT_NOT_IN_LIST"))
 
 
         staff = ConfigStaff.get(staff_id)

@@ -12,6 +12,7 @@ from dianjing.exception import GameException
 
 from core.db import MongoDB
 from core.staff import StaffManger, StaffRecruit
+from core.club import Club
 from config import ConfigErrorMessage, ConfigStaffRecruit, ConfigStaff, ConfigStaffLevel
 
 from protomsg.staff_pb2 import RECRUIT_HOT, RECRUIT_DIAMOND, RECRUIT_GOLD, RECRUIT_NORMAL
@@ -28,11 +29,15 @@ class TestStaffRecruit(object):
             }}
         )
 
+
     def setUp(self):
         self.update()
 
     def tearDown(self):
         self.update()
+        MongoDB.get(1).recruit.delete_one({'_id': 1})
+        MongoDB.get(1).staff.delete_one({'_id': 1})
+
 
 
     def test_send_notify(self):
@@ -48,7 +53,10 @@ class TestStaffRecruit(object):
         cost_value = config.cost_value
         self.update(**{cost_type:cost_value})
 
-        StaffRecruit(1, 1).refresh(RECRUIT_DIAMOND)
+        staffs = StaffRecruit(1, 1).refresh(RECRUIT_DIAMOND)
+        assert len(staffs) > 0
+        assert Club(1, 1).diamond == 0
+        assert Club(1, 1).gold == 0
 
 
     def test_refresh_diamond_not_enough(self):
@@ -69,7 +77,10 @@ class TestStaffRecruit(object):
         cost_value = config.cost_value
         self.update(**{cost_type:cost_value})
 
-        StaffRecruit(1, 1).refresh(RECRUIT_GOLD)
+        staffs = StaffRecruit(1, 1).refresh(RECRUIT_GOLD)
+        assert len(staffs) > 0
+        assert Club(1, 1).diamond == 0
+        assert Club(1, 1).gold == 0
 
 
     def test_refresh_normal(self):
@@ -78,7 +89,10 @@ class TestStaffRecruit(object):
         cost_value = config.cost_value
         self.update(**{cost_type:cost_value})
 
-        StaffRecruit(1, 1).refresh(RECRUIT_NORMAL)
+        staffs = StaffRecruit(1, 1).refresh(RECRUIT_NORMAL)
+        assert len(staffs) > 0
+        assert Club(1, 1).diamond == 0
+        assert Club(1, 1).gold == 0
 
 
     def test_refresh_error_tp(self):
@@ -90,6 +104,62 @@ class TestStaffRecruit(object):
             assert e.error_id == ConfigErrorMessage.get_error_id("BAD_MESSAGE")
         else:
             raise Exception("can not be here!")
+
+
+    def test_recruit_not_in_list(self):
+
+        sid = random.choice(ConfigStaff.INSTANCES.keys())
+
+        try:
+            StaffRecruit(1, 1).recruit(sid)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id("STAFF_RECRUIT_NOT_IN_LIST")
+        else:
+            raise Exception("can not be here!")
+
+
+    def test_recruit_already_have(self):
+        config = ConfigStaffRecruit.get(1)
+        cost_type = 'gold' if config.cost_type == 1 else 'diamond'
+        cost_value = config.cost_value
+        self.update(**{cost_type:cost_value})
+
+        staffs = StaffRecruit(1, 1).refresh(RECRUIT_NORMAL)
+        sid = random.choice(staffs)
+
+        StaffManger(1, 1).add(sid)
+
+        try:
+            StaffRecruit(1, 1).recruit(sid)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id("STAFF_ALREADY_HAVE")
+        else:
+            raise Exception("can not be here!")
+
+
+    def test_recruit(self):
+        config = ConfigStaffRecruit.get(1)
+        cost_type = 'gold' if config.cost_type == 1 else 'diamond'
+        cost_value = config.cost_value
+        self.update(**{cost_type:cost_value})
+
+        staffs = StaffRecruit(1, 1).refresh(RECRUIT_NORMAL)
+        sid = random.choice(staffs)
+
+        assert StaffManger(1, 1).has_staff(sid) is False
+
+        s = ConfigStaff.get(sid)
+        cost_type = 'gold' if s.buy_type == 1 else 'diamond'
+        cost_value = s.buy_cost
+
+        self.update(**{cost_type: cost_value})
+
+        StaffRecruit(1, 1).recruit(sid)
+
+        assert StaffManger(1, 1).has_staff(sid) is True
+        assert Club(1, 1).diamond == 0
+        assert Club(1, 1).gold == 0
+
 
 
 class TestStaffManager(object):
