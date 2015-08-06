@@ -58,10 +58,7 @@ class FriendManager(object):
 
 
     def get_info(self, friend_id):
-        key = 'friends.{0}'.format(friend_id)
-        doc = self.mongo.friend.find_one({'_id': self.char_id}, {key: 1})
-
-        if str(friend_id) not in doc['friends']:
+        if not self.check_friend_exist(friend_id):
             raise GameException(ConfigErrorMessage.get_error_id("FRIEND_NOT_EXIST"))
 
         char = Character(self.server_id, friend_id)
@@ -70,10 +67,7 @@ class FriendManager(object):
 
 
     def match(self, friend_id):
-        key = 'friends.{0}'.format(friend_id)
-        doc = self.mongo.friend.find_one({'_id': self.char_id}, {key: 1})
-
-        if str(friend_id) not in doc['friends']:
+        if not self.check_friend_exist(friend_id):
             raise GameException(ConfigErrorMessage.get_error_id("FRIEND_NOT_EXIST"))
 
         club_one = Club(self.server_id, self.char_id)
@@ -97,6 +91,9 @@ class FriendManager(object):
 
         if status == FRIEND_STATUS_OK:
             raise GameException(ConfigErrorMessage.get_error_id("FRIEND_ALREADY_IS_FRIEND"))
+
+        if status == FRIEND_STATUS_PEER_CONFIRM:
+            raise GameException(ConfigErrorMessage.get_error_id("FRIEND_ADD_REQUEST_SEEDED"))
 
         if status == FRIEND_STATUS_SELF_CONFIRM:
             # 要添加的是，需要自己确认的，也就是对方也想添加我。那么就直接成为好友
@@ -124,7 +121,6 @@ class FriendManager(object):
 
             if status == FRIEND_STATUS_OK:
                 raise GameException(ConfigErrorMessage.get_error_id("FRIEND_ALREADY_IS_FRIEND"))
-
 
         self.mongo.friend.update_one(
             {'_id': self.char_id},
@@ -191,7 +187,6 @@ class FriendManager(object):
                 )
             )
 
-
         self.mongo.friend.update_one(
             {'_id': self.char_id},
             {'$set': {key: new_status}}
@@ -203,7 +198,6 @@ class FriendManager(object):
         notify = FriendRemoveNotify()
         notify.ids.append(friend_id)
         MessagePipe(self.char_id).put(msg=notify)
-
 
 
 
@@ -240,6 +234,13 @@ class FriendManager(object):
             notify_friend.club_gold = char_dict[f]['club']['gold']
             notify_friend.club_level = char_dict[f]['club']['level']
 
-
         MessagePipe(self.char_id).put(msg=notify)
+
+    def check_friend_exist(self, friend_id):
+        key = 'friends.{0}'.format(friend_id)
+        doc = self.mongo.friend.find_one({'_id': self.char_id}, {key: 1})
+        if str(friend_id) not in doc['friends']:
+            return False
+        return True
+
 

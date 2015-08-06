@@ -73,9 +73,11 @@ class TestTask(object):
         )
 
     def setUp(self):
+        # print 'setUp'
         self.reset()
 
     def tearDown(self):
+        # print 'teardown'
         self.reset()
 
     def test_common_refresh(self):
