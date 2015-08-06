@@ -24,85 +24,63 @@ from config.task import ConfigTask
 from config.club import ConfigClubLevel
 
 
-CONFIG = None
-
-
-class _Config(object):
-    pass
-
+_has_configed = False
 
 def load_config():
     from django.conf import settings
 
-    global CONFIG
-    if CONFIG is not None:
+    global _has_configed
+    if _has_configed:
         return
 
-    attr_dict = {}
+    _has_configed = True
+
 
     z = zipfile.ZipFile(os.path.join(settings.BASE_DIR, 'config', 'config.zip'))
     for item in z.namelist():
-
-        name, ext = os.path.splitext(item)
         content = z.open(item).read()
         if not content:
             continue
 
         data = json.loads(content)
 
-        attr_name = name.upper()
-        attr_value = {}
 
-        for d in data:
-            obj = _Config()
-            obj.id = d['pk']
-            for k, v in d['fields'].iteritems():
-                setattr(obj, k, v)
-
-            attr_value[obj.id] = obj
-
-        attr_dict[attr_name] = attr_value
-
-        # ===
-        if attr_name == 'ERRORMSG':
+        if item == 'errormsg.json':
             ConfigErrorMessage.initialize(data)
-        elif attr_name == 'STAFF':
+        elif item == 'staff.json':
             ConfigStaff.initialize(data)
-        elif attr_name == 'STAFF_HOT':
+        elif item == 'staff_hot.json':
             ConfigStaffHot.initialize(data)
-        elif attr_name == 'STAFF_RECRUIT':
+        elif item == 'staff_recruit.json':
             ConfigStaffRecruit.initialize(data)
-        elif attr_name == 'STAFF_LEVEL':
+        elif item == 'staff_level.json':
             ConfigStaffLevel.initialize(data)
-        elif attr_name == 'CHALLENGE_TYPE':
+        elif item == 'challenge_type.json':
             ConfigChallengeType.initialize(data)
-        elif attr_name == 'CHALLENGE_MATCH':
+        elif item == 'challenge_match.json':
             ConfigChallengeMatch.initialize(data)
-        elif attr_name == 'UNIT':
+        elif item == 'unit.json':
             ConfigUnit.initialize(data)
-        elif attr_name == 'BUILDING':
+        elif item == 'building.json':
             ConfigBuilding.initialize(data)
-        elif attr_name == 'PACKAGE':
+        elif item == 'package.json':
             ConfigPackage.initialize(data)
-        elif attr_name == 'TRAINING':
+        elif item == 'training.json':
             ConfigTraining.initialize(data)
-        elif attr_name == 'NPC_CLUB':
+        elif item == 'npc_club.json':
             ConfigNPC.initialize(data)
-        elif attr_name == 'NPC_CLUB_NAME':
+        elif item == 'npc_club_name.json':
             ConfigNPC.initialize_club_names(data)
-        elif attr_name == 'NPC_MANAGER_NAME':
+        elif item == 'npc_manager_name.json':
             ConfigNPC.initialize_manager_name(data)
-        elif attr_name == 'SKILL':
+        elif item == 'skill.json':
             ConfigSkill.initialize(data)
-        elif attr_name == 'POLICY':
+        elif item == 'policy.json':
             ConfigPolicy.initialize(data)
-        elif attr_name == 'TASK':
+        elif item == 'task.json':
             ConfigTask.initialize(data)
-        elif attr_name == 'CLUB_LEVEL':
+        elif item == 'club_level.json':
             ConfigClubLevel.initialize(data)
-
-
-    CONFIG = type('CONFIG', (object,), attr_dict)
 
     print "LOAD CONFIG DONE"
 
