@@ -88,7 +88,8 @@ RECRUIT_DOCUMENT = {
     'times': {}
 }
 
-DEFAULT_BUILDING_DOCUMENT = {
+# 建筑
+BUILDING_DOCUMENT = {
     '_id': null,
     'buildings': {str(i): 1 for i in ConfigBuilding.can_level_up_building_ids()}
 }
@@ -202,7 +203,7 @@ class Document(object):
 
 
         "recruit": RECRUIT_DOCUMENT,
-        "building": DEFAULT_BUILDING_DOCUMENT,
+        "building": BUILDING_DOCUMENT,
         "friend": DEFAULT_FRIEND_DOCUMENT,
         "mail": MAIL_DOCUMENT,
         "mail.embedded": MAIL_EMBEDDED_DOCUMENT,

@@ -8,7 +8,7 @@ Description:
 """
 
 from core.abstract import AbstractClub
-from core.db import get_mongo_db
+from core.db import MongoDB
 from core.staff import Staff
 from core.signals import match_staffs_set_done_signal
 from core.staff import StaffManger
@@ -37,7 +37,7 @@ class Club(AbstractClub):
 
         self.server_id = server_id
         self.char_id = char_id
-        self.mongo = get_mongo_db(server_id)
+        self.mongo = MongoDB.get(server_id)
 
         self.load_data()
 
