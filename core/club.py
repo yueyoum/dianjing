@@ -123,22 +123,18 @@ class Club(AbstractClub):
 
         # update
         while True:
+            need_renown = club_level_up_need_renown(self.level)
             next_level_id = ConfigClubLevel.get(self.level).next_level_id
             if not next_level_id:
+                if self.renown >= need_renown:
+                    self.renown = need_renown - 1
                 break
 
-            need_renown = club_level_up_need_renown(self.level)
             if self.renown < need_renown:
                 break
 
             self.renown -= need_renown
             self.level += 1
-
-        # cap the max level renown
-        if not ConfigClubLevel.get(self.level).next_level_id:
-            this_renown = club_level_up_need_renown(self.level)
-            if self.renown >= this_renown:
-                self.renown = this_renown - 1
 
 
         self.mongo.character.update_one(

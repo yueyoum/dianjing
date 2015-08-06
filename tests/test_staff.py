@@ -12,7 +12,7 @@ from dianjing.exception import GameException
 
 from core.db import MongoDB
 from core.staff import StaffManger, StaffRecruit
-from config import ConfigErrorMessage, ConfigStaffRecruit, ConfigStaff
+from config import ConfigErrorMessage, ConfigStaffRecruit, ConfigStaff, ConfigStaffLevel
 
 from protomsg.staff_pb2 import RECRUIT_HOT, RECRUIT_DIAMOND, RECRUIT_GOLD, RECRUIT_NORMAL
 
@@ -162,3 +162,52 @@ class TestStaffManager(object):
             assert e.error_id == ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST")
         else:
             raise Exception("can not be here!")
+
+
+    def test_level_up(self):
+        s = random.choice(ConfigStaff.INSTANCES.values())
+
+        level = 5
+        exp = 0
+        for i in range(1, level):
+            exp += ConfigStaffLevel.get(i).exp[s.quality]
+
+        exp += 1
+
+        StaffManger(1, 1).add(s.id)
+
+        assert StaffManger(1, 1).get_staff(s.id)['level'] == 1
+        assert StaffManger(1, 1).get_staff(s.id)['exp'] == 0
+
+        StaffManger(1, 1).update(s.id, exp=exp)
+
+        assert StaffManger(1, 1).get_staff(s.id)['level'] == level
+        assert StaffManger(1, 1).get_staff(s.id)['exp'] == 1
+
+
+    def test_level_up_to_max_level(self):
+        def get_max_level():
+            levels = ConfigStaffLevel.INSTANCES.keys()
+            for lv in levels:
+                if not ConfigStaffLevel.get(lv).next_level:
+                    return lv
+
+        max_level = get_max_level()
+
+        s = random.choice(ConfigStaff.INSTANCES.values())
+
+        exp = 0
+        for i in range(1, max_level+1):
+            exp += ConfigStaffLevel.get(i).exp[s.quality]
+
+        exp += 10000
+
+        StaffManger(1, 1).add(s.id)
+
+        assert StaffManger(1, 1).get_staff(s.id)['level'] == 1
+        assert StaffManger(1, 1).get_staff(s.id)['exp'] == 0
+
+        StaffManger(1, 1).update(s.id, exp=exp)
+
+        assert StaffManger(1, 1).get_staff(s.id)['level'] == max_level
+        assert StaffManger(1, 1).get_staff(s.id)['exp'] == ConfigStaffLevel.get(max_level).exp[s.quality]-1

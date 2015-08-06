@@ -30,6 +30,9 @@ from protomsg.staff_pb2 import StaffRecruitNotify, StaffNotify, StaffRemoveNotif
 from protomsg.staff_pb2 import RECRUIT_DIAMOND, RECRUIT_GOLD, RECRUIT_HOT, RECRUIT_NORMAL
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
+def staff_level_up_need_exp(staff_id, current_level):
+    return ConfigStaffLevel.get(current_level).exp[ConfigStaff.get(staff_id).quality]
+
 
 class Staff(AbstractStaff):
     __slots__ = ['id', 'level', 'exp', 'status', 'skills'] + STAFF_ATTRS
@@ -208,6 +211,10 @@ class StaffManger(object):
         doc = self.mongo.staff.find_one({'_id': self.char_id}, {'staffs': 1})
         return doc['staffs']
 
+    def get_staff(self, staff_id):
+        doc = self.mongo.staff.find_one({'_id': self.char_id}, {'staffs.{0}'.format(staff_id): 1})
+        return doc['staffs'].get(str(staff_id), None)
+
 
     def has_staff(self, staff_ids):
         if not isinstance(staff_ids, (list, tuple)):
@@ -333,38 +340,53 @@ class StaffManger(object):
         caozuo = kwargs.get('caozuo', 0)
 
         char = self.mongo.staff.find_one({'_id': self.char_id}, {'staffs.{0}'.format(staff_id): 1})
-        this_staff = char['staffs'][str(staff_id)]
+        this_staff = char['staffs'].get(str(staff_id), None)
+        if not this_staff:
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
-        next_level = ConfigStaffLevel.get(this_staff['level']).next_level
-        if next_level:
-            new_exp = this_staff['exp'] + exp
-            level_up_need_exp = ConfigStaffLevel.get(this_staff['level']).exp[ConfigStaff.get(staff_id).quality]
-            if new_exp >= level_up_need_exp:
-                new_exp -= level_up_need_exp
-                new_level = next_level
-            else:
-                new_level = this_staff['level']
-        else:
-            new_exp = this_staff['exp']
-            new_level = this_staff['level']
+
+        # update
+        current_level = this_staff['level']
+        current_exp = this_staff['exp'] + exp
+        while True:
+            need_exp = staff_level_up_need_exp(staff_id, current_level)
+
+            next_level = ConfigStaffLevel.get(current_level).next_level
+            if not next_level:
+                if current_exp >= need_exp:
+                    current_exp = need_exp - 1
+
+                break
+
+            if current_exp < need_exp:
+                break
+
+            current_exp -= need_exp
+            current_level += 1
 
         self.mongo.staff.update_one(
             {'_id': self.char_id},
-            {'$inc': {
-                'staffs.{0}.exp'.format(staff_id): new_exp,
-                'staffs.{0}.level'.format(staff_id): new_level,
-                'staffs.{0}.jingong'.format(staff_id): jingong,
-                'staffs.{0}.qianzhi'.format(staff_id): qianzhi,
-                'staffs.{0}.xintai'.format(staff_id): xintai,
-                'staffs.{0}.baobing'.format(staff_id): baobing,
-                'staffs.{0}.fangshou'.format(staff_id): fangshou,
-                'staffs.{0}.yunying'.format(staff_id): yunying,
-                'staffs.{0}.yishi'.format(staff_id): yishi,
-                'staffs.{0}.caozuo'.format(staff_id): caozuo,
-            }}
+            {
+                '$set': {
+                    'staffs.{0}.exp'.format(staff_id): current_exp,
+                    'staffs.{0}.level'.format(staff_id): current_level
+                },
+
+                '$inc': {
+                    'staffs.{0}.jingong'.format(staff_id): jingong,
+                    'staffs.{0}.qianzhi'.format(staff_id): qianzhi,
+                    'staffs.{0}.xintai'.format(staff_id): xintai,
+                    'staffs.{0}.baobing'.format(staff_id): baobing,
+                    'staffs.{0}.fangshou'.format(staff_id): fangshou,
+                    'staffs.{0}.yunying'.format(staff_id): yunying,
+                    'staffs.{0}.yishi'.format(staff_id): yishi,
+                    'staffs.{0}.caozuo'.format(staff_id): caozuo,
+                },
+            }
         )
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
+
 
     def msg_staff(self, msg, sid, staff_data):
         staff = Staff(sid, staff_data)
