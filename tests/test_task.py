@@ -149,10 +149,10 @@ class TestTask(object):
         except GameException as e:
             assert e.error_id == ConfigErrorMessage.get_error_id("TASK_ALREADY_GET_REWARD")
         else:
-            Exception('test_get_reward_have_got error')
+            raise Exception('test_get_reward_have_got error')
 
     def test_send_notify(self):
-        pass
+        TaskManager(test_server_id, test_char_id).send_notify(1)
 
     def test_update(self):
         self.update_receive()
@@ -169,6 +169,5 @@ class TestTask(object):
 
     def test_get_task_ids(self):
         pass
-
 
 

@@ -192,14 +192,11 @@ class TestFriend(object):
         if self_friend['friends'] or fri_friend['friends']:
             raise Exception('test_remove_friend error')
 
-    # def test_someone_remove_me(self):
-    #     pass
-    #
-    # def someone_accept_me(self):
-    #     pass
+    def test_send_remove_notify(self):
+        FriendManager(test_server_id, test_char_id).send_remove_notify(test_friend_id)
 
-    def someone_add_me(self):
-        pass
+    def test_send_notify(self):
+        FriendManager(test_server_id, test_char_id).send_notify(test_friend_id)
 
 
 
