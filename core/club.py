@@ -85,7 +85,7 @@ class Club(AbstractClub):
         if len(staff_ids) != 10:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-        if not StaffManger(self.server_id, self.char_id).has_staff(staff_ids):
+        if not StaffManger(self.server_id, self.char_id).has_staff([i for i in staff_ids if i != 0]):
             raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
 
         match_staffs = staff_ids[:5]
