@@ -6,13 +6,15 @@ Date Created:   2015-08-06 10:41
 Description:
 
 """
-from config import ConfigErrorMessage
+import random
+
+from config import ConfigStaff
 
 from core.db import MongoDB
 from core.friend import *
-from core.mongo import Document
 
 from dianjing.exception import GameException
+from core.staff import StaffManger
 
 
 test_char_id = 1
@@ -92,12 +94,31 @@ class TestFriend(object):
         else:
             raise Exception('test_get_info_not_exist error')
 
-    def test_match(self):
+    def test_match_staff_not_ready(self):
         # TODO
         self.create_char()
         self.is_friend_data()
-        msg = FriendManager(test_server_id, test_char_id).match(test_friend_id)
-        print msg
+        try:
+            FriendManager(test_server_id, test_char_id).match(test_friend_id)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id("MATCH_STAFF_NOT_READY")
+        else:
+            raise Exception('error')
+
+    def test_match(self):
+        self.create_char()
+        self.is_friend_data()
+
+        staff_ids = random.sample(ConfigStaff.INSTANCES.keys(), 10)
+        for i in staff_ids:
+            StaffManger(test_server_id, test_char_id).add(i)
+            StaffManger(test_server_id, test_friend_id).add(i)
+
+        Club(test_server_id, test_char_id).set_match_staffs(staff_ids)
+        Club(test_server_id, test_friend_id).set_match_staffs(staff_ids)
+
+        # msg = FriendManager(test_server_id, test_char_id).match(test_friend_id)
+        # print msg
 
     def test_add_char_not_exist(self):
         try:

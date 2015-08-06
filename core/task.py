@@ -107,7 +107,6 @@ class TaskManager(object):
         mongo = get_mongo_db(server_id)
         mongo.task.drop()
 
-
     def receive(self, task_id):
         task = ConfigTask.get(task_id)
         if not task:
