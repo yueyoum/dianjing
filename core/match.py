@@ -195,7 +195,7 @@ class ClubMatch(object):
         club_one_winning_times = 0
         club_two_winning_times = 0
 
-        if not self.club_one.match_staffs_ready() or self.club_two.match_staffs_ready():
+        if not self.club_one.match_staffs_ready() or not self.club_two.match_staffs_ready():
             raise GameException(ConfigErrorMessage.get_error_id("MATCH_STAFF_NOT_READY"))
 
         for i in range(5):

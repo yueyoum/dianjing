@@ -65,6 +65,23 @@ class TestFriend(object):
             upsert=True
         )
 
+    def remove_staff_match(self):
+        mongo = MongoDB.get(test_server_id)
+        mongo.character.update_one(
+            {'_id': test_char_id},
+            {'$set': {
+                'club.match_staffs': [],
+                'club.tibu_staffs': []
+            }}
+        )
+        mongo.character.update_one(
+            {'_id': test_friend_id},
+            {'$set': {
+                'club.match_staffs': [],
+                'club.tibu_staffs': []
+            }}
+        )
+
     def setUp(self):
         self.reSet()
 
@@ -95,9 +112,9 @@ class TestFriend(object):
             raise Exception('test_get_info_not_exist error')
 
     def test_match_staff_not_ready(self):
-        # TODO
         self.create_char()
         self.is_friend_data()
+        self.remove_staff_match()
         try:
             FriendManager(test_server_id, test_char_id).match(test_friend_id)
         except GameException as e:
