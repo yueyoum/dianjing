@@ -224,3 +224,6 @@ class Document(object):
     def get(cls, name):
         return cls.DOCUMENTS[name].copy()
 
+
+
+MONGO_COMMON_KEY_RECRUIT_HOT = 'recruit_hot'
