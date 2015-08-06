@@ -10,7 +10,7 @@ Description:
 from dianjing.exception import GameException
 
 from core.abstract import AbstractClub, AbstractStaff
-from core.db import get_mongo_db
+from core.db import MongoDB
 from core.club import Club
 from core.match import ClubMatch
 
@@ -29,17 +29,17 @@ class ChallengeNPCStaff(AbstractStaff):
         self.id = id
         self.level = level
 
-        config_staff = ConfigStaff.get(id)
-        self.race = config_staff.race
+        config = ConfigStaff.get(id)
+        self.race = config.race
 
-        self.jingong = (config_staff.jingong + config_staff.jingong_grow * level) * strength
-        self.qianzhi = (config_staff.qianzhi + config_staff.qianzhi_grow * level) * strength
-        self.xintai = (config_staff.xintai + config_staff.xintai_grow * level) * strength
-        self.baobing = (config_staff.baobing + config_staff.baobing_grow * level) * strength
-        self.fangshou = (config_staff.fangshou + config_staff.fangshou_grow * level) * strength
-        self.yunying = (config_staff.yunying + config_staff.yunying_grow * level) * strength
-        self.yishi = (config_staff.yishi + config_staff.yishi_grow * level) * strength
-        self.caozuo = (config_staff.caozuo + config_staff.caozuo_grow * level) * strength
+        self.jingong = (config.jingong + config.jingong_grow * level) * strength
+        self.qianzhi = (config.qianzhi + config.qianzhi_grow * level) * strength
+        self.xintai = (config.xintai + config.xintai_grow * level) * strength
+        self.baobing = (config.baobing + config.baobing_grow * level) * strength
+        self.fangshou = (config.fangshou + config.fangshou_grow * level) * strength
+        self.yunying = (config.yunying + config.yunying_grow * level) * strength
+        self.yishi = (config.yishi + config.yishi_grow * level) * strength
+        self.caozuo = (config.caozuo + config.caozuo_grow * level) * strength
 
         self.skills = []
 
@@ -48,19 +48,17 @@ class ChallengeNPCClub(AbstractClub):
     def __init__(self, challenge_match_id):
         super(ChallengeNPCClub, self).__init__()
 
-        level = ConfigChallengeMatch.get(challenge_match_id).level
-        strength = ConfigChallengeMatch.get(challenge_match_id).strength
+        config = ConfigChallengeMatch.get(challenge_match_id)
 
         self.id = challenge_match_id
 
-        config = ConfigChallengeMatch.get(challenge_match_id)
         self.match_staffs = config.staffs
         self.policy = config.policy
         self.name = config.club_name
         self.flag = config.club_flag
 
         for i in self.match_staffs:
-            self.staffs[i] = ChallengeNPCStaff(i, level, strength)
+            self.staffs[i] = ChallengeNPCStaff(i, config.level, config.strength)
 
 
 
@@ -68,22 +66,24 @@ class Challenge(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-        self.mongo = get_mongo_db(server_id)
+        self.mongo = MongoDB.get(server_id)
 
-    def get_match_id(self):
-        char = self.mongo.character.find_one({'_id': self.char_id}, {'challenge_id': 1})
-        challenge_id = char.get('challenge_id', None)
-        if challenge_id is None:
-            challenge_id = ConfigChallengeMatch.FIRST_ID
+        doc = self.mongo.character.find_one(
+            {'_id': self.char_id},
+            {'challenge_id': 1}
+        )
+
+        self.challenge_id = doc.get('challenge_id', None)
+        if self.challenge_id is None:
+            self.challenge_id = ConfigChallengeMatch.FIRST_ID
             self.mongo.character.update_one(
                 {'_id': self.char_id},
-                {'$set': {'challenge_id': challenge_id}}
+                {'$set': {'challenge_id': self.challenge_id}}
             )
 
-        return challenge_id
 
-    def set_next_match_id(self, challenge_id):
-        next_id = ConfigChallengeMatch.get(challenge_id).next_id
+    def set_next_match_id(self):
+        next_id = ConfigChallengeMatch.get(self.challenge_id).next_id
         self.mongo.character.update_one(
             {'_id': self.char_id},
             {'$set': {'challenge_id': next_id}}
@@ -92,28 +92,26 @@ class Challenge(object):
 
 
     def start(self):
-        challenge_id = self.get_match_id()
-        if not challenge_id:
-            # TODO all finished!
-            raise RuntimeError("all finished!")
+        if not self.challenge_id:
+            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_ALL_FINISHED"))
 
         club_one = Club(self.server_id, self.char_id)
 
         if not club_one.match_staffs_ready():
             raise GameException( ConfigErrorMessage.get_error_id("MATCH_STAFF_NOT_READY") )
 
-        club_two = ChallengeNPCClub(challenge_id)
+        club_two = ChallengeNPCClub(self.challenge_id)
         match = ClubMatch(club_one, club_two)
 
         msg = match.start()
-        next_id = self.set_next_match_id(challenge_id)
+        next_id = self.set_next_match_id()
         self.send_notify(challenge_id=next_id)
 
         challenge_match_signal.send(
             sender=None,
             server_id=self.server_id,
             char_id=self.char_id,
-            challenge_id=challenge_id,
+            challenge_id=self.challenge_id,
             win=msg.club_one_win,
         )
 
@@ -122,9 +120,8 @@ class Challenge(object):
 
     def send_notify(self, challenge_id=None):
         if challenge_id is None:
-            challenge_id = self.get_match_id()
+            challenge_id = self.challenge_id
 
         notify = ChallengeNotify()
         notify.id = challenge_id
         MessagePipe(self.char_id).put(msg=notify)
-

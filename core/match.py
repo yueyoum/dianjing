@@ -29,6 +29,9 @@ class MatchUnit(object):
 
     @classmethod
     def init(cls):
+        if cls.UNIT:
+            return
+
         for u in ConfigUnit.all_values():
             if u.race in cls.UNIT:
                 cls.UNIT[u.race].append(u)
@@ -55,11 +58,6 @@ class MatchUnit(object):
         index = random.randint(0, len(units)-1)
         return units[index]
 
-MatchUnit.init()
-
-
-
-
 
 class Match(object):
     # 一场比赛
@@ -68,6 +66,8 @@ class Match(object):
         :type staff_one: core.abstract.AbstractStaff
         :type staff_two: core.abstract.AbstractStaff
         """
+        MatchUnit.init()
+
         self.staff_one = staff_one
         self.staff_two = staff_two
         self.policy_one = policy_one
