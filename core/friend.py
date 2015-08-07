@@ -58,7 +58,7 @@ class FriendManager(object):
 
 
     def get_info(self, friend_id):
-        if not self.check_friend_exist(friend_id):
+        if not self.check_friend_exist(friend_id, expect_status=[FRIEND_STATUS_OK, FRIEND_STATUS_PEER_CONFIRM, FRIEND_STATUS_SELF_CONFIRM]):
             raise GameException(ConfigErrorMessage.get_error_id("FRIEND_NOT_EXIST"))
 
         char = Character(self.server_id, friend_id)
@@ -68,7 +68,7 @@ class FriendManager(object):
 
     def match(self, friend_id):
         if not self.check_friend_exist(friend_id):
-            raise GameException(ConfigErrorMessage.get_error_id("FRIEND_NOT_EXIST"))
+            raise GameException(ConfigErrorMessage.get_error_id("FRIEND_NOT_OK"))
 
         club_one = Club(self.server_id, self.char_id)
         club_two = Club(self.server_id, friend_id)
@@ -76,6 +76,18 @@ class FriendManager(object):
         match = ClubMatch(club_one, club_two)
         msg = match.start()
         return msg
+
+
+    def check_friend_exist(self, friend_id, expect_status=None):
+        key = 'friends.{0}'.format(friend_id)
+        doc = self.mongo.friend.find_one({'_id': self.char_id}, {key: 1})
+
+        status = doc['friends'].get(str(friend_id), FRIEND_STATUS_NOT)
+
+        if not expect_status:
+            expect_status = [FRIEND_STATUS_OK]
+
+        return status in expect_status
 
 
     def add(self, name):
@@ -93,7 +105,7 @@ class FriendManager(object):
             raise GameException(ConfigErrorMessage.get_error_id("FRIEND_ALREADY_IS_FRIEND"))
 
         if status == FRIEND_STATUS_PEER_CONFIRM:
-            raise GameException(ConfigErrorMessage.get_error_id("FRIEND_ADD_REQUEST_SEEDED"))
+            raise GameException(ConfigErrorMessage.get_error_id("FRIEND_ADD_REQUEST_ALREADY_SENT"))
 
         if status == FRIEND_STATUS_SELF_CONFIRM:
             # 要添加的是，需要自己确认的，也就是对方也想添加我。那么就直接成为好友
@@ -235,12 +247,5 @@ class FriendManager(object):
             notify_friend.club_level = char_dict[f]['club']['level']
 
         MessagePipe(self.char_id).put(msg=notify)
-
-    def check_friend_exist(self, friend_id):
-        key = 'friends.{0}'.format(friend_id)
-        doc = self.mongo.friend.find_one({'_id': self.char_id}, {key: 1})
-        if str(friend_id) not in doc['friends']:
-            return False
-        return True
 
 

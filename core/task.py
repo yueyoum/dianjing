@@ -7,9 +7,10 @@ import random
 from dianjing.exception import GameException
 
 from core.db import get_mongo_db
-from core.mongo import Document
+from core.mongo import Document, MONGO_COMMON_KEY_TASK
 from core.resource import Resource
 from core.building import BuildingManager
+from core.common import Common
 
 from config import ConfigErrorMessage
 from config.task import ConfigTask
@@ -32,10 +33,8 @@ TASK_REFRESH_AMOUNT_PER_LEVEL = 10
 
 
 class TaskRefresh(object):
-    TASK_COMMON_MONGO_ID = 'task'
-
     def __init__(self, server_id):
-        self.server = server_id
+        self.server_id = server_id
         self.mongo = get_mongo_db(server_id)
 
 
@@ -50,6 +49,7 @@ class TaskRefresh(object):
             lv: ConfigTask.filter(level=lv).keys()
             for lv in range(1, ConfigBuilding.get(TASK_CENTRE_ID).max_levels+1)
             }
+
         levels = {}
         task_center = ConfigBuilding.get(TASK_CENTRE_ID)
         for i in range(1, task_center.max_levels+1):
@@ -62,23 +62,17 @@ class TaskRefresh(object):
 
             levels[str(i)] = task_ids
 
-        self.mongo.common.update_one(
-            {'_id':  self.TASK_COMMON_MONGO_ID},
-            {'$set': {'levels': levels}},
-            upsert=True
-        )
+        Common.set(self.server_id, MONGO_COMMON_KEY_TASK, levels)
+
 
     def get_task_ids(self, building_level):
         def get():
-            doc = self.mongo.common.find_one(
-                {'_id': self.TASK_COMMON_MONGO_ID},
-                {'levels.{0}'.format(building_level): 1}
-            )
+            doc = Common.get(self.server_id, MONGO_COMMON_KEY_TASK)
 
             if not doc:
                 return []
 
-            return doc.get('levels', {}).get(str(building_level), [])
+            return doc.get(str(building_level), [])
 
         task_ids = get()
         if not task_ids:
@@ -108,21 +102,28 @@ class TaskManager(object):
         mongo.task.drop()
 
     def receive(self, task_id):
-        task = ConfigTask.get(task_id)
-        if not task:
+        config = ConfigTask.get(task_id)
+        if not config:
             raise GameException(ConfigErrorMessage.get_error_id('TASK_NOT_EXIST'))
 
-        char = self.mongo.character.find_one({'_id': self.char_id}, {'club.level': 1})
-        if char['club']['level'] < task.level:
-            raise GameException(ConfigErrorMessage.get_error_id('CLUB_LEVEL_NOT_ENOUGH'))
+        if BuildingManager(self.server_id, self.char_id).get_level(TASK_CENTRE_ID) < config.level:
+            raise GameException(ConfigErrorMessage.get_error_id('BUILDING_TASK_CENTER_LEVEL_NOT_ENOUGH'))
 
         task = self.mongo.task.find_one(
             {'_id': self.char_id},
             {'tasks.{0}'.format(task_id): 1}
         )
 
-        if task['tasks'].get(str(task_id), {}).get('status', None) != TASK_STATUS_UNRECEIVED:
+        try:
+            this_task = task['tasks'][str(task_id)]
+        except KeyError:
+            raise GameException(ConfigErrorMessage.get_error_id("TASK_NOT_FIND"))
+
+        print "this_task =", this_task
+
+        if this_task['status'] != TASK_STATUS_UNRECEIVED:
             raise GameException(ConfigErrorMessage.get_error_id("TASK_ALREADY_DOING"))
+
 
         doc = Document.get("task.char.embedded")
         doc['status'] = TASK_STATUS_DOING
@@ -215,3 +216,5 @@ class TaskManager(object):
             {'$set': {'tasks': new_tasks}},
             upsert=True
         )
+
+        return task_ids

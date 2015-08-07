@@ -187,6 +187,10 @@ class ClubMatch(object):
         self.club_one = club_one
         self.club_two = club_two
 
+        if not self.club_one.match_staffs_ready() or not self.club_two.match_staffs_ready():
+            raise GameException(ConfigErrorMessage.get_error_id("MATCH_STAFF_NOT_READY"))
+
+
     def start(self):
         msg = MessageClubMatch()
         msg.club_one.MergeFrom(self.club_one.make_protomsg())
@@ -194,9 +198,6 @@ class ClubMatch(object):
 
         club_one_winning_times = 0
         club_two_winning_times = 0
-
-        if not self.club_one.match_staffs_ready() or not self.club_two.match_staffs_ready():
-            raise GameException(ConfigErrorMessage.get_error_id("MATCH_STAFF_NOT_READY"))
 
         for i in range(5):
             staff_one = self.club_one.staffs[ self.club_one.match_staffs[i] ]

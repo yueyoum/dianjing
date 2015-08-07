@@ -96,10 +96,6 @@ class Challenge(object):
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_ALL_FINISHED"))
 
         club_one = Club(self.server_id, self.char_id)
-
-        if not club_one.match_staffs_ready():
-            raise GameException( ConfigErrorMessage.get_error_id("MATCH_STAFF_NOT_READY") )
-
         club_two = ChallengeNPCClub(self.challenge_id)
         match = ClubMatch(club_one, club_two)
 
