@@ -31,11 +31,6 @@ TASK_CENTRE_ID = 4
 TASK_REFRESH_AMOUNT_PER_LEVEL = 10
 
 
-TASK_LEVEL_IDS_DICT = {
-    lv: ConfigTask.filter(level=lv).keys() for lv in range(1, ConfigBuilding.get(TASK_CENTRE_ID).max_levels+1)
-    }
-
-
 class TaskRefresh(object):
     TASK_COMMON_MONGO_ID = 'task'
 
@@ -51,15 +46,19 @@ class TaskRefresh(object):
 
 
     def refresh(self):
+        task_level_ids = {
+            lv: ConfigTask.filter(level=lv).keys()
+            for lv in range(1, ConfigBuilding.get(TASK_CENTRE_ID).max_levels+1)
+            }
         levels = {}
         task_center = ConfigBuilding.get(TASK_CENTRE_ID)
         for i in range(1, task_center.max_levels+1):
             task_num = task_center.get_level(i).value1
 
             try:
-                task_ids = random.sample(TASK_LEVEL_IDS_DICT[i], task_num)
+                task_ids = random.sample(task_level_ids[i], task_num)
             except ValueError:
-                task_ids = TASK_LEVEL_IDS_DICT[i]
+                task_ids = task_level_ids[i]
 
             levels[str(i)] = task_ids
 
@@ -107,7 +106,6 @@ class TaskManager(object):
     def clean(cls, server_id):
         mongo = get_mongo_db(server_id)
         mongo.task.drop()
-
 
     def receive(self, task_id):
         task = ConfigTask.get(task_id)

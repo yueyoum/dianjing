@@ -9,7 +9,8 @@ Description:
 
 import random
 
-from config import ConfigUnit
+from config import ConfigUnit, ConfigErrorMessage
+from dianjing.exception import GameException
 
 from protomsg.match_pb2 import ClubMatch as MessageClubMatch
 from protomsg.match_pb2 import Match as MessageMatch
@@ -193,6 +194,9 @@ class ClubMatch(object):
 
         club_one_winning_times = 0
         club_two_winning_times = 0
+
+        if not self.club_one.match_staffs_ready() or not self.club_two.match_staffs_ready():
+            raise GameException(ConfigErrorMessage.get_error_id("MATCH_STAFF_NOT_READY"))
 
         for i in range(5):
             staff_one = self.club_one.staffs[ self.club_one.match_staffs[i] ]
