@@ -189,7 +189,7 @@ LEAGUE_EMBEDDED_CLUB_DOCUMENT = {
     # 如果是npc才会设置下面的几项
     'club_name': "",
     'manager_name': "",
-    'staffs': ""
+    'staffs': []
 }
 
 
