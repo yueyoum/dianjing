@@ -6,7 +6,7 @@ import random
 
 from dianjing.exception import GameException
 
-from core.db import get_mongo_db
+from core.db import MongoDB
 from core.mongo import Document, MONGO_COMMON_KEY_TASK
 from core.resource import Resource
 from core.building import BuildingManager
@@ -35,7 +35,7 @@ TASK_REFRESH_AMOUNT_PER_LEVEL = 10
 class TaskRefresh(object):
     def __init__(self, server_id):
         self.server_id = server_id
-        self.mongo = get_mongo_db(server_id)
+        self.mongo = MongoDB.get(server_id)
 
 
     @classmethod
@@ -90,7 +90,7 @@ class TaskManager(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-        self.mongo = get_mongo_db(self.server_id)
+        self.mongo = MongoDB.get(server_id)
 
         doc = self.mongo.task.find_one({'_id': self.char_id}, {'_id': 1})
         if not doc:
@@ -98,8 +98,7 @@ class TaskManager(object):
 
     @classmethod
     def clean(cls, server_id):
-        mongo = get_mongo_db(server_id)
-        mongo.task.drop()
+        MongoDB.get(server_id).task.drop()
 
     def receive(self, task_id):
         config = ConfigTask.get(task_id)

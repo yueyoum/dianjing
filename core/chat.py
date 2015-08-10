@@ -11,10 +11,11 @@ import base64
 
 
 from dianjing.exception import GameException
-from core.db import get_mongo_db
-from utils.message import MessagePipe
+from core.db import MongoDB
 
 from config import ConfigErrorMessage
+
+from utils.message import MessagePipe
 
 
 from protomsg.chat_pb2 import CHAT_CHANNEL_PUBLIC, CHAT_CHANNEL_UNION, ChatNotify, ChatMessage
@@ -27,7 +28,7 @@ class Chat(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-        self.mongo = get_mongo_db(server_id)
+        self.mongo = MongoDB.get(server_id)
 
 
     def send(self, channel, text):

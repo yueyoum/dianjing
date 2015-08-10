@@ -12,6 +12,7 @@ import redis
 from pymongo import MongoClient
 from django.conf import settings
 
+
 class RedisDB(object):
     DB = None
 
@@ -32,7 +33,6 @@ class RedisDB(object):
         :rtype : redis.Redis
         """
         return cls.DB
-
 
 
 class MongoDB(object):
@@ -75,9 +75,6 @@ class MongoDB(object):
     @classmethod
     def server_ids(cls):
         return cls.DBS.keys()
-
-
-get_mongo_db = MongoDB.get
 
 
 def connect():

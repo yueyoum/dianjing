@@ -10,6 +10,7 @@ Description:
 from config import ConfigChallengeMatch
 from config import ConfigBuilding
 
+
 class Null(object):
     pass
 
@@ -223,7 +224,6 @@ class Document(object):
     @classmethod
     def get(cls, name):
         return cls.DOCUMENTS[name].copy()
-
 
 
 MONGO_COMMON_KEY_RECRUIT_HOT = 'recruit_hot'

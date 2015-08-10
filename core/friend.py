@@ -9,7 +9,7 @@ Description:
 
 from dianjing.exception import GameException
 
-from core.db import get_mongo_db
+from core.db import MongoDB
 from core.mongo import Document
 from core.character import Character
 from core.club import Club
@@ -48,7 +48,7 @@ class FriendManager(object):
         self.server_id = server_id
         self.char_id = char_id
 
-        self.mongo = get_mongo_db(server_id)
+        self.mongo = MongoDB.get(server_id)
 
         doc = self.mongo.friend.find_one({'_id': char_id}, {'_id': 1})
         if not doc:
