@@ -50,23 +50,43 @@ class SkillManager(object):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
         if skill_id:
+            if not ConfigSkill.get(skill_id):
+                raise GameException(ConfigErrorMessage.get_error_id("SKILL_NOT_EXISTS"))
+
             doc = self.mongo.staff.find_one(
                 {'_id': self.char_id},
                 {'staffs.{0}.skills.{1}'.format(staff_id, skill_id): 1}
             )
 
-            if str(skill_id) not in doc['staffs'][str(staff_id)]['skills']:
+            try:
+                this_skill = doc['staffs'][str(staff_id)]['skills'][str(skill_id)]
+            except KeyError:
                 raise GameException(ConfigErrorMessage.get_error_id("SKILL_NOT_OWN"))
+            else:
+                return this_skill
+
+        return None
 
 
     def add_level(self, staff_id, skill_id, level_addition):
-        self.check(staff_id, skill_id)
-        assert level_addition > 0
+        this_skill = self.check(staff_id, skill_id)
+
+        if not isinstance(level_addition, (int, long)) or level_addition <= 0:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
+        config = ConfigSkill.get(skill_id)
+        level = this_skill['level']
+        if level >= config.max_level:
+            raise GameException(ConfigErrorMessage.get_error_id("SKILL_ALREADY_MAX_LEVEL"))
+
+        if level + level_addition > config.max_level:
+            raise GameException(ConfigErrorMessage.get_error_id("SKILL_WILL_BEYOND_MAX_LEVEL"))
 
         key = "staffs.{0}.skills.{1}.level".format(staff_id, skill_id)
+
         self.mongo.staff.update_one(
             {'_id': self.char_id},
-            {'$inc': {key: level_addition}}
+            {'$set': {key: level+level_addition}}
         )
 
         self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)

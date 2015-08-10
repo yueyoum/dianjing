@@ -11,10 +11,11 @@ import random
 
 from dianjing.exception import GameException
 
+from core.db import MongoDB
 from core.skill import SkillManager
 from core.staff import StaffManger
 
-from config import ConfigStaff, ConfigErrorMessage
+from config import ConfigStaff, ConfigErrorMessage, ConfigSkill
 
 class TestSkillManager(object):
     def setUp(self):
@@ -33,10 +34,10 @@ class TestSkillManager(object):
         skills = SkillManager(1, 1).get_skill(self.staff_id)
         sid = random.choice(skills.keys())
 
-        SkillManager(1, 1).add_level(self.staff_id, int(sid), 10)
+        SkillManager(1, 1).add_level(self.staff_id, int(sid), 1)
 
         skills = SkillManager(1, 1).get_skill(self.staff_id)
-        assert skills[sid]['level'] == 11
+        assert skills[sid]['level'] == 2
 
 
     def test_add_level_staff_not_exist(self):
@@ -47,13 +48,76 @@ class TestSkillManager(object):
         else:
             raise Exception("can not be here!")
 
+
     def test_add_level_skill_not_own(self):
+        skills = SkillManager(1, 1).get_skill(self.staff_id)
+        skill_ids = [int(i) for i in skills.keys()]
+
+        def get_skill_id():
+            while True:
+                x = random.choice(ConfigSkill.INSTANCES.keys())
+                if x not in skill_ids:
+                    return x
+
+        sid = get_skill_id()
+
         try:
-            SkillManager(1, 1).add_level(self.staff_id, 9999, 10)
+            SkillManager(1, 1).add_level(self.staff_id, sid, 10)
         except GameException as e:
             assert e.error_id == ConfigErrorMessage.get_error_id("SKILL_NOT_OWN")
         else:
             raise Exception("can not be here!")
+
+
+    def test_add_level_already_reach_max(self):
+        skills = SkillManager(1, 1).get_skill(self.staff_id)
+
+        sid = random.choice(skills.keys())
+        sid = int(sid)
+
+        config = ConfigSkill.get(sid)
+        max_level = config.max_level
+
+        key = "staffs.{0}.skills.{1}.level".format(self.staff_id, sid)
+
+        MongoDB.get(1).staff.update_one(
+            {'_id': 1},
+            {'$set': {key: max_level}}
+        )
+
+        try:
+            SkillManager(1, 1).add_level(self.staff_id, sid, 1)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id("SKILL_ALREADY_MAX_LEVEL")
+        else:
+            raise Exception("can not be here!")
+
+        assert SkillManager(1, 1).get_skill(self.staff_id)[str(sid)]['level'] == max_level
+
+
+    def test_add_level_beyond_max(self):
+        skills = SkillManager(1, 1).get_skill(self.staff_id)
+        sid = random.choice(skills.keys())
+        sid = int(sid)
+
+        config = ConfigSkill.get(sid)
+        max_level = config.max_level
+
+        key = "staffs.{0}.skills.{1}.level".format(self.staff_id, sid)
+
+        MongoDB.get(1).staff.update_one(
+            {'_id': 1},
+            {'$set': {key: max_level-1}}
+        )
+
+        try:
+            SkillManager(1, 1).add_level(self.staff_id, sid, 2)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id("SKILL_WILL_BEYOND_MAX_LEVEL")
+        else:
+            raise Exception("can not be here!")
+
+        assert SkillManager(1, 1).get_skill(self.staff_id)[str(sid)]['level'] == max_level-1
 
 
     def test_add_toggle(self):

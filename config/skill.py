@@ -18,11 +18,10 @@ class Skill(object):
         self.id = 0
         self.race = 0
         self.type_id = 0
-        self.addition_ids = ""
+        self.addition_ids = []
         self.value_base = 0
         self.level_grow = 0
         self.max_level = 0
-
 
 
 class ConfigSkill(ConfigBase):
