@@ -59,6 +59,9 @@ class Staff(AbstractStaff):
         self.yishi = config_staff.yishi + config_staff.yunying_grow * self.level + data.get('yishi', 0)
         self.caozuo = config_staff.caozuo + config_staff.caozuo_grow * self.level + data.get('caozuo', 0)
 
+        skills = data.get('skills', {})
+        self.skills = {int(k): v['level'] for k, v in skills.iteritems()}
+
 
 class StaffRecruit(object):
     def __init__(self, server_id, char_id):

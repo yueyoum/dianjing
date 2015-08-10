@@ -86,9 +86,11 @@ class LeagueNPCStaff(AbstractStaff):
         super(LeagueNPCStaff, self).__init__()
 
         self.id = staff_attribute['id']
+        config = ConfigStaff.get(self.id)
+
         # TODO
         self.level = 1
-        self.race = ConfigStaff.get(self.id).race
+        self.race = config.race
 
         self.jingong = staff_attribute['jingong']
         self.qianzhi = staff_attribute['qianzhi']
@@ -99,7 +101,8 @@ class LeagueNPCStaff(AbstractStaff):
         self.yishi = staff_attribute['yishi']
         self.caozuo = staff_attribute['caozuo']
 
-        self.skills = []
+        skill_level = staff_attribute.get('skill_level', 1)
+        self.skills = {i: skill_level for i in config.skill_ids}
 
 
 class LeagueNPCClub(AbstractClub):
@@ -394,6 +397,7 @@ class LeagueGroup(object):
                     'yunying': random.randint(npc.yunying_low, npc.yunying_high) * self.level,
                     'yishi': random.randint(npc.yishi_low, npc.yishi_high) * self.level,
                     'caozuo': random.randint(npc.caozuo_low, npc.caozuo_high) * self.level,
+                    'skill_level': random.randint(npc.skill_low, npc.skill_high)
                 })
 
             club['staffs'] = staffs

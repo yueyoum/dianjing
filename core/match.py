@@ -8,9 +8,10 @@ Description:
 """
 
 import random
-
-from config import ConfigUnit, ConfigErrorMessage
 from dianjing.exception import GameException
+
+
+from config import ConfigUnit, ConfigPolicy, ConfigErrorMessage, ConfigSkill
 
 from protomsg.match_pb2 import ClubMatch as MessageClubMatch
 from protomsg.match_pb2 import Match as MessageMatch
@@ -45,18 +46,17 @@ class MatchUnit(object):
             round_three = []
 
             for u in units:
-                round_one.extend( [u.id] * u.first_trig )
-                round_two.extend( [u.id] * u.second_trig )
-                round_three.extend( [u.id] * u.third_trig )
+                round_one.extend([u.id] * u.first_trig)
+                round_two.extend([u.id] * u.second_trig)
+                round_three.extend([u.id] * u.third_trig)
 
             cls.UNIT[race_id] = [round_one, round_two, round_three]
-
 
     @classmethod
     def get(cls, race, round_index):
         # 根据种族和第几回合来随机选择兵种
-        units = cls.UNIT[race][round_index-1]
-        index = random.randint(0, len(units)-1)
+        units = cls.UNIT[race][round_index]
+        index = random.randint(0, len(units) - 1)
         return units[index]
 
 
@@ -82,53 +82,72 @@ class Match(object):
 
 
     def round(self):
-        # TODO skill
         msg = MessageRound()
         msg.round_index = self.round_index
 
         unit_one = MatchUnit.get(self.staff_one.race, self.round_index)
         unit_two = MatchUnit.get(self.staff_two.race, self.round_index)
 
-        # unit_one_des = ConfigUnit.get(unit_one).des[str(self.policy_one)]
-        # unit_two_des = ConfigUnit.get(unit_two).des[str(self.policy_two)]
-
-        unit_one_des = ConfigUnit.get(unit_one).des[str(1)]
-        unit_two_des = ConfigUnit.get(unit_two).des[str(1)]
+        unit_one_des = ConfigUnit.get(unit_one).des[str(self.policy_one)]
+        unit_two_des = ConfigUnit.get(unit_two).des[str(self.policy_two)]
 
         msg.staff_one.unit_id = unit_one
-        msg.staff_one.unit_des = random.randint(0, len(unit_one_des[self.round_index])-1)
+        msg.staff_one.unit_des = random.randint(0, len(unit_one_des[self.round_index]) - 1)
         msg.staff_one.advantage_begin = int(self.advantage_one)
 
         msg.staff_two.unit_id = unit_two
-        msg.staff_two.unit_des = random.randint(0, len(unit_two_des[self.round_index])-1)
+        msg.staff_two.unit_des = random.randint(0, len(unit_two_des[self.round_index]) - 1)
         msg.staff_two.advantage_begin = int(self.advantage_two)
 
+        def calculate(staff, unit_id):
+            """
 
-        XA = 0
-        XB = 0
-        M = 0
+            :type staff: core.abstract.AbstractStaff
+            :type unit_id: int
+            """
 
-        PA = self.staff_one.jingong + self.staff_one.baobing + self.staff_one.caozuo + \
-             self.staff_one.qianzhi + self.staff_one.fangshou + self.staff_one.yunying
+            p = staff.jingong + staff.baobing + staff.caozuo + staff.qianzhi + staff.fangshou + staff.yunying
 
-        JA = (self.staff_one.xintai + self.staff_one.yishi + XA) * M
+            skill_id = ConfigUnit.get(unit_id).skill
+            if skill_id not in staff.skills:
+                j = 0
+            else:
+                config_skill = ConfigSkill.get(skill_id)
 
-        PB = self.staff_two.jingong + self.staff_two.baobing + self.staff_two.caozuo + \
-             self.staff_two.qianzhi + self.staff_two.fangshou + self.staff_two.yunying
+                x = 0
+                for name, percent in config_skill.addition_ids:
+                    x += getattr(staff, name) * percent / 100.0
 
-        JB = (self.staff_two.xintai + self.staff_two.yishi + XB) * M
+                m = (config_skill.value_base + (staff.skills[skill_id]-1) * config_skill.level_grow) / 100.0
+                j = (staff.xintai + staff.yishi + x) * m
 
-        S = PA + JA + PB + JB
+            return (p, j)
 
-        Y = (((PA + JA) - (PB + JB)) / float(S)) * 100
 
-        print "Y = ", Y
-        if Y < 0:
-            self.advantage_one -= Y
-            self.advantage_two += Y
+        pone, jone = calculate(self.staff_one, unit_one)
+        ptwo, jtwo = calculate(self.staff_two, unit_two)
+
+        s = pone + jone + ptwo + jtwo
+
+        y = (((pone + jone) - (ptwo + jtwo)) / float(s)) * 100
+        print "Y =", y
+
+        if y < 0:
+            self.advantage_one -= y
+            self.advantage_two += y
         else:
-            self.advantage_one += Y
-            self.advantage_two -= Y
+            self.advantage_one += y
+            self.advantage_two -= y
+
+
+        # policy addition
+        config_policy = ConfigPolicy.get(self.policy_one)
+        if config_policy.advantage_add_round == self.round_index:
+            self.advantage_one += config_policy.advantage_add_value
+
+        config_policy = ConfigPolicy.get(self.policy_two)
+        if config_policy.advantage_add_round == self.round_index:
+            self.advantage_two += config_policy.advantage_add_value
 
         msg.staff_one.advantage_end = int(self.advantage_one)
         msg.staff_two.advantage_end = int(self.advantage_two)
@@ -156,7 +175,6 @@ class Match(object):
 
             self.round_index += 1
 
-
         if not self.winning:
             if self.advantage_one >= self.advantage_two:
                 rate = (self.advantage_two / 100.0) ** 2 * 100
@@ -170,7 +188,6 @@ class Match(object):
                     self.winning = self.staff_one
                 else:
                     self.winning = self.staff_two
-
 
         msg.staff_one_win = self.winning is self.staff_one
         return msg
@@ -190,7 +207,6 @@ class ClubMatch(object):
         if not self.club_one.match_staffs_ready() or not self.club_two.match_staffs_ready():
             raise GameException(ConfigErrorMessage.get_error_id("MATCH_STAFF_NOT_READY"))
 
-
     def start(self):
         msg = MessageClubMatch()
         msg.club_one.MergeFrom(self.club_one.make_protomsg())
@@ -200,8 +216,8 @@ class ClubMatch(object):
         club_two_winning_times = 0
 
         for i in range(5):
-            staff_one = self.club_one.staffs[ self.club_one.match_staffs[i] ]
-            staff_two = self.club_two.staffs[ self.club_two.match_staffs[i] ]
+            staff_one = self.club_one.staffs[self.club_one.match_staffs[i]]
+            staff_two = self.club_two.staffs[self.club_two.match_staffs[i]]
 
             match = Match(staff_one, staff_two, self.club_one.policy, self.club_two.policy)
             match_msg = match.start()
@@ -220,4 +236,3 @@ class ClubMatch(object):
             msg.club_one_win = False
 
         return msg
-

@@ -118,8 +118,6 @@ class TaskManager(object):
         except KeyError:
             raise GameException(ConfigErrorMessage.get_error_id("TASK_NOT_FIND"))
 
-        print "this_task =", this_task
-
         if this_task['status'] != TASK_STATUS_UNRECEIVED:
             raise GameException(ConfigErrorMessage.get_error_id("TASK_ALREADY_DOING"))
 

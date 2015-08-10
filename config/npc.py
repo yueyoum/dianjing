@@ -24,6 +24,7 @@ class NPC(object):
         'yunying_low', 'yunying_high',
         'yishi_low', 'yishi_high',
         'caozuo_low', 'caozuo_high',
+        'skill_low', 'skill_high',
 
         'name',
         'manager_name',
@@ -47,6 +48,8 @@ class NPC(object):
         self.yishi_high = 0
         self.caozuo_low = 0
         self.caozuo_high = 0
+        self.skill_low = 0
+        self.skill_high = 0
 
         self.name = ""
         self.manager_name = ""

@@ -41,7 +41,8 @@ class ChallengeNPCStaff(AbstractStaff):
         self.yishi = (config.yishi + config.yishi_grow * level) * strength
         self.caozuo = (config.caozuo + config.caozuo_grow * level) * strength
 
-        self.skills = []
+        skills = config.skill_ids
+        self.skills = {i: 1 for i in skills}
 
 
 class ChallengeNPCClub(AbstractClub):

@@ -14,6 +14,7 @@ class Unit(object):
     __slots__ = [
         'id', 'race',
         'first_trig', 'second_trig', 'third_trig',
+        'skill',
         'des'
     ]
 
@@ -23,6 +24,7 @@ class Unit(object):
         self.first_trig = None
         self.second_trig = None
         self.third_trig = None
+        self.skill = None
         self.des = None
 
 

@@ -30,7 +30,7 @@ class AbstractStaff(object):
         self.yishi = None
         self.caozuo = None
 
-        self.skills = []
+        self.skills = {}
 
 
 
