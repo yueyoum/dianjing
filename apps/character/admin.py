@@ -38,9 +38,12 @@ class CharacterAdmin(admin.ModelAdmin):
             }
         )
 
-        gold = doc.get('club', {}).get('gold', 'None')
-        diamond = doc.get('club', {}).get('diamond', 'None')
-        level = doc.get('club', {}).get('level', 'None')
+        if not doc:
+            gold = diamond = level = 'None'
+        else:
+            gold = doc.get('club', {}).get('gold', 'None')
+            diamond = doc.get('club', {}).get('diamond', 'None')
+            level = doc.get('club', {}).get('level', 'None')
 
         return "软妹币  : {0}<br/>钻石   : {1}<br/>俱乐部等级: {2}".format(
             gold, diamond, level
@@ -64,7 +67,8 @@ class CharacterAdmin(admin.ModelAdmin):
 
         key = "club.{0}".format(name)
         for q in queryset:
-            if 'club' not in MongoDB.get(q.server_id).character.find_one({'_id': q.id}, {'club': 1}):
+            doc = MongoDB.get(q.server_id).character.find_one({'_id': q.id}, {'club': 1})
+            if not doc or 'club' not in doc:
                 continue
 
             MongoDB.get(q.server_id).character.update_one(
