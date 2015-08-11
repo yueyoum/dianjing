@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from django.http import HttpResponse
 from django.contrib import admin
 from django import forms
 from django.contrib.admin.helpers import ActionForm
@@ -39,10 +38,12 @@ class CharacterAdmin(admin.ModelAdmin):
             }
         )
 
+        gold = doc.get('club', {}).get('gold', 'None')
+        diamond = doc.get('club', {}).get('diamond', 'None')
+        level = doc.get('club', {}).get('level', 'None')
+
         return "软妹币  : {0}<br/>钻石   : {1}<br/>俱乐部等级: {2}".format(
-            doc['club']['gold'],
-            doc['club']['diamond'],
-            doc['club']['level'],
+            gold, diamond, level
         )
     Info.allow_tags = True
 
@@ -63,6 +64,9 @@ class CharacterAdmin(admin.ModelAdmin):
 
         key = "club.{0}".format(name)
         for q in queryset:
+            if 'club' not in MongoDB.get(q.server_id).character.find_one({'_id': q.id}, {'club': 1}):
+                continue
+
             MongoDB.get(q.server_id).character.update_one(
                 {'_id': q.id},
                 {'$set': {key: value}}
