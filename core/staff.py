@@ -426,8 +426,8 @@ class StaffManger(object):
 
             try:
                 tr = training[i]
-                msg_training_slot.training_id = tr['training_id']
-                msg_training_slot.end_at = tr['start_at'] + ConfigTraining.get(tr['training_id']).minutes * 60
+                msg_training_slot.training_id = tr['training_data']['oid']
+                msg_training_slot.end_at = tr['start_at'] + ConfigTraining.get(tr['training_data']['oid']).minutes * 60
                 if msg_training_slot.end_at <= arrow.utcnow().timestamp:
                     msg_training_slot.status = MsgStaff.TrainingSlot.TS_FINISHED
                 else:
