@@ -7,11 +7,11 @@ Description:
 
 """
 
-from core.training import Training
+from core.training import Training, TrainingStore
 
 from utils.http import ProtobufResponse
 
-from protomsg.training_pb2 import TrainingBuyResponse
+from protomsg.training_pb2 import TrainingBuyResponse, TrainingStoreRefreshResponse
 from protomsg.staff_pb2 import StaffTrainingResponse
 
 def buy(request):
@@ -25,6 +25,17 @@ def buy(request):
 
 
     response = TrainingBuyResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+
+def refresh(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    TrainingStore(server_id, char_id).refresh()
+
+    response = TrainingStoreRefreshResponse()
     response.ret = 0
     return ProtobufResponse(response)
 
