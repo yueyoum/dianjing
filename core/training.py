@@ -32,7 +32,7 @@ class TrainingStore(object):
         self.mongo = MongoDB.get(server_id)
 
         doc = self.mongo.training_store.find_one({'_id': self.char_id}, {'trainings': 1})
-        if not doc.get('trainings', {}):
+        if not doc or not doc.get('trainings', {}):
             self.refresh()
 
 

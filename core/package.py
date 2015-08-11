@@ -176,6 +176,5 @@ class Package(object):
 
         p = cls()
 
-        for attr in cls.__slots__:
-            if attr != 'trainings':
-                setattr(p, attr, getattr(msg, attr))
+        for item in msg.items:
+            setattr(p, item.resource_id, item.value)
