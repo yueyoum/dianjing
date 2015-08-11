@@ -178,3 +178,5 @@ class Package(object):
 
         for item in msg.items:
             setattr(p, item.resource_id, item.value)
+
+        return p

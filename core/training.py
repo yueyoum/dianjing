@@ -33,10 +33,10 @@ class TrainingStore(object):
 
         doc = self.mongo.training_store.find_one({'_id': self.char_id}, {'trainings': 1})
         if not doc or not doc.get('trainings', {}):
-            self.refresh()
+            self.refresh(send_notify=False)
 
 
-    def refresh(self):
+    def refresh(self, send_notify=True):
         # TODO real rule
         ids = random.sample(ConfigTraining.INSTANCES.keys(), 10)
 
@@ -58,6 +58,10 @@ class TrainingStore(object):
             {'$set': {'trainings': trainings}},
             upsert=True
         )
+
+        if send_notify:
+            self.send_notify()
+
 
     def get_training(self, training_id):
         key = 'trainings.{0}'.format(training_id)
