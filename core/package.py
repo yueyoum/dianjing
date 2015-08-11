@@ -14,6 +14,7 @@ from core.base import STAFF_ATTRS
 from config import ConfigPackage
 
 from protomsg.package_pb2 import Package as MsgPackage
+from protomsg.package_pb2 import Item as MsgItem
 
 class Package(object):
     __slots__ = STAFF_ATTRS + [
@@ -146,3 +147,35 @@ class Package(object):
             p.trainings.append((tr.id, tr.amount))
 
         return p
+
+
+    def make_item_protomsg(self):
+        msg = MsgItem()
+        for attr in self.__slots__:
+            if attr != 'trainings':
+                msg_item = msg.items.add()
+                msg_item.resource_id = attr
+                msg_item.value = getattr(self, attr)
+
+        return msg
+
+    def dump_to_item(self):
+        data = self.make_item_protomsg().SerializePartialToString()
+        return base64.b64encode(data)
+
+
+    @classmethod
+    def load_from_item(cls, data):
+        """
+
+        :rtype : Package
+        """
+        data = base64.b64decode(data)
+        msg = MsgItem()
+        msg.ParseFromString(data)
+
+        p = cls()
+
+        for attr in cls.__slots__:
+            if attr != 'trainings':
+                setattr(p, attr, getattr(msg, attr))

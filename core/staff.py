@@ -18,6 +18,7 @@ from core.mongo import Document, MONGO_COMMON_KEY_RECRUIT_HOT
 from core.resource import Resource
 from core.common import Common
 from core.skill import SkillManager
+from core.package import Package
 
 from config import (
     ConfigStaff, ConfigStaffHot, ConfigStaffRecruit,
@@ -283,12 +284,12 @@ class StaffManger(object):
         MessagePipe(self.char_id).put(msg=notify)
 
 
-    def training_start(self, staff_id, training_id):
+    def training_start(self, staff_id, training_data):
         # training_start 是在 外部 Training.use 中调用的，
         # 已经在外部做了错误检测。这里不用对 staff_id, 和 training_id 再次检查了
         # TODO check training num full ?
         doc = Document.get("training.embedded")
-        doc['training_id'] = training_id
+        doc['training_data'] = training_data
         doc['start_at'] = arrow.utcnow().timestamp
 
         key = 'staffs.{0}.trainings'.format(staff_id)
@@ -317,7 +318,7 @@ class StaffManger(object):
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_NOT_EXIST"))
 
 
-        if not self.is_training_finished(data['training_id'], data['start_at']):
+        if not self.is_training_finished(data['training_data']['oid'], data['start_at']):
             raise GameException(ConfigErrorMessage.get_error_id('TRAINING_NOT_FINISHED'))
 
         trainings.pop(slot_id)
@@ -327,12 +328,14 @@ class StaffManger(object):
             {'$set': {key: trainings}}
         )
 
-        config_training = ConfigTraining.get(data['training_id'])
+        config_training = ConfigTraining.get(data['training_data']['oid'])
         if config_training.tp == 3:
             # 技能
             SkillManager(self.server_id, self.char_id).add_level(staff_id, config_training.skill_id, config_training.skill_level)
         else:
-            Resource(self.server_id, self.char_id).add_from_package_id(config_training.package, staff_id)
+            item = data['training_data']['item']
+            p = Package.load_from_item(item)
+            Resource(self.server_id, self.char_id).add_package(p, staff_id)
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
 

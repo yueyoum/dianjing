@@ -75,9 +75,24 @@ STAFF_EMBEDDED_SKILL_DOCUMENT = {
 
 # 嵌入staff中
 STAFF_EMBEDDED_TRAININGS_DOCUMENT = {
-    'training_id': null,
+    'training_data': null,
     'start_at': null
 }
+
+
+# 训练道具商店
+TRAINING_STORE_DOCUMENT = {
+    '_id': null,
+    'trainings': {}
+}
+
+# 嵌入到上面
+TRAINING_STORE_EMBEDDED_DOCUMENT = {
+    'oid': null,
+    # 如果是非技能训练，这里是生成好的package的 protobuf 消息
+    'item': ""
+}
+
 
 # 招募刷新
 RECRUIT_DOCUMENT = {
@@ -203,6 +218,9 @@ class Document(object):
         "staff.embedded": STAFF_EMBEDDED_DOCUMENT,
         "skill.embedded": STAFF_EMBEDDED_SKILL_DOCUMENT,
         "training.embedded": STAFF_EMBEDDED_TRAININGS_DOCUMENT,
+
+        "training_store": TRAINING_STORE_DOCUMENT,
+        "training_store.embedded": TRAINING_STORE_EMBEDDED_DOCUMENT,
 
 
         "recruit": RECRUIT_DOCUMENT,
