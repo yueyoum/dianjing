@@ -68,6 +68,10 @@ class Club(AbstractClub):
             self.staffs[int(k)] = Staff(int(k), v)
 
 
+    def is_staff_in_match(self, staff_id):
+        return staff_id in self.match_staffs or staff_id in self.tibu_staffs
+
+
     def set_policy(self, policy):
         if not ConfigPolicy.get(policy):
             raise GameException(ConfigErrorMessage.get_error_id('POLICY_NOT_EXIST'))

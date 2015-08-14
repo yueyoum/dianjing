@@ -195,7 +195,7 @@ class StaffRecruit(object):
         for s in staffs:
             r = notify.recruits.add()
             r.staff_id = s
-            r.has_recruit = str(s) in already_recruited_staffs
+            r.has_recruit = s in already_recruited_staffs
 
         MessagePipe(self.char_id).put(msg=notify)
 
@@ -269,9 +269,13 @@ class StaffManger(object):
 
 
     def remove(self, staff_id):
+        from core.club import Club
+
         if not self.has_staff(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
+        if Club(self.server_id, self.char_id).is_staff_in_match(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_CAN_NOT_REMOVE_IN_MATCH"))
 
         self.mongo.staff.update_one(
             {'_id': self.char_id},
