@@ -15,7 +15,7 @@ from core.common import Common
 
 from cronjob.log import Logger
 
-@uwsgidecorators.cron(0, -1, -1, -1, -1, target='mule')
+@uwsgidecorators.cron(0, -1, -1, -1, -1, target='spooler')
 def recruit_hot_reset(*args):
     logger = Logger("recruit_hot_reset")
     logger.write("Start")
