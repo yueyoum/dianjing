@@ -44,7 +44,7 @@ class Character(object):
             )
 
         msg = MsgCharacter()
-        msg.id = self.char_id
+        msg.id = str(self.char_id)
         msg.name = char['name']
         # TODO
         msg.avatar = ""
