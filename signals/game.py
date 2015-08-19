@@ -23,6 +23,7 @@ from core.mail import MailManager
 from core.task import TaskManager
 from core.chat import Chat
 from core.notification import Notification
+from core.ladder import Ladder
 
 
 from utils.message import MessagePipe
@@ -55,6 +56,8 @@ def start(server_id, char_id, **kwargs):
     Chat(server_id, char_id).send_notify()
 
     Notification(server_id, char_id).send_notify()
+
+    Ladder(server_id, char_id).send_notify()
 
 game_start_signal.connect(
     start,

@@ -374,40 +374,19 @@ class LeagueGroup(object):
 
 
         def make_npc_club_doc(npc):
-            """
-
-            :type npc: config.npc.NPC
-            """
             club = Document.get("league.club")
             club['club_id'] = 0
 
-            club['club_name'] = npc.name
-            club['manager_name'] = npc.manager_name
-
-            staffs = []
-            staff_ids = ConfigStaff.random_ids(5)
-            for i in range(5):
-                staffs.append({
-                    'id': staff_ids[i],
-                    'jingong': random.randint(npc.jingong_low, npc.jingong_high) * self.level,
-                    'qianzhi': random.randint(npc.qianzhi_low, npc.qianzhi_high) * self.level,
-                    'xintai': random.randint(npc.xintai_low, npc.xintai_high) * self.level,
-                    'baobing': random.randint(npc.baobing_low, npc.baobing_high) * self.level,
-                    'fangshou': random.randint(npc.fangshou_low, npc.fangshou_high) * self.level,
-                    'yunying': random.randint(npc.yunying_low, npc.yunying_high) * self.level,
-                    'yishi': random.randint(npc.yishi_low, npc.yishi_high) * self.level,
-                    'caozuo': random.randint(npc.caozuo_low, npc.caozuo_high) * self.level,
-                    'skill_level': random.randint(npc.skill_low, npc.skill_high)
-                })
-
-            club['staffs'] = staffs
+            club['club_name'] = npc['club_name']
+            club['manager_name'] = npc['manager_name']
+            club['staffs'] = npc['staffs']
             return club
 
 
         clubs = [make_real_club_doc(i) for i in self.real_clubs]
 
         need_npc_amount = GROUP_CLUBS_AMOUNT - len(clubs)
-        npcs = ConfigNPC.random_npcs(need_npc_amount)
+        npcs = ConfigNPC.random_npcs(need_npc_amount, league_level=self.level)
 
         npc_clubs = [make_npc_club_doc(npc) for npc in npcs]
 

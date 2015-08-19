@@ -7,15 +7,14 @@ Description:
 
 """
 
-import copy
 import random
 
 from config.base import ConfigBase
 
-
 class NPC(object):
     __slots__ = [
         'id',
+        'league',
         'jingong_low', 'jingong_high',
         'qianzhi_low', 'qianzhi_high',
         'xintai_low', 'xintai_high',
@@ -32,6 +31,7 @@ class NPC(object):
 
     def __init__(self):
         self.id = 0
+        self.league = 0
         self.jingong_low = 0
         self.jingong_high = 0
         self.qianzhi_low = 0
@@ -92,19 +92,41 @@ class ConfigNPC(ConfigBase):
 
 
     @classmethod
-    def random_npcs(cls, amount):
-        names = random.sample(cls.CLUB_NAMES, amount)
-        manager_names = random.sample(cls.MANAGER_NAMES, amount)
+    def random_npcs(cls, amount, league_level=1):
+        from config import ConfigStaff
+        from config import ConfigClubFlag
+
+        flags = ConfigClubFlag.INSTANCES.keys()
+
+        values = cls.filter(league=league_level).values()
 
         npcs = []
-        values = cls.INSTANCES.values()
-
         while len(npcs) < amount:
             v = random.choice(values)
-            npcs.append(copy.copy(v))
 
-        for index in range(amount):
-            npcs[index].name = names[index]
-            npcs[index].manager_name = manager_names[index]
+            npc = {}
+            npc['club_name'] = random.choice(cls.CLUB_NAMES)
+            npc['club_flag'] = random.choice(flags)
+            npc['manager_name'] = random.choice(cls.MANAGER_NAMES)
+            staffs = []
+
+            staff_ids = ConfigStaff.random_ids(5)
+            for i in range(5):
+                staffs.append({
+                    'id': staff_ids[i],
+                    'jingong': random.randint(v.jingong_low, v.jingong_high),
+                    'qianzhi': random.randint(v.qianzhi_low, v.qianzhi_high),
+                    'xintai': random.randint(v.xintai_low, v.xintai_high),
+                    'baobing': random.randint(v.baobing_low, v.baobing_high),
+                    'fangshou': random.randint(v.fangshou_low, v.fangshou_high),
+                    'yunying': random.randint(v.yunying_low, v.yunying_high),
+                    'yishi': random.randint(v.yishi_low, v.yishi_high),
+                    'caozuo': random.randint(v.caozuo_low, v.caozuo_high),
+                    'skill_level': random.randint(v.skill_low, v.skill_high)
+                })
+
+            npc['staffs'] = staffs
+
+            npcs.append(npc)
 
         return npcs

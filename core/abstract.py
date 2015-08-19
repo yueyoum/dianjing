@@ -63,7 +63,7 @@ class AbstractClub(object):
 
     def make_protomsg(self):
         msg = MessageClub()
-        msg.id = self.id
+        msg.id = str(self.id)
         msg.name = self.name
         msg.manager = self.manager_name
         msg.flag = self.flag

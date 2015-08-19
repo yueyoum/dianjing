@@ -21,7 +21,8 @@ from config.training import ConfigTraining
 from config.npc import ConfigNPC
 from config.skill import ConfigSkill
 from config.task import ConfigTask
-from config.club import ConfigClubLevel
+from config.club import ConfigClubLevel, ConfigClubFlag
+from config.ladder import ConfigLadderRankReward, ConfigLadderScoreStore
 
 
 _has_configed = False
@@ -81,6 +82,12 @@ def load_config():
             ConfigTask.initialize(data)
         elif item == 'club_level.json':
             ConfigClubLevel.initialize(data)
+        elif item == 'club_flag.json':
+            ConfigClubFlag.initialize(data)
+        elif item == 'ladder_rank_reward.json':
+            ConfigLadderRankReward.initialize(data)
+        elif item == 'ladder_score_store.json':
+            ConfigLadderScoreStore.initialize(data)
 
     print "LOAD CONFIG DONE"
 

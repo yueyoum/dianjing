@@ -22,6 +22,12 @@ COMMON_DOCUMENT = {
     'value': null,
 }
 
+# 锁
+LOCK_DOCUMENT = {
+    '_id': null,
+    'locked': False,
+}
+
 # 角色
 CHARACTER_DOCUMENT = {
     '_id': null,
@@ -150,6 +156,29 @@ TASK_CHAR_EMBEDDED_DOCUMENT = {
 }
 
 
+# 天梯
+LADDER_DOCUMENT = {
+    # id: 真实玩家就是str(char_id)，npc是 uuid
+    '_id': null,
+    'score': 0,
+    # TODO 给order加索引
+    'order': 0,
+
+    # 刷新结果 _id: order
+    'refreshed': {},
+    # 剩余次数
+    'remained_times': 0,
+    # 战报
+    'logs': [],
+
+    # 以下几项只有NPC才有
+    'club_name': "",
+    'club_flag': 0,
+    'manager_name': "",
+    'staffs': []
+}
+
+
 # 联赛
 LEAGUE_GROUP_DOCUMENT = {
     '_id': null,
@@ -212,6 +241,8 @@ LEAGUE_EMBEDDED_CLUB_DOCUMENT = {
 class Document(object):
     DOCUMENTS = {
         "common": COMMON_DOCUMENT,
+        "lock": LOCK_DOCUMENT,
+
         "character": CHARACTER_DOCUMENT,
 
         "staff": STAFF_DOCUMENT,
@@ -232,6 +263,8 @@ class Document(object):
         "task.common": TASK_COMMON_DOCUMENT,
         "task.char": TASK_CHAR_DOCUMENT,
         "task.char.embedded": TASK_CHAR_EMBEDDED_DOCUMENT,
+
+        "ladder": LADDER_DOCUMENT,
 
         "league.group": LEAGUE_GROUP_DOCUMENT,
         "league.event": LEAGUE_EVENT_DOCUMENT,

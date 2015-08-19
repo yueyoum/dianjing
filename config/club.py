@@ -17,6 +17,13 @@ class ClubLevel(object):
         self.next_level_id = 0
 
 
+class ClubFlag(object):
+    __slots__ = ['id', 'flag']
+    def __init__(self):
+        self.id = 0
+        self.flag = 0
+
+
 class ConfigClubLevel(ConfigBase):
     EntityClass = ClubLevel
     INSTANCES = {}
@@ -44,3 +51,17 @@ class ConfigClubLevel(ConfigBase):
         :rtype : ClubLevel
         """
         return super(ConfigClubLevel, cls).get(id)
+
+
+class ConfigClubFlag(ConfigBase):
+    EntityClass = ClubFlag
+    INSTANCES = {}
+    FILTER_CACHE = {}
+    
+    @classmethod
+    def get(cls, id):
+        """
+
+        :rtype : ClubFlag
+        """
+        return super(ConfigClubFlag, cls).get()
