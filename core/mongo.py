@@ -225,15 +225,16 @@ LEAGUE_EVENT_EMBEDDED_PAIR_DOCUMENT = {
 # 而且 一个group中 club 只有14个，其大小是比较小的
 # 所以可以嵌入
 LEAGUE_EMBEDDED_CLUB_DOCUMENT = {
-    # club_id 为 0 表示为npc
+    # 真实玩家为 str(club id), npc为uuid
     'club_id': 0,
     'match_times': 0,
     'win_times': 0,
     'score': 0,
 
-    # 如果是npc才会设置下面的几项
+    # 如果是npc 就会设置下面的几项
     'club_name': "",
     'manager_name': "",
+    'club_flag': 1,
     'staffs': []
 }
 
