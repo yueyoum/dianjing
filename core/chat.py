@@ -74,6 +74,9 @@ class Chat(object):
         notify.act = ACT_INIT
 
         doc = self.mongo.common.find_one({'_id': self.CHAT_COMMON_MONGO_ID}, {'chats': 1})
+        if not doc:
+            return
+
         chats = doc.get('chats', [])
         if not chats:
             return
