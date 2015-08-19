@@ -42,7 +42,7 @@ class Chat(object):
 
         msg = ChatMessage()
         msg.channel = channel
-        msg.char.id = self.char_id
+        msg.char.id = str(self.char_id)
         msg.char.name = char_doc['name']
         msg.char.vip = char_doc['club']['vip']
         msg.msg = text

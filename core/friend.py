@@ -58,6 +58,7 @@ class FriendManager(object):
 
 
     def get_info(self, friend_id):
+        friend_id = int(friend_id)
         if not self.check_friend_exist(friend_id, expect_status=[FRIEND_STATUS_OK, FRIEND_STATUS_PEER_CONFIRM, FRIEND_STATUS_SELF_CONFIRM]):
             raise GameException(ConfigErrorMessage.get_error_id("FRIEND_NOT_EXIST"))
 
@@ -67,6 +68,7 @@ class FriendManager(object):
 
 
     def match(self, friend_id):
+        friend_id = int(friend_id)
         if not self.check_friend_exist(friend_id):
             raise GameException(ConfigErrorMessage.get_error_id("FRIEND_NOT_OK"))
 
@@ -122,6 +124,7 @@ class FriendManager(object):
 
 
     def accept(self, char_id, verify=True):
+        char_id = int(char_id)
         key = 'friends.{0}'.format(char_id)
 
         if verify:
@@ -144,6 +147,7 @@ class FriendManager(object):
 
 
     def remove(self, char_id):
+        char_id = int(char_id)
         key = 'friends.{0}'.format(char_id)
 
         doc = self.mongo.friend.find_one({'_id': self.char_id}, {key: 1})
@@ -208,7 +212,7 @@ class FriendManager(object):
 
     def send_remove_notify(self, friend_id):
         notify = FriendRemoveNotify()
-        notify.ids.append(friend_id)
+        notify.ids.append(str(friend_id))
         MessagePipe(self.char_id).put(msg=notify)
 
 
@@ -237,7 +241,7 @@ class FriendManager(object):
         for f in friend_ids:
             notify_friend = notify.friends.add()
             notify_friend.status = FRIEND_STATUS_TABLE[ doc['friends'][str(f)] ]
-            notify_friend.id = f
+            notify_friend.id = str(f)
             notify_friend.name = char_dict[f]['name']
             # TODO
             notify_friend.avatar = ""

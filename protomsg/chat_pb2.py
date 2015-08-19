@@ -15,7 +15,7 @@ import common_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='chat.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\nchat.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"6\n\rChatCharacter\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0b\n\x03vip\x18\x03 \x02(\x05\"{\n\x0b\x43hatMessage\x12/\n\x07\x63hannel\x18\x01 \x02(\x0e\x32\x1e.Dianjing.protocol.ChatChannel\x12.\n\x04\x63har\x18\x02 \x02(\x0b\x32 .Dianjing.protocol.ChatCharacter\x12\x0b\n\x03msg\x18\x03 \x02(\t\"s\n\nChatNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12,\n\x04msgs\x18\x03 \x03(\x0b\x32\x1e.Dianjing.protocol.ChatMessage\"`\n\x0f\x43hatSendRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x07\x63hannel\x18\x02 \x02(\x0e\x32\x1e.Dianjing.protocol.ChatChannel\x12\x0b\n\x03msg\x18\x03 \x02(\t\"0\n\x10\x43hatSendResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*W\n\x0b\x43hatChannel\x12\x17\n\x13\x43HAT_CHANNEL_SYSTEM\x10\x01\x12\x17\n\x13\x43HAT_CHANNEL_PUBLIC\x10\x02\x12\x16\n\x12\x43HAT_CHANNEL_UNION\x10\x03')
+  serialized_pb='\n\nchat.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"6\n\rChatCharacter\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0b\n\x03vip\x18\x03 \x02(\x05\"{\n\x0b\x43hatMessage\x12/\n\x07\x63hannel\x18\x01 \x02(\x0e\x32\x1e.Dianjing.protocol.ChatChannel\x12.\n\x04\x63har\x18\x02 \x02(\x0b\x32 .Dianjing.protocol.ChatCharacter\x12\x0b\n\x03msg\x18\x03 \x02(\t\"s\n\nChatNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12,\n\x04msgs\x18\x03 \x03(\x0b\x32\x1e.Dianjing.protocol.ChatMessage\"`\n\x0f\x43hatSendRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x07\x63hannel\x18\x02 \x02(\x0e\x32\x1e.Dianjing.protocol.ChatChannel\x12\x0b\n\x03msg\x18\x03 \x02(\t\"0\n\x10\x43hatSendResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*W\n\x0b\x43hatChannel\x12\x17\n\x13\x43HAT_CHANNEL_SYSTEM\x10\x01\x12\x17\n\x13\x43HAT_CHANNEL_PUBLIC\x10\x02\x12\x16\n\x12\x43HAT_CHANNEL_UNION\x10\x03')
 
 _CHATCHANNEL = _descriptor.EnumDescriptor(
   name='ChatChannel',
@@ -58,8 +58,8 @@ _CHATCHARACTER = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='id', full_name='Dianjing.protocol.ChatCharacter.id', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
+      number=1, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),

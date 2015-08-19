@@ -41,6 +41,7 @@ class MailManager(object):
 
 
     def send(self, to_id, content):
+        to_id = int(to_id)
         char = self.mongo.character.find_one({'_id': to_id}, {'name': 1})
         if not char:
             raise GameException( ConfigErrorMessage.get_error_id("CHAR_NOT_EXIST") )
