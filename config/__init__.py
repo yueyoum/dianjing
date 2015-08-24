@@ -23,6 +23,7 @@ from config.skill import ConfigSkill
 from config.task import ConfigTask
 from config.club import ConfigClubLevel, ConfigClubFlag
 from config.ladder import ConfigLadderRankReward, ConfigLadderScoreStore
+from config.qianban import ConfigQianBan
 
 
 _has_configed = False
@@ -88,6 +89,8 @@ def load_config():
             ConfigLadderRankReward.initialize(data)
         elif item == 'ladder_score_store.json':
             ConfigLadderScoreStore.initialize(data)
+        elif item == 'qianban.json':
+            ConfigQianBan.initialize(data)
 
     print "LOAD CONFIG DONE"
 

@@ -7,11 +7,14 @@ Description:
 
 """
 
+import itertools
+
 from core.abstract import AbstractClub
 from core.db import MongoDB
 from core.staff import Staff
 from core.signals import match_staffs_set_done_signal
 from core.staff import StaffManger
+from core.qianban import QianBanContainer
 
 from dianjing.exception import GameException
 
@@ -50,7 +53,7 @@ class Club(AbstractClub):
 
         self.id = self.char_id                  # 玩家ID
         self.name = club['name']                # 俱乐部名
-        self.manager_name = char_doc['name']        # 角色名
+        self.manager_name = char_doc['name']    # 角色名
         self.flag = club['flag']                # 俱乐部旗帜
         self.level = club['level']              # 俱乐部等级
         self.renown = club['renown']            # 俱乐部声望
@@ -67,9 +70,24 @@ class Club(AbstractClub):
         for k, v in staffs.iteritems():
             self.staffs[int(k)] = Staff(int(k), v)
 
+        qc = QianBanContainer(self.all_match_staffs())
+        for i in itertools.chain(self.match_staffs, self.tibu_staffs):
+            if i == 0:
+                continue
+
+            qc.affect(self.staffs[i])
+
 
     def is_staff_in_match(self, staff_id):
         return staff_id in self.match_staffs or staff_id in self.tibu_staffs
+
+    def all_match_staffs(self):
+        # 所有上阵员工
+        staffs = []
+        staffs.extend([i for i in self.match_staffs if i != 0])
+        staffs.extend([i for i in self.tibu_staffs if i != 0])
+
+        return staffs
 
 
     def set_policy(self, policy):

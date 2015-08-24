@@ -48,3 +48,13 @@ class TestLeague(object):
 
     def test_match(self):
         LeagueGame.start_match(1)
+
+    def test_get_statistics(self):
+        doc = MongoDB.get(1).character.find_one({'_id': 1}, {'league_group': 1})
+        group_id = doc['league_group']
+
+        group_doc = MongoDB.get(1).league_group.find_one({'_id': group_id})
+
+        for i in group_doc['clubs'].keys():
+            League(1, 1).get_statistics(i)
+

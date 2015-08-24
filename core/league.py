@@ -106,14 +106,14 @@ class LeagueNPCStaff(AbstractStaff):
 
 
 class LeagueNPCClub(AbstractClub):
-    def __init__(self, club_name, manager_name, staffs):
+    def __init__(self, group_id, club_id, club_name, manager_name, club_flag, staffs):
         super(LeagueNPCClub, self).__init__()
 
-        self.id = 0
+        self.id = '{0}:{1}'.format(group_id, club_id)
         self.name = club_name
         self.manager_name = manager_name
+        self.flag = club_flag
         # TODO
-        self.flag = 1
         self.policy = 1
 
         for s in staffs:
@@ -123,26 +123,27 @@ class LeagueNPCClub(AbstractClub):
 
 
 class LeagueClub(object):
-    def __new__(cls, server_id, club):
+    def __new__(cls, server_id, group_id, club):
         # club 是存在mongo中的数据
-        if club['club_id']:
-            return Club(server_id, club['club_id'])
+        if club['club_name']:
+            return LeagueNPCClub(group_id, club['club_id'], club['club_name'], club['manager_name'], club['club_flag'], club['staffs'])
 
-        return LeagueNPCClub(club['club_name'], club['manager_name'], club['staffs'])
+        return Club(server_id, int(club['club_id']))
 
 
 
 class LeagueMatch(object):
     # 一对俱乐部比赛
-    def __init__(self, server_id, club_one, club_two):
+    def __init__(self, server_id, group_id, club_one, club_two):
         # club_one, club_two 是存在mongodb中的数据
         self.server_id = server_id
+        self.group_id = group_id
         self.club_one = club_one
         self.club_two = club_two
 
     def start(self):
-        club_one = LeagueClub(self.server_id, self.club_one)
-        club_two = LeagueClub(self.server_id, self.club_two)
+        club_one = LeagueClub(self.server_id, self.group_id, self.club_one)
+        club_two = LeagueClub(self.server_id, self.group_id, self.club_two)
 
         match = ClubMatch(club_one, club_two)
         msg = match.start()
@@ -299,7 +300,7 @@ class LeagueGame(object):
                 club_one = clubs[ club_one_id ]
                 club_two = clubs[ club_two_id ]
 
-                match = LeagueMatch(server_id, club_one, club_two)
+                match = LeagueMatch(server_id, g['_id'], club_one, club_two)
                 msg = match.start()
 
                 pairs[k]['club_one_win'] = msg.club_one_win
@@ -375,10 +376,11 @@ class LeagueGroup(object):
 
         def make_npc_club_doc(npc):
             club = Document.get("league.club")
-            club['club_id'] = 0
+            club['club_id'] = make_id()
 
             club['club_name'] = npc['club_name']
             club['manager_name'] = npc['manager_name']
+            club['club_flag'] = npc['club_flag']
             club['staffs'] = npc['staffs']
             return club
 
@@ -392,7 +394,8 @@ class LeagueGroup(object):
 
         clubs.extend(npc_clubs)
 
-        self.all_clubs = {str(i+1): clubs[i] for i in range(GROUP_CLUBS_AMOUNT)}
+        # self.all_clubs = {str(i+1): clubs[i] for i in range(GROUP_CLUBS_AMOUNT)}
+        self.all_clubs = {str(c['club_id']): c for c in clubs}
 
         match = self.arrange_match(self.all_clubs.keys())
 
@@ -494,8 +497,13 @@ class League(object):
         self.order = LeagueGame.find_order()
 
 
-    def get_statistics(self, league_club_id):
-        group_id, club_id = league_club_id.split(':')
+    def get_statistics(self, club_id):
+        if ':' in club_id:
+            # npc
+            group_id, club_id = club_id.split(':')
+        else:
+            group_id = self.group_id
+            club_id = club_id
 
         league_group = self.mongo.league_group.find_one(
             {'_id': group_id},
@@ -550,23 +558,23 @@ class League(object):
 
 
         rank_info = []
+        clubs_id_table = {}
 
         # clubs
         for k, v in league_group['clubs'].iteritems():
-            league_club_id = "{0}:{1}".format(self.group_id, k)
-
             notify_club = notify.league.clubs.add()
-            notify_club.league_club_id = league_club_id
-            notify_club.club.MergeFrom( LeagueClub(self.server_id, v).make_protomsg() )
+            lc = LeagueClub(self.server_id, self.group_id, v)
+            notify_club.MergeFrom( lc.make_protomsg() )
 
-            rank_info.append( (league_club_id, v['match_times'], v['win_times'], v['score']) )
+            rank_info.append( (str(lc.id), v['match_times'], v['win_times'], v['score']) )
+            clubs_id_table[k] = str(lc.id)
 
         # ranks
         # TODO rank sort
-        for league_club_id, match_times, win_times, score in rank_info:
+        for club_id, match_times, win_times, score in rank_info:
             notify_rank = notify.league.ranks.add()
 
-            notify_rank.league_club_id = league_club_id
+            notify_rank.club_id = club_id
             notify_rank.battle_times = match_times
             notify_rank.score = score
 
@@ -586,10 +594,9 @@ class League(object):
             for k, v in e['pairs'].iteritems():
                 notify_event_pair = notify_event.pairs.add()
                 notify_event_pair.pair_id = "{0}:{1}".format(event_id, k)
-                notify_event_pair.league_club_one_id = "{0}:{1}".format(self.group_id, v['club_one'])
-                notify_event_pair.league_club_two_id = "{0}:{1}".format(self.group_id, v['club_two'])
+                notify_event_pair.club_one_id = clubs_id_table[v['club_one']]
+                notify_event_pair.club_two_id = clubs_id_table[v['club_two']]
                 notify_event_pair.club_one_win = v['club_one_win']
-
 
         MessagePipe(self.char_id).put(msg=notify)
 
