@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="/static/react.js"></script>
+    <script src="/static/JSXTransformer.js"></script>
+    <style type="text/css">
+        h1 {color: black; }
+        table {text-align: center;}
+        td {text-align: center;
+            border: solid salmon;
+            border-width: 0px 0px 1px 1px}
+        th {text-align: center;
+            border: solid salmon;
+            border-width: 0px 0px 1px 1px}
+    </style>
+</head>
+<body>
+<h1>League Group</h1>
+<div id="content"></div>
+
+<script type="text/jsx">
+
+    var groups = [];
+    {% for d in data %}
+        var group ={};
+        group['id'] = "{{ d.id }}";
+        group['level'] = "{{ d.level }}";
+
+        var events = [];
+        {% for event in d.events %}
+            var id = "{{ event }}";
+            events.push(id);
+        {% endfor %}
+        group['events'] = events;
+
+        groups.push(group);
+    {% endfor %}
+
+    var EventRow = React.createClass({
+        render: function(){
+            return(
+                    <li>{this.props.event}</li>
+            );
+        }
+    });
+
+    var MakeRow = React.createClass({
+        render: function(){
+            var rows = [];
+            this.props.group.events.forEach(function(event){
+                rows.push(<EventRow event={event} />)
+            }.bind(this));
+
+            return(
+                    <tr>
+                        <th>{this.props.group.id}</th>
+                        <th>{this.props.group.level}</th>
+                        <th>{rows}</th>
+                    </tr>
+            );
+        }
+    });
+
+    var ShowForm = React.createClass({
+        render: function(){
+            var rows = [];
+            this.props.groups.forEach(function(group){
+                rows.push(<MakeRow group={group} />);
+            }.bind(this));
+
+            return(
+                    <table>
+                        <tr>
+                            <th>ID</th>
+                            <th>Level</th>
+                            <th>Events</th>
+                        </tr>
+                        {rows}
+                    </table>
+            );
+        }
+    });
+
+    React.render(
+            <ShowForm groups={groups} />,
+            document.getElementById('content')
+    )
+</script>
+</body>
+</html>

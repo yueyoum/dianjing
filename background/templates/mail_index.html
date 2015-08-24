@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="/static/react.js"></script>
+    <script src="/static/JSXTransformer.js"></script>
+    <style type="text/css">
+        h1 {color: black; }
+        table {text-align: center;}
+        td {text-align: center;
+            border: solid salmon;
+            border-width: 0px 0px 1px 1px}
+        th {text-align: center;
+            border: solid salmon;
+            border-width: 0px 0px 1px 1px}
+    </style>
+</head>
+<body>
+<div id="content"></div>
+<script type="text/jsx">
+
+    var server_id = "{{ server_id }}";
+
+    var mails_data = [];
+    {% for d in data %}
+        var row = {};
+        row['id'] = "{{ d.id }}";
+
+        var mails = [];
+        {% for m in d.mails %}
+            var mail = [];
+            mail['char_id'] = "{{ d.id }}";
+            mail['key'] = "{{ m.key }}";
+            mail['title'] = "{{ m.title }}";
+
+            mails.push(mail);
+        {% endfor %}
+        row['mails'] = mails;
+
+        mails_data.push(row);
+    {% endfor %}
+
+    var MailRow = React.createClass({
+        render: function(){
+            var link = "data/mail/one?server_id=" + server_id +
+                    "&char_id="  + this.props.mail.char_id +
+                    "&mail_id=" + this.props.mail.key;
+            return(
+                    <li>
+                        <a href={link} >{this.props.mail.key}: {this.props.mail.title}</a>
+                    </li>
+            );
+        }
+    });
+
+    var MakeRow = React.createClass({
+        render: function(){
+            var rows = [];
+            this.props.row.mails.forEach(function(mail){
+                rows.push( <MailRow mail={mail} /> );
+            }.bind(this));
+
+            return(
+                    <tr>
+                        <td>{this.props.row.id}</td>
+                        <td>{rows}</td>
+                    </tr>
+            )
+        }
+    });
+
+    var MailForm = React.createClass({
+        render: function(){
+            var rows = [];
+            this.props.mails.forEach(function(row){
+                rows.push(<MakeRow row={row} />);
+            }.bind(this));
+
+            return(
+                    <table>
+                        <tr>
+                            <th width="150">Char_ID</th>
+                            <th width="600">Mails</th>
+                        </tr>
+                        {rows}
+                    </table>
+            );
+        }
+    });
+
+    React.render(
+            <MailForm mails={mails_data} />,
+            document.getElementById('content')
+    )
+
+</script>
+
+</body>
+</html>

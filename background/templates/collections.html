@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>数据库表</title>
+    <script src="/static/react.js"></script>
+    <script src="/static/JSXTransformer.js"></script>
+</head>
+<body>
+<div id="content"></div>
+<script type="text/jsx">
+
+    var list = [];
+    {% for c in data %}
+        var t = "{{ c }}";
+        list.push(t);
+    {% endfor %}
+
+    var server_id = "{{ server_id }}";
+    var CollectionRows = React.createClass({
+        render: function(){
+            var link = "/data/" + this.props.collection + "?server_id=" + server_id;
+            return(
+                    <h2>
+                        <li>
+                            <a href={link}>{this.props.collection}</a>
+                        </li>
+                    </h2>
+            );
+        }
+    });
+
+    var CollectionListForm = React.createClass({
+        render: function(){
+            var rows = [];
+            this.props.collections.forEach(function(collection){
+                rows.push(<CollectionRows collection={collection} /> );
+            }.bind(this));
+            return(
+                    <div>
+                        <h1> Collections </h1>
+                        {rows}
+                    </div>
+            );
+        }
+    });
+
+    React.render(
+            <CollectionListForm collections={list} />,
+            document.getElementById('content')
+    );
+</script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="/static/react.js"></script>
+    <script src="/static/JSXTransformer.js"></script>
+    <style type="text/css">
+        table {text-align: center}
+        td {text-align: center;
+            border: solid salmon;
+            border-width: 0px 0px 1px 1px}
+        th {text-align: center;
+            border: solid salmon;
+            border-width: 0px 0px 1px 1px}
+    </style>
+</head>
+<body>
+<h1>Friends</h1>
+<div id="content"></div>
+<script type="text/jsx">
+    
+    var friends = [];
+    {% for d in data %}
+        var row = {};
+        row['char_id'] = "{{ d.char_id }}";
+
+        var friend_list = [];
+        {% for k, v in d.friends.items %}
+            var friend = {};
+            friend['char_id'] = "{{ k }}";
+            friend['status'] = "{{ v }}";
+            friend_list.push(friend);
+        {% endfor %}
+        row['friends'] = friend_list;
+
+        friends.push(row);
+    {% endfor %}
+
+    var FriendRow = React.createClass({
+        render: function(){
+            return(
+                    <li>{this.props.friend.char_id}: {this.props.friend.status}</li>
+            );
+        }
+    });
+    
+    var Row = React.createClass({
+        render: function(){
+            var friendRows = [];
+            this.props.row.friends.forEach(function(friend){
+                friendRows.push(<FriendRow friend={friend} />)
+            }.bind(this));
+
+            return(
+                    <tr>
+                        <td>{this.props.row.char_id}</td>
+                        <td>{friendRows}</td>
+                    </tr>
+            );
+        }
+    });
+
+    var FriendsForm = React.createClass({
+        render: function(){
+            var rows = [];
+            this.props.friends.forEach(function(row){
+                rows.push(<Row row={row} />);
+            }.bind(this));
+            return(
+                    <table>
+                        <tr>
+                            <th>Char_ID</th>
+                            <th>Friends</th>
+                        </tr>
+                        {rows}
+                    </table>
+            );
+        }
+    });
+    
+    React.render(
+            <FriendsForm friends={friends} />,
+            document.getElementById('content')
+    )
+</script>
+</body>
+</html>
