@@ -33,9 +33,9 @@ def league_new(*args):
     try:
         servers = MongoDB.server_ids()
         for s in servers:
-            logger.write("server {0} start".format(s.id))
-            LeagueGame.new(s.id)
-            logger.write("server {0} finish".format(s.id))
+            logger.write("server {0} start".format(s))
+            LeagueGame.new(s)
+            logger.write("server {0} finish".format(s))
     except:
         logger.error(traceback.format_exc())
     else:
@@ -52,9 +52,9 @@ def league_match(*args):
     try:
         servers = MongoDB.server_ids()
         for s in servers:
-            logger.write("server {0} start".format(s.id))
-            LeagueGame.start_match(s.id)
-            logger.write("server {0} finish".format(s.id))
+            logger.write("server {0} start".format(s))
+            LeagueGame.start_match(s)
+            logger.write("server {0} finish".format(s))
     except:
         logger.error(traceback.format_exc())
     else:
