@@ -160,14 +160,16 @@ class TrainingBag(object):
 
         with Resource(self.server_id, self.char_id).check(**needs):
             TrainingStore(self.server_id, self.char_id).remove(training_id)
+            self.add(training_id, training)
 
-            self.mongo.staff.update_one(
-                {'_id': self.char_id},
-                {'$set': {'trainings.{0}'.format(training_id): training}}
-            )
+
+    def add(self, training_id, training_data):
+        self.mongo.staff.update_one(
+            {'_id': self.char_id},
+            {'$set': {'trainings.{0}'.format(training_id): training_data}}
+        )
 
         self.send_notify(act=ACT_UPDATE, ids=[training_id])
-
 
 
     def use(self, staff_id, training_id):

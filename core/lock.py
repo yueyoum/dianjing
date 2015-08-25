@@ -56,3 +56,6 @@ class LadderNPCLock(Lock):
 
 class LadderLock(Lock):
     KEY = 'ladder'
+
+class LadderStoreLock(Lock):
+    KEY = 'ladder_store'

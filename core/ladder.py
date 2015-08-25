@@ -9,16 +9,20 @@ Description:
 
 import random
 import pymongo
+import arrow
 
 from dianjing.exception import GameException
 
 from core.db import MongoDB
-from core.mongo import Document
+from core.mongo import Document, MONGO_COMMON_KEY_LADDER_STORE
 from core.abstract import AbstractStaff, AbstractClub
 from core.club import Club
 from core.match import ClubMatch
+from core.common import Common
+from core.package import Package
+from core.training import TrainingBag
 
-from core.lock import Lock, LadderLock, LadderNPCLock, LockTimeOut
+from core.lock import Lock, LadderLock, LadderNPCLock, LadderStoreLock, LockTimeOut
 
 from utils.functional import make_string_id
 from utils.message import MessagePipe
@@ -31,7 +35,7 @@ from config import (
     ConfigStaff,
 )
 
-from protomsg.ladder_pb2 import LadderNotify
+from protomsg.ladder_pb2 import LadderNotify, LadderStoreNotify
 
 
 NPC_AMOUNT = 2000
@@ -166,23 +170,23 @@ class Ladder(object):
         if order <= 6:
             order_range = [1,2,3,4,5]
         elif order <= 15:
-            order_range = xrange(order, order-6, -1)
+            order_range = xrange(order-1, order-6, -1)
         elif order <= 29:
-            order_range = xrange(order, order-10, -1)
+            order_range = xrange(order-1, order-10, -1)
         elif order <= 69:
-            order_range = xrange(order, order-20, -1)
+            order_range = xrange(order-1, order-20, -1)
         elif order <= 199:
-            order_range = xrange(order, order-50, -1)
+            order_range = xrange(order-1, order-50, -1)
         elif order <= 499:
-            order_range = xrange(order, order-100, -1)
+            order_range = xrange(order-1, order-100, -1)
         elif order <= 999:
-            order_range = xrange(order, order-200, -1)
+            order_range = xrange(order-1, order-200, -1)
         elif order <= 1499:
-            order_range = xrange(order, order-300, -1)
+            order_range = xrange(order-1, order-300, -1)
         elif order <= 1999:
-            order_range = xrange(order, order-500, -1)
+            order_range = xrange(order-1, order-500, -1)
         else:
-            order_range = xrange(order, 1995, -1)
+            order_range = xrange(order-1, 1994, -1)
 
         choose_orders = random.sample(order_range, 5)
 
@@ -283,6 +287,7 @@ class Ladder(object):
         notify = LadderNotify()
         notify.remained_times = doc['remained_times']
         notify.my_order = doc['order']
+        notify.my_score = doc['score']
 
         refreshed = doc['refreshed']
         refreshed_docs = self.mongo.ladder.find({'_id': {'$in': refreshed.keys()}})
@@ -313,3 +318,60 @@ class Ladder(object):
         MessagePipe(self.char_id).put(msg=notify)
 
 
+class LadderStore(object):
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+
+        self.items = Common.get(self.server_id, MONGO_COMMON_KEY_LADDER_STORE)
+        if not self.items:
+            self.refresh()
+
+
+    def refresh(self):
+        with LadderStoreLock(self.server_id).lock():
+            self.items = Common.get(self.server_id, MONGO_COMMON_KEY_LADDER_STORE)
+            if self.items:
+                return
+
+            items = random.sample(ConfigLadderScoreStore.INSTANCES.values(), 9)
+
+            self.items = {}
+            for i in items:
+                this_doc = Document.get("training_store.embedded")
+                this_doc['oid'] = i.id
+                this_doc['item'] = Package.generate(i.package).dump_to_item()
+
+                self.items[make_string_id()] = this_doc
+
+            Common.set(self.server_id, MONGO_COMMON_KEY_LADDER_STORE, self.items)
+
+
+    def buy(self, item_id):
+        try:
+            data = self.items[item_id]
+        except KeyError:
+            raise GameException(ConfigErrorMessage.get_error_id("LADDER_STORE_ITEM_NOT_EXIST"))
+
+        # TODO BUY LIMIT
+        # TODO COST SCORE
+        TrainingBag(self.server_id, self.char_id).add(item_id, data)
+
+        Ladder(self.server_id, self.char_id).send_notify()
+
+
+
+    def send_notify(self):
+        next_day = arrow.utcnow().replace(days=1)
+        next_time = arrow.Arrow(next_day.year, next_day.month, next_day.day).timestamp
+
+        notify = LadderStoreNotify()
+        notify.next_refresh_time = next_time
+
+        for k, v in self.items.iteritems():
+            notify_item = notify.items.add()
+            notify_item.id = k
+            notify_item.oid = v['oid']
+            notify_item.item.MergeFrom(Package.load_from_item(v['item']).make_item_protomsg())
+
+        MessagePipe(self.char_id).put(msg=notify)

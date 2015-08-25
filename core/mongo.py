@@ -280,3 +280,4 @@ class Document(object):
 
 MONGO_COMMON_KEY_RECRUIT_HOT = 'recruit_hot'
 MONGO_COMMON_KEY_TASK = 'task'
+MONGO_COMMON_KEY_LADDER_STORE = 'ladder_store'

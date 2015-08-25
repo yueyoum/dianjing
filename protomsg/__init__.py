@@ -97,6 +97,9 @@ MESSAGE_TO_ID = {
     "LadderRefreshResponse": 1702,
     "LadderMatchRequest": 1703,
     "LadderMatchResponse": 1704,
+    "LadderStoreNotify": 1705,
+    "LadderStoreBuyRequest": 1706,
+    "LadderStoreBuyResponse": 1707,
 }
 
 ID_TO_MESSAGE = {
@@ -197,6 +200,9 @@ ID_TO_MESSAGE = {
     1702: "LadderRefreshResponse",
     1703: "LadderMatchRequest",
     1704: "LadderMatchResponse",
+    1705: "LadderStoreNotify",
+    1706: "LadderStoreBuyRequest",
+    1707: "LadderStoreBuyResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -237,6 +243,7 @@ PATH_TO_REQUEST = {
     "/game/notification/open/": ["notification", "NotificationOpenRequest"],
     "/game/ladder/refresh/": ["ladder", "LadderRefreshRequest"],
     "/game/ladder/match/": ["ladder", "LadderMatchRequest"],
+    "/game/ladder/store/buy/": ["ladder", "LadderStoreBuyRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -277,4 +284,5 @@ PATH_TO_RESPONSE = {
     "/game/notification/open/": ["notification", "NotificationOpenResponse"],
     "/game/ladder/refresh/": ["ladder", "LadderRefreshResponse"],
     "/game/ladder/match/": ["ladder", "LadderMatchResponse"],
+    "/game/ladder/store/buy/": ["ladder", "LadderStoreBuyResponse"],
 }

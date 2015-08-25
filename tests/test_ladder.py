@@ -9,12 +9,17 @@ Description:
 
 import random
 
+from dianjing.exception import GameException
+
 from core.db import MongoDB
-from core.ladder import Ladder
+from core.mongo import MONGO_COMMON_KEY_LADDER_STORE
+from core.common import Common
+from core.ladder import Ladder, LadderStore
 from core.staff import StaffManger
 from core.club import Club
+from core.training import TrainingBag
 
-from config import ConfigStaff
+from config import ConfigStaff, ConfigErrorMessage
 
 
 
@@ -56,3 +61,30 @@ class TestLadder(object):
         target_id = random.choice(refreshed)
 
         ladder.match(target_id)
+
+
+class TestLadderStore(object):
+    def teardown(self):
+        MongoDB.get(1).staff.delete_one({'_id': 1})
+        Common.delete(1, MONGO_COMMON_KEY_LADDER_STORE)
+
+    def test_send_notify(self):
+        LadderStore(1, 1).send_notify()
+
+    def test_buy_not_exist(self):
+        l = LadderStore(1, 1)
+        try:
+            l.buy(1)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id("LADDER_STORE_ITEM_NOT_EXIST")
+        else:
+            raise Exception("can not be here!")
+
+    def test_buy(self):
+        l = LadderStore(1, 1)
+        t = TrainingBag(1, 1)
+        item_id = random.choice(l.items.keys())
+
+        assert t.has_training(item_id) is False
+        l.buy(item_id)
+        assert t.has_training(item_id) is True
