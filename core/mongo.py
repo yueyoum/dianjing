@@ -168,7 +168,7 @@ LADDER_DOCUMENT = {
     'refreshed': {},
     # 剩余次数
     'remained_times': 0,
-    # 战报
+    # 战报 [(template_id, args) ...]
     'logs': [],
 
     # 以下几项只有NPC才有

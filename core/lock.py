@@ -19,31 +19,36 @@ class LockTimeOut(Exception):
 
 
 class Lock(object):
+    INTERVAL = 0.1
     KEY = None
+
     def __init__(self, server_id):
         self.server_id = server_id
         self.mongo = MongoDB.get(server_id)
 
 
     @contextmanager
-    def lock(self, timeout=5):
+    def lock(self, timeout=5, key=None):
+        if not key:
+            key = self.KEY
+
         t = 0
         while True:
             if t > timeout:
                 raise LockTimeOut()
 
             try:
-                self.mongo.lock.insert_one({'_id': self.KEY})
+                self.mongo.lock.insert_one({'_id': key})
             except DuplicateKeyError:
-                time.sleep(0.1)
-                t += 0.1
+                time.sleep(self.INTERVAL)
+                t += self.INTERVAL
             else:
                 break
 
         try:
             yield
         finally:
-            self.mongo.lock.delete_one({'_id': self.KEY})
+            self.mongo.lock.delete_one({'_id': key})
 
 
 class LadderNPCLock(Lock):
