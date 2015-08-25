@@ -19,6 +19,7 @@ def servers(request):
         temp['mongo_port'] = s.mongo_port
         temp['mongo_db'] = s.mongo_db
         data.append(temp)
+        print data
     return render_to_response('servers.html', {'servers': data})
 
 
