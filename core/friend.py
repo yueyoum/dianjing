@@ -14,6 +14,7 @@ from core.mongo import Document
 from core.character import Character
 from core.club import Club
 from core.match import ClubMatch
+from core.signals import friend_match_signal
 
 from utils.message import MessagePipe
 
@@ -77,6 +78,15 @@ class FriendManager(object):
 
         match = ClubMatch(club_one, club_two)
         msg = match.start()
+
+        friend_match_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            friend_id=friend_id,
+            win=msg.club_one_win
+        )
+
         return msg
 
 

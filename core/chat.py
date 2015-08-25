@@ -12,6 +12,7 @@ import base64
 
 from dianjing.exception import GameException
 from core.db import MongoDB
+from core.signals import chat_signal
 
 from config import ConfigErrorMessage
 
@@ -67,6 +68,12 @@ class Chat(object):
 
         for char in self.mongo.character.find():
             MessagePipe(char['_id']).put(msg=notify)
+
+        chat_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id
+        )
 
 
     def send_notify(self):

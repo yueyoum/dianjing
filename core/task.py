@@ -9,12 +9,10 @@ from dianjing.exception import GameException
 from core.db import MongoDB
 from core.mongo import Document, MONGO_COMMON_KEY_TASK
 from core.resource import Resource
-from core.building import BuildingManager
+from core.building import BuildingTaskCenter
 from core.common import Common
 
-from config import ConfigErrorMessage
-from config.task import ConfigTask
-from config.building import ConfigBuilding
+from config import ConfigErrorMessage, ConfigTask, ConfigBuilding
 
 from utils.message import MessagePipe
 
@@ -27,9 +25,7 @@ TASK_STATUS_FINISH = 2
 TASK_STATUS_END = 3
 
 
-TASK_CENTRE_ID = 4
 # 每个等级要刷新的任务数量
-TASK_REFRESH_AMOUNT_PER_LEVEL = 10
 
 
 class TaskRefresh(object):
@@ -45,20 +41,17 @@ class TaskRefresh(object):
 
 
     def refresh(self):
-        task_level_ids = {
-            lv: ConfigTask.filter(level=lv).keys()
-            for lv in range(1, ConfigBuilding.get(TASK_CENTRE_ID).max_levels+1)
-            }
+        task_center = ConfigBuilding.get(BuildingTaskCenter.BUILDING_ID)
 
         levels = {}
-        task_center = ConfigBuilding.get(TASK_CENTRE_ID)
         for i in range(1, task_center.max_levels+1):
+            this_level_task_ids = ConfigTask.filter(level=i).keys()
             task_num = task_center.get_level(i).value1
 
             try:
-                task_ids = random.sample(task_level_ids[i], task_num)
+                task_ids = random.sample(this_level_task_ids, task_num)
             except ValueError:
-                task_ids = task_level_ids[i]
+                task_ids = this_level_task_ids
 
             levels[str(i)] = task_ids
 
@@ -96,16 +89,18 @@ class TaskManager(object):
         if not doc:
             self.refresh()
 
+
     @classmethod
     def clean(cls, server_id):
         MongoDB.get(server_id).task.drop()
+
 
     def receive(self, task_id):
         config = ConfigTask.get(task_id)
         if not config:
             raise GameException(ConfigErrorMessage.get_error_id('TASK_NOT_EXIST'))
 
-        if BuildingManager(self.server_id, self.char_id).get_level(TASK_CENTRE_ID) < config.level:
+        if BuildingTaskCenter(self.server_id, self.char_id).get_level() < config.level:
             raise GameException(ConfigErrorMessage.get_error_id('BUILDING_TASK_CENTER_LEVEL_NOT_ENOUGH'))
 
         task = self.mongo.task.find_one(
@@ -121,25 +116,22 @@ class TaskManager(object):
         if this_task['status'] != TASK_STATUS_UNRECEIVED:
             raise GameException(ConfigErrorMessage.get_error_id("TASK_ALREADY_DOING"))
 
-
-        doc = Document.get("task.char.embedded")
-        doc['status'] = TASK_STATUS_DOING
-
         self.mongo.task.update_one(
             {'_id': self.char_id},
-            {'$set': {'tasks.{0}'.format(task_id): doc}}
+            {'$set': {'tasks.{0}.status'.format(task_id): TASK_STATUS_DOING}}
         )
+
         self.send_notify(ACT_UPDATE, [task_id])
 
+
     def get_reward(self, task_id):
-        # check task finish
         task = self.mongo.task.find_one({'_id': self.char_id}, {'tasks.{0}'.format(task_id): 1})
 
         this_task = task['tasks'].get(str(task_id), None)
         if not this_task:
             raise GameException(ConfigErrorMessage.get_error_id("TASK_NOT_EXIST"))
 
-        if this_task['status'] == TASK_STATUS_DOING:
+        if this_task['status'] == TASK_STATUS_UNRECEIVED or this_task['status'] == TASK_STATUS_DOING:
             raise GameException(ConfigErrorMessage.get_error_id("TASK_NOT_DONE"))
 
         if this_task['status'] == TASK_STATUS_END:
@@ -153,6 +145,7 @@ class TaskManager(object):
         )
 
         self.send_notify(ACT_UPDATE, [task_id])
+
 
     def send_notify(self, act=ACT_INIT, task_ids=None):
         if not task_ids:
@@ -173,34 +166,44 @@ class TaskManager(object):
 
         MessagePipe(self.char_id).put(msg=notify)
 
-    def update(self, **kwargs):
-        task_id = kwargs.get('task_id', 0)
-        num = kwargs.get('num', 0)
 
-        task = self.mongo.task.find_one({'_id': self.char_id}, {'tasks.{0}'.format(task_id): 1})
-        if task['tasks'].get(str(task_id), {}).get('status', None) != TASK_STATUS_DOING:
-            return
+    def trig(self, tp, num):
+        # 按照类型来触发
+        doc = self.mongo.task.find_one({'_id': self.char_id}, {'tasks': 1})
+        tasks = doc['tasks']
 
-        num += task['tasks'][str(task_id)]['num']
-        updater = {'tasks.{0}.num'.format(task_id): num}
+        updated_ids = []
+        updater = {}
 
-        config = ConfigTask.get(task_id)
-        if num >= config.num:
-            updater['tasks.{0}.status'.format(task_id)] = TASK_STATUS_FINISH
+        for k, v in tasks.iteritems():
+            config = ConfigTask.get(int(k))
+            if config.tp != tp:
+                continue
 
-        self.mongo.task.update_one(
-            {'_id': self.char_id},
-            {'$set': updater}
-        )
+            if v['status'] != TASK_STATUS_DOING:
+                continue
 
-        self.send_notify(ACT_UPDATE, [task_id])
+            updated_ids.append(k)
+            # XXX 是否有其他类型的判断
+            new_num = v['num'] + num
+            updater['tasks.{0}.num'.format(k)] = new_num
+            if new_num >= config.num:
+                updater['tasks.{0}.status'.format(k)] = TASK_STATUS_FINISH
+
+        if updated_ids:
+            self.mongo.task.update_one(
+                {'_id': self.char_id},
+                {'$set': updater}
+            )
+
+            self.send_notify(ACT_UPDATE, updated_ids)
 
 
     def refresh(self):
         task_doc = Document.get("task.char")
         task_doc['_id'] = self.char_id
 
-        level = BuildingManager(self.server_id, self.char_id).get_level(TASK_CENTRE_ID)
+        level = BuildingTaskCenter(self.server_id, self.char_id).get_level()
         task_ids = TaskRefresh(self.server_id).get_task_ids(level)
 
         new_tasks_doc = Document.get("task.char.embedded")

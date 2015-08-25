@@ -14,3 +14,6 @@ game_start_signal = Signal(providing_args=['server_id', 'char_id'])
 match_staffs_set_done_signal = Signal(providing_args=['server_id', 'char_id', 'match_staffs'])
 
 challenge_match_signal = Signal(providing_args=['server_id', 'char_id', 'challenge_id', 'win'])
+friend_match_signal = Signal(providing_args=['server_id', 'char_id', 'friend_id', 'win'])
+league_match_signal = Signal(providing_args=['server_id', 'char_id'])
+chat_signal = Signal(providing_args=['server_id', 'char_id'])

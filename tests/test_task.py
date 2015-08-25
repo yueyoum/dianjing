@@ -13,6 +13,7 @@ from dianjing.exception import GameException
 from core.db import MongoDB
 from core.common import Common
 from core.mongo import MONGO_COMMON_KEY_TASK
+from core.building import BuildingTaskCenter
 
 from core.task import (
     TaskManager,
@@ -21,7 +22,6 @@ from core.task import (
     TASK_STATUS_UNRECEIVED,
     TASK_STATUS_FINISH,
     TASK_STATUS_END,
-    TASK_CENTRE_ID,
 )
 
 from config import ConfigErrorMessage, ConfigTask
@@ -48,7 +48,7 @@ class TestTask(object):
         # 设置 任务中心 等级
         MongoDB.get(1).building.update_one(
             {'_id': 1},
-            {'$set': {'buildings.{0}'.format(TASK_CENTRE_ID): cls.BUILDING_LEVEL}},
+            {'$set': {'buildings.{0}'.format(BuildingTaskCenter.BUILDING_ID): cls.BUILDING_LEVEL}},
              upsert=True
         )
 
@@ -192,7 +192,9 @@ class TestTask(object):
         task_id = get_random_task_id(level=self.BUILDING_LEVEL)
         self.set_task_status(task_id, TASK_STATUS_DOING)
 
-        TaskManager(1, 1).update(task_id=task_id, num=ConfigTask.get(task_id).num)
+        config = ConfigTask.get(task_id)
+        TaskManager(1, 1).trig(config.tp, config.num)
+
         doc = MongoDB.get(1).task.find_one({'_id': 1})
 
         assert doc['tasks'][str(task_id)]['num'] == ConfigTask.get(task_id).num
@@ -203,7 +205,8 @@ class TestTask(object):
         task_id = get_random_task_id(level=self.BUILDING_LEVEL)
         self.set_task_status(task_id, TASK_STATUS_FINISH)
 
-        TaskManager(1, 1).update(task_id=task_id, num=ConfigTask.get(task_id).num)
+        config = ConfigTask.get(task_id)
+        TaskManager(1, 1).trig(config.tp, config.num)
 
         doc = MongoDB.get(1).task.find_one({'_id': 1})
 
