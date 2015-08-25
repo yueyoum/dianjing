@@ -22,6 +22,14 @@ class TestLadder(object):
     def teardown(self):
         MongoDB.get(1).ladder.drop()
 
+        MongoDB.get(1).staff.delete_one({'_id': 1})
+        MongoDB.get(1).character.update_one(
+            {'_id': 1},
+            {'$set': {
+                'club.match_staffs': [],
+                'club.tibu_staffs': []
+            }}
+        )
 
     def test_send_notify(self):
         Ladder(1, 1).send_notify()

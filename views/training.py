@@ -7,7 +7,7 @@ Description:
 
 """
 
-from core.training import Training, TrainingStore
+from core.training import TrainingBag, TrainingStore
 
 from utils.http import ProtobufResponse
 
@@ -20,7 +20,7 @@ def buy(request):
 
     training_id = request._proto.id
 
-    tr = Training(server_id, char_id)
+    tr = TrainingBag(server_id, char_id)
     tr.buy(training_id)
 
 
@@ -47,7 +47,7 @@ def training(request):
     staff_id = request._proto.staff_id
     training_id = request._proto.training_id
 
-    tr = Training(server_id, char_id)
+    tr = TrainingBag(server_id, char_id)
     tr.use(staff_id, training_id)
 
     response = StaffTrainingResponse()

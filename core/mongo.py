@@ -59,7 +59,7 @@ STAFF_DOCUMENT = {
     '_id': null,
     # 员工， 定义见下面的 STAFF_EMBEDDED
     'staffs': {},
-    # 拥有的训练
+    # 拥有的训练 训练商店中生产的是 已经生成 好的训练，所以这里是 字典 要记录训练数据
     'trainings': {}
 }
 

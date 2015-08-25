@@ -70,6 +70,7 @@ class Club(AbstractClub):
         for k, v in staffs.iteritems():
             self.staffs[int(k)] = Staff(int(k), v)
 
+        print "all staffs ids = {0}".format(self.staffs.keys())
         qc = QianBanContainer(self.all_match_staffs())
         for i in itertools.chain(self.match_staffs, self.tibu_staffs):
             if i == 0:

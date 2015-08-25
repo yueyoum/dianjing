@@ -123,14 +123,12 @@ class Match(object):
 
             return (p, j)
 
-
         pone, jone = calculate(self.staff_one, unit_one)
         ptwo, jtwo = calculate(self.staff_two, unit_two)
 
         s = pone + jone + ptwo + jtwo
 
         y = (((pone + jone) - (ptwo + jtwo)) / float(s)) * 100
-        print "Y =", y
 
         if y < 0:
             self.advantage_one -= y

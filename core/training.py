@@ -13,16 +13,22 @@ from dianjing.exception import GameException
 from core.db import MongoDB
 from core.mongo import Document
 from core.staff import StaffManger
+from core.building import BuildingTrainingCenter
 from core.resource import Resource
 from core.package import Package
 
 from utils.message import MessagePipe
 from utils.functional import make_string_id
 
-from config import ConfigErrorMessage, ConfigTraining
+from config import ConfigErrorMessage, ConfigTraining, ConfigBuilding
 
-from protomsg.training_pb2 import TrainingNotify, TrainingRemoveNotify, TrainingStoreNotify, TrainingStoreRemoveNotify
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
+from protomsg.training_pb2 import (
+    TrainingNotify,
+    TrainingRemoveNotify,
+    TrainingStoreNotify,
+    TrainingStoreRemoveNotify,
+)
 
 
 class TrainingStore(object):
@@ -37,8 +43,10 @@ class TrainingStore(object):
 
 
     def refresh(self, send_notify=True):
-        # TODO real rule
-        ids = random.sample(ConfigTraining.INSTANCES.keys(), 10)
+        level = BuildingTrainingCenter(self.server_id, self.char_id).get_level()
+        amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(level).value1
+
+        ids = ConfigTraining.refreshed_ids(level, amount)
 
         trainings = {}
         for i in ids:
@@ -61,6 +69,8 @@ class TrainingStore(object):
 
         if send_notify:
             self.send_notify()
+
+        return trainings
 
 
     def get_training(self, training_id):
@@ -110,7 +120,7 @@ class TrainingStore(object):
 
 
 
-class Training(object):
+class TrainingBag(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id

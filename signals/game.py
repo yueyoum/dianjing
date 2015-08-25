@@ -16,7 +16,7 @@ from core.staff import StaffRecruit, StaffManger
 from core.skill import SkillManager
 from core.challenge import Challenge
 from core.building import BuildingManager
-from core.training import Training, TrainingStore
+from core.training import TrainingBag, TrainingStore
 from core.league import League
 from core.friend import FriendManager
 from core.mail import MailManager
@@ -47,7 +47,7 @@ def start(server_id, char_id, **kwargs):
     Challenge(server_id, char_id).send_notify()
     BuildingManager(server_id, char_id).send_notify()
     TrainingStore(server_id, char_id).send_notify()
-    Training(server_id, char_id).send_notify()
+    TrainingBag(server_id, char_id).send_notify()
     League(server_id, char_id).send_notify()
     FriendManager(server_id, char_id).send_notify()
     MailManager(server_id, char_id).send_notify()

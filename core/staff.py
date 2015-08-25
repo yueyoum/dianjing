@@ -313,11 +313,10 @@ class StaffManger(object):
         if not self.has_staff(staff_id):
             raise GameException( ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST") )
 
-
         key = "staffs.{0}.trainings".format(staff_id)
 
-        char = self.mongo.staff.find_one({'_id': self.char_id}, {key: 1})
-        trainings = char['staffs'][str(staff_id)]['trainings']
+        doc = self.mongo.staff.find_one({'_id': self.char_id}, {key: 1})
+        trainings = doc['staffs'][str(staff_id)]['trainings']
 
         try:
             data = trainings[slot_id]
@@ -327,13 +326,6 @@ class StaffManger(object):
 
         if not self.is_training_finished(data['training_data']['oid'], data['start_at']):
             raise GameException(ConfigErrorMessage.get_error_id('TRAINING_NOT_FINISHED'))
-
-        trainings.pop(slot_id)
-
-        self.mongo.staff.update_one(
-            {'_id': self.char_id},
-            {'$set': {key: trainings}}
-        )
 
         # TODO 判断技能训练 玩家此时是否拥有此技能
         config_training = ConfigTraining.get(data['training_data']['oid'])
@@ -354,6 +346,12 @@ class StaffManger(object):
             item = data['training_data']['item']
             p = Package.load_from_item(item)
             Resource(self.server_id, self.char_id).add_package(p, staff_id)
+
+        trainings.pop(slot_id)
+        self.mongo.staff.update_one(
+            {'_id': self.char_id},
+            {'$set': {key: trainings}}
+        )
 
         self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
 

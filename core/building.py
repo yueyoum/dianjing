@@ -21,6 +21,14 @@ from utils.message import MessagePipe
 
 from protomsg.building_pb2 import BuildingNotify
 
+BUILDING_HEADQUARTERS = 1           # 总部大楼
+BUILDING_TRAINING_CENTER = 2        # 任务中心
+BUILDING_STAFF_CENTER = 3           # 员工中心
+BUILDING_TASK_CENTER = 4            # 任务中心
+BUILDING_LEAGUE_CENTER = 5          # 联赛中心
+
+
+
 class BuildingManager(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
@@ -91,3 +99,29 @@ class BuildingManager(object):
 
         MessagePipe(self.char_id).put(msg=notify)
 
+
+
+class BuildingBase(object):
+    BUILDING_ID = 0
+
+    def __init__(self, server_id, char_id):
+        self.bm = BuildingManager(server_id, char_id)
+
+    def get_level(self):
+        return self.bm.get_level(self.BUILDING_ID)
+
+    def level_up(self):
+        return self.bm.level_up(self.BUILDING_ID)
+
+
+class BuildingTrainingCenter(BuildingBase):
+    BUILDING_ID = BUILDING_TRAINING_CENTER
+
+class BuildingStaffCenter(BuildingBase):
+    BUILDING_ID = BUILDING_STAFF_CENTER
+
+class BuildingTaskCenter(BuildingBase):
+    BUILDING_ID = BUILDING_TASK_CENTER
+
+class BuildingLeagueCenter(BuildingBase):
+    BUILDING_ID = BUILDING_LEAGUE_CENTER

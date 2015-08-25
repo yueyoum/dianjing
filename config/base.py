@@ -63,4 +63,5 @@ class ConfigBase(object):
         for k, v in condition.iteritems():
             if getattr(obj, k) != v:
                 return False
-            return True
+
+        return True

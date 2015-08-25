@@ -96,7 +96,6 @@ class QianBanContainer(object):
         """
         config_staff = ConfigStaff.get(staff_id)
         qianban_ids = config_staff.qianban_ids
-        print "qianban_ids:", qianban_ids
 
         effect = QianBanEffect()
 
