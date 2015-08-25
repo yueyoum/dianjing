@@ -76,5 +76,8 @@ urlpatterns = [
     url(r'data/staff/$', 'background.views.staff'),
     url(r'data/staff/char/$', 'background.views.staff_char'),
     url(r'data/recruit/$', 'background.views.recruit'),
+    url(r'data/league_event/$', 'background.views.league_event'),
+    url(r'data/league_group/$', 'background.views.league_group'),
+    url(r'data/training_store/$', 'background.views.training_store'),
 ]
 

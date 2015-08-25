@@ -61,26 +61,85 @@
         }
     });
 
-    var FriendsForm = React.createClass({
+    var FriendsTable = React.createClass({
         render: function(){
             var rows = [];
             this.props.friends.forEach(function(row){
+                if( row.char_id.indexOf(this.props.filterText) === -1){
+                    return;
+                }
+
                 rows.push(<Row row={row} />);
             }.bind(this));
             return(
                     <table>
-                        <tr>
-                            <th>Char_ID</th>
-                            <th>Friends</th>
-                        </tr>
-                        {rows}
+                        <thead>
+                            <tr>
+                                <th>Char_ID</th>
+                                <th>Friends</th>
+                            </tr>
+                        </thead>
+                        <tbody>{rows}</tbody>
                     </table>
+            );
+        }
+    });
+
+    var SearchBar = React.createClass({
+
+        handleChange: function(){
+            this.props.onUserInput(
+                    this.refs.filterTextInput.getDOMNode().value
+            );
+        },
+
+        render: function(){
+            return(
+                    <from>
+                        <input
+                            type="text"
+                            placeholder="Search...ID"
+                            value={this.props.filterText}
+                            ref="filterTextInput"
+                            onChange={this.handleChange}
+                            />
+                    </from>
+            );
+        }
+    });
+
+    var FriendForm = React.createClass({
+
+        getInitialState: function(){
+            return{
+                filterText: ''
+            };
+        },
+
+        handleUserInput:function(filterText){
+            this.setState({
+                filterText: filterText
+            });
+        },
+
+        render: function(){
+            return(
+                    <div>
+                        <SearchBar
+                                filterText={this.state.filterText}
+                                onUserInput={this.handleUserInput}
+                                />
+                        <FriendsTable
+                                friends={this.props.friends}
+                                filterText={this.state.filterText}
+                                />
+                    </div>
             );
         }
     });
     
     React.render(
-            <FriendsForm friends={friends} />,
+            <FriendForm friends={friends} />,
             document.getElementById('content')
     )
 </script>

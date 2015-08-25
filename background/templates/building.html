@@ -24,30 +24,28 @@
 <body>
 <div id="content"></div>
 <script type="text/jsx">
-    var buildings = [];
+    var building_data = [];
     {% for d in data %}
-        var temp = {};
-        temp['char_id'] = "{{ d.id }}";
+        var row = {};
+        row['char'] = "{{ d.id }}";
 
-        var list = [];
+        var buildings = [];
         {% for k, v in d.buildings.items %}
-            var t = {};
-            var t_k = "{{ k }}";
-            var t_v = "{{ v }}";
-            t['k'] = t_k;
-            t['v'] = t_v;
+            var building = {};
+            building['id'] = "{{ k }}";
+            building['level'] = "{{ v }}";
 
-            list.push(t);
+            buildings.push(building);
         {% endfor %}
-        temp['buildings'] = list;
+        row['buildings'] = buildings;
 
-        buildings.push(temp);
+        building_data.push(row);
     {% endfor %}
 
     var BuildingRow = React.createClass({
         render: function () {
             return (
-                    <li>{this.props.building.k}: {this.props.building.v}</li>
+                    <li>{this.props.building.id}: {this.props.building.level}</li>
             );
         }
     });
@@ -55,14 +53,41 @@
     var MakeRow = React.createClass({
         render: function () {
             var rows = [];
-            this.props.building.buildings.forEach(function (building) {
+            this.props.row.buildings.forEach(function (building) {
                 rows.push(<BuildingRow building={building}/>);
             }.bind(this));
             return (
                     <tr>
-                        <td>{this.props.building.char_id}</td>
+                        <td>{this.props.row.char}</td>
                         <td>{rows}</td>
                     </tr>
+            );
+        }
+    });
+
+    var BuildingTable = React.createClass({
+        render: function () {
+            var rows = [];
+            var a = 0;
+            this.props.data.forEach(function (row) {
+                if (row.char.indexOf(this.props.filterText) === -1) {
+                    return;
+                }
+
+                a += 1;
+                rows.push(<MakeRow row={row}/>);
+            }.bind(this));
+
+            return (
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>帐号ID</th>
+                                <th>建筑等级</th>
+                            </tr>
+                        </thead>
+                        <tbody>{rows}</tbody>
+                    </table>
             );
         }
     });
@@ -90,29 +115,6 @@
         }
     });
 
-    var BuildingTable = React.createClass({
-        render: function () {
-            var rows = [];
-            this.props.buildings.forEach(function (building) {
-                if (building.char_id.indexOf(this.props.filterText) === -1) {
-                    return;
-                }
-                rows.push(<MakeRow building={building}/>);
-            }.bind(this));
-
-            return (
-                    <table>
-                        {this.props.filterText}
-                        <tr>
-                            <th>帐号ID</th>
-                            <th>建筑等级</th>
-                        </tr>
-                        {rows}
-                    </table>
-            );
-        }
-    });
-
     var BuildingForm = React.createClass({
 
         getInitialState: function () {
@@ -136,7 +138,7 @@
                                 onUserInput={this.handleUserInput}
                                 />
                         <BuildingTable
-                                buildings={this.props.buildings}
+                                data={this.props.data}
                                 filterText={this.state.filterText}
                                 />
                     </div>
@@ -145,7 +147,7 @@
     });
 
     React.render(
-            <BuildingForm buildings={buildings}/>,
+            <BuildingForm data={building_data}/>,
             document.getElementById('content')
     );
 </script>

@@ -70,10 +70,13 @@
         }
     });
 
-    var MailForm = React.createClass({
+    var MailTable = React.createClass({
         render: function(){
             var rows = [];
             this.props.mails.forEach(function(row){
+                if( row.id.indexOf(this.props.filterText) === -1 ){
+                    return;
+                }
                 rows.push(<MakeRow row={row} />);
             }.bind(this));
 
@@ -83,8 +86,63 @@
                             <th width="150">Char_ID</th>
                             <th width="600">Mails</th>
                         </tr>
-                        {rows}
+                        <tbody>{rows}</tbody>
                     </table>
+            );
+        }
+    });
+
+    var SearchBar = React.createClass({
+
+        handleChange: function(){
+            this.props.onUserInput(
+                    this.refs.filterTextInput.getDOMNode().value
+            )
+        },
+
+        render: function(){
+            return(
+                    <form>
+                        <input
+                                type="text"
+                                placeholder="Search...ID"
+                                value={this.props.filterText}
+                                ref="filterTextInput"
+                                onChange={this.handleChange}
+                                />
+                    </form>
+            );
+        }
+    });
+
+    var MailForm = React.createClass({
+
+        getInitialState:function() {
+            return{
+                filterText: ''
+            }
+        },
+
+        handleUserInput:function(filterText) {
+            this.setState({
+                filterText: filterText
+            });
+        },
+
+        render: function(){
+            return(
+                    <div>
+                        <h1>Mails</h1>
+                        <SearchBar
+                                filterText={this.state.filterText}
+                                onUserInput={this.handleUserInput}
+                                />
+
+                        <MailTable
+                                mails={this.props.mails}
+                                filterText={this.state.filterText}
+                                />
+                    </div>
             );
         }
     });
