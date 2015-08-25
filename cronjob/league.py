@@ -25,7 +25,7 @@ time_one = arrow.get(LEAGUE_START_TIME_ONE, "HH:mm:ssZ").to(settings.TIME_ZONE)
 time_two = arrow.get(LEAGUE_START_TIME_TWO, "HH:mm:ssZ").to(settings.TIME_ZONE)
 
 # 每周创建新的联赛
-@uwsgidecorators.cron(0, 0, -1, -1, 1, target="mule")
+@uwsgidecorators.cron(0, 0, -1, -1, 1, target="spooler")
 def league_new(*args):
     logger = Logger("league_new")
     logger.write("Start")
@@ -63,5 +63,5 @@ def league_match(*args):
         logger.close()
 
 
-uwsgidecorators.cron(time_one.minute, time_one.hour, -1, -1, -1, target="mule")(league_match)
-uwsgidecorators.cron(time_two.minute, time_two.hour, -1, -1, -1, target="mule")(league_match)
+uwsgidecorators.cron(time_one.minute, time_one.hour, -1, -1, -1, target="spooler")(league_match)
+uwsgidecorators.cron(time_two.minute, time_two.hour, -1, -1, -1, target="spooler")(league_match)

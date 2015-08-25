@@ -307,6 +307,9 @@ class StaffManger(object):
 
 
     def training_get_reward(self, staff_id, slot_id):
+        from core.club import Club
+        from core.qianban import QianBanContainer
+
         if not self.has_staff(staff_id):
             raise GameException( ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST") )
 
@@ -332,10 +335,21 @@ class StaffManger(object):
             {'$set': {key: trainings}}
         )
 
+        # TODO 判断技能训练 玩家此时是否拥有此技能
         config_training = ConfigTraining.get(data['training_data']['oid'])
         if config_training.tp == 3:
             # 技能
             SkillManager(self.server_id, self.char_id).add_level(staff_id, config_training.skill_id, config_training.skill_level)
+        elif config_training.tp == 1:
+            # 商业
+            club = Club(self.server_id, self.char_id)
+            qc = QianBanContainer(club.all_match_staffs())
+            effect = qc.get_effect(staff_id, club.staffs[staff_id].skills.keys())
+
+            item = data['training_data']['item']
+            p = Package.load_from_item(item)
+            # TODO
+            p.gold += sum(effect.effect_business_skill.values())
         else:
             item = data['training_data']['item']
             p = Package.load_from_item(item)
