@@ -90,7 +90,7 @@
         render: function () {
             var rows = [];
             this.props.chars.forEach(function (char) {
-                if (char.id.indexOf(this.props.filterText) === -1) {
+                if (char.id != this.props.filterText && this.props.filterText != '') {
                     return;
                 }
                 rows.push(<CharacterRow char={char}/>);

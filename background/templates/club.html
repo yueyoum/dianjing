@@ -42,7 +42,7 @@
 
     var MakeStaffLink = React.createClass({
         render: function(){
-            var link = "/data/staff_char?server_id=" + server_id + "&char_id=" + club['id'];
+            var link = "/data/staff/char?server_id=" + server_id + "&char_id=" + club['id'];
             return(
                     <li>
                         <a href={link}>{this.props.staff}</a>
