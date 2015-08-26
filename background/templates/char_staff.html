@@ -99,7 +99,7 @@
         render: function () {
             var rows = [];
             this.props.staffs.forEach(function (staff) {
-                if (staff.id != this.props.filterText && this.props.filterText != '') {
+                if (staff.id.indexOf(this.props.filterText) === -1 ) {
                     return;
                 }
                 rows.push(<MakeStaffRow staff={staff}/>);
