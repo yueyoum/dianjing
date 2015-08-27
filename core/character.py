@@ -23,6 +23,9 @@ class Character(object):
 
     @classmethod
     def create(cls, server_id, char_id, char_name, club_name, club_flag):
+        from core.staff import StaffManger
+        from core.club import Club
+
         doc = Document.get("character")
         doc['_id'] = char_id
         doc['name'] = char_name
@@ -32,6 +35,13 @@ class Character(object):
 
         mongo = MongoDB.get(server_id)
         mongo.character.insert_one(doc)
+
+        sm = StaffManger(server_id, char_id)
+        staff_ids = [2,3,4,5,6]
+        for i in staff_ids:
+            sm.add(i, send_notify=False)
+
+        Club(server_id, char_id).set_match_staffs(staff_ids + [0] * 5)
 
 
     def make_protomsg(self, **kwargs):

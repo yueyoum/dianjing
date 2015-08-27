@@ -246,7 +246,7 @@ class StaffManger(object):
         return True
 
 
-    def add(self, staff_id):
+    def add(self, staff_id, send_notify=True):
         if not ConfigStaff.get(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
@@ -264,8 +264,9 @@ class StaffManger(object):
             {'$set': {'staffs.{0}'.format(staff_id): doc}},
         )
 
-        self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
-        SkillManager(self.server_id, self.char_id).send_notify(staff_id=staff_id)
+        if send_notify:
+            self.send_notify(act=ACT_UPDATE, staff_ids=[staff_id])
+            SkillManager(self.server_id, self.char_id).send_notify(staff_id=staff_id)
 
 
     def remove(self, staff_id):
