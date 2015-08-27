@@ -28,6 +28,7 @@ class Character(object):
         doc['name'] = char_name
         doc['club']['name'] = club_name
         doc['club']['flag'] = club_flag
+        doc['club']['gold'] = 100000
 
         mongo = MongoDB.get(server_id)
         mongo.character.insert_one(doc)

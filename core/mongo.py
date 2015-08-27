@@ -52,6 +52,9 @@ CHARACTER_DOCUMENT = {
     'challenge_id': ConfigChallengeMatch.FIRST_ID,
     # 所属联赛小组
     'league_group': 0,
+    # 是否报名参加了杯赛
+    # TODO 为 in_cup 建立索引
+    'in_cup': 0,
 }
 
 
@@ -239,6 +242,31 @@ LEAGUE_EMBEDDED_CLUB_DOCUMENT = {
 }
 
 
+# 杯赛
+CUP_DOCUMENT = {
+    # 这里的 _id 是定死的：1, 因为一个服务器只有一个杯赛
+    '_id': 1,
+    # 第几届杯赛
+    'order': 1,
+    # 上一届冠军
+    'last_champion': "",
+    # level 的 key 表示多少强
+    # values [club_id, club_id...] 列表
+    'levels': {},
+}
+
+CUP_CLUB_DOCUMENT = {
+    # club id
+    '_id': null,
+    # 开始前一小时把玩家的阵容拷贝过来
+    'staffs': "",
+    # 下面几项只有NPC才有
+    'club_name': "",
+    'manager_name': "",
+    'club_flag': 1,
+}
+
+
 class Document(object):
     DOCUMENTS = {
         "common": COMMON_DOCUMENT,
@@ -271,6 +299,9 @@ class Document(object):
         "league.event": LEAGUE_EVENT_DOCUMENT,
         "league.pair": LEAGUE_EVENT_EMBEDDED_PAIR_DOCUMENT,
         "league.club": LEAGUE_EMBEDDED_CLUB_DOCUMENT,
+
+        "cup": CUP_DOCUMENT,
+        "cup.club": CUP_CLUB_DOCUMENT,
     }
 
     @classmethod

@@ -64,5 +64,8 @@ urlpatterns = [
 
     url(r'game/ladder/refresh/$', 'views.ladder.refresh'),
     url(r'game/ladder/match/$', 'views.ladder.match'),
+
+    url(r'game/cup/join/$', 'views.cup.join'),
+    url(r'game/cup/infomation/$', 'views.cup.information'),
 ]
 

@@ -100,6 +100,10 @@ MESSAGE_TO_ID = {
     "LadderStoreNotify": 1705,
     "LadderStoreBuyRequest": 1706,
     "LadderStoreBuyResponse": 1707,
+    "CupInfomationRequest": 1800,
+    "CupInfomationResponse": 1801,
+    "CupJoinRequest": 1802,
+    "CupJoinResponse": 1803,
 }
 
 ID_TO_MESSAGE = {
@@ -203,6 +207,10 @@ ID_TO_MESSAGE = {
     1705: "LadderStoreNotify",
     1706: "LadderStoreBuyRequest",
     1707: "LadderStoreBuyResponse",
+    1800: "CupInfomationRequest",
+    1801: "CupInfomationResponse",
+    1802: "CupJoinRequest",
+    1803: "CupJoinResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -244,6 +252,8 @@ PATH_TO_REQUEST = {
     "/game/ladder/refresh/": ["ladder", "LadderRefreshRequest"],
     "/game/ladder/match/": ["ladder", "LadderMatchRequest"],
     "/game/ladder/store/buy/": ["ladder", "LadderStoreBuyRequest"],
+    "/game/cup/infomation/": ["cup", "CupInfomationRequest"],
+    "/game/cup/join/": ["cup", "CupJoinRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -285,4 +295,6 @@ PATH_TO_RESPONSE = {
     "/game/ladder/refresh/": ["ladder", "LadderRefreshResponse"],
     "/game/ladder/match/": ["ladder", "LadderMatchResponse"],
     "/game/ladder/store/buy/": ["ladder", "LadderStoreBuyResponse"],
+    "/game/cup/infomation/": ["cup", "CupInfomationResponse"],
+    "/game/cup/join/": ["cup", "CupJoinResponse"],
 }
