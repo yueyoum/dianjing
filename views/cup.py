@@ -23,6 +23,7 @@ def join(request):
     msg = c.make_cup_protomsg()
 
     response = CupJoinResponse()
+    response.ret = 0
     response.cup.MergeFrom(msg)
 
     return ProtobufResponse(response)
@@ -36,6 +37,7 @@ def information(request):
     msg = c.make_cup_protomsg()
 
     response = CupInfomationResponse()
+    response.ret = 0
     response.cup.MergeFrom(msg)
 
     return ProtobufResponse(response)

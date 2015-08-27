@@ -15,6 +15,7 @@ from config import ConfigPackage
 
 from protomsg.package_pb2 import Package as MsgPackage
 from protomsg.package_pb2 import Item as MsgItem
+from protomsg.package_pb2 import Goods as MsgGoods
 
 class Package(object):
     __slots__ = STAFF_ATTRS + [
@@ -178,5 +179,51 @@ class Package(object):
 
         for item in msg.items:
             setattr(p, item.resource_id, item.value)
+
+        return p
+
+
+class Goods(Package):
+    FIELDS = ['gold', 'diamond',
+        'staff_exp', 'club_renown',
+        'trainings']
+
+    def make_protomsg(self):
+        msg = MsgGoods()
+
+        for attr in self.FIELDS:
+            if attr != 'trainings':
+                msg_item = msg.resources.add()
+                msg_item.resource_id = attr
+                msg_item.value = getattr(self, attr)
+
+
+        for tid, amount in self.trainings:
+            msg_training = msg.trainings.add()
+            msg_training.id = tid
+            msg_training.amount = amount
+
+        return msg
+
+
+    def dumps(self):
+        data = self.make_protomsg().SerializeToString()
+        return base64.b64encode(data)
+
+
+    @classmethod
+    def loads(cls, data):
+        data = base64.b64decode(data)
+        msg = MsgPackage()
+        msg.ParseFromString(data)
+
+        p = cls()
+
+        for item in msg.resources:
+            setattr(p, item.resource_id, item.value)
+
+
+        for tr in msg.trainings:
+            p.trainings.append((tr.id, tr.amount))
 
         return p

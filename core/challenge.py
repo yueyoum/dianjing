@@ -13,6 +13,8 @@ from core.abstract import AbstractClub, AbstractStaff
 from core.db import MongoDB
 from core.club import Club
 from core.match import ClubMatch
+from core.package import Goods
+from core.resource import Resource
 
 from core.signals import challenge_match_signal
 
@@ -101,8 +103,6 @@ class Challenge(object):
         match = ClubMatch(club_one, club_two)
 
         msg = match.start()
-        next_id = self.set_next_match_id()
-        self.send_notify(challenge_id=next_id)
 
         challenge_match_signal.send(
             sender=None,
@@ -112,7 +112,17 @@ class Challenge(object):
             win=msg.club_one_win,
         )
 
-        return msg
+        if not msg.club_one_win:
+            return msg, None
+
+
+        next_id = self.set_next_match_id()
+        self.send_notify(challenge_id=next_id)
+
+        g = Goods.generate(ConfigChallengeMatch.get(self.challenge_id).package)
+        Resource(self.server_id, self.char_id).add_package(g)
+
+        return msg, g.make_protomsg()
 
 
     def send_notify(self, challenge_id=None):

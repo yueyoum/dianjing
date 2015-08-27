@@ -16,7 +16,7 @@ class ChallengeType(object):
 
 class ChallengeMatch(object):
     __slots__ = [
-        'id', 'next_id', 'tp', 'policy', 'level', 'strength', 'staffs',
+        'id', 'next_id', 'tp', 'policy', 'level', 'strength', 'staffs', 'package',
         'club_name', 'club_flag'
     ]
 
@@ -28,6 +28,7 @@ class ChallengeMatch(object):
         self.level = None
         self.strength = None
         self.staffs = None
+        self.package = None
         self.club_name = None
         self.club_flag = None
     

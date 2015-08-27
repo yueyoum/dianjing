@@ -18,10 +18,13 @@ def start(request):
     char_id = request._game_session.char_id
 
     c = Challenge(server_id, char_id)
-    msg = c.start()
+    msg, drop = c.start()
 
     response = ChallengeStartResponse()
     response.ret = 0
     response.match.MergeFrom(msg)
+
+    if drop:
+        response.drop.MergeFrom(drop)
 
     return ProtobufResponse(response)
