@@ -34,14 +34,14 @@ class ChallengeNPCStaff(AbstractStaff):
         config = ConfigStaff.get(id)
         self.race = config.race
 
-        self.jingong = (config.jingong + config.jingong_grow * level) * strength
-        self.qianzhi = (config.qianzhi + config.qianzhi_grow * level) * strength
-        self.xintai = (config.xintai + config.xintai_grow * level) * strength
-        self.baobing = (config.baobing + config.baobing_grow * level) * strength
-        self.fangshou = (config.fangshou + config.fangshou_grow * level) * strength
-        self.yunying = (config.yunying + config.yunying_grow * level) * strength
-        self.yishi = (config.yishi + config.yishi_grow * level) * strength
-        self.caozuo = (config.caozuo + config.caozuo_grow * level) * strength
+        self.jingong = (config.jingong + config.jingong_grow * (level-1)) * strength
+        self.qianzhi = (config.qianzhi + config.qianzhi_grow * (level-1)) * strength
+        self.xintai = (config.xintai + config.xintai_grow * (level-1)) * strength
+        self.baobing = (config.baobing + config.baobing_grow * (level-1)) * strength
+        self.fangshou = (config.fangshou + config.fangshou_grow * (level-1)) * strength
+        self.yunying = (config.yunying + config.yunying_grow * (level-1)) * strength
+        self.yishi = (config.yishi + config.yishi_grow * (level-1)) * strength
+        self.caozuo = (config.caozuo + config.caozuo_grow * (level-1)) * strength
 
         skills = config.skill_ids
         self.skills = {i: 1 for i in skills}

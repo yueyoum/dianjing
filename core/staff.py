@@ -51,14 +51,14 @@ class Staff(AbstractStaff):
         self.race = config_staff.race
         self.quality = config_staff.quality
 
-        self.jingong = config_staff.jingong + config_staff.jingong_grow * self.level + data.get('jingong', 0)
-        self.qianzhi = config_staff.qianzhi + config_staff.caozuo_grow * self.level + data.get('qianzhi', 0)
-        self.xintai = config_staff.xintai + config_staff.xintai_grow * self.level + data.get('xintai', 0)
-        self.baobing = config_staff.baobing + config_staff.baobing_grow * self.level + data.get('baobing', 0)
-        self.fangshou = config_staff.fangshou + config_staff.fangshou_grow * self.level + data.get('fangshou', 0)
-        self.yunying = config_staff.yunying + config_staff.yunying_grow * self.level + data.get('yunying', 0)
-        self.yishi = config_staff.yishi + config_staff.yunying_grow * self.level + data.get('yishi', 0)
-        self.caozuo = config_staff.caozuo + config_staff.caozuo_grow * self.level + data.get('caozuo', 0)
+        self.jingong = config_staff.jingong + config_staff.jingong_grow * (self.level - 1) + data.get('jingong', 0)
+        self.qianzhi = config_staff.qianzhi + config_staff.caozuo_grow * (self.level - 1) + data.get('qianzhi', 0)
+        self.xintai = config_staff.xintai + config_staff.xintai_grow * (self.level - 1) + data.get('xintai', 0)
+        self.baobing = config_staff.baobing + config_staff.baobing_grow * (self.level - 1) + data.get('baobing', 0)
+        self.fangshou = config_staff.fangshou + config_staff.fangshou_grow * (self.level - 1) + data.get('fangshou', 0)
+        self.yunying = config_staff.yunying + config_staff.yunying_grow * (self.level - 1) + data.get('yunying', 0)
+        self.yishi = config_staff.yishi + config_staff.yunying_grow * (self.level - 1) + data.get('yishi', 0)
+        self.caozuo = config_staff.caozuo + config_staff.caozuo_grow * (self.level - 1) + data.get('caozuo', 0)
 
         skills = data.get('skills', {})
         self.skills = {int(k): v['level'] for k, v in skills.iteritems()}
