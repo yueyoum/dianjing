@@ -26,10 +26,10 @@ PATH_METHOD_GET = {
 class GameRequestMiddleware(object):
     # 对所以请求解析protobuf消息，以及session
     def process_request(self, request):
-        if not request.path.startswith('/game/'):
+        if not request.path.startswith('/game/') or request.path in PATH_METHOD_GET:
             return
 
-        if request.path not in PATH_METHOD_GET and request.method != 'POST':
+        if request.method != 'POST':
             return HttpResponse(status=403)
 
         try:
