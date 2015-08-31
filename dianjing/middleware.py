@@ -64,7 +64,7 @@ class GameRequestMiddleware(object):
 class GameResponseMiddleware(object):
     # 在这里将队列中的消息一起取出返回给客户端
     def process_response(self, request, response):
-        if not request.path.startswith('/game/'):
+        if not request.path.startswith('/game/') or request.path in PATH_METHOD_GET:
             return response
 
         if response.status_code != 200:
@@ -105,7 +105,7 @@ class GameResponseMiddleware(object):
 class GameExceptionMiddleware(object):
     # 统一的错误处理
     def process_exception(self, request, exception):
-        if not request.path.startswith("/game/"):
+        if not request.path.startswith("/game/") or request.path in PATH_METHOD_GET:
             return
 
         if not isinstance(exception, GameException):
