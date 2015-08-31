@@ -19,13 +19,17 @@ from utils.message import NUM_FILED, MessagePipe
 from protomsg import PATH_TO_REQUEST, PATH_TO_RESPONSE, ID_TO_MESSAGE
 
 
+PATH_METHOD_GET = {
+    '/game/version/',
+}
+
 class GameRequestMiddleware(object):
     # 对所以请求解析protobuf消息，以及session
     def process_request(self, request):
         if not request.path.startswith('/game/'):
             return
 
-        if request.method != 'POST':
+        if request.path not in PATH_METHOD_GET and request.method != 'POST':
             return HttpResponse(status=403)
 
         try:
