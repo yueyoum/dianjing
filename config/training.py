@@ -76,7 +76,7 @@ class ConfigTraining(ConfigBase):
             level -= 1
 
         need_additional_amount = amount - len(ids)
-        ids.append(random.sample(training_ids, need_additional_amount))
+        ids.extend(random.sample(training_ids, need_additional_amount))
 
         return ids
 
