@@ -67,5 +67,20 @@ urlpatterns = [
 
     url(r'game/cup/join/$', 'views.cup.join'),
     url(r'game/cup/infomation/$', 'views.cup.information'),
+
+    url(r'data/$', 'background.views.servers'),
+    url(r'data/collections/$', 'background.views.collections'),
+    url(r'data/building/$', 'background.views.building'),
+    url(r'data/character/$', 'background.views.character'),
+    url(r'data/character/club/$', 'background.views.club'),
+    url(r'data/friend/$', 'background.views.friend'),
+    url(r'data/mail/$', 'background.views.mail'),
+    url(r'data/mail/one/$', 'background.views.mail_one'),
+    url(r'data/staff/$', 'background.views.staff'),
+    url(r'data/staff/char/$', 'background.views.staff_char'),
+    url(r'data/recruit/$', 'background.views.recruit'),
+    url(r'data/league_event/$', 'background.views.league_event'),
+    url(r'data/league_group/$', 'background.views.league_group'),
+    url(r'data/training_store/$', 'background.views.training_store'),
 ]
 

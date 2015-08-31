@@ -46,6 +46,7 @@ INSTALLED_APPS = (
     'apps.server',
     'apps.account',
     'apps.character',
+    'background',
 )
 
 MIDDLEWARE_CLASSES = (

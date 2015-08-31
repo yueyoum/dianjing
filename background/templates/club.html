@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Club</title>
+    <script src="/static/react.js"></script>
+    <script src="/static/JSXTransformer.js"></script>
+    <style type="text/css">
+        table {text-align: center;}
+    </style>
+</head>
+<body>
+<div id="content"></div>
+<script type="text/jsx">
+    var club = {};
+    club['id'] = "{{ data.id }}";
+    club['name'] = "{{ data.club.name }}";
+    club['flag'] = "{{ data.club.flag }}";
+    club['level'] = "{{ data.club.level }}";
+    club['renown'] = "{{ data.club.renown }}";
+    club['vip'] = "{{ data.club.vip }}";
+    club['exp'] = "{{ data.club.exp }}";
+    club['gold'] = "{{ data.club.gold }}";
+    club['diamond'] = "{{ data.club.diamond }}";
+    club['policy'] = "{{ data.club.policy }}";
+
+    var match_s = [];
+    {% for s in data.club.match_staffs %}
+        match_s.push("{{ s }}");
+    {% endfor %}
+    club['match_staffs'] = match_s;
+
+    var tibu_s = [];
+    {% for s in data.club.tibu_staffs %}
+        {% if s != 0 %}
+            tibu_s.push("{{ s }}");
+        {% endif %}
+    {% endfor %}
+    club['tibu_staffs'] = tibu_s;
+
+    var server_id = "{{ servers_id }}";
+
+    var MakeStaffLink = React.createClass({
+        render: function(){
+            var link = "/data/staff/char?server_id=" + server_id + "&char_id=" + club['id'];
+            return(
+                    <li>
+                        <a href={link}>{this.props.staff}</a>
+                    </li>
+            );
+        }
+    });
+
+    var ClubTable = React.createClass({
+        render: function(){
+            var macth_rows = [];
+            var alternate_rows = [];
+            this.props.club.match_staffs.forEach(function(staff){
+                macth_rows.push(<MakeStaffLink staff={staff} />);
+            }.bind(this));
+
+            this.props.club.tibu_staffs.forEach(function(staff){
+                alternate_rows.push(<MakeStaffLink staff={staff} />);
+            }.bind(this));
+
+            return(
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th width="150">帐号ID</th>
+                                <th width="275">俱乐部名称</th>
+                                <th width="100">旗帜</th>
+                                <th width="100">俱乐部等级</th>
+                                <th width="150">俱乐部荣誉</th>
+                                <th width="100">VIP</th>
+                                <th width="150">经验</th>
+                                <th width="150">金币</th>
+                                <th width="150">钻石</th>
+                                <th width="100">战术</th>
+                                <th width="300">首发成员</th>
+                                <th width="300">替补成员</th>
+                            </tr>
+                            <tr>
+                                <td>{this.props.club.id}</td>
+                                <td>{this.props.club.name}</td>
+                                <td>{this.props.club.flag}</td>
+                                <td>{this.props.club.level}</td>
+                                <td>{this.props.club.renown}</td>
+                                <td>{this.props.club.vip}</td>
+                                <td>{this.props.club.exp}</td>
+                                <td>{this.props.club.gold}</td>
+                                <td>{this.props.club.diamond}</td>
+                                <td>{this.props.club.policy}</td>
+                                <td>
+                                    {macth_rows}
+                                </td>
+                                <td>
+                                    {alternate_rows}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+            );
+        }
+    });
+
+    var ClubForm = React.createClass({
+        render: function(){
+            return(
+                    <div>
+                        <ClubTable club={this.props.club}/>
+                    </div>
+            );
+        }
+    });
+
+    React.render(
+            <ClubForm club={club}/>,
+            document.getElementById('content')
+    )
+</script>
+</body>
+</html>

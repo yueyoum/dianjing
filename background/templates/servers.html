@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>电竞经理</title>
+    <script src="/static/react.js"></script>
+    <script src="/static/JSXTransformer.js"></script>
+    <style>
+        a {text-decoration: none}
+        h1 {color: red}
+        table {text-align: center; color: black}
+        body {background-color: white;}
+    </style>
+</head>
+<body>
+<h1>服务器列表</h1>
+<table id="server_list" cellpadding="15" rules="rows"></table>
+<script type="text/jsx">
+    var server_data = [];
+    {% for d in servers %}
+        var d_temp = {};
+        d_temp['id'] = "{{ d.id}}";
+        d_temp['name'] = "{{ d.name }}";
+        d_temp['status'] = "{{ d.status }}";
+        d_temp['open_at'] = "{{ d.open_at }}";
+        d_temp['mongo_host'] = "{{ d.mongo_host }}";
+        d_temp['mongo_port'] = "{{ d.mongo_port }}";
+        d_temp['mongo_db'] = "{{ d.mongo_db }}";
+        server_data.push(d_temp);
+    {% endfor %}
+
+    var MakeTdRow = React.createClass({
+        render: function () {
+            var link = "/data/collections?server_id=" + this.props.server.id;
+            return (
+                    <tr>
+                        <td>{this.props.server.id}</td>
+                        <td>
+                            <li>
+                                <a id="server_link" href={link}>
+                                    {this.props.server.name}
+                                </a>
+                            </li>
+                        </td>
+                        <td>{this.props.server.status}</td>
+                        <td>{this.props.server.open_at}</td>
+                        <td>{this.props.server.mongo_host}</td>
+                        <td>{this.props.server.mongo_port}</td>
+                        <td>{this.props.server.mongo_db}</td>
+                    </tr>
+            );
+        }
+    });
+
+    var ServerTable = React.createClass({
+        render: function () {
+            var TdRows = [];
+            this.props.servers.forEach(function (server) {
+                TdRows.push(<MakeTdRow server={server} key={server.id}/>);
+            }.bind(this));
+
+            return (
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>服务器ID</th>
+                                <th>服务器名</th>
+                                <th>服务器状态</th>
+                                <th>开服时间</th>
+                                <th>Mongo地址</th>
+                                <th>Mongo端口</th>
+                                <th>Mongo数据库名</th>
+                            </tr>
+                        </thead>
+                        <tbody>{TdRows}</tbody>
+                    </table>
+            );
+        }
+    });
+    //form框架
+    var ServersForm = React.createClass({
+        render: function () {
+            return (
+                    <div>
+                        <ServerTable servers={this.props.servers} keys={this.props.keys}/>
+                    </div>
+            );
+        }
+    });
+
+    //数据 填充字段
+    React.render(
+            <ServersForm servers={server_data} />,
+            document.getElementById('server_list')
+    )
+</script>
+</body>
+</html>

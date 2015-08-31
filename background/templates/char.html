@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Characters</title>
+    <script src="/static/react.js"></script>
+    <script src="/static/JSXTransformer.js"></script>
+    <style type="text/css">
+        h1 {
+            color: black;
+        }
+
+        table {
+            text-align: center;
+        }
+
+        td {
+            text-align: center;
+            border: solid salmon;
+            border-width: 0px 0px 1px 1px
+        }
+
+        th {
+            text-align: center;
+            border: solid salmon;
+            border-width: 0px 0px 1px 1px
+        }
+    </style>
+</head>
+<body>
+<div id="content">
+</div>
+<script type="text/jsx">
+
+    var chars = [];
+    {% for char in data %}
+        var temp = {};
+        var club_info = {};
+        temp['id'] = "{{ char.id }}";
+        temp['name'] = "{{ char.name }}";
+        temp['club'] = "{{ char.club }}";
+        temp['challenge_id'] = "{{ char.challenge_id }}";
+        temp['league_group'] = "{{ char.league_group }}";
+        chars.push(temp);
+    {% endfor %}
+
+    var server_id = "{{ server_id }}";
+
+    var CharacterRow = React.createClass({
+        render: function () {
+            var link = "/data/character/club?server_id=" + server_id + "&char_id=" + this.props.char.id;
+            return (
+                    <tr>
+                        <td width="150">{this.props.char.id}</td>
+                        <td width="200">{this.props.char.name}</td>
+                        <td width="300">
+                            <a href={link}>{this.props.char.club}</a>
+                        </td>
+                        <td width="150">{this.props.char.challenge_id}</td>
+                        <td width="350">{this.props.char.league_group}</td>
+                    </tr>
+            );
+        }
+    });
+
+    var SearchText = React.createClass({
+
+        handleChange: function () {
+            this.props.onUserInput(
+                    this.refs.filterTextInput.getDOMNode().value
+            );
+        },
+
+        render: function () {
+            return (
+                    <form>
+                        <input
+                                type="text"
+                                placeholder="Search...ID"
+                                value={this.props.filterText}
+                                ref="filterTextInput"
+                                onChange={this.handleChange}
+                                />
+                    </form>
+            );
+        }
+    });
+
+    var CharacterTable = React.createClass({
+        render: function () {
+            var rows = [];
+            this.props.chars.forEach(function (char) {
+                if (char.id.indexOf(this.props.filterText) === -1 ) {
+                    return;
+                }
+                rows.push(<CharacterRow char={char}/>);
+            }.bind(this));
+
+            return (
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Club</th>
+                                <th>Challenge_id</th>
+                                <th>League_group</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {rows}
+                        </tbody>
+                    </table>
+            );
+        }
+    });
+
+    var Characters = React.createClass({
+
+        getInitialState: function () {
+            return {
+                filterText: ''
+            };
+        },
+
+        handleUserInput: function (filterText) {
+            this.setState({
+                filterText: filterText
+            });
+        },
+
+        render: function () {
+            return (
+                    <div>
+                        <h1>服务器ID：{server_id}</h1>
+                        <SearchText
+                                filterText={this.state.filterText}
+                                onUserInput={this.handleUserInput}
+                                />
+
+                        <CharacterTable
+                                chars={this.props.chars}
+                                filterText={this.state.filterText}
+                                />
+                    </div>
+            );
+        }
+    });
+
+    React.render(
+            <Characters chars={chars}/>,
+            document.getElementById('content')
+    )
+</script>
+</body>
+</html>

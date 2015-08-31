@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="/static/react.js"></script>
+    <script src="/static/JSXTransformer.js"></script>
+    <style type="text/css">
+        h1 {color: black; }
+        table {text-align: center;}
+        td {text-align: center;
+            border: solid salmon;
+            border-width: 0px 0px 1px 1px}
+        th {text-align: center;
+            border: solid salmon;
+            border-width: 0px 0px 1px 1px}
+    </style>
+</head>
+<body>
+<h1>Recruit </h1>
+
+<div id="content"></div>
+
+<script type="text/jsx">
+    var recruits = [];
+    {% for d in data %}
+        var recruit = {};
+        recruit['id'] = "{{ d.id }}";
+        recruit['tp'] = "{{ d.tp }}";
+
+        var staffs = [];
+        {% for s in d.staffs %}
+            var staff = "{{ s }}";
+            staffs.push(staff);
+        {% endfor %}
+        recruit['staffs'] = staffs;
+
+        var times = [];
+        {% for k, v in d.times.items %}
+            var time = {};
+            time['id'] = "{{ k }}";
+            time['value'] = "{{ v }}";
+            times.push(time);
+        {% endfor %}
+        recruit['times'] = times;
+
+        recruits.push(recruit);
+    {% endfor %}
+
+    var StaffRow = React.createClass({
+        render: function(){
+            return(
+                    <li>{this.props.staff}</li>
+            );
+        }
+    });
+
+    var TimesRow = React.createClass({
+        render: function(){
+            return(
+                    <li>{this.props.time.id}: {this.props.time.value}</li>
+            );
+        }
+    });
+
+    var RecruitRow = React.createClass({
+        render: function(){
+            var staff_rows = [];
+            this.props.recruit.staffs.forEach(function(staff){
+                staff_rows.push(<StaffRow staff={staff} />);
+            }.bind(this));
+
+            var times_rows = [];
+            this.props.recruit.times.forEach(function(time){
+                times_rows.push(<TimesRow time={time} />);
+            }.bind(this));
+
+            return(
+                    <tr>
+                        <td>{this.props.recruit.id}</td>
+                        <td>{this.props.recruit.tp}</td>
+                        <td>{staff_rows}</td>
+                        <td>{times_rows}</td>
+                    </tr>
+            );
+        }
+    });
+
+    var RecruitTable = React.createClass({
+        render: function(){
+            var rows = [];
+            this.props.recruits.forEach(function(recruit){
+                if( recruit.id.indexOf(this.props.filterText) === -1 ){
+                    return;
+                }
+
+                rows.push(<RecruitRow recruit={recruit} />);
+            }.bind(this));
+
+            return(
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Char ID</th>
+                                <th>TP</th>
+                                <th>Staffs</th>
+                                <th>Times</th>
+                            </tr>
+                        </thead>
+                        <tbody>{rows}</tbody>
+                    </table>
+            );
+        }
+    });
+
+    var SearchBar = React.createClass({
+
+        handleChange:function(){
+            this.props.onUserInput(
+                    this.refs.filterTextInput.getDOMNode().value
+            )
+        },
+
+        render: function(){
+            return(
+                    <form>
+                        <input
+                                type="text"
+                                placeholder="Search...ID"
+                                value={this.props.filterText}
+                                ref="filterTextInput"
+                                onChange={this.handleChange}
+                                />
+                    </form>
+            );
+        }
+    });
+
+    var RecruitForm = React.createClass({
+
+        getInitialState: function(){
+            return{
+                filterText: ''
+            };
+        },
+
+        handleUserInput: function(filter){
+            this.setState({
+                filterText: filter
+            });
+        },
+
+        render: function(){
+            return(
+                    <div>
+                        <SearchBar
+                                filterText={this.state.filterText}
+                                onUserInput={this.handleUserInput}
+                                />
+
+                        <RecruitTable
+                                recruits={this.props.recruits}
+                                filterText={this.state.filterText}
+                                />
+                    </div>
+            );
+        }
+    });
+
+    React.render(
+            <RecruitForm recruits={recruits} />,
+            document.getElementById('content')
+    )
+
+</script>
+
+</body>
+</html>
