@@ -10,6 +10,7 @@ Description:
 from django.conf.urls import url
 
 urlpatterns = [
+    url(r'^version/$', 'views.game.get_version'),
     url(r'^sync/$', 'views.sync.sync'),
 
     url(r'^account/register/$', 'views.account.register'),

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
     <timezone>Asia/Shanghai</timezone>
+    <version>1</version>
 
     <mysql>
         <host>127.0.0.1</host>
@@ -18,5 +19,6 @@
     <redis>
         <host>127.0.0.1</host>
         <port>6379</port>
+        <cache-seconds>3600</cache-seconds>
     </redis>
 </config>

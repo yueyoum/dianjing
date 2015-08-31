@@ -185,6 +185,8 @@ REDIS_HOST = doc.find('redis/host').text
 REDIS_PORT = int( doc.find('redis/port').text )
 REDIS_CACHE_SECONDS = int( doc.find('redis/cache-seconds').text )
 
+GAME_VERSION = doc.find('version').text
+
 del doc
 del tree
 del et
