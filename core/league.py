@@ -286,7 +286,7 @@ class LeagueGame(object):
             league_groups = mongo.league_group.find()
 
         for g in league_groups:
-            event_id = g['events'][order]
+            event_id = g['events'][order-1]
 
             clubs = g['clubs']
 
