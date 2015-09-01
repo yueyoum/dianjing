@@ -405,45 +405,22 @@ class LeagueGroup(object):
     def arrange_match(self, clubs):
         # 对小组内的14支俱乐部安排比赛
         # 算法：
-        # clubs = range(1, 15)
-        # match = []
-        # for day in range(7):
-        #     pairs = []
-        #     for i in range(len(clubs)):
-        #         j = i + 1 + day
-        #         while j >= len(clubs):
-        #             j -= len(clubs)
-        #
-        #         pairs.append((clubs[i], clubs[j]))
-        #
-        #     random.shuffle(pairs)
-        #     match.append(pairs[:len(clubs)/2])
-        #     match.append(pairs[len(clubs)/2:])
-        #
-        # result format:
-        # [
-        #     [ (1,2), (2,3)... ], 7 pairs
-        #     [ ] ...
-        #     14 list
-        # ]
-
-
-        random.shuffle(clubs)
-
         match = []
-        for day in range(7):
-            pairs = []
-            for i in range(GROUP_CLUBS_AMOUNT):
-                j = i + 1 + day
-                while j >= GROUP_CLUBS_AMOUNT:
-                    j -= GROUP_CLUBS_AMOUNT
+        pairs = []
+        for i in [0, 1]:
+            for interval in range(1, 14, 2):
+                for j in range(0, 13, 2):
+                    a = i + j
+                    b = a + interval
+                    if b > 13:
+                        b -= 14
 
-                pairs.append((clubs[i], clubs[j]))
+                    p = (clubs[a], clubs[b])
+                    pairs.append(p)
 
-            random.shuffle(pairs)
-
-            match.append( pairs[:GROUP_CLUBS_AMOUNT/2] )
-            match.append( pairs[GROUP_CLUBS_AMOUNT/2:] )
+        while pairs:
+            match.append(pairs[:7])
+            pairs = pairs[7:]
 
         return match
 
