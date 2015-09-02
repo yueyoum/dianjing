@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Q
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db.utils import ProgrammingError
 
 def upload_to(instance, filename):
     name = "config-{0}.zip".format(instance.version)
@@ -40,4 +41,6 @@ class Config(models.Model):
         try:
             return cls.objects.get(in_use=True)
         except Config.DoesNotExist:
+            return None
+        except ProgrammingError:
             return None
