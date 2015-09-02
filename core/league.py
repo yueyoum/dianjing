@@ -44,7 +44,6 @@ Description:
 # 每周刷新的时候直接清空以前的记录，并生成新记录
 
 import uuid
-import random
 import base64
 
 import arrow
@@ -58,9 +57,11 @@ from core.mongo import Document
 from core.club import Club
 from core.match import ClubMatch
 from core.abstract import AbstractClub, AbstractStaff
+from core.mail import MailManager
+from core.package import Package
 
 from config.settings import LEAGUE_START_TIME_ONE, LEAGUE_START_TIME_TWO
-from config import ConfigNPC, ConfigStaff, ConfigErrorMessage
+from config import ConfigNPC, ConfigStaff, ConfigErrorMessage, ConfigLeague
 
 from utils.message import MessagePipe
 
@@ -75,7 +76,7 @@ ARROW_FORMAT = "YYYY-MM-DD HH:mm:ssZ"
 
 def time_string_to_datetime(day_text, time_text):
     text = "%s %s" % (day_text, time_text)
-    return arrow.get(text).to(settings.TIME_ZONE)
+    return arrow.get(text, ARROW_FORMAT).to(settings.TIME_ZONE)
 
 def make_id():
     return str(uuid.uuid4())
@@ -105,7 +106,12 @@ class LeagueNPCStaff(AbstractStaff):
         self.skills = {i: skill_level for i in config.skill_ids}
 
 
-class LeagueNPCClub(AbstractClub):
+class LeagueBaseClubMixin(object):
+    def send_day_mail(self, *args, **kwargs):
+        pass
+
+
+class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
     def __init__(self, group_id, club_id, club_name, manager_name, club_flag, staffs):
         super(LeagueNPCClub, self).__init__()
 
@@ -122,13 +128,19 @@ class LeagueNPCClub(AbstractClub):
 
 
 
+class LeagueRealClub(LeagueBaseClubMixin, Club):
+    def send_day_mail(self, title, content, attachment):
+        m = MailManager(self.server_id, self.char_id)
+        m.add(title, content, attachment=attachment)
+
+
 class LeagueClub(object):
     def __new__(cls, server_id, group_id, club):
         # club 是存在mongo中的数据
         if club['club_name']:
             return LeagueNPCClub(group_id, club['club_id'], club['club_name'], club['manager_name'], club['club_flag'], club['staffs'])
 
-        return Club(server_id, int(club['club_id']))
+        return LeagueRealClub(server_id, int(club['club_id']))
 
 
 
@@ -159,8 +171,27 @@ class LeagueMatch(object):
 
         # TODO score
 
+        self.send_mail(club_one, True)
+        self.send_mail(club_two, True)
+
         return msg
 
+
+    def send_mail(self, club, win):
+        """
+
+        :type club: LeagueBaseClubMixin
+        """
+
+        # TODO mail title, content
+
+        title = u'联赛日奖励'
+        content = u'联赛日奖励'
+
+        config = ConfigLeague.get(1)
+        attachment = Package.generate(config.day_reward).dumps()
+
+        club.send_day_mail(title, content, attachment)
 
 
 class LeagueGame(object):
@@ -176,12 +207,13 @@ class LeagueGame(object):
         passed_days = weekday - 0
         passed_order = passed_days * 2
 
-        time_one = time_string_to_datetime(now_day_text, LEAGUE_START_TIME_ONE)
-        if now < time_one:
+        # 因为启动定时任务后要从这里判断改打哪一场，所以这里延时1分钟，否则可能会判断到下一场
+        time_one = time_string_to_datetime(now_day_text, LEAGUE_START_TIME_ONE).replace(minutes=1)
+        if now <= time_one:
             return passed_order + 1
 
-        time_two = time_string_to_datetime(now_day_text, LEAGUE_START_TIME_TWO)
-        if now < time_two:
+        time_two = time_string_to_datetime(now_day_text, LEAGUE_START_TIME_TWO).replace(minutes=1)
+        if now <= time_two:
             return passed_order + 2
 
         return passed_order + 3
