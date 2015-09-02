@@ -19,14 +19,11 @@ from utils.message import NUM_FILED, MessagePipe
 from protomsg import PATH_TO_REQUEST, PATH_TO_RESPONSE, ID_TO_MESSAGE
 
 
-PATH_METHOD_GET = {
-    '/game/version/',
-}
 
 class GameRequestMiddleware(object):
     # 对所以请求解析protobuf消息，以及session
     def process_request(self, request):
-        if not request.path.startswith('/game/') or request.path in PATH_METHOD_GET:
+        if not request.path.startswith('/game/'):
             return
 
         if request.method != 'POST':
@@ -64,7 +61,7 @@ class GameRequestMiddleware(object):
 class GameResponseMiddleware(object):
     # 在这里将队列中的消息一起取出返回给客户端
     def process_response(self, request, response):
-        if not request.path.startswith('/game/') or request.path in PATH_METHOD_GET:
+        if not request.path.startswith('/game/'):
             return response
 
         if response.status_code != 200:
@@ -105,7 +102,7 @@ class GameResponseMiddleware(object):
 class GameExceptionMiddleware(object):
     # 统一的错误处理
     def process_exception(self, request, exception):
-        if not request.path.startswith("/game/") or request.path in PATH_METHOD_GET:
+        if not request.path.startswith("/game/"):
             return
 
         if not isinstance(exception, GameException):
