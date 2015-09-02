@@ -131,11 +131,11 @@ class Match(object):
         y = (((pone + jone) - (ptwo + jtwo)) / float(s)) * 100
 
         if y < 0:
-            self.advantage_one -= y
-            self.advantage_two += y
+            self.advantage_one -= abs(y)
+            self.advantage_two += abs(y)
         else:
-            self.advantage_one += y
-            self.advantage_two -= y
+            self.advantage_one += abs(y)
+            self.advantage_two -= abs(y)
 
 
         # policy addition
