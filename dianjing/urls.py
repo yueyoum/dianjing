@@ -10,5 +10,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^game/', include('views.urls')),
     url(r'^data/', include('background.urls')),
+
+    url(r'^config/$', 'apps.config.views.get_config'),
 ]
 

@@ -11,6 +11,8 @@ import os
 import json
 import zipfile
 
+from apps.config.models import Config as ModelConfig
+
 from config.errormsg import ConfigErrorMessage
 from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigStaffLevel
 from config.challenge import ConfigChallengeType, ConfigChallengeMatch
@@ -37,8 +39,14 @@ def load_config():
 
     _has_configed = True
 
+    c = ModelConfig.get_config()
+    if c:
+        z_file = c.config.path
+    else:
+        z_file = os.path.join(settings.BASE_DIR, 'config', 'config.zip')
 
-    z = zipfile.ZipFile(os.path.join(settings.BASE_DIR, 'config', 'config.zip'))
+
+    z = zipfile.ZipFile(z_file)
     for item in z.namelist():
         content = z.open(item).read()
         if not content:
@@ -92,5 +100,5 @@ def load_config():
         elif item == 'qianban.json':
             ConfigQianBan.initialize(data)
 
-    print "LOAD CONFIG DONE"
+    print "LOAD CONFIG DONE FROM {0}".format(z_file)
 

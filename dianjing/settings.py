@@ -15,6 +15,7 @@ import os
 TEST = os.environ.get('DIANJING_TEST', '0') == '1'
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+UPLOAD_DIR = os.path.join(BASE_DIR, 'upload')
 
 
 # Quick-start development settings - unsuitable for production
@@ -46,6 +47,7 @@ INSTALLED_APPS = (
     'apps.server',
     'apps.account',
     'apps.character',
+    'apps.config',
     'background',
 )
 
@@ -185,7 +187,6 @@ REDIS_HOST = doc.find('redis/host').text
 REDIS_PORT = int( doc.find('redis/port').text )
 REDIS_CACHE_SECONDS = int( doc.find('redis/cache-seconds').text )
 
-GAME_VERSION = doc.find('version').text
 
 del doc
 del tree
