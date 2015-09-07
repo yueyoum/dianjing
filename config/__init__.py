@@ -11,7 +11,6 @@ import os
 import json
 import zipfile
 
-from apps.config.models import Config as ModelConfig
 
 from config.errormsg import ConfigErrorMessage
 from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigStaffLevel
@@ -33,6 +32,7 @@ _has_configed = False
 
 def load_config():
     from django.conf import settings
+    from apps.config.models import Config as ModelConfig
 
     global _has_configed
     if _has_configed:

@@ -15,8 +15,8 @@ class ProjectConfig(AppConfig):
 
 
     def ready(self):
-        from core.db import connect
-        connect()
+        from core.db import RedisDB
+        RedisDB.get().ping()
 
         from config import load_config
         load_config()

@@ -24,7 +24,6 @@ class RedisDB(object):
         db = 1 if settings.TEST else 0
         pool = redis.ConnectionPool(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=db)
         cls.DB = redis.Redis(connection_pool=pool)
-        cls.DB.ping()
 
     @classmethod
     def get(cls):
@@ -32,6 +31,10 @@ class RedisDB(object):
 
         :rtype : redis.Redis
         """
+
+        if not cls.DB:
+            cls.connect()
+
         return cls.DB
 
 
@@ -65,18 +68,15 @@ class MongoDB(object):
 
             cls.DBS[s.id] = instance[db_name]
 
-        print "MONGO"
-        print cls.DBS
 
     @classmethod
     def get(cls, server_id):
+        if not cls.DBS:
+            cls.connect()
+
         return cls.DBS[server_id]
+
 
     @classmethod
     def server_ids(cls):
         return cls.DBS.keys()
-
-
-def connect():
-    RedisDB.connect()
-    MongoDB.connect()
