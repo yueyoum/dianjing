@@ -40,10 +40,9 @@ class AbstractClub(object):
         self.name = ""
         self.manager_name = ""
         self.flag = 0
-        self.level = 0
+        self.level = 1
         self.renown = 0
         self.vip = 0
-        self.exp = 0
         self.gold = 0
         self.diamond = 0
 
@@ -58,9 +57,6 @@ class AbstractClub(object):
         return len(self.match_staffs) == 5 and all([i!=0 for i in self.match_staffs])
 
 
-    def get_max_renown(self):
-        return 0
-
     def make_protomsg(self):
         msg = MessageClub()
         msg.id = str(self.id)
@@ -70,10 +66,8 @@ class AbstractClub(object):
         msg.level = self.level
         msg.renown = self.renown
         msg.vip = self.vip
-        msg.exp = self.exp
         msg.gold = self.gold
         msg.diamond = self.diamond
-        msg.max_renown = self.get_max_renown()
         msg.policy = self.policy
 
         match_staffs = self.match_staffs[:]
@@ -91,6 +85,6 @@ class AbstractClub(object):
                 msg_match_staff.level = 0
             else:
                 msg_match_staff.id = i
-                msg_match_staff.level = 0
+                msg_match_staff.level = self.staffs[i].level
 
         return msg

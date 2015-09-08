@@ -40,11 +40,14 @@ def load_config():
 
     _has_configed = True
 
-    c = ModelConfig.get_config()
-    if c:
-        z_file = c.config.path
-    else:
+    if settings.TEST:
         z_file = os.path.join(settings.BASE_DIR, 'config', 'config.zip')
+    else:
+        c = ModelConfig.get_config()
+        if c:
+            z_file = c.config.path
+        else:
+            z_file = os.path.join(settings.BASE_DIR, 'config', 'config.zip')
 
 
     z = zipfile.ZipFile(z_file)

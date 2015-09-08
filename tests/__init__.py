@@ -14,6 +14,8 @@ def setup():
 
     import dianjing.wsgi
 
+    teardown()
+
     from core.character import Character
     Character.create(1, 1, "one", "club_one", 1)
 

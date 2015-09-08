@@ -58,7 +58,6 @@ class Club(AbstractClub):
         self.level = club['level']              # 俱乐部等级
         self.renown = club['renown']            # 俱乐部声望
         self.vip = club['vip']                  # vip等级
-        self.exp = club['exp']                  # 俱乐部经验
         self.gold = club['gold']                # 游戏币
         # FIXME
         self.diamond = int(club['diamond'])     # 钻石

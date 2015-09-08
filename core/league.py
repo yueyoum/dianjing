@@ -300,7 +300,10 @@ class LeagueGame(object):
         g.add(club_id)
         g.finish()
 
-        LeagueGame.start_match(server_id, group_ids=[g.id])
+        order = LeagueGame.find_order()
+        for i in range(1, order):
+            LeagueGame.start_match(server_id, group_ids=[g.id], order=i)
+
         League(server_id, club_id).send_notify()
 
 

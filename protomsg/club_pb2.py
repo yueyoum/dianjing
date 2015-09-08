@@ -14,7 +14,7 @@ import common_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='club.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\nclub.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xf3\x01\n\x04\x43lub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0f\n\x07manager\x18\x03 \x02(\t\x12\x0c\n\x04\x66lag\x18\x04 \x02(\x05\x12\r\n\x05level\x18\x05 \x02(\x05\x12\x0e\n\x06renown\x18\x06 \x02(\x05\x12\x0b\n\x03vip\x18\x07 \x02(\x05\x12\x0b\n\x03\x65xp\x18\x08 \x02(\x05\x12\x0c\n\x04gold\x18\t \x02(\x05\x12\x0f\n\x07\x64iamond\x18\n \x02(\x05\x12\x12\n\nmax_renown\x18\x0b \x02(\x05\x12\x36\n\x0cmatch_staffs\x18\x0c \x03(\x0b\x32 .Dianjing.protocol.StaffBaseInfo\x12\x0e\n\x06policy\x18\r \x01(\x05\"D\n\nClubNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12%\n\x04\x63lub\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\"@\n\x11\x43reateClubRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\"2\n\x12\x43reateClubResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\":\n\x14\x43lubSetPolicyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tpolicy_id\x18\x02 \x02(\x05\"5\n\x15\x43lubSetPolicyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\">\n\x18\x43lubSetMatchStaffRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tstaff_ids\x18\x02 \x03(\x05\"9\n\x19\x43lubSetMatchStaffResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+  serialized_pb='\n\nclub.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xd2\x01\n\x04\x43lub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0f\n\x07manager\x18\x03 \x02(\t\x12\x0c\n\x04\x66lag\x18\x04 \x02(\x05\x12\r\n\x05level\x18\x05 \x02(\x05\x12\x0e\n\x06renown\x18\x06 \x02(\x05\x12\x0b\n\x03vip\x18\x07 \x02(\x05\x12\x0c\n\x04gold\x18\x08 \x02(\x05\x12\x0f\n\x07\x64iamond\x18\t \x02(\x05\x12\x36\n\x0cmatch_staffs\x18\n \x03(\x0b\x32 .Dianjing.protocol.StaffBaseInfo\x12\x0e\n\x06policy\x18\x0b \x01(\x05\"D\n\nClubNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12%\n\x04\x63lub\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\"@\n\x11\x43reateClubRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\"2\n\x12\x43reateClubResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\":\n\x14\x43lubSetPolicyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tpolicy_id\x18\x02 \x02(\x05\"5\n\x15\x43lubSetPolicyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\">\n\x18\x43lubSetMatchStaffRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tstaff_ids\x18\x02 \x03(\x05\"9\n\x19\x43lubSetMatchStaffResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
 
 
 
@@ -76,43 +76,29 @@ _CLUB = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='exp', full_name='Dianjing.protocol.Club.exp', index=7,
+      name='gold', full_name='Dianjing.protocol.Club.gold', index=7,
       number=8, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='gold', full_name='Dianjing.protocol.Club.gold', index=8,
+      name='diamond', full_name='Dianjing.protocol.Club.diamond', index=8,
       number=9, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='diamond', full_name='Dianjing.protocol.Club.diamond', index=9,
-      number=10, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='max_renown', full_name='Dianjing.protocol.Club.max_renown', index=10,
-      number=11, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='match_staffs', full_name='Dianjing.protocol.Club.match_staffs', index=11,
-      number=12, type=11, cpp_type=10, label=3,
+      name='match_staffs', full_name='Dianjing.protocol.Club.match_staffs', index=9,
+      number=10, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='policy', full_name='Dianjing.protocol.Club.policy', index=12,
-      number=13, type=5, cpp_type=1, label=1,
+      name='policy', full_name='Dianjing.protocol.Club.policy', index=10,
+      number=11, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -127,7 +113,7 @@ _CLUB = _descriptor.Descriptor(
   is_extendable=False,
   extension_ranges=[],
   serialized_start=48,
-  serialized_end=291,
+  serialized_end=258,
 )
 
 
@@ -161,8 +147,8 @@ _CLUBNOTIFY = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=293,
-  serialized_end=361,
+  serialized_start=260,
+  serialized_end=328,
 )
 
 
@@ -203,8 +189,8 @@ _CREATECLUBREQUEST = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=363,
-  serialized_end=427,
+  serialized_start=330,
+  serialized_end=394,
 )
 
 
@@ -238,8 +224,8 @@ _CREATECLUBRESPONSE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=429,
-  serialized_end=479,
+  serialized_start=396,
+  serialized_end=446,
 )
 
 
@@ -273,8 +259,8 @@ _CLUBSETPOLICYREQUEST = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=481,
-  serialized_end=539,
+  serialized_start=448,
+  serialized_end=506,
 )
 
 
@@ -308,8 +294,8 @@ _CLUBSETPOLICYRESPONSE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=541,
-  serialized_end=594,
+  serialized_start=508,
+  serialized_end=561,
 )
 
 
@@ -343,8 +329,8 @@ _CLUBSETMATCHSTAFFREQUEST = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=596,
-  serialized_end=658,
+  serialized_start=563,
+  serialized_end=625,
 )
 
 
@@ -378,8 +364,8 @@ _CLUBSETMATCHSTAFFRESPONSE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=660,
-  serialized_end=717,
+  serialized_start=627,
+  serialized_end=684,
 )
 
 _CLUB.fields_by_name['match_staffs'].message_type = common_pb2._STAFFBASEINFO

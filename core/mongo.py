@@ -39,7 +39,6 @@ CHARACTER_DOCUMENT = {
         'level': 1,
         'renown': 0,
         'vip': 0,
-        'exp': 0,
         'gold': 0,
         'diamond': 0,
 
