@@ -18,7 +18,7 @@ from core.mongo import Document, MONGO_COMMON_KEY_RECRUIT_HOT
 from core.resource import Resource
 from core.common import Common
 from core.skill import SkillManager
-from core.package import Package
+from core.package import TrainingItem
 
 from config import (
     ConfigStaff, ConfigStaffHot, ConfigStaffRecruit,
@@ -340,12 +340,12 @@ class StaffManger(object):
             effect = qc.get_effect(staff_id, club.staffs[staff_id].skills.keys())
 
             item = data['training_data']['item']
-            p = Package.load_from_item(item)
+            p = TrainingItem.loads(item)
             # TODO
             p.gold += sum(effect.effect_business_skill.values())
         else:
             item = data['training_data']['item']
-            p = Package.load_from_item(item)
+            p = TrainingItem.loads(item)
             Resource(self.server_id, self.char_id).add_package(p, staff_id)
 
         trainings.pop(slot_id)

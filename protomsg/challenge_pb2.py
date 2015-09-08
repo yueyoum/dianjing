@@ -15,7 +15,7 @@ import package_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='challenge.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\x0f\x63hallenge.proto\x12\x11\x44ianjing.protocol\x1a\x0bmatch.proto\x1a\rpackage.proto\".\n\x0f\x43hallengeNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"(\n\x15\x43hallengeStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\x8b\x01\n\x16\x43hallengeStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\x12&\n\x04\x64rop\x18\x04 \x01(\x0b\x32\x18.Dianjing.protocol.Goods')
+  serialized_pb='\n\x0f\x63hallenge.proto\x12\x11\x44ianjing.protocol\x1a\x0bmatch.proto\x1a\rpackage.proto\".\n\x0f\x43hallengeNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"(\n\x15\x43hallengeStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\x8a\x01\n\x16\x43hallengeStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\x12%\n\x04\x64rop\x18\x04 \x01(\x0b\x32\x17.Dianjing.protocol.Drop')
 
 
 
@@ -128,11 +128,11 @@ _CHALLENGESTARTRESPONSE = _descriptor.Descriptor(
   is_extendable=False,
   extension_ranges=[],
   serialized_start=157,
-  serialized_end=296,
+  serialized_end=295,
 )
 
 _CHALLENGESTARTRESPONSE.fields_by_name['match'].message_type = match_pb2._CLUBMATCH
-_CHALLENGESTARTRESPONSE.fields_by_name['drop'].message_type = package_pb2._GOODS
+_CHALLENGESTARTRESPONSE.fields_by_name['drop'].message_type = package_pb2._DROP
 DESCRIPTOR.message_types_by_name['ChallengeNotify'] = _CHALLENGENOTIFY
 DESCRIPTOR.message_types_by_name['ChallengeStartRequest'] = _CHALLENGESTARTREQUEST
 DESCRIPTOR.message_types_by_name['ChallengeStartResponse'] = _CHALLENGESTARTRESPONSE

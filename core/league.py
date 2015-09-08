@@ -58,7 +58,7 @@ from core.club import Club
 from core.match import ClubMatch
 from core.abstract import AbstractClub, AbstractStaff
 from core.mail import MailManager
-from core.package import Package
+from core.package import Drop
 
 from config.settings import LEAGUE_START_TIME_ONE, LEAGUE_START_TIME_TWO
 from config import ConfigNPC, ConfigStaff, ConfigErrorMessage, ConfigLeague
@@ -189,7 +189,7 @@ class LeagueMatch(object):
         content = u'联赛日奖励'
 
         config = ConfigLeague.get(1)
-        attachment = Package.generate(config.day_reward).dumps()
+        attachment = Drop.generate(config.day_reward).dumps()
 
         club.send_day_mail(title, content, attachment)
 

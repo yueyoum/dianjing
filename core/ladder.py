@@ -19,8 +19,8 @@ from core.abstract import AbstractStaff, AbstractClub
 from core.club import Club
 from core.match import ClubMatch
 from core.common import Common
-from core.package import Package
-from core.training import TrainingBag
+from core.package import Drop
+from core.resource import Resource
 
 from core.lock import Lock, LadderLock, LadderNPCLock, LadderStoreLock, LockTimeOut
 
@@ -306,7 +306,7 @@ class Ladder(object):
                 notify_club.flag = this_ladder_club['club_flag']
             else:
                 # REAL club
-                club = Club(self.server_id, self.char_id)
+                club = Club(self.server_id, int(k))
                 notify_club.name = club.name
                 notify_club.flag = club.flag
 
@@ -334,29 +334,19 @@ class LadderStore(object):
             if self.items:
                 return
 
-            items = random.sample(ConfigLadderScoreStore.INSTANCES.values(), 9)
-
-            self.items = {}
-            for i in items:
-                this_doc = Document.get("training_store.embedded")
-                this_doc['oid'] = i.id
-                this_doc['item'] = Package.generate(i.package).dump_to_item()
-
-                self.items[make_string_id()] = this_doc
-
+            self.items = random.sample(ConfigLadderScoreStore.INSTANCES.keys(), 9)
             Common.set(self.server_id, MONGO_COMMON_KEY_LADDER_STORE, self.items)
 
 
     def buy(self, item_id):
-        try:
-            data = self.items[item_id]
-        except KeyError:
+        if item_id not in self.items:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_STORE_ITEM_NOT_EXIST"))
 
         # TODO BUY LIMIT
         # TODO COST SCORE
-        TrainingBag(self.server_id, self.char_id).add(item_id, data)
 
+        drop = Drop.generate(ConfigLadderScoreStore.get(item_id).package)
+        Resource(self.server_id, self.char_id).add_package(drop)
         Ladder(self.server_id, self.char_id).send_notify()
 
 
@@ -367,11 +357,6 @@ class LadderStore(object):
 
         notify = LadderStoreNotify()
         notify.next_refresh_time = next_time
-
-        for k, v in self.items.iteritems():
-            notify_item = notify.items.add()
-            notify_item.id = k
-            notify_item.oid = v['oid']
-            notify_item.item.MergeFrom(Package.load_from_item(v['item']).make_item_protomsg())
+        notify.ids.extend(self.items)
 
         MessagePipe(self.char_id).put(msg=notify)

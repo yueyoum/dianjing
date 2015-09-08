@@ -13,7 +13,7 @@ from core.abstract import AbstractClub, AbstractStaff
 from core.db import MongoDB
 from core.club import Club
 from core.match import ClubMatch
-from core.package import Goods
+from core.package import Drop
 from core.resource import Resource
 
 from core.signals import challenge_match_signal
@@ -119,10 +119,10 @@ class Challenge(object):
         next_id = self.set_next_match_id()
         self.send_notify(challenge_id=next_id)
 
-        g = Goods.generate(ConfigChallengeMatch.get(self.challenge_id).package)
-        Resource(self.server_id, self.char_id).add_package(g)
+        drop = Drop.generate(ConfigChallengeMatch.get(self.challenge_id).package)
+        Resource(self.server_id, self.char_id).add_package(drop)
 
-        return msg, g.make_protomsg()
+        return msg, drop.make_protomsg()
 
 
     def send_notify(self, challenge_id=None):

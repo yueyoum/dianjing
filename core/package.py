@@ -13,11 +13,12 @@ import random
 from core.base import STAFF_ATTRS
 from config import ConfigPackage
 
-from protomsg.package_pb2 import Package as MsgPackage
-from protomsg.package_pb2 import Item as MsgItem
-from protomsg.package_pb2 import Goods as MsgGoods
+from protomsg.package_pb2 import (
+    Drop as MsgDrop,
+    TrainingItem as MsgTrainingItem
+)
 
-class Package(object):
+class PackageBase(object):
     __slots__ = STAFF_ATTRS + [
         'gold', 'diamond',
         'staff_exp', 'club_renown',
@@ -41,7 +42,6 @@ class Package(object):
         self.club_renown = 0
         self.trainings = []
 
-
     @property
     def attrs(self):
         return {k: getattr(self, k) for k in self.ATTRS}
@@ -51,7 +51,7 @@ class Package(object):
     def generate(cls, pid):
         """
 
-        :rtype : Package
+        :rtype : PackageBase
         """
 
         def set_value(attr, values):
@@ -114,82 +114,13 @@ class Package(object):
         return p
 
 
-    def make_protomsg(self):
-        msg = MsgPackage()
-
-        for key in self.__slots__:
-            if key != 'trainings':
-                setattr(msg, key, getattr(self, key))
-
-        for tid, amount in self.trainings:
-            msg_training = msg.trainings.add()
-            msg_training.id = tid
-            msg_training.amount = amount
-
-        return msg
-
-    def dumps(self):
-        data = self.make_protomsg().SerializeToString()
-        return base64.b64encode(data)
-
-    @classmethod
-    def loads(cls, data):
-        data = base64.b64decode(data)
-        msg = MsgPackage()
-        msg.ParseFromString(data)
-
-        p = cls()
-
-        for key in cls.__slots__:
-            if key != 'trainings':
-                setattr(p, key, getattr(msg, key))
-
-        for tr in msg.trainings:
-            p.trainings.append((tr.id, tr.amount))
-
-        return p
-
-
-    def make_item_protomsg(self):
-        msg = MsgItem()
-        for attr in self.__slots__:
-            if attr != 'trainings':
-                msg_item = msg.items.add()
-                msg_item.resource_id = attr
-                msg_item.value = getattr(self, attr)
-
-        return msg
-
-    def dump_to_item(self):
-        data = self.make_item_protomsg().SerializePartialToString()
-        return base64.b64encode(data)
-
-
-    @classmethod
-    def load_from_item(cls, data):
-        """
-
-        :rtype : Package
-        """
-        data = base64.b64decode(data)
-        msg = MsgItem()
-        msg.ParseFromString(data)
-
-        p = cls()
-
-        for item in msg.items:
-            setattr(p, item.resource_id, item.value)
-
-        return p
-
-
-class Goods(Package):
+class Drop(PackageBase):
     FIELDS = ['gold', 'diamond',
         'staff_exp', 'club_renown',
         'trainings']
 
     def make_protomsg(self):
-        msg = MsgGoods()
+        msg = MsgDrop()
 
         for attr in self.FIELDS:
             if attr != 'trainings':
@@ -214,7 +145,7 @@ class Goods(Package):
     @classmethod
     def loads(cls, data):
         data = base64.b64decode(data)
-        msg = MsgPackage()
+        msg = MsgDrop()
         msg.ParseFromString(data)
 
         p = cls()
@@ -225,5 +156,40 @@ class Goods(Package):
 
         for tr in msg.trainings:
             p.trainings.append((tr.id, tr.amount))
+
+        return p
+
+
+class TrainingItem(PackageBase):
+    FIELDS = STAFF_ATTRS + ['staff_exp',]
+
+    def make_protomsg(self):
+        msg = MsgTrainingItem()
+
+        for attr in self.FIELDS:
+            msg_resources = msg.resources.add()
+            msg_resources.resource_id = attr
+            msg_resources.value = getattr(self, attr)
+
+        return msg
+
+    def dump(self):
+        data = self.make_protomsg().SerializeToString()
+        return base64.b64encode(data)
+
+    @classmethod
+    def loads(cls, data):
+        """
+
+        :rtype : TrainingItem
+        """
+        data = base64.b64decode(data)
+        msg = MsgTrainingItem()
+        msg.ParseFromString(data)
+
+        p = cls()
+
+        for item in msg.resources:
+            setattr(p, item.resource_id, item.value)
 
         return p

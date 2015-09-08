@@ -15,7 +15,7 @@ from core.mongo import Document
 from core.staff import StaffManger
 from core.building import BuildingTrainingCenter
 from core.resource import Resource
-from core.package import Package
+from core.package import TrainingItem
 
 from utils.message import MessagePipe
 from utils.functional import make_string_id
@@ -56,8 +56,8 @@ class TrainingStore(object):
 
             if ConfigTraining.get(i).tp != 3:
                 # 不是技能训练，其他都可能是随机的，这里要生成好
-                p = Package.generate(ConfigTraining.get(i).package)
-                this_doc['item'] = p.dump_to_item()
+                p = TrainingItem.generate(ConfigTraining.get(i).package)
+                this_doc['item'] = p.dump()
 
             trainings[this_id] = this_doc
 
@@ -113,8 +113,8 @@ class TrainingStore(object):
             notify_training.id = k
             notify_training.oid = v['oid']
             if v['item']:
-                p = Package.load_from_item(v['item'])
-                notify_training.item.MergeFrom(p.make_item_protomsg())
+                p = TrainingItem.loads(v['item'])
+                notify_training.item.MergeFrom(p.make_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)
 
@@ -220,7 +220,7 @@ class TrainingBag(object):
             notify_training.id = k
             notify_training.oid = v['oid']
             if v['item']:
-                p = Package.load_from_item(v['item'])
-                notify_training.item.MergeFrom(p.make_item_protomsg())
+                p = TrainingItem.loads(v['item'])
+                notify_training.item.MergeFrom(p.make_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)

@@ -15,7 +15,7 @@ import package_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='training.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\x0etraining.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"J\n\x08Training\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0b\n\x03oid\x18\x02 \x02(\x05\x12%\n\x04item\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Item\"~\n\x13TrainingStoreNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12.\n\ttrainings\x18\x03 \x03(\x0b\x32\x1b.Dianjing.protocol.Training\"9\n\x19TrainingStoreRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t\".\n\x1bTrainingStoreRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"<\n\x1cTrainingStoreRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"y\n\x0eTrainingNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12.\n\ttrainings\x18\x03 \x03(\x0b\x32\x1b.Dianjing.protocol.Training\"4\n\x14TrainingRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t\"1\n\x12TrainingBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"3\n\x13TrainingBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+  serialized_pb='\n\x0etraining.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"R\n\x08Training\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0b\n\x03oid\x18\x02 \x02(\x05\x12-\n\x04item\x18\x03 \x01(\x0b\x32\x1f.Dianjing.protocol.TrainingItem\"~\n\x13TrainingStoreNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12.\n\ttrainings\x18\x03 \x03(\x0b\x32\x1b.Dianjing.protocol.Training\"9\n\x19TrainingStoreRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t\".\n\x1bTrainingStoreRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"<\n\x1cTrainingStoreRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"y\n\x0eTrainingNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12.\n\ttrainings\x18\x03 \x03(\x0b\x32\x1b.Dianjing.protocol.Training\"4\n\x14TrainingRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t\"1\n\x12TrainingBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"3\n\x13TrainingBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
 
 
 
@@ -58,7 +58,7 @@ _TRAINING = _descriptor.Descriptor(
   is_extendable=False,
   extension_ranges=[],
   serialized_start=66,
-  serialized_end=140,
+  serialized_end=148,
 )
 
 
@@ -99,8 +99,8 @@ _TRAININGSTORENOTIFY = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=142,
-  serialized_end=268,
+  serialized_start=150,
+  serialized_end=276,
 )
 
 
@@ -134,8 +134,8 @@ _TRAININGSTOREREMOVENOTIFY = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=270,
-  serialized_end=327,
+  serialized_start=278,
+  serialized_end=335,
 )
 
 
@@ -162,8 +162,8 @@ _TRAININGSTOREREFRESHREQUEST = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=329,
-  serialized_end=375,
+  serialized_start=337,
+  serialized_end=383,
 )
 
 
@@ -197,8 +197,8 @@ _TRAININGSTOREREFRESHRESPONSE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=377,
-  serialized_end=437,
+  serialized_start=385,
+  serialized_end=445,
 )
 
 
@@ -239,8 +239,8 @@ _TRAININGNOTIFY = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=439,
-  serialized_end=560,
+  serialized_start=447,
+  serialized_end=568,
 )
 
 
@@ -274,8 +274,8 @@ _TRAININGREMOVENOTIFY = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=562,
-  serialized_end=614,
+  serialized_start=570,
+  serialized_end=622,
 )
 
 
@@ -309,8 +309,8 @@ _TRAININGBUYREQUEST = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=616,
-  serialized_end=665,
+  serialized_start=624,
+  serialized_end=673,
 )
 
 
@@ -344,11 +344,11 @@ _TRAININGBUYRESPONSE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=667,
-  serialized_end=718,
+  serialized_start=675,
+  serialized_end=726,
 )
 
-_TRAINING.fields_by_name['item'].message_type = package_pb2._ITEM
+_TRAINING.fields_by_name['item'].message_type = package_pb2._TRAININGITEM
 _TRAININGSTORENOTIFY.fields_by_name['act'].enum_type = common_pb2._ACTION
 _TRAININGSTORENOTIFY.fields_by_name['trainings'].message_type = _TRAINING
 _TRAININGNOTIFY.fields_by_name['act'].enum_type = common_pb2._ACTION

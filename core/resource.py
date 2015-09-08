@@ -8,11 +8,14 @@ Description:
 """
 
 from contextlib import contextmanager
+from dianjing.exception import GameException
 
 from core.base import STAFF_ATTRS
-from core.package import Package
-from dianjing.exception import GameException
-from config import ConfigErrorMessage
+from core.package import PackageBase, TrainingItem
+
+from utils.functional import make_string_id
+
+from config import ConfigErrorMessage, ConfigTraining
 
 
 class Resource(object):
@@ -23,13 +26,13 @@ class Resource(object):
     def add(self, **kwargs):
         staff_id = kwargs.pop('staff_id', None)
 
-        p = Package.new(**kwargs)
+        p = PackageBase.new(**kwargs)
         self.add_package(p, staff_id=staff_id)
 
 
     def add_from_package_id(self, package_id, staff_id=None):
 
-        p = Package.generate(package_id)
+        p = PackageBase.generate(package_id)
         self.add_package(p, staff_id=staff_id)
 
 
@@ -40,6 +43,8 @@ class Resource(object):
         """
         from core.club import Club
         from core.staff import StaffManger
+        from core.training import TrainingBag
+
 
         if package.club_renown or package.gold or package.diamond:
             club_data = {
@@ -50,6 +55,15 @@ class Resource(object):
 
             club = Club(self.server_id, self.char_id)
             club.update(**club_data)
+
+        tb = TrainingBag(self.server_id, self.char_id)
+        for tid, amount in package.trainings:
+            for i in range(amount):
+                training_id = make_string_id()
+                # XXX
+                training_data = TrainingItem.generate(ConfigTraining.get(tid).package).dump()
+                tb.add(training_id, training_data)
+
 
         if staff_id:
             staff_data = {

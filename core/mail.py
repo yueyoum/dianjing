@@ -15,7 +15,7 @@ from dianjing.exception import GameException
 from core.db import MongoDB
 from core.mongo import Document
 from core.character import Character
-from core.package import Package
+from core.package import Drop
 from core.resource import Resource
 
 from config import ConfigErrorMessage
@@ -113,7 +113,7 @@ class MailManager(object):
         if not attachment:
             raise GameException( ConfigErrorMessage.get_error_id("MAIL_HAS_NO_ATTACHMENT") )
 
-        package = Package.loads(attachment)
+        package = Drop.loads(attachment)
         Resource(self.server_id, self.char_id).add_package(package)
 
         self.mongo.mail.update_one(
@@ -155,6 +155,6 @@ class MailManager(object):
             notify_mail.remained_seconds = 1000
 
             if v['attachment']:
-                notify_mail.attachment.MergeFrom(Package.loads(v['attachment']).make_protomsg())
+                notify_mail.attachment.MergeFrom(Drop.loads(v['attachment']).make_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)
