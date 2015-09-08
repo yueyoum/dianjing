@@ -3,6 +3,7 @@
 import arrow
 
 from django.db import models
+from django.db import connection
 
 class Server(models.Model):
     STATUS = (
@@ -25,6 +26,8 @@ class Server(models.Model):
 
     @classmethod
     def opened_servers(cls):
+        connection.close()
+
         now = arrow.utcnow().format("YYYY-MM-DD HH:mm:ssZ")
         servers = cls.objects.filter(open_at__lte=now)
         return servers
