@@ -46,10 +46,10 @@ class MongoDB(object):
 
     @classmethod
     def connect(cls):
+        from apps.server.models import Server
+
         if cls.DBS:
             raise RuntimeError("only can call mongo.connect once!")
-
-        from apps.server.models import Server
 
         servers = Server.opened_servers()
         for s in servers:
@@ -79,4 +79,7 @@ class MongoDB(object):
 
     @classmethod
     def server_ids(cls):
-        return cls.DBS.keys()
+        from apps.server.models import Server
+
+        servers = Server.opened_servers()
+        return [s.id for s in servers]
