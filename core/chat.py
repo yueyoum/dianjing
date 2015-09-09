@@ -67,13 +67,18 @@ class Chat(object):
         notify_msg = notify.msgs.add()
         notify_msg.MergeFrom(msg)
 
+        notify_bin = MessageFactory.pack(notify)
+
         arg = {
             'server_id': self.server_id,
+            'exclude_chars': [self.char_id],
             'data': MessageFactory.pack(notify)
         }
 
         payload = cPickle.dumps(arg)
         world.broadcast(payload=payload)
+
+        MessagePipe(self.char_id).put(data=notify_bin)
 
         chat_signal.send(
             sender=None,

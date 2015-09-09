@@ -93,6 +93,7 @@ class Notification(object):
             updater
         )
 
+        self.send_notify([noti_id])
         return noti_id
 
 

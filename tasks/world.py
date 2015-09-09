@@ -19,9 +19,14 @@ def broadcast(args):
     try:
         payload = cPickle.loads(args['payload'])
         server_id = payload['server_id']
+        exclude_chars = payload['exclude_chars']
         data = payload['data']
 
-        chars = MongoDB.get(server_id).character.find({}, {'_id': 1})
+        chars = MongoDB.get(server_id).character.find(
+            {'_id': {'$nin': exclude_chars}},
+            {'_id': 1}
+        )
+
         for c in chars:
             MessagePipe(c['_id']).put(data=data)
     except:
