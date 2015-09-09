@@ -266,6 +266,21 @@ CUP_CLUB_DOCUMENT = {
 }
 
 
+# 通知
+NOTIFICATION_DOCUMENT = {
+    '_id': null,
+    # {id: [tp, args, timestamp], ...}
+    'notis': {}
+}
+
+NOTIFICATION_EMBEDDED_DOCUMENT = {
+    'tp': null,
+    'args': null,
+    'timestamp': null,
+    'opened': False
+}
+
+
 class Document(object):
     DOCUMENTS = {
         "common": COMMON_DOCUMENT,
@@ -301,6 +316,9 @@ class Document(object):
 
         "cup": CUP_DOCUMENT,
         "cup.club": CUP_CLUB_DOCUMENT,
+
+        "notification": NOTIFICATION_DOCUMENT,
+        "notification.embedded": NOTIFICATION_EMBEDDED_DOCUMENT
     }
 
     @classmethod
@@ -308,6 +326,7 @@ class Document(object):
         return cls.DOCUMENTS[name].copy()
 
 
+MONGO_COMMON_KEY_CHAT = 'chat'
 MONGO_COMMON_KEY_RECRUIT_HOT = 'recruit_hot'
 MONGO_COMMON_KEY_TASK = 'task'
 MONGO_COMMON_KEY_LADDER_STORE = 'ladder_store'

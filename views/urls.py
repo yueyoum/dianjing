@@ -62,6 +62,7 @@ urlpatterns = [
     url(r'^chat/send/$', 'views.chat.send'),
 
     url(r'^notification/open/$', 'views.notification.open'),
+    url(r'^notification/delete/$', 'views.notification.delete'),
 
     url(r'^ladder/refresh/$', 'views.ladder.refresh'),
     url(r'^ladder/match/$', 'views.ladder.match'),

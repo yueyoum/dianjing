@@ -21,6 +21,7 @@ from core.match import ClubMatch
 from core.common import Common
 from core.package import Drop
 from core.resource import Resource
+from core.notification import Notification
 
 from core.lock import Lock, LadderLock, LadderNPCLock, LadderStoreLock, LockTimeOut
 
@@ -34,6 +35,7 @@ from config import (
     ConfigErrorMessage,
     ConfigStaff,
 )
+from config.settings import LADDER_LOG_MAX_AMOUNT
 
 from protomsg.ladder_pb2 import LadderNotify, LadderStoreNotify
 
@@ -98,15 +100,68 @@ class LadderMatch(object):
         self.club_one = club_one
         self.club_two = club_two
 
+        self.club_one_object = LadderClub(self.server_id, self.club_one)
+        self.club_two_object = LadderClub(self.server_id, self.club_two)
+
         self.club_one_win = False
 
     def start(self):
-        match = ClubMatch(self.club_one, self.club_two)
+        match = ClubMatch(self.club_one_object, self.club_two_object)
         msg = match.start()
-
         self.club_one_win = msg.club_one_win
+
+        self.after_match()
         return msg
 
+
+    def after_match(self):
+        # 记录天梯战报
+        order_changed = self.club_one['order'] - self.club_two['order']
+
+        final_club_one_order = self.club_one['order']
+        final_club_two_order = self.club_two['order']
+
+        if self.club_one_win:
+            if order_changed > 0:
+                # exchange the order
+                MongoDB.get(self.server_id).ladder.update_one(
+                    {'_id': self.club_one['_id']},
+                    {'$set': {'order': self.club_two['order']}}
+                )
+
+                MongoDB.get(self.server_id).ladder.update_one(
+                    {'_id': self.club_two['_id']},
+                    {'$set': {'order': self.club_one['order']}}
+                )
+
+                final_club_one_order = self.club_two['order']
+                final_club_two_order = self.club_one['order']
+
+                self_log = (1, (self.club_two_object.name, str(order_changed)))
+                target_log = (4, (self.club_one_object.name, str(order_changed)))
+            else:
+                self_log = (5, (self.club_two_object.name,))
+                target_log = (6, (self.club_one_object.name,))
+        else:
+            self_log = (2, (self.club_two_object.name,))
+            target_log = (3, (self.club_one_object.name,))
+
+        Ladder(self.server_id, int(self.club_one_object.id)).add_log(self_log, send_notify=False)
+        if isinstance(self.club_two_object, Club):
+            # real club
+            ladder_two = Ladder(self.server_id, int(self.club_two_object.id))
+            ladder_two.add_log(target_log)
+
+        # 发送通知
+        if isinstance(self.club_two_object, Club):
+            n = Notification(self.server_id, int(self.club_two_object.id))
+            n.add_ladder_notification(
+                win=not self.club_one_win,
+                from_name=self.club_one_object.name,
+                current_order=final_club_two_order,
+                # FIXME
+                renown=900
+            )
 
 
 
@@ -206,12 +261,15 @@ class Ladder(object):
 
 
     def match(self, target_id):
+        if target_id == str(self.char_id):
+            raise GameException(ConfigErrorMessage.get_error_id("LADDER_CANNOT_MATCH_SELF"))
+
         doc = self.mongo.ladder.find_one({'_id': str(self.char_id)})
-        if str(target_id) not in doc['refreshed']:
+        if target_id not in doc['refreshed']:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_TARGET_NOT_EXIST"))
 
         target = self.mongo.ladder.find_one({'_id': target_id}, {'order': 1})
-        if target['order'] != doc['refreshed'][str(target_id)]:
+        if target['order'] != doc['refreshed'][target_id]:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_TARGET_ORDER_CHANGED"))
 
         msg = None
@@ -225,41 +283,8 @@ class Ladder(object):
                         club_one = self.mongo.ladder.find_one({'_id': str(self.char_id)})
                         club_two = self.mongo.ladder.find_one({'_id': str(target_id)})
 
-                        ladder_club_one = LadderClub(self.server_id, club_one)
-                        ladder_club_two = LadderClub(self.server_id, club_two)
-
-                        match = LadderMatch(self.server_id, ladder_club_one, ladder_club_two)
+                        match = LadderMatch(self.server_id, club_one, club_two)
                         msg = match.start()
-
-                        order_changed = club_one['order'] - club_two['order']
-
-                        if match.club_one_win:
-                            if order_changed > 0:
-                                # exchange the order
-                                self.mongo.ladder.update_one(
-                                    {'_id': str(self.char_id)},
-                                    {'$set': {'order': club_two['order']}}
-                                )
-
-                                self.mongo.ladder.update_one(
-                                    {'_id': str(target_id)},
-                                    {'$set': {'order': club_one['order']}}
-                                )
-
-                                self_log = (1, (ladder_club_two.name, str(order_changed)))
-                                target_log = (4, (ladder_club_one.name, str(order_changed)))
-                            else:
-                                self_log = (5, (ladder_club_two.name,))
-                                target_log = (6, (ladder_club_one.name,))
-                        else:
-                            self_log = (2, (ladder_club_two.name,))
-                            target_log = (3, (ladder_club_one.name,))
-
-                        self.add_log(self_log, send_notify=False)
-                        if isinstance(ladder_club_two, Club):
-                            # real club
-                            ladder_two = Ladder(self.server_id, int(target_id))
-                            ladder_two.add_log(target_log)
 
                 except LockTimeOut:
                     raise GameException(ConfigErrorMessage.get_error_id("LADDER_TARGET_IN_MATCH"))
@@ -271,10 +296,12 @@ class Ladder(object):
 
 
     def add_log(self, log, send_notify=True):
-        # TODO 战报清理 ?
         self.mongo.ladder.update_one(
             {'_id': str(self.char_id)},
-            {'$push': {'logs': log}}
+            {'$push': {'logs': {
+                '$each': [log],
+                '$slice': -LADDER_LOG_MAX_AMOUNT
+            }}},
         )
 
         if send_notify:

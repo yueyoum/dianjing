@@ -8,15 +8,17 @@ Description:
 """
 
 import base64
+import cPickle
 
 
 from dianjing.exception import GameException
 from core.db import MongoDB
+from core.mongo import MONGO_COMMON_KEY_CHAT
 from core.signals import chat_signal
 
 from config import ConfigErrorMessage
+from utils.message import MessagePipe, MessageFactory
 
-from utils.message import MessagePipe
 
 
 from protomsg.chat_pb2 import CHAT_CHANNEL_PUBLIC, CHAT_CHANNEL_UNION, ChatNotify, ChatMessage
@@ -24,8 +26,6 @@ from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
 
 class Chat(object):
-    CHAT_COMMON_MONGO_ID = 'chat'
-
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
@@ -33,6 +33,8 @@ class Chat(object):
 
 
     def send(self, channel, text):
+        from tasks import world
+
         if channel not in [CHAT_CHANNEL_PUBLIC, CHAT_CHANNEL_UNION]:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
@@ -52,7 +54,7 @@ class Chat(object):
 
         # TODO union chat
         self.mongo.common.update_one(
-            {'_id': self.CHAT_COMMON_MONGO_ID},
+            {'_id': MONGO_COMMON_KEY_CHAT},
             {'$push': {'chats': {
                 '$each': [data],
                 '$slice': -20
@@ -60,14 +62,18 @@ class Chat(object):
             upsert=True
         )
 
-        # TODO performance
         notify = ChatNotify()
         notify.act = ACT_UPDATE
         notify_msg = notify.msgs.add()
         notify_msg.MergeFrom(msg)
 
-        for char in self.mongo.character.find():
-            MessagePipe(char['_id']).put(msg=notify)
+        arg = {
+            'server_id': self.server_id,
+            'data': MessageFactory.pack(notify)
+        }
+
+        payload = cPickle.dumps(arg)
+        world.broadcast(payload=payload)
 
         chat_signal.send(
             sender=None,
@@ -80,7 +86,7 @@ class Chat(object):
         notify = ChatNotify()
         notify.act = ACT_INIT
 
-        doc = self.mongo.common.find_one({'_id': self.CHAT_COMMON_MONGO_ID}, {'chats': 1})
+        doc = self.mongo.common.find_one({'_id': MONGO_COMMON_KEY_CHAT}, {'chats': 1})
         if not doc:
             return
 

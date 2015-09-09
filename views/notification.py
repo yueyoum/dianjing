@@ -11,7 +11,7 @@ from utils.http import ProtobufResponse
 
 from core.notification import Notification
 
-from protomsg.notification_pb2 import NotificationOpenResponse
+from protomsg.notification_pb2 import NotificationOpenResponse, NotificationDeleteResponse
 
 def open(request):
     server_id = request._game_session.server_id
@@ -23,5 +23,18 @@ def open(request):
     n.open(noti_id)
 
     response = NotificationOpenResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+def delete(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    noti_id = request._proto.id
+
+    n = Notification(server_id, char_id)
+    n.delete(noti_id)
+
+    response = NotificationDeleteResponse()
     response.ret = 0
     return ProtobufResponse(response)

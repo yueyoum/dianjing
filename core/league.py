@@ -59,6 +59,7 @@ from core.match import ClubMatch
 from core.abstract import AbstractClub, AbstractStaff
 from core.mail import MailManager
 from core.package import Drop
+from core.notification import Notification
 
 from config.settings import LEAGUE_START_TIME_ONE, LEAGUE_START_TIME_TWO
 from config import ConfigNPC, ConfigStaff, ConfigErrorMessage, ConfigLeague
@@ -153,28 +154,38 @@ class LeagueMatch(object):
         self.club_one = club_one
         self.club_two = club_two
 
+        self.club_one_object = LeagueClub(self.server_id, self.group_id, self.club_one)
+        self.club_two_object = LeagueClub(self.server_id, self.group_id, self.club_two)
+
+        self.club_one_win = False
+
+
     def start(self):
-        club_one = LeagueClub(self.server_id, self.group_id, self.club_one)
-        club_two = LeagueClub(self.server_id, self.group_id, self.club_two)
 
-        match = ClubMatch(club_one, club_two)
+        match = ClubMatch(self.club_one_object, self.club_two_object)
         msg = match.start()
+        self.club_one_win = msg.club_one_win
 
+        self.after_match()
+        return msg
+
+
+    def after_match(self):
         self.club_one['match_times'] += 1
         self.club_two['match_times'] += 1
 
 
-        if msg.club_one_win:
+        if self.club_one_win:
             self.club_one['win_times'] += 1
+            self.club_one['score'] += 3
         else:
             self.club_two['win_times'] += 1
+            self.club_two['score'] += 3
 
-        # TODO score
+        self.send_mail(self.club_one_object, self.club_one_win)
+        self.send_mail(self.club_two_object, not self.club_one_win)
 
-        self.send_mail(club_one, True)
-        self.send_mail(club_two, True)
-
-        return msg
+        self.send_notification()
 
 
     def send_mail(self, club, win):
@@ -192,6 +203,32 @@ class LeagueMatch(object):
         attachment = Drop.generate(config.day_reward).dumps()
 
         club.send_day_mail(title, content, attachment)
+
+
+    def send_notification(self):
+        # 发送通知
+        if isinstance(self.club_one_object, Club):
+            n = Notification(self.server_id, int(self.club_one_object.id))
+            n.add_league_notification(
+                win=self.club_one_win,
+                target=self.club_two_object.name,
+                score_got=3 if self.club_one_win else 1,
+                # TODO
+                gold_got=100,
+                score_rank=5,
+            )
+
+        if isinstance(self.club_two_object, Club):
+            n = Notification(self.server_id, int(self.club_two_object.id))
+            n.add_league_notification(
+                win=not self.club_one_win,
+                target=self.club_one_object.name,
+                score_got=3 if not self.club_one_win else 1,
+                # TODO
+                gold_got=100,
+                score_rank=5,
+            )
+
 
 
 class LeagueGame(object):
