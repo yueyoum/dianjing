@@ -181,7 +181,11 @@ class Ladder(object):
     def send_rank_reward(cls, server_id):
         # TODO 不能全发，过滤死号
         for doc in MongoDB.get(server_id).mongo.ladder.find():
-            char_id = doc['_id']
+            if doc['club_name']:
+                # NPC
+                continue
+
+            char_id = int(doc['_id'])
             rank = doc['rank']
 
             config = ConfigLadderRankReward.get_reward_object(rank)
