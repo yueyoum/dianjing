@@ -180,7 +180,7 @@ class Ladder(object):
     @classmethod
     def send_rank_reward(cls, server_id):
         # TODO 不能全发，过滤死号
-        for doc in MongoDB.get(server_id).mongo.ladder.find():
+        for doc in MongoDB.get(server_id).ladder.find():
             if doc['club_name']:
                 # NPC
                 continue
