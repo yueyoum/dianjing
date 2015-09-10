@@ -6,8 +6,6 @@ Date Created:   2015-07-21 15:45
 Description:
 
 """
-import random
-
 from dianjing.exception import GameException
 
 from core.db import MongoDB
@@ -57,7 +55,7 @@ class TrainingStore(object):
             if ConfigTraining.get(i).tp != 3:
                 # 不是技能训练，其他都可能是随机的，这里要生成好
                 p = TrainingItem.generate(ConfigTraining.get(i).package)
-                this_doc['item'] = p.dump()
+                this_doc['item'] = p.dumps()
 
             trainings[this_id] = this_doc
 
@@ -198,7 +196,6 @@ class TrainingBag(object):
         notify = TrainingRemoveNotify()
         notify.ids.append(training_id)
         MessagePipe(self.char_id).put(msg=notify)
-
 
 
     def send_notify(self, act=ACT_INIT, ids=None):

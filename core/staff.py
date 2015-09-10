@@ -444,6 +444,8 @@ class StaffManger(object):
             try:
                 tr = training[i]
                 msg_training_slot.training_id = tr['training_data']['oid']
+                if tr['training_data'].get('item', ""):
+                    msg_training_slot.training_item.MergeFrom( TrainingItem.loads(tr['training_data']['item']).make_protomsg() )
                 msg_training_slot.end_at = tr['start_at'] + ConfigTraining.get(tr['training_data']['oid']).minutes * 60
                 if msg_training_slot.end_at <= arrow.utcnow().timestamp:
                     msg_training_slot.status = MsgStaff.TrainingSlot.TS_FINISHED

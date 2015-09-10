@@ -167,13 +167,17 @@ class TrainingItem(PackageBase):
         msg = MsgTrainingItem()
 
         for attr in self.FIELDS:
+            value = getattr(self, attr)
+            if not value:
+                continue
+
             msg_resources = msg.resources.add()
             msg_resources.resource_id = attr
-            msg_resources.value = getattr(self, attr)
+            msg_resources.value = value
 
         return msg
 
-    def dump(self):
+    def dumps(self):
         data = self.make_protomsg().SerializeToString()
         return base64.b64encode(data)
 

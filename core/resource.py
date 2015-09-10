@@ -61,7 +61,7 @@ class Resource(object):
             for i in range(amount):
                 training_id = make_string_id()
                 # XXX
-                training_data = TrainingItem.generate(ConfigTraining.get(tid).package).dump()
+                training_data = TrainingItem.generate(ConfigTraining.get(tid).package).dumps()
                 tb.add(training_id, training_data)
 
 

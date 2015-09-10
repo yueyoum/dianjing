@@ -13,15 +13,16 @@ _sym_db = _symbol_database.Default()
 
 
 import common_pb2 as common__pb2
+import package_pb2 as package__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='staff.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=b'\n\x0bstaff.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xc9\x01\n\x12StaffRecruitNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x02tp\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.StaffRecruitType\x12?\n\x08recruits\x18\x03 \x03(\x0b\x32-.Dianjing.protocol.StaffRecruitNotify.Recruit\x1a\x30\n\x07Recruit\x12\x10\n\x08staff_id\x18\x01 \x02(\x05\x12\x13\n\x0bhas_recruit\x18\x02 \x02(\x08\"^\n\x1aStaffRecruitRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x02tp\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.StaffRecruitType\";\n\x1bStaffRecruitRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"8\n\x13StaffRecruitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\"4\n\x14StaffRecruitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"5\n\x10StaffFireRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\"1\n\x11StaffFireResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\x8c\x04\n\x05Staff\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0f\n\x07\x63ur_exp\x18\x03 \x02(\x05\x12\x0f\n\x07max_exp\x18\x04 \x02(\x05\x12\x0e\n\x06status\x18\x05 \x02(\x05\x12\x0f\n\x07jingong\x18\x06 \x02(\x05\x12\x0f\n\x07qianzhi\x18\x07 \x02(\x05\x12\x0e\n\x06xintai\x18\x08 \x02(\x05\x12\x0f\n\x07\x62\x61obing\x18\t \x02(\x05\x12\x10\n\x08\x66\x61ngshou\x18\n \x02(\x05\x12\x0f\n\x07yunying\x18\x0b \x02(\x05\x12\r\n\x05yishi\x18\x0c \x02(\x05\x12\x0e\n\x06\x63\x61ozuo\x18\r \x02(\x05\x12=\n\x0etraining_slots\x18\x0e \x03(\x0b\x32%.Dianjing.protocol.Staff.TrainingSlot\x1a\xf1\x01\n\x0cTrainingSlot\x12H\n\x06status\x18\x01 \x02(\x0e\x32\x38.Dianjing.protocol.Staff.TrainingSlot.TrainingSlotStatus\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x13\n\x0btraining_id\x18\x03 \x01(\x05\x12\x0e\n\x06\x65nd_at\x18\x04 \x01(\x03\"a\n\x12TrainingSlotStatus\x12\r\n\tTS_CLOSED\x10\x01\x12\x0c\n\x08TS_EMPTY\x10\x02\x12\x0c\n\x08TS_QUEUE\x10\x03\x12\x0f\n\x0bTS_TRAINING\x10\x04\x12\x0f\n\x0bTS_FINISHED\x10\x05\"p\n\x0bStaffNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12(\n\x06staffs\x18\x03 \x03(\x0b\x32\x18.Dianjing.protocol.Staff\"0\n\x11StaffRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x03(\x05\"N\n\x14StaffTrainingRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x13\n\x0btraining_id\x18\x03 \x02(\t\"5\n\x15StaffTrainingResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"S\n\x1dStaffTrainingGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\">\n\x1eStaffTrainingGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*^\n\x10StaffRecruitType\x12\x0f\n\x0bRECRUIT_HOT\x10\x01\x12\x12\n\x0eRECRUIT_NORMAL\x10\x02\x12\x10\n\x0cRECRUIT_GOLD\x10\x03\x12\x13\n\x0fRECRUIT_DIAMOND\x10\x04'
+  serialized_pb=b'\n\x0bstaff.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\xc9\x01\n\x12StaffRecruitNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x02tp\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.StaffRecruitType\x12?\n\x08recruits\x18\x03 \x03(\x0b\x32-.Dianjing.protocol.StaffRecruitNotify.Recruit\x1a\x30\n\x07Recruit\x12\x10\n\x08staff_id\x18\x01 \x02(\x05\x12\x13\n\x0bhas_recruit\x18\x02 \x02(\x08\"^\n\x1aStaffRecruitRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x02tp\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.StaffRecruitType\";\n\x1bStaffRecruitRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"8\n\x13StaffRecruitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\"4\n\x14StaffRecruitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"5\n\x10StaffFireRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\"1\n\x11StaffFireResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\xc4\x04\n\x05Staff\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0f\n\x07\x63ur_exp\x18\x03 \x02(\x05\x12\x0f\n\x07max_exp\x18\x04 \x02(\x05\x12\x0e\n\x06status\x18\x05 \x02(\x05\x12\x0f\n\x07jingong\x18\x06 \x02(\x05\x12\x0f\n\x07qianzhi\x18\x07 \x02(\x05\x12\x0e\n\x06xintai\x18\x08 \x02(\x05\x12\x0f\n\x07\x62\x61obing\x18\t \x02(\x05\x12\x10\n\x08\x66\x61ngshou\x18\n \x02(\x05\x12\x0f\n\x07yunying\x18\x0b \x02(\x05\x12\r\n\x05yishi\x18\x0c \x02(\x05\x12\x0e\n\x06\x63\x61ozuo\x18\r \x02(\x05\x12=\n\x0etraining_slots\x18\x0e \x03(\x0b\x32%.Dianjing.protocol.Staff.TrainingSlot\x1a\xa9\x02\n\x0cTrainingSlot\x12H\n\x06status\x18\x01 \x02(\x0e\x32\x38.Dianjing.protocol.Staff.TrainingSlot.TrainingSlotStatus\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x13\n\x0btraining_id\x18\x03 \x01(\x05\x12\x36\n\rtraining_item\x18\x04 \x01(\x0b\x32\x1f.Dianjing.protocol.TrainingItem\x12\x0e\n\x06\x65nd_at\x18\x05 \x01(\x03\"a\n\x12TrainingSlotStatus\x12\r\n\tTS_CLOSED\x10\x01\x12\x0c\n\x08TS_EMPTY\x10\x02\x12\x0c\n\x08TS_QUEUE\x10\x03\x12\x0f\n\x0bTS_TRAINING\x10\x04\x12\x0f\n\x0bTS_FINISHED\x10\x05\"p\n\x0bStaffNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12(\n\x06staffs\x18\x03 \x03(\x0b\x32\x18.Dianjing.protocol.Staff\"0\n\x11StaffRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x03(\x05\"N\n\x14StaffTrainingRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x13\n\x0btraining_id\x18\x03 \x02(\t\"5\n\x15StaffTrainingResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"S\n\x1dStaffTrainingGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\">\n\x1eStaffTrainingGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*^\n\x10StaffRecruitType\x12\x0f\n\x0bRECRUIT_HOT\x10\x01\x12\x12\n\x0eRECRUIT_NORMAL\x10\x02\x12\x10\n\x0cRECRUIT_GOLD\x10\x03\x12\x13\n\x0fRECRUIT_DIAMOND\x10\x04'
   ,
-  dependencies=[common__pb2.DESCRIPTOR,])
+  dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 _STAFFRECRUITTYPE = _descriptor.EnumDescriptor(
@@ -49,8 +50,8 @@ _STAFFRECRUITTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1602,
-  serialized_end=1696,
+  serialized_start=1673,
+  serialized_end=1767,
 )
 _sym_db.RegisterEnumDescriptor(_STAFFRECRUITTYPE)
 
@@ -90,8 +91,8 @@ _STAFF_TRAININGSLOT_TRAININGSLOTSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1055,
-  serialized_end=1152,
+  serialized_start=1126,
+  serialized_end=1223,
 )
 _sym_db.RegisterEnumDescriptor(_STAFF_TRAININGSLOT_TRAININGSLOTSTATUS)
 
@@ -129,8 +130,8 @@ _STAFFRECRUITNOTIFY_RECRUIT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=202,
-  serialized_end=250,
+  serialized_start=217,
+  serialized_end=265,
 )
 
 _STAFFRECRUITNOTIFY = _descriptor.Descriptor(
@@ -173,8 +174,8 @@ _STAFFRECRUITNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=49,
-  serialized_end=250,
+  serialized_start=64,
+  serialized_end=265,
 )
 
 
@@ -211,8 +212,8 @@ _STAFFRECRUITREFRESHREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=252,
-  serialized_end=346,
+  serialized_start=267,
+  serialized_end=361,
 )
 
 
@@ -249,8 +250,8 @@ _STAFFRECRUITREFRESHRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=348,
-  serialized_end=407,
+  serialized_start=363,
+  serialized_end=422,
 )
 
 
@@ -287,8 +288,8 @@ _STAFFRECRUITREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=409,
-  serialized_end=465,
+  serialized_start=424,
+  serialized_end=480,
 )
 
 
@@ -325,8 +326,8 @@ _STAFFRECRUITRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=467,
-  serialized_end=519,
+  serialized_start=482,
+  serialized_end=534,
 )
 
 
@@ -363,8 +364,8 @@ _STAFFFIREREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=521,
-  serialized_end=574,
+  serialized_start=536,
+  serialized_end=589,
 )
 
 
@@ -401,8 +402,8 @@ _STAFFFIRERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=576,
-  serialized_end=625,
+  serialized_start=591,
+  serialized_end=640,
 )
 
 
@@ -435,8 +436,15 @@ _STAFF_TRAININGSLOT = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='end_at', full_name='Dianjing.protocol.Staff.TrainingSlot.end_at', index=3,
-      number=4, type=3, cpp_type=2, label=1,
+      name='training_item', full_name='Dianjing.protocol.Staff.TrainingSlot.training_item', index=3,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='end_at', full_name='Dianjing.protocol.Staff.TrainingSlot.end_at', index=4,
+      number=5, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -454,8 +462,8 @@ _STAFF_TRAININGSLOT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=911,
-  serialized_end=1152,
+  serialized_start=926,
+  serialized_end=1223,
 )
 
 _STAFF = _descriptor.Descriptor(
@@ -575,8 +583,8 @@ _STAFF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=628,
-  serialized_end=1152,
+  serialized_start=643,
+  serialized_end=1223,
 )
 
 
@@ -620,8 +628,8 @@ _STAFFNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1154,
-  serialized_end=1266,
+  serialized_start=1225,
+  serialized_end=1337,
 )
 
 
@@ -658,8 +666,8 @@ _STAFFREMOVENOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1268,
-  serialized_end=1316,
+  serialized_start=1339,
+  serialized_end=1387,
 )
 
 
@@ -703,8 +711,8 @@ _STAFFTRAININGREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1318,
-  serialized_end=1396,
+  serialized_start=1389,
+  serialized_end=1467,
 )
 
 
@@ -741,8 +749,8 @@ _STAFFTRAININGRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1398,
-  serialized_end=1451,
+  serialized_start=1469,
+  serialized_end=1522,
 )
 
 
@@ -786,8 +794,8 @@ _STAFFTRAININGGETREWARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1453,
-  serialized_end=1536,
+  serialized_start=1524,
+  serialized_end=1607,
 )
 
 
@@ -824,8 +832,8 @@ _STAFFTRAININGGETREWARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1538,
-  serialized_end=1600,
+  serialized_start=1609,
+  serialized_end=1671,
 )
 
 _STAFFRECRUITNOTIFY_RECRUIT.containing_type = _STAFFRECRUITNOTIFY
@@ -833,6 +841,7 @@ _STAFFRECRUITNOTIFY.fields_by_name['tp'].enum_type = _STAFFRECRUITTYPE
 _STAFFRECRUITNOTIFY.fields_by_name['recruits'].message_type = _STAFFRECRUITNOTIFY_RECRUIT
 _STAFFRECRUITREFRESHREQUEST.fields_by_name['tp'].enum_type = _STAFFRECRUITTYPE
 _STAFF_TRAININGSLOT.fields_by_name['status'].enum_type = _STAFF_TRAININGSLOT_TRAININGSLOTSTATUS
+_STAFF_TRAININGSLOT.fields_by_name['training_item'].message_type = package__pb2._TRAININGITEM
 _STAFF_TRAININGSLOT.containing_type = _STAFF
 _STAFF_TRAININGSLOT_TRAININGSLOTSTATUS.containing_type = _STAFF_TRAININGSLOT
 _STAFF.fields_by_name['training_slots'].message_type = _STAFF_TRAININGSLOT
