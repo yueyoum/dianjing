@@ -71,7 +71,7 @@ class LadderNPCStaff(AbstractStaff):
 
 
 class LadderNPCClub(AbstractClub):
-    def __init__(self, ladder_id, club_name, manager_name, club_flag, staffs):
+    def __init__(self, ladder_id, club_name, manager_name, club_flag, staffs, order, score):
         super(LadderNPCClub, self).__init__()
         self.id = ladder_id
         self.name = club_name
@@ -84,15 +84,25 @@ class LadderNPCClub(AbstractClub):
             self.match_staffs.append(s['id'])
             self.staffs[s['id']] = LadderNPCStaff(s)
 
+        self.order = order
+        self.score = score
+
+
+class LadderRealClub(Club):
+    def __init__(self, server_id, club_id, order, score):
+        super(LadderRealClub, self).__init__(server_id, club_id)
+        self.order = order
+        self.score = score
+
 
 class LadderClub(object):
     def __new__(cls, server_id, club):
         # club 是 Ladder 数据
         if club['club_name']:
             #NPC
-            return LadderNPCClub(club['_id'], club['club_name'], club['manager_name'], club['club_flag'], club['staffs'])
+            return LadderNPCClub(club['_id'], club['club_name'], club['manager_name'], club['club_flag'], club['staffs'], club['order'], club['score'])
 
-        return Club(server_id, int(club['_id']))
+        return LadderRealClub(server_id, int(club['_id']), club['order'], club['score'])
 
 
 class LadderMatch(object):
@@ -197,6 +207,13 @@ class Ladder(object):
                 content=config.mail_content.format(order),
                 attachment=drop.to_json(),
             )
+
+
+    @classmethod
+    def get_top_clubs(cls, server_id, amount=8):
+        docs = MongoDB.get(server_id).ladder.find().sort('order', pymongo.ASCENDING).limit(amount)
+        clubs = [LadderClub(server_id, doc) for doc in docs]
+        return clubs
 
 
     def create_index(self):
@@ -349,16 +366,13 @@ class Ladder(object):
             notify_club = notify.clubs.add()
             notify_club.id = k
             notify_club.order = v
+            # TODO
+            notify_club.power = 999
+            notify_club.score = this_ladder_club['score']
 
-            if this_ladder_club['club_name']:
-                # NPC
-                notify_club.name = this_ladder_club['club_name']
-                notify_club.flag = this_ladder_club['club_flag']
-            else:
-                # REAL club
-                club = Club(self.server_id, int(k))
-                notify_club.name = club.name
-                notify_club.flag = club.flag
+            ladder_club = LadderClub(self.server_id, this_ladder_club)
+            notify_club.name = ladder_club.name
+            notify_club.flag = ladder_club.flag
 
         for template_id, args in doc['logs']:
             notify_log = notify.logs.add()

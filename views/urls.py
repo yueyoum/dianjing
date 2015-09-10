@@ -66,6 +66,7 @@ urlpatterns = [
 
     url(r'^ladder/refresh/$', 'views.ladder.refresh'),
     url(r'^ladder/match/$', 'views.ladder.match'),
+    url(r'^ladder/leaderboard/$', 'views.ladder.get_leader_board'),
 
     url(r'^cup/join/$', 'views.cup.join'),
     url(r'^cup/infomation/$', 'views.cup.information'),

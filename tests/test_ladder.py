@@ -62,6 +62,9 @@ class TestLadder(object):
 
         ladder.match(target_id)
 
+    def test_get_top_clubs(self):
+        Ladder.get_top_clubs(1)
+
 
 class TestLadderStore(object):
     def teardown(self):

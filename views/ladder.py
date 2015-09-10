@@ -11,7 +11,7 @@ from utils.http import ProtobufResponse
 
 from core.ladder import Ladder
 
-from protomsg.ladder_pb2 import LadderRefreshResponse, LadderMatchResponse
+from protomsg.ladder_pb2 import LadderRefreshResponse, LadderMatchResponse, LadderLeaderBoardResponse
 
 def refresh(request):
     server_id = request._game_session.server_id
@@ -36,3 +36,23 @@ def match(request):
     response.ret = 0
     response.match.MergeFrom(msg)
     return ProtobufResponse(response)
+
+
+def get_leader_board(request):
+    server_id = request._game_session.server_id
+
+    clubs = Ladder.get_top_clubs(server_id)
+
+    response = LadderLeaderBoardResponse()
+    response.ret = 0
+    for club in clubs:
+        c = response.clubs.add()
+        c.id = club.id
+        c.name = club.name
+        c.flag = club.flag
+        c.order = club.order
+        c.power = 999
+        c.score = club.score
+
+    return ProtobufResponse(response)
+
