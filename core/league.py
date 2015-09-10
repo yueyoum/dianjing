@@ -43,7 +43,6 @@ Description:
 # 每天该开始哪场比赛由 LeagueGame 中的 find_order 确定
 # 每周刷新的时候直接清空以前的记录，并生成新记录
 
-import uuid
 import base64
 
 import arrow
@@ -65,9 +64,9 @@ from config.settings import LEAGUE_START_TIME_ONE, LEAGUE_START_TIME_TWO
 from config import ConfigNPC, ConfigStaff, ConfigErrorMessage, ConfigLeague
 
 from utils.message import MessagePipe
+from utils.functional import make_string_id
 
 from protomsg.league_pb2 import LeagueNotify
-
 
 GROUP_CLUBS_AMOUNT = 14
 GROUP_MAX_REAL_CLUBS_AMOUNT = 12
@@ -78,9 +77,6 @@ ARROW_FORMAT = "YYYY-MM-DD HH:mm:ssZ"
 def time_string_to_datetime(day_text, time_text):
     text = "%s %s" % (day_text, time_text)
     return arrow.get(text, ARROW_FORMAT).to(settings.TIME_ZONE)
-
-def make_id():
-    return str(uuid.uuid4())
 
 
 class LeagueNPCStaff(AbstractStaff):
@@ -128,7 +124,6 @@ class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
             self.staffs[s['id']] = LeagueNPCStaff(s)
 
 
-
 class LeagueRealClub(LeagueBaseClubMixin, Club):
     def send_day_mail(self, title, content, attachment):
         m = MailManager(self.server_id, self.char_id)
@@ -139,10 +134,10 @@ class LeagueClub(object):
     def __new__(cls, server_id, group_id, club):
         # club 是存在mongo中的数据
         if club['club_name']:
-            return LeagueNPCClub(group_id, club['club_id'], club['club_name'], club['manager_name'], club['club_flag'], club['staffs'])
+            return LeagueNPCClub(group_id, club['club_id'], club['club_name'], club['manager_name'], club['club_flag'],
+                                 club['staffs'])
 
         return LeagueRealClub(server_id, int(club['club_id']))
-
 
 
 class LeagueMatch(object):
@@ -159,7 +154,6 @@ class LeagueMatch(object):
 
         self.club_one_win = False
 
-
     def start(self):
 
         match = ClubMatch(self.club_one_object, self.club_two_object)
@@ -169,11 +163,9 @@ class LeagueMatch(object):
         self.after_match()
         return msg
 
-
     def after_match(self):
         self.club_one['match_times'] += 1
         self.club_two['match_times'] += 1
-
 
         if self.club_one_win:
             self.club_one['win_times'] += 1
@@ -186,7 +178,6 @@ class LeagueMatch(object):
         self.send_mail(self.club_two_object, not self.club_one_win)
 
         self.send_notification()
-
 
     def send_mail(self, club, win):
         """
@@ -203,7 +194,6 @@ class LeagueMatch(object):
         attachment = Drop.generate(config.day_reward).dumps()
 
         club.send_day_mail(title, content, attachment)
-
 
     def send_notification(self):
         # 发送通知
@@ -228,7 +218,6 @@ class LeagueMatch(object):
                 gold_got=100,
                 score_rank=5,
             )
-
 
 
 class LeagueGame(object):
@@ -287,8 +276,6 @@ class LeagueGame(object):
 
         return arrow.get(date_text).replace(tzinfo=settings.TIME_ZONE)
 
-
-
     @staticmethod
     def clean(server_id):
         mongo = MongoDB.get(server_id)
@@ -296,7 +283,6 @@ class LeagueGame(object):
         mongo.character.update_many({}, {"$unset": {"league_group": 1}})
         mongo.league_group.drop()
         mongo.league_event.drop()
-
 
     @staticmethod
     def new(server_id):
@@ -328,7 +314,6 @@ class LeagueGame(object):
 
         g.finish()
 
-
     @staticmethod
     def join_already_started_league(server_id, club_id):
         # 每周的新用户都要做这个事情，把其放入联赛
@@ -342,7 +327,6 @@ class LeagueGame(object):
             LeagueGame.start_match(server_id, group_ids=[g.id], order=i)
 
         League(server_id, club_id).send_notify()
-
 
     @staticmethod
     def start_match(server_id, group_ids=None, order=None):
@@ -358,7 +342,7 @@ class LeagueGame(object):
             league_groups = mongo.league_group.find()
 
         for g in league_groups:
-            event_id = g['events'][order-1]
+            event_id = g['events'][order - 1]
 
             clubs = g['clubs']
 
@@ -369,8 +353,8 @@ class LeagueGame(object):
                 club_one_id = v['club_one']
                 club_two_id = v['club_two']
 
-                club_one = clubs[ club_one_id ]
-                club_two = clubs[ club_two_id ]
+                club_one = clubs[club_one_id]
+                club_two = clubs[club_two_id]
 
                 match = LeagueMatch(server_id, g['_id'], club_one, club_two)
                 msg = match.start()
@@ -383,7 +367,6 @@ class LeagueGame(object):
                 group_clubs_updater["clubs.{0}.match_times".format(k)] = v['match_times']
                 group_clubs_updater["clubs.{0}.win_times".format(k)] = v['win_times']
                 group_clubs_updater["clubs.{0}.score".format(k)] = v['score']
-
 
             event_pairs_updater = {}
             event_pairs_updater["finished"] = True
@@ -404,7 +387,6 @@ class LeagueGame(object):
             )
 
 
-
 class LeagueGroup(object):
     # 一个分组
 
@@ -412,7 +394,7 @@ class LeagueGroup(object):
         pass
 
     def __init__(self, server_id, level):
-        self.id = make_id()
+        self.id = make_string_id()
 
         self.server_id = server_id
         self.level = level
@@ -427,35 +409,30 @@ class LeagueGroup(object):
     def event_ids(self):
         return [e['_id'] for e in self.event_docs]
 
-
     def add(self, club_id):
         self.real_clubs.append(club_id)
 
         if len(self.real_clubs) >= GROUP_MAX_REAL_CLUBS_AMOUNT:
             raise LeagueGroup.ClubAddFinish()
 
-
     def finish(self):
         if not self.real_clubs:
             return
-
 
         def make_real_club_doc(club_id):
             club = Document.get("league.club")
             club['club_id'] = club_id
             return club
 
-
         def make_npc_club_doc(npc):
             club = Document.get("league.club")
-            club['club_id'] = make_id()
+            club['club_id'] = make_string_id()
 
             club['club_name'] = npc['club_name']
             club['manager_name'] = npc['manager_name']
             club['club_flag'] = npc['club_flag']
             club['staffs'] = npc['staffs']
             return club
-
 
         clubs = [make_real_club_doc(i) for i in self.real_clubs]
 
@@ -472,7 +449,6 @@ class LeagueGroup(object):
         match = self.arrange_match(self.all_clubs.keys())
 
         self.save(match)
-
 
     def arrange_match(self, clubs):
         # 对小组内的14支俱乐部安排比赛
@@ -496,7 +472,6 @@ class LeagueGroup(object):
 
         return match
 
-
     def save(self, match):
 
         def make_pair_doc(club_one, club_two):
@@ -505,17 +480,15 @@ class LeagueGroup(object):
             doc['club_two'] = club_two
             return doc
 
-
         for index, event in enumerate(match):
             edoc = Document.get("league.event")
-            edoc['_id'] = make_id()
-            edoc['start_at'] = LeagueGame.find_match_time(index+1).format(ARROW_FORMAT)
+            edoc['_id'] = make_string_id()
+            edoc['start_at'] = LeagueGame.find_match_time(index + 1).format(ARROW_FORMAT)
 
             pair_docs = [make_pair_doc(one, two) for one, two in event]
-            edoc['pairs'] = {str(i+1): pair_docs[i] for i in range(len(pair_docs))}
+            edoc['pairs'] = {str(i + 1): pair_docs[i] for i in range(len(pair_docs))}
 
             self.event_docs.append(edoc)
-
 
         group_doc = Document.get("league.group")
         group_doc['_id'] = self.id
@@ -533,7 +506,6 @@ class LeagueGroup(object):
         )
 
 
-
 class League(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
@@ -544,7 +516,6 @@ class League(object):
         self.group_id = doc.get('league_group', "")
 
         self.order = LeagueGame.find_order()
-
 
     def get_statistics(self, club_id):
         if ':' in club_id:
@@ -573,7 +544,6 @@ class League(object):
 
         return [(i, winning_rate) for i in range(10, 16)]
 
-
     def get_log(self, league_pair_id):
         event_id, pair_id = league_pair_id.split(':')
 
@@ -591,7 +561,6 @@ class League(object):
 
         return base64.b64decode(log)
 
-
     def send_notify(self):
         if not self.group_id:
             return
@@ -605,7 +574,6 @@ class League(object):
         notify.league.level = league_group['level']
         notify.league.current_order = LeagueGame.find_order()
 
-
         rank_info = []
         clubs_id_table = {}
 
@@ -613,9 +581,9 @@ class League(object):
         for k, v in league_group['clubs'].iteritems():
             notify_club = notify.league.clubs.add()
             lc = LeagueClub(self.server_id, self.group_id, v)
-            notify_club.MergeFrom( lc.make_protomsg() )
+            notify_club.MergeFrom(lc.make_protomsg())
 
-            rank_info.append( (str(lc.id), v['match_times'], v['win_times'], v['score']) )
+            rank_info.append((str(lc.id), v['match_times'], v['win_times'], v['score']))
             clubs_id_table[k] = str(lc.id)
 
         # ranks
@@ -648,4 +616,3 @@ class League(object):
                 notify_event_pair.club_one_win = v['club_one_win']
 
         MessagePipe(self.char_id).put(msg=notify)
-
