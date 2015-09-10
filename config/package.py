@@ -15,6 +15,7 @@ class Package(object):
                  'fangshou', 'yunying', 'yishi', 'caozuo',
                  'gold', 'diamond',
                  'staff_exp', 'club_renown',
+                 'ladder_score', 'league_score',
                  'trainings',
                  ]
     
@@ -38,6 +39,9 @@ class Package(object):
         
         self.staff_exp = 0
         self.club_renown = 0
+
+        self.ladder_score = 0
+        self.league_score = 0
 
         self.trainings = []
 

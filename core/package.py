@@ -19,8 +19,13 @@ from protomsg.package_pb2 import (
     TrainingItem as MsgTrainingItem
 )
 
+
 class PackageBase(object):
     ATTRS = STAFF_ATTRS
+    FIELDS = ATTRS + [
+        'gold', 'diamond', 'staff_exp', 'club_renown', 'ladder_score', 'league_score',
+    ]
+    # fields also contains trainings
 
     def __init__(self):
         self.jingong = 0
@@ -35,12 +40,9 @@ class PackageBase(object):
         self.diamond = 0
         self.staff_exp = 0
         self.club_renown = 0
+        self.ladder_score = 0
+        self.league_score = 0
         self.trainings = []
-
-    @property
-    def attrs(self):
-        return {k: getattr(self, k) for k in self.ATTRS}
-
 
     @classmethod
     def generate(cls, pid):
@@ -64,11 +66,13 @@ class PackageBase(object):
         # 训练(道具)
         p.trainings = config.trainings
 
-        # 软妹币，钻石，经验，荣耀
+        # 软妹币，钻石，经验，荣耀，天梯赛积分，联赛积分
         set_value('gold', config.gold)
         set_value('diamond', config.diamond)
         set_value('staff_exp', config.staff_exp)
         set_value('club_renown', config.club_renown)
+        set_value('ladder_score', config.ladder_score)
+        set_value('league_score', config.league_score)
 
         if config.attr_mode == 1:
             # 不加成属性
@@ -81,7 +85,6 @@ class PackageBase(object):
                 set_value(attr, config.attr_random_value)
 
             return p
-
 
         selected_attrs = [attr for attr in cls.ATTRS if getattr(config, attr)]
 
@@ -99,7 +102,6 @@ class PackageBase(object):
 
         return p
 
-
     @classmethod
     def new(cls, **kwargs):
         p = cls()
@@ -110,22 +112,20 @@ class PackageBase(object):
 
 
 class Drop(PackageBase):
-    FIELDS = ['gold', 'diamond', 'club_renown', 'trainings']
-
+    FIELDS = ['gold', 'diamond', 'club_renown', 'ladder_score', 'league_score']
+    # 还有 trainings
 
     def make_protomsg(self):
         msg = MsgDrop()
 
         for attr in self.FIELDS:
-            if attr != 'trainings':
-                value = getattr(self, attr)
-                if not value:
-                    continue
+            value = getattr(self, attr)
+            if not value:
+                continue
 
-                msg_item = msg.resources.add()
-                msg_item.resource_id = attr
-                msg_item.value = getattr(self, attr)
-
+            msg_item = msg.resources.add()
+            msg_item.resource_id = attr
+            msg_item.value = getattr(self, attr)
 
         for tid, amount in self.trainings:
             msg_training = msg.trainings.add()
@@ -134,11 +134,37 @@ class Drop(PackageBase):
 
         return msg
 
+    def to_json(self):
+        data = {}
+        for attr in self.FIELDS:
+            value = getattr(self, attr)
+            if not value:
+                continue
+
+            data[attr] = value
+
+        if self.trainings:
+            data['trainings'] = self.trainings
+
+        return json.dumps(data)
+
+    @classmethod
+    def loads_from_json(cls, data):
+        """
+
+        :rtype : Drop
+        """
+        data = json.loads(data)
+        obj = cls()
+
+        for k, v in data.iteritems():
+            setattr(obj, k, v)
+
+        return obj
 
     def dumps(self):
         data = self.make_protomsg().SerializeToString()
         return base64.b64encode(data)
-
 
     @classmethod
     def loads(cls, data):
@@ -151,7 +177,6 @@ class Drop(PackageBase):
         for item in msg.resources:
             setattr(p, item.resource_id, item.value)
 
-
         for tr in msg.trainings:
             p.trainings.append((tr.id, tr.amount))
 
@@ -159,14 +184,12 @@ class Drop(PackageBase):
 
 
 class TrainingItem(PackageBase):
-    FIELDS = STAFF_ATTRS + ['staff_exp',]
-    # also has skill_id, skill_level
+    # FIELDS also has skill_id, skill_level
 
     def __init__(self):
         super(TrainingItem, self).__init__()
         self.skill_id = 0
         self.skill_level = 0
-
 
     @classmethod
     def generate_from_training_id(cls, tid):
@@ -183,7 +206,6 @@ class TrainingItem(PackageBase):
             return obj
 
         return cls.generate(config.package)
-
 
     def make_protomsg(self):
         msg = MsgTrainingItem()
@@ -218,7 +240,6 @@ class TrainingItem(PackageBase):
 
         return json.dumps(data)
 
-
     @classmethod
     def loads_from_json(cls, data):
         """
@@ -232,8 +253,6 @@ class TrainingItem(PackageBase):
             setattr(obj, k, v)
 
         return obj
-
-
 
     def dumps(self):
         data = self.make_protomsg().SerializeToString()

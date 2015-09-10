@@ -10,10 +10,9 @@ Description:
 from config.base import ConfigBase
 
 class LadderRankReward(object):
-    __slots__ = ['id', 'score', 'package']
+    __slots__ = ['id', 'package']
     def __init__(self):
         self.id = 0
-        self.score = 0
         self.package = 0
 
 
