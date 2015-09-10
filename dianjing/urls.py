@@ -11,6 +11,6 @@ urlpatterns = [
     url(r'^game/', include('views.urls')),
     url(r'^data/', include('background.urls')),
 
-    url(r'^config/$', 'apps.config.views.get_config'),
+    url(r'^system/config/$', 'apps.config.views.get_config'),
+    url(r'^system/bulletin/$', 'apps.system.views.get_bulletins'),
 ]
-
