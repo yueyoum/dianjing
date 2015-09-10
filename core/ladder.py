@@ -186,15 +186,15 @@ class Ladder(object):
                 continue
 
             char_id = int(doc['_id'])
-            rank = doc['rank']
+            order = doc['order']
 
-            config = ConfigLadderRankReward.get_reward_object(rank)
+            config = ConfigLadderRankReward.get_reward_object(order)
             drop = Drop.generate(config.package)
 
             m = MailManager(server_id, char_id)
             m.add(
                 title=config.mail_title,
-                content=config.mail_content.format(rank),
+                content=config.mail_content.format(order),
                 attachment=drop.to_json(),
             )
 
