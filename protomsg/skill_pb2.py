@@ -4,17 +4,24 @@
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
+from google.protobuf import symbol_database as _symbol_database
 from google.protobuf import descriptor_pb2
 # @@protoc_insertion_point(imports)
 
+_sym_db = _symbol_database.Default()
 
-import common_pb2
+
+import common_pb2 as common__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='skill.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\x0bskill.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"2\n\x05Skill\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0e\n\x06locked\x18\x03 \x02(\x08\"\xd1\x01\n\x0bSkillNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12?\n\x0cstaff_skills\x18\x03 \x03(\x0b\x32).Dianjing.protocol.SkillNotify.StaffSkill\x1aH\n\nStaffSkill\x12\x10\n\x08staff_id\x18\x01 \x02(\x05\x12(\n\x06skills\x18\x02 \x03(\x0b\x32\x18.Dianjing.protocol.Skill\"M\n\x16SkillLockToggleRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x10\n\x08skill_id\x18\x03 \x02(\x05\"7\n\x17SkillLockToggleResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"5\n\x10SkillWashRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\"1\n\x11SkillWashResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+  syntax='proto2',
+  serialized_pb=b'\n\x0bskill.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"2\n\x05Skill\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0e\n\x06locked\x18\x03 \x02(\x08\"\xd1\x01\n\x0bSkillNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12?\n\x0cstaff_skills\x18\x03 \x03(\x0b\x32).Dianjing.protocol.SkillNotify.StaffSkill\x1aH\n\nStaffSkill\x12\x10\n\x08staff_id\x18\x01 \x02(\x05\x12(\n\x06skills\x18\x02 \x03(\x0b\x32\x18.Dianjing.protocol.Skill\"M\n\x16SkillLockToggleRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x10\n\x08skill_id\x18\x03 \x02(\x05\"7\n\x17SkillLockToggleResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"5\n\x10SkillWashRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\"1\n\x11SkillWashResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c'
+  ,
+  dependencies=[common__pb2.DESCRIPTOR,])
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
@@ -55,7 +62,10 @@ _SKILL = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=48,
   serialized_end=98,
 )
@@ -90,7 +100,10 @@ _SKILLNOTIFY_STAFFSKILL = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=238,
   serialized_end=310,
 )
@@ -105,7 +118,7 @@ _SKILLNOTIFY = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.SkillNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -131,7 +144,10 @@ _SKILLNOTIFY = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=101,
   serialized_end=310,
 )
@@ -147,7 +163,7 @@ _SKILLLOCKTOGGLEREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.SkillLockToggleRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -173,7 +189,10 @@ _SKILLLOCKTOGGLEREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=312,
   serialized_end=389,
 )
@@ -196,7 +215,7 @@ _SKILLLOCKTOGGLERESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.SkillLockToggleResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -208,7 +227,10 @@ _SKILLLOCKTOGGLERESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=391,
   serialized_end=446,
 )
@@ -224,7 +246,7 @@ _SKILLWASHREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.SkillWashRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -243,7 +265,10 @@ _SKILLWASHREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=448,
   serialized_end=501,
 )
@@ -266,7 +291,7 @@ _SKILLWASHRESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.SkillWashResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -278,14 +303,17 @@ _SKILLWASHRESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=503,
   serialized_end=552,
 )
 
 _SKILLNOTIFY_STAFFSKILL.fields_by_name['skills'].message_type = _SKILL
-_SKILLNOTIFY_STAFFSKILL.containing_type = _SKILLNOTIFY;
-_SKILLNOTIFY.fields_by_name['act'].enum_type = common_pb2._ACTION
+_SKILLNOTIFY_STAFFSKILL.containing_type = _SKILLNOTIFY
+_SKILLNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _SKILLNOTIFY.fields_by_name['staff_skills'].message_type = _SKILLNOTIFY_STAFFSKILL
 DESCRIPTOR.message_types_by_name['Skill'] = _SKILL
 DESCRIPTOR.message_types_by_name['SkillNotify'] = _SKILLNOTIFY
@@ -294,47 +322,55 @@ DESCRIPTOR.message_types_by_name['SkillLockToggleResponse'] = _SKILLLOCKTOGGLERE
 DESCRIPTOR.message_types_by_name['SkillWashRequest'] = _SKILLWASHREQUEST
 DESCRIPTOR.message_types_by_name['SkillWashResponse'] = _SKILLWASHRESPONSE
 
-class Skill(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _SKILL
-
+Skill = _reflection.GeneratedProtocolMessageType('Skill', (_message.Message,), dict(
+  DESCRIPTOR = _SKILL,
+  __module__ = 'skill_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.Skill)
+  ))
+_sym_db.RegisterMessage(Skill)
 
-class SkillNotify(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
+SkillNotify = _reflection.GeneratedProtocolMessageType('SkillNotify', (_message.Message,), dict(
 
-  class StaffSkill(_message.Message):
-    __metaclass__ = _reflection.GeneratedProtocolMessageType
-    DESCRIPTOR = _SKILLNOTIFY_STAFFSKILL
-
+  StaffSkill = _reflection.GeneratedProtocolMessageType('StaffSkill', (_message.Message,), dict(
+    DESCRIPTOR = _SKILLNOTIFY_STAFFSKILL,
+    __module__ = 'skill_pb2'
     # @@protoc_insertion_point(class_scope:Dianjing.protocol.SkillNotify.StaffSkill)
-  DESCRIPTOR = _SKILLNOTIFY
-
+    ))
+  ,
+  DESCRIPTOR = _SKILLNOTIFY,
+  __module__ = 'skill_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.SkillNotify)
+  ))
+_sym_db.RegisterMessage(SkillNotify)
+_sym_db.RegisterMessage(SkillNotify.StaffSkill)
 
-class SkillLockToggleRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _SKILLLOCKTOGGLEREQUEST
-
+SkillLockToggleRequest = _reflection.GeneratedProtocolMessageType('SkillLockToggleRequest', (_message.Message,), dict(
+  DESCRIPTOR = _SKILLLOCKTOGGLEREQUEST,
+  __module__ = 'skill_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.SkillLockToggleRequest)
+  ))
+_sym_db.RegisterMessage(SkillLockToggleRequest)
 
-class SkillLockToggleResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _SKILLLOCKTOGGLERESPONSE
-
+SkillLockToggleResponse = _reflection.GeneratedProtocolMessageType('SkillLockToggleResponse', (_message.Message,), dict(
+  DESCRIPTOR = _SKILLLOCKTOGGLERESPONSE,
+  __module__ = 'skill_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.SkillLockToggleResponse)
+  ))
+_sym_db.RegisterMessage(SkillLockToggleResponse)
 
-class SkillWashRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _SKILLWASHREQUEST
-
+SkillWashRequest = _reflection.GeneratedProtocolMessageType('SkillWashRequest', (_message.Message,), dict(
+  DESCRIPTOR = _SKILLWASHREQUEST,
+  __module__ = 'skill_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.SkillWashRequest)
+  ))
+_sym_db.RegisterMessage(SkillWashRequest)
 
-class SkillWashResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _SKILLWASHRESPONSE
-
+SkillWashResponse = _reflection.GeneratedProtocolMessageType('SkillWashResponse', (_message.Message,), dict(
+  DESCRIPTOR = _SKILLWASHRESPONSE,
+  __module__ = 'skill_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.SkillWashResponse)
+  ))
+_sym_db.RegisterMessage(SkillWashResponse)
 
 
 # @@protoc_insertion_point(module_scope)

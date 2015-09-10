@@ -5,17 +5,24 @@ from google.protobuf.internal import enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
+from google.protobuf import symbol_database as _symbol_database
 from google.protobuf import descriptor_pb2
 # @@protoc_insertion_point(imports)
 
+_sym_db = _symbol_database.Default()
 
-import common_pb2
+
+import common_pb2 as common__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='staff.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\x0bstaff.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xc9\x01\n\x12StaffRecruitNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x02tp\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.StaffRecruitType\x12?\n\x08recruits\x18\x03 \x03(\x0b\x32-.Dianjing.protocol.StaffRecruitNotify.Recruit\x1a\x30\n\x07Recruit\x12\x10\n\x08staff_id\x18\x01 \x02(\x05\x12\x13\n\x0bhas_recruit\x18\x02 \x02(\x08\"^\n\x1aStaffRecruitRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x02tp\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.StaffRecruitType\";\n\x1bStaffRecruitRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"8\n\x13StaffRecruitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\"4\n\x14StaffRecruitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"5\n\x10StaffFireRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\"1\n\x11StaffFireResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\x8c\x04\n\x05Staff\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0f\n\x07\x63ur_exp\x18\x03 \x02(\x05\x12\x0f\n\x07max_exp\x18\x04 \x02(\x05\x12\x0e\n\x06status\x18\x05 \x02(\x05\x12\x0f\n\x07jingong\x18\x06 \x02(\x05\x12\x0f\n\x07qianzhi\x18\x07 \x02(\x05\x12\x0e\n\x06xintai\x18\x08 \x02(\x05\x12\x0f\n\x07\x62\x61obing\x18\t \x02(\x05\x12\x10\n\x08\x66\x61ngshou\x18\n \x02(\x05\x12\x0f\n\x07yunying\x18\x0b \x02(\x05\x12\r\n\x05yishi\x18\x0c \x02(\x05\x12\x0e\n\x06\x63\x61ozuo\x18\r \x02(\x05\x12=\n\x0etraining_slots\x18\x0e \x03(\x0b\x32%.Dianjing.protocol.Staff.TrainingSlot\x1a\xf1\x01\n\x0cTrainingSlot\x12H\n\x06status\x18\x01 \x02(\x0e\x32\x38.Dianjing.protocol.Staff.TrainingSlot.TrainingSlotStatus\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x13\n\x0btraining_id\x18\x03 \x01(\x05\x12\x0e\n\x06\x65nd_at\x18\x04 \x01(\x03\"a\n\x12TrainingSlotStatus\x12\r\n\tTS_CLOSED\x10\x01\x12\x0c\n\x08TS_EMPTY\x10\x02\x12\x0c\n\x08TS_QUEUE\x10\x03\x12\x0f\n\x0bTS_TRAINING\x10\x04\x12\x0f\n\x0bTS_FINISHED\x10\x05\"p\n\x0bStaffNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12(\n\x06staffs\x18\x03 \x03(\x0b\x32\x18.Dianjing.protocol.Staff\"0\n\x11StaffRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x03(\x05\"N\n\x14StaffTrainingRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x13\n\x0btraining_id\x18\x03 \x02(\t\"5\n\x15StaffTrainingResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"S\n\x1dStaffTrainingGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\">\n\x1eStaffTrainingGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*^\n\x10StaffRecruitType\x12\x0f\n\x0bRECRUIT_HOT\x10\x01\x12\x12\n\x0eRECRUIT_NORMAL\x10\x02\x12\x10\n\x0cRECRUIT_GOLD\x10\x03\x12\x13\n\x0fRECRUIT_DIAMOND\x10\x04')
+  syntax='proto2',
+  serialized_pb=b'\n\x0bstaff.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xc9\x01\n\x12StaffRecruitNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x02tp\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.StaffRecruitType\x12?\n\x08recruits\x18\x03 \x03(\x0b\x32-.Dianjing.protocol.StaffRecruitNotify.Recruit\x1a\x30\n\x07Recruit\x12\x10\n\x08staff_id\x18\x01 \x02(\x05\x12\x13\n\x0bhas_recruit\x18\x02 \x02(\x08\"^\n\x1aStaffRecruitRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x02tp\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.StaffRecruitType\";\n\x1bStaffRecruitRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"8\n\x13StaffRecruitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\"4\n\x14StaffRecruitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"5\n\x10StaffFireRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\"1\n\x11StaffFireResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\x8c\x04\n\x05Staff\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0f\n\x07\x63ur_exp\x18\x03 \x02(\x05\x12\x0f\n\x07max_exp\x18\x04 \x02(\x05\x12\x0e\n\x06status\x18\x05 \x02(\x05\x12\x0f\n\x07jingong\x18\x06 \x02(\x05\x12\x0f\n\x07qianzhi\x18\x07 \x02(\x05\x12\x0e\n\x06xintai\x18\x08 \x02(\x05\x12\x0f\n\x07\x62\x61obing\x18\t \x02(\x05\x12\x10\n\x08\x66\x61ngshou\x18\n \x02(\x05\x12\x0f\n\x07yunying\x18\x0b \x02(\x05\x12\r\n\x05yishi\x18\x0c \x02(\x05\x12\x0e\n\x06\x63\x61ozuo\x18\r \x02(\x05\x12=\n\x0etraining_slots\x18\x0e \x03(\x0b\x32%.Dianjing.protocol.Staff.TrainingSlot\x1a\xf1\x01\n\x0cTrainingSlot\x12H\n\x06status\x18\x01 \x02(\x0e\x32\x38.Dianjing.protocol.Staff.TrainingSlot.TrainingSlotStatus\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x13\n\x0btraining_id\x18\x03 \x01(\x05\x12\x0e\n\x06\x65nd_at\x18\x04 \x01(\x03\"a\n\x12TrainingSlotStatus\x12\r\n\tTS_CLOSED\x10\x01\x12\x0c\n\x08TS_EMPTY\x10\x02\x12\x0c\n\x08TS_QUEUE\x10\x03\x12\x0f\n\x0bTS_TRAINING\x10\x04\x12\x0f\n\x0bTS_FINISHED\x10\x05\"p\n\x0bStaffNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12(\n\x06staffs\x18\x03 \x03(\x0b\x32\x18.Dianjing.protocol.Staff\"0\n\x11StaffRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x03(\x05\"N\n\x14StaffTrainingRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x13\n\x0btraining_id\x18\x03 \x02(\t\"5\n\x15StaffTrainingResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"S\n\x1dStaffTrainingGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\">\n\x1eStaffTrainingGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*^\n\x10StaffRecruitType\x12\x0f\n\x0bRECRUIT_HOT\x10\x01\x12\x12\n\x0eRECRUIT_NORMAL\x10\x02\x12\x10\n\x0cRECRUIT_GOLD\x10\x03\x12\x13\n\x0fRECRUIT_DIAMOND\x10\x04'
+  ,
+  dependencies=[common__pb2.DESCRIPTOR,])
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 _STAFFRECRUITTYPE = _descriptor.EnumDescriptor(
   name='StaffRecruitType',
@@ -45,6 +52,7 @@ _STAFFRECRUITTYPE = _descriptor.EnumDescriptor(
   serialized_start=1602,
   serialized_end=1696,
 )
+_sym_db.RegisterEnumDescriptor(_STAFFRECRUITTYPE)
 
 StaffRecruitType = enum_type_wrapper.EnumTypeWrapper(_STAFFRECRUITTYPE)
 RECRUIT_HOT = 1
@@ -85,6 +93,7 @@ _STAFF_TRAININGSLOT_TRAININGSLOTSTATUS = _descriptor.EnumDescriptor(
   serialized_start=1055,
   serialized_end=1152,
 )
+_sym_db.RegisterEnumDescriptor(_STAFF_TRAININGSLOT_TRAININGSLOTSTATUS)
 
 
 _STAFFRECRUITNOTIFY_RECRUIT = _descriptor.Descriptor(
@@ -116,7 +125,10 @@ _STAFFRECRUITNOTIFY_RECRUIT = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=202,
   serialized_end=250,
 )
@@ -131,7 +143,7 @@ _STAFFRECRUITNOTIFY = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.StaffRecruitNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -157,7 +169,10 @@ _STAFFRECRUITNOTIFY = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=49,
   serialized_end=250,
 )
@@ -173,7 +188,7 @@ _STAFFRECRUITREFRESHREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.StaffRecruitRefreshRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -192,7 +207,10 @@ _STAFFRECRUITREFRESHREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=252,
   serialized_end=346,
 )
@@ -215,7 +233,7 @@ _STAFFRECRUITREFRESHRESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.StaffRecruitRefreshResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -227,7 +245,10 @@ _STAFFRECRUITREFRESHRESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=348,
   serialized_end=407,
 )
@@ -243,7 +264,7 @@ _STAFFRECRUITREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.StaffRecruitRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -262,7 +283,10 @@ _STAFFRECRUITREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=409,
   serialized_end=465,
 )
@@ -285,7 +309,7 @@ _STAFFRECRUITRESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.StaffRecruitResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -297,7 +321,10 @@ _STAFFRECRUITRESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=467,
   serialized_end=519,
 )
@@ -313,7 +340,7 @@ _STAFFFIREREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.StaffFireRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -332,7 +359,10 @@ _STAFFFIREREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=521,
   serialized_end=574,
 )
@@ -355,7 +385,7 @@ _STAFFFIRERESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.StaffFireResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -367,7 +397,10 @@ _STAFFFIRERESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=576,
   serialized_end=625,
 )
@@ -417,7 +450,10 @@ _STAFF_TRAININGSLOT = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=911,
   serialized_end=1152,
 )
@@ -535,7 +571,10 @@ _STAFF = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=628,
   serialized_end=1152,
 )
@@ -551,7 +590,7 @@ _STAFFNOTIFY = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.StaffNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -577,7 +616,10 @@ _STAFFNOTIFY = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=1154,
   serialized_end=1266,
 )
@@ -593,7 +635,7 @@ _STAFFREMOVENOTIFY = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.StaffRemoveNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -612,7 +654,10 @@ _STAFFREMOVENOTIFY = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=1268,
   serialized_end=1316,
 )
@@ -628,7 +673,7 @@ _STAFFTRAININGREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.StaffTrainingRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -642,7 +687,7 @@ _STAFFTRAININGREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='training_id', full_name='Dianjing.protocol.StaffTrainingRequest.training_id', index=2,
       number=3, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -654,7 +699,10 @@ _STAFFTRAININGREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=1318,
   serialized_end=1396,
 )
@@ -677,7 +725,7 @@ _STAFFTRAININGRESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.StaffTrainingResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -689,7 +737,10 @@ _STAFFTRAININGRESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=1398,
   serialized_end=1451,
 )
@@ -705,7 +756,7 @@ _STAFFTRAININGGETREWARDREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.StaffTrainingGetRewardRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -731,7 +782,10 @@ _STAFFTRAININGGETREWARDREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=1453,
   serialized_end=1536,
 )
@@ -754,7 +808,7 @@ _STAFFTRAININGGETREWARDRESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.StaffTrainingGetRewardResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -766,20 +820,23 @@ _STAFFTRAININGGETREWARDRESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=1538,
   serialized_end=1600,
 )
 
-_STAFFRECRUITNOTIFY_RECRUIT.containing_type = _STAFFRECRUITNOTIFY;
+_STAFFRECRUITNOTIFY_RECRUIT.containing_type = _STAFFRECRUITNOTIFY
 _STAFFRECRUITNOTIFY.fields_by_name['tp'].enum_type = _STAFFRECRUITTYPE
 _STAFFRECRUITNOTIFY.fields_by_name['recruits'].message_type = _STAFFRECRUITNOTIFY_RECRUIT
 _STAFFRECRUITREFRESHREQUEST.fields_by_name['tp'].enum_type = _STAFFRECRUITTYPE
 _STAFF_TRAININGSLOT.fields_by_name['status'].enum_type = _STAFF_TRAININGSLOT_TRAININGSLOTSTATUS
-_STAFF_TRAININGSLOT.containing_type = _STAFF;
-_STAFF_TRAININGSLOT_TRAININGSLOTSTATUS.containing_type = _STAFF_TRAININGSLOT;
+_STAFF_TRAININGSLOT.containing_type = _STAFF
+_STAFF_TRAININGSLOT_TRAININGSLOTSTATUS.containing_type = _STAFF_TRAININGSLOT
 _STAFF.fields_by_name['training_slots'].message_type = _STAFF_TRAININGSLOT
-_STAFFNOTIFY.fields_by_name['act'].enum_type = common_pb2._ACTION
+_STAFFNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _STAFFNOTIFY.fields_by_name['staffs'].message_type = _STAFF
 DESCRIPTOR.message_types_by_name['StaffRecruitNotify'] = _STAFFRECRUITNOTIFY
 DESCRIPTOR.message_types_by_name['StaffRecruitRefreshRequest'] = _STAFFRECRUITREFRESHREQUEST
@@ -795,102 +852,121 @@ DESCRIPTOR.message_types_by_name['StaffTrainingRequest'] = _STAFFTRAININGREQUEST
 DESCRIPTOR.message_types_by_name['StaffTrainingResponse'] = _STAFFTRAININGRESPONSE
 DESCRIPTOR.message_types_by_name['StaffTrainingGetRewardRequest'] = _STAFFTRAININGGETREWARDREQUEST
 DESCRIPTOR.message_types_by_name['StaffTrainingGetRewardResponse'] = _STAFFTRAININGGETREWARDRESPONSE
+DESCRIPTOR.enum_types_by_name['StaffRecruitType'] = _STAFFRECRUITTYPE
 
-class StaffRecruitNotify(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
+StaffRecruitNotify = _reflection.GeneratedProtocolMessageType('StaffRecruitNotify', (_message.Message,), dict(
 
-  class Recruit(_message.Message):
-    __metaclass__ = _reflection.GeneratedProtocolMessageType
-    DESCRIPTOR = _STAFFRECRUITNOTIFY_RECRUIT
-
+  Recruit = _reflection.GeneratedProtocolMessageType('Recruit', (_message.Message,), dict(
+    DESCRIPTOR = _STAFFRECRUITNOTIFY_RECRUIT,
+    __module__ = 'staff_pb2'
     # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffRecruitNotify.Recruit)
-  DESCRIPTOR = _STAFFRECRUITNOTIFY
-
+    ))
+  ,
+  DESCRIPTOR = _STAFFRECRUITNOTIFY,
+  __module__ = 'staff_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffRecruitNotify)
+  ))
+_sym_db.RegisterMessage(StaffRecruitNotify)
+_sym_db.RegisterMessage(StaffRecruitNotify.Recruit)
 
-class StaffRecruitRefreshRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _STAFFRECRUITREFRESHREQUEST
-
+StaffRecruitRefreshRequest = _reflection.GeneratedProtocolMessageType('StaffRecruitRefreshRequest', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFRECRUITREFRESHREQUEST,
+  __module__ = 'staff_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffRecruitRefreshRequest)
+  ))
+_sym_db.RegisterMessage(StaffRecruitRefreshRequest)
 
-class StaffRecruitRefreshResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _STAFFRECRUITREFRESHRESPONSE
-
+StaffRecruitRefreshResponse = _reflection.GeneratedProtocolMessageType('StaffRecruitRefreshResponse', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFRECRUITREFRESHRESPONSE,
+  __module__ = 'staff_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffRecruitRefreshResponse)
+  ))
+_sym_db.RegisterMessage(StaffRecruitRefreshResponse)
 
-class StaffRecruitRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _STAFFRECRUITREQUEST
-
+StaffRecruitRequest = _reflection.GeneratedProtocolMessageType('StaffRecruitRequest', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFRECRUITREQUEST,
+  __module__ = 'staff_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffRecruitRequest)
+  ))
+_sym_db.RegisterMessage(StaffRecruitRequest)
 
-class StaffRecruitResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _STAFFRECRUITRESPONSE
-
+StaffRecruitResponse = _reflection.GeneratedProtocolMessageType('StaffRecruitResponse', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFRECRUITRESPONSE,
+  __module__ = 'staff_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffRecruitResponse)
+  ))
+_sym_db.RegisterMessage(StaffRecruitResponse)
 
-class StaffFireRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _STAFFFIREREQUEST
-
+StaffFireRequest = _reflection.GeneratedProtocolMessageType('StaffFireRequest', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFFIREREQUEST,
+  __module__ = 'staff_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffFireRequest)
+  ))
+_sym_db.RegisterMessage(StaffFireRequest)
 
-class StaffFireResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _STAFFFIRERESPONSE
-
+StaffFireResponse = _reflection.GeneratedProtocolMessageType('StaffFireResponse', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFFIRERESPONSE,
+  __module__ = 'staff_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffFireResponse)
+  ))
+_sym_db.RegisterMessage(StaffFireResponse)
 
-class Staff(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
+Staff = _reflection.GeneratedProtocolMessageType('Staff', (_message.Message,), dict(
 
-  class TrainingSlot(_message.Message):
-    __metaclass__ = _reflection.GeneratedProtocolMessageType
-    DESCRIPTOR = _STAFF_TRAININGSLOT
-
+  TrainingSlot = _reflection.GeneratedProtocolMessageType('TrainingSlot', (_message.Message,), dict(
+    DESCRIPTOR = _STAFF_TRAININGSLOT,
+    __module__ = 'staff_pb2'
     # @@protoc_insertion_point(class_scope:Dianjing.protocol.Staff.TrainingSlot)
-  DESCRIPTOR = _STAFF
-
+    ))
+  ,
+  DESCRIPTOR = _STAFF,
+  __module__ = 'staff_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.Staff)
+  ))
+_sym_db.RegisterMessage(Staff)
+_sym_db.RegisterMessage(Staff.TrainingSlot)
 
-class StaffNotify(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _STAFFNOTIFY
-
+StaffNotify = _reflection.GeneratedProtocolMessageType('StaffNotify', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFNOTIFY,
+  __module__ = 'staff_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffNotify)
+  ))
+_sym_db.RegisterMessage(StaffNotify)
 
-class StaffRemoveNotify(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _STAFFREMOVENOTIFY
-
+StaffRemoveNotify = _reflection.GeneratedProtocolMessageType('StaffRemoveNotify', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFREMOVENOTIFY,
+  __module__ = 'staff_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffRemoveNotify)
+  ))
+_sym_db.RegisterMessage(StaffRemoveNotify)
 
-class StaffTrainingRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _STAFFTRAININGREQUEST
-
+StaffTrainingRequest = _reflection.GeneratedProtocolMessageType('StaffTrainingRequest', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFTRAININGREQUEST,
+  __module__ = 'staff_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffTrainingRequest)
+  ))
+_sym_db.RegisterMessage(StaffTrainingRequest)
 
-class StaffTrainingResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _STAFFTRAININGRESPONSE
-
+StaffTrainingResponse = _reflection.GeneratedProtocolMessageType('StaffTrainingResponse', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFTRAININGRESPONSE,
+  __module__ = 'staff_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffTrainingResponse)
+  ))
+_sym_db.RegisterMessage(StaffTrainingResponse)
 
-class StaffTrainingGetRewardRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _STAFFTRAININGGETREWARDREQUEST
-
+StaffTrainingGetRewardRequest = _reflection.GeneratedProtocolMessageType('StaffTrainingGetRewardRequest', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFTRAININGGETREWARDREQUEST,
+  __module__ = 'staff_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffTrainingGetRewardRequest)
+  ))
+_sym_db.RegisterMessage(StaffTrainingGetRewardRequest)
 
-class StaffTrainingGetRewardResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _STAFFTRAININGGETREWARDRESPONSE
-
+StaffTrainingGetRewardResponse = _reflection.GeneratedProtocolMessageType('StaffTrainingGetRewardResponse', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFTRAININGGETREWARDRESPONSE,
+  __module__ = 'staff_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffTrainingGetRewardResponse)
+  ))
+_sym_db.RegisterMessage(StaffTrainingGetRewardResponse)
 
 
 # @@protoc_insertion_point(module_scope)

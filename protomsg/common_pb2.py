@@ -5,8 +5,11 @@ from google.protobuf.internal import enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
+from google.protobuf import symbol_database as _symbol_database
 from google.protobuf import descriptor_pb2
 # @@protoc_insertion_point(imports)
+
+_sym_db = _symbol_database.Default()
 
 
 
@@ -14,7 +17,10 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='common.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\x0c\x63ommon.proto\x12\x11\x44ianjing.protocol\"/\n\tUTCNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\ttimestamp\x18\x02 \x02(\x03\"*\n\rStaffBaseInfo\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\"\x1e\n\x0bSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\",\n\x0cSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*C\n\x0bNextOperate\x12\n\n\x06OPT_OK\x10\x01\x12\x13\n\x0fOPT_CREATE_CHAR\x10\x02\x12\x13\n\x0fOPT_CREATE_CLUB\x10\x03*&\n\x06\x41\x63tion\x12\x0c\n\x08\x41\x43T_INIT\x10\x01\x12\x0e\n\nACT_UPDATE\x10\x02*\xc1\x01\n\x0bLeagueLevel\x12\x12\n\x0eLEAGUE_LEVEL_1\x10\x01\x12\x12\n\x0eLEAGUE_LEVEL_2\x10\x02\x12\x12\n\x0eLEAGUE_LEVEL_3\x10\x03\x12\x12\n\x0eLEAGUE_LEVEL_4\x10\x04\x12\x12\n\x0eLEAGUE_LEVEL_5\x10\x05\x12\x12\n\x0eLEAGUE_LEVEL_6\x10\x06\x12\x12\n\x0eLEAGUE_LEVEL_7\x10\x07\x12\x12\n\x0eLEAGUE_LEVEL_8\x10\x08\x12\x12\n\x0eLEAGUE_LEVEL_9\x10\t*1\n\x08\x43lubType\x12\x12\n\x0e\x43LUB_TYPE_REAL\x10\x01\x12\x11\n\rCLUB_TYPE_NPC\x10\x02')
+  syntax='proto2',
+  serialized_pb=b'\n\x0c\x63ommon.proto\x12\x11\x44ianjing.protocol\"/\n\tUTCNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\ttimestamp\x18\x02 \x02(\x03\"*\n\rStaffBaseInfo\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\"\x1e\n\x0bSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\",\n\x0cSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*C\n\x0bNextOperate\x12\n\n\x06OPT_OK\x10\x01\x12\x13\n\x0fOPT_CREATE_CHAR\x10\x02\x12\x13\n\x0fOPT_CREATE_CLUB\x10\x03*&\n\x06\x41\x63tion\x12\x0c\n\x08\x41\x43T_INIT\x10\x01\x12\x0e\n\nACT_UPDATE\x10\x02*\xc1\x01\n\x0bLeagueLevel\x12\x12\n\x0eLEAGUE_LEVEL_1\x10\x01\x12\x12\n\x0eLEAGUE_LEVEL_2\x10\x02\x12\x12\n\x0eLEAGUE_LEVEL_3\x10\x03\x12\x12\n\x0eLEAGUE_LEVEL_4\x10\x04\x12\x12\n\x0eLEAGUE_LEVEL_5\x10\x05\x12\x12\n\x0eLEAGUE_LEVEL_6\x10\x06\x12\x12\n\x0eLEAGUE_LEVEL_7\x10\x07\x12\x12\n\x0eLEAGUE_LEVEL_8\x10\x08\x12\x12\n\x0eLEAGUE_LEVEL_9\x10\t*1\n\x08\x43lubType\x12\x12\n\x0e\x43LUB_TYPE_REAL\x10\x01\x12\x11\n\rCLUB_TYPE_NPC\x10\x02'
+)
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 _NEXTOPERATE = _descriptor.EnumDescriptor(
   name='NextOperate',
@@ -40,6 +46,7 @@ _NEXTOPERATE = _descriptor.EnumDescriptor(
   serialized_start=206,
   serialized_end=273,
 )
+_sym_db.RegisterEnumDescriptor(_NEXTOPERATE)
 
 NextOperate = enum_type_wrapper.EnumTypeWrapper(_NEXTOPERATE)
 _ACTION = _descriptor.EnumDescriptor(
@@ -62,6 +69,7 @@ _ACTION = _descriptor.EnumDescriptor(
   serialized_start=275,
   serialized_end=313,
 )
+_sym_db.RegisterEnumDescriptor(_ACTION)
 
 Action = enum_type_wrapper.EnumTypeWrapper(_ACTION)
 _LEAGUELEVEL = _descriptor.EnumDescriptor(
@@ -112,6 +120,7 @@ _LEAGUELEVEL = _descriptor.EnumDescriptor(
   serialized_start=316,
   serialized_end=509,
 )
+_sym_db.RegisterEnumDescriptor(_LEAGUELEVEL)
 
 LeagueLevel = enum_type_wrapper.EnumTypeWrapper(_LEAGUELEVEL)
 _CLUBTYPE = _descriptor.EnumDescriptor(
@@ -134,6 +143,7 @@ _CLUBTYPE = _descriptor.EnumDescriptor(
   serialized_start=511,
   serialized_end=560,
 )
+_sym_db.RegisterEnumDescriptor(_CLUBTYPE)
 
 ClubType = enum_type_wrapper.EnumTypeWrapper(_CLUBTYPE)
 OPT_OK = 1
@@ -165,7 +175,7 @@ _UTCNOTIFY = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.UTCNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -184,7 +194,10 @@ _UTCNOTIFY = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=35,
   serialized_end=82,
 )
@@ -219,7 +232,10 @@ _STAFFBASEINFO = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=84,
   serialized_end=126,
 )
@@ -235,7 +251,7 @@ _SYNCREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.SyncRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -247,7 +263,10 @@ _SYNCREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=128,
   serialized_end=158,
 )
@@ -270,7 +289,7 @@ _SYNCRESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.SyncResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -282,7 +301,10 @@ _SYNCRESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=160,
   serialized_end=204,
 )
@@ -291,30 +313,38 @@ DESCRIPTOR.message_types_by_name['UTCNotify'] = _UTCNOTIFY
 DESCRIPTOR.message_types_by_name['StaffBaseInfo'] = _STAFFBASEINFO
 DESCRIPTOR.message_types_by_name['SyncRequest'] = _SYNCREQUEST
 DESCRIPTOR.message_types_by_name['SyncResponse'] = _SYNCRESPONSE
+DESCRIPTOR.enum_types_by_name['NextOperate'] = _NEXTOPERATE
+DESCRIPTOR.enum_types_by_name['Action'] = _ACTION
+DESCRIPTOR.enum_types_by_name['LeagueLevel'] = _LEAGUELEVEL
+DESCRIPTOR.enum_types_by_name['ClubType'] = _CLUBTYPE
 
-class UTCNotify(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _UTCNOTIFY
-
+UTCNotify = _reflection.GeneratedProtocolMessageType('UTCNotify', (_message.Message,), dict(
+  DESCRIPTOR = _UTCNOTIFY,
+  __module__ = 'common_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.UTCNotify)
+  ))
+_sym_db.RegisterMessage(UTCNotify)
 
-class StaffBaseInfo(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _STAFFBASEINFO
-
+StaffBaseInfo = _reflection.GeneratedProtocolMessageType('StaffBaseInfo', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFBASEINFO,
+  __module__ = 'common_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffBaseInfo)
+  ))
+_sym_db.RegisterMessage(StaffBaseInfo)
 
-class SyncRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _SYNCREQUEST
-
+SyncRequest = _reflection.GeneratedProtocolMessageType('SyncRequest', (_message.Message,), dict(
+  DESCRIPTOR = _SYNCREQUEST,
+  __module__ = 'common_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.SyncRequest)
+  ))
+_sym_db.RegisterMessage(SyncRequest)
 
-class SyncResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _SYNCRESPONSE
-
+SyncResponse = _reflection.GeneratedProtocolMessageType('SyncResponse', (_message.Message,), dict(
+  DESCRIPTOR = _SYNCRESPONSE,
+  __module__ = 'common_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.SyncResponse)
+  ))
+_sym_db.RegisterMessage(SyncResponse)
 
 
 # @@protoc_insertion_point(module_scope)

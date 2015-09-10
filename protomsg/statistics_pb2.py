@@ -4,8 +4,11 @@
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
+from google.protobuf import symbol_database as _symbol_database
 from google.protobuf import descriptor_pb2
 # @@protoc_insertion_point(imports)
+
+_sym_db = _symbol_database.Default()
 
 
 
@@ -13,7 +16,10 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='statistics.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\x10statistics.proto\x12\x11\x44ianjing.protocol\"K\n\x17\x46inanceStatisticsNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0e\n\x06income\x18\x02 \x03(\x03\x12\x0f\n\x07\x65xpense\x18\x03 \x03(\x03')
+  syntax='proto2',
+  serialized_pb=b'\n\x10statistics.proto\x12\x11\x44ianjing.protocol\"K\n\x17\x46inanceStatisticsNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0e\n\x06income\x18\x02 \x03(\x03\x12\x0f\n\x07\x65xpense\x18\x03 \x03(\x03'
+)
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
@@ -28,7 +34,7 @@ _FINANCESTATISTICSNOTIFY = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.FinanceStatisticsNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -54,18 +60,22 @@ _FINANCESTATISTICSNOTIFY = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=39,
   serialized_end=114,
 )
 
 DESCRIPTOR.message_types_by_name['FinanceStatisticsNotify'] = _FINANCESTATISTICSNOTIFY
 
-class FinanceStatisticsNotify(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _FINANCESTATISTICSNOTIFY
-
+FinanceStatisticsNotify = _reflection.GeneratedProtocolMessageType('FinanceStatisticsNotify', (_message.Message,), dict(
+  DESCRIPTOR = _FINANCESTATISTICSNOTIFY,
+  __module__ = 'statistics_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.FinanceStatisticsNotify)
+  ))
+_sym_db.RegisterMessage(FinanceStatisticsNotify)
 
 
 # @@protoc_insertion_point(module_scope)

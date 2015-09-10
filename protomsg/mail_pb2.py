@@ -5,19 +5,26 @@ from google.protobuf.internal import enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
+from google.protobuf import symbol_database as _symbol_database
 from google.protobuf import descriptor_pb2
 # @@protoc_insertion_point(imports)
 
+_sym_db = _symbol_database.Default()
 
-import character_pb2
-import common_pb2
-import package_pb2
+
+import character_pb2 as character__pb2
+import common_pb2 as common__pb2
+import package_pb2 as package__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='mail.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\nmail.proto\x12\x11\x44ianjing.protocol\x1a\x0f\x63haracter.proto\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"j\n\x08MailFrom\x12\x32\n\tfrom_type\x18\x01 \x02(\x0e\x32\x1f.Dianjing.protocol.MailFromType\x12*\n\x04\x63har\x18\x02 \x01(\x0b\x32\x1c.Dianjing.protocol.Character\"\xce\x01\n\x04Mail\x12\n\n\x02id\x18\x01 \x02(\t\x12.\n\tmail_from\x18\x02 \x02(\x0b\x32\x1b.Dianjing.protocol.MailFrom\x12\r\n\x05title\x18\x03 \x02(\t\x12\x0f\n\x07\x63ontent\x18\x04 \x02(\t\x12\x10\n\x08has_read\x18\x05 \x02(\x08\x12\x11\n\tcreate_at\x18\x06 \x02(\x03\x12\x18\n\x10remained_seconds\x18\x07 \x02(\x05\x12+\n\nattachment\x18\x08 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"m\n\nMailNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12&\n\x05mails\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Mail\"0\n\x10MailRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t\"B\n\x0fMailSendRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05to_id\x18\x02 \x02(\t\x12\x0f\n\x07\x63ontent\x18\x03 \x02(\t\"0\n\x10MailSendResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\".\n\x0fMailOpenRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"0\n\x10MailOpenResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"0\n\x11MailDeleteRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"2\n\x12MailDeleteResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"7\n\x18MailGetAttachmentRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"f\n\x19MailGetAttachmentResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\nattachment\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*8\n\x0cMailFromType\x12\x14\n\x10MAIL_FROM_SYSTEM\x10\x01\x12\x12\n\x0eMAIL_FROM_USER\x10\x02')
+  syntax='proto2',
+  serialized_pb=b'\n\nmail.proto\x12\x11\x44ianjing.protocol\x1a\x0f\x63haracter.proto\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"j\n\x08MailFrom\x12\x32\n\tfrom_type\x18\x01 \x02(\x0e\x32\x1f.Dianjing.protocol.MailFromType\x12*\n\x04\x63har\x18\x02 \x01(\x0b\x32\x1c.Dianjing.protocol.Character\"\xce\x01\n\x04Mail\x12\n\n\x02id\x18\x01 \x02(\t\x12.\n\tmail_from\x18\x02 \x02(\x0b\x32\x1b.Dianjing.protocol.MailFrom\x12\r\n\x05title\x18\x03 \x02(\t\x12\x0f\n\x07\x63ontent\x18\x04 \x02(\t\x12\x10\n\x08has_read\x18\x05 \x02(\x08\x12\x11\n\tcreate_at\x18\x06 \x02(\x03\x12\x18\n\x10remained_seconds\x18\x07 \x02(\x05\x12+\n\nattachment\x18\x08 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"m\n\nMailNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12&\n\x05mails\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Mail\"0\n\x10MailRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t\"B\n\x0fMailSendRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05to_id\x18\x02 \x02(\t\x12\x0f\n\x07\x63ontent\x18\x03 \x02(\t\"0\n\x10MailSendResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\".\n\x0fMailOpenRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"0\n\x10MailOpenResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"0\n\x11MailDeleteRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"2\n\x12MailDeleteResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"7\n\x18MailGetAttachmentRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"f\n\x19MailGetAttachmentResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\nattachment\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*8\n\x0cMailFromType\x12\x14\n\x10MAIL_FROM_SYSTEM\x10\x01\x12\x12\n\x0eMAIL_FROM_USER\x10\x02'
+  ,
+  dependencies=[character__pb2.DESCRIPTOR,common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 _MAILFROMTYPE = _descriptor.EnumDescriptor(
   name='MailFromType',
@@ -39,6 +46,7 @@ _MAILFROMTYPE = _descriptor.EnumDescriptor(
   serialized_start=1036,
   serialized_end=1092,
 )
+_sym_db.RegisterEnumDescriptor(_MAILFROMTYPE)
 
 MailFromType = enum_type_wrapper.EnumTypeWrapper(_MAILFROMTYPE)
 MAIL_FROM_SYSTEM = 1
@@ -75,7 +83,10 @@ _MAILFROM = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=79,
   serialized_end=185,
 )
@@ -91,7 +102,7 @@ _MAIL = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='id', full_name='Dianjing.protocol.Mail.id', index=0,
       number=1, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -105,14 +116,14 @@ _MAIL = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='title', full_name='Dianjing.protocol.Mail.title', index=2,
       number=3, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='content', full_name='Dianjing.protocol.Mail.content', index=3,
       number=4, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -152,7 +163,10 @@ _MAIL = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=188,
   serialized_end=394,
 )
@@ -168,7 +182,7 @@ _MAILNOTIFY = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.MailNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -194,7 +208,10 @@ _MAILNOTIFY = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=396,
   serialized_end=505,
 )
@@ -210,7 +227,7 @@ _MAILREMOVENOTIFY = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.MailRemoveNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -229,7 +246,10 @@ _MAILREMOVENOTIFY = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=507,
   serialized_end=555,
 )
@@ -245,21 +265,21 @@ _MAILSENDREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.MailSendRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='to_id', full_name='Dianjing.protocol.MailSendRequest.to_id', index=1,
       number=2, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='content', full_name='Dianjing.protocol.MailSendRequest.content', index=2,
       number=3, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -271,7 +291,10 @@ _MAILSENDREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=557,
   serialized_end=623,
 )
@@ -294,7 +317,7 @@ _MAILSENDRESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.MailSendResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -306,7 +329,10 @@ _MAILSENDRESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=625,
   serialized_end=673,
 )
@@ -322,14 +348,14 @@ _MAILOPENREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.MailOpenRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='id', full_name='Dianjing.protocol.MailOpenRequest.id', index=1,
       number=2, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -341,7 +367,10 @@ _MAILOPENREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=675,
   serialized_end=721,
 )
@@ -364,7 +393,7 @@ _MAILOPENRESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.MailOpenResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -376,7 +405,10 @@ _MAILOPENRESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=723,
   serialized_end=771,
 )
@@ -392,14 +424,14 @@ _MAILDELETEREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.MailDeleteRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='id', full_name='Dianjing.protocol.MailDeleteRequest.id', index=1,
       number=2, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -411,7 +443,10 @@ _MAILDELETEREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=773,
   serialized_end=821,
 )
@@ -434,7 +469,7 @@ _MAILDELETERESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.MailDeleteResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -446,7 +481,10 @@ _MAILDELETERESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=823,
   serialized_end=873,
 )
@@ -462,14 +500,14 @@ _MAILGETATTACHMENTREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.MailGetAttachmentRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='id', full_name='Dianjing.protocol.MailGetAttachmentRequest.id', index=1,
       number=2, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -481,7 +519,10 @@ _MAILGETATTACHMENTREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=875,
   serialized_end=930,
 )
@@ -504,7 +545,7 @@ _MAILGETATTACHMENTRESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.MailGetAttachmentResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -523,18 +564,21 @@ _MAILGETATTACHMENTRESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=932,
   serialized_end=1034,
 )
 
 _MAILFROM.fields_by_name['from_type'].enum_type = _MAILFROMTYPE
-_MAILFROM.fields_by_name['char'].message_type = character_pb2._CHARACTER
+_MAILFROM.fields_by_name['char'].message_type = character__pb2._CHARACTER
 _MAIL.fields_by_name['mail_from'].message_type = _MAILFROM
-_MAIL.fields_by_name['attachment'].message_type = package_pb2._DROP
-_MAILNOTIFY.fields_by_name['act'].enum_type = common_pb2._ACTION
+_MAIL.fields_by_name['attachment'].message_type = package__pb2._DROP
+_MAILNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _MAILNOTIFY.fields_by_name['mails'].message_type = _MAIL
-_MAILGETATTACHMENTRESPONSE.fields_by_name['attachment'].message_type = package_pb2._DROP
+_MAILGETATTACHMENTRESPONSE.fields_by_name['attachment'].message_type = package__pb2._DROP
 DESCRIPTOR.message_types_by_name['MailFrom'] = _MAILFROM
 DESCRIPTOR.message_types_by_name['Mail'] = _MAIL
 DESCRIPTOR.message_types_by_name['MailNotify'] = _MAILNOTIFY
@@ -547,78 +591,91 @@ DESCRIPTOR.message_types_by_name['MailDeleteRequest'] = _MAILDELETEREQUEST
 DESCRIPTOR.message_types_by_name['MailDeleteResponse'] = _MAILDELETERESPONSE
 DESCRIPTOR.message_types_by_name['MailGetAttachmentRequest'] = _MAILGETATTACHMENTREQUEST
 DESCRIPTOR.message_types_by_name['MailGetAttachmentResponse'] = _MAILGETATTACHMENTRESPONSE
+DESCRIPTOR.enum_types_by_name['MailFromType'] = _MAILFROMTYPE
 
-class MailFrom(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _MAILFROM
-
+MailFrom = _reflection.GeneratedProtocolMessageType('MailFrom', (_message.Message,), dict(
+  DESCRIPTOR = _MAILFROM,
+  __module__ = 'mail_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.MailFrom)
+  ))
+_sym_db.RegisterMessage(MailFrom)
 
-class Mail(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _MAIL
-
+Mail = _reflection.GeneratedProtocolMessageType('Mail', (_message.Message,), dict(
+  DESCRIPTOR = _MAIL,
+  __module__ = 'mail_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.Mail)
+  ))
+_sym_db.RegisterMessage(Mail)
 
-class MailNotify(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _MAILNOTIFY
-
+MailNotify = _reflection.GeneratedProtocolMessageType('MailNotify', (_message.Message,), dict(
+  DESCRIPTOR = _MAILNOTIFY,
+  __module__ = 'mail_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.MailNotify)
+  ))
+_sym_db.RegisterMessage(MailNotify)
 
-class MailRemoveNotify(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _MAILREMOVENOTIFY
-
+MailRemoveNotify = _reflection.GeneratedProtocolMessageType('MailRemoveNotify', (_message.Message,), dict(
+  DESCRIPTOR = _MAILREMOVENOTIFY,
+  __module__ = 'mail_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.MailRemoveNotify)
+  ))
+_sym_db.RegisterMessage(MailRemoveNotify)
 
-class MailSendRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _MAILSENDREQUEST
-
+MailSendRequest = _reflection.GeneratedProtocolMessageType('MailSendRequest', (_message.Message,), dict(
+  DESCRIPTOR = _MAILSENDREQUEST,
+  __module__ = 'mail_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.MailSendRequest)
+  ))
+_sym_db.RegisterMessage(MailSendRequest)
 
-class MailSendResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _MAILSENDRESPONSE
-
+MailSendResponse = _reflection.GeneratedProtocolMessageType('MailSendResponse', (_message.Message,), dict(
+  DESCRIPTOR = _MAILSENDRESPONSE,
+  __module__ = 'mail_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.MailSendResponse)
+  ))
+_sym_db.RegisterMessage(MailSendResponse)
 
-class MailOpenRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _MAILOPENREQUEST
-
+MailOpenRequest = _reflection.GeneratedProtocolMessageType('MailOpenRequest', (_message.Message,), dict(
+  DESCRIPTOR = _MAILOPENREQUEST,
+  __module__ = 'mail_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.MailOpenRequest)
+  ))
+_sym_db.RegisterMessage(MailOpenRequest)
 
-class MailOpenResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _MAILOPENRESPONSE
-
+MailOpenResponse = _reflection.GeneratedProtocolMessageType('MailOpenResponse', (_message.Message,), dict(
+  DESCRIPTOR = _MAILOPENRESPONSE,
+  __module__ = 'mail_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.MailOpenResponse)
+  ))
+_sym_db.RegisterMessage(MailOpenResponse)
 
-class MailDeleteRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _MAILDELETEREQUEST
-
+MailDeleteRequest = _reflection.GeneratedProtocolMessageType('MailDeleteRequest', (_message.Message,), dict(
+  DESCRIPTOR = _MAILDELETEREQUEST,
+  __module__ = 'mail_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.MailDeleteRequest)
+  ))
+_sym_db.RegisterMessage(MailDeleteRequest)
 
-class MailDeleteResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _MAILDELETERESPONSE
-
+MailDeleteResponse = _reflection.GeneratedProtocolMessageType('MailDeleteResponse', (_message.Message,), dict(
+  DESCRIPTOR = _MAILDELETERESPONSE,
+  __module__ = 'mail_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.MailDeleteResponse)
+  ))
+_sym_db.RegisterMessage(MailDeleteResponse)
 
-class MailGetAttachmentRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _MAILGETATTACHMENTREQUEST
-
+MailGetAttachmentRequest = _reflection.GeneratedProtocolMessageType('MailGetAttachmentRequest', (_message.Message,), dict(
+  DESCRIPTOR = _MAILGETATTACHMENTREQUEST,
+  __module__ = 'mail_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.MailGetAttachmentRequest)
+  ))
+_sym_db.RegisterMessage(MailGetAttachmentRequest)
 
-class MailGetAttachmentResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _MAILGETATTACHMENTRESPONSE
-
+MailGetAttachmentResponse = _reflection.GeneratedProtocolMessageType('MailGetAttachmentResponse', (_message.Message,), dict(
+  DESCRIPTOR = _MAILGETATTACHMENTRESPONSE,
+  __module__ = 'mail_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.MailGetAttachmentResponse)
+  ))
+_sym_db.RegisterMessage(MailGetAttachmentResponse)
 
 
 # @@protoc_insertion_point(module_scope)

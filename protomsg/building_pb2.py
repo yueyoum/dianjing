@@ -4,8 +4,11 @@
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
+from google.protobuf import symbol_database as _symbol_database
 from google.protobuf import descriptor_pb2
 # @@protoc_insertion_point(imports)
+
+_sym_db = _symbol_database.Default()
 
 
 
@@ -13,7 +16,10 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='building.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\x0e\x62uilding.proto\x12\x11\x44ianjing.protocol\"\x87\x01\n\x0e\x42uildingNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12=\n\tbuildings\x18\x02 \x03(\x0b\x32*.Dianjing.protocol.BuildingNotify.Building\x1a%\n\x08\x42uilding\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\"5\n\x16\x42uildingLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"7\n\x17\x42uildingLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+  syntax='proto2',
+  serialized_pb=b'\n\x0e\x62uilding.proto\x12\x11\x44ianjing.protocol\"\x87\x01\n\x0e\x42uildingNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12=\n\tbuildings\x18\x02 \x03(\x0b\x32*.Dianjing.protocol.BuildingNotify.Building\x1a%\n\x08\x42uilding\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\"5\n\x16\x42uildingLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"7\n\x17\x42uildingLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c'
+)
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
@@ -47,7 +53,10 @@ _BUILDINGNOTIFY_BUILDING = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=136,
   serialized_end=173,
 )
@@ -62,7 +71,7 @@ _BUILDINGNOTIFY = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.BuildingNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -81,7 +90,10 @@ _BUILDINGNOTIFY = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=38,
   serialized_end=173,
 )
@@ -97,7 +109,7 @@ _BUILDINGLEVELUPREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.BuildingLevelUpRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -116,7 +128,10 @@ _BUILDINGLEVELUPREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=175,
   serialized_end=228,
 )
@@ -139,7 +154,7 @@ _BUILDINGLEVELUPRESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.BuildingLevelUpResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -151,40 +166,48 @@ _BUILDINGLEVELUPRESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=230,
   serialized_end=285,
 )
 
-_BUILDINGNOTIFY_BUILDING.containing_type = _BUILDINGNOTIFY;
+_BUILDINGNOTIFY_BUILDING.containing_type = _BUILDINGNOTIFY
 _BUILDINGNOTIFY.fields_by_name['buildings'].message_type = _BUILDINGNOTIFY_BUILDING
 DESCRIPTOR.message_types_by_name['BuildingNotify'] = _BUILDINGNOTIFY
 DESCRIPTOR.message_types_by_name['BuildingLevelUpRequest'] = _BUILDINGLEVELUPREQUEST
 DESCRIPTOR.message_types_by_name['BuildingLevelUpResponse'] = _BUILDINGLEVELUPRESPONSE
 
-class BuildingNotify(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
+BuildingNotify = _reflection.GeneratedProtocolMessageType('BuildingNotify', (_message.Message,), dict(
 
-  class Building(_message.Message):
-    __metaclass__ = _reflection.GeneratedProtocolMessageType
-    DESCRIPTOR = _BUILDINGNOTIFY_BUILDING
-
+  Building = _reflection.GeneratedProtocolMessageType('Building', (_message.Message,), dict(
+    DESCRIPTOR = _BUILDINGNOTIFY_BUILDING,
+    __module__ = 'building_pb2'
     # @@protoc_insertion_point(class_scope:Dianjing.protocol.BuildingNotify.Building)
-  DESCRIPTOR = _BUILDINGNOTIFY
-
+    ))
+  ,
+  DESCRIPTOR = _BUILDINGNOTIFY,
+  __module__ = 'building_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.BuildingNotify)
+  ))
+_sym_db.RegisterMessage(BuildingNotify)
+_sym_db.RegisterMessage(BuildingNotify.Building)
 
-class BuildingLevelUpRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _BUILDINGLEVELUPREQUEST
-
+BuildingLevelUpRequest = _reflection.GeneratedProtocolMessageType('BuildingLevelUpRequest', (_message.Message,), dict(
+  DESCRIPTOR = _BUILDINGLEVELUPREQUEST,
+  __module__ = 'building_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.BuildingLevelUpRequest)
+  ))
+_sym_db.RegisterMessage(BuildingLevelUpRequest)
 
-class BuildingLevelUpResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _BUILDINGLEVELUPRESPONSE
-
+BuildingLevelUpResponse = _reflection.GeneratedProtocolMessageType('BuildingLevelUpResponse', (_message.Message,), dict(
+  DESCRIPTOR = _BUILDINGLEVELUPRESPONSE,
+  __module__ = 'building_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.BuildingLevelUpResponse)
+  ))
+_sym_db.RegisterMessage(BuildingLevelUpResponse)
 
 
 # @@protoc_insertion_point(module_scope)

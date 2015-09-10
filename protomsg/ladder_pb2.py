@@ -4,17 +4,24 @@
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
+from google.protobuf import symbol_database as _symbol_database
 from google.protobuf import descriptor_pb2
 # @@protoc_insertion_point(imports)
 
+_sym_db = _symbol_database.Default()
 
-import match_pb2
+
+import match_pb2 as match__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='ladder.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\x0cladder.proto\x12\x11\x44ianjing.protocol\x1a\x0bmatch.proto\"C\n\nLadderClub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\x12\r\n\x05order\x18\x04 \x02(\x05\".\n\tLadderLog\x12\x13\n\x0btemplate_id\x18\x01 \x02(\x05\x12\x0c\n\x04\x61rgs\x18\x02 \x03(\t\"\xb5\x01\n\x0cLadderNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12,\n\x05\x63lubs\x18\x02 \x03(\x0b\x32\x1d.Dianjing.protocol.LadderClub\x12\x16\n\x0eremained_times\x18\x03 \x02(\x05\x12\x10\n\x08my_order\x18\x04 \x02(\x05\x12\x10\n\x08my_score\x18\x05 \x02(\x05\x12*\n\x04logs\x18\x06 \x03(\x0b\x32\x1c.Dianjing.protocol.LadderLog\"\'\n\x14LadderRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"5\n\x15LadderRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"1\n\x12LadderMatchRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"`\n\x13LadderMatchResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"L\n\x11LadderStoreNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x19\n\x11next_refresh_time\x18\x02 \x02(\x03\x12\x0b\n\x03ids\x18\x03 \x03(\x05\"4\n\x15LadderStoreBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"6\n\x16LadderStoreBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+  syntax='proto2',
+  serialized_pb=b'\n\x0cladder.proto\x12\x11\x44ianjing.protocol\x1a\x0bmatch.proto\"C\n\nLadderClub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\x12\r\n\x05order\x18\x04 \x02(\x05\".\n\tLadderLog\x12\x13\n\x0btemplate_id\x18\x01 \x02(\x05\x12\x0c\n\x04\x61rgs\x18\x02 \x03(\t\"\xb5\x01\n\x0cLadderNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12,\n\x05\x63lubs\x18\x02 \x03(\x0b\x32\x1d.Dianjing.protocol.LadderClub\x12\x16\n\x0eremained_times\x18\x03 \x02(\x05\x12\x10\n\x08my_order\x18\x04 \x02(\x05\x12\x10\n\x08my_score\x18\x05 \x02(\x05\x12*\n\x04logs\x18\x06 \x03(\x0b\x32\x1c.Dianjing.protocol.LadderLog\"\'\n\x14LadderRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"5\n\x15LadderRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"1\n\x12LadderMatchRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"`\n\x13LadderMatchResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"L\n\x11LadderStoreNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x19\n\x11next_refresh_time\x18\x02 \x02(\x03\x12\x0b\n\x03ids\x18\x03 \x03(\x05\"4\n\x15LadderStoreBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"6\n\x16LadderStoreBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c'
+  ,
+  dependencies=[match__pb2.DESCRIPTOR,])
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
@@ -29,14 +36,14 @@ _LADDERCLUB = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='id', full_name='Dianjing.protocol.LadderClub.id', index=0,
       number=1, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='name', full_name='Dianjing.protocol.LadderClub.name', index=1,
       number=2, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -62,7 +69,10 @@ _LADDERCLUB = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=48,
   serialized_end=115,
 )
@@ -97,7 +107,10 @@ _LADDERLOG = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=117,
   serialized_end=163,
 )
@@ -113,7 +126,7 @@ _LADDERNOTIFY = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.LadderNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -160,7 +173,10 @@ _LADDERNOTIFY = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=166,
   serialized_end=347,
 )
@@ -176,7 +192,7 @@ _LADDERREFRESHREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.LadderRefreshRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -188,7 +204,10 @@ _LADDERREFRESHREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=349,
   serialized_end=388,
 )
@@ -211,7 +230,7 @@ _LADDERREFRESHRESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.LadderRefreshResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -223,7 +242,10 @@ _LADDERREFRESHRESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=390,
   serialized_end=443,
 )
@@ -239,14 +261,14 @@ _LADDERMATCHREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.LadderMatchRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='id', full_name='Dianjing.protocol.LadderMatchRequest.id', index=1,
       number=2, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -258,7 +280,10 @@ _LADDERMATCHREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=445,
   serialized_end=494,
 )
@@ -281,7 +306,7 @@ _LADDERMATCHRESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.LadderMatchResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -300,7 +325,10 @@ _LADDERMATCHRESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=496,
   serialized_end=592,
 )
@@ -316,7 +344,7 @@ _LADDERSTORENOTIFY = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.LadderStoreNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -342,7 +370,10 @@ _LADDERSTORENOTIFY = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=594,
   serialized_end=670,
 )
@@ -358,7 +389,7 @@ _LADDERSTOREBUYREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.LadderStoreBuyRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -377,7 +408,10 @@ _LADDERSTOREBUYREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=672,
   serialized_end=724,
 )
@@ -400,7 +434,7 @@ _LADDERSTOREBUYRESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.LadderStoreBuyResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -412,14 +446,17 @@ _LADDERSTOREBUYRESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=726,
   serialized_end=780,
 )
 
 _LADDERNOTIFY.fields_by_name['clubs'].message_type = _LADDERCLUB
 _LADDERNOTIFY.fields_by_name['logs'].message_type = _LADDERLOG
-_LADDERMATCHRESPONSE.fields_by_name['match'].message_type = match_pb2._CLUBMATCH
+_LADDERMATCHRESPONSE.fields_by_name['match'].message_type = match__pb2._CLUBMATCH
 DESCRIPTOR.message_types_by_name['LadderClub'] = _LADDERCLUB
 DESCRIPTOR.message_types_by_name['LadderLog'] = _LADDERLOG
 DESCRIPTOR.message_types_by_name['LadderNotify'] = _LADDERNOTIFY
@@ -431,65 +468,75 @@ DESCRIPTOR.message_types_by_name['LadderStoreNotify'] = _LADDERSTORENOTIFY
 DESCRIPTOR.message_types_by_name['LadderStoreBuyRequest'] = _LADDERSTOREBUYREQUEST
 DESCRIPTOR.message_types_by_name['LadderStoreBuyResponse'] = _LADDERSTOREBUYRESPONSE
 
-class LadderClub(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _LADDERCLUB
-
+LadderClub = _reflection.GeneratedProtocolMessageType('LadderClub', (_message.Message,), dict(
+  DESCRIPTOR = _LADDERCLUB,
+  __module__ = 'ladder_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.LadderClub)
+  ))
+_sym_db.RegisterMessage(LadderClub)
 
-class LadderLog(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _LADDERLOG
-
+LadderLog = _reflection.GeneratedProtocolMessageType('LadderLog', (_message.Message,), dict(
+  DESCRIPTOR = _LADDERLOG,
+  __module__ = 'ladder_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.LadderLog)
+  ))
+_sym_db.RegisterMessage(LadderLog)
 
-class LadderNotify(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _LADDERNOTIFY
-
+LadderNotify = _reflection.GeneratedProtocolMessageType('LadderNotify', (_message.Message,), dict(
+  DESCRIPTOR = _LADDERNOTIFY,
+  __module__ = 'ladder_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.LadderNotify)
+  ))
+_sym_db.RegisterMessage(LadderNotify)
 
-class LadderRefreshRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _LADDERREFRESHREQUEST
-
+LadderRefreshRequest = _reflection.GeneratedProtocolMessageType('LadderRefreshRequest', (_message.Message,), dict(
+  DESCRIPTOR = _LADDERREFRESHREQUEST,
+  __module__ = 'ladder_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.LadderRefreshRequest)
+  ))
+_sym_db.RegisterMessage(LadderRefreshRequest)
 
-class LadderRefreshResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _LADDERREFRESHRESPONSE
-
+LadderRefreshResponse = _reflection.GeneratedProtocolMessageType('LadderRefreshResponse', (_message.Message,), dict(
+  DESCRIPTOR = _LADDERREFRESHRESPONSE,
+  __module__ = 'ladder_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.LadderRefreshResponse)
+  ))
+_sym_db.RegisterMessage(LadderRefreshResponse)
 
-class LadderMatchRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _LADDERMATCHREQUEST
-
+LadderMatchRequest = _reflection.GeneratedProtocolMessageType('LadderMatchRequest', (_message.Message,), dict(
+  DESCRIPTOR = _LADDERMATCHREQUEST,
+  __module__ = 'ladder_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.LadderMatchRequest)
+  ))
+_sym_db.RegisterMessage(LadderMatchRequest)
 
-class LadderMatchResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _LADDERMATCHRESPONSE
-
+LadderMatchResponse = _reflection.GeneratedProtocolMessageType('LadderMatchResponse', (_message.Message,), dict(
+  DESCRIPTOR = _LADDERMATCHRESPONSE,
+  __module__ = 'ladder_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.LadderMatchResponse)
+  ))
+_sym_db.RegisterMessage(LadderMatchResponse)
 
-class LadderStoreNotify(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _LADDERSTORENOTIFY
-
+LadderStoreNotify = _reflection.GeneratedProtocolMessageType('LadderStoreNotify', (_message.Message,), dict(
+  DESCRIPTOR = _LADDERSTORENOTIFY,
+  __module__ = 'ladder_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.LadderStoreNotify)
+  ))
+_sym_db.RegisterMessage(LadderStoreNotify)
 
-class LadderStoreBuyRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _LADDERSTOREBUYREQUEST
-
+LadderStoreBuyRequest = _reflection.GeneratedProtocolMessageType('LadderStoreBuyRequest', (_message.Message,), dict(
+  DESCRIPTOR = _LADDERSTOREBUYREQUEST,
+  __module__ = 'ladder_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.LadderStoreBuyRequest)
+  ))
+_sym_db.RegisterMessage(LadderStoreBuyRequest)
 
-class LadderStoreBuyResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _LADDERSTOREBUYRESPONSE
-
+LadderStoreBuyResponse = _reflection.GeneratedProtocolMessageType('LadderStoreBuyResponse', (_message.Message,), dict(
+  DESCRIPTOR = _LADDERSTOREBUYRESPONSE,
+  __module__ = 'ladder_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.LadderStoreBuyResponse)
+  ))
+_sym_db.RegisterMessage(LadderStoreBuyResponse)
 
 
 # @@protoc_insertion_point(module_scope)

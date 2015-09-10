@@ -4,18 +4,25 @@
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
+from google.protobuf import symbol_database as _symbol_database
 from google.protobuf import descriptor_pb2
 # @@protoc_insertion_point(imports)
 
+_sym_db = _symbol_database.Default()
 
-import common_pb2
-import package_pb2
+
+import common_pb2 as common__pb2
+import package_pb2 as package__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='training.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\x0etraining.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"R\n\x08Training\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0b\n\x03oid\x18\x02 \x02(\x05\x12-\n\x04item\x18\x03 \x01(\x0b\x32\x1f.Dianjing.protocol.TrainingItem\"~\n\x13TrainingStoreNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12.\n\ttrainings\x18\x03 \x03(\x0b\x32\x1b.Dianjing.protocol.Training\"9\n\x19TrainingStoreRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t\".\n\x1bTrainingStoreRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"<\n\x1cTrainingStoreRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"y\n\x0eTrainingNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12.\n\ttrainings\x18\x03 \x03(\x0b\x32\x1b.Dianjing.protocol.Training\"4\n\x14TrainingRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t\"1\n\x12TrainingBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"3\n\x13TrainingBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+  syntax='proto2',
+  serialized_pb=b'\n\x0etraining.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"R\n\x08Training\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0b\n\x03oid\x18\x02 \x02(\x05\x12-\n\x04item\x18\x03 \x01(\x0b\x32\x1f.Dianjing.protocol.TrainingItem\"~\n\x13TrainingStoreNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12.\n\ttrainings\x18\x03 \x03(\x0b\x32\x1b.Dianjing.protocol.Training\"9\n\x19TrainingStoreRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t\".\n\x1bTrainingStoreRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"<\n\x1cTrainingStoreRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"y\n\x0eTrainingNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12.\n\ttrainings\x18\x03 \x03(\x0b\x32\x1b.Dianjing.protocol.Training\"4\n\x14TrainingRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t\"1\n\x12TrainingBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"3\n\x13TrainingBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c'
+  ,
+  dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
@@ -30,7 +37,7 @@ _TRAINING = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='id', full_name='Dianjing.protocol.Training.id', index=0,
       number=1, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -56,7 +63,10 @@ _TRAINING = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=66,
   serialized_end=148,
 )
@@ -72,7 +82,7 @@ _TRAININGSTORENOTIFY = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.TrainingStoreNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -98,7 +108,10 @@ _TRAININGSTORENOTIFY = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=150,
   serialized_end=276,
 )
@@ -114,7 +127,7 @@ _TRAININGSTOREREMOVENOTIFY = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.TrainingStoreRemoveNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -133,7 +146,10 @@ _TRAININGSTOREREMOVENOTIFY = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=278,
   serialized_end=335,
 )
@@ -149,7 +165,7 @@ _TRAININGSTOREREFRESHREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.TrainingStoreRefreshRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -161,7 +177,10 @@ _TRAININGSTOREREFRESHREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=337,
   serialized_end=383,
 )
@@ -184,7 +203,7 @@ _TRAININGSTOREREFRESHRESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.TrainingStoreRefreshResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -196,7 +215,10 @@ _TRAININGSTOREREFRESHRESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=385,
   serialized_end=445,
 )
@@ -212,7 +234,7 @@ _TRAININGNOTIFY = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.TrainingNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -238,7 +260,10 @@ _TRAININGNOTIFY = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=447,
   serialized_end=568,
 )
@@ -254,7 +279,7 @@ _TRAININGREMOVENOTIFY = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.TrainingRemoveNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -273,7 +298,10 @@ _TRAININGREMOVENOTIFY = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=570,
   serialized_end=622,
 )
@@ -289,14 +317,14 @@ _TRAININGBUYREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.TrainingBuyRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='id', full_name='Dianjing.protocol.TrainingBuyRequest.id', index=1,
       number=2, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -308,7 +336,10 @@ _TRAININGBUYREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=624,
   serialized_end=673,
 )
@@ -331,7 +362,7 @@ _TRAININGBUYRESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.TrainingBuyResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -343,15 +374,18 @@ _TRAININGBUYRESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=675,
   serialized_end=726,
 )
 
-_TRAINING.fields_by_name['item'].message_type = package_pb2._TRAININGITEM
-_TRAININGSTORENOTIFY.fields_by_name['act'].enum_type = common_pb2._ACTION
+_TRAINING.fields_by_name['item'].message_type = package__pb2._TRAININGITEM
+_TRAININGSTORENOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _TRAININGSTORENOTIFY.fields_by_name['trainings'].message_type = _TRAINING
-_TRAININGNOTIFY.fields_by_name['act'].enum_type = common_pb2._ACTION
+_TRAININGNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _TRAININGNOTIFY.fields_by_name['trainings'].message_type = _TRAINING
 DESCRIPTOR.message_types_by_name['Training'] = _TRAINING
 DESCRIPTOR.message_types_by_name['TrainingStoreNotify'] = _TRAININGSTORENOTIFY
@@ -363,59 +397,68 @@ DESCRIPTOR.message_types_by_name['TrainingRemoveNotify'] = _TRAININGREMOVENOTIFY
 DESCRIPTOR.message_types_by_name['TrainingBuyRequest'] = _TRAININGBUYREQUEST
 DESCRIPTOR.message_types_by_name['TrainingBuyResponse'] = _TRAININGBUYRESPONSE
 
-class Training(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _TRAINING
-
+Training = _reflection.GeneratedProtocolMessageType('Training', (_message.Message,), dict(
+  DESCRIPTOR = _TRAINING,
+  __module__ = 'training_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.Training)
+  ))
+_sym_db.RegisterMessage(Training)
 
-class TrainingStoreNotify(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _TRAININGSTORENOTIFY
-
+TrainingStoreNotify = _reflection.GeneratedProtocolMessageType('TrainingStoreNotify', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGSTORENOTIFY,
+  __module__ = 'training_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingStoreNotify)
+  ))
+_sym_db.RegisterMessage(TrainingStoreNotify)
 
-class TrainingStoreRemoveNotify(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _TRAININGSTOREREMOVENOTIFY
-
+TrainingStoreRemoveNotify = _reflection.GeneratedProtocolMessageType('TrainingStoreRemoveNotify', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGSTOREREMOVENOTIFY,
+  __module__ = 'training_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingStoreRemoveNotify)
+  ))
+_sym_db.RegisterMessage(TrainingStoreRemoveNotify)
 
-class TrainingStoreRefreshRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _TRAININGSTOREREFRESHREQUEST
-
+TrainingStoreRefreshRequest = _reflection.GeneratedProtocolMessageType('TrainingStoreRefreshRequest', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGSTOREREFRESHREQUEST,
+  __module__ = 'training_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingStoreRefreshRequest)
+  ))
+_sym_db.RegisterMessage(TrainingStoreRefreshRequest)
 
-class TrainingStoreRefreshResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _TRAININGSTOREREFRESHRESPONSE
-
+TrainingStoreRefreshResponse = _reflection.GeneratedProtocolMessageType('TrainingStoreRefreshResponse', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGSTOREREFRESHRESPONSE,
+  __module__ = 'training_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingStoreRefreshResponse)
+  ))
+_sym_db.RegisterMessage(TrainingStoreRefreshResponse)
 
-class TrainingNotify(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _TRAININGNOTIFY
-
+TrainingNotify = _reflection.GeneratedProtocolMessageType('TrainingNotify', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGNOTIFY,
+  __module__ = 'training_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingNotify)
+  ))
+_sym_db.RegisterMessage(TrainingNotify)
 
-class TrainingRemoveNotify(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _TRAININGREMOVENOTIFY
-
+TrainingRemoveNotify = _reflection.GeneratedProtocolMessageType('TrainingRemoveNotify', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGREMOVENOTIFY,
+  __module__ = 'training_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingRemoveNotify)
+  ))
+_sym_db.RegisterMessage(TrainingRemoveNotify)
 
-class TrainingBuyRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _TRAININGBUYREQUEST
-
+TrainingBuyRequest = _reflection.GeneratedProtocolMessageType('TrainingBuyRequest', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGBUYREQUEST,
+  __module__ = 'training_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingBuyRequest)
+  ))
+_sym_db.RegisterMessage(TrainingBuyRequest)
 
-class TrainingBuyResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _TRAININGBUYRESPONSE
-
+TrainingBuyResponse = _reflection.GeneratedProtocolMessageType('TrainingBuyResponse', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGBUYRESPONSE,
+  __module__ = 'training_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingBuyResponse)
+  ))
+_sym_db.RegisterMessage(TrainingBuyResponse)
 
 
 # @@protoc_insertion_point(module_scope)

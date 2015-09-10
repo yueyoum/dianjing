@@ -4,18 +4,25 @@
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
+from google.protobuf import symbol_database as _symbol_database
 from google.protobuf import descriptor_pb2
 # @@protoc_insertion_point(imports)
 
+_sym_db = _symbol_database.Default()
 
-import match_pb2
-import package_pb2
+
+import match_pb2 as match__pb2
+import package_pb2 as package__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='challenge.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\x0f\x63hallenge.proto\x12\x11\x44ianjing.protocol\x1a\x0bmatch.proto\x1a\rpackage.proto\".\n\x0f\x43hallengeNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"(\n\x15\x43hallengeStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\x8a\x01\n\x16\x43hallengeStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\x12%\n\x04\x64rop\x18\x04 \x01(\x0b\x32\x17.Dianjing.protocol.Drop')
+  syntax='proto2',
+  serialized_pb=b'\n\x0f\x63hallenge.proto\x12\x11\x44ianjing.protocol\x1a\x0bmatch.proto\x1a\rpackage.proto\".\n\x0f\x43hallengeNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"(\n\x15\x43hallengeStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\x8a\x01\n\x16\x43hallengeStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\x12%\n\x04\x64rop\x18\x04 \x01(\x0b\x32\x17.Dianjing.protocol.Drop'
+  ,
+  dependencies=[match__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
@@ -30,7 +37,7 @@ _CHALLENGENOTIFY = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.ChallengeNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -49,7 +56,10 @@ _CHALLENGENOTIFY = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=66,
   serialized_end=112,
 )
@@ -65,7 +75,7 @@ _CHALLENGESTARTREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.ChallengeStartRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -77,7 +87,10 @@ _CHALLENGESTARTREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=114,
   serialized_end=154,
 )
@@ -100,7 +113,7 @@ _CHALLENGESTARTRESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.ChallengeStartResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -126,34 +139,40 @@ _CHALLENGESTARTRESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=157,
   serialized_end=295,
 )
 
-_CHALLENGESTARTRESPONSE.fields_by_name['match'].message_type = match_pb2._CLUBMATCH
-_CHALLENGESTARTRESPONSE.fields_by_name['drop'].message_type = package_pb2._DROP
+_CHALLENGESTARTRESPONSE.fields_by_name['match'].message_type = match__pb2._CLUBMATCH
+_CHALLENGESTARTRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 DESCRIPTOR.message_types_by_name['ChallengeNotify'] = _CHALLENGENOTIFY
 DESCRIPTOR.message_types_by_name['ChallengeStartRequest'] = _CHALLENGESTARTREQUEST
 DESCRIPTOR.message_types_by_name['ChallengeStartResponse'] = _CHALLENGESTARTRESPONSE
 
-class ChallengeNotify(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _CHALLENGENOTIFY
-
+ChallengeNotify = _reflection.GeneratedProtocolMessageType('ChallengeNotify', (_message.Message,), dict(
+  DESCRIPTOR = _CHALLENGENOTIFY,
+  __module__ = 'challenge_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChallengeNotify)
+  ))
+_sym_db.RegisterMessage(ChallengeNotify)
 
-class ChallengeStartRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _CHALLENGESTARTREQUEST
-
+ChallengeStartRequest = _reflection.GeneratedProtocolMessageType('ChallengeStartRequest', (_message.Message,), dict(
+  DESCRIPTOR = _CHALLENGESTARTREQUEST,
+  __module__ = 'challenge_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChallengeStartRequest)
+  ))
+_sym_db.RegisterMessage(ChallengeStartRequest)
 
-class ChallengeStartResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _CHALLENGESTARTRESPONSE
-
+ChallengeStartResponse = _reflection.GeneratedProtocolMessageType('ChallengeStartResponse', (_message.Message,), dict(
+  DESCRIPTOR = _CHALLENGESTARTRESPONSE,
+  __module__ = 'challenge_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChallengeStartResponse)
+  ))
+_sym_db.RegisterMessage(ChallengeStartResponse)
 
 
 # @@protoc_insertion_point(module_scope)

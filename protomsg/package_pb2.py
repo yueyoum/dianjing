@@ -4,8 +4,11 @@
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
+from google.protobuf import symbol_database as _symbol_database
 from google.protobuf import descriptor_pb2
 # @@protoc_insertion_point(imports)
+
+_sym_db = _symbol_database.Default()
 
 
 
@@ -13,7 +16,10 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='package.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\rpackage.proto\x12\x11\x44ianjing.protocol\".\n\x08Resource\x12\x13\n\x0bresource_id\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\x05\"\x95\x01\n\x04\x44rop\x12.\n\tresources\x18\x01 \x03(\x0b\x32\x1b.Dianjing.protocol.Resource\x12\x34\n\ttrainings\x18\x02 \x03(\x0b\x32!.Dianjing.protocol.Drop.Trainings\x1a\'\n\tTrainings\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0e\n\x06\x61mount\x18\x02 \x02(\x05\">\n\x0cTrainingItem\x12.\n\tresources\x18\x01 \x03(\x0b\x32\x1b.Dianjing.protocol.Resource')
+  syntax='proto2',
+  serialized_pb=b'\n\rpackage.proto\x12\x11\x44ianjing.protocol\".\n\x08Resource\x12\x13\n\x0bresource_id\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\x05\"\x95\x01\n\x04\x44rop\x12.\n\tresources\x18\x01 \x03(\x0b\x32\x1b.Dianjing.protocol.Resource\x12\x34\n\ttrainings\x18\x02 \x03(\x0b\x32!.Dianjing.protocol.Drop.Trainings\x1a\'\n\tTrainings\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0e\n\x06\x61mount\x18\x02 \x02(\x05\">\n\x0cTrainingItem\x12.\n\tresources\x18\x01 \x03(\x0b\x32\x1b.Dianjing.protocol.Resource'
+)
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
@@ -28,7 +34,7 @@ _RESOURCE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='resource_id', full_name='Dianjing.protocol.Resource.resource_id', index=0,
       number=1, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -47,7 +53,10 @@ _RESOURCE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=36,
   serialized_end=82,
 )
@@ -82,7 +91,10 @@ _DROP_TRAININGS = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=195,
   serialized_end=234,
 )
@@ -116,7 +128,10 @@ _DROP = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=85,
   serialized_end=234,
 )
@@ -144,12 +159,15 @@ _TRAININGITEM = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=236,
   serialized_end=298,
 )
 
-_DROP_TRAININGS.containing_type = _DROP;
+_DROP_TRAININGS.containing_type = _DROP
 _DROP.fields_by_name['resources'].message_type = _RESOURCE
 _DROP.fields_by_name['trainings'].message_type = _DROP_TRAININGS
 _TRAININGITEM.fields_by_name['resources'].message_type = _RESOURCE
@@ -157,29 +175,34 @@ DESCRIPTOR.message_types_by_name['Resource'] = _RESOURCE
 DESCRIPTOR.message_types_by_name['Drop'] = _DROP
 DESCRIPTOR.message_types_by_name['TrainingItem'] = _TRAININGITEM
 
-class Resource(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _RESOURCE
-
+Resource = _reflection.GeneratedProtocolMessageType('Resource', (_message.Message,), dict(
+  DESCRIPTOR = _RESOURCE,
+  __module__ = 'package_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.Resource)
+  ))
+_sym_db.RegisterMessage(Resource)
 
-class Drop(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
+Drop = _reflection.GeneratedProtocolMessageType('Drop', (_message.Message,), dict(
 
-  class Trainings(_message.Message):
-    __metaclass__ = _reflection.GeneratedProtocolMessageType
-    DESCRIPTOR = _DROP_TRAININGS
-
+  Trainings = _reflection.GeneratedProtocolMessageType('Trainings', (_message.Message,), dict(
+    DESCRIPTOR = _DROP_TRAININGS,
+    __module__ = 'package_pb2'
     # @@protoc_insertion_point(class_scope:Dianjing.protocol.Drop.Trainings)
-  DESCRIPTOR = _DROP
-
+    ))
+  ,
+  DESCRIPTOR = _DROP,
+  __module__ = 'package_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.Drop)
+  ))
+_sym_db.RegisterMessage(Drop)
+_sym_db.RegisterMessage(Drop.Trainings)
 
-class TrainingItem(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _TRAININGITEM
-
+TrainingItem = _reflection.GeneratedProtocolMessageType('TrainingItem', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGITEM,
+  __module__ = 'package_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingItem)
+  ))
+_sym_db.RegisterMessage(TrainingItem)
 
 
 # @@protoc_insertion_point(module_scope)

@@ -5,17 +5,24 @@ from google.protobuf.internal import enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
+from google.protobuf import symbol_database as _symbol_database
 from google.protobuf import descriptor_pb2
 # @@protoc_insertion_point(imports)
 
+_sym_db = _symbol_database.Default()
 
-import club_pb2
+
+import club_pb2 as club__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='cup.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\tcup.proto\x12\x11\x44ianjing.protocol\x1a\nclub.proto\"\xd1\x02\n\x03\x43up\x12\r\n\x05order\x18\x01 \x02(\x05\x12.\n\rlast_champion\x18\x02 \x01(\x0b\x32\x17.Dianjing.protocol.Club\x12.\n\x07process\x18\x03 \x02(\x0e\x32\x1d.Dianjing.protocol.CupProcess\x12\x0e\n\x06joined\x18\x04 \x02(\x08\x12&\n\x05\x63lubs\x18\x05 \x03(\x0b\x32\x17.Dianjing.protocol.Club\x12/\n\x06levels\x18\x06 \x03(\x0b\x32\x1f.Dianjing.protocol.Cup.CupLevel\x12\x10\n\x08top_four\x18\x07 \x03(\t\x1a`\n\x08\x43upLevel\x12.\n\x07process\x18\x01 \x02(\x0e\x32\x1d.Dianjing.protocol.CupProcess\x12\x12\n\nmatch_time\x18\x02 \x02(\x03\x12\x10\n\x08\x63lub_ids\x18\x03 \x03(\t\"\'\n\x14\x43upInfomationRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"Z\n\x15\x43upInfomationResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12#\n\x03\x63up\x18\x03 \x02(\x0b\x32\x16.Dianjing.protocol.Cup\"!\n\x0e\x43upJoinRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"T\n\x0f\x43upJoinResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12#\n\x03\x63up\x18\x03 \x01(\x0b\x32\x16.Dianjing.protocol.Cup*\xb2\x01\n\nCupProcess\x12\x16\n\x11\x43UP_PROCESS_APPLY\x10\xe8\x07\x12\x18\n\x13\x43UP_PROCESS_PREPARE\x10\xe9\x07\x12\x12\n\x0e\x43UP_PROCESS_32\x10 \x12\x12\n\x0e\x43UP_PROCESS_16\x10\x10\x12\x11\n\rCUP_PROCESS_8\x10\x08\x12\x11\n\rCUP_PROCESS_4\x10\x04\x12\x11\n\rCUP_PROCESS_2\x10\x02\x12\x11\n\rCUP_PROCESS_1\x10\x01')
+  syntax='proto2',
+  serialized_pb=b'\n\tcup.proto\x12\x11\x44ianjing.protocol\x1a\nclub.proto\"\xd1\x02\n\x03\x43up\x12\r\n\x05order\x18\x01 \x02(\x05\x12.\n\rlast_champion\x18\x02 \x01(\x0b\x32\x17.Dianjing.protocol.Club\x12.\n\x07process\x18\x03 \x02(\x0e\x32\x1d.Dianjing.protocol.CupProcess\x12\x0e\n\x06joined\x18\x04 \x02(\x08\x12&\n\x05\x63lubs\x18\x05 \x03(\x0b\x32\x17.Dianjing.protocol.Club\x12/\n\x06levels\x18\x06 \x03(\x0b\x32\x1f.Dianjing.protocol.Cup.CupLevel\x12\x10\n\x08top_four\x18\x07 \x03(\t\x1a`\n\x08\x43upLevel\x12.\n\x07process\x18\x01 \x02(\x0e\x32\x1d.Dianjing.protocol.CupProcess\x12\x12\n\nmatch_time\x18\x02 \x02(\x03\x12\x10\n\x08\x63lub_ids\x18\x03 \x03(\t\"\'\n\x14\x43upInfomationRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"Z\n\x15\x43upInfomationResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12#\n\x03\x63up\x18\x03 \x02(\x0b\x32\x16.Dianjing.protocol.Cup\"!\n\x0e\x43upJoinRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"T\n\x0f\x43upJoinResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12#\n\x03\x63up\x18\x03 \x01(\x0b\x32\x16.Dianjing.protocol.Cup*\xb2\x01\n\nCupProcess\x12\x16\n\x11\x43UP_PROCESS_APPLY\x10\xe8\x07\x12\x18\n\x13\x43UP_PROCESS_PREPARE\x10\xe9\x07\x12\x12\n\x0e\x43UP_PROCESS_32\x10 \x12\x12\n\x0e\x43UP_PROCESS_16\x10\x10\x12\x11\n\rCUP_PROCESS_8\x10\x08\x12\x11\n\rCUP_PROCESS_4\x10\x04\x12\x11\n\rCUP_PROCESS_2\x10\x02\x12\x11\n\rCUP_PROCESS_1\x10\x01'
+  ,
+  dependencies=[club__pb2.DESCRIPTOR,])
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 _CUPPROCESS = _descriptor.EnumDescriptor(
   name='CupProcess',
@@ -61,6 +68,7 @@ _CUPPROCESS = _descriptor.EnumDescriptor(
   serialized_start=639,
   serialized_end=817,
 )
+_sym_db.RegisterEnumDescriptor(_CUPPROCESS)
 
 CupProcess = enum_type_wrapper.EnumTypeWrapper(_CUPPROCESS)
 CUP_PROCESS_APPLY = 1000
@@ -110,7 +118,10 @@ _CUP_CUPLEVEL = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=286,
   serialized_end=382,
 )
@@ -179,7 +190,10 @@ _CUP = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=45,
   serialized_end=382,
 )
@@ -195,7 +209,7 @@ _CUPINFOMATIONREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.CupInfomationRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -207,7 +221,10 @@ _CUPINFOMATIONREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=384,
   serialized_end=423,
 )
@@ -230,7 +247,7 @@ _CUPINFOMATIONRESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.CupInfomationResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -249,7 +266,10 @@ _CUPINFOMATIONRESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=425,
   serialized_end=515,
 )
@@ -265,7 +285,7 @@ _CUPJOINREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.CupJoinRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -277,7 +297,10 @@ _CUPJOINREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=517,
   serialized_end=550,
 )
@@ -300,7 +323,7 @@ _CUPJOINRESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.CupJoinResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -319,16 +342,19 @@ _CUPJOINRESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=552,
   serialized_end=636,
 )
 
 _CUP_CUPLEVEL.fields_by_name['process'].enum_type = _CUPPROCESS
-_CUP_CUPLEVEL.containing_type = _CUP;
-_CUP.fields_by_name['last_champion'].message_type = club_pb2._CLUB
+_CUP_CUPLEVEL.containing_type = _CUP
+_CUP.fields_by_name['last_champion'].message_type = club__pb2._CLUB
 _CUP.fields_by_name['process'].enum_type = _CUPPROCESS
-_CUP.fields_by_name['clubs'].message_type = club_pb2._CLUB
+_CUP.fields_by_name['clubs'].message_type = club__pb2._CLUB
 _CUP.fields_by_name['levels'].message_type = _CUP_CUPLEVEL
 _CUPINFOMATIONRESPONSE.fields_by_name['cup'].message_type = _CUP
 _CUPJOINRESPONSE.fields_by_name['cup'].message_type = _CUP
@@ -337,42 +363,50 @@ DESCRIPTOR.message_types_by_name['CupInfomationRequest'] = _CUPINFOMATIONREQUEST
 DESCRIPTOR.message_types_by_name['CupInfomationResponse'] = _CUPINFOMATIONRESPONSE
 DESCRIPTOR.message_types_by_name['CupJoinRequest'] = _CUPJOINREQUEST
 DESCRIPTOR.message_types_by_name['CupJoinResponse'] = _CUPJOINRESPONSE
+DESCRIPTOR.enum_types_by_name['CupProcess'] = _CUPPROCESS
 
-class Cup(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
+Cup = _reflection.GeneratedProtocolMessageType('Cup', (_message.Message,), dict(
 
-  class CupLevel(_message.Message):
-    __metaclass__ = _reflection.GeneratedProtocolMessageType
-    DESCRIPTOR = _CUP_CUPLEVEL
-
+  CupLevel = _reflection.GeneratedProtocolMessageType('CupLevel', (_message.Message,), dict(
+    DESCRIPTOR = _CUP_CUPLEVEL,
+    __module__ = 'cup_pb2'
     # @@protoc_insertion_point(class_scope:Dianjing.protocol.Cup.CupLevel)
-  DESCRIPTOR = _CUP
-
+    ))
+  ,
+  DESCRIPTOR = _CUP,
+  __module__ = 'cup_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.Cup)
+  ))
+_sym_db.RegisterMessage(Cup)
+_sym_db.RegisterMessage(Cup.CupLevel)
 
-class CupInfomationRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _CUPINFOMATIONREQUEST
-
+CupInfomationRequest = _reflection.GeneratedProtocolMessageType('CupInfomationRequest', (_message.Message,), dict(
+  DESCRIPTOR = _CUPINFOMATIONREQUEST,
+  __module__ = 'cup_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.CupInfomationRequest)
+  ))
+_sym_db.RegisterMessage(CupInfomationRequest)
 
-class CupInfomationResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _CUPINFOMATIONRESPONSE
-
+CupInfomationResponse = _reflection.GeneratedProtocolMessageType('CupInfomationResponse', (_message.Message,), dict(
+  DESCRIPTOR = _CUPINFOMATIONRESPONSE,
+  __module__ = 'cup_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.CupInfomationResponse)
+  ))
+_sym_db.RegisterMessage(CupInfomationResponse)
 
-class CupJoinRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _CUPJOINREQUEST
-
+CupJoinRequest = _reflection.GeneratedProtocolMessageType('CupJoinRequest', (_message.Message,), dict(
+  DESCRIPTOR = _CUPJOINREQUEST,
+  __module__ = 'cup_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.CupJoinRequest)
+  ))
+_sym_db.RegisterMessage(CupJoinRequest)
 
-class CupJoinResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _CUPJOINRESPONSE
-
+CupJoinResponse = _reflection.GeneratedProtocolMessageType('CupJoinResponse', (_message.Message,), dict(
+  DESCRIPTOR = _CUPJOINRESPONSE,
+  __module__ = 'cup_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.CupJoinResponse)
+  ))
+_sym_db.RegisterMessage(CupJoinResponse)
 
 
 # @@protoc_insertion_point(module_scope)

@@ -5,17 +5,24 @@ from google.protobuf.internal import enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
+from google.protobuf import symbol_database as _symbol_database
 from google.protobuf import descriptor_pb2
 # @@protoc_insertion_point(imports)
 
+_sym_db = _symbol_database.Default()
 
-import common_pb2
+
+import common_pb2 as common__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='chat.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\nchat.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"6\n\rChatCharacter\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0b\n\x03vip\x18\x03 \x02(\x05\"{\n\x0b\x43hatMessage\x12/\n\x07\x63hannel\x18\x01 \x02(\x0e\x32\x1e.Dianjing.protocol.ChatChannel\x12.\n\x04\x63har\x18\x02 \x02(\x0b\x32 .Dianjing.protocol.ChatCharacter\x12\x0b\n\x03msg\x18\x03 \x02(\t\"s\n\nChatNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12,\n\x04msgs\x18\x03 \x03(\x0b\x32\x1e.Dianjing.protocol.ChatMessage\"`\n\x0f\x43hatSendRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x07\x63hannel\x18\x02 \x02(\x0e\x32\x1e.Dianjing.protocol.ChatChannel\x12\x0b\n\x03msg\x18\x03 \x02(\t\"0\n\x10\x43hatSendResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*W\n\x0b\x43hatChannel\x12\x17\n\x13\x43HAT_CHANNEL_SYSTEM\x10\x01\x12\x17\n\x13\x43HAT_CHANNEL_PUBLIC\x10\x02\x12\x16\n\x12\x43HAT_CHANNEL_UNION\x10\x03')
+  syntax='proto2',
+  serialized_pb=b'\n\nchat.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"6\n\rChatCharacter\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0b\n\x03vip\x18\x03 \x02(\x05\"{\n\x0b\x43hatMessage\x12/\n\x07\x63hannel\x18\x01 \x02(\x0e\x32\x1e.Dianjing.protocol.ChatChannel\x12.\n\x04\x63har\x18\x02 \x02(\x0b\x32 .Dianjing.protocol.ChatCharacter\x12\x0b\n\x03msg\x18\x03 \x02(\t\"s\n\nChatNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12,\n\x04msgs\x18\x03 \x03(\x0b\x32\x1e.Dianjing.protocol.ChatMessage\"`\n\x0f\x43hatSendRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x07\x63hannel\x18\x02 \x02(\x0e\x32\x1e.Dianjing.protocol.ChatChannel\x12\x0b\n\x03msg\x18\x03 \x02(\t\"0\n\x10\x43hatSendResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*W\n\x0b\x43hatChannel\x12\x17\n\x13\x43HAT_CHANNEL_SYSTEM\x10\x01\x12\x17\n\x13\x43HAT_CHANNEL_PUBLIC\x10\x02\x12\x16\n\x12\x43HAT_CHANNEL_UNION\x10\x03'
+  ,
+  dependencies=[common__pb2.DESCRIPTOR,])
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 _CHATCHANNEL = _descriptor.EnumDescriptor(
   name='ChatChannel',
@@ -41,6 +48,7 @@ _CHATCHANNEL = _descriptor.EnumDescriptor(
   serialized_start=493,
   serialized_end=580,
 )
+_sym_db.RegisterEnumDescriptor(_CHATCHANNEL)
 
 ChatChannel = enum_type_wrapper.EnumTypeWrapper(_CHATCHANNEL)
 CHAT_CHANNEL_SYSTEM = 1
@@ -59,14 +67,14 @@ _CHATCHARACTER = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='id', full_name='Dianjing.protocol.ChatCharacter.id', index=0,
       number=1, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='name', full_name='Dianjing.protocol.ChatCharacter.name', index=1,
       number=2, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -85,7 +93,10 @@ _CHATCHARACTER = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=47,
   serialized_end=101,
 )
@@ -115,7 +126,7 @@ _CHATMESSAGE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='msg', full_name='Dianjing.protocol.ChatMessage.msg', index=2,
       number=3, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -127,7 +138,10 @@ _CHATMESSAGE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=103,
   serialized_end=226,
 )
@@ -143,7 +157,7 @@ _CHATNOTIFY = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.ChatNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -169,7 +183,10 @@ _CHATNOTIFY = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=228,
   serialized_end=343,
 )
@@ -185,7 +202,7 @@ _CHATSENDREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.ChatSendRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -199,7 +216,7 @@ _CHATSENDREQUEST = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='msg', full_name='Dianjing.protocol.ChatSendRequest.msg', index=2,
       number=3, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -211,7 +228,10 @@ _CHATSENDREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=345,
   serialized_end=441,
 )
@@ -234,7 +254,7 @@ _CHATSENDRESPONSE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='session', full_name='Dianjing.protocol.ChatSendResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value="",
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -246,14 +266,17 @@ _CHATSENDRESPONSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=443,
   serialized_end=491,
 )
 
 _CHATMESSAGE.fields_by_name['channel'].enum_type = _CHATCHANNEL
 _CHATMESSAGE.fields_by_name['char'].message_type = _CHATCHARACTER
-_CHATNOTIFY.fields_by_name['act'].enum_type = common_pb2._ACTION
+_CHATNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _CHATNOTIFY.fields_by_name['msgs'].message_type = _CHATMESSAGE
 _CHATSENDREQUEST.fields_by_name['channel'].enum_type = _CHATCHANNEL
 DESCRIPTOR.message_types_by_name['ChatCharacter'] = _CHATCHARACTER
@@ -261,36 +284,42 @@ DESCRIPTOR.message_types_by_name['ChatMessage'] = _CHATMESSAGE
 DESCRIPTOR.message_types_by_name['ChatNotify'] = _CHATNOTIFY
 DESCRIPTOR.message_types_by_name['ChatSendRequest'] = _CHATSENDREQUEST
 DESCRIPTOR.message_types_by_name['ChatSendResponse'] = _CHATSENDRESPONSE
+DESCRIPTOR.enum_types_by_name['ChatChannel'] = _CHATCHANNEL
 
-class ChatCharacter(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _CHATCHARACTER
-
+ChatCharacter = _reflection.GeneratedProtocolMessageType('ChatCharacter', (_message.Message,), dict(
+  DESCRIPTOR = _CHATCHARACTER,
+  __module__ = 'chat_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChatCharacter)
+  ))
+_sym_db.RegisterMessage(ChatCharacter)
 
-class ChatMessage(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _CHATMESSAGE
-
+ChatMessage = _reflection.GeneratedProtocolMessageType('ChatMessage', (_message.Message,), dict(
+  DESCRIPTOR = _CHATMESSAGE,
+  __module__ = 'chat_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChatMessage)
+  ))
+_sym_db.RegisterMessage(ChatMessage)
 
-class ChatNotify(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _CHATNOTIFY
-
+ChatNotify = _reflection.GeneratedProtocolMessageType('ChatNotify', (_message.Message,), dict(
+  DESCRIPTOR = _CHATNOTIFY,
+  __module__ = 'chat_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChatNotify)
+  ))
+_sym_db.RegisterMessage(ChatNotify)
 
-class ChatSendRequest(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _CHATSENDREQUEST
-
+ChatSendRequest = _reflection.GeneratedProtocolMessageType('ChatSendRequest', (_message.Message,), dict(
+  DESCRIPTOR = _CHATSENDREQUEST,
+  __module__ = 'chat_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChatSendRequest)
+  ))
+_sym_db.RegisterMessage(ChatSendRequest)
 
-class ChatSendResponse(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _CHATSENDRESPONSE
-
+ChatSendResponse = _reflection.GeneratedProtocolMessageType('ChatSendResponse', (_message.Message,), dict(
+  DESCRIPTOR = _CHATSENDRESPONSE,
+  __module__ = 'chat_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChatSendResponse)
+  ))
+_sym_db.RegisterMessage(ChatSendResponse)
 
 
 # @@protoc_insertion_point(module_scope)

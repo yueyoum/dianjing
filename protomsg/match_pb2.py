@@ -4,17 +4,24 @@
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
+from google.protobuf import symbol_database as _symbol_database
 from google.protobuf import descriptor_pb2
 # @@protoc_insertion_point(imports)
 
+_sym_db = _symbol_database.Default()
 
-import club_pb2
+
+import club_pb2 as club__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='match.proto',
   package='Dianjing.protocol',
-  serialized_pb='\n\x0bmatch.proto\x12\x11\x44ianjing.protocol\x1a\nclub.proto\"\xcc\x01\n\x05Round\x12\x13\n\x0bround_index\x18\x01 \x02(\x05\x12\x31\n\tstaff_one\x18\x02 \x02(\x0b\x32\x1e.Dianjing.protocol.Round.Staff\x12\x31\n\tstaff_two\x18\x03 \x02(\x0b\x32\x1e.Dianjing.protocol.Round.Staff\x1aH\n\x05Staff\x12\x0f\n\x07unit_id\x18\x01 \x02(\x05\x12\x17\n\x0f\x61\x64vantage_begin\x18\x02 \x02(\x05\x12\x15\n\radvantage_end\x18\x03 \x02(\x05\"t\n\x05Match\x12\x14\n\x0cstaff_one_id\x18\x01 \x02(\x05\x12\x14\n\x0cstaff_two_id\x18\x02 \x02(\x05\x12(\n\x06rounds\x18\x03 \x03(\x0b\x32\x18.Dianjing.protocol.Round\x12\x15\n\rstaff_one_win\x18\x04 \x02(\x08\"\xa0\x01\n\tClubMatch\x12)\n\x08\x63lub_one\x18\x01 \x02(\x0b\x32\x17.Dianjing.protocol.Club\x12)\n\x08\x63lub_two\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\x12\'\n\x05match\x18\x03 \x03(\x0b\x32\x18.Dianjing.protocol.Match\x12\x14\n\x0c\x63lub_one_win\x18\x04 \x02(\x08')
+  syntax='proto2',
+  serialized_pb=b'\n\x0bmatch.proto\x12\x11\x44ianjing.protocol\x1a\nclub.proto\"\xcc\x01\n\x05Round\x12\x13\n\x0bround_index\x18\x01 \x02(\x05\x12\x31\n\tstaff_one\x18\x02 \x02(\x0b\x32\x1e.Dianjing.protocol.Round.Staff\x12\x31\n\tstaff_two\x18\x03 \x02(\x0b\x32\x1e.Dianjing.protocol.Round.Staff\x1aH\n\x05Staff\x12\x0f\n\x07unit_id\x18\x01 \x02(\x05\x12\x17\n\x0f\x61\x64vantage_begin\x18\x02 \x02(\x05\x12\x15\n\radvantage_end\x18\x03 \x02(\x05\"t\n\x05Match\x12\x14\n\x0cstaff_one_id\x18\x01 \x02(\x05\x12\x14\n\x0cstaff_two_id\x18\x02 \x02(\x05\x12(\n\x06rounds\x18\x03 \x03(\x0b\x32\x18.Dianjing.protocol.Round\x12\x15\n\rstaff_one_win\x18\x04 \x02(\x08\"\xa0\x01\n\tClubMatch\x12)\n\x08\x63lub_one\x18\x01 \x02(\x0b\x32\x17.Dianjing.protocol.Club\x12)\n\x08\x63lub_two\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\x12\'\n\x05match\x18\x03 \x03(\x0b\x32\x18.Dianjing.protocol.Match\x12\x14\n\x0c\x63lub_one_win\x18\x04 \x02(\x08'
+  ,
+  dependencies=[club__pb2.DESCRIPTOR,])
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
@@ -55,7 +62,10 @@ _ROUND_STAFF = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=179,
   serialized_end=251,
 )
@@ -96,7 +106,10 @@ _ROUND = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=47,
   serialized_end=251,
 )
@@ -145,7 +158,10 @@ _MATCH = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=253,
   serialized_end=369,
 )
@@ -194,45 +210,53 @@ _CLUBMATCH = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=372,
   serialized_end=532,
 )
 
-_ROUND_STAFF.containing_type = _ROUND;
+_ROUND_STAFF.containing_type = _ROUND
 _ROUND.fields_by_name['staff_one'].message_type = _ROUND_STAFF
 _ROUND.fields_by_name['staff_two'].message_type = _ROUND_STAFF
 _MATCH.fields_by_name['rounds'].message_type = _ROUND
-_CLUBMATCH.fields_by_name['club_one'].message_type = club_pb2._CLUB
-_CLUBMATCH.fields_by_name['club_two'].message_type = club_pb2._CLUB
+_CLUBMATCH.fields_by_name['club_one'].message_type = club__pb2._CLUB
+_CLUBMATCH.fields_by_name['club_two'].message_type = club__pb2._CLUB
 _CLUBMATCH.fields_by_name['match'].message_type = _MATCH
 DESCRIPTOR.message_types_by_name['Round'] = _ROUND
 DESCRIPTOR.message_types_by_name['Match'] = _MATCH
 DESCRIPTOR.message_types_by_name['ClubMatch'] = _CLUBMATCH
 
-class Round(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
+Round = _reflection.GeneratedProtocolMessageType('Round', (_message.Message,), dict(
 
-  class Staff(_message.Message):
-    __metaclass__ = _reflection.GeneratedProtocolMessageType
-    DESCRIPTOR = _ROUND_STAFF
-
+  Staff = _reflection.GeneratedProtocolMessageType('Staff', (_message.Message,), dict(
+    DESCRIPTOR = _ROUND_STAFF,
+    __module__ = 'match_pb2'
     # @@protoc_insertion_point(class_scope:Dianjing.protocol.Round.Staff)
-  DESCRIPTOR = _ROUND
-
+    ))
+  ,
+  DESCRIPTOR = _ROUND,
+  __module__ = 'match_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.Round)
+  ))
+_sym_db.RegisterMessage(Round)
+_sym_db.RegisterMessage(Round.Staff)
 
-class Match(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _MATCH
-
+Match = _reflection.GeneratedProtocolMessageType('Match', (_message.Message,), dict(
+  DESCRIPTOR = _MATCH,
+  __module__ = 'match_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.Match)
+  ))
+_sym_db.RegisterMessage(Match)
 
-class ClubMatch(_message.Message):
-  __metaclass__ = _reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _CLUBMATCH
-
+ClubMatch = _reflection.GeneratedProtocolMessageType('ClubMatch', (_message.Message,), dict(
+  DESCRIPTOR = _CLUBMATCH,
+  __module__ = 'match_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.ClubMatch)
+  ))
+_sym_db.RegisterMessage(ClubMatch)
 
 
 # @@protoc_insertion_point(module_scope)
