@@ -10,10 +10,12 @@ Description:
 from config.base import ConfigBase
 
 class LadderRankReward(object):
-    __slots__ = ['id', 'package']
+    __slots__ = ['id', 'package', 'mail_title', 'mail_content']
     def __init__(self):
         self.id = 0
         self.package = 0
+        self.mail_title = 0
+        self.mail_content = 0
 
 
 class LadderScoreStore(object):
@@ -51,6 +53,10 @@ class ConfigLadderRankReward(ConfigBase):
 
     @classmethod
     def get_reward_object(cls, rank):
+        """
+
+        :rtype : LadderRankReward
+        """
         for i in range(cls.RANKS_AMOUNT):
             if cls.RANKS[i].id > rank:
                 return cls.RANKS[i-1]

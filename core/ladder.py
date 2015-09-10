@@ -22,6 +22,7 @@ from core.common import Common
 from core.package import Drop
 from core.resource import Resource
 from core.notification import Notification
+from core.mail import MailManager
 
 from core.lock import Lock, LadderLock, LadderNPCLock, LadderStoreLock, LockTimeOut
 
@@ -174,6 +175,24 @@ class Ladder(object):
         self.fill_npc()
         self.add_self_to_ladder()
         self.create_index()
+
+
+    @classmethod
+    def send_rank_reward(cls, server_id):
+        # TODO 不能全发，过滤死号
+        for doc in MongoDB.get(server_id).mongo.ladder.find():
+            char_id = doc['_id']
+            rank = doc['rank']
+
+            config = ConfigLadderRankReward.get_reward_object(rank)
+            drop = Drop.generate(config.package)
+
+            m = MailManager(server_id, char_id)
+            m.add(
+                title=config.mail_title,
+                content=config.mail_content.format(rank),
+                attachment=drop.to_json(),
+            )
 
 
     def create_index(self):

@@ -121,7 +121,7 @@ class MailManager(object):
         if not attachment:
             raise GameException( ConfigErrorMessage.get_error_id("MAIL_HAS_NO_ATTACHMENT") )
 
-        drop = Drop.loads(attachment)
+        drop = Drop.loads_from_json(attachment)
         Resource(self.server_id, self.char_id).add_package(drop)
 
         self.mongo.mail.update_one(
@@ -130,7 +130,6 @@ class MailManager(object):
         )
 
         self.send_notify(act=ACT_UPDATE, ids=[mail_id])
-
         return drop
 
 
@@ -203,6 +202,6 @@ class MailManager(object):
             notify_mail.remained_seconds = remained_seconds
 
             if v['attachment']:
-                notify_mail.attachment.MergeFrom(Drop.loads(v['attachment']).make_protomsg())
+                notify_mail.attachment.MergeFrom(Drop.loads_from_json(v['attachment']).make_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)

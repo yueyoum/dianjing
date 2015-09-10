@@ -191,7 +191,7 @@ class LeagueMatch(object):
         content = u'联赛日奖励'
 
         config = ConfigLeague.get(1)
-        attachment = Drop.generate(config.day_reward).dumps()
+        attachment = Drop.generate(config.day_reward).to_json()
 
         club.send_day_mail(title, content, attachment)
 
