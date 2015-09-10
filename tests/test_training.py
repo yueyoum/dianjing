@@ -20,6 +20,13 @@ from config import ConfigTraining, ConfigErrorMessage, ConfigStaff
 
 
 class TestTrainingStore(object):
+    def setup(self):
+        refreshed = TrainingStore(1, 1).refresh()
+        self.tid = random.choice(refreshed.keys())
+        oid = refreshed[self.tid]['oid']
+        self.config = ConfigTraining.get(oid)
+
+
     def teardown(self):
         MongoDB.get(1).training_store.drop()
 
@@ -34,6 +41,45 @@ class TestTrainingStore(object):
 
         for k in refresh.keys():
             assert k in doc['trainings']
+
+
+    def test_buy(self):
+        if self.config.cost_type == 1:
+            needs = {'gold': self.config.cost_value}
+        else:
+            needs = {'diamond': self.config.cost_value}
+
+        Club(1, 1).update(**needs)
+
+        assert TrainingBag(1, 1).has_training(self.tid) is False
+        TrainingStore(1, 1).buy(self.tid)
+        assert TrainingBag(1, 1).has_training(self.tid) is True
+
+        assert getattr(Club(1, 1), needs.keys()[0]) == 0
+
+
+    def test_buy_not_exist(self):
+        try:
+            TrainingStore(1, 1).buy(9999)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id("TRAINING_NOT_EXIST")
+        else:
+            raise Exception("can not be here!")
+
+
+    def test_buy_no_money(self):
+        if self.config.cost_type == 1:
+            error = "GOLD_NOT_ENOUGH"
+        else:
+            error = "DIAMOND_NOT_ENOUGH"
+
+        try:
+            TrainingStore(1, 1).buy(self.tid)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id(error)
+        else:
+            raise Exception("can not be here!")
+
 
     def test_remove(self):
         refresh = TrainingStore(1, 1).refresh()
@@ -74,44 +120,6 @@ class TestTrainingBag(object):
         TrainingBag(1, 1).send_notify()
 
 
-    def test_buy(self):
-        if self.config.cost_type == 1:
-            needs = {'gold': self.config.cost_value}
-        else:
-            needs = {'diamond': self.config.cost_value}
-
-        Club(1, 1).update(**needs)
-
-        assert TrainingBag(1, 1).has_training(self.tid) is False
-        TrainingBag(1, 1).buy(self.tid)
-        assert TrainingBag(1, 1).has_training(self.tid) is True
-
-        assert getattr(Club(1, 1), needs.keys()[0]) == 0
-
-
-    def test_buy_not_exist(self):
-        try:
-            TrainingBag(1, 1).buy(9999)
-        except GameException as e:
-            assert e.error_id == ConfigErrorMessage.get_error_id("TRAINING_NOT_EXIST")
-        else:
-            raise Exception("can not be here!")
-
-
-    def test_buy_no_money(self):
-        if self.config.cost_type == 1:
-            error = "GOLD_NOT_ENOUGH"
-        else:
-            error = "DIAMOND_NOT_ENOUGH"
-
-        try:
-            TrainingBag(1, 1).buy(self.tid)
-        except GameException as e:
-            assert e.error_id == ConfigErrorMessage.get_error_id(error)
-        else:
-            raise Exception("can not be here!")
-
-
     def test_use_no_training(self):
         try:
             TrainingBag(1, 1).use(9999, 9999)
@@ -137,16 +145,14 @@ class TestTrainingBag(object):
 
 
     def test_use(self):
-        MongoDB.get(1).staff.update_one(
-            {'_id': 1},
-            {'$set': {'trainings.{0}'.format(self.tid): {'oid': 1}}},
-            upsert=True
-        )
+        ts = TestTrainingStore()
+        ts.setup()
+        ts.test_buy()
 
         sid = random.choice(ConfigStaff.INSTANCES.keys())
         StaffManger(1, 1).add(sid)
 
-        TrainingBag(1, 1).use(sid, self.tid)
+        TrainingBag(1, 1).use(sid, ts.tid)
 
         try:
             StaffManger(1, 1).training_get_reward(sid, 0)

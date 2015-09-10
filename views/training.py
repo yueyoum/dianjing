@@ -20,7 +20,7 @@ def buy(request):
 
     training_id = request._proto.id
 
-    tr = TrainingBag(server_id, char_id)
+    tr = TrainingStore(server_id, char_id)
     tr.buy(training_id)
 
 

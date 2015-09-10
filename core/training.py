@@ -39,7 +39,6 @@ class TrainingStore(object):
         if not doc or not doc.get('trainings', {}):
             self.refresh(send_notify=False)
 
-
     def refresh(self, send_notify=True):
         level = BuildingTrainingCenter(self.server_id, self.char_id).get_level()
         amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(level).value1
@@ -51,11 +50,7 @@ class TrainingStore(object):
             this_id = make_string_id()
             this_doc = Document.get("training_store.embedded")
             this_doc['oid'] = i
-
-            if ConfigTraining.get(i).tp != 3:
-                # 不是技能训练，其他都可能是随机的，这里要生成好
-                p = TrainingItem.generate(ConfigTraining.get(i).package)
-                this_doc['item'] = p.dumps()
+            this_doc['item'] = TrainingItem.generate_from_training_id(i).to_json()
 
             trainings[this_id] = this_doc
 
@@ -70,7 +65,6 @@ class TrainingStore(object):
 
         return trainings
 
-
     def get_training(self, training_id):
         key = 'trainings.{0}'.format(training_id)
 
@@ -81,6 +75,21 @@ class TrainingStore(object):
 
         return doc.get('trainings', {}).get(str(training_id), None)
 
+    def buy(self, training_id):
+        training = self.get_training(training_id)
+        if not training:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_NOT_EXIST"))
+
+        config = ConfigTraining.get(training['oid'])
+
+        if config.cost_type == 1:
+            needs = {'gold': -config.cost_value}
+        else:
+            needs = {'diamond': -config.cost_value}
+
+        with Resource(self.server_id, self.char_id).check(**needs):
+            self.remove(training_id)
+            TrainingBag(self.server_id, self.char_id).add(training_id, training)
 
     def remove(self, training_id):
         key = 'trainings.{0}'.format(training_id)
@@ -93,8 +102,6 @@ class TrainingStore(object):
         notify = TrainingStoreRemoveNotify()
         notify.ids.append(training_id)
         MessagePipe(self.char_id).put(msg=notify)
-
-
 
     def send_notify(self):
         notify = TrainingStoreNotify()
@@ -110,12 +117,11 @@ class TrainingStore(object):
             notify_training = notify.trainings.add()
             notify_training.id = k
             notify_training.oid = v['oid']
-            if v['item']:
-                p = TrainingItem.loads(v['item'])
-                notify_training.item.MergeFrom(p.make_protomsg())
+
+            obj = TrainingItem.loads_from_json(v['item'])
+            notify_training.item.MergeFrom(obj.make_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)
-
 
 
 class TrainingBag(object):
@@ -130,7 +136,6 @@ class TrainingBag(object):
             doc['_id'] = self.char_id
             self.mongo.staff.insert_one(doc)
 
-
     def has_training(self, training_ids):
         if not isinstance(training_ids, (list, tuple)):
             training_ids = [training_ids]
@@ -143,32 +148,13 @@ class TrainingBag(object):
 
         return True
 
-
-    def buy(self, training_id):
-        training = TrainingStore(self.server_id, self.char_id).get_training(training_id)
-        if not training:
-            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_NOT_EXIST"))
-
-        config = ConfigTraining.get(training['oid'])
-
-        if config.cost_type == 1:
-            needs = {'gold': -config.cost_value}
-        else:
-            needs = {'diamond': -config.cost_value}
-
-        with Resource(self.server_id, self.char_id).check(**needs):
-            TrainingStore(self.server_id, self.char_id).remove(training_id)
-            self.add(training_id, training)
-
-
     def add(self, training_id, training_data):
         self.mongo.staff.update_one(
             {'_id': self.char_id},
             {'$set': {'trainings.{0}'.format(training_id): training_data}}
         )
 
-        self.send_notify(act=ACT_UPDATE, ids=[training_id])
-
+        self.send_notify(ids=[training_id])
 
     def use(self, staff_id, training_id):
         key = "trainings.{0}".format(training_id)
@@ -179,14 +165,14 @@ class TrainingBag(object):
 
         trainings = doc.get('trainings', {})
         if training_id not in trainings:
-            raise GameException( ConfigErrorMessage.get_error_id("TRAINING_NOT_EXIST") )
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_NOT_EXIST"))
 
         sm = StaffManger(self.server_id, self.char_id)
         if not sm.has_staff(staff_id):
-            raise GameException( ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST") )
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
         this_training = trainings[training_id]
-        sm.training_start(staff_id, this_training)
+        sm.training_start(staff_id, this_training['oid'], this_training['item'])
 
         self.mongo.staff.update_one(
             {'_id': self.char_id},
@@ -197,12 +183,13 @@ class TrainingBag(object):
         notify.ids.append(training_id)
         MessagePipe(self.char_id).put(msg=notify)
 
-
-    def send_notify(self, act=ACT_INIT, ids=None):
+    def send_notify(self, ids=None):
         if not ids:
             projection = {'trainings': 1}
+            act = ACT_INIT
         else:
             projection = {'trainings.{0}'.format(i): 1 for i in ids}
+            act = ACT_UPDATE
 
         doc = self.mongo.staff.find_one(
             {'_id': self.char_id},
@@ -216,8 +203,8 @@ class TrainingBag(object):
             notify_training = notify.trainings.add()
             notify_training.id = k
             notify_training.oid = v['oid']
-            if v['item']:
-                p = TrainingItem.loads(v['item'])
-                notify_training.item.MergeFrom(p.make_protomsg())
+
+            obj = TrainingItem.loads_from_json(v['item'])
+            notify_training.item.MergeFrom(obj.make_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)

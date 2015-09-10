@@ -23,6 +23,32 @@ class Resource(object):
         self.server_id = server_id
         self.char_id = char_id
 
+    def save_training_item(self, staff_id, training_id, item):
+        from core.skill import SkillManager
+        from core.club import Club
+        from core.qianban import QianBanContainer
+        from core.package import TrainingItem
+
+        obj = TrainingItem.loads_from_json(item)
+
+        if obj.skill_id:
+            # TODO 判断玩家是否有此技能
+            SkillManager(self.server_id, self.char_id).add_level(staff_id, obj.skill_id, obj.skill_level)
+            return
+
+        # TODO 牵绊
+        config = ConfigTraining.get(training_id)
+        if config.tp == 1:
+            club = Club(self.server_id, self.char_id)
+            qc = QianBanContainer(club.all_match_staffs())
+            effect = qc.get_effect(staff_id, club.staffs[staff_id].skills.keys())
+
+            # TODO
+            obj.gold += sum(effect.effect_business_skill.values())
+
+        self.add_package(obj, staff_id)
+
+
     def add(self, **kwargs):
         staff_id = kwargs.pop('staff_id', None)
 

@@ -7,11 +7,12 @@ Description:
 
 """
 
+import json
 import base64
 import random
 
 from core.base import STAFF_ATTRS
-from config import ConfigPackage
+from config import ConfigPackage, ConfigTraining
 
 from protomsg.package_pb2 import (
     Drop as MsgDrop,
@@ -19,12 +20,6 @@ from protomsg.package_pb2 import (
 )
 
 class PackageBase(object):
-    __slots__ = STAFF_ATTRS + [
-        'gold', 'diamond',
-        'staff_exp', 'club_renown',
-        'trainings',
-    ]
-
     ATTRS = STAFF_ATTRS
 
     def __init__(self):
@@ -115,15 +110,18 @@ class PackageBase(object):
 
 
 class Drop(PackageBase):
-    FIELDS = ['gold', 'diamond',
-        'staff_exp', 'club_renown',
-        'trainings']
+    FIELDS = ['gold', 'diamond', 'club_renown', 'trainings']
+
 
     def make_protomsg(self):
         msg = MsgDrop()
 
         for attr in self.FIELDS:
             if attr != 'trainings':
+                value = getattr(self, attr)
+                if not value:
+                    continue
+
                 msg_item = msg.resources.add()
                 msg_item.resource_id = attr
                 msg_item.value = getattr(self, attr)
@@ -162,20 +160,80 @@ class Drop(PackageBase):
 
 class TrainingItem(PackageBase):
     FIELDS = STAFF_ATTRS + ['staff_exp',]
+    # also has skill_id, skill_level
+
+    def __init__(self):
+        super(TrainingItem, self).__init__()
+        self.skill_id = 0
+        self.skill_level = 0
+
+
+    @classmethod
+    def generate_from_training_id(cls, tid):
+        """
+
+        :rtype : TrainingItem
+        """
+        obj = cls()
+
+        config = ConfigTraining.get(tid)
+        if config.skill_id:
+            obj.skill_id = config.skill_id
+            obj.skill_level = config.skill_level
+            return obj
+
+        return cls.generate(config.package)
+
 
     def make_protomsg(self):
         msg = MsgTrainingItem()
 
-        for attr in self.FIELDS:
-            value = getattr(self, attr)
-            if not value:
-                continue
+        if self.skill_id:
+            msg.skill.id = self.skill_id
+            msg.skill.level = self.skill_level
+        else:
+            for attr in self.FIELDS:
+                value = getattr(self, attr)
+                if not value:
+                    continue
 
-            msg_resources = msg.resources.add()
-            msg_resources.resource_id = attr
-            msg_resources.value = value
+                msg_resources = msg.resources.add()
+                msg_resources.resource_id = attr
+                msg_resources.value = value
 
         return msg
+
+    def to_json(self):
+        data = {}
+        if self.skill_id:
+            data['skill_id'] = self.skill_id
+            data['skill_level'] = self.skill_level
+        else:
+            for attr in self.FIELDS:
+                value = getattr(self, attr)
+                if not value:
+                    continue
+
+                data[attr] = value
+
+        return json.dumps(data)
+
+
+    @classmethod
+    def loads_from_json(cls, data):
+        """
+
+        :rtype : TrainingItem
+        """
+        data = json.loads(data)
+
+        obj = cls()
+        for k, v in data.iteritems():
+            setattr(obj, k, v)
+
+        return obj
+
+
 
     def dumps(self):
         data = self.make_protomsg().SerializeToString()

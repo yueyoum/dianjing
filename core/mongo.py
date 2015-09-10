@@ -83,7 +83,8 @@ STAFF_EMBEDDED_SKILL_DOCUMENT = {
 
 # 嵌入staff中
 STAFF_EMBEDDED_TRAININGS_DOCUMENT = {
-    'training_data': null,
+    'oid': null,
+    'item': null,
     'start_at': null
 }
 
@@ -97,8 +98,7 @@ TRAINING_STORE_DOCUMENT = {
 # 嵌入到上面
 TRAINING_STORE_EMBEDDED_DOCUMENT = {
     'oid': null,
-    # 如果是非技能训练，这里是生成好的package的 protobuf 消息
-    'item': ""
+    'item': null,
 }
 
 
