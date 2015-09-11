@@ -6,15 +6,113 @@ Date Created:   2015-07-08 02:13
 Description:
 
 """
+from core.db import MongoDB
 
 from config import ConfigChallengeMatch
 from config import ConfigBuilding
+
+
+def ensure_index():
+    for s in MongoDB.server_ids():
+        for i in BaseDocument.__subclasses__():
+            i.create_indexes(s)
+
+class BaseDocument(object):
+    DOCUMENT = {}
+    COLLECTION = ""
+    INDEXES = []
+
+    @classmethod
+    def document(cls):
+        """
+
+        :rtype : dict
+        """
+        return cls.DOCUMENT.copy()
+
+    @classmethod
+    def db(cls, server_id):
+        """
+
+        :rtype : pymongo.collection.Collection
+        """
+        return MongoDB.get(server_id)[cls.COLLECTION]
+
+    @classmethod
+    def create_indexes(cls, server_id):
+        if not cls.INDEXES:
+            return
+
+        for i in cls.INDEXES:
+            cls.db(server_id).create_index(i)
+
 
 
 class Null(object):
     pass
 
 null = Null()
+
+
+class MongoCharacter(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'name': null,
+
+        'club': {
+            'name': null,
+            'flag': null,
+            'level': 1,
+            'renown': 0,
+            'vip': 0,
+            'gold': 0,
+            'diamond': 0,
+
+            'policy': 1,
+            'match_staffs': [],
+            'tibu_staffs': []
+        },
+
+        # 挑战赛ID
+        'challenge_id': ConfigChallengeMatch.FIRST_ID,
+        # 所属联赛小组
+        'league_group': 0,
+        # 是否报名参加了杯赛
+        'in_cup': 0,
+    }
+
+    COLLECTION = "character"
+    INDEXES = ['name', 'in_cup']
+
+
+
+class MongoLadder(BaseDocument):
+    DOCUMENT = {
+        # id: 真实玩家就是str(char_id)，npc是 uuid
+        '_id': null,
+        'score': 0,
+        # TODO 给order加索引
+        'order': 0,
+
+        # 刷新结果 _id: order
+        'refreshed': {},
+        # 剩余次数
+        'remained_times': 0,
+        # 战报 [(template_id, args) ...]
+        'logs': [],
+
+        # 以下几项只有NPC才有
+        'club_name': "",
+        'club_flag': 0,
+        'manager_name': "",
+        'staffs': []
+    }
+
+    COLLECTION = "ladder"
+    INDEXES = ['order']
+
+
+
 
 # 公共数据
 COMMON_DOCUMENT = {
