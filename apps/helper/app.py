@@ -10,16 +10,13 @@ Description:
 import os
 from django.apps import AppConfig
 
+
 class ProjectConfig(AppConfig):
     name = 'apps.helper'
-
 
     def ready(self):
         from core.db import RedisDB
         RedisDB.get().ping()
-
-        from core.mongo import ensure_index
-        ensure_index()
 
         from config import load_config
         load_config()
