@@ -50,13 +50,9 @@ class Notification(object):
         return self._add(tp, args)
 
 
-    def add_ladder_notification(self, win, from_name, current_order, renown):
-        if win:
-            tp = 3
-        else:
-            tp = 4
-
-        args = (from_name, str(current_order), str(renown))
+    def add_ladder_notification(self, win, from_name, current_order, ladder_score):
+        tp = 3 if win else 4
+        args = (from_name, str(current_order), str(ladder_score))
         return self._add(tp, args)
 
 

@@ -91,7 +91,6 @@ class MongoLadder(BaseDocument):
         # id: 真实玩家就是str(char_id)，npc是 uuid
         '_id': null,
         'score': 0,
-        # TODO 给order加索引
         'order': 0,
 
         # 刷新结果 _id: order
@@ -100,6 +99,9 @@ class MongoLadder(BaseDocument):
         'remained_times': 0,
         # 战报 [(template_id, args) ...]
         'logs': [],
+
+        # 天梯商店购买次数，每天清空
+        'buy_times': {},
 
         # 以下几项只有NPC才有
         'club_name': "",

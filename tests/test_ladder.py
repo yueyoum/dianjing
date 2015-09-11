@@ -12,14 +12,13 @@ import random
 from dianjing.exception import GameException
 
 from core.db import MongoDB
-from core.mongo import MONGO_COMMON_KEY_LADDER_STORE
+from core.mongo import MONGO_COMMON_KEY_LADDER_STORE, MongoLadder
 from core.common import Common
 from core.ladder import Ladder, LadderStore
 from core.staff import StaffManger
 from core.club import Club
-from core.training import TrainingBag
 
-from config import ConfigStaff, ConfigErrorMessage
+from config import ConfigStaff, ConfigErrorMessage, ConfigLadderScoreStore
 
 
 
@@ -69,6 +68,7 @@ class TestLadder(object):
 class TestLadderStore(object):
     def teardown(self):
         MongoDB.get(1).staff.delete_one({'_id': 1})
+        MongoDB.get(1).ladder.drop()
         Common.delete(1, MONGO_COMMON_KEY_LADDER_STORE)
 
     def test_send_notify(self):
@@ -83,11 +83,30 @@ class TestLadderStore(object):
         else:
             raise Exception("can not be here!")
 
-    def test_buy(self):
+    def test_buy_score_not_enough(self):
         l = LadderStore(1, 1)
-        t = TrainingBag(1, 1)
         item_id = random.choice(l.items)
 
-        assert t.has_training(item_id) is False
+        try:
+            l.buy(item_id)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id("LADDER_SCORE_NOT_ENOUGH")
+        else:
+            raise Exception("can not be here")
+
+    def test_buy(self):
+        l = LadderStore(1, 1)
+        item_id = random.choice(l.items)
+
+        config = ConfigLadderScoreStore.get(item_id)
+
+        MongoLadder.db(1).update_one(
+            {'_id': '1'},
+            {'$set': {'score': config.score}}
+        )
+
         l.buy(item_id)
-        # assert t.has_training(item_id) is True
+
+        doc = MongoLadder.db(1).find_one({'_id': '1'})
+        assert doc['score'] == 0
+

@@ -15,7 +15,7 @@ from cronjob.log import Logger
 
 from core.ladder import Ladder
 
-@uwsgidecorators.cron(0, 0, -1, -1, -1, target="spooler")
+@uwsgidecorators.cron(30, 21, -1, -1, -1, target="spooler")
 def ladder_send_rank_reward(*args):
     logger = Logger("ladder_rank_reward")
     logger.write("Start")

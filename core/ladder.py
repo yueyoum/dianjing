@@ -48,7 +48,6 @@ class LadderNPCStaff(AbstractStaff):
     def __init__(self, data):
         super(LadderNPCStaff, self).__init__()
 
-        # XXX
         self.id = data['id']
         config = ConfigStaff.get(self.id)
 
@@ -132,6 +131,16 @@ class LadderMatch(object):
         final_club_two_order = self.club_two['order']
 
         if self.club_one_win:
+            MongoLadder.db(self.server_id).update_one(
+                {'_id': self.club_one['_id']},
+                {'$inc': {'score': 10}}
+            )
+
+            MongoLadder.db(self.server_id).update_one(
+                {'_id': self.club_two['_id']},
+                {'$inc': {'score': 5}}
+            )
+
             if order_changed > 0:
                 # exchange the order
                 MongoLadder.db(self.server_id).update_one(
@@ -153,6 +162,16 @@ class LadderMatch(object):
                 self_log = (5, (self.club_two_object.name,))
                 target_log = (6, (self.club_one_object.name,))
         else:
+            MongoLadder.db(self.server_id).update_one(
+                {'_id': self.club_one['_id']},
+                {'$inc': {'score': 5}}
+            )
+
+            MongoLadder.db(self.server_id).update_one(
+                {'_id': self.club_two['_id']},
+                {'$inc': {'score': 10}}
+            )
+
             self_log = (2, (self.club_two_object.name,))
             target_log = (3, (self.club_one_object.name,))
 
@@ -164,13 +183,13 @@ class LadderMatch(object):
 
         # 发送通知
         if isinstance(self.club_two_object, Club):
+            d = Drop.generate(ConfigLadderRankReward.get_reward_object(final_club_two_order).package)
             n = Notification(self.server_id, int(self.club_two_object.id))
             n.add_ladder_notification(
                 win=not self.club_one_win,
                 from_name=self.club_one_object.name,
                 current_order=final_club_two_order,
-                # FIXME
-                renown=900
+                ladder_score=d.ladder_score,
             )
 
 
@@ -374,6 +393,8 @@ class LadderStore(object):
         if not self.items:
             self.refresh()
 
+        Ladder(self.server_id, self.char_id)
+
     def refresh(self):
         with LadderStoreLock(self.server_id).lock():
             self.items = Common.get(self.server_id, MONGO_COMMON_KEY_LADDER_STORE)
@@ -387,8 +408,32 @@ class LadderStore(object):
         if item_id not in self.items:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_STORE_ITEM_NOT_EXIST"))
 
-        # TODO BUY LIMIT
-        # TODO COST SCORE
+        doc = MongoLadder.db(self.server_id).find_one(
+            {'_id': str(self.char_id)},
+            {'buy_times': 1, 'score': 1}
+        )
+
+        config = ConfigLadderScoreStore.get(item_id)
+        if config.times_limit == 0:
+            raise GameException(ConfigErrorMessage.get_error_id("LADDER_SCORE_CANNOT_BUY"))
+
+        if config.times_limit > 0:
+            # has limit
+            if doc.get('buy_times', {}).get(str(item_id), 0) >= config.times_limit:
+                raise GameException(ConfigErrorMessage.get_error_id("LADDER_STORE_ITEM_REACH_LIMIT"))
+
+        if doc['score'] < config.score:
+            raise GameException(ConfigErrorMessage.get_error_id("LADDER_SCORE_NOT_ENOUGH"))
+
+        MongoLadder.db(self.server_id).update_one(
+            {'_id': str(self.char_id)},
+            {
+                '$inc': {
+                    'buy_times.{0}'.format(item_id): 1,
+                    'score': -config.score
+                },
+            }
+        )
 
         drop = Drop.generate(ConfigLadderScoreStore.get(item_id).package)
         Resource(self.server_id, self.char_id).add_package(drop)
