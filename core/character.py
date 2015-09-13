@@ -7,8 +7,7 @@ Description:
 
 """
 
-from core.db import MongoDB
-from core.mongo import Document
+from core.mongo import MongoCharacter
 from utils.message import MessagePipe
 
 from protomsg.character_pb2 import CharacterNotify, Character as MsgCharacter
@@ -18,7 +17,6 @@ class Character(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-        self.mongo = MongoDB.get(server_id)
 
 
     @classmethod
@@ -26,15 +24,14 @@ class Character(object):
         from core.staff import StaffManger
         from core.club import Club
 
-        doc = Document.get("character")
+        doc = MongoCharacter.document()
         doc['_id'] = char_id
         doc['name'] = char_name
         doc['club']['name'] = club_name
         doc['club']['flag'] = club_flag
         doc['club']['gold'] = 100000
 
-        mongo = MongoDB.get(server_id)
-        mongo.character.insert_one(doc)
+        MongoCharacter.db(server_id).insert_one(doc)
 
         sm = StaffManger(server_id, char_id)
         staff_ids = [2,3,4,5,6]
@@ -48,7 +45,7 @@ class Character(object):
         if kwargs:
             char = kwargs
         else:
-            char = self.mongo.character.find_one(
+            char = MongoCharacter.db(self.server_id).find_one(
                 {'_id': self.char_id},
                 # TODO field
                 {'name': 1}

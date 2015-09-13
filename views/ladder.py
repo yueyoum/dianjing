@@ -47,7 +47,7 @@ def get_leader_board(request):
     response.ret = 0
     for club in clubs:
         c = response.clubs.add()
-        c.id = club.id
+        c.id = str(club.id)
         c.name = club.name
         c.flag = club.flag
         c.order = club.order

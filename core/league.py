@@ -44,15 +44,13 @@ Description:
 # 每周刷新的时候直接清空以前的记录，并生成新记录
 
 import base64
-
 import arrow
 
 from django.conf import settings
 
 from dianjing.exception import GameException
 
-from core.db import MongoDB
-from core.mongo import Document
+from core.mongo import MongoLeagueGroup, MongoLeagueEvent, MongoCharacter
 from core.club import Club
 from core.match import ClubMatch
 from core.abstract import AbstractClub, AbstractStaff
@@ -179,7 +177,8 @@ class LeagueMatch(object):
 
         self.send_notification()
 
-    def send_mail(self, club, win):
+    @staticmethod
+    def send_mail(club, win):
         """
 
         :type club: LeagueBaseClubMixin
@@ -278,11 +277,13 @@ class LeagueGame(object):
 
     @staticmethod
     def clean(server_id):
-        mongo = MongoDB.get(server_id)
+        MongoCharacter.db(server_id).update_many(
+            {},
+            {'$unset': {'league_group': 1}}
+        )
 
-        mongo.character.update_many({}, {"$unset": {"league_group": 1}})
-        mongo.league_group.drop()
-        mongo.league_event.drop()
+        MongoLeagueGroup.db(server_id).drop()
+        MongoLeagueEvent.db(server_id).drop()
 
     @staticmethod
     def new(server_id):
@@ -292,32 +293,33 @@ class LeagueGame(object):
         # TODO 分组级别
         # TODO 死号
         # TODO 如何根据server_id来将定时任务分配到多台机器上
+        # TODO 联赛等级是写死的1到9
 
-        mongo = MongoDB.get(server_id)
-        # TODO 判断size 是否要建立索引？
-        chars = mongo.character.find({'club.match_staffs': {'$size': 5}}, {'club.match_staffs': 1})
+        for i in range(1, 10):
+            chars = MongoCharacter.db(server_id).find({'league_level': i})
+            g = LeagueGroup(server_id, i)
 
-        # TODO league level
-        g = LeagueGroup(server_id, 1)
+            for c in chars:
+                if len(c['club']['match_staffs']) != 5:
+                    continue
 
-        for c in chars:
-            if 0 in c['club']['match_staffs']:
-                continue
+                if 0 in c['club']['match_staffs']:
+                    continue
 
-            try:
-                g.add(c['_id'])
-            except LeagueGroup.ClubAddFinish:
-                g.finish()
+                try:
+                    g.add(c['_id'])
+                except LeagueGroup.ClubAddFinish:
+                    g.finish()
 
-                # new group
-                g = LeagueGroup(server_id, 1)
+                    # new group
+                    g = LeagueGroup(server_id, i)
 
-        g.finish()
+            g.finish()
 
     @staticmethod
     def join_already_started_league(server_id, club_id):
-        # 每周的新用户都要做这个事情，把其放入联赛
-        # 当这些帐号进入下一周后， 就会 自动匹配
+        # 新用户都要做这个事情，把其放入联赛
+        # 当这些帐号进入下一周后， 就会自动匹配
         g = LeagueGroup(server_id, 1)
         g.add(club_id)
         g.finish()
@@ -331,22 +333,25 @@ class LeagueGame(object):
     @staticmethod
     def start_match(server_id, group_ids=None, order=None):
         # 开始一场比赛
-        mongo = MongoDB.get(server_id)
-
         if not order:
             order = LeagueGame.find_order()
 
+        if order > 14:
+            # 这种一般是在测试中才会出现的，比如周日第二场已经过去，
+            # 这时候就会判断到该打第15场，显然是不对的
+            return
+
         if group_ids:
-            league_groups = mongo.league_group.find({'_id': {'$in': group_ids}})
+            league_groups = MongoLeagueGroup.db(server_id).find({'_id': {'$in': group_ids}})
         else:
-            league_groups = mongo.league_group.find()
+            league_groups = MongoLeagueGroup.db(server_id).find()
 
         for g in league_groups:
             event_id = g['events'][order - 1]
 
             clubs = g['clubs']
 
-            league_event = mongo.league_event.find_one({'_id': event_id})
+            league_event = MongoLeagueEvent.db(server_id).find_one({'_id': event_id})
             pairs = league_event['pairs']
 
             for k, v in pairs.iteritems():
@@ -368,23 +373,45 @@ class LeagueGame(object):
                 group_clubs_updater["clubs.{0}.win_times".format(k)] = v['win_times']
                 group_clubs_updater["clubs.{0}.score".format(k)] = v['score']
 
-            event_pairs_updater = {}
-            event_pairs_updater["finished"] = True
+            event_pairs_updater = {"finished": True}
             for k, v in pairs.iteritems():
                 event_pairs_updater["pairs.{0}.club_one_win".format(k)] = v['club_one_win']
                 event_pairs_updater["pairs.{0}.log".format(k)] = v['log']
 
             # 更新小组中 clubs 的信息
-            mongo.league_group.update_one(
+            MongoLeagueGroup.db(server_id).update_one(
                 {'_id': g['_id']},
                 {'$set': group_clubs_updater}
             )
 
             # 更新这场比赛(event) 中的pairs信息
-            mongo.league_event.update_one(
+            MongoLeagueEvent.db(server_id).update_one(
                 {'_id': event_id},
                 {'$set': event_pairs_updater}
             )
+
+
+def arrange_match(clubs):
+    # 对小组内的14支俱乐部安排比赛
+    # 算法：
+    match = []
+    pairs = []
+    for i in [0, 1]:
+        for interval in range(1, 14, 2):
+            for j in range(0, 13, 2):
+                a = i + j
+                b = a + interval
+                if b > 13:
+                    b -= 14
+
+                p = (clubs[a], clubs[b])
+                pairs.append(p)
+
+    while pairs:
+        match.append(pairs[:7])
+        pairs = pairs[7:]
+
+    return match
 
 
 class LeagueGroup(object):
@@ -398,9 +425,10 @@ class LeagueGroup(object):
 
         self.server_id = server_id
         self.level = level
-        self.mongo = MongoDB.get(server_id)
 
+        # 记录real club的id列表
         self.real_clubs = []
+        # 所有clubs  id: data
         self.all_clubs = {}
 
         self.event_docs = []
@@ -420,19 +448,18 @@ class LeagueGroup(object):
             return
 
         def make_real_club_doc(club_id):
-            club = Document.get("league.club")
-            club['club_id'] = club_id
-            return club
+            doc = MongoLeagueGroup.document_embedded_club()
+            doc['club_id'] = str(club_id)
+            return doc
 
-        def make_npc_club_doc(npc):
-            club = Document.get("league.club")
-            club['club_id'] = make_string_id()
-
-            club['club_name'] = npc['club_name']
-            club['manager_name'] = npc['manager_name']
-            club['club_flag'] = npc['club_flag']
-            club['staffs'] = npc['staffs']
-            return club
+        def make_npc_club_doc(n):
+            doc = MongoLeagueGroup.document_embedded_club()
+            doc['club_id'] = make_string_id()
+            doc['club_name'] = n['club_name']
+            doc['manager_name'] = n['manager_name']
+            doc['club_flag'] = n['club_flag']
+            doc['staffs'] = n['staffs']
+            return doc
 
         clubs = [make_real_club_doc(i) for i in self.real_clubs]
 
@@ -442,65 +469,39 @@ class LeagueGroup(object):
         npc_clubs = [make_npc_club_doc(npc) for npc in npcs]
 
         clubs.extend(npc_clubs)
-
-        # self.all_clubs = {str(i+1): clubs[i] for i in range(GROUP_CLUBS_AMOUNT)}
         self.all_clubs = {str(c['club_id']): c for c in clubs}
 
-        match = self.arrange_match(self.all_clubs.keys())
-
+        match = arrange_match(self.all_clubs.keys())
         self.save(match)
 
-    def arrange_match(self, clubs):
-        # 对小组内的14支俱乐部安排比赛
-        # 算法：
-        match = []
-        pairs = []
-        for i in [0, 1]:
-            for interval in range(1, 14, 2):
-                for j in range(0, 13, 2):
-                    a = i + j
-                    b = a + interval
-                    if b > 13:
-                        b -= 14
-
-                    p = (clubs[a], clubs[b])
-                    pairs.append(p)
-
-        while pairs:
-            match.append(pairs[:7])
-            pairs = pairs[7:]
-
-        return match
-
     def save(self, match):
-
         def make_pair_doc(club_one, club_two):
-            doc = Document.get("league.pair")
+            doc = MongoLeagueEvent.document_embedded_pair()
             doc['club_one'] = club_one
             doc['club_two'] = club_two
             return doc
 
         for index, event in enumerate(match):
-            edoc = Document.get("league.event")
-            edoc['_id'] = make_string_id()
-            edoc['start_at'] = LeagueGame.find_match_time(index + 1).format(ARROW_FORMAT)
+            event_doc = MongoLeagueEvent.document()
+            event_doc['_id'] = make_string_id()
+            event_doc['start_at'] = LeagueGame.find_match_time(index + 1).format(ARROW_FORMAT)
 
             pair_docs = [make_pair_doc(one, two) for one, two in event]
-            edoc['pairs'] = {str(i + 1): pair_docs[i] for i in range(len(pair_docs))}
+            event_doc['pairs'] = {str(i + 1): pair_docs[i] for i in range(len(pair_docs))}
 
-            self.event_docs.append(edoc)
+            self.event_docs.append(event_doc)
 
-        group_doc = Document.get("league.group")
+        group_doc = MongoLeagueGroup.document()
         group_doc['_id'] = self.id
         group_doc['level'] = self.level
         group_doc['clubs'] = self.all_clubs
         group_doc['events'] = self.event_ids
 
-        self.mongo.league_event.insert_many(self.event_docs)
-        self.mongo.league_group.insert_one(group_doc)
+        MongoLeagueEvent.db(self.server_id).insert_many(self.event_docs)
+        MongoLeagueGroup.db(self.server_id).insert_one(group_doc)
 
         # 然后将 此 group_id 关联到 character中
-        self.mongo.character.update_many(
+        MongoCharacter.db(self.server_id).update_many(
             {'_id': {'$in': self.real_clubs}},
             {'$set': {'league_group': self.id}}
         )
@@ -510,11 +511,9 @@ class League(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-        self.mongo = MongoDB.get(server_id)
 
-        doc = self.mongo.character.find_one({'_id': self.char_id}, {'league_group': 1})
+        doc = MongoCharacter.db(server_id).find_one({'_id': self.char_id}, {'league_group': 1})
         self.group_id = doc.get('league_group', "")
-
         self.order = LeagueGame.find_order()
 
     def get_statistics(self, club_id):
@@ -525,7 +524,7 @@ class League(object):
             group_id = self.group_id
             club_id = club_id
 
-        league_group = self.mongo.league_group.find_one(
+        league_group = MongoLeagueGroup.db(self.server_id).find_one(
             {'_id': group_id},
             {'clubs.{0}'.format(club_id): 1}
         )
@@ -547,7 +546,7 @@ class League(object):
     def get_log(self, league_pair_id):
         event_id, pair_id = league_pair_id.split(':')
 
-        league_event = self.mongo.league_event.find_one(
+        league_event = MongoLeagueEvent.db(self.server_id).find_one(
             {'_id': event_id},
             {'pairs.{0}.log'.format(pair_id): 1}
         )
@@ -565,8 +564,8 @@ class League(object):
         if not self.group_id:
             return
 
-        league_group = self.mongo.league_group.find_one({'_id': self.group_id})
-        league_events = self.mongo.league_event.find({'_id': {'$in': league_group['events']}})
+        league_group = MongoLeagueGroup.db(self.server_id).find_one({'_id': self.group_id})
+        league_events = MongoLeagueEvent.db(self.server_id).find({'_id': {'$in': league_group['events']}})
 
         events = {e['_id']: e for e in league_events}
 
@@ -583,22 +582,23 @@ class League(object):
             lc = LeagueClub(self.server_id, self.group_id, v)
             notify_club.MergeFrom(lc.make_protomsg())
 
-            rank_info.append((str(lc.id), v['match_times'], v['win_times'], v['score']))
+            if not v['match_times']:
+                winning_rate = 0
+            else:
+                winning_rate = int(v['win_times'] * 1.0 / v['match_times'] * 100)
+
+            rank_info.append((str(lc.id), v['match_times'], v['score'], winning_rate))
             clubs_id_table[k] = str(lc.id)
 
-        # ranks
-        # TODO rank sort
-        for club_id, match_times, win_times, score in rank_info:
-            notify_rank = notify.league.ranks.add()
+        rank_info.sort(key=lambda item: -item[3])
 
+        # ranks
+        for club_id, match_times, score, winning_rate in rank_info:
+            notify_rank = notify.league.ranks.add()
             notify_rank.club_id = club_id
             notify_rank.battle_times = match_times
             notify_rank.score = score
-
-            if match_times:
-                notify_rank.winning_rate = int(win_times * 1.0 / match_times * 100)
-            else:
-                notify_rank.winning_rate = 0
+            notify_rank.winning_rate = winning_rate
 
         # events
         for event_id in league_group['events']:

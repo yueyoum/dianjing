@@ -8,7 +8,6 @@ Description:
 """
 from core.db import MongoDB
 
-from config import ConfigChallengeMatch
 from config import ConfigBuilding
 
 
@@ -74,15 +73,24 @@ class MongoCharacter(BaseDocument):
         },
 
         # 挑战赛ID
-        'challenge_id': ConfigChallengeMatch.FIRST_ID,
+        'challenge_id': null,
         # 所属联赛小组
         'league_group': 0,
+        'league_level': 1,
         # 是否报名参加了杯赛
         'in_cup': 0,
     }
 
     COLLECTION = "character"
-    INDEXES = ['name', 'in_cup']
+    INDEXES = ['name', 'league_level', 'in_cup']
+
+    @classmethod
+    def document(cls):
+        from config import ConfigChallengeMatch
+
+        doc = super(MongoCharacter, cls).document()
+        doc['challenge_id'] = ConfigChallengeMatch.FIRST_ID
+        return doc
 
 
 
@@ -148,7 +156,7 @@ CHARACTER_DOCUMENT = {
     },
 
     # 挑战赛ID
-    'challenge_id': ConfigChallengeMatch.FIRST_ID,
+    'challenge_id': null,
     # 所属联赛小组
     'league_group': 0,
     # 是否报名参加了杯赛
@@ -279,6 +287,81 @@ LADDER_DOCUMENT = {
     'manager_name': "",
     'staffs': []
 }
+
+
+class MongoLeagueGroup(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'level': null,
+        # clubs 记录了这个小组中的14个club 信息
+        # 见下面的 LEAGUE_EMBEDDED_CLUB_DOCUMENT
+        'clubs': {},
+        # events 是记录的一组一组的比赛，一共14场
+        # 要打哪一场是根据 LeagueGame.find_order() 来决定的，
+        # 这里面记录是的 event_id
+        'events': [],
+    }
+    
+    # club 嵌入 group 中
+    # 为了降低查询IO请求
+    # 如果不嵌入，那么查询过程是这样的：
+    # 从 group 中根据 order 取到 [pair_id, pair_id,...]
+    # 再遍历这7个pair_id，并以此从 pair 中取到 club_one_id和 club_two_id
+    # 然后 再根据这些 club_id 到 club 中取 club 信息...
+    # 每次 取完 group 和 pair 后，还有 额外的14次IO
+    # 如果 有大量的分组 (group)，那么这个IO开销将是很消耗系统资源的
+    # 如果嵌套起来， 那么只有两次IO
+    # 因为取 group 的时候，这些 clubs 信息也一起返回了
+    # 但是要注意协议中ID的处理
+    # 而且 一个group中 club 只有14个，其大小是比较小的
+    # 所以可以嵌入
+    CLUB_DOCUMENT = {
+        # 真实玩家为 str(club id), npc为uuid
+        'club_id': 0,
+        'match_times': 0,
+        'win_times': 0,
+        'score': 0,
+    
+        # 如果是npc 就会设置下面的几项
+        'club_name': "",
+        'manager_name': "",
+        'club_flag': 1,
+        'staffs': []
+    }
+
+    COLLECTION = "league_group"
+    
+    @classmethod
+    def document_embedded_club(cls):
+        return cls.CLUB_DOCUMENT.copy()
+
+
+
+class MongoLeagueEvent(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'start_at': 0,
+        'finished': False,
+        'pairs': {}
+    }
+
+    PAIR_DOCUMENT = {
+        'club_one': null,
+        'club_two': null,
+        'club_one_win': False,
+        # 战斗日志，用来回放
+        'log': "",
+    }
+
+    COLLECTION = "league_event"
+    
+    @classmethod
+    def document_embedded_pair(cls):
+        """
+
+        :rtype : dict
+        """
+        return cls.PAIR_DOCUMENT.copy()
 
 
 # 联赛
