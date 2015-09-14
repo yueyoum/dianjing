@@ -9,8 +9,8 @@ Description:
 
 import itertools
 
+from core.mongo import MongoCharacter
 from core.abstract import AbstractClub
-from core.db import MongoDB
 from core.staff import Staff
 from core.signals import match_staffs_set_done_signal
 from core.staff import StaffManger
@@ -26,7 +26,6 @@ from config import (
     ConfigErrorMessage
 )
 
-
 from protomsg.club_pb2 import ClubNotify
 
 
@@ -40,31 +39,28 @@ class Club(AbstractClub):
 
         self.server_id = server_id
         self.char_id = char_id
-        self.mongo = MongoDB.get(server_id)
-
         self.load_data()
 
-
     def load_data(self):
-        char_doc = self.mongo.character.find_one({'_id': self.char_id}, {'club': 1, 'name': 1})
+        doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'club': 1, 'name': 1})
 
-        club = char_doc['club']
+        club = doc['club']
         staffs = StaffManger(self.server_id, self.char_id).get_all_staffs()
 
-        self.id = self.char_id                  # 玩家ID
-        self.name = club['name']                # 俱乐部名
-        self.manager_name = char_doc['name']    # 角色名
-        self.flag = club['flag']                # 俱乐部旗帜
-        self.level = club['level']              # 俱乐部等级
-        self.renown = club['renown']            # 俱乐部声望
-        self.vip = club['vip']                  # vip等级
-        self.gold = club['gold']                # 游戏币
+        self.id = self.char_id  # 玩家ID
+        self.name = club['name']  # 俱乐部名
+        self.manager_name = doc['name']  # 角色名
+        self.flag = club['flag']  # 俱乐部旗帜
+        self.level = club['level']  # 俱乐部等级
+        self.renown = club['renown']  # 俱乐部声望
+        self.vip = club['vip']  # vip等级
+        self.gold = club['gold']  # 游戏币
         # FIXME
-        self.diamond = int(club['diamond'])     # 钻石
-        self.policy = club.get('policy', 1)     # 战术
+        self.diamond = int(club['diamond'])  # 钻石
+        self.policy = club.get('policy', 1)  # 战术
 
-        self.match_staffs = club.get('match_staffs', [])    # 出战员工
-        self.tibu_staffs = club.get('tibu_staffs', [])      # 替补员工
+        self.match_staffs = club.get('match_staffs', [])  # 出战员工
+        self.tibu_staffs = club.get('tibu_staffs', [])  # 替补员工
 
         for k, v in staffs.iteritems():
             self.staffs[int(k)] = Staff(int(k), v)
@@ -75,7 +71,6 @@ class Club(AbstractClub):
                 continue
 
             qc.affect(self.staffs[i])
-
 
     def is_staff_in_match(self, staff_id):
         return staff_id in self.match_staffs or staff_id in self.tibu_staffs
@@ -88,19 +83,17 @@ class Club(AbstractClub):
 
         return staffs
 
-
     def set_policy(self, policy):
         if not ConfigPolicy.get(policy):
             raise GameException(ConfigErrorMessage.get_error_id('POLICY_NOT_EXIST'))
 
-        self.mongo.character.update_one(
+        MongoCharacter.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {'club.policy': policy}}
         )
 
         self.policy = policy
         self.send_notify()
-
 
     def set_match_staffs(self, staff_ids):
         if len(staff_ids) != 10:
@@ -112,7 +105,7 @@ class Club(AbstractClub):
         match_staffs = staff_ids[:5]
         tibu_staffs = staff_ids[5:]
 
-        self.mongo.character.update_one(
+        MongoCharacter.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
                 'club.match_staffs': match_staffs,
@@ -131,7 +124,6 @@ class Club(AbstractClub):
 
         self.load_data()
         self.send_notify()
-
 
     def update(self, **kwargs):
         renown = kwargs.get('renown', 0)
@@ -157,8 +149,7 @@ class Club(AbstractClub):
             self.renown -= need_renown
             self.level += 1
 
-
-        self.mongo.character.update_one(
+        MongoCharacter.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
                 'club.level': self.level,
@@ -169,7 +160,6 @@ class Club(AbstractClub):
         )
 
         self.send_notify()
-
 
     def send_notify(self):
         msg = self.make_protomsg()

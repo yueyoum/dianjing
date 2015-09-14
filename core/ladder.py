@@ -14,7 +14,7 @@ import pymongo
 
 from dianjing.exception import GameException
 
-from core.mongo import Document, MONGO_COMMON_KEY_LADDER_STORE, MongoLadder
+from core.mongo import MONGO_COMMON_KEY_LADDER_STORE, MongoLadder
 from core.abstract import AbstractStaff, AbstractClub
 from core.club import Club
 from core.match import ClubMatch
@@ -238,7 +238,7 @@ class Ladder(object):
 
                 docs = []
                 for index, npc in enumerate(npcs):
-                    doc = Document.get("ladder")
+                    doc = MongoLadder.document()
                     doc['_id'] = make_string_id()
                     doc['order'] = index + 1
                     doc['club_name'] = npc['club_name']

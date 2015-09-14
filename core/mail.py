@@ -11,8 +11,7 @@ import arrow
 
 from dianjing.exception import GameException
 
-from core.db import MongoDB
-from core.mongo import Document
+from core.mongo import MongoMail, MongoCharacter
 from core.character import Character
 from core.package import Drop
 from core.resource import Resource
@@ -42,29 +41,34 @@ class MailManager(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-        self.mongo = MongoDB.get(server_id)
 
-        doc = self.mongo.mail.find_one({'_id': char_id}, {'_id': 1})
+        doc = MongoMail.db(server_id).find_one({'_id': char_id}, {'_id': 1})
         if not doc:
-            doc = Document.get("mail")
+            doc = MongoMail.document()
             doc['_id'] = char_id
-            self.mongo.mail.insert_one(doc)
+            MongoMail.db(server_id).insert_one(doc)
 
+    def get_mail(self, mail_id):
+        doc = MongoMail.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'mails.{0}'.format(mail_id): 1}
+        )
+
+        return doc['mails'].get(mail_id, None)
 
     def send(self, to_id, content):
         to_id = int(to_id)
-        target_doc = self.mongo.character.find_one({'_id': to_id}, {'_id': 1})
+        target_doc = MongoCharacter.db(self.server_id).find_one({'_id': to_id}, {'_id': 1})
         if not target_doc:
-            raise GameException( ConfigErrorMessage.get_error_id("CHAR_NOT_EXIST") )
+            raise GameException(ConfigErrorMessage.get_error_id("CHAR_NOT_EXIST"))
 
-        self_doc = self.mongo.character.find_one({'_id': self.char_id}, {'name': 1})
+        self_doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'name': 1})
 
         title = u"来自 {0} 的邮件".format(self_doc['name'])
         MailManager(self.server_id, to_id).add(title, content, from_id=self.char_id)
 
-
     def add(self, title, content, attachment="", from_id=0):
-        doc = Document.get("mail.embedded")
+        doc = MongoMail.document_mail()
         doc['from_id'] = from_id
         doc['title'] = title
         doc['content'] = content
@@ -73,74 +77,57 @@ class MailManager(object):
 
         mail_id = make_string_id()
 
-        self.mongo.mail.update_one(
+        MongoMail.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {'mails.{0}'.format(mail_id): doc}}
         )
 
-        self.send_notify(act=ACT_UPDATE, ids=[mail_id])
+        self.send_notify(ids=[mail_id])
 
     def delete(self, mail_id):
         key = "mails.{0}".format(mail_id)
-        self.mongo.mail.update_one(
+        MongoMail.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$unset': {key: 1}}
         )
 
         self.send_remove_notify([mail_id])
 
+    def open(self, mail_id):
+        if not self.get_mail(mail_id):
+            raise GameException(ConfigErrorMessage.get_error_id("MAIL_NOT_EXISTS"))
 
-    def read(self, mail_id):
-        key = "mails.{0}".format(mail_id)
-        doc = self.mongo.mail.find_one(
-            {'_id': self.char_id},
-            {key: 1}
-        )
-
-        if mail_id not in doc['mails']:
-            raise GameException( ConfigErrorMessage.get_error_id("MAIL_NOT_EXISTS") )
-
-        self.mongo.mail.update_one(
+        MongoMail.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {'mails.{0}.has_read'.format(mail_id): True}}
         )
 
-        self.send_notify(act=ACT_UPDATE, ids=[mail_id])
-
+        self.send_notify(ids=[mail_id])
 
     def get_attachment(self, mail_id):
-        key = "mails.{0}".format(mail_id)
-        doc = self.mongo.mail.find_one(
-            {'_id': self.char_id},
-            {key: 1}
-        )
-
-        this_mail = doc['mails'].get(mail_id, None)
+        this_mail = self.get_mail(mail_id)
         if not this_mail:
-            raise GameException( ConfigErrorMessage.get_error_id("MAIL_NOT_EXISTS") )
+            raise GameException(ConfigErrorMessage.get_error_id("MAIL_NOT_EXISTS"))
 
         attachment = this_mail['attachment']
         if not attachment:
-            raise GameException( ConfigErrorMessage.get_error_id("MAIL_HAS_NO_ATTACHMENT") )
+            raise GameException(ConfigErrorMessage.get_error_id("MAIL_HAS_NO_ATTACHMENT"))
 
         drop = Drop.loads_from_json(attachment)
         Resource(self.server_id, self.char_id).add_package(drop)
 
-        self.mongo.mail.update_one(
+        MongoMail.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {'mails.{0}.attachment'.format(mail_id): ""}}
         )
 
-        self.send_notify(act=ACT_UPDATE, ids=[mail_id])
+        self.send_notify(ids=[mail_id])
         return drop
 
-
     def clean_expired(self):
-
         limit_timestamp = get_mail_clean_time().timestamp
 
-        doc = self.mongo.mail.find_one({'_id': self.char_id}, {'mails': 1})
-
+        doc = MongoMail.db(self.server_id).find_one({'_id': self.char_id}, {'mails': 1})
         expired = []
 
         for k, v in doc['mails'].iteritems():
@@ -148,34 +135,31 @@ class MailManager(object):
             if remained_seconds < 0:
                 expired.append(k)
 
-
         if expired:
             updater = {"mails.{0}".format(i): 1 for i in expired}
 
-            self.mongo.mail.update_one(
+            MongoMail.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {'$unset': updater}
             )
 
             self.send_remove_notify(expired)
-
         return len(expired)
-
 
     def send_remove_notify(self, ids):
         notify = MailRemoveNotify()
         notify.ids.extend(ids)
         MessagePipe(self.char_id).put(msg=notify)
 
-
-
-    def send_notify(self, act=ACT_INIT, ids=None):
+    def send_notify(self, ids=None):
         if ids:
             projection = {"mails.{0}".format(i): 1 for i in ids}
+            act = ACT_UPDATE
         else:
             projection = {"mails": 1}
+            act = ACT_INIT
 
-        doc = self.mongo.mail.find_one({'_id': self.char_id}, projection)
+        doc = MongoMail.db(self.server_id).find_one({'_id': self.char_id}, projection)
         notify = MailNotify()
         notify.act = act
 

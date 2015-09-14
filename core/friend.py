@@ -9,8 +9,7 @@ Description:
 
 from dianjing.exception import GameException
 
-from core.db import MongoDB
-from core.mongo import Document
+from core.mongo import MongoFriend, MongoCharacter
 from core.character import Character
 from core.club import Club
 from core.match import ClubMatch
@@ -27,8 +26,6 @@ from protomsg.friend_pb2 import (
 )
 
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
-
-
 
 # 服务器内部使用
 FRIEND_STATUS_NOT = 1
@@ -49,24 +46,20 @@ class FriendManager(object):
         self.server_id = server_id
         self.char_id = char_id
 
-        self.mongo = MongoDB.get(server_id)
-
-        doc = self.mongo.friend.find_one({'_id': char_id}, {'_id': 1})
-        if not doc:
-            doc = Document.get("friend")
+        if not MongoFriend.exist(server_id, self.char_id):
+            doc = MongoFriend.document()
             doc['_id'] = self.char_id
-            self.mongo.friend.insert_one(doc)
-
+            MongoFriend.db(server_id).insert_one(doc)
 
     def get_info(self, friend_id):
         friend_id = int(friend_id)
-        if not self.check_friend_exist(friend_id, expect_status=[FRIEND_STATUS_OK, FRIEND_STATUS_PEER_CONFIRM, FRIEND_STATUS_SELF_CONFIRM]):
+        if not self.check_friend_exist(friend_id, expect_status=[FRIEND_STATUS_OK, FRIEND_STATUS_PEER_CONFIRM,
+                                                                 FRIEND_STATUS_SELF_CONFIRM]):
             raise GameException(ConfigErrorMessage.get_error_id("FRIEND_NOT_EXIST"))
 
         char = Character(self.server_id, friend_id)
         club = Club(self.server_id, friend_id)
-        return (char, club)
-
+        return char, club
 
     def match(self, friend_id):
         friend_id = int(friend_id)
@@ -89,10 +82,9 @@ class FriendManager(object):
 
         return msg
 
-
     def check_friend_exist(self, friend_id, expect_status=None):
         key = 'friends.{0}'.format(friend_id)
-        doc = self.mongo.friend.find_one({'_id': self.char_id}, {key: 1})
+        doc = MongoFriend.db(self.server_id).find_one({'_id': self.char_id}, {key: 1})
 
         status = doc['friends'].get(str(friend_id), FRIEND_STATUS_NOT)
 
@@ -101,16 +93,15 @@ class FriendManager(object):
 
         return status in expect_status
 
-
     def add(self, name):
-        doc = self.mongo.character.find_one({'name': name}, {'_id': 1})
+        doc = MongoCharacter.db(self.server_id).find_one({'name': name}, {'_id': 1})
         if not doc:
             raise GameException(ConfigErrorMessage.get_error_id("CHAR_NOT_EXIST"))
 
         char_id = doc['_id']
         key = 'friends.{0}'.format(char_id)
 
-        doc = self.mongo.friend.find_one({'_id': self.char_id}, {key: 1})
+        doc = MongoFriend.db(self.server_id).find_one({'_id': self.char_id}, {key: 1})
         status = doc['friends'].get(str(char_id), FRIEND_STATUS_NOT)
 
         if status == FRIEND_STATUS_OK:
@@ -124,21 +115,20 @@ class FriendManager(object):
             self.accept(char_id, verify=False)
             return
 
-        self.mongo.friend.update_one(
+        MongoFriend.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {key: FRIEND_STATUS_PEER_CONFIRM}}
         )
 
-        self.send_notify(act=ACT_UPDATE, ids=[char_id])
+        self.send_notify(ids=[char_id])
         FriendManager(self.server_id, char_id).someone_add_me(self.char_id)
-
 
     def accept(self, char_id, verify=True):
         char_id = int(char_id)
         key = 'friends.{0}'.format(char_id)
 
         if verify:
-            doc = self.mongo.friend.find_one({'_id': self.char_id}, {key: 1})
+            doc = MongoFriend.db(self.server_id).find_one({'_id': self.char_id}, {key: 1})
             status = doc['friends'].get(str(char_id), FRIEND_STATUS_NOT)
 
             if status == FRIEND_STATUS_NOT or status == FRIEND_STATUS_PEER_CONFIRM:
@@ -147,26 +137,25 @@ class FriendManager(object):
             if status == FRIEND_STATUS_OK:
                 raise GameException(ConfigErrorMessage.get_error_id("FRIEND_ALREADY_IS_FRIEND"))
 
-        self.mongo.friend.update_one(
+        MongoFriend.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {key: FRIEND_STATUS_OK}}
         )
 
-        self.send_notify(act=ACT_UPDATE, ids=[char_id])
+        self.send_notify(ids=[char_id])
         FriendManager(self.server_id, char_id).someone_accept_me(self.char_id)
-
 
     def remove(self, char_id):
         char_id = int(char_id)
         key = 'friends.{0}'.format(char_id)
 
-        doc = self.mongo.friend.find_one({'_id': self.char_id}, {key: 1})
+        doc = MongoFriend.db(self.server_id).find_one({'_id': self.char_id}, {key: 1})
         status = doc['friends'].get(str(char_id), FRIEND_STATUS_NOT)
 
         if status == FRIEND_STATUS_NOT:
             raise GameException(ConfigErrorMessage.get_error_id("FRIEND_NOT_EXIST"))
 
-        self.mongo.friend.update_one(
+        MongoFriend.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$unset': {key: 1}}
         )
@@ -174,73 +163,63 @@ class FriendManager(object):
         self.send_remove_notify(char_id)
         FriendManager(self.server_id, char_id).someone_remove_me(self.char_id)
 
-
     def someone_remove_me(self, from_id):
-        self.mongo.friend.update_one(
+        MongoFriend.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$unset': {'friends.{0}'.format(from_id): 1}}
         )
 
         self.send_remove_notify(from_id)
 
-
     def someone_accept_me(self, from_id):
         key = 'friends.{0}'.format(from_id)
-        self.mongo.friend.update_one(
+        MongoFriend.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {key: FRIEND_STATUS_OK}}
         )
 
-        self.send_notify(act=ACT_UPDATE, ids=[from_id])
-
-
+        self.send_notify(ids=[from_id])
 
     def someone_add_me(self, from_id):
         key = 'friends.{0}'.format(from_id)
 
-        doc = self.mongo.friend.find_one({'_id': self.char_id}, {key: 1})
+        doc = MongoFriend.db(self.server_id).find_one({'_id': self.char_id}, {key: 1})
         status = doc['friends'].get(str(from_id), FRIEND_STATUS_NOT)
 
         if status == FRIEND_STATUS_NOT or status == FRIEND_STATUS_SELF_CONFIRM:
             # 如果不是好友，或者本来就在我的确认队列里，那么还是加入到确认队列
             new_status = FRIEND_STATUS_SELF_CONFIRM
         else:
-            raise RuntimeError(
-                "Invalid status in someone_add_me. char_id: {0}, from_id: {1}, status: {2}".format(
-                    self.char_id,
-                    from_id,
-                    status
-                )
-            )
+            return
 
-        self.mongo.friend.update_one(
+        MongoFriend.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {key: new_status}}
         )
 
-        self.send_notify(act=ACT_UPDATE, ids=[from_id])
+        self.send_notify(ids=[from_id])
 
     def send_remove_notify(self, friend_id):
         notify = FriendRemoveNotify()
         notify.ids.append(str(friend_id))
         MessagePipe(self.char_id).put(msg=notify)
 
-
-
-    def send_notify(self, act=ACT_INIT, ids=None):
+    def send_notify(self, ids=None):
         notify = FriendNotify()
-        notify.act = act
 
         if ids:
             projection = {"friends.{0}".format(_id): 1 for _id in ids}
+            act = ACT_UPDATE
         else:
             projection = {"friends": 1}
+            act = ACT_INIT
 
-        doc = self.mongo.friend.find_one({'_id': self.char_id}, projection)
+        notify.act = act
 
+        doc = MongoFriend.db(self.server_id).find_one({'_id': self.char_id}, projection)
         friend_ids = [int(i) for i in doc['friends'].keys()]
 
-        char_docs = self.mongo.character.find(
+        char_docs = MongoCharacter.db(self.server_id).find(
             {'_id': {'$in': friend_ids}},
             # TODO, other fields
             {'name': 1, 'club': 1}
@@ -250,7 +229,7 @@ class FriendManager(object):
 
         for f in friend_ids:
             notify_friend = notify.friends.add()
-            notify_friend.status = FRIEND_STATUS_TABLE[ doc['friends'][str(f)] ]
+            notify_friend.status = FRIEND_STATUS_TABLE[doc['friends'][str(f)]]
             notify_friend.id = str(f)
             notify_friend.name = char_dict[f]['name']
             # TODO
@@ -261,5 +240,3 @@ class FriendManager(object):
             notify_friend.club_level = char_dict[f]['club']['level']
 
         MessagePipe(self.char_id).put(msg=notify)
-
-

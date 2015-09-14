@@ -10,7 +10,8 @@ Description:
 import random
 
 from dianjing.exception import GameException
-from core.db import MongoDB
+
+from core.mongo import MongoTraining, MongoStaff, MongoCharacter
 
 from core.staff import StaffManger
 from core.training import TrainingBag, TrainingStore
@@ -26,9 +27,8 @@ class TestTrainingStore(object):
         oid = refreshed[self.tid]['oid']
         self.config = ConfigTraining.get(oid)
 
-
     def teardown(self):
-        MongoDB.get(1).training_store.drop()
+        MongoTraining.db(1).drop()
 
     def test_send_notify(self):
         TrainingStore(1, 1).send_notify()
@@ -36,11 +36,11 @@ class TestTrainingStore(object):
     def test_refresh(self):
         refresh = TrainingStore(1, 1).refresh()
 
-        doc = MongoDB.get(1).training_store.find_one({'_id': 1})
-        assert len(refresh) == len(doc['trainings'])
+        doc = MongoTraining.db(1).find_one({'_id': 1}, {'store': 1})
+        assert len(refresh) == len(doc['store'])
 
         for k in refresh.keys():
-            assert k in doc['trainings']
+            assert k in doc['store']
 
 
     def test_buy(self):
@@ -93,18 +93,17 @@ class TestTrainingStore(object):
 
 class TestTrainingBag(object):
     def reset(self):
-        MongoDB.get(1).staff.delete_one({'_id': 1})
-        MongoDB.get(1).character.update_one(
+        MongoTraining.db(1).drop()
+        MongoCharacter.db(1).update_one(
             {'_id': 1},
             {'$set': {
                 'club.gold': 0,
                 'club.diamond': 0,
             }}
         )
-        MongoDB.get(1).training_store.drop()
 
 
-    def setUp(self):
+    def setup(self):
         self.reset()
         refreshed = TrainingStore(1, 1).refresh()
         self.tid = random.choice(refreshed.keys())
@@ -112,7 +111,7 @@ class TestTrainingBag(object):
         self.config = ConfigTraining.get(oid)
 
 
-    def tearDown(self):
+    def teardown(self):
         self.reset()
 
 
@@ -130,14 +129,10 @@ class TestTrainingBag(object):
 
 
     def test_use_no_staff(self):
-        MongoDB.get(1).staff.update_one(
-            {'_id': 1},
-            {'$set': {'trainings.{0}'.format(self.tid): {'oid': 1}}},
-            upsert=True
-        )
+        TrainingBag(1, 1).add(1, {'oid': self.config.id, 'item': '{}'})
 
         try:
-            TrainingBag(1, 1).use(9999, self.tid)
+            TrainingBag(1, 1).use(9999, '1')
         except GameException as e:
             assert e.error_id == ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST")
         else:
@@ -158,3 +153,5 @@ class TestTrainingBag(object):
             StaffManger(1, 1).training_get_reward(sid, 0)
         except GameException as e:
             assert e.error_id == ConfigErrorMessage.get_error_id("TRAINING_NOT_FINISHED")
+
+        ts.teardown()

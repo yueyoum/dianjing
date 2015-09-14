@@ -16,8 +16,16 @@ def setup():
 
     teardown()
 
+    from core.mongo import MongoCharacter
     from core.character import Character
     Character.create(1, 1, "one", "club_one", 1)
+    MongoCharacter.db(1).update_one(
+        {'_id': 1},
+        {'$set': {
+            'club.gold': 0,
+            'club.diamond': 0
+        }}
+    )
 
 
 def teardown():

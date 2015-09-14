@@ -13,8 +13,7 @@ from dianjing.exception import GameException
 
 from core.base import STAFF_ATTRS
 from core.abstract import AbstractStaff
-from core.db import MongoDB
-from core.mongo import Document, MONGO_COMMON_KEY_RECRUIT_HOT
+from core.mongo import MongoStaff, MongoRecruit, MONGO_COMMON_KEY_RECRUIT_HOT
 from core.resource import Resource
 from core.common import Common
 from core.skill import SkillManager
@@ -69,22 +68,21 @@ class StaffRecruit(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-        self.mongo = MongoDB.get(server_id)
 
-        doc = self.mongo.recruit.find_one({'_id': self.char_id}, {'_id': 1})
+        doc = MongoRecruit.db(server_id).find_one({'_id': self.char_id}, {'_id': 1})
         if not doc:
-            doc = Document.get("recruit")
+            doc = MongoRecruit.document()
             doc['_id'] = self.char_id
             doc['tp'] = RECRUIT_HOT
-            self.mongo.recruit.insert_one(doc)
+            MongoRecruit.db(server_id).insert_one(doc)
 
     def get_self_refreshed_staffs(self):
-        data = self.mongo.recruit.find_one({'_id': self.char_id}, {'staffs': 1, 'tp': 1})
-        tp = data.get('tp', RECRUIT_HOT)
+        doc = MongoRecruit.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1, 'tp': 1})
+        tp = doc.get('tp', RECRUIT_HOT)
         if tp == RECRUIT_HOT:
             return []
 
-        return data['staffs']
+        return doc['staffs']
 
     def get_hot_staffs(self):
         data = Common.get(self.server_id, MONGO_COMMON_KEY_RECRUIT_HOT)
@@ -114,7 +112,7 @@ class StaffRecruit(object):
             else:
                 cost = {'diamond': -config.cost_value}
 
-            doc = self.mongo.recruit.find_one(
+            doc = MongoRecruit.db(self.server_id).find_one(
                 {'_id': self.char_id},
                 {'times.{0}'.format(refresh_id): 1}
             )
@@ -134,7 +132,7 @@ class StaffRecruit(object):
                 for quality, amount in result:
                     staffs.extend(ConfigStaff.get_random_ids_by_condition(amount, quality=quality))
 
-        self.mongo.recruit.update_one(
+        MongoRecruit.db(self.server_id).update_one(
             {'_id': self.char_id},
             {
                 '$set': {'tp': tp, 'staffs': staffs},
@@ -143,7 +141,6 @@ class StaffRecruit(object):
         )
 
         self.send_notify(staffs=staffs, tp=tp)
-
         return staffs
 
     def recruit(self, staff_id):
@@ -179,7 +176,7 @@ class StaffRecruit(object):
                 staffs = self.get_hot_staffs()
                 tp = RECRUIT_HOT
             else:
-                tp = self.mongo.recruit.find_one({'_id': self.char_id}, {'tp': 1})['tp']
+                tp = MongoRecruit.db(self.server_id).find_one({'_id': self.char_id}, {'tp': 1})['tp']
 
         already_recruited_staffs = StaffManger(self.server_id, self.char_id).get_all_staff_ids()
 
@@ -197,23 +194,22 @@ class StaffManger(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-        self.mongo = MongoDB.get(server_id)
 
-        doc = self.mongo.staff.find_one({'_id': self.char_id}, {'_id': 1})
+        doc = MongoStaff.db(server_id).find_one({'_id': self.char_id}, {'_id': 1})
         if not doc:
-            doc = Document.get("staff")
+            doc = MongoStaff.document()
             doc['_id'] = self.char_id
-            self.mongo.staff.insert_one(doc)
+            MongoStaff.db(server_id).insert_one(doc)
 
     def get_all_staff_ids(self):
         return [int(i) for i in self.get_all_staffs().keys()]
 
     def get_all_staffs(self):
-        doc = self.mongo.staff.find_one({'_id': self.char_id}, {'staffs': 1})
+        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1})
         return doc['staffs']
 
     def get_staff(self, staff_id):
-        doc = self.mongo.staff.find_one({'_id': self.char_id}, {'staffs.{0}'.format(staff_id): 1})
+        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs.{0}'.format(staff_id): 1})
         return doc['staffs'].get(str(staff_id), None)
 
     def has_staff(self, staff_ids):
@@ -222,12 +218,11 @@ class StaffManger(object):
 
         projection = {'staffs.{0}'.format(i): 1 for i in staff_ids}
 
-        doc = self.mongo.staff.find_one({'_id': self.char_id}, projection)
+        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, projection)
         if not doc:
             return False
 
         staffs = doc.get('staffs', {})
-
         for staff_id in staff_ids:
             if str(staff_id) not in staffs:
                 return False
@@ -241,13 +236,13 @@ class StaffManger(object):
         if self.has_staff(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_ALREADY_HAVE"))
 
-        doc = Document.get('staff.embedded')
+        doc = MongoStaff.document_staff()
         default_skills = ConfigStaff.get(staff_id).skill_ids
 
-        skills = {str(sid): Document.get('skill.embedded') for sid in default_skills}
+        skills = {str(sid): MongoStaff.document_staff_skill() for sid in default_skills}
         doc['skills'] = skills
 
-        self.mongo.staff.update_one(
+        MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {'staffs.{0}'.format(staff_id): doc}},
         )
@@ -265,28 +260,27 @@ class StaffManger(object):
         if Club(self.server_id, self.char_id).is_staff_in_match(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_CAN_NOT_REMOVE_IN_MATCH"))
 
-        self.mongo.staff.update_one(
+        MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$unset': {'staffs.{0}'.format(staff_id): 1}}
         )
 
         notify = StaffRemoveNotify()
         notify.id.append(staff_id)
-
         MessagePipe(self.char_id).put(msg=notify)
 
     def training_start(self, staff_id, training_oid, training_item):
         # training_start 是在 外部 Training.use 中调用的，
         # 已经在外部做了错误检测。这里不用对 staff_id, 和 training_id 再次检查了
         # TODO check training num full ?
-        doc = Document.get("training.embedded")
+        doc = MongoStaff.document_staff_trainings()
         doc['start_at'] = arrow.utcnow().timestamp
         doc['oid'] = training_oid
         doc['item'] = training_item
 
         key = 'staffs.{0}.trainings'.format(staff_id)
 
-        self.mongo.staff.update_one(
+        MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$push': {key: doc}}
         )
@@ -299,7 +293,7 @@ class StaffManger(object):
 
         key = "staffs.{0}.trainings".format(staff_id)
 
-        doc = self.mongo.staff.find_one({'_id': self.char_id}, {key: 1})
+        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {key: 1})
         trainings = doc['staffs'][str(staff_id)]['trainings']
 
         try:
@@ -313,7 +307,7 @@ class StaffManger(object):
         Resource(self.server_id, self.char_id).save_training_item(staff_id, data['oid'], data['item'])
 
         trainings.pop(slot_id)
-        self.mongo.staff.update_one(
+        MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {key: trainings}}
         )
@@ -331,8 +325,7 @@ class StaffManger(object):
         yishi = kwargs.get('yishi', 0)
         caozuo = kwargs.get('caozuo', 0)
 
-        char = self.mongo.staff.find_one({'_id': self.char_id}, {'staffs.{0}'.format(staff_id): 1})
-        this_staff = char['staffs'].get(str(staff_id), None)
+        this_staff = self.get_staff(staff_id)
         if not this_staff:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
@@ -355,7 +348,7 @@ class StaffManger(object):
             current_exp -= need_exp
             current_level += 1
 
-        self.mongo.staff.update_one(
+        MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
             {
                 '$set': {
@@ -432,7 +425,7 @@ class StaffManger(object):
             projection = {'staffs.{0}'.format(i): 1 for i in staff_ids}
             act = ACT_UPDATE
 
-        doc = self.mongo.staff.find_one({'_id': self.char_id}, projection)
+        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, projection)
         staffs = doc.get('staffs', {})
 
         notify = StaffNotify()

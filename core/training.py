@@ -8,8 +8,7 @@ Description:
 """
 from dianjing.exception import GameException
 
-from core.db import MongoDB
-from core.mongo import Document
+from core.mongo import MongoTraining
 from core.staff import StaffManger
 from core.building import BuildingTrainingCenter
 from core.resource import Resource
@@ -33,10 +32,14 @@ class TrainingStore(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-        self.mongo = MongoDB.get(server_id)
 
-        doc = self.mongo.training_store.find_one({'_id': self.char_id}, {'trainings': 1})
-        if not doc or not doc.get('trainings', {}):
+        doc = MongoTraining.db(server_id).find_one({'_id': self.char_id})
+        if not doc:
+            doc = MongoTraining.document()
+            doc['_id'] = self.char_id
+            MongoTraining.db(server_id).insert_one(doc)
+
+        if not doc['store']:
             self.refresh(send_notify=False)
 
     def refresh(self, send_notify=True):
@@ -48,16 +51,15 @@ class TrainingStore(object):
         trainings = {}
         for i in ids:
             this_id = make_string_id()
-            this_doc = Document.get("training_store.embedded")
+            this_doc = MongoTraining.document_training_item()
             this_doc['oid'] = i
             this_doc['item'] = TrainingItem.generate_from_training_id(i).to_json()
 
             trainings[this_id] = this_doc
 
-        self.mongo.training_store.update_one(
+        MongoTraining.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': {'trainings': trainings}},
-            upsert=True
+            {'$set': {'store': trainings}}
         )
 
         if send_notify:
@@ -66,14 +68,12 @@ class TrainingStore(object):
         return trainings
 
     def get_training(self, training_id):
-        key = 'trainings.{0}'.format(training_id)
-
-        doc = self.mongo.training_store.find_one(
+        doc = MongoTraining.db(self.server_id).find_one(
             {'_id': self.char_id},
-            {key: 1}
+            {'store.{0}'.format(training_id): 1}
         )
 
-        return doc.get('trainings', {}).get(str(training_id), None)
+        return doc.get('store', {}).get(str(training_id), None)
 
     def buy(self, training_id):
         training = self.get_training(training_id)
@@ -92,11 +92,9 @@ class TrainingStore(object):
             TrainingBag(self.server_id, self.char_id).add(training_id, training)
 
     def remove(self, training_id):
-        key = 'trainings.{0}'.format(training_id)
-
-        self.mongo.training_store.update_one(
+        MongoTraining.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$unset': {key: 1}}
+            {'$unset': {'store.{0}'.format(training_id): 1}}
         )
 
         notify = TrainingStoreRemoveNotify()
@@ -107,12 +105,12 @@ class TrainingStore(object):
         notify = TrainingStoreNotify()
         notify.act = ACT_INIT
 
-        doc = MongoDB.get(self.server_id).training_store.find_one(
+        doc = MongoTraining.db(self.server_id).find_one(
             {'_id': self.char_id},
-            {'trainings': 1}
+            {'store': 1}
         )
 
-        trainings = doc.get('trainings', {})
+        trainings = doc.get('store', {})
         for k, v in trainings.iteritems():
             notify_training = notify.trainings.add()
             notify_training.id = k
@@ -128,53 +126,49 @@ class TrainingBag(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-        self.mongo = MongoDB.get(server_id)
 
-        doc = self.mongo.staff.find_one({'_id': self.char_id}, {'_id': 1})
+        doc = MongoTraining.db(server_id).find_one({'_id': self.char_id}, {'_id': 1})
         if not doc:
-            doc = Document.get("staff")
+            doc = MongoTraining.document()
             doc['_id'] = self.char_id
-            self.mongo.staff.insert_one(doc)
+            MongoTraining.db(server_id).insert_one(doc)
 
     def has_training(self, training_ids):
         if not isinstance(training_ids, (list, tuple)):
             training_ids = [training_ids]
 
-        projection = {"trainings.{0}".format(i): 1 for i in training_ids}
-        char = self.mongo.staff.find_one({'_id': self.char_id}, projection)
+        projection = {"bag.{0}".format(i): 1 for i in training_ids}
+        doc = MongoTraining.db(self.server_id).find_one({'_id': self.char_id}, projection)
         for tid in training_ids:
-            if str(tid) not in char['trainings']:
+            if tid not in doc['bag']:
                 return False
 
         return True
 
     def add(self, training_id, training_data):
-        self.mongo.staff.update_one(
+        MongoTraining.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': {'trainings.{0}'.format(training_id): training_data}}
+            {'$set': {'bag.{0}'.format(training_id): training_data}}
         )
 
         self.send_notify(ids=[training_id])
 
     def use(self, staff_id, training_id):
-        key = "trainings.{0}".format(training_id)
-        doc = self.mongo.staff.find_one(
-            {'_id': self.char_id},
-            {key: 1}
-        )
+        key = "bag.{0}".format(training_id)
+        doc = MongoTraining.db(self.server_id).find_one({'_id': self.char_id}, {key: 1})
 
-        trainings = doc.get('trainings', {})
-        if training_id not in trainings:
+        bag = doc.get('bag', {})
+        if training_id not in bag:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_NOT_EXIST"))
 
         sm = StaffManger(self.server_id, self.char_id)
         if not sm.has_staff(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
-        this_training = trainings[training_id]
+        this_training = bag[training_id]
         sm.training_start(staff_id, this_training['oid'], this_training['item'])
 
-        self.mongo.staff.update_one(
+        MongoTraining.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$unset': {key: 1}}
         )
@@ -185,21 +179,17 @@ class TrainingBag(object):
 
     def send_notify(self, ids=None):
         if not ids:
-            projection = {'trainings': 1}
+            projection = {'bag': 1}
             act = ACT_INIT
         else:
-            projection = {'trainings.{0}'.format(i): 1 for i in ids}
+            projection = {'bag.{0}'.format(i): 1 for i in ids}
             act = ACT_UPDATE
 
-        doc = self.mongo.staff.find_one(
-            {'_id': self.char_id},
-            projection
-        )
-
+        doc = MongoTraining.db(self.server_id).find_one({'_id': self.char_id}, projection)
         notify = TrainingNotify()
         notify.act = act
 
-        for k, v in doc['trainings'].iteritems():
+        for k, v in doc['bag'].iteritems():
             notify_training = notify.trainings.add()
             notify_training.id = k
             notify_training.oid = v['oid']

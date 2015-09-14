@@ -41,7 +41,7 @@ def read(request):
     id = request._proto.id
 
     m = MailManager(server_id, char_id)
-    m.read(id)
+    m.open(id)
 
     response = MailOpenResponse()
     response.ret = 0

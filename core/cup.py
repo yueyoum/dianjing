@@ -17,9 +17,8 @@ from django.conf import settings
 
 from dianjing.exception import GameException
 
-from core.db import MongoDB
-from core.mongo import Document
-from core.abstract import AbstractStaff, AbstractClub
+from core.mongo import MongoCup, MongoCupClub, MongoCharacter
+from core.abstract import AbstractClub
 from core.club import Club
 
 from utils.functional import make_string_id
@@ -30,16 +29,15 @@ from protomsg import cup_pb2
 from protomsg.cup_pb2 import Cup as MessageCup
 
 # 服务器程序内部使用
-CUP_PROCESS_APPLY = 1000       # 报名
-CUP_PROCESS_PREPARE = 1001     # 预选赛
+CUP_PROCESS_APPLY = 1000  # 报名
+CUP_PROCESS_PREPARE = 1001  # 预选赛
 
-CUP_PROCESS_32 = 32         # 32强
-CUP_PROCESS_16 = 16         # 16强
-CUP_PROCESS_8 = 8           # 8强
-CUP_PROCESS_4 = 4           # 4强    半决赛
-CUP_PROCESS_2 = 2           # 2强    总决赛
-CUP_PROCESS_1 = 1           # 结束
-
+CUP_PROCESS_32 = 32  # 32强
+CUP_PROCESS_16 = 16  # 16强
+CUP_PROCESS_8 = 8  # 8强
+CUP_PROCESS_4 = 4  # 4强    半决赛
+CUP_PROCESS_2 = 2  # 2强    总决赛
+CUP_PROCESS_1 = 1  # 结束
 
 CUP_LEVELS = [
     CUP_PROCESS_32,
@@ -81,8 +79,6 @@ class CupClub(object):
         return Club(server_id, int(club_data['_id']))
 
 
-
-
 class CupLevel(object):
     def __init__(self, year, month, lv):
         self.level = lv
@@ -110,13 +106,11 @@ class CupLevel(object):
 
         self.start_time = arrow.Arrow(year, month, day, hour, 0, 0, tzinfo=settings.TIME_ZONE)
 
-
     @classmethod
     def current_level(cls):
         now = arrow.utcnow().to(settings.TIME_ZONE)
         current_day = now.day
         last_day_of_this_month = calendar.monthrange(now.year, now.month)
-
 
         if current_day < 4:
             # 1 ~ 3
@@ -148,7 +142,6 @@ class CupLevel(object):
 
         return cls(now.year, now.month, level)
 
-
     @classmethod
     def all_match_levels(cls):
         now = arrow.utcnow().to(settings.TIME_ZONE)
@@ -161,7 +154,6 @@ class CupLevel(object):
             result.append(lv)
         return result
 
-
     @classmethod
     def all_passed_match_levels(cls):
         now = arrow.utcnow().to(settings.TIME_ZONE)
@@ -173,15 +165,12 @@ class Cup(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-        self.mongo = MongoDB.get(server_id)
-
 
     @staticmethod
     def new(server_id):
         # 开始一场新的
-        db = MongoDB.get(1)
-        db.cup_club.drop()
-        db.cup.update_one(
+        MongoCupClub.db(server_id).drop()
+        MongoCup.db(server_id).update_one(
             {'_id': 1},
             {
                 '$set': {
@@ -194,16 +183,11 @@ class Cup(object):
             upsert=True,
         )
 
-
     @staticmethod
     def prepare(server_id):
         # 预选赛， 选出32强
-
-        db = MongoDB.get(server_id)
-
-
         # TODO real rule
-        chars = db.character.find({'in_cup': 1}, {'_id': 1})
+        chars = MongoCharacter.db(server_id).find({'in_cup': 1}, {'_id': 1})
         char_ids = [c['_id'] for c in chars]
         if len(char_ids) >= 32:
             char_ids = random.sample(char_ids, 16)
@@ -213,90 +197,81 @@ class Cup(object):
 
         docs = []
         for i in char_ids:
-            doc = Document.get("cup.club")
+            doc = MongoCupClub.document()
             doc['_id'] = str(i)
             doc['staffs'] = []
-
             docs.append(doc)
 
         for n in npcs:
-            doc = Document.get("cup.club")
+            doc = MongoCupClub.document()
             doc['_id'] = make_string_id()
             doc['club_name'] = n['club_name']
             doc['manager_name'] = n['manager_name']
             doc['club_flag'] = n['club_flag']
             doc['staffs'] = n['staffs']
-
             docs.append(doc)
 
-        db.cup_club.insert_many(docs)
-        db.cup.update_one(
+        MongoCupClub.db(server_id).insert_many(docs)
+        MongoCup.db(server_id).update_one(
             {'_id': 1},
             {'$set': {'levels.{0}'.format(CUP_PROCESS_32): [d['_id'] for d in docs]}}
         )
 
-
     @staticmethod
     def match(server_id):
-        db = MongoDB.get(server_id)
-
         all_passed_match_levels = CupLevel.all_passed_match_levels()
 
-        cup_doc = db.cup.find_one({'_id': 1})
-
-        for i in range(1, len(all_passed_match_levels)):
-            lv = all_passed_match_levels[i].level
+        cup_doc = MongoCup.db(server_id).find_one({'_id': 1})
+        for index in range(1, len(all_passed_match_levels)):
+            lv = all_passed_match_levels[index].level
             if str(lv) not in cup_doc['levels']:
-                club_ids = cup_doc['levels'][str(all_passed_match_levels[i-1].level)]
+                club_ids = cup_doc['levels'][str(all_passed_match_levels[index - 1].level)]
                 # TODO real match
 
                 next_level_club_ids = []
-                for i in range(0, len(club_ids)-1, 2):
-                    next_level_club_ids.append( random.choice([club_ids[i], club_ids[i+1]]) )
+                for c in range(0, len(club_ids) - 1, 2):
+                    next_level_club_ids.append(random.choice([club_ids[c], club_ids[c + 1]]))
 
                 cup_doc['levels'][str(lv)] = next_level_club_ids
-                db.cup.update_one(
+                MongoCup.db(server_id).update_one(
                     {'_id': 1},
                     {'$set': {'levels.{0}'.format(lv): next_level_club_ids}}
                 )
-
 
     @staticmethod
     def current_level():
         return CupLevel.current_level()
 
-
     def join_cup(self):
         if Cup.current_level().level != CUP_PROCESS_PREPARE:
             raise GameException(ConfigErrorMessage.get_error_id("CUP_OUT_OF_APPLY_TIME"))
 
-        self.mongo.character.update_one(
+        MongoCharacter.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {'in_cup': True}}
         )
 
-
     def make_cup_protomsg(self):
-        cup_doc = self.mongo.cup.find_one({'_id': 1})
-        if not cup_doc:
-            cup_doc = Document.get("cup")
+        doc = MongoCup.db(self.server_id).find_one({'_id': 1})
+        if not doc:
+            doc = MongoCup.document()
             try:
-                self.mongo.cup.insert_one(cup_doc)
+                MongoCup.db(self.server_id).insert_one(doc)
             except DuplicateKeyError:
                 pass
 
         msg = MessageCup()
-        msg.order = cup_doc['order']
+        msg.order = doc['order']
 
-        last_champion = cup_doc.get('last_champion', "")
+        last_champion = doc.get('last_champion', "")
         if last_champion:
             msg.last_champion.MergeFromString(last_champion)
 
         msg.process = CUP_PROCESS_TABLE[Cup.current_level().level]
-        char = self.mongo.character.find_one({'_id': self.char_id}, {'in_cup': 1})
-        msg.joined = char.get('in_cup', False)
+        char_doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'in_cup': 1})
+        msg.joined = char_doc.get('in_cup', False)
 
-        for i in self.mongo.cup_club.find():
+        for i in MongoCupClub.db(self.server_id).find():
             msg_club = msg.clubs.add()
             c = CupClub(self.server_id, i)
             msg_club.MergeFrom(c.make_protomsg())
@@ -306,19 +281,18 @@ class Cup(object):
             msg_level.process = CUP_PROCESS_TABLE[lv.level]
             msg_level.match_time = lv.start_time.timestamp
 
-            if str(lv.level) in cup_doc['levels']:
-                msg_level.club_ids.extend(cup_doc['levels'][str(lv.level)])
-
+            if str(lv.level) in doc['levels']:
+                msg_level.club_ids.extend(doc['levels'][str(lv.level)])
 
         if Cup.current_level().level == CUP_PROCESS_1:
-            number_one = cup_doc['levels'][str(CUP_PROCESS_1)][0]
-            cup_doc['levels'][str(CUP_PROCESS_2)].remove(number_one)
-            number_two = cup_doc['levels'][str(CUP_PROCESS_2)][0]
+            number_one = doc['levels'][str(CUP_PROCESS_1)][0]
+            doc['levels'][str(CUP_PROCESS_2)].remove(number_one)
+            number_two = doc['levels'][str(CUP_PROCESS_2)][0]
 
-            cup_doc['levels'][str(CUP_PROCESS_4)].remove(number_one)
-            cup_doc['levels'][str(CUP_PROCESS_4)].remove(number_two)
+            doc['levels'][str(CUP_PROCESS_4)].remove(number_one)
+            doc['levels'][str(CUP_PROCESS_4)].remove(number_two)
 
-            number_three, number_four = cup_doc['levels'][str(CUP_PROCESS_4)]
+            number_three, number_four = doc['levels'][str(CUP_PROCESS_4)]
 
             msg.top_four.extend([number_one, number_two, number_three, number_four])
 

@@ -9,9 +9,7 @@ Description:
 
 from dianjing.exception import GameException
 
-
-from core.db import MongoDB
-from core.mongo import Document
+from core.mongo import MongoBuilding
 from core.club import Club
 from core.resource import Resource
 
@@ -21,35 +19,33 @@ from utils.message import MessagePipe
 
 from protomsg.building_pb2 import BuildingNotify
 
-BUILDING_HEADQUARTERS = 1           # 总部大楼
-BUILDING_TRAINING_CENTER = 2        # 任务中心
-BUILDING_STAFF_CENTER = 3           # 员工中心
-BUILDING_TASK_CENTER = 4            # 任务中心
-BUILDING_LEAGUE_CENTER = 5          # 联赛中心
-
+BUILDING_HEADQUARTERS = 1  # 总部大楼
+BUILDING_TRAINING_CENTER = 2  # 任务中心
+BUILDING_STAFF_CENTER = 3  # 员工中心
+BUILDING_TASK_CENTER = 4  # 任务中心
+BUILDING_LEAGUE_CENTER = 5  # 联赛中心
 
 
 class BuildingManager(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-        self.mongo = MongoDB.get(server_id)
 
-        if not self.mongo.building.find_one({'_id': self.char_id}, {'_id': 1}):
-            doc = Document.get("building")
+        doc = MongoBuilding.db(server_id).find_one({'_id': self.char_id}, {'_id': 1})
+        if not doc:
+            doc = MongoBuilding.document()
             doc['_id'] = self.char_id
+            doc['buildings'] = {str(i): 1 for i in ConfigBuilding.INSTANCES.keys()}
 
-            self.mongo.building.insert_one(doc)
-
+            MongoBuilding.db(server_id).insert_one(doc)
 
     def get_level(self, building_id):
-        doc = self.mongo.building.find_one(
+        doc = MongoBuilding.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'buildings.{0}'.format(building_id): 1}
         )
 
-        return doc['buildings'].get(str(building_id), 1)
-
+        return doc['buildings'][str(building_id)]
 
     def level_up(self, building_id):
         b = ConfigBuilding.get(building_id)
@@ -68,13 +64,12 @@ class BuildingManager(object):
 
         needs = {"gold": -b.get_level(current_level).up_need_gold}
         with Resource(self.server_id, self.char_id).check(**needs):
-            self.mongo.building.update_one(
+            MongoBuilding.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {'$inc': {'buildings.{0}'.format(building_id): 1}}
             )
 
         self.send_notify(building_ids=[building_id])
-
 
     def send_notify(self, building_ids=None):
         if building_ids:
@@ -82,9 +77,8 @@ class BuildingManager(object):
         else:
             projection = {'buildings': 1}
 
-
+        doc = MongoBuilding.db(self.server_id).find_one({'_id': self.char_id}, projection)
         notify = BuildingNotify()
-        buildings = self.mongo.building.find_one({'_id': self.char_id}, projection)
 
         for b in ConfigBuilding.all_values():
             if building_ids and b.id not in building_ids:
@@ -92,13 +86,9 @@ class BuildingManager(object):
 
             notify_building = notify.buildings.add()
             notify_building.id = b.id
-            if not b.max_levels:
-                notify_building.level = 0
-            else:
-                notify_building.level = buildings['buildings'].get(str(b.id), 1)
+            notify_building.level = doc['buildings'][str(b.id)]
 
         MessagePipe(self.char_id).put(msg=notify)
-
 
 
 class BuildingBase(object):
@@ -117,11 +107,14 @@ class BuildingBase(object):
 class BuildingTrainingCenter(BuildingBase):
     BUILDING_ID = BUILDING_TRAINING_CENTER
 
+
 class BuildingStaffCenter(BuildingBase):
     BUILDING_ID = BUILDING_STAFF_CENTER
 
+
 class BuildingTaskCenter(BuildingBase):
     BUILDING_ID = BUILDING_TASK_CENTER
+
 
 class BuildingLeagueCenter(BuildingBase):
     BUILDING_ID = BUILDING_LEAGUE_CENTER

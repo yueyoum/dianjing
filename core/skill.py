@@ -11,8 +11,7 @@ import random
 
 from dianjing.exception import GameException
 
-from core.db import MongoDB
-from core.mongo import Document
+from core.mongo import MongoStaff
 
 from utils.message import MessagePipe
 
@@ -27,12 +26,9 @@ class SkillManager(object):
         self.server_id = server_id
         self.char_id = char_id
 
-        self.mongo = MongoDB.get(server_id)
-
-
     def get_skill(self, staff_id):
         key = "staffs.{0}.skills".format(staff_id)
-        doc = self.mongo.staff.find_one(
+        doc = MongoStaff.db(self.server_id).find_one(
             {'_id': self.char_id},
             {key: 1}
         )
@@ -41,7 +37,6 @@ class SkillManager(object):
             return None
 
         return doc['staffs'][str(staff_id)]['skills']
-
 
     def check(self, staff_id, skill_id=None):
         from core.staff import StaffManger
@@ -53,7 +48,7 @@ class SkillManager(object):
             if not ConfigSkill.get(skill_id):
                 raise GameException(ConfigErrorMessage.get_error_id("SKILL_NOT_EXISTS"))
 
-            doc = self.mongo.staff.find_one(
+            doc = MongoStaff.db(self.server_id).find_one(
                 {'_id': self.char_id},
                 {'staffs.{0}.skills.{1}'.format(staff_id, skill_id): 1}
             )
@@ -66,7 +61,6 @@ class SkillManager(object):
                 return this_skill
 
         return None
-
 
     def add_level(self, staff_id, skill_id, level_addition):
         this_skill = self.check(staff_id, skill_id)
@@ -84,30 +78,28 @@ class SkillManager(object):
 
         key = "staffs.{0}.skills.{1}.level".format(staff_id, skill_id)
 
-        self.mongo.staff.update_one(
+        MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': {key: level+level_addition}}
+            {'$set': {key: level + level_addition}}
         )
 
-        self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
-
+        self.send_notify(staff_id=staff_id, skill_id=skill_id)
 
     def lock_toggle(self, staff_id, skill_id):
         self.check(staff_id, skill_id)
         key = "staffs.{0}.skills.{1}.locked".format(staff_id, skill_id)
 
-        self.mongo.staff.update_one(
+        MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$bit': {key: {'xor': 1}}}
         )
 
-        self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
-
+        self.send_notify(staff_id=staff_id, skill_id=skill_id)
 
     def wash(self, staff_id):
         self.check(staff_id)
 
-        doc = self.mongo.staff.find_one(
+        doc = MongoStaff.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'staffs.{0}.skills'.format(staff_id): 1}
         )
@@ -117,7 +109,6 @@ class SkillManager(object):
         for k, v in skills.iteritems():
             if v['locked'] == 1:
                 new_skills[k] = v
-
 
         race = ConfigStaff.get(staff_id).race
         race_skills = ConfigSkill.filter(race=race)
@@ -131,32 +122,32 @@ class SkillManager(object):
             race_skill_ids.remove(picked_skill)
 
             if str(picked_skill) not in new_skills:
-                new_skills[str(picked_skill)] = Document.get("skill.embedded")
-
+                new_skills[str(picked_skill)] = MongoStaff.document_staff_skill()
 
         if len(new_skills) < 4:
             raise RuntimeError("Not enough skills for race {0}".format(race))
 
-        self.mongo.staff.update_one(
+        MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {"staffs.{0}.skills".format(staff_id): new_skills}}
         )
 
         self.send_notify()
 
-
-    def send_notify(self, act=ACT_INIT, staff_id=None, skill_id=None):
+    def send_notify(self, staff_id=None, skill_id=None):
         # 这个必须在 StaffNotify 之后
 
         if not staff_id:
             projection = {'staffs': 1}
+            act = ACT_INIT
         else:
+            act = ACT_UPDATE
             if not skill_id:
                 projection = {'staffs.{0}.skills'.format(staff_id): 1}
             else:
                 projection = {'staffs.{0}.skills.{1}'.format(staff_id, skill_id): 1}
 
-        doc = self.mongo.staff.find_one(
+        doc = MongoStaff.db(self.server_id).find_one(
             {'_id': self.char_id},
             projection
         )
@@ -175,4 +166,3 @@ class SkillManager(object):
                 notify_staff_skill.locked = sinfo['locked'] == 1
 
         MessagePipe(self.char_id).put(msg=notify)
-
