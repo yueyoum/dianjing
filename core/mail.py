@@ -53,11 +53,13 @@ class MailManager(object):
 
     def send(self, to_id, content):
         to_id = int(to_id)
-        char = self.mongo.character.find_one({'_id': to_id}, {'name': 1})
-        if not char:
+        target_doc = self.mongo.character.find_one({'_id': to_id}, {'_id': 1})
+        if not target_doc:
             raise GameException( ConfigErrorMessage.get_error_id("CHAR_NOT_EXIST") )
 
-        title = u"来自 {0} 的邮件".format(char['name'])
+        self_doc = self.mongo.character.find_one({'_id': self.char_id}, {'name': 1})
+
+        title = u"来自 {0} 的邮件".format(self_doc['name'])
         MailManager(self.server_id, to_id).add(title, content, from_id=self.char_id)
 
 
@@ -186,7 +188,7 @@ class MailManager(object):
             if v['from_id']:
                 # char
                 notify_mail.mail_from.from_type = MAIL_FROM_USER
-                notify_mail.mail_from.char.MergeFrom(Character(self.server_id, self.char_id).make_protomsg())
+                notify_mail.mail_from.char.MergeFrom(Character(self.server_id, v['from_id']).make_protomsg())
             else:
                 notify_mail.mail_from.from_type = MAIL_FROM_SYSTEM
 
