@@ -14,11 +14,11 @@ import pymongo
 
 from dianjing.exception import GameException
 
-from core.mongo import MONGO_COMMON_KEY_LADDER_STORE, MongoLadder
+from core.mongo import MongoLadder
 from core.abstract import AbstractStaff, AbstractClub
 from core.club import Club
 from core.match import ClubMatch
-from core.common import Common
+from core.common import CommonLadderStore
 from core.package import Drop
 from core.resource import Resource
 from core.notification import Notification
@@ -389,7 +389,7 @@ class LadderStore(object):
         self.server_id = server_id
         self.char_id = char_id
 
-        self.items = Common.get(self.server_id, MONGO_COMMON_KEY_LADDER_STORE)
+        self.items = CommonLadderStore.get(self.server_id)
         if not self.items:
             self.refresh()
 
@@ -397,12 +397,12 @@ class LadderStore(object):
 
     def refresh(self):
         with LadderStoreLock(self.server_id).lock():
-            self.items = Common.get(self.server_id, MONGO_COMMON_KEY_LADDER_STORE)
+            self.items = CommonLadderStore.get(self.server_id)
             if self.items:
                 return
 
             self.items = random.sample(ConfigLadderScoreStore.INSTANCES.keys(), 9)
-            Common.set(self.server_id, MONGO_COMMON_KEY_LADDER_STORE, self.items)
+            CommonLadderStore.set(self.server_id, self.items)
 
     def buy(self, item_id):
         if item_id not in self.items:

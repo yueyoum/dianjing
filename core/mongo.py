@@ -98,10 +98,13 @@ class MongoCharacter(BaseDocument):
 
 
 # 公共数据
-COMMON_DOCUMENT = {
-    '_id': null,
-    'value': null,
-}
+class MongoCommon(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'value': null,
+    }
+
+    COLLECTION = "common"
 
 # 锁
 LOCK_DOCUMENT = {
@@ -411,8 +414,3 @@ class MongoNotification(BaseDocument):
     def document_notification(cls):
         return cls.NOTIFICATION_DOCUMENT.copy()
 
-
-MONGO_COMMON_KEY_CHAT = 'chat'
-MONGO_COMMON_KEY_RECRUIT_HOT = 'recruit_hot'
-MONGO_COMMON_KEY_TASK = 'task'
-MONGO_COMMON_KEY_LADDER_STORE = 'ladder_store'

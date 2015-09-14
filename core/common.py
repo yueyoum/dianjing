@@ -7,22 +7,41 @@ Description:
 
 """
 
-from core.db import MongoDB
+from core.mongo import MongoCommon
 
-class Common(object):
+
+class BaseCommon(object):
+    ID = None
+
     @classmethod
-    def get(cls, server_id, _id):
-        doc = MongoDB.get(server_id).common.find_one({'_id': _id})
+    def get(cls, server_id):
+        doc = MongoCommon.db(server_id).find_one({'_id': cls.ID})
         return doc.get('value', None) if doc else None
 
     @classmethod
-    def set(cls, server_id, _id, value):
-        MongoDB.get(server_id).common.update_one(
-            {'_id': _id},
+    def set(cls, server_id, value):
+        MongoCommon.db(server_id).update_one(
+            {'_id': cls.ID},
             {'$set': {'value': value}},
             upsert=True
         )
 
     @classmethod
-    def delete(cls, server_id, _id):
-        MongoDB.get(server_id).common.delete_one({'_id': _id})
+    def delete(cls, server_id):
+        MongoCommon.db(server_id).delete_one({'_id': cls.ID})
+
+
+class CommonChat(BaseCommon):
+    ID = 'chat'
+
+
+class CommonRecruitHot(BaseCommon):
+    ID = 'recruit_hot'
+
+
+class CommonTask(BaseCommon):
+    ID = 'task'
+
+
+class CommonLadderStore(BaseCommon):
+    ID = 'ladder_store'

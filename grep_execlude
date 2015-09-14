@@ -1,1 +1,1 @@
---exclude-dir=evn --exclude-dir=tests --exclude-dir=protomsg --exclude-dir=protobuf
+--exclude-dir=env --exclude-dir=tests --exclude-dir=protomsg --exclude-dir=protobuf

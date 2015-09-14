@@ -13,9 +13,9 @@ from dianjing.exception import GameException
 
 from core.base import STAFF_ATTRS
 from core.abstract import AbstractStaff
-from core.mongo import MongoStaff, MongoRecruit, MONGO_COMMON_KEY_RECRUIT_HOT
+from core.mongo import MongoStaff, MongoRecruit
 from core.resource import Resource
-from core.common import Common
+from core.common import CommonRecruitHot
 from core.skill import SkillManager
 from core.package import TrainingItem
 
@@ -85,13 +85,12 @@ class StaffRecruit(object):
         return doc['staffs']
 
     def get_hot_staffs(self):
-        data = Common.get(self.server_id, MONGO_COMMON_KEY_RECRUIT_HOT)
-        if not data:
-            staffs = ConfigStaffHot.random_three()
-            Common.set(self.server_id, MONGO_COMMON_KEY_RECRUIT_HOT, staffs)
-            return staffs
+        value = CommonRecruitHot.get(self.server_id)
+        if not value:
+            value = ConfigStaffHot.random_three()
+            CommonRecruitHot.set(self.server_id, value)
 
-        return data
+        return value
 
     def refresh(self, tp):
         if tp == RECRUIT_HOT:

@@ -10,8 +10,7 @@ Description:
 import uwsgidecorators
 
 from core.db import MongoDB
-from core.mongo import MONGO_COMMON_KEY_RECRUIT_HOT
-from core.common import Common
+from core.common import CommonRecruitHot
 
 from cronjob.log import Logger
 
@@ -22,7 +21,7 @@ def recruit_hot_reset(*args):
 
     servers = MongoDB.server_ids()
     for s in servers:
-        Common.delete(s, MONGO_COMMON_KEY_RECRUIT_HOT)
+        CommonRecruitHot.delete(s)
 
     logger.write("Done")
     logger.close()

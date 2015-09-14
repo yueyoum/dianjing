@@ -11,8 +11,7 @@ import random
 from dianjing.exception import GameException
 
 from core.db import MongoDB
-from core.common import Common
-from core.mongo import MONGO_COMMON_KEY_TASK
+from core.common import CommonTask
 from core.building import BuildingTaskCenter
 
 from core.task import (
@@ -79,8 +78,8 @@ class TestTask(object):
 
     def test_common_refresh(self):
         TaskRefresh(1).refresh()
-        data = Common.get(1, MONGO_COMMON_KEY_TASK)
-        assert len(data) > 0
+        value = CommonTask.get(1)
+        assert len(value) > 0
 
 
     def test_refresh(self):

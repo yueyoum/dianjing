@@ -10,16 +10,13 @@ Description:
 import base64
 import cPickle
 
-
 from dianjing.exception import GameException
-from core.db import MongoDB
-from core.mongo import MONGO_COMMON_KEY_CHAT
+from core.mongo import MongoCommon, MongoCharacter
+from core.common import CommonChat
 from core.signals import chat_signal
 
 from config import ConfigErrorMessage
 from utils.message import MessagePipe, MessageFactory
-
-
 
 from protomsg.chat_pb2 import CHAT_CHANNEL_PUBLIC, CHAT_CHANNEL_UNION, ChatNotify, ChatMessage
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
@@ -29,8 +26,6 @@ class Chat(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-        self.mongo = MongoDB.get(server_id)
-
 
     def send(self, channel, text):
         from tasks import world
@@ -38,7 +33,7 @@ class Chat(object):
         if channel not in [CHAT_CHANNEL_PUBLIC, CHAT_CHANNEL_UNION]:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-        char_doc = self.mongo.character.find_one(
+        char_doc = MongoCharacter.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'name': 1, 'club.vip': 1}
         )
@@ -53,9 +48,9 @@ class Chat(object):
         data = base64.b64encode(msg.SerializeToString())
 
         # TODO union chat
-        self.mongo.common.update_one(
-            {'_id': MONGO_COMMON_KEY_CHAT},
-            {'$push': {'chats': {
+        MongoCommon.db(self.server_id).update_one(
+            {'_id': CommonChat.ID},
+            {'$push': {'value': {
                 '$each': [data],
                 '$slice': -20
             }}},
@@ -86,22 +81,14 @@ class Chat(object):
             char_id=self.char_id
         )
 
-
     def send_notify(self):
         notify = ChatNotify()
         notify.act = ACT_INIT
 
-        doc = self.mongo.common.find_one({'_id': MONGO_COMMON_KEY_CHAT}, {'chats': 1})
-        if not doc:
-            return
+        value = CommonChat.get(self.server_id)
 
-        chats = doc.get('chats', [])
-        if not chats:
-            return
-
-        for c in chats:
+        for v in value:
             notify_msg = notify.msgs.add()
-            notify_msg.MergeFromString(base64.b64decode(c))
+            notify_msg.MergeFromString(base64.b64decode(v))
 
         MessagePipe(self.char_id).put(msg=notify)
-

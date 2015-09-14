@@ -12,8 +12,8 @@ import random
 from dianjing.exception import GameException
 
 from core.db import MongoDB
-from core.mongo import MONGO_COMMON_KEY_LADDER_STORE, MongoLadder
-from core.common import Common
+from core.mongo import MongoLadder
+from core.common import CommonLadderStore
 from core.ladder import Ladder, LadderStore
 from core.staff import StaffManger
 from core.club import Club
@@ -69,7 +69,7 @@ class TestLadderStore(object):
     def teardown(self):
         MongoDB.get(1).staff.delete_one({'_id': 1})
         MongoDB.get(1).ladder.drop()
-        Common.delete(1, MONGO_COMMON_KEY_LADDER_STORE)
+        CommonLadderStore.delete(1)
 
     def test_send_notify(self):
         LadderStore(1, 1).send_notify()

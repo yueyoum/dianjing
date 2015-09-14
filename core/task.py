@@ -4,10 +4,10 @@ import random
 
 from dianjing.exception import GameException
 
-from core.mongo import MongoTask, MONGO_COMMON_KEY_TASK
+from core.mongo import MongoTask
 from core.resource import Resource
 from core.building import BuildingTaskCenter
-from core.common import Common
+from core.common import CommonTask
 
 from config import ConfigErrorMessage, ConfigTask, ConfigBuilding
 
@@ -46,16 +46,16 @@ class TaskRefresh(object):
 
             levels[str(i)] = task_ids
 
-        Common.set(self.server_id, MONGO_COMMON_KEY_TASK, levels)
+        CommonTask.set(self.server_id, levels)
 
     def get_task_ids(self, building_level):
         def get():
-            doc = Common.get(self.server_id, MONGO_COMMON_KEY_TASK)
+            value = CommonTask.get(self.server_id)
 
-            if not doc:
+            if not value:
                 return []
 
-            return doc.get(str(building_level), [])
+            return value.get(str(building_level), [])
 
         task_ids = get()
         if not task_ids:
