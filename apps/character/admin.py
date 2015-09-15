@@ -22,7 +22,7 @@ class CharacterAdmin(admin.ModelAdmin):
         'Info'
     )
 
-    search_fields = ['name', ]
+    search_fields = ['name', 'club_name',]
 
     action_form = MyActionForm
     actions = ['add_gold', 'add_diamond', 'add_club_level']

@@ -131,16 +131,7 @@ class LadderMatch(object):
         final_club_two_order = self.club_two['order']
 
         if self.club_one_win:
-            MongoLadder.db(self.server_id).update_one(
-                {'_id': self.club_one['_id']},
-                {'$inc': {'score': 10}}
-            )
-
-            MongoLadder.db(self.server_id).update_one(
-                {'_id': self.club_two['_id']},
-                {'$inc': {'score': 5}}
-            )
-
+            add_score = 10
             if order_changed > 0:
                 # exchange the order
                 MongoLadder.db(self.server_id).update_one(
@@ -162,20 +153,14 @@ class LadderMatch(object):
                 self_log = (5, (self.club_two_object.name,))
                 target_log = (6, (self.club_one_object.name,))
         else:
-            MongoLadder.db(self.server_id).update_one(
-                {'_id': self.club_one['_id']},
-                {'$inc': {'score': 5}}
-            )
-
-            MongoLadder.db(self.server_id).update_one(
-                {'_id': self.club_two['_id']},
-                {'$inc': {'score': 10}}
-            )
-
+            add_score = 5
             self_log = (2, (self.club_two_object.name,))
             target_log = (3, (self.club_one_object.name,))
 
-        Ladder(self.server_id, int(self.club_one_object.id)).add_log(self_log, send_notify=False)
+        ladder_one = Ladder(self.server_id, int(self.club_one_object.id))
+        ladder_one.add_score(add_score, send_notify=False)
+        ladder_one.add_log(self_log, send_notify=False)
+
         if isinstance(self.club_two_object, Club):
             # real club
             ladder_two = Ladder(self.server_id, int(self.club_two_object.id))
@@ -338,6 +323,24 @@ class Ladder(object):
         self.make_refresh()
         return msg
 
+    def add_score(self, score, send_notify=True):
+        lock_key = "ladder_add_score_{0}".format(self.char_id)
+
+        with Lock(self.server_id).lock(key=lock_key):
+            doc = MongoLadder.db(self.server_id).find_one({'_id': str(self.char_id)}, {'score': 1})
+            new_score = doc['score'] + score
+            if new_score > 1000000:
+                new_score = 1000000
+
+            MongoLadder.db(self.server_id).update_one(
+                {'_id': str(self.char_id)},
+                {'$set': {'score': new_score}}
+            )
+
+        if send_notify:
+            self.send_notify()
+
+
     def add_log(self, log, send_notify=True):
         MongoLadder.db(self.server_id).update_one(
             {'_id': str(self.char_id)},
@@ -436,7 +439,8 @@ class LadderStore(object):
         )
 
         drop = Drop.generate(ConfigLadderScoreStore.get(item_id).package)
-        Resource(self.server_id, self.char_id).add_package(drop)
+        message = "Buy from ladder store. item id {0}".format(item_id)
+        Resource(self.server_id, self.char_id).save_drop(drop, message=message)
         Ladder(self.server_id, self.char_id).send_notify()
 
     def send_notify(self):

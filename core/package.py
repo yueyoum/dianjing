@@ -102,15 +102,15 @@ class PackageBase(object):
 
         return p
 
+    def to_json(self):
+        raise NotImplementedError()
+
     @classmethod
-    def new(cls, **kwargs):
-        p = cls()
-        for k, v in kwargs.iteritems():
-            setattr(p, k, v)
-
-        return p
+    def loads_from_json(cls, data):
+        raise NotImplementedError()
 
 
+# 对应只会给角色加的物品。 关卡掉落，奖励，邮件附件 这些
 class Drop(PackageBase):
     FIELDS = ['gold', 'diamond', 'club_renown', 'ladder_score', 'league_score']
     # 还有 trainings
@@ -125,7 +125,7 @@ class Drop(PackageBase):
 
             msg_item = msg.resources.add()
             msg_item.resource_id = attr
-            msg_item.value = getattr(self, attr)
+            msg_item.value = value
 
         for tid, amount in self.trainings:
             msg_training = msg.trainings.add()
@@ -162,26 +162,6 @@ class Drop(PackageBase):
 
         return obj
 
-    def dumps(self):
-        data = self.make_protomsg().SerializeToString()
-        return base64.b64encode(data)
-
-    @classmethod
-    def loads(cls, data):
-        data = base64.b64decode(data)
-        msg = MsgDrop()
-        msg.ParseFromString(data)
-
-        p = cls()
-
-        for item in msg.resources:
-            setattr(p, item.resource_id, item.value)
-
-        for tr in msg.trainings:
-            p.trainings.append((tr.id, tr.amount))
-
-        return p
-
 
 class TrainingItem(PackageBase):
     # FIELDS also has skill_id, skill_level
@@ -201,6 +181,7 @@ class TrainingItem(PackageBase):
 
         config = ConfigTraining.get(tid)
         if config.skill_id:
+            # 这是技能训练，就不会其他加成了
             obj.skill_id = config.skill_id
             obj.skill_level = config.skill_level
             return obj
@@ -253,24 +234,3 @@ class TrainingItem(PackageBase):
             setattr(obj, k, v)
 
         return obj
-
-    def dumps(self):
-        data = self.make_protomsg().SerializeToString()
-        return base64.b64encode(data)
-
-    @classmethod
-    def loads(cls, data):
-        """
-
-        :rtype : TrainingItem
-        """
-        data = base64.b64decode(data)
-        msg = MsgTrainingItem()
-        msg.ParseFromString(data)
-
-        p = cls()
-
-        for item in msg.resources:
-            setattr(p, item.resource_id, item.value)
-
-        return p

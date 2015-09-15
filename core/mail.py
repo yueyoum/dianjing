@@ -114,7 +114,8 @@ class MailManager(object):
             raise GameException(ConfigErrorMessage.get_error_id("MAIL_HAS_NO_ATTACHMENT"))
 
         drop = Drop.loads_from_json(attachment)
-        Resource(self.server_id, self.char_id).add_package(drop)
+        message = "Attachment from mail: {0}".format(this_mail['title'])
+        Resource(self.server_id, self.char_id).save_drop(drop, message=message)
 
         MongoMail.db(self.server_id).update_one(
             {'_id': self.char_id},

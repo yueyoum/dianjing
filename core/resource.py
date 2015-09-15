@@ -12,8 +12,7 @@ from dianjing.exception import GameException
 
 from core.base import STAFF_ATTRS
 from core.package import PackageBase, TrainingItem
-
-from utils.functional import make_string_id
+from core.statistics import FinanceStatistics
 
 from config import ConfigErrorMessage, ConfigTraining
 
@@ -23,17 +22,25 @@ class Resource(object):
         self.server_id = server_id
         self.char_id = char_id
 
-    def save_training_item(self, staff_id, training_id, item):
+    def save_training_item(self, staff_id, training_id, item, message=""):
+        """
+
+        :type item: TrainingItem
+        """
         from core.skill import SkillManager
         from core.club import Club
+        from core.staff import StaffManger
         from core.qianban import QianBanContainer
-        from core.package import TrainingItem
 
-        obj = TrainingItem.loads_from_json(item)
+        if item.skill_id:
+            # 判断玩家是否有此技能
+            try:
+                SkillManager(self.server_id, self.char_id).add_level(staff_id, item.skill_id, item.skill_level)
+            except GameException as e:
+                if e.error_id == ConfigErrorMessage.get_error_id("SKILL_NOT_OWN"):
+                    raise GameException(ConfigErrorMessage.get_error_id("TRAINING_REWARD_NO_SKILL"))
+                raise e
 
-        if obj.skill_id:
-            # TODO 判断玩家是否有此技能
-            SkillManager(self.server_id, self.char_id).add_level(staff_id, obj.skill_id, obj.skill_level)
             return
 
         # TODO 牵绊
@@ -44,67 +51,58 @@ class Resource(object):
             effect = qc.get_effect(staff_id, club.staffs[staff_id].skills.keys())
 
             # TODO
-            obj.gold += sum(effect.effect_business_skill.values())
+            item.gold += sum(effect.effect_business_skill.values())
 
-        self.add_package(obj, staff_id)
+        staff_data = {
+            'exp': item.staff_exp,
+        }
 
+        for attr in STAFF_ATTRS:
+            staff_data[attr] = getattr(item, attr)
 
-    def add(self, **kwargs):
-        staff_id = kwargs.pop('staff_id', None)
+        sm = StaffManger(self.server_id, self.char_id)
+        sm.update(staff_id, **staff_data)
 
-        p = PackageBase.new(**kwargs)
-        self.add_package(p, staff_id=staff_id)
+        self.save_drop(item, message=message)
 
-
-    def add_from_package_id(self, package_id, staff_id=None):
-
-        p = PackageBase.generate(package_id)
-        self.add_package(p, staff_id=staff_id)
-
-
-    def add_package(self, package, staff_id=None):
+    def save_drop(self, drop, message=""):
         """
 
-        :type package: core.package.Package
+        :type drop: PackageBase
         """
         from core.club import Club
-        from core.staff import StaffManger
         from core.training import TrainingBag
+        from core.ladder import Ladder
 
-
-        if package.club_renown or package.gold or package.diamond:
+        if drop.club_renown or drop.gold or drop.diamond:
             club_data = {
-                'renown': package.club_renown,
-                'gold': package.gold,
-                'diamond': package.diamond,
+                'renown': drop.club_renown,
+                'gold': drop.gold,
+                'diamond': drop.diamond,
             }
 
             club = Club(self.server_id, self.char_id)
             club.update(**club_data)
 
-        tb = TrainingBag(self.server_id, self.char_id)
-        for tid, amount in package.trainings:
-            for i in range(amount):
-                training_id = make_string_id()
-                # XXX
-                training_data = TrainingItem.generate(ConfigTraining.get(tid).package).dumps()
-                tb.add(training_id, training_data)
+            if drop.gold or drop.diamond:
+                FinanceStatistics(self.server_id, self.char_id).add_log(
+                    gold=drop.gold, diamond=drop.diamond, message=message
+                )
 
+        if drop.ladder_score:
+            Ladder(self.server_id, self.char_id).add_score(drop.ladder_score)
 
-        if staff_id:
-            staff_data = {
-                'exp': package.staff_exp,
-            }
+        # TODO drop.league_score ?
 
-            for attr in STAFF_ATTRS:
-                staff_data[attr] = getattr(package, attr)
-
-            sm = StaffManger(self.server_id, self.char_id)
-            sm.update(staff_id, **staff_data)
-
+        if drop.trainings:
+            tb = TrainingBag(self.server_id, self.char_id)
+            for tid, amount in drop.trainings:
+                for i in range(amount):
+                    tb.add_from_raw_training(i)
 
     @contextmanager
     def check(self, **kwargs):
+        message = kwargs.pop("message", "")
         data = self.data_analysis(**kwargs)
         check_list = self._pre_check_list(data)
 
@@ -112,14 +110,20 @@ class Resource(object):
 
         self._post_check(check_list)
 
+        if data['gold'] or data['diamond']:
+            FinanceStatistics(self.server_id, self.char_id).add_log(
+                gold=data['gold'],
+                diamond=data['diamond'],
+                message=message
+            )
 
-    def data_analysis(self, **kwargs):
+    @staticmethod
+    def data_analysis(**kwargs):
         data = {
             'gold': kwargs.get('gold', 0),
             'diamond': kwargs.get('diamond', 0),
         }
         return data
-
 
     def _pre_check_list(self, data):
         check_list = []
@@ -131,14 +135,13 @@ class Resource(object):
 
         return check_list
 
-
-    def _post_check(self, check_list):
+    @staticmethod
+    def _post_check(check_list):
         for func in check_list:
             try:
                 func.next()
             except StopIteration:
                 pass
-
 
     def _club_resource_check(self, gold=0, diamond=0):
         from core.club import Club

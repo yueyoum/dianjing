@@ -89,7 +89,7 @@ class TrainingStore(object):
 
         with Resource(self.server_id, self.char_id).check(**needs):
             self.remove(training_id)
-            TrainingBag(self.server_id, self.char_id).add(training_id, training)
+            TrainingBag(self.server_id, self.char_id).add(training_id, training['oid'], training['item'])
 
     def remove(self, training_id):
         MongoTraining.db(self.server_id).update_one(
@@ -145,10 +145,21 @@ class TrainingBag(object):
 
         return True
 
-    def add(self, training_id, training_data):
+    def add_from_raw_training(self, oid):
+        # 直接从配置中的 训练id 添加
+        training_id = make_string_id()
+        item = TrainingItem.generate_from_training_id(oid).to_json()
+        self.add(training_id, oid, item)
+
+
+    def add(self, training_id, training_oid, training_item):
+        doc = MongoTraining.document_training_item()
+        doc['oid'] = training_oid
+        doc['item'] = training_item
+
         MongoTraining.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': {'bag.{0}'.format(training_id): training_data}}
+            {'$set': {'bag.{0}'.format(training_id): doc}}
         )
 
         self.send_notify(ids=[training_id])

@@ -272,6 +272,14 @@ class StaffManger(object):
         # training_start 是在 外部 Training.use 中调用的，
         # 已经在外部做了错误检测。这里不用对 staff_id, 和 training_id 再次检查了
         # TODO check training num full ?
+
+        item = TrainingItem.loads_from_json(training_item)
+        if item.skill_id:
+            # 如果是技能训练，如果员工没有此技能，就不能训练
+            skills = SkillManager(self.server_id, self.char_id).get_skill(staff_id)
+            if not skills or str(item.skill_id) not in skills:
+                raise GameException(ConfigErrorMessage.get_error_id("TRAINING_HAS_NO_SKILL"))
+
         doc = MongoStaff.document_staff_trainings()
         doc['start_at'] = arrow.utcnow().timestamp
         doc['oid'] = training_oid
@@ -303,7 +311,9 @@ class StaffManger(object):
         if not self.is_training_finished(data['oid'], data['start_at']):
             raise GameException(ConfigErrorMessage.get_error_id('TRAINING_NOT_FINISHED'))
 
-        Resource(self.server_id, self.char_id).save_training_item(staff_id, data['oid'], data['item'])
+        item = TrainingItem.loads_from_json(data['item'])
+        message = "Reward from training {0}".format(data['oid'])
+        Resource(self.server_id, self.char_id).save_training_item(staff_id, data['oid'], item, message=message)
 
         trainings.pop(slot_id)
         MongoStaff.db(self.server_id).update_one(

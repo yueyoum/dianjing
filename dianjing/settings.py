@@ -49,6 +49,7 @@ INSTALLED_APPS = (
     'apps.character',
     'apps.config',
     'apps.system',
+    'apps.statistics',
     'background',
 )
 

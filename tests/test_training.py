@@ -11,7 +11,7 @@ import random
 
 from dianjing.exception import GameException
 
-from core.mongo import MongoTraining, MongoStaff, MongoCharacter
+from core.mongo import MongoTraining, MongoCharacter
 
 from core.staff import StaffManger
 from core.training import TrainingBag, TrainingStore
@@ -129,7 +129,7 @@ class TestTrainingBag(object):
 
 
     def test_use_no_staff(self):
-        TrainingBag(1, 1).add(1, {'oid': self.config.id, 'item': '{}'})
+        TrainingBag(1, 1).add(1, self.config.id, '{}')
 
         try:
             TrainingBag(1, 1).use(9999, '1')

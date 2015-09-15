@@ -5,6 +5,7 @@ import random
 from dianjing.exception import GameException
 
 from core.mongo import MongoTask
+from core.package import Drop
 from core.resource import Resource
 from core.building import BuildingTaskCenter
 from core.common import CommonTask
@@ -142,7 +143,9 @@ class TaskManager(object):
             raise GameException(ConfigErrorMessage.get_error_id("TASK_ALREADY_GET_REWARD"))
 
         config = ConfigTask.get(task_id)
-        Resource(self.server_id, self.char_id).add_from_package_id(config.package)
+        drop = Drop.generate(config.package)
+        message = "Reward from task {0}".format(task_id)
+        Resource(self.server_id, self.char_id).save_drop(drop, message=message)
         MongoTask.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {'tasks.{0}.status'.format(task_id): TASK_STATUS_END}}
