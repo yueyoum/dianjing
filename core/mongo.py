@@ -10,9 +10,10 @@ from core.db import MongoDB
 
 
 def ensure_index():
-    for s in MongoDB.server_ids():
+    from apps.server.models import Server
+    for sid in Server.opened_server_ids():
         for i in BaseDocument.__subclasses__():
-            i.create_indexes(s)
+            i.create_indexes(sid)
 
 
 class BaseDocument(object):

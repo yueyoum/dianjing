@@ -75,11 +75,3 @@ class MongoDB(object):
             cls.connect()
 
         return cls.DBS[server_id]
-
-
-    @classmethod
-    def server_ids(cls):
-        from apps.server.models import Server
-
-        servers = Server.opened_servers()
-        return [s.id for s in servers]

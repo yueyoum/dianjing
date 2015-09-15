@@ -10,7 +10,7 @@ Description:
 import traceback
 import uwsgidecorators
 
-from core.db import MongoDB
+from apps.server.models import Server
 from core.mongo import MongoLadder
 from cronjob.log import Logger
 
@@ -22,8 +22,8 @@ def ladder_send_rank_reward(*args):
     logger.write("Start")
 
     try:
-        servers = MongoDB.server_ids()
-        for s in servers:
+        server_ids = Server.opened_server_ids()
+        for s in server_ids:
             Ladder.send_rank_reward(s)
             logger.write("Server {0} finish".format(s))
     except:
@@ -40,7 +40,7 @@ def ladder_store_clean_buy_times(*args):
     logger.write("Start")
 
     try:
-        for s in MongoDB.server_ids():
+        for s in Server.opened_server_ids():
             MongoLadder.db(s).update_many(
                 {},
                 {'$set': {'buy_times': {}}}

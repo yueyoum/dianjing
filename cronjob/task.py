@@ -10,8 +10,7 @@ Description:
 import traceback
 
 import uwsgidecorators
-
-from core.db import MongoDB
+from apps.server.models import Server
 from core.task import TaskManager, TaskRefresh
 from cronjob.log import Logger
 
@@ -22,9 +21,9 @@ def task_refresh(*args):
     logger.write("Start")
 
     try:
-        for server_id in MongoDB.server_ids():
-            TaskRefresh.cron_job(server_id)
-            TaskManager.clean(server_id)
+        for sid in Server.opened_server_ids():
+            TaskRefresh.cron_job(sid)
+            TaskManager.clean(sid)
     except:
         logger.error(traceback.format_exc())
     else:

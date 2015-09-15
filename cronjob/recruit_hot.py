@@ -8,10 +8,8 @@ Description:
 """
 
 import uwsgidecorators
-
-from core.db import MongoDB
+from apps.server.models import Server
 from core.common import CommonRecruitHot
-
 from cronjob.log import Logger
 
 @uwsgidecorators.cron(0, -1, -1, -1, -1, target='spooler')
@@ -19,8 +17,8 @@ def recruit_hot_reset(*args):
     logger = Logger("recruit_hot_reset")
     logger.write("Start")
 
-    servers = MongoDB.server_ids()
-    for s in servers:
+    server_ids = Server.opened_server_ids()
+    for s in server_ids:
         CommonRecruitHot.delete(s)
 
     logger.write("Done")

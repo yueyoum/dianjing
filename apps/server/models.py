@@ -31,3 +31,8 @@ class Server(models.Model):
         now = arrow.utcnow().format("YYYY-MM-DD HH:mm:ssZ")
         servers = cls.objects.filter(open_at__lte=now)
         return servers
+
+    @classmethod
+    def opened_server_ids(cls):
+        servers = cls.opened_servers()
+        return [s.id for s in servers]
