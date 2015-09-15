@@ -19,30 +19,30 @@ from protomsg.package_pb2 import (
     TrainingItem as MsgTrainingItem
 )
 
-
+# 这个对应编辑器中的 Package
 class PackageBase(object):
     ATTRS = STAFF_ATTRS
     FIELDS = ATTRS + [
-        'gold', 'diamond', 'staff_exp', 'club_renown', 'ladder_score', 'league_score',
+        'staff_exp', 'gold', 'diamond', 'club_renown', 'ladder_score', 'league_score',
     ]
     # fields also contains trainings
 
     def __init__(self):
-        self.jingong = 0
-        self.qianzhi = 0
-        self.xintai = 0
-        self.baobing = 0
-        self.fangshou = 0
-        self.yunying = 0
-        self.yishi = 0
-        self.caozuo = 0
-        self.gold = 0
-        self.diamond = 0
-        self.staff_exp = 0
-        self.club_renown = 0
-        self.ladder_score = 0
-        self.league_score = 0
-        self.trainings = []
+        self.jingong = 0                # 员工 - 进攻
+        self.qianzhi = 0                # 员工 - 牵制
+        self.xintai = 0                 # 员工 - 心态
+        self.baobing = 0                # 员工 - 暴兵
+        self.fangshou = 0               # 员工 - 防守
+        self.yunying = 0                # 员工 - 运营
+        self.yishi = 0                  # 员工 - 意识
+        self.caozuo = 0                 # 员工 - 操作
+        self.staff_exp = 0              # 员工 - 经验
+        self.gold = 0                   # 角色 - 金币/软妹币
+        self.diamond = 0                # 角色 - 钻石
+        self.club_renown = 0            # 角色 - 俱乐部声望
+        self.ladder_score = 0           # 角色 - 天梯赛积分
+        self.league_score = 0           # 角色 - 联赛积分
+        self.trainings = []             # 角色 - 训练道具
 
     @classmethod
     def generate(cls, pid):
@@ -66,10 +66,10 @@ class PackageBase(object):
         # 训练(道具)
         p.trainings = config.trainings
 
-        # 软妹币，钻石，经验，荣耀，天梯赛积分，联赛积分
+        # 员工经验， 软妹币，钻石，荣耀，天梯赛积分，联赛积分
+        set_value('staff_exp', config.staff_exp)
         set_value('gold', config.gold)
         set_value('diamond', config.diamond)
-        set_value('staff_exp', config.staff_exp)
         set_value('club_renown', config.club_renown)
         set_value('ladder_score', config.ladder_score)
         set_value('league_score', config.league_score)

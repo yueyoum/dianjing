@@ -10,7 +10,7 @@ Description:
 from dianjing.exception import GameException
 
 from core.abstract import AbstractClub, AbstractStaff
-from core.db import MongoDB
+from core.mongo import MongoCharacter
 from core.club import Club
 from core.match import ClubMatch
 from core.package import Drop
@@ -25,23 +25,23 @@ from protomsg.challenge_pb2 import ChallengeNotify
 
 
 class ChallengeNPCStaff(AbstractStaff):
-    def __init__(self, id, level, strength):
+    def __init__(self, _id, level, strength):
         super(ChallengeNPCStaff, self).__init__()
 
-        self.id = id
+        self.id = _id
         self.level = level
 
-        config = ConfigStaff.get(id)
+        config = ConfigStaff.get(_id)
         self.race = config.race
 
-        self.jingong = (config.jingong + config.jingong_grow * (level-1)) * strength
-        self.qianzhi = (config.qianzhi + config.qianzhi_grow * (level-1)) * strength
-        self.xintai = (config.xintai + config.xintai_grow * (level-1)) * strength
-        self.baobing = (config.baobing + config.baobing_grow * (level-1)) * strength
-        self.fangshou = (config.fangshou + config.fangshou_grow * (level-1)) * strength
-        self.yunying = (config.yunying + config.yunying_grow * (level-1)) * strength
-        self.yishi = (config.yishi + config.yishi_grow * (level-1)) * strength
-        self.caozuo = (config.caozuo + config.caozuo_grow * (level-1)) * strength
+        self.jingong = (config.jingong + config.jingong_grow * (level - 1)) * strength
+        self.qianzhi = (config.qianzhi + config.qianzhi_grow * (level - 1)) * strength
+        self.xintai = (config.xintai + config.xintai_grow * (level - 1)) * strength
+        self.baobing = (config.baobing + config.baobing_grow * (level - 1)) * strength
+        self.fangshou = (config.fangshou + config.fangshou_grow * (level - 1)) * strength
+        self.yunying = (config.yunying + config.yunying_grow * (level - 1)) * strength
+        self.yishi = (config.yishi + config.yishi_grow * (level - 1)) * strength
+        self.caozuo = (config.caozuo + config.caozuo_grow * (level - 1)) * strength
 
         skills = config.skill_ids
         self.skills = {i: 1 for i in skills}
@@ -64,14 +64,12 @@ class ChallengeNPCClub(AbstractClub):
             self.staffs[i] = ChallengeNPCStaff(i, config.level, config.strength)
 
 
-
 class Challenge(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-        self.mongo = MongoDB.get(server_id)
 
-        doc = self.mongo.character.find_one(
+        doc = MongoCharacter.db(server_id).find_one(
             {'_id': self.char_id},
             {'challenge_id': 1}
         )
@@ -79,20 +77,18 @@ class Challenge(object):
         self.challenge_id = doc.get('challenge_id', None)
         if self.challenge_id is None:
             self.challenge_id = ConfigChallengeMatch.FIRST_ID
-            self.mongo.character.update_one(
+            MongoCharacter.db(server_id).update_one(
                 {'_id': self.char_id},
                 {'$set': {'challenge_id': self.challenge_id}}
             )
 
-
     def set_next_match_id(self):
         next_id = ConfigChallengeMatch.get(self.challenge_id).next_id
-        self.mongo.character.update_one(
+        MongoCharacter.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {'challenge_id': next_id}}
         )
         return next_id
-
 
     def start(self):
         if not self.challenge_id:
@@ -115,7 +111,6 @@ class Challenge(object):
         if not msg.club_one_win:
             return msg, None
 
-
         next_id = self.set_next_match_id()
         self.send_notify(challenge_id=next_id)
 
@@ -123,7 +118,6 @@ class Challenge(object):
         Resource(self.server_id, self.char_id).add_package(drop)
 
         return msg, drop.make_protomsg()
-
 
     def send_notify(self, challenge_id=None):
         if challenge_id is None:

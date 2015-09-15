@@ -13,7 +13,7 @@ import uwsgidecorators
 
 @uwsgidecorators.spool
 def broadcast(args):
-    from core.db import MongoDB
+    from core.mongo import MongoCharacter
     from utils.message import MessagePipe
 
     try:
@@ -22,7 +22,7 @@ def broadcast(args):
         exclude_chars = payload['exclude_chars']
         data = payload['data']
 
-        chars = MongoDB.get(server_id).character.find(
+        chars = MongoCharacter.db(server_id).find(
             {'_id': {'$nin': exclude_chars}},
             {'_id': 1}
         )

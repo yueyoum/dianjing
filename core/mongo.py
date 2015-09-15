@@ -106,12 +106,6 @@ class MongoCommon(BaseDocument):
 
     COLLECTION = "common"
 
-# 锁
-LOCK_DOCUMENT = {
-    '_id': null,
-    'locked': False,
-}
-
 
 class MongoStaff(BaseDocument):
     DOCUMENT = {
@@ -413,4 +407,3 @@ class MongoNotification(BaseDocument):
     @classmethod
     def document_notification(cls):
         return cls.NOTIFICATION_DOCUMENT.copy()
-
