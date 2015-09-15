@@ -87,8 +87,9 @@ class Chat(object):
 
         value = CommonChat.get(self.server_id)
 
-        for v in value:
-            notify_msg = notify.msgs.add()
-            notify_msg.MergeFromString(base64.b64decode(v))
+        if value:
+            for v in value:
+                notify_msg = notify.msgs.add()
+                notify_msg.MergeFromString(base64.b64decode(v))
 
         MessagePipe(self.char_id).put(msg=notify)
