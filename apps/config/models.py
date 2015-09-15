@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 
 from django.db import models
@@ -19,6 +21,8 @@ class Config(models.Model):
 
     class Meta:
         db_table = 'config'
+        verbose_name = '配置文件'
+        verbose_name_plural = '配置文件'
 
     def __unicode__(self):
         return self.version
@@ -44,3 +48,16 @@ class Config(models.Model):
             return None
         except ProgrammingError:
             return None
+
+
+
+class CustomerServiceInformation(models.Model):
+    name = models.CharField(max_length=255, primary_key=True)
+    value = models.CharField(max_length=255)
+
+    des = models.TextField(blank=True)
+
+    class Meta:
+        db_table = 'customer_service'
+        verbose_name = '客服信息'
+        verbose_name_plural = '客服信息'
