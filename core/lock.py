@@ -14,6 +14,7 @@ from contextlib import contextmanager
 from pymongo.errors import DuplicateKeyError
 from core.db import MongoDB, RedisDB
 
+
 class LockTimeOut(Exception):
     pass
 
@@ -27,10 +28,9 @@ class RedisLock(object):
 
     @contextmanager
     def lock(self, timeout=5, lock_seconds=10, key=None):
-        if not key:
-            key = self.KEY
+        key = "{0}:{1}".format(key or self.KEY, self.server_id)
 
-        t= 0
+        t = 0
         while True:
             if t > timeout:
                 raise LockTimeOut()
@@ -56,7 +56,6 @@ class MongoLock(object):
     def __init__(self, server_id):
         self.server_id = server_id
         self.mongo = MongoDB.get(server_id)
-
 
     @contextmanager
     def lock(self, timeout=5, key=None):
@@ -84,11 +83,14 @@ class MongoLock(object):
 
 Lock = RedisLock
 
+
 class LadderNPCLock(Lock):
-    KEY = 'ladder_npc'
+    KEY = 'lock_ladder_npc'
+
 
 class LadderLock(Lock):
-    KEY = 'ladder'
+    KEY = 'lock_ladder'
+
 
 class LadderStoreLock(Lock):
-    KEY = 'ladder_store'
+    KEY = 'lock_ladder_store'
