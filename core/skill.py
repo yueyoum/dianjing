@@ -83,7 +83,7 @@ class SkillManager(object):
             {'$set': {key: level + level_addition}}
         )
 
-        self.send_notify(staff_id=staff_id, skill_id=skill_id)
+        self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
 
     def lock_toggle(self, staff_id, skill_id):
         self.check(staff_id, skill_id)
@@ -94,7 +94,7 @@ class SkillManager(object):
             {'$bit': {key: {'xor': 1}}}
         )
 
-        self.send_notify(staff_id=staff_id, skill_id=skill_id)
+        self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
 
     def wash(self, staff_id):
         self.check(staff_id)
@@ -134,14 +134,12 @@ class SkillManager(object):
 
         self.send_notify()
 
-    def send_notify(self, staff_id=None, skill_id=None):
+    def send_notify(self, act=ACT_INIT, staff_id=None, skill_id=None):
         # 这个必须在 StaffNotify 之后
-
+        # 这里的 act 必须手动指定，因为添加新员工后，这里的sill notify 得是 ACT_INIT
         if not staff_id:
             projection = {'staffs': 1}
-            act = ACT_INIT
         else:
-            act = ACT_UPDATE
             if not skill_id:
                 projection = {'staffs.{0}.skills'.format(staff_id): 1}
             else:
