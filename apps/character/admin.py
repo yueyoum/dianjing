@@ -27,7 +27,7 @@ class CharacterAdmin(admin.ModelAdmin):
     search_fields = ['name', 'club_name', ]
 
     action_form = MyActionForm
-    actions = ['add_gold', 'add_diamond', 'add_club_level']
+    actions = ['add_gold', 'add_diamond', 'add_club_level', 'add_ladder_score', ]
 
     def Info(self, obj):
         doc = MongoCharacter.db(obj.server_id).find_one(
@@ -58,38 +58,63 @@ class CharacterAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    def modify_club(self, request, queryset, name):
+
+    def check_value(self, request):
         try:
-            value = int(request.POST['value'])
+            return int(request.POST['value'])
         except:
-            self.message_user(request, "填入的数字错误", level=messages.ERROR)
+            self.message_user(request, u"填入的数字错误", level=messages.ERROR)
             return False
 
-        if name == 'level':
-            for q in queryset:
-                MongoCharacter.db(q.server_id).update_one(
-                    {'_id': q.id},
-                    {'$set': {'club.level': value}}
-                )
-        else:
-            for q in queryset:
-                drop = Drop()
-                setattr(drop, name, value)
-                Resource(q.server_id, q.id).save_drop(drop, message="From Admin")
-
-        self.message_user(request, "设置成功")
 
     def add_gold(self, request, queryset):
-        self.modify_club(request, queryset, 'gold')
+        value = self.check_value(request)
+        if not value:
+            return
 
-    add_gold.short_description = "设置软妹币"
+        drop = Drop()
+        drop.gold = value
+
+        for q in queryset:
+            Resource(q.server_id, q.id).save_drop(drop, message=u"From Admin")
+
+    add_gold.short_description = u"设置软妹币"
 
     def add_diamond(self, request, queryset):
-        self.modify_club(request, queryset, 'diamond')
+        value = self.check_value(request)
+        if not value:
+            return
 
-    add_diamond.short_description = "设置钻石"
+        drop = Drop()
+        drop.diamond = value
+
+        for q in queryset:
+            Resource(q.server_id, q.id).save_drop(drop, message=u"From Admin")
+
+    add_diamond.short_description = u"设置钻石"
 
     def add_club_level(self, request, queryset):
-        self.modify_club(request, queryset, 'level')
+        value = self.check_value(request)
+        if not value:
+            return
 
-    add_club_level.short_description = "设置俱乐部等级"
+        for q in queryset:
+            MongoCharacter.db(q.server_id).update_one(
+                {'_id': q.id},
+                {'$set': {'club.level': value}}
+            )
+
+    add_club_level.short_description = u"设置俱乐部等级"
+
+    def add_ladder_score(self, request, queryset):
+        value = self.check_value(request)
+        if not value:
+            return
+
+        drop = Drop()
+        drop.ladder_score = value
+
+        for q in queryset:
+            Resource(q.server_id, q.id).save_drop(drop, message=u"From Admin")
+
+    add_ladder_score.short_description = u"设置天梯赛积分"
