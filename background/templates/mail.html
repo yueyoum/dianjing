@@ -1,23 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-    <script src="/static/react.js"></script>
-    <script src="/static/JSXTransformer.js"></script>
-    <style type="text/css">
-        h1 {color: black; }
-        table {text-align: center;}
-        td {text-align: center;
-            border: solid salmon;
-            border-width: 0px 0px 1px 1px}
-        th {text-align: center;
-            border: solid salmon;
-            border-width: 0px 0px 1px 1px}
-    </style>
-</head>
-<body>
-<div id="content" style="width: 600px"></div>
+<div id="main"></div>
 
 <script type="text/jsx">
 
@@ -28,32 +9,71 @@
     mail['from_id'] = "{{ data.from_id }}";
     mail['content'] = "{{ data.content }}";
     mail['has_read'] = "{{ data.has_read }}";
-    mail['create_at'] = "{{ data.create_at }}";
+
+    var time = "{{ data.create_at }}";
+    mail['create_at'] = time;
+
     mail['attachment'] = "{{ data.attachment }}";
 
+    var Main = React.createClass({
+        render: function () {
+            return (
+                    <div className="mail-form">
+                        <div className="title">
+                            <p className="mail-title-t">{this.props.mail.title}</p>
+                        </div>
+                        <div>
+                            <li className="mail-info">
+                                <div className="mail-info-o">Sender ID:</div>
+                                <p className="mail-info-t">{this.props.mail.from_id}</p>
+                            </li>
+                            <li className="mail-info">
+                                <div className="mail-info-o">Receiver ID:</div>
+                                <p className="mail-info-t">{this.props.mail.char_id}</p>
+                            </li>
+                            <li className="mail-info">
+                                <div className="mail-info-o">Send Time:</div>
+                                <p className="mail-info-t">{this.props.mail.create_at}</p>
+                            </li>
+                            <li className="mail-info">
+                                <div className="mail-info-o">Status:</div>
+                                <p className="mail-info-t">{this.props.mail.has_read}</p>
+                            </li>
+                            <li className="mail-info">
+                                <div className="mail-info-o">Attachment:</div>
+                                <p className="mail-info-t">{this.props.mail.attachment}</p>
+                            </li>
+                            <li className="mail-info">
+                                <div className="mail-info-o">Key:</div>
+                                <p className="mail-info-t">{this.props.mail.key}</p>
+                            </li>
+                        </div>
+                        <div>
+                            <div className="mail-form-content">Content</div>
+                            <li className="mail-form-content-t">{this.props.mail.content}</li>
+                        </div>
+                    </div>
+            );
+        }
+    });
+
     var MailForm = React.createClass({
-        render: function(){
-            return(
+        render: function () {
+            return (
                     <div>
-                        <h1>Character ID: {this.props.mail.char_id}</h1>
-                        <h3>Mail ID: {this.props.mail.key}</h3>
-                        <h3>Mail Title: {this.props.mail.title}</h3>
-                        <h3>From ID: {this.props.mail.from_id}</h3>
-                        <h3>Read Stus: {this.props.mail.has_read}</h3>
-                        <h3>Create Time: {this.props.mail.create_at}</h3>
-                        <h3>Content:
-                            <p>{this.props.mail.content}</p>
-                        </h3>
-                        <h3>Attachment: {this.props.mail.attachment}</h3>
+                        <div className="header">
+                            <h1>Mail</h1>
+                        </div>
+                        <div>
+                            <Main mail={this.props.mail}/>
+                        </div>
                     </div>
             );
         }
     });
 
     React.render(
-            <MailForm mail={mail} />,
-            document.getElementById('content')
+            <MailForm mail={mail}/>,
+            document.getElementById('main')
     )
 </script>
-</body>
-</html>

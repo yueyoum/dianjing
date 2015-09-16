@@ -1,34 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Staff</title>
-    <script src="/static/react.js"></script>
-    <script src="/static/JSXTransformer.js"></script>
-    <style type="text/css">
-        table {
-            text-align: center;
-        }
-
-        th {
-            border: solid salmon;
-            border-width: 1px 0px 0px 1px
-        }
-
-        td {
-            border: solid salmon;
-            border-width: 1px 0px 0px 1px
-        }
-    </style>
-</head>
-<body>
-<h1>Staff List</h1>
-
-<div id="content">
-    <h1>
-        Null Data Now
-    </h1>
-</div>
+<div id="main"></div>
 <script type="text/jsx">
 
     var server_id = "{{ server_id }}";
@@ -56,6 +26,7 @@
         staff_data.push(row);
     {% endfor %}
 
+    var counter = 0;
 
     var MakeTrainRow = React.createClass({
         render: function () {
@@ -65,24 +36,21 @@
         }
     });
 
-    var MakeStaffRow = React.createClass({
-        render: function(){
-            return(
-                    <li>{this.props.data}</li>
-            );
-        }
-    });
-
     var DataRow = React.createClass({
         render: function () {
             var TrainRows = [];
             this.props.staff.trainings.forEach(function (training) {
-                TrainRows.push(<MakeTrainRow training={training} />);
+                TrainRows.push(<MakeTrainRow training={training}/>);
             }.bind(this));
+            var name = '';
+            if (counter % 2 === 0) {
+                name = 'alt';
+            }
+            counter++;
 
-            var staff_link = "/data/staff_char?server_id=" + server_id + "&char_id=" + this.props.staff.id;
+            var staff_link = "/data/staff/char?server_id=" + server_id + "&char_id=" + this.props.staff.id;
             return (
-                    <tr>
+                    <tr className={name}>
                         <td>{this.props.staff.id}</td>
                         <td>
                             <a href={staff_link}>{this.props.staff.staffs}</a>
@@ -97,60 +65,59 @@
         render: function () {
             var rows = [];
             this.props.staff_data.forEach(function (staff) {
-                if( staff.id.indexOf(this.props.filterText) === -1 ){
+                if (staff.id.indexOf(this.props.filterText) === -1) {
                     return;
                 }
-
                 rows.push(<DataRow staff={staff}/>);
             }.bind(this));
             return (
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>帐号ID</th>
-                                <th>员工</th>
-                                <th>训练</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {rows}
-                        </tbody>
-                    </table>
+                    <div className="middle-staff">
+                        <table className="pure-table-my">
+                            <thead>
+                                <tr>
+                                    <th>帐号ID</th>
+                                    <th>员工</th>
+                                    <th>训练</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rows}
+                            </tbody>
+                        </table>
+                    </div>
             );
         }
     });
 
     var SearchBar = React.createClass({
 
-        handleChange:function(){
+        handleChange: function () {
             this.props.onUserInput(
                     this.refs.filterTextInput.getDOMNode().value
             );
         },
 
-        render: function(){
-            return(
-                    <form>
-                        <input
-                                type="text"
-                                placeholder="Search...ID"
-                                value={this.props.filterText}
-                                ref="filterTextInput"
-                                onChange={this.handleChange}
-                                />
-                    </form>
+        render: function () {
+            return (
+                    <input
+                            type="text"
+                            placeholder="Search...ID"
+                            value={this.props.filterText}
+                            ref="filterTextInput"
+                            onChange={this.handleChange}
+                            />
             );
         }
     });
 
     var StaffForm = React.createClass({
-        getInitialState: function(){
-            return{
+        getInitialState: function () {
+            return {
                 filterText: ''
             };
         },
 
-        handleUserInput: function(filter){
+        handleUserInput: function (filter) {
             this.setState({
                 filterText: filter
             });
@@ -159,15 +126,21 @@
         render: function () {
             return (
                     <div>
-                        <SearchBar
-                                filterText={this.state.filterText}
-                                onUserInput={this.handleUserInput}
-                                />
-
-                        <StaffTable
-                                staff_data={this.props.staff_data}
-                                filterText={this.state.filterText}
-                                />
+                        <div className="header">
+                            <h1>Staff</h1>
+                        </div>
+                        <div className="searchBar">
+                            <SearchBar
+                                    filterText={this.state.filterText}
+                                    onUserInput={this.handleUserInput}
+                                    />
+                        </div>
+                        <div>
+                            <StaffTable
+                                    staff_data={this.props.staff_data}
+                                    filterText={this.state.filterText}
+                                    />
+                        </div>
                     </div>
             );
         }
@@ -175,9 +148,7 @@
 
     React.render(
             <StaffForm staff_data={staff_data}/>,
-            document.getElementById('content')
+            document.getElementById('main')
     );
 
 </script>
-</body>
-</html>

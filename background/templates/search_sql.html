@@ -1,0 +1,129 @@
+{% extends "base_index.html" %}
+
+{% block title %}
+    <title>Test Search</title>
+{% endblock %}
+
+{% block body %}
+    <div id="layout">
+        {% include "menu.html" %}
+        <div id="main">
+            <div class="header">
+                <h1>Search</h1>
+            </div>
+            <div class="area-search">
+                <input id="search-content" class="input-search" placeholder="搜索" title="(｀･ω･´)   (´･ω･｀)">
+                <button class="search-btn" title=' \("▔□▔)/\("▔□▔)/\("▔□▔)/'>Search</button>
+            </div>
+            <div id="data" class="area-data"></div>
+
+            <script type="text/jsx">
+                var datas = '';
+                var text = '';
+
+                document.getElementsByClassName("search-btn")[0].onclick = function () {
+                    text = document.getElementById('search-content').value;
+                    if (text === '') {
+                        return;
+                    }
+                    search();
+                };
+
+                function search() {
+                    var xmlhttp;
+                    if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+                        xmlhttp = new XMLHttpRequest();
+                    }
+                    else {// code for IE6, IE5
+                        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+                    }
+
+                    xmlhttp.onreadystatechange = function () {
+                        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                            datas = xmlhttp.responseText;
+                        }
+                        change();
+                    };
+
+                    var url = "http://192.168.1.124:8000/data/?text=" + text;
+                    xmlhttp.open("Get", url, true);
+                    xmlhttp.send();
+                }
+
+                function change() {
+                    if (datas === 'null') {
+                        document.getElementById('area-data').innerHTML = '<div><h1>No Data</h1></div>';
+                    }
+                    else {
+                        var tmp = JSON.parse(datas);
+                        var ResultTable = React.createClass({
+                            render: function () {
+                                if (Object.keys(tmp).length === 0) {
+                                    return (
+                                            <div>
+                                                <h1>Empty</h1>
+                                            </div>
+                                    );
+                                }
+
+                                var rows = [];
+                                for (var r in tmp) {
+                                    var link = "search/?server_id=" + tmp[r].server_id
+                                            + "&type=id&text=" + tmp[r].account_id
+                                            + "&jump=1";
+                                    rows.push(
+                                            <div className="item">
+                                                <div>
+                                                    <p>
+                                                        <a href={link}>Name: {tmp[r].name}</a>
+                                                    </p>
+                                                </div>
+                                                <div className="item-name">
+                                                    <table>
+                                                        <tr>
+                                                            <th width="100">AccountID</th>
+                                                            <th width="100">Server</th>
+                                                            <th width="200">CreateTime</th>
+                                                            <th width="100">ClubName</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>{tmp[r].account_id}</td>
+                                                            <td>{tmp[r].server_id}</td>
+                                                            <td>{tmp[r].create_at}</td>
+                                                            <td>{tmp[r].club_name}</td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                    );
+                                }
+
+                                return (
+                                        <div>
+                                            {rows}
+                                        </div>
+                                );
+                            }
+                        });
+
+                        var ResultForm = React.createClass({
+                            render: function () {
+                                return (
+                                        <div>
+                                            <ResultTable />
+                                        </div>
+                                );
+                            }
+                        });
+
+                        React.render(
+                                <ResultForm />,
+                                document.getElementById('data')
+                        )
+                    }
+                }
+
+            </script>
+        </div>
+    </div>
+{% endblock %}

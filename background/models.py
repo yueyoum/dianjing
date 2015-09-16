@@ -1,8 +1,9 @@
-
+import re
 
 from apps.server.models import Server
 
 from core.db import MongoDB
+
 
 # Create your models here.
 
@@ -16,50 +17,25 @@ class DBHandle(object):
         self.server_id = server_id
         self.mongo = MongoDB.get(server_id)
 
-    def get_collections(self):
-        collections = self.mongo.collection_names()
-        names = []
-        for k in collections:
-            if k != 'system.indexes' and k != 'server':
-                names.append(k)
-        return names
+    def get_data(self, tp, text):
+        data = {}
+        if tp == 'id' and re.match(r'[1-9][0-9]*$', text):
+            data['char'] = self.mongo.character.find_one({'_id': int(text)})
+        elif tp == 'name':
+            data['char'] = self.mongo.character.find_one({'name': text})
+        elif tp == 'club':
+            data['char'] = self.mongo.character.find_one({'club.name': text})
+        else:
+            return None
 
-    def get_building(self):
-        return self.mongo.building.find()
+        if data['char'] == None:
+            return None
+        data['friend'] = self.mongo.friend.find_one({'_id': data['char']['_id']})
 
-    def get_char(self):
-        return self.mongo.character.find()
+        data['building'] = self.mongo.building.find_one({'_id': data['char']['_id']})
 
-    def get_club(self, char_id):
-        return self.mongo.character.find_one({'_id': char_id}, {'club': 1})
+        data['mail'] = self.mongo.mail.find_one({'_id': data['char']['_id']})
 
-    def get_common(self):
-        return self.mongo.common.find()
+        data['staff'] = self.mongo.staff.find_one({'_id': data['char']['_id']})
 
-    def get_friend(self):
-        return self.mongo.friend.find()
-
-    def get_league_event(self):
-        return self.mongo.league_event.find()
-
-    def get_league_group(self):
-        return self.mongo.league_group.find()
-
-    def get_mail(self):
-        return self.mongo.mail.find()
-
-    def get_mail_one(self, char_id, mail_id):
-        mails = self.mongo.mail.find_one({'_id': char_id})
-        return mails
-
-    def get_staff(self):
-        return self.mongo.staff.find()
-
-    def get_char_staff(self, char_id):
-        return self.mongo.staff.find_one({'_id': char_id}, {'staffs': 1})
-
-    def get_recruit(self):
-        return self.mongo.recruit.find()
-
-    def get_training_store(self):
-        return self.mongo.training_store.find()
+        return data

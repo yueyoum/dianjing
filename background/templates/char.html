@@ -1,37 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Characters</title>
-    <script src="/static/react.js"></script>
-    <script src="/static/JSXTransformer.js"></script>
-    <style type="text/css">
-        h1 {
-            color: black;
-        }
-
-        table {
-            text-align: center;
-        }
-
-        td {
-            text-align: center;
-            border: solid salmon;
-            border-width: 0px 0px 1px 1px
-        }
-
-        th {
-            text-align: center;
-            border: solid salmon;
-            border-width: 0px 0px 1px 1px
-        }
-    </style>
-</head>
-<body>
-<div id="content">
+<div id="main">
+    <div class="header">
+        <h1>Character</h1>
+    </div>
+    <div class="area-search">
+        <input class="input-search" placeholder="Search...">
+        <select>
+            <option>id</option>
+            <option>name</option>
+            <option>club</option>
+        </select>
+        <button class="search-btn" title="Search">Search</button>
+    </div>
+    <div id="area-data"></div>
 </div>
 <script type="text/jsx">
-
     var chars = [];
     {% for char in data %}
         var temp = {};
@@ -45,43 +27,25 @@
     {% endfor %}
 
     var server_id = "{{ server_id }}";
-
+    var counter = 0;
     var CharacterRow = React.createClass({
         render: function () {
             var link = "/data/character/club?server_id=" + server_id + "&char_id=" + this.props.char.id;
+            var name = '';
+            if (counter % 2 === 0) {
+                name = "alt"
+            }
+            counter++;
             return (
-                    <tr>
-                        <td width="150">{this.props.char.id}</td>
-                        <td width="200">{this.props.char.name}</td>
-                        <td width="300">
+                    <tr className={name}>
+                        <td>{this.props.char.id}</td>
+                        <td>{this.props.char.name}</td>
+                        <td>
                             <a href={link}>{this.props.char.club}</a>
                         </td>
-                        <td width="150">{this.props.char.challenge_id}</td>
-                        <td width="350">{this.props.char.league_group}</td>
+                        <td>{this.props.char.challenge_id}</td>
+                        <td>{this.props.char.league_group}</td>
                     </tr>
-            );
-        }
-    });
-
-    var SearchText = React.createClass({
-
-        handleChange: function () {
-            this.props.onUserInput(
-                    this.refs.filterTextInput.getDOMNode().value
-            );
-        },
-
-        render: function () {
-            return (
-                    <form>
-                        <input
-                                type="text"
-                                placeholder="Search...ID"
-                                value={this.props.filterText}
-                                ref="filterTextInput"
-                                onChange={this.handleChange}
-                                />
-                    </form>
             );
         }
     });
@@ -90,14 +54,11 @@
         render: function () {
             var rows = [];
             this.props.chars.forEach(function (char) {
-                if (char.id.indexOf(this.props.filterText) === -1 ) {
-                    return;
-                }
                 rows.push(<CharacterRow char={char}/>);
             }.bind(this));
 
             return (
-                    <table>
+                    <table className="pure-table-my">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -116,32 +77,10 @@
     });
 
     var Characters = React.createClass({
-
-        getInitialState: function () {
-            return {
-                filterText: ''
-            };
-        },
-
-        handleUserInput: function (filterText) {
-            this.setState({
-                filterText: filterText
-            });
-        },
-
         render: function () {
             return (
-                    <div>
-                        <h1>服务器ID：{server_id}</h1>
-                        <SearchText
-                                filterText={this.state.filterText}
-                                onUserInput={this.handleUserInput}
-                                />
-
-                        <CharacterTable
-                                chars={this.props.chars}
-                                filterText={this.state.filterText}
-                                />
+                    <div className="middle">
+                        <CharacterTable chars={this.props.chars}/>
                     </div>
             );
         }
@@ -149,8 +88,8 @@
 
     React.render(
             <Characters chars={chars}/>,
-            document.getElementById('content')
+            document.getElementById('area-data')
     )
+
 </script>
-</body>
-</html>
+

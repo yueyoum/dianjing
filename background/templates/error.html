@@ -1,0 +1,409 @@
+
+<div id="main">
+    <div>
+        <div class="header">
+            <h1 title="(・ω・)ノ- ( ゜- ゜)つロ">Data Search</h1>
+        </div>
+    </div>
+    <div>
+        <div id="inner-header" class="area-search">
+            <div id="title" class="title-inner" title="(╯‵□′)╯︵┻━┻   ">
+                <h1>Title</h1>
+            </div>
+            <input id="search-content" class="input-search" placeholder="搜索" title="(｀･ω･´)   (´･ω･｀)">
+            <button class="search-btn" title=' \("▔□▔)/\("▔□▔)/\("▔□▔)/'>Search</button>
+            <div class="select-type">
+                <form>
+                    id
+                    <input title="┴┴︵╰（‵□′）╯︵┴┴ "
+                           type="radio" checked="checked" name="id" value="id"/>
+                    name
+                    <input title="( *￣▽￣)((≧︶≦*)   "
+                           type="radio" name="id" value="name"/>
+                    club
+                    <input title="( ' – ' ) ( ^３^ )╱~~　"
+                           type="radio" name="id" value="club"/>
+                </form>
+            </div>
+            <div class="home-link">
+                <h1 title="(￣ε(#￣)☆╰╮o(￣▽￣///) ">Home</h1>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="area-data">
+            <div id="block-result-search" class="block">
+                <div class="banner">
+                    <p class="tab">Result</p>
+                </div>
+                <div class="mainer">
+                    <div id="area-data"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="test"></div>
+    <script type="text/jsx">
+
+        var flag = true;
+        var tmp_url = '', data = '', s_text = '';
+        var server_id = "{{ server_id }}";
+
+        if(flag){
+            var t_tp = '';
+            flag=false;
+            var args = window.location.href.split("?");
+            if(args[0] != window.location.href){
+                var str = args[1];
+                args = str.split("&");
+                for(var i=0; i< args.length; i++){
+                    str = args[i];
+                    var arg = str.split("=");
+                    if(arg[0] == 'type'){
+                        t_tp=arg[1];
+                    }
+
+                    if(arg[0] == 'text'){
+                        s_text = arg[1]
+                    }
+                }
+            }
+            if(s_text != '' && t_tp != ''){
+                search(s_text, t_tp);
+            }
+        }
+
+        document.getElementById('title').innerHTML = "<h1>ServerID:" + "{{ server_id }}</h1>";
+
+
+        document.getElementsByClassName('search-btn')[0].onclick = function () {
+            s_text = document.getElementById('search-content').value;
+
+            var tp = document.getElementsByName('id');
+            var tmpcnt = tp.length;
+            var selected = '';
+            while (tmpcnt--) {
+                if (tp[tmpcnt].checked) {
+                    selected = tp[tmpcnt].value;
+                }
+            }
+
+            if (s_text === '') {
+                return;
+            }
+
+            search(s_text, selected);
+        };
+
+        function search(text, selected) {
+            var xmlhttp;
+            if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+                xmlhttp = new XMLHttpRequest();
+            }
+            else {// code for IE6, IE5
+                xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    data = xmlhttp.responseText;
+                }
+                change();
+            };
+
+            var url = "http://192.168.1.124:8000/data/search/?server_id=" + server_id
+                    + "&type=" + selected + "&text=" + text;
+            xmlhttp.open("Get", url, true);
+            xmlhttp.send();
+        }
+
+        function change() {
+            if (data === 'null') {
+                document.getElementById('area-data').innerHTML = '<div><h1>No Data</h1></div>';
+            }
+            else {
+                var tmp = JSON.parse(data);
+                var CharTbl = React.createClass({
+                    render: function () {
+                        return (
+                                <div>
+                                    <h2>Character</h2>
+                                    <table className="pure-table-my">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Name</th>
+                                                <th>Challenge_id</th>
+                                                <th>League_group</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>{this.props.char._id}</td>
+                                                <td>{this.props.char.name}</td>
+                                                <td>{this.props.char.challenge_id}</td>
+                                                <td>{this.props.char.league_group}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                        );
+                    }
+                });
+
+                var ClubTbl = React.createClass({
+                    render: function () {
+                        var flag = true;
+                        var match = '';
+                        for (var m_s in this.props.club.match_staffs) {
+                            if (this.props.club.match_staffs[m_s] === 0) {
+                                continue;
+                            }
+
+                            if (flag) {
+                                match += this.props.club.match_staffs[m_s];
+                                flag = false;
+                            }
+                            else {
+                                match += ',' + this.props.club.match_staffs[m_s];
+                            }
+                        }
+
+                        var tibu = [];
+                        flag = true;
+                        for (var t_s in this.props.club.tibu_staffs) {
+                            if (this.props.club.tibu_staffs[t_s] === 0) {
+                                continue;
+                            }
+
+                            if (flag) {
+                                tibu += this.props.club.tibu_staffs[t_s];
+                                flag = false;
+                            }
+                            else {
+                                tibu += ',' + this.props.club.tibu_staffs[t_s];
+                            }
+                        }
+
+                        return (
+                                <div>
+                                    <h2>Club</h2>
+                                    <table className="pure-table-my">
+                                        <thead>
+                                            <tr>
+                                                <th>名字</th>
+                                                <th>旗帜</th>
+                                                <th>等级</th>
+                                                <th>荣誉</th>
+                                                <th>vip</th>
+                                                <th>金币</th>
+                                                <th>钻石</th>
+                                                <th>战术</th>
+                                                <th>首发队员</th>
+                                                <th>替补队员</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>{this.props.club.name}</td>
+                                                <td>{this.props.club.flag}</td>
+                                                <td>{this.props.club.level}</td>
+                                                <td>{this.props.club.renown}</td>
+                                                <td>{this.props.club.vip}</td>
+                                                <td>{this.props.club.gold}</td>
+                                                <td>{this.props.club.diamond}</td>
+                                                <td>{this.props.club.policy}</td>
+                                                <td>{match}</td>
+                                                <td>{tibu}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                        );
+                    }
+                });
+
+                var StaffTbl = React.createClass({
+                    render: function () {
+                        if (tmp.staff === null || Object.keys(tmp.staff.staffs).length === 0) {
+                            return (
+                                    <div></div>
+                            );
+                        }
+                        else {
+                            var staffs = [];
+                            for (var k in tmp.staff.staffs) {
+                                var staff = tmp.staff.staffs[k];
+
+                                var skills = '';
+                                for (var sk in staff.skills) {
+                                    skills += sk + ':' + staff.skills[sk].locked + ',' + staff.skills[sk].level + ';\t';
+                                }
+
+                                staffs.push(
+                                        <tr>
+                                            <td>{k}</td>
+                                            <td>{staff.exp}</td>
+                                            <td>{staff.level}</td>
+                                            <td>{staff.status}</td>
+                                            <td>{skills}</td>
+                                            <td>{staff.trainings}</td>
+                                        </tr>
+                                );
+                            }
+
+                            return (
+                                    <div>
+                                        <h2>Staff</h2>
+                                        <table className="pure-table-my">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>经验</th>
+                                                    <th>等级</th>
+                                                    <th>状态</th>
+                                                    <th>
+                                                        技能
+                                                    </th>
+                                                    <th>训练</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {staffs}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                            );
+                        }
+                    }
+                });
+
+                var FriendTbl = React.createClass({
+                    render: function () {
+                        var Rs = {
+                            1: "FRIEND_STATUS_NOT",
+                            2: "FRIEND_STATUS_OK",
+                            3: "FRIEND_STATUS_PEER_CONFIRM",
+                            4: "FRIEND_STATUS_SELF_CONFIRM"
+                        };
+
+                        if (tmp.friend === null || Object.keys(tmp.friend.friends).length === 0) {
+                            return (
+                                    <div></div>
+                            );
+                        }
+                        else {
+                            var rows = [];
+                            for (var f in this.props.friends.friends) {
+                                rows.push(
+                                        <tr>
+                                            <td>{f}</td>
+                                            <td>{Rs[this.props.friends.friends[f]]}</td>
+                                        </tr>
+                                );
+                            }
+
+                            return (
+                                    <div>
+                                        <h2>Friend</h2>
+                                        <table className="pure-table-my">
+                                            <thead>
+                                                <tr>
+                                                    <th>Friend ID</th>
+                                                    <th>RelationShip</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {rows}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                            );
+                        }
+                    }
+                });
+
+                var BuildingRow = React.createClass({
+                    render: function () {
+                        return (
+                                <tr>
+                                    <td>{this.props.building}</td>
+                                    <td>{this.props.building}</td>
+                                </tr>
+                        );
+                    }
+                });
+
+                var BuildingTbl = React.createClass({
+                    render: function () {
+                        if (this.props.buildings === null ||
+                                Object.keys(this.props.buildings.buildings).length === 0) {
+                            return (
+                                    <div></div>
+                            );
+                        }
+                        else {
+                            var rows = [];
+                            for (var b in this.props.buildings.buildings) {
+                                rows.push(
+                                        <tr>
+                                            <td>{b}</td>
+                                            <td>{this.props.buildings.buildings[b]}</td>
+                                        </tr>
+                                );
+                            }
+
+                            return (
+                                    <div>
+                                        <h2>Building</h2>
+                                        <table className="pure-table-my">
+                                            <thead>
+                                                <tr>
+                                                    <th>Building</th>
+                                                    <th>Level</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {rows}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                            );
+                        }
+                    }
+                });
+
+                var DataForm = React.createClass({
+                    render: function () {
+                        return (
+                                <div>
+                                    <h1>{tmp_url}</h1>
+                                    <div>
+                                        <CharTbl char={tmp.char}/>
+                                    </div>
+                                    <div>
+                                        <ClubTbl club={tmp.char.club}/>
+                                    </div>
+                                    <div>
+                                        <StaffTbl staffs={tmp.staff.staffs}/>
+                                    </div>
+                                    <div>
+                                        <FriendTbl friends={tmp.friend}/>
+                                    </div>
+                                    <div>
+                                        <BuildingTbl buildings={tmp.building}/>
+                                    </div>
+                                </div>
+                        );
+                    }
+                });
+
+                React.render(
+                        <DataForm/>,
+                        document.getElementById('area-data')
+                )
+            }
+        }
+
+    </script>
+</div>

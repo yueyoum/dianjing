@@ -1,25 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-    <script src="/static/react.js"></script>
-    <script src="/static/JSXTransformer.js"></script>
-    <style type="text/css">
-        table {text-align: center}
-        td {text-align: center;
-            border: solid salmon;
-            border-width: 0px 0px 1px 1px}
-        th {text-align: center;
-            border: solid salmon;
-            border-width: 0px 0px 1px 1px}
-    </style>
-</head>
-<body>
-<h1>Friends</h1>
 <div id="content"></div>
 <script type="text/jsx">
-    
+
     var friends = [];
     {% for d in data %}
         var row = {};
@@ -37,23 +18,27 @@
         friends.push(row);
     {% endfor %}
 
-    var FriendRow = React.createClass({
-        render: function(){
-            return(
-                    <li>{this.props.friend.char_id}: {this.props.friend.status}</li>
-            );
-        }
-    });
-    
+    var counter = 0;
     var Row = React.createClass({
-        render: function(){
-            var friendRows = [];
-            this.props.row.friends.forEach(function(friend){
-                friendRows.push(<FriendRow friend={friend} />)
+        render: function () {
+            var friendRows = '';
+            var tmp = 0;
+            this.props.row.friends.forEach(function (friend) {
+                if(tmp % 2 != 0){
+                    friendRows += ';   ';
+                }
+                friendRows += {friend}.friend.char_id + ': ' + {friend}.friend.status;
+                tmp++;
             }.bind(this));
 
-            return(
-                    <tr>
+            var name = '';
+            if(counter % 2 === 0){
+                name = 'alt';
+            }
+            counter++;
+
+            return (
+                    <tr className={name}>
                         <td>{this.props.row.char_id}</td>
                         <td>{friendRows}</td>
                     </tr>
@@ -62,17 +47,17 @@
     });
 
     var FriendsTable = React.createClass({
-        render: function(){
+        render: function () {
             var rows = [];
-            this.props.friends.forEach(function(row){
-                if( row.char_id.indexOf(this.props.filterText) === -1){
+            this.props.friends.forEach(function (row) {
+                if (row.char_id.indexOf(this.props.filterText) === -1) {
                     return;
                 }
 
-                rows.push(<Row row={row} />);
+                rows.push(<Row row={row}/>);
             }.bind(this));
-            return(
-                    <table>
+            return (
+                    <table className="pure-table-my">
                         <thead>
                             <tr>
                                 <th>Char_ID</th>
@@ -87,22 +72,22 @@
 
     var SearchBar = React.createClass({
 
-        handleChange: function(){
+        handleChange: function () {
             this.props.onUserInput(
                     this.refs.filterTextInput.getDOMNode().value
             );
         },
 
-        render: function(){
-            return(
+        render: function () {
+            return (
                     <from>
                         <input
-                            type="text"
-                            placeholder="Search...ID"
-                            value={this.props.filterText}
-                            ref="filterTextInput"
-                            onChange={this.handleChange}
-                            />
+                                type="text"
+                                placeholder="Search...ID"
+                                value={this.props.filterText}
+                                ref="filterTextInput"
+                                onChange={this.handleChange}
+                                />
                     </from>
             );
         }
@@ -110,38 +95,43 @@
 
     var FriendForm = React.createClass({
 
-        getInitialState: function(){
-            return{
+        getInitialState: function () {
+            return {
                 filterText: ''
             };
         },
 
-        handleUserInput:function(filterText){
+        handleUserInput: function (filterText) {
             this.setState({
                 filterText: filterText
             });
         },
 
-        render: function(){
-            return(
+        render: function () {
+            return (
                     <div>
-                        <SearchBar
-                                filterText={this.state.filterText}
-                                onUserInput={this.handleUserInput}
-                                />
-                        <FriendsTable
-                                friends={this.props.friends}
-                                filterText={this.state.filterText}
-                                />
+                        <div className="header">
+                            <h1>Friend</h1>
+                        </div>
+                        <div className="searchBar">
+                            <SearchBar
+                                    filterText={this.state.filterText}
+                                    onUserInput={this.handleUserInput}
+                                    />
+                        </div>
+                        <div className="middle">
+                            <FriendsTable
+                                    friends={this.props.friends}
+                                    filterText={this.state.filterText}
+                                    />
+                        </div>
                     </div>
             );
         }
     });
-    
+
     React.render(
-            <FriendForm friends={friends} />,
+            <FriendForm friends={friends}/>,
             document.getElementById('content')
     )
 </script>
-</body>
-</html>

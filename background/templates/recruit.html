@@ -1,25 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-    <script src="/static/react.js"></script>
-    <script src="/static/JSXTransformer.js"></script>
-    <style type="text/css">
-        h1 {color: black; }
-        table {text-align: center;}
-        td {text-align: center;
-            border: solid salmon;
-            border-width: 0px 0px 1px 1px}
-        th {text-align: center;
-            border: solid salmon;
-            border-width: 0px 0px 1px 1px}
-    </style>
-</head>
-<body>
-<h1>Recruit </h1>
-
-<div id="content"></div>
+<div id="main"></div>
 
 <script type="text/jsx">
     var recruits = [];
@@ -47,36 +26,40 @@
         recruits.push(recruit);
     {% endfor %}
 
-    var StaffRow = React.createClass({
-        render: function(){
-            return(
-                    <li>{this.props.staff}</li>
-            );
-        }
-    });
-
     var TimesRow = React.createClass({
-        render: function(){
-            return(
+        render: function () {
+            return (
                     <li>{this.props.time.id}: {this.props.time.value}</li>
             );
         }
     });
 
     var RecruitRow = React.createClass({
-        render: function(){
-            var staff_rows = [];
-            this.props.recruit.staffs.forEach(function(staff){
-                staff_rows.push(<StaffRow staff={staff} />);
+        render: function () {
+            var staff_rows = '';
+            var tmp = false;
+
+            this.props.recruit.staffs.forEach(function (staff) {
+                if(tmp){
+                    staff_rows += ',';
+                }
+                staff_rows += {staff}.staff;
+                tmp = true;
             }.bind(this));
 
             var times_rows = [];
-            this.props.recruit.times.forEach(function(time){
-                times_rows.push(<TimesRow time={time} />);
+            this.props.recruit.times.forEach(function (time) {
+                times_rows.push(<TimesRow time={time}/>);
             }.bind(this));
 
-            return(
-                    <tr>
+            var name = '';
+            if(counter % 2 === 0){
+                name = 'alt';
+            }
+            counter++;
+
+            return (
+                    <tr className={name}>
                         <td>{this.props.recruit.id}</td>
                         <td>{this.props.recruit.tp}</td>
                         <td>{staff_rows}</td>
@@ -86,19 +69,21 @@
         }
     });
 
+    var counter = 0;
     var RecruitTable = React.createClass({
-        render: function(){
+        render: function () {
             var rows = [];
-            this.props.recruits.forEach(function(recruit){
-                if( recruit.id.indexOf(this.props.filterText) === -1 ){
+
+            this.props.recruits.forEach(function (recruit) {
+                if (recruit.id.indexOf(this.props.filterText) === -1) {
                     return;
                 }
 
-                rows.push(<RecruitRow recruit={recruit} />);
+                rows.push(<RecruitRow recruit={recruit}/>);
             }.bind(this));
 
-            return(
-                    <table>
+            return (
+                    <table className="pure-table-my">
                         <thead>
                             <tr>
                                 <th>Char ID</th>
@@ -115,14 +100,14 @@
 
     var SearchBar = React.createClass({
 
-        handleChange:function(){
+        handleChange: function () {
             this.props.onUserInput(
                     this.refs.filterTextInput.getDOMNode().value
             )
         },
 
-        render: function(){
-            return(
+        render: function () {
+            return (
                     <form>
                         <input
                                 type="text"
@@ -138,41 +123,44 @@
 
     var RecruitForm = React.createClass({
 
-        getInitialState: function(){
-            return{
+        getInitialState: function () {
+            return {
                 filterText: ''
             };
         },
 
-        handleUserInput: function(filter){
+        handleUserInput: function (filter) {
             this.setState({
                 filterText: filter
             });
         },
 
-        render: function(){
-            return(
+        render: function () {
+            return (
                     <div>
-                        <SearchBar
-                                filterText={this.state.filterText}
-                                onUserInput={this.handleUserInput}
-                                />
-
-                        <RecruitTable
-                                recruits={this.props.recruits}
-                                filterText={this.state.filterText}
-                                />
+                        <div className="header">
+                            <h1>Recruit</h1>
+                        </div>
+                        <div className="searchBar">
+                            <SearchBar
+                                    filterText={this.state.filterText}
+                                    onUserInput={this.handleUserInput}
+                                    />
+                        </div>
+                        <div className="middle">
+                            <RecruitTable
+                                    recruits={this.props.recruits}
+                                    filterText={this.state.filterText}
+                                    />
+                        </div>
                     </div>
             );
         }
     });
 
     React.render(
-            <RecruitForm recruits={recruits} />,
-            document.getElementById('content')
+            <RecruitForm recruits={recruits}/>,
+            document.getElementById('main')
     )
 
 </script>
-
-</body>
-</html>
