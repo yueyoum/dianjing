@@ -80,14 +80,14 @@ class TrainingStore(object):
         if not training:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_NOT_EXIST"))
 
+        check = {'message': u'Buy Training. oid: {0}'.format(training['oid'])}
         config = ConfigTraining.get(training['oid'])
-
         if config.cost_type == 1:
-            needs = {'gold': -config.cost_value}
+            check['gold'] = -config.cost_value
         else:
-            needs = {'diamond': -config.cost_value}
+            check['diamond'] = -config.cost_value
 
-        with Resource(self.server_id, self.char_id).check(**needs):
+        with Resource(self.server_id, self.char_id).check(**check):
             self.remove(training_id)
             TrainingBag(self.server_id, self.char_id).add(training_id, training['oid'], training['item'])
 
@@ -150,7 +150,6 @@ class TrainingBag(object):
         training_id = make_string_id()
         item = TrainingItem.generate_from_training_id(oid).to_json()
         self.add(training_id, oid, item)
-
 
     def add(self, training_id, training_oid, training_item):
         doc = MongoTraining.document_training_item()

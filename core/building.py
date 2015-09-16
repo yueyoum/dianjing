@@ -63,8 +63,12 @@ class BuildingManager(object):
         if Club(self.server_id, self.char_id).level < b.get_level(current_level).up_need_club_level:
             raise GameException(ConfigErrorMessage.get_error_id("CLUB_LEVEL_NOT_ENOUGH"))
 
-        needs = {"gold": -b.get_level(current_level).up_need_gold}
-        with Resource(self.server_id, self.char_id).check(**needs):
+        check = {
+            "gold": -b.get_level(current_level).up_need_gold,
+            "message": u"Building {0} level up to {1}".format(building_id, current_level+1)
+        }
+
+        with Resource(self.server_id, self.char_id).check(**check):
             MongoBuilding.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {'$inc': {'buildings.{0}'.format(building_id): 1}}
