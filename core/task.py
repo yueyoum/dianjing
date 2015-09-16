@@ -36,35 +36,39 @@ class TaskRefresh(object):
         task_center = ConfigBuilding.get(BuildingTaskCenter.BUILDING_ID)
 
         levels = {}
-        for i in range(1, task_center.max_levels + 1):
-            this_level_task_ids = ConfigTask.filter(level=i).keys()
-            task_num = task_center.get_level(i).value1
+        for level in range(1, task_center.max_levels + 1):
+            this_level_task_ids = ConfigTask.filter(level=level).keys()
+            task_ids = random.sample(this_level_task_ids, 1)
 
+            low_level_task_ids = []
+            for i in range(1, level):
+                low_level_task_ids.extend(ConfigTask.filter(level=i).keys())
+
+            task_num = task_center.get_level(level).value1
             try:
-                task_ids = random.sample(this_level_task_ids, task_num)
+                low_level_task_ids = random.sample(low_level_task_ids, task_num-1)
             except ValueError:
-                task_ids = this_level_task_ids
+                pass
 
-            levels[str(i)] = task_ids
+            task_ids.extend(low_level_task_ids)
+            levels[str(level)] = task_ids
 
         CommonTask.set(self.server_id, levels)
 
     def get_task_ids(self, building_level):
         def get():
             value = CommonTask.get(self.server_id)
-
             if not value:
                 return []
-
             return value.get(str(building_level), [])
 
         task_ids = get()
         if not task_ids:
             self.refresh()
 
-        task_ids = get()
-        if not task_ids:
-            raise RuntimeError("can not get task.common for building_level {0}".format(building_level))
+            task_ids = get()
+            if not task_ids:
+                raise RuntimeError("can not get task.common for building_level {0}".format(building_level))
 
         return task_ids
 
