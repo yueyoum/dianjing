@@ -11,14 +11,16 @@ from google.protobuf import descriptor_pb2
 _sym_db = _symbol_database.Default()
 
 
+import common_pb2 as common__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='building.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=b'\n\x0e\x62uilding.proto\x12\x11\x44ianjing.protocol\"\x87\x01\n\x0e\x42uildingNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12=\n\tbuildings\x18\x02 \x03(\x0b\x32*.Dianjing.protocol.BuildingNotify.Building\x1a%\n\x08\x42uilding\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\"5\n\x16\x42uildingLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"7\n\x17\x42uildingLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c'
-)
+  serialized_pb=b'\n\x0e\x62uilding.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xaf\x01\n\x0e\x42uildingNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12=\n\tbuildings\x18\x02 \x03(\x0b\x32*.Dianjing.protocol.BuildingNotify.Building\x12&\n\x03\x61\x63t\x18\x03 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x1a%\n\x08\x42uilding\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\"5\n\x16\x42uildingLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"7\n\x17\x42uildingLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c'
+  ,
+  dependencies=[common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
@@ -57,8 +59,8 @@ _BUILDINGNOTIFY_BUILDING = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=136,
-  serialized_end=173,
+  serialized_start=190,
+  serialized_end=227,
 )
 
 _BUILDINGNOTIFY = _descriptor.Descriptor(
@@ -82,6 +84,13 @@ _BUILDINGNOTIFY = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='act', full_name='Dianjing.protocol.BuildingNotify.act', index=2,
+      number=3, type=14, cpp_type=8, label=2,
+      has_default_value=False, default_value=1,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -94,8 +103,8 @@ _BUILDINGNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=38,
-  serialized_end=173,
+  serialized_start=52,
+  serialized_end=227,
 )
 
 
@@ -132,8 +141,8 @@ _BUILDINGLEVELUPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=175,
-  serialized_end=228,
+  serialized_start=229,
+  serialized_end=282,
 )
 
 
@@ -170,12 +179,13 @@ _BUILDINGLEVELUPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=230,
-  serialized_end=285,
+  serialized_start=284,
+  serialized_end=339,
 )
 
 _BUILDINGNOTIFY_BUILDING.containing_type = _BUILDINGNOTIFY
 _BUILDINGNOTIFY.fields_by_name['buildings'].message_type = _BUILDINGNOTIFY_BUILDING
+_BUILDINGNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 DESCRIPTOR.message_types_by_name['BuildingNotify'] = _BUILDINGNOTIFY
 DESCRIPTOR.message_types_by_name['BuildingLevelUpRequest'] = _BUILDINGLEVELUPREQUEST
 DESCRIPTOR.message_types_by_name['BuildingLevelUpResponse'] = _BUILDINGLEVELUPRESPONSE

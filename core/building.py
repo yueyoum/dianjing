@@ -18,6 +18,7 @@ from config import ConfigBuilding, ConfigErrorMessage
 from utils.message import MessagePipe
 
 from protomsg.building_pb2 import BuildingNotify
+from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
 BUILDING_HEADQUARTERS = 1  # 总部大楼
 BUILDING_TRAINING_CENTER = 2  # 任务中心
@@ -74,11 +75,14 @@ class BuildingManager(object):
     def send_notify(self, building_ids=None):
         if building_ids:
             projection = {'buildings.{0}'.format(i): 1 for i in building_ids}
+            act = ACT_UPDATE
         else:
             projection = {'buildings': 1}
+            act = ACT_INIT
 
         doc = MongoBuilding.db(self.server_id).find_one({'_id': self.char_id}, projection)
         notify = BuildingNotify()
+        notify.act = act
 
         for b in ConfigBuilding.all_values():
             if building_ids and b.id not in building_ids:
