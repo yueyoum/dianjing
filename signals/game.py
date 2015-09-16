@@ -8,6 +8,7 @@ Description:
 """
 
 import arrow
+from django.dispatch import receiver
 
 from core.signals import game_start_signal
 from core.character import Character
@@ -30,8 +31,8 @@ from core.statistics import FinanceStatistics
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
 
-
-def start(server_id, char_id, **kwargs):
+@receiver(game_start_signal, dispatch_uid='signals.game.game_start_handler')
+def game_start_handler(server_id, char_id, **kwargs):
     MessagePipe(char_id).clean()
 
     msg = UTCNotify()
@@ -63,7 +64,3 @@ def start(server_id, char_id, **kwargs):
 
     FinanceStatistics(server_id, char_id).send_notify()
 
-game_start_signal.connect(
-    start,
-    dispatch_uid='signals.game.start'
-)
