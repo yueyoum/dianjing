@@ -23,6 +23,7 @@ from core.package import Drop
 from core.resource import Resource
 from core.notification import Notification
 from core.mail import MailManager
+from core.signals import ladder_match_signal
 
 from core.lock import Lock, LadderLock, LadderNPCLock, LadderStoreLock, LockTimeOut
 
@@ -176,6 +177,14 @@ class LadderMatch(object):
                 current_order=final_club_two_order,
                 ladder_score=d.ladder_score,
             )
+
+        ladder_match_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=int(self.club_one_object.id),
+            target_id=self.club_two_object.id,
+            win=self.club_one_win
+        )
 
 
 class Ladder(object):

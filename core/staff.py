@@ -18,6 +18,7 @@ from core.resource import Resource
 from core.common import CommonRecruitHot
 from core.skill import SkillManager
 from core.package import TrainingItem
+from core.signals import recruit_staff_signal, staff_level_up_signal
 
 from config import (
     ConfigStaff, ConfigStaffHot, ConfigStaffRecruit,
@@ -157,7 +158,6 @@ class StaffRecruit(object):
         if staff_id not in recruit_list:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_RECRUIT_NOT_IN_LIST"))
 
-
         check = {"message": u"Recruit staff {0}".format(staff_id)}
         config = ConfigStaff.get(staff_id)
         if config.buy_type == 1:
@@ -167,6 +167,13 @@ class StaffRecruit(object):
 
         with Resource(self.server_id, self.char_id).check(**check):
             StaffManger(self.server_id, self.char_id).add(staff_id)
+
+        recruit_staff_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            staff_id=staff_id
+        )
 
         self.send_notify()
 
@@ -342,6 +349,7 @@ class StaffManger(object):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
         # update
+        level_updated = False
         current_level = this_staff['level']
         current_exp = this_staff['exp'] + exp
         while True:
@@ -359,6 +367,7 @@ class StaffManger(object):
 
             current_exp -= need_exp
             current_level += 1
+            level_updated = True
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -380,6 +389,15 @@ class StaffManger(object):
                 },
             }
         )
+
+        if level_updated:
+            staff_level_up_signal.send(
+                sender=None,
+                server_id=self.server_id,
+                char_id=self.char_id,
+                staff_id=staff_id,
+                new_level=current_level
+            )
 
         self.send_notify(staff_ids=[staff_id])
 

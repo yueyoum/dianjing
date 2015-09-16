@@ -170,7 +170,6 @@ class TaskManager(object):
                 continue
 
             updated_ids.append(k)
-            # TODO 是否有其他类型的判断
             new_num = v['num'] + num
             updater['tasks.{0}.num'.format(k)] = new_num
             if new_num >= config.num:

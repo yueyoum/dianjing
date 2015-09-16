@@ -23,7 +23,17 @@ from config import ConfigTraining, ConfigErrorMessage, ConfigStaff
 class TestTrainingStore(object):
     def setup(self):
         refreshed = TrainingStore(1, 1).refresh()
-        self.tid = random.choice(refreshed.keys())
+        while len(refreshed):
+            tid = random.choice(refreshed.keys())
+            config = ConfigTraining.get(refreshed[tid]['oid'])
+            if config.cost_value:
+                break
+
+            refreshed.pop(tid)
+        else:
+            raise Exception("Error!!!")
+
+        self.tid = tid
         oid = refreshed[self.tid]['oid']
         self.config = ConfigTraining.get(oid)
 
