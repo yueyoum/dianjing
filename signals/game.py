@@ -24,6 +24,7 @@ from core.task import TaskManager
 from core.chat import Chat
 from core.notification import Notification
 from core.ladder import Ladder, LadderStore
+from core.statistics import FinanceStatistics
 
 
 from utils.message import MessagePipe
@@ -59,6 +60,8 @@ def start(server_id, char_id, **kwargs):
 
     Ladder(server_id, char_id).send_notify()
     LadderStore(server_id, char_id).send_notify()
+
+    FinanceStatistics(server_id, char_id).send_notify()
 
 game_start_signal.connect(
     start,
