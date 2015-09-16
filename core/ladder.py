@@ -439,7 +439,7 @@ class LadderStore(object):
         )
 
         drop = Drop.generate(ConfigLadderScoreStore.get(item_id).package)
-        message = "Buy from ladder store. item id {0}".format(item_id)
+        message = u"Buy from ladder store. item id {0}".format(item_id)
         Resource(self.server_id, self.char_id).save_drop(drop, message=message)
         Ladder(self.server_id, self.char_id).send_notify()
 

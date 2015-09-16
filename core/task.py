@@ -144,7 +144,7 @@ class TaskManager(object):
 
         config = ConfigTask.get(task_id)
         drop = Drop.generate(config.package)
-        message = "Reward from task {0}".format(task_id)
+        message = u"Reward from task {0}".format(task_id)
         Resource(self.server_id, self.char_id).save_drop(drop, message=message)
         MongoTask.db(self.server_id).update_one(
             {'_id': self.char_id},
