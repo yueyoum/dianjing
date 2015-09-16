@@ -145,13 +145,13 @@ class TrainingBag(object):
 
         return True
 
-    def add_from_raw_training(self, oid):
+    def add_from_raw_training(self, oid, send_notify=True):
         # 直接从配置中的 训练id 添加
         training_id = make_string_id()
         item = TrainingItem.generate_from_training_id(oid).to_json()
-        self.add(training_id, oid, item)
+        self.add(training_id, oid, item, send_notify=send_notify)
 
-    def add(self, training_id, training_oid, training_item):
+    def add(self, training_id, training_oid, training_item, send_notify=True):
         doc = MongoTraining.document_training_item()
         doc['oid'] = training_oid
         doc['item'] = training_item
@@ -161,7 +161,8 @@ class TrainingBag(object):
             {'$set': {'bag.{0}'.format(training_id): doc}}
         )
 
-        self.send_notify(ids=[training_id])
+        if send_notify:
+            self.send_notify(ids=[training_id])
 
     def use(self, staff_id, training_id):
         key = "bag.{0}".format(training_id)

@@ -41,7 +41,7 @@ class Character(object):
 
         Club(server_id, char_id).set_match_staffs(staff_ids + [0] * 5)
 
-        TrainingBag(server_id, char_id).add_from_raw_training(1)
+        TrainingBag(server_id, char_id).add_from_raw_training(1, send_notify=False)
 
 
     def make_protomsg(self, **kwargs):
