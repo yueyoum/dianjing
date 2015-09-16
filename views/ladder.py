@@ -9,9 +9,16 @@ Description:
 
 from utils.http import ProtobufResponse
 
-from core.ladder import Ladder
+from core.ladder import Ladder, LadderStore
 
-from protomsg.ladder_pb2 import LadderRefreshResponse, LadderMatchResponse, LadderLeaderBoardResponse
+from protomsg.ladder_pb2 import (
+    LadderRefreshResponse,
+    LadderMatchResponse,
+    LadderLeaderBoardResponse,
+    LadderStoreBuyResponse,
+    LadderStoreRefreshResponse,
+)
+
 
 def refresh(request):
     server_id = request._game_session.server_id
@@ -22,6 +29,7 @@ def refresh(request):
     response = LadderRefreshResponse()
     response.ret = 0
     return ProtobufResponse(response)
+
 
 def match(request):
     server_id = request._game_session.server_id
@@ -56,3 +64,28 @@ def get_leader_board(request):
 
     return ProtobufResponse(response)
 
+
+def store_refresh(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    s = LadderStore(server_id, char_id)
+    s.refresh()
+
+    response = LadderStoreRefreshResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+
+def store_buy(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    item_id = request._proto.id
+
+    s = LadderStore(server_id, char_id)
+    s.buy(item_id)
+
+    response = LadderStoreBuyResponse()
+    response.ret = 0
+    return ProtobufResponse(response)

@@ -394,11 +394,11 @@ class LadderStore(object):
 
         self.items = CommonLadderStore.get(self.server_id)
         if not self.items:
-            self.refresh()
+            self.refresh(send_notify=False)
 
         Ladder(self.server_id, self.char_id)
 
-    def refresh(self):
+    def refresh(self, send_notify=True):
         with LadderStoreLock(self.server_id).lock():
             self.items = CommonLadderStore.get(self.server_id)
             if self.items:
@@ -406,6 +406,9 @@ class LadderStore(object):
 
             self.items = random.sample(ConfigLadderScoreStore.INSTANCES.keys(), 9)
             CommonLadderStore.set(self.server_id, self.items)
+
+        if send_notify:
+            self.send_notify()
 
     def buy(self, item_id):
         if item_id not in self.items:
