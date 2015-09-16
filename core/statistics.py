@@ -49,7 +49,7 @@ class FinanceStatistics(object):
         income = {i: 0 for i in range(0, 7)}
         expense = {i: 0 for i in range(0, 7)}
 
-        condition = Q(create_at__gte=monday.format("YYYY-MM-DD HH:mm:ssZ")) & Q(
+        condition = Q(char_id=self.char_id) & Q(create_at__gte=monday.format("YYYY-MM-DD HH:mm:ssZ")) & Q(
             create_at__lte=next_monday.format("YYYY-MM-DD HH:mm:ssZ"))
         for s in Statistics.objects.filter(condition):
             create_at_weekday = arrow.get(s.create_at).to(settings.TIME_ZONE).weekday()

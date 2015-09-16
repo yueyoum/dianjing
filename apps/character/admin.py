@@ -8,6 +8,8 @@ from django.contrib import messages
 from apps.character.models import Character
 
 from core.mongo import MongoCharacter
+from core.package import Drop
+from core.resource import Resource
 
 
 class MyActionForm(ActionForm):
@@ -22,7 +24,7 @@ class CharacterAdmin(admin.ModelAdmin):
         'Info'
     )
 
-    search_fields = ['name', 'club_name',]
+    search_fields = ['name', 'club_name', ]
 
     action_form = MyActionForm
     actions = ['add_gold', 'add_diamond', 'add_club_level']
@@ -63,16 +65,17 @@ class CharacterAdmin(admin.ModelAdmin):
             self.message_user(request, "填入的数字错误", level=messages.ERROR)
             return False
 
-        key = "club.{0}".format(name)
-        for q in queryset:
-            doc = MongoCharacter.db(q.server_id).find_one({'_id': q.id}, {'club': 1})
-            if not doc or 'club' not in doc:
-                continue
-
-            MongoCharacter.db(q.server_id).update_one(
-                {'_id': q.id},
-                {'$set': {key: value}}
-            )
+        if name == 'level':
+            for q in queryset:
+                MongoCharacter.db(q.server_id).update_one(
+                    {'_id': q.id},
+                    {'$set': {'club.level': value}}
+                )
+        else:
+            for q in queryset:
+                drop = Drop()
+                setattr(drop, name, value)
+                Resource(q.server_id, q.id).save_drop(drop, message="From Admin")
 
         self.message_user(request, "设置成功")
 
