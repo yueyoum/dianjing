@@ -37,7 +37,6 @@ class FinanceStatistics(object):
 
         self.send_notify()
 
-    @property
     def get_gold_statistics(self):
         from apps.statistics.models import Statistics
 
@@ -74,7 +73,7 @@ class FinanceStatistics(object):
 
     def send_notify(self):
         # 只有 gold 需要notify
-        income, expense = self.get_gold_statistics
+        income, expense = self.get_gold_statistics()
 
         notify = FinanceStatisticsNotify()
         notify.income.extend(income)
