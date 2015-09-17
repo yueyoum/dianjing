@@ -37,8 +37,18 @@ class BuildingManager(object):
             doc = MongoBuilding.document()
             doc['_id'] = self.char_id
             doc['buildings'] = {str(i): 1 for i in ConfigBuilding.INSTANCES.keys()}
-
             MongoBuilding.db(server_id).insert_one(doc)
+        else:
+            updater = {}
+            for i in ConfigBuilding.INSTANCES.keys():
+                if str(i) not in doc['buildings']:
+                    updater['buildings.{0}'.format(i)] = 1
+
+            if updater:
+                MongoBuilding.db(server_id).update_one(
+                    {'_id': self.char_id},
+                    {'$set': updater}
+                )
 
     def get_level(self, building_id):
         doc = MongoBuilding.db(self.server_id).find_one(

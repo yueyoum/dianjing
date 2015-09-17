@@ -10,12 +10,14 @@ Description:
 from config.base import ConfigBase
 
 class BuildingLevel(object):
-    __slots__ = ['level', 'up_need_club_level', 'up_need_gold', 'value1']
+    __slots__ = ['level', 'up_need_club_level', 'up_need_gold', 'up_need_diamond', 'value1', 'value2']
     def __init__(self):
-        self.level = None
-        self.up_need_club_level = None
-        self.up_need_gold = None
-        self.value1 = None
+        self.level = 0
+        self.up_need_club_level = 0
+        self.up_need_gold = 0
+        self.up_need_diamond = 0
+        self.value1 = 0
+        self.value2 = 0
 
     @classmethod
     def new(cls, **kwargs):
