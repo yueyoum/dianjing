@@ -32,7 +32,7 @@ class BuildingManager(object):
         self.server_id = server_id
         self.char_id = char_id
 
-        doc = MongoBuilding.db(server_id).find_one({'_id': self.char_id}, {'_id': 1})
+        doc = MongoBuilding.db(server_id).find_one({'_id': self.char_id})
         if not doc:
             doc = MongoBuilding.document()
             doc['_id'] = self.char_id
