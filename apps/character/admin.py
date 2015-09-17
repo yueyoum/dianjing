@@ -28,7 +28,7 @@ class CharacterAdmin(admin.ModelAdmin):
     search_fields = ['name', 'club_name', ]
 
     action_form = MyActionForm
-    actions = ['add_gold', 'add_diamond', 'add_club_level', 'add_ladder_score', ]
+    actions = ['add_gold', 'add_diamond', 'add_club_level', 'add_ladder_score', 'add_purchase_diamond',]
 
     def Info(self, obj):
         doc = MongoCharacter.db(obj.server_id).find_one(
