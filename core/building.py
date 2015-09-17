@@ -20,11 +20,12 @@ from utils.message import MessagePipe
 from protomsg.building_pb2 import BuildingNotify
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
-BUILDING_HEADQUARTERS = 1  # 总部大楼
-BUILDING_TRAINING_CENTER = 2  # 任务中心
-BUILDING_STAFF_CENTER = 3  # 员工中心
-BUILDING_TASK_CENTER = 4  # 任务中心
-BUILDING_LEAGUE_CENTER = 5  # 联赛中心
+BUILDING_HEADQUARTERS = 1       # 总部大楼
+BUILDING_TRAINING_CENTER = 2    # 任务中心
+BUILDING_STAFF_CENTER = 3       # 员工中心
+BUILDING_TASK_CENTER = 4        # 任务中心
+BUILDING_LEAGUE_CENTER = 5      # 联赛中心
+BUILDING_SPONSOR_CENTER = 6     # 赞助商中心
 
 
 class BuildingManager(object):
@@ -109,7 +110,7 @@ class BuildingManager(object):
         MessagePipe(self.char_id).put(msg=notify)
 
 
-class BuildingBase(object):
+class BaseBuilding(object):
     BUILDING_ID = 0
 
     def __init__(self, server_id, char_id):
@@ -122,17 +123,20 @@ class BuildingBase(object):
         return self.bm.level_up(self.BUILDING_ID)
 
 
-class BuildingTrainingCenter(BuildingBase):
+class BuildingTrainingCenter(BaseBuilding):
     BUILDING_ID = BUILDING_TRAINING_CENTER
 
 
-class BuildingStaffCenter(BuildingBase):
+class BuildingStaffCenter(BaseBuilding):
     BUILDING_ID = BUILDING_STAFF_CENTER
 
 
-class BuildingTaskCenter(BuildingBase):
+class BuildingTaskCenter(BaseBuilding):
     BUILDING_ID = BUILDING_TASK_CENTER
 
 
-class BuildingLeagueCenter(BuildingBase):
+class BuildingLeagueCenter(BaseBuilding):
     BUILDING_ID = BUILDING_LEAGUE_CENTER
+
+class BuildingSponsorCenter(BaseBuilding):
+    BUILDING_ID = BUILDING_SPONSOR_CENTER

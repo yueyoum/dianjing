@@ -223,7 +223,8 @@ class MongoMail(BaseDocument):
         'content': null,
         'has_read': False,
         'create_at': null,
-        'attachment': ""
+        'attachment': "",
+        'function': 0,
     }
 
     COLLECTION = "mail"
@@ -408,3 +409,15 @@ class MongoNotification(BaseDocument):
     @classmethod
     def document_notification(cls):
         return cls.NOTIFICATION_DOCUMENT.copy()
+
+# 赞助
+class MongoSponsor(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'sponsor_to_id': 0,     # 赞助了谁
+        'income': 0,            # 总收益
+        'sponsors': {},         # id: income.  这里的income不清零
+        'logs': []              # [(template_id, args), ...]
+    }
+
+    COLLECTION = "sponsor"

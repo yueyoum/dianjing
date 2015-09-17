@@ -10,6 +10,7 @@ from apps.character.models import Character
 from core.mongo import MongoCharacter
 from core.package import Drop
 from core.resource import Resource
+from core.signals import purchase_done_signal
 
 
 class MyActionForm(ActionForm):
@@ -78,7 +79,7 @@ class CharacterAdmin(admin.ModelAdmin):
         for q in queryset:
             Resource(q.server_id, q.id).save_drop(drop, message=u"From Admin")
 
-    add_gold.short_description = u"设置软妹币"
+    add_gold.short_description = u"添加软妹币"
 
     def add_diamond(self, request, queryset):
         value = self.check_value(request)
@@ -91,7 +92,7 @@ class CharacterAdmin(admin.ModelAdmin):
         for q in queryset:
             Resource(q.server_id, q.id).save_drop(drop, message=u"From Admin")
 
-    add_diamond.short_description = u"设置钻石"
+    add_diamond.short_description = u"添加钻石"
 
     def add_club_level(self, request, queryset):
         value = self.check_value(request)
@@ -117,4 +118,24 @@ class CharacterAdmin(admin.ModelAdmin):
         for q in queryset:
             Resource(q.server_id, q.id).save_drop(drop, message=u"From Admin")
 
-    add_ladder_score.short_description = u"设置天梯赛积分"
+    add_ladder_score.short_description = u"添加天梯赛积分"
+
+
+    def add_purchase_diamond(self, request, queryset):
+        value = self.check_value(request)
+        if not value:
+            return
+
+        drop = Drop()
+        drop.diamond = value
+
+        for q in queryset:
+            Resource(q.server_id, q.id).save_drop(drop, message=u"From Admin. Purchase")
+            purchase_done_signal.send(
+                sender=None,
+                server_id=q.server_id,
+                char_id=q.id,
+                diamond=value
+            )
+
+    add_purchase_diamond.short_description = u"添加充值钻石"

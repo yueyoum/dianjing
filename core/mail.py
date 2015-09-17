@@ -22,7 +22,13 @@ from config.settings import MAIL_KEEP_DAYS, MAIL_CLEAN_AT
 from utils.functional import make_string_id
 from utils.message import MessagePipe
 
-from protomsg.mail_pb2 import MailNotify, MailRemoveNotify, MAIL_FROM_SYSTEM, MAIL_FROM_USER
+from protomsg.mail_pb2 import (
+    MailNotify,
+    MailRemoveNotify,
+    MAIL_FROM_SYSTEM,
+    MAIL_FROM_USER,
+)
+
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
 
@@ -57,6 +63,7 @@ class MailManager(object):
         return doc['mails'].get(mail_id, None)
 
     def send(self, to_id, content):
+        # 聊天
         to_id = int(to_id)
         target_doc = MongoCharacter.db(self.server_id).find_one({'_id': to_id}, {'_id': 1})
         if not target_doc:
@@ -67,13 +74,14 @@ class MailManager(object):
         title = u"来自 {0} 的邮件".format(self_doc['name'])
         MailManager(self.server_id, to_id).add(title, content, from_id=self.char_id)
 
-    def add(self, title, content, attachment="", from_id=0):
+    def add(self, title, content, attachment="", from_id=0, function=0):
         doc = MongoMail.document_mail()
         doc['from_id'] = from_id
         doc['title'] = title
         doc['content'] = content
         doc['attachment'] = attachment
         doc['create_at'] = arrow.utcnow().timestamp
+        doc['function'] = function
 
         mail_id = make_string_id()
 
@@ -190,5 +198,9 @@ class MailManager(object):
 
             if v['attachment']:
                 notify_mail.attachment.MergeFrom(Drop.loads_from_json(v['attachment']).make_protomsg())
+
+            function = v.get('function', 0)
+            if function:
+                notify_mail.function = function
 
         MessagePipe(self.char_id).put(msg=notify)

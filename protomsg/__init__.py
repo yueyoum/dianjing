@@ -111,6 +111,11 @@ MESSAGE_TO_ID = {
     "CupInfomationResponse": 1801,
     "CupJoinRequest": 1802,
     "CupJoinResponse": 1803,
+    "SponsorNotify": 1900,
+    "SponsorRequest": 1903,
+    "SponsorResponse": 1904,
+    "SponsorGetIncomeRequest": 1905,
+    "SponsorGetIncomeResponse": 1906,
 }
 
 ID_TO_MESSAGE = {
@@ -225,6 +230,11 @@ ID_TO_MESSAGE = {
     1801: "CupInfomationResponse",
     1802: "CupJoinRequest",
     1803: "CupJoinResponse",
+    1900: "SponsorNotify",
+    1903: "SponsorRequest",
+    1904: "SponsorResponse",
+    1905: "SponsorGetIncomeRequest",
+    1906: "SponsorGetIncomeResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -271,6 +281,8 @@ PATH_TO_REQUEST = {
     "/game/ladder/store/refresh/": ["ladder", "LadderStoreRefreshRequest"],
     "/game/cup/infomation/": ["cup", "CupInfomationRequest"],
     "/game/cup/join/": ["cup", "CupJoinRequest"],
+    "/game/sponsor/": ["spread", "SponsorRequest"],
+    "/game/sponsor/getincome/": ["spread", "SponsorGetIncomeRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -317,4 +329,6 @@ PATH_TO_RESPONSE = {
     "/game/ladder/store/refresh/": ["ladder", "LadderStoreRefreshResponse"],
     "/game/cup/infomation/": ["cup", "CupInfomationResponse"],
     "/game/cup/join/": ["cup", "CupJoinResponse"],
+    "/game/sponsor/": ["spread", "SponsorResponse"],
+    "/game/sponsor/getincome/": ["spread", "SponsorGetIncomeResponse"],
 }

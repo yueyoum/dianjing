@@ -35,3 +35,6 @@ recruit_staff_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'
 club_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])
 # 升级了员工
 staff_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id', 'new_level'])
+
+# 充值
+purchase_done_signal = Signal(providing_args=['server_id', 'char_id', 'diamond'])

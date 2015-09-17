@@ -9,8 +9,10 @@ Description:
 
 from config.base import ConfigBase
 
+
 class BuildingLevel(object):
     __slots__ = ['level', 'up_need_club_level', 'up_need_gold', 'up_need_diamond', 'value1', 'value2']
+
     def __init__(self):
         self.level = 0
         self.up_need_club_level = 0
@@ -60,12 +62,10 @@ class ConfigBuilding(ConfigBase):
 
             v.levels = levels
 
-
     @classmethod
-    def get(cls, id):
+    def get(cls, _id):
         """
 
         :rtype : Building
         """
-        return super(ConfigBuilding, cls).get(id)
-
+        return super(ConfigBuilding, cls).get(_id)

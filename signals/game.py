@@ -26,6 +26,7 @@ from core.chat import Chat
 from core.notification import Notification
 from core.ladder import Ladder, LadderStore
 from core.statistics import FinanceStatistics
+from core.sponsor import SponsorManager
 
 
 from utils.message import MessagePipe
@@ -63,4 +64,5 @@ def game_start_handler(server_id, char_id, **kwargs):
     LadderStore(server_id, char_id).send_notify()
 
     FinanceStatistics(server_id, char_id).send_notify()
+    SponsorManager(server_id, char_id).send_notify()
 
