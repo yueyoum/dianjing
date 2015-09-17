@@ -117,9 +117,7 @@ class SponsorManager(object):
             {'club.name': 1}
         )
 
-        data = [
-            [1, [from_doc['club']['name']]],
-        ]
+        data = [1, [from_doc['club']['name']]]
         MongoSponsor.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$push': {'logs': {
@@ -136,9 +134,7 @@ class SponsorManager(object):
             {'club.name': 1}
         )
 
-        data = [
-            [2, [[from_doc['club']['name'], income], ]],
-        ]
+        data = [2, [[from_doc['club']['name'], income]]]
         MongoSponsor.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$push': {'logs': {
