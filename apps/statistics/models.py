@@ -17,5 +17,6 @@ class Statistics(models.Model):
 
     class Meta:
         db_table = 'statistics'
+        ordering = ['-create_at']
         verbose_name = '统计'
         verbose_name_plural = '统计'
