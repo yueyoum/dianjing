@@ -72,4 +72,7 @@ urlpatterns = [
 
     url(r'^cup/join/$', 'views.cup.join'),
     url(r'^cup/infomation/$', 'views.cup.information'),
+
+    url(r'^sponsor/$', 'views.sponsor.sponsor'),
+    url(r'^sponsor/getincome/$', 'views.sponsor.get_income'),
 ]
