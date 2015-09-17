@@ -2,7 +2,7 @@ import re
 
 from apps.server.models import Server
 
-from core.mongo import MongoCharacter, MongoFriend, MongoBuilding, MongoStaff, MongoMail, MongoTraining, MongoTask
+from core.mongo import MongoCharacter, MongoFriend, MongoBuilding, MongoStaff, MongoMail, MongoTraining, MongoTask, MongoLadder
 
 
 # Create your models here.
@@ -58,5 +58,8 @@ class DBHandle(object):
 
     def get_task(self, char_id):
         return MongoTask.db(self.server_id).find_one({'_id': char_id})
+
+    def get_ladder(self):
+        return MongoLadder.db(self.server_id).find()
 
 

@@ -163,3 +163,12 @@ def knapsack(request):
                                'server_id': server_id,
                                'data': tmp,
                                'web_title': 'Staff'})
+
+def ladder(request):
+    server_id = request.GET['server_id']
+
+    return render_to_response("data_index.html",
+                              {'html': 'ladder.html',
+                               'server_id': server_id,
+                               'data': tmp,
+                               'web_title': 'Staff'})
