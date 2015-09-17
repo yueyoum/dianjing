@@ -134,7 +134,7 @@ class SponsorManager(object):
             {'club.name': 1}
         )
 
-        data = [2, [[from_doc['club']['name'], income]]]
+        data = [2, [from_doc['club']['name'], str(income)]]
         MongoSponsor.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$push': {'logs': {
