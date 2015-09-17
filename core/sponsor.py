@@ -84,7 +84,7 @@ class SponsorManager(object):
 
         self.send_notify()
 
-    def add_purchase_income(self, from_id, purchase_got, step):
+    def add_purchase_income(self, from_id, real_from_id, purchase_got, step):
         if step > 2:
             return
 
@@ -109,7 +109,7 @@ class SponsorManager(object):
 
         sponsor_to_id = self.get_sponsor_to_id()
         if sponsor_to_id:
-            SponsorManager(self.server_id, sponsor_to_id).add_purchase_income(self.char_id, purchase_got, step + 1)
+            SponsorManager(self.server_id, sponsor_to_id).add_purchase_income(self.char_id, real_from_id, purchase_got, step + 1)
 
     def add_sponsor_log(self, from_id):
         from_doc = MongoCharacter.db(self.server_id).find_one(
@@ -150,7 +150,7 @@ class SponsorManager(object):
         if not sponsor_to_id:
             return
 
-        SponsorManager(self.server_id, sponsor_to_id).add_purchase_income(self.char_id, purchase_got, 1)
+        SponsorManager(self.server_id, sponsor_to_id).add_purchase_income(self.char_id, self.char_id, purchase_got, 1)
 
     def send_notify(self):
         doc = MongoSponsor.db(self.server_id).find_one({'_id': self.char_id})
