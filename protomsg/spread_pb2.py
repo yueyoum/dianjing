@@ -17,7 +17,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='spread.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=b'\n\x0cspread.proto\x12\x11\x44ianjing.protocol\"\xcb\x02\n\rSponsorNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12:\n\x08sponsors\x18\x02 \x03(\x0b\x32(.Dianjing.protocol.SponsorNotify.Sponsor\x12\x39\n\x04logs\x18\x03 \x03(\x0b\x32+.Dianjing.protocol.SponsorNotify.SponsorLog\x12\x12\n\nsponsor_to\x18\x04 \x02(\t\x12\x14\n\x0ctotal_income\x18\x05 \x02(\x05\x1aW\n\x07Sponsor\x12\x11\n\tclub_flag\x18\x01 \x02(\x05\x12\x11\n\tclub_name\x18\x02 \x02(\x05\x12\x16\n\x0esponsor_amount\x18\x03 \x02(\x05\x12\x0e\n\x06income\x18\x04 \x02(\x05\x1a/\n\nSponsorLog\x12\x13\n\x0btemplate_id\x18\x01 \x02(\x05\x12\x0c\n\x04\x61rgs\x18\x02 \x03(\t\"-\n\x0eSponsorRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"/\n\x0fSponsorResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"*\n\x17SponsorGetIncomeRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"8\n\x18SponsorGetIncomeResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c'
+  serialized_pb=b'\n\x0cspread.proto\x12\x11\x44ianjing.protocol\"\xcb\x02\n\rSponsorNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12:\n\x08sponsors\x18\x02 \x03(\x0b\x32(.Dianjing.protocol.SponsorNotify.Sponsor\x12\x39\n\x04logs\x18\x03 \x03(\x0b\x32+.Dianjing.protocol.SponsorNotify.SponsorLog\x12\x12\n\nsponsor_to\x18\x04 \x02(\t\x12\x14\n\x0ctotal_income\x18\x05 \x02(\x05\x1aW\n\x07Sponsor\x12\x11\n\tclub_flag\x18\x01 \x02(\x05\x12\x11\n\tclub_name\x18\x02 \x02(\t\x12\x16\n\x0esponsor_amount\x18\x03 \x02(\x05\x12\x0e\n\x06income\x18\x04 \x02(\x05\x1a/\n\nSponsorLog\x12\x13\n\x0btemplate_id\x18\x01 \x02(\x05\x12\x0c\n\x04\x61rgs\x18\x02 \x03(\t\"-\n\x0eSponsorRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"/\n\x0fSponsorResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"*\n\x17SponsorGetIncomeRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"8\n\x18SponsorGetIncomeResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c'
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -40,8 +40,8 @@ _SPONSORNOTIFY_SPONSOR = _descriptor.Descriptor(
       options=None),
     _descriptor.FieldDescriptor(
       name='club_name', full_name='Dianjing.protocol.SponsorNotify.Sponsor.club_name', index=1,
-      number=2, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
