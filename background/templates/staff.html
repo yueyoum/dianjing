@@ -1,83 +1,65 @@
 <div id="main"></div>
 <script type="text/jsx">
-
-    var server_id = "{{ server_id }}";
-
-    var staff_data = [];
-    {% for d in data %}
-        var row = {};
-        row['id'] = "{{ d.id }}";
-
-        var staff_list = [];
-        {% for staff in d.staffs %}
-            var s_id = "{{ staff }}";
-            staff_list.push(s_id);
-            staff_list.push(', ');
-        {% endfor %}
-        row['staffs'] = staff_list;
-
-        var training_list = [];
-        {% for training in d.trainings %}
-            var t_id = "{{ training }}";
-            training_list.push(t_id);
-        {% endfor %}
-        row['trainings'] = training_list;
-
-        staff_data.push(row);
-    {% endfor %}
-
     var counter = 0;
-
-    var MakeTrainRow = React.createClass({
-        render: function () {
-            return (
-                    <li>{this.props.training}</li>
-            );
-        }
-    });
-
-    var DataRow = React.createClass({
-        render: function () {
-            var TrainRows = [];
-            this.props.staff.trainings.forEach(function (training) {
-                TrainRows.push(<MakeTrainRow training={training}/>);
-            }.bind(this));
-            var name = '';
-            if (counter % 2 === 0) {
-                name = 'alt';
-            }
-            counter++;
-
-            var staff_link = "/data/staff/char?server_id=" + server_id + "&char_id=" + this.props.staff.id;
-            return (
-                    <tr className={name}>
-                        <td>{this.props.staff.id}</td>
-                        <td>
-                            <a href={staff_link}>{this.props.staff.staffs}</a>
-                        </td>
-                        <td>{TrainRows}</td>
-                    </tr>
-            );
-        }
-    });
-
     var StaffTable = React.createClass({
         render: function () {
+            var skillStatus = ['未开启', '开启'];
             var rows = [];
-            this.props.staff_data.forEach(function (staff) {
-                if (staff.id.indexOf(this.props.filterText) === -1) {
-                    return;
+            for (var s in this.props.staffs) {
+                var name = '';
+                if (counter % 2 === 0) {
+                    name = 'alt';
                 }
-                rows.push(<DataRow staff={staff}/>);
-            }.bind(this));
+                ++counter;
+
+                var skills = [];
+                for (var sk in this.props.staffs[s].skills) {
+                    skills.push(
+                            <li>
+                                {sk}:{skillStatus[this.props.staffs[s].skills[sk].locked]},
+                                等级：{this.props.staffs[s].skills[sk].level}
+                            </li>
+                    );
+                }
+
+                var trainings = [];
+                for (var tr in this.props.staffs[s].trainings) {
+                    trainings.push(
+                            <li>
+                                {skillStatus[this.props.staffs[s].trainings[tr].oid]}:
+                                物品：{this.props.staffs[s].trainings[tr].item},
+                                开始时间:{this.props.staffs[s].trainings[tr].start_at}
+                            </li>
+                    );
+                }
+
+                rows.push(
+                        <tr className={name}>
+                            <td>{s}</td>
+                            <td>{this.props.staffs[s].exp}</td>
+                            <td>{this.props.staffs[s].level}</td>
+                            <td>{this.props.staffs[s].status}</td>
+                            <td>
+                                <ul>
+                                    {skills}
+                                </ul>
+                            </td>
+                            <td>{trainings}</td>
+                        </tr>
+                );
+            }
+
             return (
                     <div className="middle-staff">
                         <table className="pure-table-my">
                             <thead>
                                 <tr>
-                                    <th>帐号ID</th>
-                                    <th>员工</th>
-                                    <th>训练</th>
+                                    <th>员工ID</th>
+                                    <th>经验</th>
+                                    <th>等级</th>
+                                    <th>状态</th>
+                                    <th>技能</th>
+                                    <th>训练列表</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -89,66 +71,38 @@
         }
     });
 
-    var SearchBar = React.createClass({
-
-        handleChange: function () {
-            this.props.onUserInput(
-                    this.refs.filterTextInput.getDOMNode().value
-            );
-        },
-
-        render: function () {
-            return (
-                    <input
-                            type="text"
-                            placeholder="Search...ID"
-                            value={this.props.filterText}
-                            ref="filterTextInput"
-                            onChange={this.handleChange}
-                            />
-            );
-        }
-    });
-
     var StaffForm = React.createClass({
-        getInitialState: function () {
-            return {
-                filterText: ''
-            };
-        },
-
-        handleUserInput: function (filter) {
-            this.setState({
-                filterText: filter
-            });
-        },
-
         render: function () {
-            return (
-                    <div>
-                        <div className="header">
-                            <h1>Staff</h1>
-                        </div>
-                        <div className="searchBar">
-                            <SearchBar
-                                    filterText={this.state.filterText}
-                                    onUserInput={this.handleUserInput}
-                                    />
-                        </div>
+            var tmp = JSON.parse(this.props.staff_data);
+            if (Object.keys(tmp.staffs).length === 0) {
+                return (
                         <div>
-                            <StaffTable
-                                    staff_data={this.props.staff_data}
-                                    filterText={this.state.filterText}
-                                    />
+                            <div className="header">
+                                <h1>Staff</h1>
+                            </div>
+                            <div>
+                               <h1>(╯‵□′)╯︵┻━┻  没有朋友!</h1>
+                            </div>
                         </div>
-                    </div>
-            );
+                );
+            }
+            else {
+                return (
+                        <div>
+                            <div className="header">
+                                <h1>Staff</h1>
+                            </div>
+                            <div>
+                                <StaffTable staffs={tmp.staffs}/>
+                            </div>
+                        </div>
+                );
+            }
         }
     });
 
     React.render(
-            <StaffForm staff_data={staff_data}/>,
+            <StaffForm staff_data="{{ data }}"/>,
             document.getElementById('main')
     );
-
 </script>

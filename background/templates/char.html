@@ -1,95 +1,364 @@
-<div id="main">
-    <div class="header">
-        <h1>Character</h1>
-    </div>
-    <div class="area-search">
-        <input class="input-search" placeholder="Search...">
-        <select>
-            <option>id</option>
-            <option>name</option>
-            <option>club</option>
-        </select>
-        <button class="search-btn" title="Search">Search</button>
-    </div>
+<div class="mainer">
     <div id="area-data"></div>
 </div>
 <script type="text/jsx">
-    var chars = [];
-    {% for char in data %}
-        var temp = {};
-        var club_info = {};
-        temp['id'] = "{{ char.id }}";
-        temp['name'] = "{{ char.name }}";
-        temp['club'] = "{{ char.club }}";
-        temp['challenge_id'] = "{{ char.challenge_id }}";
-        temp['league_group'] = "{{ char.league_group }}";
-        chars.push(temp);
-    {% endfor %}
-
     var server_id = "{{ server_id }}";
-    var counter = 0;
-    var CharacterRow = React.createClass({
+    var CharTbl = React.createClass({
         render: function () {
-            var link = "/data/character/club?server_id=" + server_id + "&char_id=" + this.props.char.id;
-            var name = '';
-            if (counter % 2 === 0) {
-                name = "alt"
-            }
-            counter++;
+            var cup_status = ['未报名', '参赛'];
+            var friend = "/data/friend/?server_id=" + server_id + "&char_id=" + this.props.char._id;
+            var mail = "/data/mail/?server_id=" + server_id + "&char_id=" + this.props.char._id;
+            var staff = "/data/staff/?server_id=" + server_id + "&char_id=" + this.props.char._id;
+            var knapsack = "/data/knapsack/?server_id=" + server_id + "&char_id=" + this.props.char._id;
             return (
-                    <tr className={name}>
-                        <td>{this.props.char.id}</td>
-                        <td>{this.props.char.name}</td>
-                        <td>
-                            <a href={link}>{this.props.char.club}</a>
-                        </td>
-                        <td>{this.props.char.challenge_id}</td>
-                        <td>{this.props.char.league_group}</td>
-                    </tr>
-            );
-        }
-    });
-
-    var CharacterTable = React.createClass({
-        render: function () {
-            var rows = [];
-            this.props.chars.forEach(function (char) {
-                rows.push(<CharacterRow char={char}/>);
-            }.bind(this));
-
-            return (
-                    <table className="pure-table-my">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Club</th>
-                                <th>Challenge_id</th>
-                                <th>League_group</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {rows}
-                        </tbody>
-                    </table>
-            );
-        }
-    });
-
-    var Characters = React.createClass({
-        render: function () {
-            return (
-                    <div className="middle">
-                        <CharacterTable chars={this.props.chars}/>
+                    <div className="item">
+                        <h2>Character</h2>
+                        <table className="pure-table-my">
+                            <thead>
+                                <tr>
+                                    <th>帐号</th>
+                                    <th>角色名</th>
+                                    <th>挑战赛ID</th>
+                                    <th>好友</th>
+                                    <th>邮件</th>
+                                    <th>员工</th>
+                                    <th>背包</th>
+                                    <th>联赛等级</th>
+                                    <th>杯赛</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{this.props.char._id}</td>
+                                    <td>{this.props.char.name}</td>
+                                    <td>{this.props.char.challenge_id}</td>
+                                    <td>
+                                        <a href={friend}>查看好友</a>
+                                    </td>
+                                    <td>
+                                        <a href={mail}>查看邮件</a>
+                                    </td>
+                                    <td>
+                                        <a href={staff}>查看员工</a>
+                                    </td>
+                                    <td>
+                                        <a href={knapsack}>查看背包</a>
+                                    </td>
+                                    <td>{this.props.char.league_level}</td>
+                                    <td>{cup_status[this.props.char.in_cup]}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
             );
         }
     });
 
+    var ClubTbl = React.createClass({
+        render: function () {
+            if(Object.keys(this.props.club).length === 0){
+                return(
+                        <div></div>
+                );
+            }
+
+            var staff = "/data/staff/?server_id=" + server_id + "&char_id=" + this.props.char_id;
+            var flag = true;
+            var match = '';
+            for (var m_s in this.props.club.match_staffs) {
+                if (this.props.club.match_staffs[m_s] === 0) {
+                    continue;
+                }
+
+                if (flag) {
+                    match += this.props.club.match_staffs[m_s];
+                    flag = false;
+                }
+                else {
+                    match += ',' + this.props.club.match_staffs[m_s];
+                }
+            }
+
+            var tibu = [];
+            flag = true;
+            for (var t_s in this.props.club.tibu_staffs) {
+                if (this.props.club.tibu_staffs[t_s] === 0) {
+                    continue;
+                }
+
+                if (flag) {
+                    tibu += this.props.club.tibu_staffs[t_s];
+                    flag = false;
+                }
+                else {
+                    tibu += ',' + this.props.club.tibu_staffs[t_s];
+                }
+            }
+
+            return (
+                    <div className="item">
+                        <h2>Club</h2>
+                        <table className="pure-table-my">
+                            <thead>
+                                <tr>
+                                    <th>俱乐部</th>
+                                    <th>旗帜</th>
+                                    <th>等级</th>
+                                    <th>荣誉</th>
+                                    <th>vip</th>
+                                    <th>金币</th>
+                                    <th>钻石</th>
+                                    <th>战术</th>
+                                    <th>首发队员</th>
+                                    <th>替补队员</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{this.props.club.name}</td>
+                                    <td>{this.props.club.flag}</td>
+                                    <td>{this.props.club.level}</td>
+                                    <td>{this.props.club.renown}</td>
+                                    <td>{this.props.club.vip}</td>
+                                    <td>{this.props.club.gold}</td>
+                                    <td>{this.props.club.diamond}</td>
+                                    <td>{this.props.club.policy}</td>
+                                    <td>
+                                        <a href={staff}>{match}</a>
+                                    </td>
+                                    <td>
+                                        <a href={staff}>{tibu}</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+            );
+        }
+    });
+
+    var StaffTbl = React.createClass({
+        render: function () {
+            if (tmp.staff === null || Object.keys(tmp.staff.staffs).length === 0
+                    || Object.keys(tmp.staff).length === 0) {
+                return (
+                        <div></div>
+                );
+            }
+            else {
+                var counter = 0;
+                var staffs = [];
+                for (var k in tmp.staff.staffs) {
+                    var staff = tmp.staff.staffs[k];
+
+                    var skills = '';
+                    for (var sk in staff.skills) {
+                        skills += sk + ':' + staff.skills[sk].locked + ',' + staff.skills[sk].level + ';\t';
+                    }
+                    var name = '';
+                    if (counter % 2 === 0) {
+                        name = 'alt';
+                    }
+                    ++counter;
+
+                    staffs.push(
+                            <tr className={name}>
+                                <td>{k}</td>
+                                <td>{staff.exp}</td>
+                                <td>{staff.level}</td>
+                                <td>{staff.status}</td>
+                                <td>{skills}</td>
+                                <td>{staff.trainings}</td>
+                            </tr>
+                    );
+                }
+
+                return (
+                        <div className="item">
+                            <h2>Staff</h2>
+                            <table className="pure-table-my">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>经验</th>
+                                        <th>等级</th>
+                                        <th>状态</th>
+                                        <th>技能</th>
+                                        <th>训练</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {staffs}
+                                </tbody>
+                            </table>
+                        </div>
+                );
+            }
+        }
+    });
+
+    var FriendTbl = React.createClass({
+        render: function () {
+            var Rs = {
+                1: "FRIEND_STATUS_NOT",
+                2: "FRIEND_STATUS_OK",
+                3: "FRIEND_STATUS_PEER_CONFIRM",
+                4: "FRIEND_STATUS_SELF_CONFIRM"
+            };
+
+            var rows = [];
+            var counter = 0;
+
+            for (var f in this.props.friends.friends) {
+                var name = '';
+                if (counter % 2 === 0) {
+                    name = 'alt';
+                }
+                ++counter;
+
+                rows.push(
+                        <tr className={name}>
+                            <td>{f}</td>
+                            <td>{Rs[this.props.friends.friends[f]]}</td>
+                        </tr>
+                );
+            }
+
+            return (
+                    <div className="item">
+                        <h2>Friend</h2>
+                        <table className="pure-table-my">
+                            <thead>
+                                <tr>
+                                    <th>Friend ID</th>
+                                    <th>RelationShip</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rows}
+                            </tbody>
+                        </table>
+                    </div>
+            );
+        }
+    });
+
+    var BuildingTbl = React.createClass({
+        render: function () {
+            if (this.props.buildings === null ||
+                    Object.keys(this.props.buildings.buildings).length === 0) {
+                return (
+                        <div></div>
+                );
+            }
+            else {
+                var th_rows = [<th>建筑</th>];
+                var td_rows = [<td>等级</td>];
+
+                var buildingName = ['总部大楼', '任务中心', '员工中心', '任务中心', '联赛中心'];
+                for (var b in this.props.buildings.buildings) {
+                    th_rows.push(<th>{buildingName[b - 1]}</th>);
+                    td_rows.push(<td>{this.props.buildings.buildings[b]}</td>)
+                }
+
+                return (
+                        <div className="item">
+                            <h2>Building</h2>
+                            <table className="pure-table-my">
+                                <thead>
+                                    <tr>{th_rows}</tr>
+                                </thead>
+                                <tbody>
+                                    <tr>{td_rows}</tr>
+                                </tbody>
+                            </table>
+                        </div>
+                );
+            }
+        }
+    });
+
+    var TaskTbl = React.createClass({
+        render: function(){
+
+            if(Object.keys(this.props.tasks).length === 0){
+                return(
+                        <div></div>
+                );
+            }
+
+            var rows = [];
+            var counter = 0;
+            for(var ta in this.props.tasks.tasks){
+                var name = '';
+                ++counter;
+                if(counter%2 === 0){
+                    name = 'alt';
+                }
+
+                rows.push(
+                        <tr className={name}>
+                            <td>{ta}</td>
+                            <td>{this.props.tasks.tasks[ta].num}</td>
+                            <td>{this.props.tasks.tasks[ta].status}</td>
+                        </tr>
+                );
+            }
+
+            return(
+                    <div className="item">
+                        <h2>Task</h2>
+                        <table className="pure-table-my">
+                            <thead>
+                                <tr>
+                                    <th>任务ID</th>
+                                    <th>数量</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rows}
+                            </tbody>
+                        </table>
+                    </div>
+            );
+        }
+    });
+
+    var DataForm = React.createClass({
+        render: function () {
+            var tmp = JSON.parse(this.props.data);
+            if(Object.keys(tmp.char).length === 0){
+                return(
+                        <div>
+                            <p>No Data</p>
+                        </div>
+                );
+            }
+
+            return (
+                    <ul>
+                        <li>
+                            <CharTbl char={tmp.char}/>
+                        </li>
+                        <li>
+                            <ClubTbl club={tmp.char.club}
+                                    char_id={tmp.char._id}/>
+                        </li>
+                        <li>
+                            <BuildingTbl buildings={tmp.building}/>
+                        </li>
+                        <li>
+                            <TaskTbl tasks={tmp.task}/>
+                        </li>
+                    </ul>
+            );
+        }
+    });
+
     React.render(
-            <Characters chars={chars}/>,
+            <DataForm data="{{ data }}"/>,
             document.getElementById('area-data')
     )
 
 </script>
-

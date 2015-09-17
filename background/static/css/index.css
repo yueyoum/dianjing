@@ -231,7 +231,6 @@
     min-height: 108px;
     margin: auto;
     padding: 0.5em;
-    background-color: #E6E6E6;
 }
 
 .title-inner {
@@ -288,14 +287,10 @@
 }
 
 .area-data{
-    position: relative;
-    top: 10px;
-
     width: 980px;
     min-height: 0px;
     margin: auto;
     padding: 0.5em;
-    background-color: #E6E6E6;
 }
 
 
@@ -319,11 +314,9 @@
 }
 
 .mainer{
-    width: 950px;
+    width: 1050px;
     margin: auto;
     padding: 0.5em;
-
-    border-top: 1px solid #777777;
 }
 
 
@@ -368,7 +361,6 @@ li {
     empty-cells: show;
     border: 1px solid #cbcbcb;
     padding: 10px;
-    margin: auto;
 }
 
 .pure-table-my caption {
@@ -485,7 +477,6 @@ li {
     height: auto !important; /*兼容FF,IE7也支持 !important标签*/
 
     margin: auto;
-    background-color: #E6E6E6;
     padding: 1em;
     border-left-width: 0
 }
@@ -501,8 +492,9 @@ li {
 }
 
 .title {
-    width: 750px;
-    height: 30px;
+    max-width: 750px;
+    min-height: 30px;
+    margin: auto;
 }
 
 .mail-title {
@@ -553,7 +545,6 @@ li {
     padding: 1em;
     text-align: center;
     border-bottom: 1px solid #eee;
-    background: #E6E6E6;
     letter-spacing: 0.05em;
     font-size: x-large;
 }
@@ -572,7 +563,6 @@ li {
     padding: 1em;
     text-align: center;
     border-bottom: 1px solid #eee;
-    background: #E6E6E6;
     letter-spacing: 0.05em;
     font-size: large;
 }
@@ -590,10 +580,12 @@ li {
 }
 
 .item{
-    max-width: 650px;
+    max-width: 1060px;
     min-height: 75px;
     margin: auto;
-    border-bottom: 1px solid #444444;
+    padding: 0.5em;
+
+    text-align: left;
 }
 
 .item-name{
@@ -604,4 +596,18 @@ li {
 }
 
 .item-name p{
+}
+
+.l-info{
+    position: relative;
+    margin: auto;
+    padding-left: 0em;
+}
+
+.account{
+    width: 150px;
+    margin: auto;
+    padding: 0em 0.5em 0em 0.5em;
+
+    font-family: "Lucida Grande", Verdana, Arial, sans-serif;
 }

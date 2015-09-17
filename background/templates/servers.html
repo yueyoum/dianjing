@@ -13,7 +13,7 @@
         </div>
         <div id="main" align="center"></div>
         <script type="text/jsx">
-
+            var counter = 0;
             var serverList = [];
             {% for server in servers %}
                 var s = {};
@@ -30,13 +30,17 @@
 
             var Row = React.createClass({
                 render: function(){
-                    var link = '/data/search?server_id=' + this.props.server.id;
+                    //var link = '/data/search?server_id=' + this.props.server.id;
+                    var name='';
+                    if(counter%2 === 0){
+                        name='alt';
+                    }
+                    ++counter;
+
                     return(
-                            <tr>
+                            <tr className={name}>
                                 <td>{this.props.server.id}</td>
-                                <td>
-                                    <a href={link}>{this.props.server.name}</a>
-                                </td>
+                                <td>{this.props.server.name}</td>
                                 <td>{this.props.server.status}</td>
                                 <td>{this.props.server.open_at}</td>
                                 <td>{this.props.server.mongo_host}</td>
@@ -54,7 +58,7 @@
                         rows.push(<Row server={server}/>);
                     }.bind(this));
                     return(
-                            <table className="pure-table">
+                            <table className="pure-table-my">
                                 <thead>
                                     <tr>
                                         <th>ServerID</th>

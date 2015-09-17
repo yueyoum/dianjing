@@ -72,35 +72,40 @@
                                             + "&type=id&text=" + tmp[r].account_id
                                             + "&jump=1";
                                     rows.push(
-                                            <div className="item">
+                                            <li className="item">
                                                 <div>
-                                                    <p>
-                                                        <a href={link}>Name: {tmp[r].name}</a>
-                                                    </p>
+                                                    <h2>
+                                                        <a href={link}>Role ID: {tmp[r].id}</a>
+                                                    </h2>
+                                                    <div className="l-info">
+                                                        <i className="account" title="帐号id">
+                                                            帐号: {tmp[r].account_id};
+                                                        </i>
+                                                        <i className="account" title="服务器id">
+                                                            服务器: {tmp[r].server_id};
+                                                        </i>
+                                                        <i className="account" title="角色名">
+                                                            角色名: {tmp[r].name};
+                                                        </i>
+                                                    </div>
+                                                    <div>
+                                                        <i className="account" title="俱乐部名">
+                                                            俱乐部: {tmp[r].club_name};
+                                                        </i>
+                                                        <i className="account" title="创建时间">
+                                                            创建时间: {tmp[r].create_at};
+                                                        </i>
+                                                    </div>
                                                 </div>
-                                                <div className="item-name">
-                                                    <table>
-                                                        <tr>
-                                                            <th width="100">AccountID</th>
-                                                            <th width="100">Server</th>
-                                                            <th width="200">CreateTime</th>
-                                                            <th width="100">ClubName</th>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>{tmp[r].account_id}</td>
-                                                            <td>{tmp[r].server_id}</td>
-                                                            <td>{tmp[r].create_at}</td>
-                                                            <td>{tmp[r].club_name}</td>
-                                                        </tr>
-                                                    </table>
-                                                </div>
-                                            </div>
+                                            </li>
                                     );
                                 }
 
                                 return (
                                         <div>
-                                            {rows}
+                                            <ul>
+                                                {rows}
+                                            </ul>
                                         </div>
                                 );
                             }

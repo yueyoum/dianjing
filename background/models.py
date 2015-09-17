@@ -2,7 +2,7 @@ import re
 
 from apps.server.models import Server
 
-from core.db import MongoDB
+from core.mongo import MongoCharacter, MongoFriend, MongoBuilding, MongoStaff, MongoMail, MongoTraining, MongoTask
 
 
 # Create your models here.
@@ -15,27 +15,48 @@ def get_servers():
 class DBHandle(object):
     def __init__(self, server_id):
         self.server_id = server_id
-        self.mongo = MongoDB.get(server_id)
 
-    def get_data(self, tp, text):
+    def get_char(self, tp, text):
         data = {}
         if tp == 'id' and re.match(r'[1-9][0-9]*$', text):
-            data['char'] = self.mongo.character.find_one({'_id': int(text)})
+            data['char'] = MongoCharacter.db(self.server_id).find_one({'_id': int(text)})
         elif tp == 'name':
-            data['char'] = self.mongo.character.find_one({'name': text})
+            data['char'] = MongoCharacter.db(self.server_id).find_one({'name': text})
         elif tp == 'club':
-            data['char'] = self.mongo.character.find_one({'club.name': text})
+            data['char'] = MongoCharacter.db(self.server_id).find_one({'club.name': text})
         else:
             return None
 
         if data['char'] == None:
             return None
-        data['friend'] = self.mongo.friend.find_one({'_id': data['char']['_id']})
 
-        data['building'] = self.mongo.building.find_one({'_id': data['char']['_id']})
-
-        data['mail'] = self.mongo.mail.find_one({'_id': data['char']['_id']})
-
-        data['staff'] = self.mongo.staff.find_one({'_id': data['char']['_id']})
+        data['building'] = MongoBuilding.db(self.server_id).find_one({'_id': data['char']['_id']})
+        # data['friend'] = MongoFriend.db(self.server_id).find_one({'_id': data['char']['_id']})
+        data['task'] = MongoTask.db(self.server_id).find_one({'_id': data['char']['_id']})
 
         return data
+
+    def get_staff(self, char_id):
+        return MongoStaff.db(self.server_id).find_one({'_id': char_id})
+
+    def get_friend(self, char_id):
+        return MongoFriend.db(self.server_id).find_one({'_id': char_id})
+
+    def get_mail(self, char_id):
+        return MongoMail.db(self.server_id).find_one({'_id': char_id})
+
+    def get_one_mail(self, char_id, mail_id):
+        data = {}
+        mails = MongoMail.db(self.server_id).find_one({'_id': char_id})
+        data['mail'] = mails["mails"][mail_id]
+        data['id'] = char_id
+        data['key'] = mail_id
+        return data
+
+    def get_knapsack(self, char_id):
+        return MongoTraining.db(self.server_id).find_one({'_id': char_id})
+
+    def get_task(self, char_id):
+        return MongoTask.db(self.server_id).find_one({'_id': char_id})
+
+
