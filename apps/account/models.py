@@ -31,7 +31,7 @@ class Account(models.Model):
 
     class Meta:
         db_table = 'account'
-        ordering = ['last_login', ]
+        ordering = ['-last_login', ]
         verbose_name = '帐号'
         verbose_name_plural = '帐号'
 
@@ -68,7 +68,7 @@ class AccountLoginLog(models.Model):
 
     class Meta:
         db_table = 'account_login_log'
-        ordering = ['login_at', ]
+        ordering = ['-login_at', ]
         verbose_name = "登录日志"
         verbose_name_plural = "登录日志"
 

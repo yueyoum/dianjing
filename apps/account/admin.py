@@ -18,8 +18,6 @@ class AccountAdmin(admin.ModelAdmin):
         'tp', 'register_at', 'last_login', 'login_times',
     )
 
-    ordering = ('-last_login',)
-
     def Name(self, obj):
         if obj.tp == 'regular':
             return obj.info_regular.name

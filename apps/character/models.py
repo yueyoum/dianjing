@@ -12,7 +12,7 @@ class Character(models.Model):
 
     class Meta:
         db_table = 'char_'
-        ordering = ('last_login',)
+        ordering = ('-last_login',)
         unique_together = (
             ('account_id', 'server_id'),
             ('server_id', 'name'),
