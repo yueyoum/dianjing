@@ -47,11 +47,14 @@ class Character(object):
         from django.db.models import F
         from apps.character.models import Character as ModelCharacter
 
-        ModelCharacter.objects.filter(id=self.char_id).update(login_times=F('login_times')+1)
-        now = arrow.utcnow().timestamp
+        now =arrow.utcnow()
+        ModelCharacter.objects.filter(id=self.char_id).update(
+            last_login=now.format("YYYY-MM-DD HH:mm:ssZ"),
+            login_times=F('login_times')+1,
+        )
         MongoCharacter.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': {'last_login': now}}
+            {'$set': {'last_login': now.timestamp}}
         )
 
 

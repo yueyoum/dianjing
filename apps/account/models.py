@@ -31,6 +31,7 @@ class Account(models.Model):
 
     class Meta:
         db_table = 'account'
+        ordering = ['last_login', ]
         verbose_name = '帐号'
         verbose_name_plural = '帐号'
 
