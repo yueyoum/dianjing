@@ -13,12 +13,13 @@ from dianjing.exception import GameException
 from apps.server.models import Server
 from apps.character.models import Character
 
-from core.signals import game_start_signal
+from core.signals import account_login_signal, game_start_signal
 
 from config import ConfigErrorMessage
 
 from protomsg.server_pb2 import GetServerListResponse, StartGameResponse
 from protomsg.common_pb2 import OPT_OK, OPT_CREATE_CHAR, OPT_CREATE_CLUB
+
 
 def get_server_list(request):
     servers = Server.opened_servers()
@@ -41,7 +42,18 @@ def start_game(request):
     server_id = req.server_id
 
     if not Server.objects.filter(id=server_id).exists():
-        raise GameException( ConfigErrorMessage.get_error_id("BAD_MESSAGE") )
+        raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
+    ip = request.META.get("REMOTE_ADDR")
+    if not ip:
+        ip = ""
+
+    account_login_signal.send(
+        sender=None,
+        account_id=account_id,
+        ip=ip,
+        to_server_id=server_id,
+    )
 
     response = StartGameResponse()
     response.ret = 0
@@ -72,4 +84,3 @@ def start_game(request):
     response.next = OPT_OK
     response.session = session.serialize()
     return ProtobufResponse(response)
-

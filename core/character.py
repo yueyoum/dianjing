@@ -6,7 +6,7 @@ Date Created:   2015-07-29 18:20
 Description:
 
 """
-
+import arrow
 from core.mongo import MongoCharacter
 from utils.message import MessagePipe
 
@@ -42,6 +42,17 @@ class Character(object):
         Club(server_id, char_id).set_match_staffs(staff_ids + [0] * 5)
 
         TrainingBag(server_id, char_id).add_from_raw_training(1, send_notify=False)
+
+    def set_login(self):
+        from django.db.models import F
+        from apps.character.models import Character as ModelCharacter
+
+        ModelCharacter.objects.filter(id=self.char_id).update(login_times=F('login_times')+1)
+        now = arrow.utcnow().timestamp
+        MongoCharacter.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {'last_login': now}}
+        )
 
 
     def make_protomsg(self, **kwargs):

@@ -40,7 +40,9 @@ def game_start_handler(server_id, char_id, **kwargs):
     msg.timestamp = arrow.utcnow().timestamp
     MessagePipe(char_id).put(msg=msg)
 
-    Character(server_id, char_id).send_notify()
+    c = Character(server_id, char_id)
+    c.set_login()
+    c.send_notify()
 
     Club(server_id, char_id).send_notify()
     StaffRecruit(server_id, char_id).send_notify()

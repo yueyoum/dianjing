@@ -66,7 +66,6 @@ class SponsorManager(object):
         if sponsor_to_id:
             SponsorManager(self.server_id, sponsor_to_id).add_sponsor_log(self.char_id)
 
-
     def get_income(self):
         doc = MongoSponsor.db(self.server_id).find_one({'_id': self.char_id}, {'income': 1})
         if not doc['income']:
@@ -109,7 +108,8 @@ class SponsorManager(object):
 
         sponsor_to_id = self.get_sponsor_to_id()
         if sponsor_to_id:
-            SponsorManager(self.server_id, sponsor_to_id).add_purchase_income(self.char_id, real_from_id, purchase_got, step + 1)
+            SponsorManager(self.server_id, sponsor_to_id).add_purchase_income(self.char_id, real_from_id, purchase_got,
+                                                                              step + 1)
 
     def add_sponsor_log(self, from_id):
         from_doc = MongoCharacter.db(self.server_id).find_one(

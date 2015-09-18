@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-
+import uuid
 from django.db import models
 
 
@@ -27,18 +27,10 @@ class Account(models.Model):
     register_at = models.DateTimeField(auto_now_add=True, db_index=True)
     last_login = models.DateTimeField(auto_now=True, db_index=True)
 
-    login_times = models.IntegerField(default=0)
+    login_times = models.BigIntegerField(default=0)
 
     class Meta:
         db_table = 'account'
-
-    def save(self, *args, **kwargs):
-        if not self.login_times:
-            self.login_times = 1
-        else:
-            self.login_times += 1
-
-        super(Account, self).save(*args, **kwargs)
 
 
 class AccountRegular(models.Model):
@@ -50,6 +42,8 @@ class AccountRegular(models.Model):
 
     class Meta:
         db_table = 'account_regular'
+        verbose_name = '帐号'
+        verbose_name_plural = '帐号'
 
 
 class AccountThird(models.Model):
@@ -65,6 +59,7 @@ class AccountThird(models.Model):
 
 
 class AccountLoginLog(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     account_id = models.IntegerField(db_index=True, verbose_name="帐号ID")
     login_at = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name="登录时间")
     ip = models.CharField(max_length=32, verbose_name="登录IP")
@@ -72,6 +67,7 @@ class AccountLoginLog(models.Model):
 
     class Meta:
         db_table = 'account_login_log'
+        ordering = ['login_at',]
         verbose_name = "登录日志"
         verbose_name_plural = "登录日志"
 
