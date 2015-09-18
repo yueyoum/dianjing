@@ -21,9 +21,11 @@ class MyActionForm(ActionForm):
 class CharacterAdmin(admin.ModelAdmin):
     list_display = (
         'id', 'account_id', 'server_id', 'name', 'create_at',
-        'club_name',
+        'club_name', 'last_login', 'login_times',
         'Info'
     )
+
+    list_per_page = 50
 
     search_fields = ['name', 'club_name', ]
 

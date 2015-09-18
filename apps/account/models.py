@@ -31,6 +31,8 @@ class Account(models.Model):
 
     class Meta:
         db_table = 'account'
+        verbose_name = '帐号'
+        verbose_name_plural = '帐号'
 
 
 class AccountRegular(models.Model):
@@ -42,8 +44,6 @@ class AccountRegular(models.Model):
 
     class Meta:
         db_table = 'account_regular'
-        verbose_name = '帐号'
-        verbose_name_plural = '帐号'
 
 
 class AccountThird(models.Model):
@@ -67,7 +67,7 @@ class AccountLoginLog(models.Model):
 
     class Meta:
         db_table = 'account_login_log'
-        ordering = ['login_at',]
+        ordering = ['login_at', ]
         verbose_name = "登录日志"
         verbose_name_plural = "登录日志"
 
