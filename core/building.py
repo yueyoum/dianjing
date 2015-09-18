@@ -57,7 +57,7 @@ class BuildingManager(object):
             {'buildings.{0}'.format(building_id): 1}
         )
 
-        return doc['buildings'][str(building_id)]
+        return doc['buildings'].get(str(building_id), 1)
 
     def level_up(self, building_id):
         b = ConfigBuilding.get(building_id)
@@ -82,7 +82,7 @@ class BuildingManager(object):
         with Resource(self.server_id, self.char_id).check(**check):
             MongoBuilding.db(self.server_id).update_one(
                 {'_id': self.char_id},
-                {'$inc': {'buildings.{0}'.format(building_id): 1}}
+                {'$set': {'buildings.{0}'.format(building_id): current_level+1}}
             )
 
         self.send_notify(building_ids=[building_id])
