@@ -116,6 +116,10 @@ MESSAGE_TO_ID = {
     "SponsorResponse": 1904,
     "SponsorGetIncomeRequest": 1905,
     "SponsorGetIncomeResponse": 1906,
+    "ActivityCategoryNotify": 2000,
+    "ActivitySignInNotify": 2001,
+    "ActivitySignInRequest": 2002,
+    "ActivitySignInResponse": 2003,
 }
 
 ID_TO_MESSAGE = {
@@ -235,6 +239,10 @@ ID_TO_MESSAGE = {
     1904: "SponsorResponse",
     1905: "SponsorGetIncomeRequest",
     1906: "SponsorGetIncomeResponse",
+    2000: "ActivityCategoryNotify",
+    2001: "ActivitySignInNotify",
+    2002: "ActivitySignInRequest",
+    2003: "ActivitySignInResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -283,6 +291,7 @@ PATH_TO_REQUEST = {
     "/game/cup/join/": ["cup", "CupJoinRequest"],
     "/game/sponsor/": ["spread", "SponsorRequest"],
     "/game/sponsor/getincome/": ["spread", "SponsorGetIncomeRequest"],
+    "/game/signin/": ["activity", "ActivitySignInRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -331,4 +340,5 @@ PATH_TO_RESPONSE = {
     "/game/cup/join/": ["cup", "CupJoinResponse"],
     "/game/sponsor/": ["spread", "SponsorResponse"],
     "/game/sponsor/getincome/": ["spread", "SponsorGetIncomeResponse"],
+    "/game/signin/": ["activity", "ActivitySignInResponse"],
 }

@@ -62,6 +62,7 @@ class MongoCharacter(BaseDocument):
     DOCUMENT = {
         '_id': null,
         'name': null,
+        'create_at': 0,
         'last_login': 0,
 
         'club': {
@@ -411,6 +412,7 @@ class MongoNotification(BaseDocument):
     def document_notification(cls):
         return cls.NOTIFICATION_DOCUMENT.copy()
 
+
 # 赞助
 class MongoSponsor(BaseDocument):
     DOCUMENT = {
@@ -422,3 +424,34 @@ class MongoSponsor(BaseDocument):
     }
 
     COLLECTION = "sponsor"
+
+
+# 活动
+class MongoActivity(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # 已经获取奖励的 活动item ID
+        'gots': {}
+    }
+
+    COLLECTION = "activity"
+
+
+# 签到
+class MongoSignIn(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'sign': {}
+    }
+
+    SIGN_DOCUMENT = {
+        'last_sign_at': 0,      # 日期
+        'last_sign_day': 0,     # day 是对应配置中的第几天。而不是真是日期中的天
+        'is_continued': True,
+    }
+
+    COLLECTION = "sign_in"
+
+    @classmethod
+    def document_sign(cls):
+        return cls.SIGN_DOCUMENT.copy()

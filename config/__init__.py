@@ -26,6 +26,8 @@ from config.club import ConfigClubLevel, ConfigClubFlag
 from config.ladder import ConfigLadderRankReward, ConfigLadderScoreStore
 from config.qianban import ConfigQianBan
 from config.league import ConfigLeague
+from config.activity import ConfigActivityCategory
+from config.signin import ConfigSignIn
 
 
 _has_configed = False
@@ -105,6 +107,9 @@ def load_config():
             ConfigQianBan.initialize(data)
         elif item == 'league.json':
             ConfigLeague.initialize(data)
+        elif item == 'activity_category.json':
+            ConfigActivityCategory.initialize(data)
+        elif item == 'activity_signin.json':
+            ConfigSignIn.initialize(data)
 
     print "LOAD CONFIG FROM {0}".format(z_file)
-
