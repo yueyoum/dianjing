@@ -1,4 +1,136 @@
 <div id="main"></div>
-<script>
+<script type="text/jsx">
+    var serverID = "{{ server_id }}";
 
+    var LadderTable = React.createClass({
+        render: function () {
+            var tp = ['NPC', '玩家'];
+            var rows = [];
+            var counter = 0;
+            for (var l in this.props.ladders) {
+                if (this.props.ladders[l].club.indexOf(this.props.filterText) === -1) {
+                    continue;
+                }
+
+                counter++;
+                var name = '';
+                if (counter % 2 === 0) {
+                    name = 'alt';
+                }
+
+                var link = '';
+                if (this.props.ladders[l].type == 1) {
+                    link = "/data/search/?server_id=" + serverID + "&type=club&text=" + this.props.ladders[l].club;
+                    rows.push(
+                            <tr className={name}>
+                                <td>{l}</td>
+                                <td>
+                                    <a href={link}>{this.props.ladders[l].club}</a>
+                                </td>
+                                <td>{this.props.ladders[l].score}</td>
+                                <td>{tp[this.props.ladders[l].type]}</td>
+                            </tr>
+                    );
+                }
+                else {
+                    rows.push(
+                            <tr className={name}>
+                                <td>{l}</td>
+                                <td>{this.props.ladders[l].club}</td>
+                                <td>{this.props.ladders[l].score}</td>
+                                <td>{tp[this.props.ladders[l].type]}</td>
+                            </tr>
+                    );
+                }
+            }
+
+            return (
+                    <table className="pure-table-my">
+                        <thead>
+                            <tr>
+                                <th>排名</th>
+                                <th>俱乐部名</th>
+                                <th>积分</th>
+                                <th>类型</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {rows}
+                        </tbody>
+                    </table>
+            );
+        }
+    });
+
+    var SearchBar = React.createClass({
+
+        handleChange: function () {
+            this.props.onUserInput(
+                    this.refs.filterTextInput.getDOMNode().value
+            )
+        },
+
+        render: function () {
+            return (
+                    <form>
+                        <input
+                                type="text"
+                                placeholder="Search...Club"
+                                value={this.props.filterText}
+                                ref="filterTextInput"
+                                onChange={this.handleChange}
+                                />
+                    </form>
+            );
+        }
+    });
+
+    var LadderForm = React.createClass({
+        getInitialState: function () {
+            return {
+                filterText: ''
+            };
+        },
+
+        handleUserInput: function (filter) {
+            this.setState({
+                filterText: filter
+            });
+        },
+
+        render: function () {
+            var tmp = JSON.parse(this.props.data);
+            if (tmp === null || Object.keys(tmp).length === 0) {
+                return (
+                        <div>
+                            <h1>No Data</h1>
+                        </div>
+                );
+            }
+
+            return (
+                    <div className="item">
+                        <h2>Ladder</h2>
+                        <div className="searchBar">
+                            <SearchBar
+                                    filterText={this.state.filterText}
+                                    onUserInput={this.handleUserInput}
+                                    />
+                        </div>
+                        <div>
+                            <LadderTable
+                                    ladders={tmp}
+                                    filterText={this.state.filterText}
+                                    />
+                        </div>
+                    </div>
+            );
+        }
+    });
+
+    React.render(
+            <LadderForm data="{{ data }}"
+                        pages="{{ pages }}"/>,
+            document.getElementById('main')
+    )
 </script>

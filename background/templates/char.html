@@ -281,7 +281,7 @@
     var TaskTbl = React.createClass({
         render: function(){
 
-            if(Object.keys(this.props.tasks).length === 0){
+            if(this.props.tasks === null || Object.keys(this.props.tasks).length === 0){
                 return(
                         <div></div>
                 );
@@ -328,10 +328,10 @@
     var DataForm = React.createClass({
         render: function () {
             var tmp = JSON.parse(this.props.data);
-            if(Object.keys(tmp.char).length === 0){
+            if(tmp === null || Object.keys(tmp.char).length === 0){
                 return(
                         <div>
-                            <p>No Data</p>
+                            <h1>No Data</h1>
                         </div>
                 );
             }

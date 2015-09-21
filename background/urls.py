@@ -11,6 +11,7 @@ from django.conf.urls import url
 
 urlpatterns = [
     url(r'^$', 'background.views.data'),
+    url(r'^s/$', 'background.views.data_s'),
     url(r'^server/$', 'background.views.servers'),
     url(r'^search/$', 'background.views.search'),
     url(r'^mail/$', 'background.views.mails'),
@@ -18,5 +19,5 @@ urlpatterns = [
     url(r'^staff/$', 'background.views.staff'),
     url(r'^knapsack/$', 'background.views.knapsack'),
     url(r'^friend/$', 'background.views.friend'),
-    url(r'^ladder/$', 'background.views')
+    url(r'^ladder/$', 'background.views.ladder'),
 ]

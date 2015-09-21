@@ -60,6 +60,9 @@ class DBHandle(object):
         return MongoTask.db(self.server_id).find_one({'_id': char_id})
 
     def get_ladder(self):
-        return MongoLadder.db(self.server_id).find()
+        return MongoLadder.db(self.server_id).find({'order': {'$lt': 51}}).sort('order', 1)
+
+    def get_club(self, char_id):
+        return MongoCharacter.db(self.server_id).find_one({'_id': int(char_id)})
 
 

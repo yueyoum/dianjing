@@ -10,12 +10,14 @@ from apps.character.models import Character
 
 
 def data(request):
+    print request
+    return render_to_response("search_sql.html")
+
+
+def data_s(request):
+    print 'ddddd'
     try:
         text = request.GET['text']
-    except:
-        return render_to_response("search_sql.html")
-
-    try:
         dataObj = Character.objects.filter(name__icontains=text)
     except:
         return HttpResponse('null')
@@ -164,9 +166,29 @@ def knapsack(request):
                                'data': tmp,
                                'web_title': 'Staff'})
 
-def ladder(request):
-    server_id = request.GET['server_id']
 
+def ladder(request):
+    server_id = 1
+    data_ladder = DBHandle(int(server_id)).get_ladder()
+
+    tmp_data = []
+    for l in data_ladder:
+        tmp_ladder = {}
+        if l['club_name']:
+            tmp_ladder['club'] = l['club_name']
+            tmp_ladder['type'] = 0
+        else:
+            club = DBHandle(int(server_id)).get_club(int(l['_id']))
+            tmp_ladder['club'] = club['club']['name']
+            tmp_ladder['type'] = 1
+
+        tmp_ladder['order'] = l['order']
+        tmp_ladder['score'] = l['score']
+
+        tmp_data.append(tmp_ladder)
+
+    tmp = JSONEncoder().encode(tmp_data)
+    print tmp
     return render_to_response("data_index.html",
                               {'html': 'ladder.html',
                                'server_id': server_id,

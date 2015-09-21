@@ -1,7 +1,7 @@
 {% extends "base_index.html" %}
 
 {% block title %}
-    <title>Test Search</title>
+    <title>Search</title>
 {% endblock %}
 
 {% block body %}
@@ -19,13 +19,23 @@
 
             <script type="text/jsx">
                 var datas = '';
+                var input = '';
+
+                var urlbase = location.href;
                 var text = '';
 
                 document.getElementsByClassName("search-btn")[0].onclick = function () {
-                    text = document.getElementById('search-content').value;
-                    if (text === '') {
+                    input = document.getElementById('search-content').value;
+                    if (input === '') {
                         return;
                     }
+
+                    if (location.href.indexOf("?") > -1) {
+                        var arr = location.href.split('?');
+                        urlbase = arr[0];
+                        text = arr[1].match(/text=(\w+)/);
+                    }
+
                     search();
                 };
 
@@ -45,7 +55,9 @@
                         change();
                     };
 
-                    var url = "http://192.168.1.124:8000/data/?text=" + text;
+                    var url = urlbase + "s/?text=" + input;
+                    window.history.pushState({}, 0, "http://192.168.1.124:8000/data/?text=" + input);
+
                     xmlhttp.open("Get", url, true);
                     xmlhttp.send();
                 }
