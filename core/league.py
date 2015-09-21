@@ -321,10 +321,11 @@ class LeagueGame(object):
             g = LeagueGroup(server_id, i)
 
             for c in chars:
-                if len(c['club']['match_staffs']) != 5:
+                match_staffs = c['club'].get('match_staffs', [])
+                if len(match_staffs) != 5:
                     continue
 
-                if 0 in c['club']['match_staffs']:
+                if 0 in match_staffs:
                     continue
 
                 try:
