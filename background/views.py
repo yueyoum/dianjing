@@ -168,7 +168,7 @@ def knapsack(request):
 
 
 def ladder(request):
-    server_id = 1
+    server_id = request.GET['server_id']
     data_ladder = DBHandle(int(server_id)).get_ladder()
 
     tmp_data = []
