@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='activity.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=b'\n\x0e\x61\x63tivity.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\xa9\x01\n\x16\x41\x63tivityCategoryNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12N\n\ncategories\x18\x02 \x03(\x0b\x32:.Dianjing.protocol.ActivityCategoryNotify.ActivityCategory\x1a.\n\x10\x41\x63tivityCategory\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0e\n\x06\x65nd_at\x18\x02 \x01(\x03\"\xf4\x01\n\x14\x41\x63tivitySignInNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12G\n\x07signins\x18\x03 \x03(\x0b\x32\x36.Dianjing.protocol.ActivitySignInNotify.ActivitySignIn\x1aZ\n\x0e\x41\x63tivitySignIn\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x15\n\rnext_get_time\x18\x02 \x02(\x03\x12%\n\x04\x64rop\x18\x03 \x02(\x0b\x32\x17.Dianjing.protocol.Drop\"4\n\x15\x41\x63tivitySignInRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"]\n\x16\x41\x63tivitySignInResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop'
+  serialized_pb=b'\n\x0e\x61\x63tivity.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\xa9\x01\n\x16\x41\x63tivityCategoryNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12N\n\ncategories\x18\x02 \x03(\x0b\x32:.Dianjing.protocol.ActivityCategoryNotify.ActivityCategory\x1a.\n\x10\x41\x63tivityCategory\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0e\n\x06\x65nd_at\x18\x02 \x01(\x03\"\xf4\x01\n\x14\x41\x63tivitySignInNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12G\n\x07signins\x18\x03 \x03(\x0b\x32\x36.Dianjing.protocol.ActivitySignInNotify.ActivitySignIn\x1aZ\n\x0e\x41\x63tivitySignIn\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x15\n\rnext_get_time\x18\x02 \x02(\x03\x12%\n\x04\x64rop\x18\x03 \x02(\x0b\x32\x17.Dianjing.protocol.Drop\"4\n\x15\x41\x63tivitySignInRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"]\n\x16\x41\x63tivitySignInResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\xf6\x01\n\x19\x41\x63tivityLoginRewardNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12I\n\x07rewards\x18\x03 \x03(\x0b\x32\x38.Dianjing.protocol.ActivityLoginRewardNotify.LoginReward\x1aU\n\x0bLoginReward\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x13\n\x0breward_time\x18\x02 \x02(\x03\x12%\n\x04\x64rop\x18\x03 \x02(\x0b\x32\x17.Dianjing.protocol.Drop\"9\n\x1a\x41\x63tivityLoginRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"b\n\x1b\x41\x63tivityLoginRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop'
   ,
   dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -273,6 +273,178 @@ _ACTIVITYSIGNINRESPONSE = _descriptor.Descriptor(
   serialized_end=632,
 )
 
+
+_ACTIVITYLOGINREWARDNOTIFY_LOGINREWARD = _descriptor.Descriptor(
+  name='LoginReward',
+  full_name='Dianjing.protocol.ActivityLoginRewardNotify.LoginReward',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.ActivityLoginRewardNotify.LoginReward.id', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='reward_time', full_name='Dianjing.protocol.ActivityLoginRewardNotify.LoginReward.reward_time', index=1,
+      number=2, type=3, cpp_type=2, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='drop', full_name='Dianjing.protocol.ActivityLoginRewardNotify.LoginReward.drop', index=2,
+      number=3, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=796,
+  serialized_end=881,
+)
+
+_ACTIVITYLOGINREWARDNOTIFY = _descriptor.Descriptor(
+  name='ActivityLoginRewardNotify',
+  full_name='Dianjing.protocol.ActivityLoginRewardNotify',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ActivityLoginRewardNotify.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='act', full_name='Dianjing.protocol.ActivityLoginRewardNotify.act', index=1,
+      number=2, type=14, cpp_type=8, label=2,
+      has_default_value=False, default_value=1,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='rewards', full_name='Dianjing.protocol.ActivityLoginRewardNotify.rewards', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[_ACTIVITYLOGINREWARDNOTIFY_LOGINREWARD, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=635,
+  serialized_end=881,
+)
+
+
+_ACTIVITYLOGINREWARDREQUEST = _descriptor.Descriptor(
+  name='ActivityLoginRewardRequest',
+  full_name='Dianjing.protocol.ActivityLoginRewardRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ActivityLoginRewardRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.ActivityLoginRewardRequest.id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=883,
+  serialized_end=940,
+)
+
+
+_ACTIVITYLOGINREWARDRESPONSE = _descriptor.Descriptor(
+  name='ActivityLoginRewardResponse',
+  full_name='Dianjing.protocol.ActivityLoginRewardResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.ActivityLoginRewardResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ActivityLoginRewardResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='drop', full_name='Dianjing.protocol.ActivityLoginRewardResponse.drop', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=942,
+  serialized_end=1040,
+)
+
 _ACTIVITYCATEGORYNOTIFY_ACTIVITYCATEGORY.containing_type = _ACTIVITYCATEGORYNOTIFY
 _ACTIVITYCATEGORYNOTIFY.fields_by_name['categories'].message_type = _ACTIVITYCATEGORYNOTIFY_ACTIVITYCATEGORY
 _ACTIVITYSIGNINNOTIFY_ACTIVITYSIGNIN.fields_by_name['drop'].message_type = package__pb2._DROP
@@ -280,10 +452,18 @@ _ACTIVITYSIGNINNOTIFY_ACTIVITYSIGNIN.containing_type = _ACTIVITYSIGNINNOTIFY
 _ACTIVITYSIGNINNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _ACTIVITYSIGNINNOTIFY.fields_by_name['signins'].message_type = _ACTIVITYSIGNINNOTIFY_ACTIVITYSIGNIN
 _ACTIVITYSIGNINRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
+_ACTIVITYLOGINREWARDNOTIFY_LOGINREWARD.fields_by_name['drop'].message_type = package__pb2._DROP
+_ACTIVITYLOGINREWARDNOTIFY_LOGINREWARD.containing_type = _ACTIVITYLOGINREWARDNOTIFY
+_ACTIVITYLOGINREWARDNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
+_ACTIVITYLOGINREWARDNOTIFY.fields_by_name['rewards'].message_type = _ACTIVITYLOGINREWARDNOTIFY_LOGINREWARD
+_ACTIVITYLOGINREWARDRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 DESCRIPTOR.message_types_by_name['ActivityCategoryNotify'] = _ACTIVITYCATEGORYNOTIFY
 DESCRIPTOR.message_types_by_name['ActivitySignInNotify'] = _ACTIVITYSIGNINNOTIFY
 DESCRIPTOR.message_types_by_name['ActivitySignInRequest'] = _ACTIVITYSIGNINREQUEST
 DESCRIPTOR.message_types_by_name['ActivitySignInResponse'] = _ACTIVITYSIGNINRESPONSE
+DESCRIPTOR.message_types_by_name['ActivityLoginRewardNotify'] = _ACTIVITYLOGINREWARDNOTIFY
+DESCRIPTOR.message_types_by_name['ActivityLoginRewardRequest'] = _ACTIVITYLOGINREWARDREQUEST
+DESCRIPTOR.message_types_by_name['ActivityLoginRewardResponse'] = _ACTIVITYLOGINREWARDRESPONSE
 
 ActivityCategoryNotify = _reflection.GeneratedProtocolMessageType('ActivityCategoryNotify', (_message.Message,), dict(
 
@@ -328,6 +508,35 @@ ActivitySignInResponse = _reflection.GeneratedProtocolMessageType('ActivitySignI
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.ActivitySignInResponse)
   ))
 _sym_db.RegisterMessage(ActivitySignInResponse)
+
+ActivityLoginRewardNotify = _reflection.GeneratedProtocolMessageType('ActivityLoginRewardNotify', (_message.Message,), dict(
+
+  LoginReward = _reflection.GeneratedProtocolMessageType('LoginReward', (_message.Message,), dict(
+    DESCRIPTOR = _ACTIVITYLOGINREWARDNOTIFY_LOGINREWARD,
+    __module__ = 'activity_pb2'
+    # @@protoc_insertion_point(class_scope:Dianjing.protocol.ActivityLoginRewardNotify.LoginReward)
+    ))
+  ,
+  DESCRIPTOR = _ACTIVITYLOGINREWARDNOTIFY,
+  __module__ = 'activity_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ActivityLoginRewardNotify)
+  ))
+_sym_db.RegisterMessage(ActivityLoginRewardNotify)
+_sym_db.RegisterMessage(ActivityLoginRewardNotify.LoginReward)
+
+ActivityLoginRewardRequest = _reflection.GeneratedProtocolMessageType('ActivityLoginRewardRequest', (_message.Message,), dict(
+  DESCRIPTOR = _ACTIVITYLOGINREWARDREQUEST,
+  __module__ = 'activity_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ActivityLoginRewardRequest)
+  ))
+_sym_db.RegisterMessage(ActivityLoginRewardRequest)
+
+ActivityLoginRewardResponse = _reflection.GeneratedProtocolMessageType('ActivityLoginRewardResponse', (_message.Message,), dict(
+  DESCRIPTOR = _ACTIVITYLOGINREWARDRESPONSE,
+  __module__ = 'activity_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ActivityLoginRewardResponse)
+  ))
+_sym_db.RegisterMessage(ActivityLoginRewardResponse)
 
 
 # @@protoc_insertion_point(module_scope)

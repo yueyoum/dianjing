@@ -7,6 +7,8 @@ Description:
 
 """
 import arrow
+from django.conf import settings
+
 from core.mongo import MongoCharacter
 from utils.message import MessagePipe
 
@@ -41,6 +43,19 @@ class Character(object):
 
         Club(server_id, char_id).set_match_staffs(staff_ids + [0] * 5)
         TrainingBag(server_id, char_id).add_from_raw_training(1, send_notify=False)
+
+    @property
+    def login_days(self):
+        doc = MongoCharacter.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'create_at': 1}
+        )
+
+        create_at = arrow.get(doc['create_at']).to(settings.TIME_ZONE)
+        now = arrow.utcnow().to(settings.TIME_ZONE)
+
+        return (now.date() - create_at.date()).days
+
 
     def set_login(self):
         from django.db.models import F

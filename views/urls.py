@@ -77,4 +77,5 @@ urlpatterns = [
     url(r'^sponsor/getincome/$', 'views.sponsor.get_income'),
 
     url(r'signin/$', 'views.activity.signin'),
+    url(r'activity/loginreward/$', 'views.activity.get_login_reward'),
 ]

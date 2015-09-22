@@ -431,7 +431,7 @@ class MongoActivity(BaseDocument):
     DOCUMENT = {
         '_id': null,
         # 已经获取奖励的 活动item ID
-        'gots': {}
+        'done': {}
     }
 
     COLLECTION = "activity"

@@ -120,6 +120,9 @@ MESSAGE_TO_ID = {
     "ActivitySignInNotify": 2001,
     "ActivitySignInRequest": 2002,
     "ActivitySignInResponse": 2003,
+    "ActivityLoginRewardNotify": 2004,
+    "ActivityLoginRewardRequest": 2005,
+    "ActivityLoginRewardResponse": 2006,
 }
 
 ID_TO_MESSAGE = {
@@ -243,6 +246,9 @@ ID_TO_MESSAGE = {
     2001: "ActivitySignInNotify",
     2002: "ActivitySignInRequest",
     2003: "ActivitySignInResponse",
+    2004: "ActivityLoginRewardNotify",
+    2005: "ActivityLoginRewardRequest",
+    2006: "ActivityLoginRewardResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -292,6 +298,7 @@ PATH_TO_REQUEST = {
     "/game/sponsor/": ["spread", "SponsorRequest"],
     "/game/sponsor/getincome/": ["spread", "SponsorGetIncomeRequest"],
     "/game/signin/": ["activity", "ActivitySignInRequest"],
+    "/game/activity/loginreward/": ["activity", "ActivityLoginRewardRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -341,4 +348,5 @@ PATH_TO_RESPONSE = {
     "/game/sponsor/": ["spread", "SponsorResponse"],
     "/game/sponsor/getincome/": ["spread", "SponsorGetIncomeResponse"],
     "/game/signin/": ["activity", "ActivitySignInResponse"],
+    "/game/activity/loginreward/": ["activity", "ActivityLoginRewardResponse"],
 }

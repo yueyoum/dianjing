@@ -27,7 +27,7 @@ from core.notification import Notification
 from core.ladder import Ladder, LadderStore
 from core.statistics import FinanceStatistics
 from core.sponsor import SponsorManager
-from core.activity import ActivityCategory
+from core.activity import ActivityCategory, ActivityLoginReward
 from core.signin import SignIn
 
 
@@ -71,5 +71,6 @@ def game_start_handler(server_id, char_id, **kwargs):
     SponsorManager(server_id, char_id).send_notify()
 
     ActivityCategory(server_id, char_id).send_notify()
+    ActivityLoginReward(server_id, char_id).send_notify()
     SignIn(server_id, char_id).send_notify()
 
