@@ -157,7 +157,7 @@ class TaskManager(object):
 
         self.send_notify(ids=[task_id])
 
-    def trig(self, tp, num):
+    def trig_by_tp(self, tp, num):
         # 按照类型来触发
         doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'tasks': 1})
         tasks = doc['tasks']
@@ -186,6 +186,42 @@ class TaskManager(object):
             )
 
             self.send_notify(ids=updated_ids)
+
+    def trig_by_id(self, task_id, num):
+        # 按照任务ID来触发
+        # 目前只用于客户端触发的任务，比如点击NPC
+        config = ConfigTask.get(task_id)
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("TASK_NOT_EXIST"))
+
+        if not config.client_task:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        doc = MongoTask.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'tasks.{0}'.format(task_id): 1}
+        )
+
+        try:
+            this_task = doc['tasks'][str(task_id)]
+        except KeyError:
+            return
+
+        if this_task['status'] != TASK_STATUS_DOING:
+            return
+
+        updater = {}
+        new_num = this_task['num'] + num
+        updater['tasks.{0}.num'.format(task_id)] = new_num
+        if new_num > config.num:
+            updater['tasks.{0}.status'.format(task_id)] = TASK_STATUS_FINISH
+
+        MongoTask.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': updater}
+        )
+
+        self.send_notify(ids=[task_id])
 
     def send_notify(self, ids=None):
         if not ids:

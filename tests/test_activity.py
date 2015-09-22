@@ -16,6 +16,7 @@ class TestLoginReward(object):
     def teardown(self):
         MongoActivity.db(1).drop()
 
+
     def test_send_notify(self):
         ActivityLoginReward(1, 1).send_notify()
 
@@ -24,3 +25,5 @@ class TestLoginReward(object):
             ActivityLoginReward(1, 1).get_reward(10)
         except GameException as e:
             assert e.error_id == ConfigErrorMessage.get_error_id("LOGIN_REWARD_NOT_TO_TIME")
+        else:
+            raise Exception("can not be here!")

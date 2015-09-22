@@ -192,7 +192,7 @@ class TestTask(object):
         self.set_task_status(task_id, TASK_STATUS_DOING)
 
         config = ConfigTask.get(task_id)
-        TaskManager(1, 1).trig(config.tp, config.num)
+        TaskManager(1, 1).trig_by_tp(config.tp, config.num)
 
         doc = MongoDB.get(1).task.find_one({'_id': 1})
 
@@ -205,7 +205,7 @@ class TestTask(object):
         self.set_task_status(task_id, TASK_STATUS_FINISH)
 
         config = ConfigTask.get(task_id)
-        TaskManager(1, 1).trig(config.tp, config.num)
+        TaskManager(1, 1).trig_by_tp(config.tp, config.num)
 
         doc = MongoDB.get(1).task.find_one({'_id': 1})
 

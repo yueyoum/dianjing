@@ -25,45 +25,45 @@ from core.signals import (
 @receiver(challenge_match_signal, dispatch_uid='signals.task.challenge_match_handler')
 def challenge_match_handler(server_id, char_id, challenge_id, win, **kwargs):
     tm = TaskManager(server_id, char_id)
-    tm.trig(1, 1)
+    tm.trig_by_tp(1, 1)
     if win:
-        tm.trig(6, 1)
+        tm.trig_by_tp(6, 1)
 
 @receiver(friend_match_signal, dispatch_uid='signals.task.friend_match_handler')
 def friend_match_handler(server_id, char_id, target_id, win, **kwargs):
-    TaskManager(server_id, char_id).trig(2, 1)
+    TaskManager(server_id, char_id).trig_by_tp(2, 1)
 
 @receiver(league_match_signal, dispatch_uid='signals.task.league_match_handler')
 def league_match_handler(server_id, char_id, target_id, win, **kwargs):
-    TaskManager(server_id, char_id).trig(4, 1)
+    TaskManager(server_id, char_id).trig_by_tp(4, 1)
 
 @receiver(ladder_match_signal, dispatch_uid='signals.task.ladder_match_handler')
 def ladder_match_handler(server_id, char_id, target_id, win, **kwargs):
     tm = TaskManager(server_id, char_id)
-    tm.trig(11, 1)
+    tm.trig_by_tp(11, 1)
     if win:
-        tm.trig(12, 1)
+        tm.trig_by_tp(12, 1)
 
 @receiver(join_cup_signal, dispatch_uid='signals.task.join_cup_handler')
 def join_cup_handler(server_id, char_id, **kwargs):
-    TaskManager(server_id, char_id).trig(7, 1)
+    TaskManager(server_id, char_id).trig_by_tp(7, 1)
 
 @receiver(chat_signal, dispatch_uid='signals.task.chat_handler')
 def chat_handler(server_id, char_id, **kwargs):
-    TaskManager(server_id, char_id).trig(3, 1)
+    TaskManager(server_id, char_id).trig_by_tp(3, 1)
 
 @receiver(friend_ok_signal, dispatch_uid='signals.task.friend_ok_handler')
 def friend_ok_handler(server_id, char_id, friend_id, **kwargs):
-    TaskManager(server_id, char_id).trig(5, 1)
+    TaskManager(server_id, char_id).trig_by_tp(5, 1)
 
 @receiver(recruit_staff_signal, dispatch_uid='signals.task.recruit_staff_handler')
 def recruit_staff_handler(server_id, char_id, staff_id, **kwargs):
-    TaskManager(server_id, char_id).trig(8, 1)
+    TaskManager(server_id, char_id).trig_by_tp(8, 1)
 
 @receiver(club_level_up_signal, dispatch_uid='signals.task.club_level_up_handler')
 def club_level_up_handler(server_id, char_id, new_level, **kwargs):
-    TaskManager(server_id, char_id).trig(9, 1)
+    TaskManager(server_id, char_id).trig_by_tp(9, 1)
 
 @receiver(staff_level_up_signal, dispatch_uid='signals.task.staff_level_up_handler')
 def staff_level_up_handler(server_id, char_id, staff_id, new_level, **kwargs):
-    TaskManager(server_id, char_id).trig(10, 1)
+    TaskManager(server_id, char_id).trig_by_tp(10, 1)
