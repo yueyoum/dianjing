@@ -98,7 +98,7 @@ class Resource(object):
             tb = TrainingBag(self.server_id, self.char_id)
             for tid, amount in drop.trainings:
                 for i in range(amount):
-                    tb.add_from_raw_training(i)
+                    tb.add_from_raw_training(tid)
 
     @contextmanager
     def check(self, **kwargs):
