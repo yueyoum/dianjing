@@ -25,7 +25,7 @@
                 if (i % 2 === 1 && '32' in this.props.cup) {
                     name_32='cup-table-td-32';
                     cup_32 = this.props.club[this.props.cup['32'][Math.ceil(i/2)-1]];
-                    link = '/search/?server_id='+ server_id + '&type=club&text=' + cup_32;
+                    link = '/data/search/?server_id='+ server_id + '&type=club&text=' + cup_32;
                 }
                 if( (i+2)%4 === 0 && '16' in this.props.cup){
                     name_16='cup-table-td-16';

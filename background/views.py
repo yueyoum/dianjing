@@ -16,7 +16,6 @@ def data(request):
     except:
         return render_to_response("search_sql.html")
 
-    print text
     return render_to_response("search_sql.html", {'text': text, 'tp': tp})
 
 

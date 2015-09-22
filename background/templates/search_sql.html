@@ -7,7 +7,7 @@
 {% block body %}
     <div id="layout">
         {% include "menu.html" %}
-        <div id="main">
+        <div id="main" align="center">
             <div class="header">
                 <h1>Search</h1>
             </div>
@@ -28,7 +28,7 @@
                     </form>
                 </div>
             </div>
-            <div id="data" class="area-data"></div>
+            <div id="data"></div>
 
             <script type="text/jsx">
                 var datas = '';
@@ -39,7 +39,7 @@
 
                 var data = "{{ text }}";
                 var tp = "{{ tp }}";
-                if(data != ''){
+                if (data != '') {
                     if (location.href.indexOf("?") > -1) {
                         var arr = location.href.split('?');
                         urlbase = arr[0];
@@ -125,46 +125,58 @@
                                 }
 
                                 var rows = [];
+                                var counter = 0;
                                 for (var r in tmp) {
                                     var link = "search/?server_id=" + tmp[r].server_id
                                             + "&type=id&text=" + tmp[r].account_id
                                             + "&jump=1";
+                                    var name = '';
+                                    if (counter % 2 === 0) {
+                                        name = 'alt';
+                                    }
+                                    counter++;
+
                                     rows.push(
-                                            <li className="item">
-                                                <div>
-                                                    <h2>
-                                                        <a href={link}>Role ID: {tmp[r].id}</a>
-                                                    </h2>
-                                                    <div className="l-info">
-                                                        <i className="account" title="帐号id">
-                                                            帐号: {tmp[r].account_id};
-                                                        </i>
-                                                        <i className="account" title="服务器id">
-                                                            服务器: {tmp[r].server_id};
-                                                        </i>
-                                                        <i className="account" title="角色名">
-                                                            角色名: {tmp[r].name};
-                                                        </i>
-                                                    </div>
-                                                    <div>
-                                                        <i className="account" title="俱乐部名">
-                                                            俱乐部: {tmp[r].club_name};
-                                                        </i>
-                                                        <i className="account" title="创建时间">
-                                                            创建时间: {tmp[r].create_at};
-                                                        </i>
-                                                    </div>
-                                                </div>
-                                            </li>
+                                            <tr className={name}>
+                                                <td>
+                                                    <a href={link}>{tmp[r].id}</a>
+                                                </td>
+                                                <td>
+                                                    <a href={link}>{tmp[r].account_id}</a>
+                                                </td>
+                                                <td>
+                                                    <a href={link}>{tmp[r].server_id}</a>
+                                                </td>
+                                                <td>
+                                                    <a href={link}>{tmp[r].name}</a>
+                                                </td>
+                                                <td>
+                                                    <a href={link}>{tmp[r].club_name}</a>
+                                                </td>
+                                                <td>
+                                                    <a href={link}>{tmp[r].create_at}</a>
+                                                </td>
+                                            </tr>
                                     );
                                 }
 
                                 return (
-                                        <div>
-                                            <ul>
+
+                                        <table className="pure-table-my">
+                                            <thead>
+                                                <tr>
+                                                    <th>Role ID</th>
+                                                    <th>帐号</th>
+                                                    <th>服务器</th>
+                                                    <th>角色</th>
+                                                    <th>俱乐部</th>
+                                                    <th>创建时间</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
                                                 {rows}
-                                            </ul>
-                                        </div>
+                                            </tbody>
+                                        </table>
                                 );
                             }
                         });
