@@ -14,18 +14,64 @@
             <div class="area-search">
                 <input id="search-content" class="input-search" placeholder="搜索" title="(｀･ω･´)   (´･ω･｀)">
                 <button class="search-btn" title=' \("▔□▔)/\("▔□▔)/\("▔□▔)/'>Search</button>
+                <div class="select-type">
+                    <form>
+                        id
+                        <input title="┴┴︵╰（‵□′）╯︵┴┴ "
+                               type="radio" checked="checked" name="id" value="id"/>
+                        name
+                        <input title="( *￣▽￣)((≧︶≦*)   "
+                               type="radio" name="id" value="name"/>
+                        club
+                        <input title="( ' – ' ) ( ^３^ )╱~~　"
+                               type="radio" name="id" value="club"/>
+                    </form>
+                </div>
             </div>
             <div id="data" class="area-data"></div>
 
             <script type="text/jsx">
                 var datas = '';
                 var input = '';
+                var selected = '';
+                var urlbase = '';
+                var counter = 0;
 
-                var urlbase = location.href;
-                var text = '';
+                var data = "{{ text }}";
+                var tp = "{{ tp }}";
+                if(data != ''){
+                    if (location.href.indexOf("?") > -1) {
+                        var arr = location.href.split('?');
+                        urlbase = arr[0];
+                        var text = arr[1].split('&');
+                        var str = text[0].split('=');
+                        input = str[1];
+                        str = text[1].split('=');
+                        selected = str[1];
+                    }
+                    var tp = document.getElementsByName('id');
+                    var tmpcnt = tp.length;
+                    while (tmpcnt--) {
+                        if (tp[tmpcnt].value === selected) {
+                            tp[tmpcnt].checked = true;
+                        }
+                    }
+
+                    search();
+                }
 
                 document.getElementsByClassName("search-btn")[0].onclick = function () {
                     input = document.getElementById('search-content').value;
+                    counter++;
+
+                    var tp = document.getElementsByName('id');
+                    var tmpcnt = tp.length;
+                    while (tmpcnt--) {
+                        if (tp[tmpcnt].checked) {
+                            selected = tp[tmpcnt].value;
+                        }
+                    }
+
                     if (input === '') {
                         return;
                     }
@@ -33,7 +79,6 @@
                     if (location.href.indexOf("?") > -1) {
                         var arr = location.href.split('?');
                         urlbase = arr[0];
-                        text = arr[1].match(/text=(\w+)/);
                     }
 
                     search();
@@ -55,8 +100,9 @@
                         change();
                     };
 
-                    var url = urlbase + "s/?text=" + input;
-                    window.history.pushState({}, 0, "http://192.168.1.124:8000/data/?text=" + input);
+                    var url = urlbase + "s/?text=" + input + "&type=" + selected;
+                    window.history.pushState({}, 0, "http://192.168.1.124:8000/data/?text="
+                            + input + '&type=' + selected);
 
                     xmlhttp.open("Get", url, true);
                     xmlhttp.send();

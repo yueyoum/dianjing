@@ -2,7 +2,8 @@ import re
 
 from apps.server.models import Server
 
-from core.mongo import MongoCharacter, MongoFriend, MongoBuilding, MongoStaff, MongoMail, MongoTraining, MongoTask, MongoLadder
+from core.mongo import MongoCharacter, MongoFriend, MongoBuilding, \
+    MongoStaff, MongoMail, MongoTraining, MongoTask, MongoLadder, MongoCup, MongoCupClub
 
 
 # Create your models here.
@@ -64,5 +65,11 @@ class DBHandle(object):
 
     def get_club(self, char_id):
         return MongoCharacter.db(self.server_id).find_one({'_id': int(char_id)})
+
+    def get_cup(self):
+        return MongoCup.db(self.server_id).find().sort('order', -1).limit(1)
+
+    def get_cup_club(self, club_id):
+        return MongoCupClub.db(self.server_id).find_one({'_id': club_id})
 
 

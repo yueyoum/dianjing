@@ -10,15 +10,27 @@ from apps.character.models import Character
 
 
 def data(request):
-    print request
-    return render_to_response("search_sql.html")
+    try:
+        text = request.GET['text']
+        tp = request.GET['type']
+    except:
+        return render_to_response("search_sql.html")
+
+    print text
+    return render_to_response("search_sql.html", {'text': text, 'tp': tp})
 
 
 def data_s(request):
-    print 'ddddd'
+    print request
     try:
         text = request.GET['text']
-        dataObj = Character.objects.filter(name__icontains=text)
+        tp = request.GET['type']
+        if tp == 'name':
+            dataObj = Character.objects.filter(name__icontains=text)
+        if tp == 'id':
+            dataObj = Character.objects.filter(account_id__icontains=text)
+        if tp == 'club':
+            dataObj = Character.objects.filter(club_name__icontains=text)
     except:
         return HttpResponse('null')
 
@@ -194,3 +206,37 @@ def ladder(request):
                                'server_id': server_id,
                                'data': tmp,
                                'web_title': 'Staff'})
+
+
+def cup(request):
+    print request
+    try:
+        server_id = request.GET['server_id']
+    except:
+        raise Http404("Error!")
+
+    cup_data = DBHandle(int(server_id)).get_cup()
+    tmp_data = {}
+    tmp_club = {}
+    for c in cup_data:
+        for k in c['levels']['32']:
+            club = DBHandle(int(server_id)).get_cup_club(k)
+            tmp_club[k] = club['club_name']
+
+        tmp_data['levels'] = c['levels']
+        tmp_data['order'] = c['order']
+        if 'last_champion' in c:
+            tmp_data['last_champion'] = c['last_champion']
+        else:
+            tmp_data['last_champion'] = ''
+
+    tmp = JSONEncoder().encode(tmp_data)
+    print tmp
+    clubs = JSONEncoder().encode(tmp_club)
+    print clubs
+
+    return render_to_response('data_index.html',
+                              {'html': 'cup.html',
+                               'server_id': server_id,
+                               'data': tmp,
+                               'club': clubs})

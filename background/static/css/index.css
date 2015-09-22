@@ -611,3 +611,54 @@ li {
 
     font-family: "Lucida Grande", Verdana, Arial, sans-serif;
 }
+
+.cup-table-my {
+    border-collapse: collapse;
+    border-spacing: 0;
+    empty-cells: show;
+    border: 1px solid #e9322d;
+    padding: 10px;
+    margin: auto;
+}
+
+.table-head{
+}
+
+.cup-table-my tr.alt td {
+    color: #000000;
+    background-color: #EAF2D3;
+}
+
+.cup-table-td-32{
+    background-color: lightgray;
+}
+
+.cup-table-td-16{
+    background-color: lightgreen;
+}
+
+.cup-table-td-8{
+    background-color: dodgerblue;
+}
+
+.cup-table-td-4{
+    background-color: purple;
+}
+
+.cup-table-td-2{
+    background-color: orangered;
+}
+
+.cup-table-td-c{
+    background-color: red;
+}
+
+.cup-table-my td,
+.cup-table-my th {
+    border: 1px solid #cbcbcb;
+    font-size: inherit;
+    margin: 0;
+    overflow: visible;
+    padding: 0.5em 1em;
+    text-align: center;
+}

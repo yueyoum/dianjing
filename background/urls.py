@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^knapsack/$', 'background.views.knapsack'),
     url(r'^friend/$', 'background.views.friend'),
     url(r'^ladder/$', 'background.views.ladder'),
+    url(r'^cup/$', 'background.views.cup'),
 ]

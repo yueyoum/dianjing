@@ -30,7 +30,8 @@
 
             var Row = React.createClass({
                 render: function(){
-                    var link = '/data/ladder/?server_id=' + this.props.server.id;
+                    var link_ladder = '/data/ladder/?server_id=' + this.props.server.id;
+                    var link_cup = '/data/cup/?server_id=' + this.props.server.id;
                     var name='';
                     if(counter%2 === 0){
                         name='alt';
@@ -46,9 +47,8 @@
                                 <td>{this.props.server.mongo_host}</td>
                                 <td>{this.props.server.mongo_port}</td>
                                 <td>{this.props.server.mongo_db}</td>
-                                <td>
-                                    <a href={link}>天梯</a>
-                                </td>
+                                <td><a href={link_ladder}>天梯</a></td>
+                                <td><a href={link_cup}>杯赛</a></td>
                             </tr>
                     );
                 }
@@ -72,6 +72,7 @@
                                         <th>MongoPort</th>
                                         <th>MongoDBName</th>
                                         <th>Ladder</th>
+                                        <th>Cup</th>
                                     </tr>
                                 </thead>
                                 <tbody>
