@@ -49,7 +49,7 @@
     var FriendForm = React.createClass({
         render: function(){
             var tmp = JSON.parse(this.props.friends);
-            if(Object.keys(tmp.friends).length === 0){
+            if(tmp === null || Object.keys(tmp.friends).length === 0){
                 return(
                         <div>
                             <h2>No Data</h2>
