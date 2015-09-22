@@ -213,7 +213,7 @@ class TaskManager(object):
         updater = {}
         new_num = this_task['num'] + num
         updater['tasks.{0}.num'.format(task_id)] = new_num
-        if new_num > config.num:
+        if new_num >= config.num:
             updater['tasks.{0}.status'.format(task_id)] = TASK_STATUS_FINISH
 
         MongoTask.db(self.server_id).update_one(
