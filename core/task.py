@@ -156,6 +156,7 @@ class TaskManager(object):
         )
 
         self.send_notify(ids=[task_id])
+        return drop.make_protomsg()
 
     def trig_by_tp(self, tp, num):
         # 按照类型来触发
@@ -237,9 +238,11 @@ class TaskManager(object):
         notify = TaskNotify()
         notify.act = act
         for k, v in tasks.iteritems():
+            k = int(k)
             s = notify.task.add()
-            s.id = int(k)
+            s.id = k
             s.num = v['num']
             s.status = v['status']
+            s.drop.MergeFrom(Drop.generate(ConfigTask.get(k).package).make_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)

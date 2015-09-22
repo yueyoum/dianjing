@@ -13,15 +13,16 @@ _sym_db = _symbol_database.Default()
 
 
 import common_pb2 as common__pb2
+import package_pb2 as package__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='task.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=b'\n\ntask.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xc7\x01\n\nTaskNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x30\n\x04task\x18\x03 \x03(\x0b\x32\".Dianjing.protocol.TaskNotify.Task\x1aN\n\x04Task\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0b\n\x03num\x18\x02 \x02(\x05\x12-\n\x06status\x18\x03 \x02(\x0e\x32\x1d.Dianjing.protocol.TaskStatus\"1\n\x12TaskAcquireRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"3\n\x13TaskAcquireResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"3\n\x14TaskGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"5\n\x15TaskGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"/\n\x10TaskDoingRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"1\n\x11TaskDoingResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*P\n\nTaskStatus\x12\x13\n\x0fTASK_UNRECEIVED\x10\x00\x12\x0e\n\nTASK_DOING\x10\x01\x12\x0f\n\x0bTASK_FINISH\x10\x02\x12\x0c\n\x08TASK_END\x10\x03'
+  serialized_pb=b'\n\ntask.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\xee\x01\n\nTaskNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x30\n\x04task\x18\x03 \x03(\x0b\x32\".Dianjing.protocol.TaskNotify.Task\x1au\n\x04Task\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0b\n\x03num\x18\x02 \x02(\x05\x12-\n\x06status\x18\x03 \x02(\x0e\x32\x1d.Dianjing.protocol.TaskStatus\x12%\n\x04\x64rop\x18\x04 \x02(\x0b\x32\x17.Dianjing.protocol.Drop\"1\n\x12TaskAcquireRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"3\n\x13TaskAcquireResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"3\n\x14TaskGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"\\\n\x15TaskGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"/\n\x10TaskDoingRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"1\n\x11TaskDoingResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*P\n\nTaskStatus\x12\x13\n\x0fTASK_UNRECEIVED\x10\x00\x12\x0e\n\nTASK_DOING\x10\x01\x12\x0f\n\x0bTASK_FINISH\x10\x02\x12\x0c\n\x08TASK_END\x10\x03'
   ,
-  dependencies=[common__pb2.DESCRIPTOR,])
+  dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 _TASKSTATUS = _descriptor.EnumDescriptor(
@@ -49,8 +50,8 @@ _TASKSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=561,
-  serialized_end=641,
+  serialized_start=654,
+  serialized_end=734,
 )
 _sym_db.RegisterEnumDescriptor(_TASKSTATUS)
 
@@ -90,6 +91,13 @@ _TASKNOTIFY_TASK = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='drop', full_name='Dianjing.protocol.TaskNotify.Task.drop', index=3,
+      number=4, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -102,8 +110,8 @@ _TASKNOTIFY_TASK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=169,
-  serialized_end=247,
+  serialized_start=184,
+  serialized_end=301,
 )
 
 _TASKNOTIFY = _descriptor.Descriptor(
@@ -146,8 +154,8 @@ _TASKNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=48,
-  serialized_end=247,
+  serialized_start=63,
+  serialized_end=301,
 )
 
 
@@ -184,8 +192,8 @@ _TASKACQUIREREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=249,
-  serialized_end=298,
+  serialized_start=303,
+  serialized_end=352,
 )
 
 
@@ -222,8 +230,8 @@ _TASKACQUIRERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=300,
-  serialized_end=351,
+  serialized_start=354,
+  serialized_end=405,
 )
 
 
@@ -260,8 +268,8 @@ _TASKGETREWARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=353,
-  serialized_end=404,
+  serialized_start=407,
+  serialized_end=458,
 )
 
 
@@ -286,6 +294,13 @@ _TASKGETREWARDRESPONSE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='drop', full_name='Dianjing.protocol.TaskGetRewardResponse.drop', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -298,8 +313,8 @@ _TASKGETREWARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=406,
-  serialized_end=459,
+  serialized_start=460,
+  serialized_end=552,
 )
 
 
@@ -336,8 +351,8 @@ _TASKDOINGREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=461,
-  serialized_end=508,
+  serialized_start=554,
+  serialized_end=601,
 )
 
 
@@ -374,14 +389,16 @@ _TASKDOINGRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=510,
-  serialized_end=559,
+  serialized_start=603,
+  serialized_end=652,
 )
 
 _TASKNOTIFY_TASK.fields_by_name['status'].enum_type = _TASKSTATUS
+_TASKNOTIFY_TASK.fields_by_name['drop'].message_type = package__pb2._DROP
 _TASKNOTIFY_TASK.containing_type = _TASKNOTIFY
 _TASKNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _TASKNOTIFY.fields_by_name['task'].message_type = _TASKNOTIFY_TASK
+_TASKGETREWARDRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 DESCRIPTOR.message_types_by_name['TaskNotify'] = _TASKNOTIFY
 DESCRIPTOR.message_types_by_name['TaskAcquireRequest'] = _TASKACQUIREREQUEST
 DESCRIPTOR.message_types_by_name['TaskAcquireResponse'] = _TASKACQUIRERESPONSE
