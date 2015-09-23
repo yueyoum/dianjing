@@ -4,6 +4,10 @@
 
     var Main = React.createClass({
         render: function () {
+            var tmp_date = (this.props.mail.mail.create_at) * 1000;
+            var date = new Date(tmp_date);
+            var str = date.toLocaleString().replace("YY-MM-DD");
+
             return (
                     <div className="mail-form">
                         <div className="title">
@@ -20,7 +24,7 @@
                             </li>
                             <li className="mail-info">
                                 <div className="mail-info-o">Send Time:</div>
-                                <p className="mail-info-t">{this.props.mail.mail.create_at}</p>
+                                <p className="mail-info-t">{str}</p>
                             </li>
                             <li className="mail-info">
                                 <div className="mail-info-o">Status:</div>
@@ -43,7 +47,6 @@
     var MailForm = React.createClass({
         render: function () {
             var tmp = JSON.parse(this.props.mail);
-            var str = tmp.mail.create_at;
 
             if(tmp.mail.has_read){
                 has_read='已读';
