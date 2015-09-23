@@ -6,6 +6,8 @@ Date Created:   2015-07-29 18:20
 Description:
 
 """
+import arrow
+from django.conf import settings
 
 from core.mongo import MongoCharacter
 from utils.message import MessagePipe
@@ -18,15 +20,16 @@ class Character(object):
         self.server_id = server_id
         self.char_id = char_id
 
-
     @classmethod
     def create(cls, server_id, char_id, char_name, club_name, club_flag):
         from core.staff import StaffManger
         from core.club import Club
+        from core.training import TrainingBag
 
         doc = MongoCharacter.document()
         doc['_id'] = char_id
         doc['name'] = char_name
+        doc['create_at'] = arrow.utcnow().timestamp
         doc['club']['name'] = club_name
         doc['club']['flag'] = club_flag
         doc['club']['gold'] = 100000
@@ -34,12 +37,39 @@ class Character(object):
         MongoCharacter.db(server_id).insert_one(doc)
 
         sm = StaffManger(server_id, char_id)
-        staff_ids = [2,3,4,5,6]
+        staff_ids = [2, 3, 4, 5, 6]
         for i in staff_ids:
             sm.add(i, send_notify=False)
 
         Club(server_id, char_id).set_match_staffs(staff_ids + [0] * 5)
+        TrainingBag(server_id, char_id).add_from_raw_training(1, send_notify=False)
 
+    @property
+    def login_days(self):
+        doc = MongoCharacter.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'create_at': 1}
+        )
+
+        create_at = arrow.get(doc['create_at']).to(settings.TIME_ZONE)
+        now = arrow.utcnow().to(settings.TIME_ZONE)
+
+        return (now.date() - create_at.date()).days
+
+
+    def set_login(self):
+        from django.db.models import F
+        from apps.character.models import Character as ModelCharacter
+
+        now = arrow.utcnow()
+        ModelCharacter.objects.filter(id=self.char_id).update(
+            last_login=now.format("YYYY-MM-DD HH:mm:ssZ"),
+            login_times=F('login_times') + 1,
+        )
+        MongoCharacter.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {'last_login': now.timestamp}}
+        )
 
     def make_protomsg(self, **kwargs):
         if kwargs:

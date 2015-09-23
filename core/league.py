@@ -57,6 +57,7 @@ from core.abstract import AbstractClub, AbstractStaff
 from core.mail import MailManager
 from core.package import Drop
 from core.notification import Notification
+from core.signals import league_match_signal
 
 from config.settings import LEAGUE_START_TIME_ONE, LEAGUE_START_TIME_TWO
 from config import ConfigNPC, ConfigStaff, ConfigErrorMessage, ConfigLeague
@@ -176,6 +177,7 @@ class LeagueMatch(object):
         self.send_mail(self.club_two_object, not self.club_one_win)
 
         self.send_notification()
+        self.trig_signal()
 
     @staticmethod
     def send_mail(club, win):
@@ -216,6 +218,25 @@ class LeagueMatch(object):
                 # TODO
                 gold_got=100,
                 score_rank=5,
+            )
+
+    def trig_signal(self):
+        if isinstance(self.club_one_object, Club):
+            league_match_signal.send(
+                sender=None,
+                server_id=self.server_id,
+                char_id=int(self.club_one_object.id),
+                target_id=self.club_two_object.id,
+                win=self.club_one_win
+            )
+
+        if isinstance(self.club_two_object, Club):
+            league_match_signal.send(
+                sender=None,
+                server_id=self.server_id,
+                char_id=int(self.club_two_object.id),
+                target_id=self.club_one_object.id,
+                win=not self.club_one_win
             )
 
 
@@ -300,10 +321,11 @@ class LeagueGame(object):
             g = LeagueGroup(server_id, i)
 
             for c in chars:
-                if len(c['club']['match_staffs']) != 5:
+                match_staffs = c['club'].get('match_staffs', [])
+                if len(match_staffs) != 5:
                     continue
 
-                if 0 in c['club']['match_staffs']:
+                if 0 in match_staffs:
                     continue
 
                 try:

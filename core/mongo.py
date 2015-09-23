@@ -62,6 +62,8 @@ class MongoCharacter(BaseDocument):
     DOCUMENT = {
         '_id': null,
         'name': null,
+        'create_at': 0,
+        'last_login': 0,
 
         'club': {
             'name': null,
@@ -87,7 +89,7 @@ class MongoCharacter(BaseDocument):
     }
 
     COLLECTION = "character"
-    INDEXES = ['name', 'league_level', 'in_cup']
+    INDEXES = ['name', 'last_login', 'league_level', 'in_cup']
 
     @classmethod
     def document(cls):
@@ -223,7 +225,8 @@ class MongoMail(BaseDocument):
         'content': null,
         'has_read': False,
         'create_at': null,
-        'attachment': ""
+        'attachment': "",
+        'function': 0,
     }
 
     COLLECTION = "mail"
@@ -408,3 +411,47 @@ class MongoNotification(BaseDocument):
     @classmethod
     def document_notification(cls):
         return cls.NOTIFICATION_DOCUMENT.copy()
+
+
+# 赞助
+class MongoSponsor(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'sponsor_to_id': 0,     # 赞助了谁
+        'income': 0,            # 总收益
+        'sponsors': {},         # id: income.  这里的income不清零
+        'logs': []              # [(template_id, args), ...]
+    }
+
+    COLLECTION = "sponsor"
+
+
+# 活动
+class MongoActivity(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # 已经获取奖励的 活动item ID
+        'done': {}
+    }
+
+    COLLECTION = "activity"
+
+
+# 签到
+class MongoSignIn(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'sign': {}
+    }
+
+    SIGN_DOCUMENT = {
+        'last_sign_at': 0,      # 日期
+        'last_sign_day': 0,     # day 是对应配置中的第几天。而不是真是日期中的天
+        'is_continued': True,
+    }
+
+    COLLECTION = "sign_in"
+
+    @classmethod
+    def document_sign(cls):
+        return cls.SIGN_DOCUMENT.copy()

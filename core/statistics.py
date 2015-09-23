@@ -41,40 +41,42 @@ class FinanceStatistics(object):
         from apps.statistics.models import Statistics
 
         now = arrow.utcnow().to(settings.TIME_ZONE)
-        now = arrow.Arrow(now.year, now.month, now.day, hour=0, minute=0, second=0, tzinfo=now.tzinfo)
-        weekday = now.weekday()
-        monday = now.replace(days=-weekday)
-        next_monday = monday.replace(days=7)
+        end = now.replace(days=1)
 
-        income = {i: 0 for i in range(0, 7)}
-        expense = {i: 0 for i in range(0, 7)}
+        end = arrow.Arrow(end.year, end.month, end.day, hour=0, minute=0, second=0, microsecond=0, tzinfo=end.tzinfo)
+        start = end.replace(days=-7)
 
-        condition = Q(create_at__gte=monday.format("YYYY-MM-DD HH:mm:ssZ")) & Q(
-            create_at__lte=next_monday.format("YYYY-MM-DD HH:mm:ssZ"))
-        for s in Statistics.objects.filter(condition):
-            create_at_weekday = arrow.get(s.create_at).to(settings.TIME_ZONE).weekday()
-            if s.club_gold > 0:
-                income[create_at_weekday] = income.get(create_at_weekday, 0) + s.club_gold
+        days = [start.replace(days=i) for i in range(1, 8)]
+        income = [0] * len(days)
+        expense = [0] * len(days)
+
+        condition = Q(char_id=self.char_id) & Q(create_at__gte=start.format("YYYY-MM-DD HH:mm:ssZ")) & Q(
+            create_at__lte=end.format("YYYY-MM-DD HH:mm:ssZ"))
+
+        for s in Statistics.objects.filter(condition).order_by('create_at'):
+            create_at = arrow.get(s.create_at).to(settings.TIME_ZONE)
+
+            # 找到这个记录应该属于哪一天
+            for i in range(len(days)):
+                if create_at < days[i]:
+                    index = i
+                    break
             else:
-                expense[create_at_weekday] = expense.get(create_at_weekday, 0) + abs(s.club_gold)
+                index = len(days)-1
 
-        income = income.items()
-        expense = expense.items()
+            if s.club_gold > 0:
+                income[index] += s.club_gold
+            else:
+                expense[index] += abs(s.club_gold)
 
-        income.sort(key=lambda item: item[0])
-        expense.sort(key=lambda item: item[0])
-
-        income_values = [i for _, i in income]
-        expense_values = [i for _, i in expense]
-
-        return income_values, expense_values
+        return income, expense
 
     def send_notify(self):
         # 只有 gold 需要notify
-        income_values, expense_values = self.get_gold_statistics()
+        income, expense = self.get_gold_statistics()
 
         notify = FinanceStatisticsNotify()
-        notify.income.extend(income_values)
-        notify.expense.extend(expense_values)
+        notify.income.extend(income)
+        notify.expense.extend(expense)
 
         MessagePipe(self.char_id).put(msg=notify)

@@ -3,7 +3,7 @@
 from django.contrib import admin
 
 from apps.account.models import (
-    Account,
+    Account, AccountLoginLog
 )
 
 
@@ -17,8 +17,6 @@ class AccountAdmin(admin.ModelAdmin):
     readonly_fields = (
         'tp', 'register_at', 'last_login', 'login_times',
     )
-
-    ordering = ('-last_login',)
 
     def Name(self, obj):
         if obj.tp == 'regular':
@@ -46,3 +44,10 @@ class AccountAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+
+@admin.register(AccountLoginLog)
+class AccountLoginLogAdmin(admin.ModelAdmin):
+    list_display = ('id', 'account_id', 'login_at', 'ip', 'to_server_id')
+    search_fields = ('account_id',)

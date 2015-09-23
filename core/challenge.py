@@ -115,7 +115,7 @@ class Challenge(object):
         self.send_notify(challenge_id=next_id)
 
         drop = Drop.generate(ConfigChallengeMatch.get(self.challenge_id).package)
-        message = "Drop from challenge {0}".format(self.challenge_id)
+        message = u"Drop from challenge {0}".format(self.challenge_id)
         Resource(self.server_id, self.char_id).save_drop(drop, message=message)
 
         return msg, drop.make_protomsg()

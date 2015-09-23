@@ -5,7 +5,9 @@ import random
 
 class Task(object):
     __slots__ = ['id', 'name', 'level',
-                 'tp', 'num', 'reward']
+                 'tp', 'num', 'reward',
+                 'client_task', 'success_rate'
+                 ]
 
     def __init__(self):
         self.id = None
@@ -14,6 +16,8 @@ class Task(object):
         self.tp = None
         self.num = None
         self.reward = None
+        self.client_task = False
+        self.success_rate = 0
 
     @property
     def package(self):

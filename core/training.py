@@ -80,14 +80,14 @@ class TrainingStore(object):
         if not training:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_NOT_EXIST"))
 
+        check = {'message': u'Buy Training. oid: {0}'.format(training['oid'])}
         config = ConfigTraining.get(training['oid'])
-
         if config.cost_type == 1:
-            needs = {'gold': -config.cost_value}
+            check['gold'] = -config.cost_value
         else:
-            needs = {'diamond': -config.cost_value}
+            check['diamond'] = -config.cost_value
 
-        with Resource(self.server_id, self.char_id).check(**needs):
+        with Resource(self.server_id, self.char_id).check(**check):
             self.remove(training_id)
             TrainingBag(self.server_id, self.char_id).add(training_id, training['oid'], training['item'])
 
@@ -145,14 +145,13 @@ class TrainingBag(object):
 
         return True
 
-    def add_from_raw_training(self, oid):
+    def add_from_raw_training(self, oid, send_notify=True):
         # 直接从配置中的 训练id 添加
         training_id = make_string_id()
         item = TrainingItem.generate_from_training_id(oid).to_json()
-        self.add(training_id, oid, item)
+        self.add(training_id, oid, item, send_notify=send_notify)
 
-
-    def add(self, training_id, training_oid, training_item):
+    def add(self, training_id, training_oid, training_item, send_notify=True):
         doc = MongoTraining.document_training_item()
         doc['oid'] = training_oid
         doc['item'] = training_item
@@ -162,7 +161,8 @@ class TrainingBag(object):
             {'$set': {'bag.{0}'.format(training_id): doc}}
         )
 
-        self.send_notify(ids=[training_id])
+        if send_notify:
+            self.send_notify(ids=[training_id])
 
     def use(self, staff_id, training_id):
         key = "bag.{0}".format(training_id)

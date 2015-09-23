@@ -9,7 +9,7 @@ Description:
 from utils.http import ProtobufResponse
 from core.task import TaskManager
 
-from protomsg.task_pb2 import TaskAcquireResponse, TaskGetRewardResponse
+from protomsg.task_pb2 import TaskAcquireResponse, TaskGetRewardResponse, TaskDoingResponse
 
 def receive(request):
     task_id = request._proto.id
@@ -36,3 +36,14 @@ def reward(request):
     response.ret = 0
     return ProtobufResponse(response)
 
+def doing(request):
+    task_id = request._proto.id
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    task = TaskManager(server_id, char_id)
+    task.trig_by_id(task_id, 1)
+
+    response = TaskDoingResponse()
+    response.ret = 0
+    return ProtobufResponse(response)

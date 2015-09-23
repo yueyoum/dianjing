@@ -14,15 +14,14 @@ import arrow
 from pymongo.errors import DuplicateKeyError
 
 from django.conf import settings
-
 from dianjing.exception import GameException
 
 from core.mongo import MongoCup, MongoCupClub, MongoCharacter
 from core.abstract import AbstractClub
 from core.club import Club
+from core.signals import join_cup_signal
 
 from utils.functional import make_string_id
-
 from config import ConfigErrorMessage, ConfigNPC
 
 from protomsg import cup_pb2
@@ -249,6 +248,12 @@ class Cup(object):
         MongoCharacter.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {'in_cup': True}}
+        )
+
+        join_cup_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id
         )
 
     def make_cup_protomsg(self):

@@ -18,12 +18,14 @@ from config import ConfigBuilding, ConfigErrorMessage
 from utils.message import MessagePipe
 
 from protomsg.building_pb2 import BuildingNotify
+from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
-BUILDING_HEADQUARTERS = 1  # 总部大楼
-BUILDING_TRAINING_CENTER = 2  # 任务中心
-BUILDING_STAFF_CENTER = 3  # 员工中心
-BUILDING_TASK_CENTER = 4  # 任务中心
-BUILDING_LEAGUE_CENTER = 5  # 联赛中心
+BUILDING_HEADQUARTERS = 1       # 总部大楼
+BUILDING_TRAINING_CENTER = 2    # 任务中心
+BUILDING_STAFF_CENTER = 3       # 员工中心
+BUILDING_TASK_CENTER = 4        # 任务中心
+BUILDING_LEAGUE_CENTER = 5      # 联赛中心
+BUILDING_SPONSOR_CENTER = 6     # 赞助商中心
 
 
 class BuildingManager(object):
@@ -31,13 +33,23 @@ class BuildingManager(object):
         self.server_id = server_id
         self.char_id = char_id
 
-        doc = MongoBuilding.db(server_id).find_one({'_id': self.char_id}, {'_id': 1})
+        doc = MongoBuilding.db(server_id).find_one({'_id': self.char_id})
         if not doc:
             doc = MongoBuilding.document()
             doc['_id'] = self.char_id
             doc['buildings'] = {str(i): 1 for i in ConfigBuilding.INSTANCES.keys()}
-
             MongoBuilding.db(server_id).insert_one(doc)
+        else:
+            updater = {}
+            for i in ConfigBuilding.INSTANCES.keys():
+                if str(i) not in doc['buildings']:
+                    updater['buildings.{0}'.format(i)] = 1
+
+            if updater:
+                MongoBuilding.db(server_id).update_one(
+                    {'_id': self.char_id},
+                    {'$set': updater}
+                )
 
     def get_level(self, building_id):
         doc = MongoBuilding.db(self.server_id).find_one(
@@ -45,7 +57,7 @@ class BuildingManager(object):
             {'buildings.{0}'.format(building_id): 1}
         )
 
-        return doc['buildings'][str(building_id)]
+        return doc['buildings'].get(str(building_id), 1)
 
     def level_up(self, building_id):
         b = ConfigBuilding.get(building_id)
@@ -62,11 +74,15 @@ class BuildingManager(object):
         if Club(self.server_id, self.char_id).level < b.get_level(current_level).up_need_club_level:
             raise GameException(ConfigErrorMessage.get_error_id("CLUB_LEVEL_NOT_ENOUGH"))
 
-        needs = {"gold": -b.get_level(current_level).up_need_gold}
-        with Resource(self.server_id, self.char_id).check(**needs):
+        check = {
+            "gold": -b.get_level(current_level).up_need_gold,
+            "message": u"Building {0} level up to {1}".format(building_id, current_level+1)
+        }
+
+        with Resource(self.server_id, self.char_id).check(**check):
             MongoBuilding.db(self.server_id).update_one(
                 {'_id': self.char_id},
-                {'$inc': {'buildings.{0}'.format(building_id): 1}}
+                {'$set': {'buildings.{0}'.format(building_id): current_level+1}}
             )
 
         self.send_notify(building_ids=[building_id])
@@ -74,11 +90,14 @@ class BuildingManager(object):
     def send_notify(self, building_ids=None):
         if building_ids:
             projection = {'buildings.{0}'.format(i): 1 for i in building_ids}
+            act = ACT_UPDATE
         else:
             projection = {'buildings': 1}
+            act = ACT_INIT
 
         doc = MongoBuilding.db(self.server_id).find_one({'_id': self.char_id}, projection)
         notify = BuildingNotify()
+        notify.act = act
 
         for b in ConfigBuilding.all_values():
             if building_ids and b.id not in building_ids:
@@ -91,7 +110,7 @@ class BuildingManager(object):
         MessagePipe(self.char_id).put(msg=notify)
 
 
-class BuildingBase(object):
+class BaseBuilding(object):
     BUILDING_ID = 0
 
     def __init__(self, server_id, char_id):
@@ -104,17 +123,20 @@ class BuildingBase(object):
         return self.bm.level_up(self.BUILDING_ID)
 
 
-class BuildingTrainingCenter(BuildingBase):
+class BuildingTrainingCenter(BaseBuilding):
     BUILDING_ID = BUILDING_TRAINING_CENTER
 
 
-class BuildingStaffCenter(BuildingBase):
+class BuildingStaffCenter(BaseBuilding):
     BUILDING_ID = BUILDING_STAFF_CENTER
 
 
-class BuildingTaskCenter(BuildingBase):
+class BuildingTaskCenter(BaseBuilding):
     BUILDING_ID = BUILDING_TASK_CENTER
 
 
-class BuildingLeagueCenter(BuildingBase):
+class BuildingLeagueCenter(BaseBuilding):
     BUILDING_ID = BUILDING_LEAGUE_CENTER
+
+class BuildingSponsorCenter(BaseBuilding):
+    BUILDING_ID = BUILDING_SPONSOR_CENTER

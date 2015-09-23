@@ -23,6 +23,7 @@ from core.package import Drop
 from core.resource import Resource
 from core.notification import Notification
 from core.mail import MailManager
+from core.signals import ladder_match_signal
 
 from core.lock import Lock, LadderLock, LadderNPCLock, LadderStoreLock, LockTimeOut
 
@@ -176,6 +177,14 @@ class LadderMatch(object):
                 current_order=final_club_two_order,
                 ladder_score=d.ladder_score,
             )
+
+        ladder_match_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=int(self.club_one_object.id),
+            target_id=self.club_two_object.id,
+            win=self.club_one_win
+        )
 
 
 class Ladder(object):
@@ -394,11 +403,11 @@ class LadderStore(object):
 
         self.items = CommonLadderStore.get(self.server_id)
         if not self.items:
-            self.refresh()
+            self.refresh(send_notify=False)
 
         Ladder(self.server_id, self.char_id)
 
-    def refresh(self):
+    def refresh(self, send_notify=True):
         with LadderStoreLock(self.server_id).lock():
             self.items = CommonLadderStore.get(self.server_id)
             if self.items:
@@ -406,6 +415,9 @@ class LadderStore(object):
 
             self.items = random.sample(ConfigLadderScoreStore.INSTANCES.keys(), 9)
             CommonLadderStore.set(self.server_id, self.items)
+
+        if send_notify:
+            self.send_notify()
 
     def buy(self, item_id):
         if item_id not in self.items:
@@ -439,7 +451,7 @@ class LadderStore(object):
         )
 
         drop = Drop.generate(ConfigLadderScoreStore.get(item_id).package)
-        message = "Buy from ladder store. item id {0}".format(item_id)
+        message = u"Buy from ladder store. item id {0}".format(item_id)
         Resource(self.server_id, self.char_id).save_drop(drop, message=message)
         Ladder(self.server_id, self.char_id).send_notify()
 

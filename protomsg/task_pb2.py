@@ -13,15 +13,16 @@ _sym_db = _symbol_database.Default()
 
 
 import common_pb2 as common__pb2
+import package_pb2 as package__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='task.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=b'\n\ntask.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xc7\x01\n\nTaskNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x30\n\x04task\x18\x03 \x03(\x0b\x32\".Dianjing.protocol.TaskNotify.Task\x1aN\n\x04Task\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0b\n\x03num\x18\x02 \x02(\x05\x12-\n\x06status\x18\x03 \x02(\x0e\x32\x1d.Dianjing.protocol.TaskStatus\"1\n\x12TaskAcquireRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"3\n\x13TaskAcquireResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"3\n\x14TaskGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"5\n\x15TaskGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*P\n\nTaskStatus\x12\x13\n\x0fTASK_UNRECEIVED\x10\x00\x12\x0e\n\nTASK_DOING\x10\x01\x12\x0f\n\x0bTASK_FINISH\x10\x02\x12\x0c\n\x08TASK_END\x10\x03'
+  serialized_pb=b'\n\ntask.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\xee\x01\n\nTaskNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x30\n\x04task\x18\x03 \x03(\x0b\x32\".Dianjing.protocol.TaskNotify.Task\x1au\n\x04Task\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0b\n\x03num\x18\x02 \x02(\x05\x12-\n\x06status\x18\x03 \x02(\x0e\x32\x1d.Dianjing.protocol.TaskStatus\x12%\n\x04\x64rop\x18\x04 \x02(\x0b\x32\x17.Dianjing.protocol.Drop\"1\n\x12TaskAcquireRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"3\n\x13TaskAcquireResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"3\n\x14TaskGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"\\\n\x15TaskGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"/\n\x10TaskDoingRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"1\n\x11TaskDoingResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*P\n\nTaskStatus\x12\x13\n\x0fTASK_UNRECEIVED\x10\x00\x12\x0e\n\nTASK_DOING\x10\x01\x12\x0f\n\x0bTASK_FINISH\x10\x02\x12\x0c\n\x08TASK_END\x10\x03'
   ,
-  dependencies=[common__pb2.DESCRIPTOR,])
+  dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 _TASKSTATUS = _descriptor.EnumDescriptor(
@@ -49,8 +50,8 @@ _TASKSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=461,
-  serialized_end=541,
+  serialized_start=654,
+  serialized_end=734,
 )
 _sym_db.RegisterEnumDescriptor(_TASKSTATUS)
 
@@ -90,6 +91,13 @@ _TASKNOTIFY_TASK = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='drop', full_name='Dianjing.protocol.TaskNotify.Task.drop', index=3,
+      number=4, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -102,8 +110,8 @@ _TASKNOTIFY_TASK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=169,
-  serialized_end=247,
+  serialized_start=184,
+  serialized_end=301,
 )
 
 _TASKNOTIFY = _descriptor.Descriptor(
@@ -146,8 +154,8 @@ _TASKNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=48,
-  serialized_end=247,
+  serialized_start=63,
+  serialized_end=301,
 )
 
 
@@ -184,8 +192,8 @@ _TASKACQUIREREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=249,
-  serialized_end=298,
+  serialized_start=303,
+  serialized_end=352,
 )
 
 
@@ -222,8 +230,8 @@ _TASKACQUIRERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=300,
-  serialized_end=351,
+  serialized_start=354,
+  serialized_end=405,
 )
 
 
@@ -260,8 +268,8 @@ _TASKGETREWARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=353,
-  serialized_end=404,
+  serialized_start=407,
+  serialized_end=458,
 )
 
 
@@ -286,6 +294,13 @@ _TASKGETREWARDRESPONSE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='drop', full_name='Dianjing.protocol.TaskGetRewardResponse.drop', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -298,19 +313,99 @@ _TASKGETREWARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=406,
-  serialized_end=459,
+  serialized_start=460,
+  serialized_end=552,
+)
+
+
+_TASKDOINGREQUEST = _descriptor.Descriptor(
+  name='TaskDoingRequest',
+  full_name='Dianjing.protocol.TaskDoingRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TaskDoingRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.TaskDoingRequest.id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=554,
+  serialized_end=601,
+)
+
+
+_TASKDOINGRESPONSE = _descriptor.Descriptor(
+  name='TaskDoingResponse',
+  full_name='Dianjing.protocol.TaskDoingResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.TaskDoingResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TaskDoingResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=603,
+  serialized_end=652,
 )
 
 _TASKNOTIFY_TASK.fields_by_name['status'].enum_type = _TASKSTATUS
+_TASKNOTIFY_TASK.fields_by_name['drop'].message_type = package__pb2._DROP
 _TASKNOTIFY_TASK.containing_type = _TASKNOTIFY
 _TASKNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _TASKNOTIFY.fields_by_name['task'].message_type = _TASKNOTIFY_TASK
+_TASKGETREWARDRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 DESCRIPTOR.message_types_by_name['TaskNotify'] = _TASKNOTIFY
 DESCRIPTOR.message_types_by_name['TaskAcquireRequest'] = _TASKACQUIREREQUEST
 DESCRIPTOR.message_types_by_name['TaskAcquireResponse'] = _TASKACQUIRERESPONSE
 DESCRIPTOR.message_types_by_name['TaskGetRewardRequest'] = _TASKGETREWARDREQUEST
 DESCRIPTOR.message_types_by_name['TaskGetRewardResponse'] = _TASKGETREWARDRESPONSE
+DESCRIPTOR.message_types_by_name['TaskDoingRequest'] = _TASKDOINGREQUEST
+DESCRIPTOR.message_types_by_name['TaskDoingResponse'] = _TASKDOINGRESPONSE
 DESCRIPTOR.enum_types_by_name['TaskStatus'] = _TASKSTATUS
 
 TaskNotify = _reflection.GeneratedProtocolMessageType('TaskNotify', (_message.Message,), dict(
@@ -355,6 +450,20 @@ TaskGetRewardResponse = _reflection.GeneratedProtocolMessageType('TaskGetRewardR
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.TaskGetRewardResponse)
   ))
 _sym_db.RegisterMessage(TaskGetRewardResponse)
+
+TaskDoingRequest = _reflection.GeneratedProtocolMessageType('TaskDoingRequest', (_message.Message,), dict(
+  DESCRIPTOR = _TASKDOINGREQUEST,
+  __module__ = 'task_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TaskDoingRequest)
+  ))
+_sym_db.RegisterMessage(TaskDoingRequest)
+
+TaskDoingResponse = _reflection.GeneratedProtocolMessageType('TaskDoingResponse', (_message.Message,), dict(
+  DESCRIPTOR = _TASKDOINGRESPONSE,
+  __module__ = 'task_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TaskDoingResponse)
+  ))
+_sym_db.RegisterMessage(TaskDoingResponse)
 
 
 # @@protoc_insertion_point(module_scope)

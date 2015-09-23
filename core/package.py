@@ -180,6 +180,9 @@ class TrainingItem(PackageBase):
         obj = cls()
 
         config = ConfigTraining.get(tid)
+        if not config:
+            raise RuntimeError("training not exist: {0}".format(tid))
+
         if config.skill_id:
             # 这是技能训练，就不会其他加成了
             obj.skill_id = config.skill_id

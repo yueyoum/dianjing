@@ -12,7 +12,7 @@ import itertools
 from core.mongo import MongoCharacter
 from core.abstract import AbstractClub
 from core.staff import Staff
-from core.signals import match_staffs_set_done_signal
+from core.signals import match_staffs_set_done_signal, club_level_up_signal
 from core.staff import StaffManger
 from core.qianban import QianBanContainer
 
@@ -135,6 +135,7 @@ class Club(AbstractClub):
         self.renown += renown
 
         # update
+        level_changed = False
         while True:
             need_renown = club_level_up_need_renown(self.level)
             next_level_id = ConfigClubLevel.get(self.level).next_level_id
@@ -148,6 +149,7 @@ class Club(AbstractClub):
 
             self.renown -= need_renown
             self.level += 1
+            level_changed = True
 
         MongoCharacter.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -158,6 +160,14 @@ class Club(AbstractClub):
                 'club.diamond': self.diamond,
             }}
         )
+
+        if level_changed:
+            club_level_up_signal.send(
+                sender=None,
+                server_id=self.server_id,
+                char_id=self.char_id,
+                new_level=self.level
+            )
 
         self.send_notify()
 

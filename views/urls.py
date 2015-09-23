@@ -58,6 +58,7 @@ urlpatterns = [
 
     url(r'^task/acquire/$', 'views.task.receive'),
     url(r'^task/getreward/$', 'views.task.reward'),
+    url(r'^task/doing/$', 'views.task.doing'),
 
     url(r'^chat/send/$', 'views.chat.send'),
 
@@ -67,7 +68,15 @@ urlpatterns = [
     url(r'^ladder/refresh/$', 'views.ladder.refresh'),
     url(r'^ladder/match/$', 'views.ladder.match'),
     url(r'^ladder/leaderboard/$', 'views.ladder.get_leader_board'),
+    url(r'^ladder/store/buy/$', 'views.ladder.store_buy'),
+    url(r'^ladder/store/refresh/$', 'views.ladder.store_refresh'),
 
     url(r'^cup/join/$', 'views.cup.join'),
     url(r'^cup/infomation/$', 'views.cup.information'),
+
+    url(r'^sponsor/$', 'views.sponsor.sponsor'),
+    url(r'^sponsor/getincome/$', 'views.sponsor.get_income'),
+
+    url(r'signin/$', 'views.activity.signin'),
+    url(r'activity/loginreward/$', 'views.activity.get_login_reward'),
 ]

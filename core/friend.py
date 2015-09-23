@@ -13,7 +13,7 @@ from core.mongo import MongoFriend, MongoCharacter
 from core.character import Character
 from core.club import Club
 from core.match import ClubMatch
-from core.signals import friend_match_signal
+from core.signals import friend_match_signal, friend_ok_signal
 
 from utils.message import MessagePipe
 
@@ -76,7 +76,7 @@ class FriendManager(object):
             sender=None,
             server_id=self.server_id,
             char_id=self.char_id,
-            friend_id=friend_id,
+            target_id=friend_id,
             win=msg.club_one_win
         )
 
@@ -145,6 +145,13 @@ class FriendManager(object):
         self.send_notify(ids=[char_id])
         FriendManager(self.server_id, char_id).someone_accept_me(self.char_id)
 
+        friend_ok_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            friend_id=char_id
+        )
+
     def remove(self, char_id):
         char_id = int(char_id)
         key = 'friends.{0}'.format(char_id)
@@ -176,6 +183,13 @@ class FriendManager(object):
         MongoFriend.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {key: FRIEND_STATUS_OK}}
+        )
+
+        friend_ok_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            friend_id=from_id
         )
 
         self.send_notify(ids=[from_id])

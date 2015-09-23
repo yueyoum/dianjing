@@ -7,7 +7,6 @@ Description:
 
 """
 
-
 from dianjing.exception import GameException
 
 from utils.http import ProtobufResponse
@@ -43,11 +42,9 @@ def login(request):
     else:
         raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-
     response = LoginResponse()
     response.ret = 0
     response.session = GameSession.dumps(account_id=account.account.id)
     response.account.MergeFrom(request._proto.account)
 
     return ProtobufResponse(response)
-
