@@ -15,18 +15,16 @@
                 counter++;
                 var name = '';
                 if (counter % 2 === 0) {
-                    name = 'alt';
+                    name += ' pure-table-odd';
                 }
 
-                var link = '';
                 if (this.props.ladders[l].type == 1) {
-                    link = "/data/search/?server_id=" + serverID + "&type=club&text=" + this.props.ladders[l].club;
+                    name += ' link-tr';
+                    var link = "/data/search/?server_id=" + serverID + "&type=club&text=" + this.props.ladders[l].club;
                     rows.push(
-                            <tr className={name}>
+                            <tr className={name} data-href={link}>
                                 <td>{l}</td>
-                                <td>
-                                    <a href={link}>{this.props.ladders[l].club}</a>
-                                </td>
+                                <td>{this.props.ladders[l].club}</td>
                                 <td>{this.props.ladders[l].score}</td>
                                 <td>{tp[this.props.ladders[l].type]}</td>
                             </tr>
@@ -45,7 +43,7 @@
             }
 
             return (
-                    <table className="pure-table-my">
+                    <table className="link-table-my">
                         <thead>
                             <tr>
                                 <th>排名</th>
@@ -132,5 +130,14 @@
             <LadderForm data="{{ data }}"
                         pages="{{ pages }}"/>,
             document.getElementById('main')
-    )
+    );
+
+    $(document).ready(function(){
+        $('table tr').click( function(){
+            if(typeof($(this).data('href')) != 'undefined'){
+                window.location = $(this).data('href');
+            }
+            return false;
+        });
+    });
 </script>

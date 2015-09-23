@@ -29,8 +29,10 @@
                 </div>
             </div>
             <div id="data"></div>
+            <div id="test"></div>
 
             <script type="text/jsx">
+
                 var datas = '';
                 var input = '';
                 var selected = '';
@@ -98,6 +100,13 @@
                             datas = xmlhttp.responseText;
                         }
                         change();
+
+                        $(document).ready(function () {
+                            $('table tr').click(function () {
+                                window.location = $(this).data('href');
+                                return false;
+                            });
+                        });
                     };
 
                     var url = urlbase + "s/?text=" + input + "&type=" + selected;
@@ -128,41 +137,28 @@
                                 var counter = 0;
                                 for (var r in tmp) {
                                     var link = "search/?server_id=" + tmp[r].server_id
-                                            + "&type=id&text=" + tmp[r].account_id
-                                            + "&jump=1";
-                                    var name = '';
+                                            + "&type=id&text=" + tmp[r].account_id;
+                                    var name = 'link-tr';
                                     if (counter % 2 === 0) {
-                                        name = 'alt';
+                                        name += ' pure-table-odd';
                                     }
                                     counter++;
 
                                     rows.push(
-                                            <tr className={name}>
-                                                <td>
-                                                    <a href={link}>{tmp[r].id}</a>
-                                                </td>
-                                                <td>
-                                                    <a href={link}>{tmp[r].account_id}</a>
-                                                </td>
-                                                <td>
-                                                    <a href={link}>{tmp[r].server_id}</a>
-                                                </td>
-                                                <td>
-                                                    <a href={link}>{tmp[r].name}</a>
-                                                </td>
-                                                <td>
-                                                    <a href={link}>{tmp[r].club_name}</a>
-                                                </td>
-                                                <td>
-                                                    <a href={link}>{tmp[r].create_at}</a>
-                                                </td>
+                                            <tr className={name} data-href={link}>
+                                                <td>{tmp[r].id}</td>
+                                                <td>{tmp[r].account_id}</td>
+                                                <td>{tmp[r].server_id}</td>
+                                                <td>{tmp[r].name}</td>
+                                                <td>{tmp[r].club_name}</td>
+                                                <td>{tmp[r].create_at}</td>
                                             </tr>
                                     );
                                 }
 
                                 return (
 
-                                        <table className="pure-table-my">
+                                        <table className="link-table-my">
                                             <thead>
                                                 <tr>
                                                     <th>Role ID</th>

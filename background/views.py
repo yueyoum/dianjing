@@ -20,7 +20,6 @@ def data(request):
 
 
 def data_s(request):
-    print request
     try:
         text = request.GET['text']
         tp = request.GET['type']
