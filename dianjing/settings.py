@@ -50,6 +50,7 @@ INSTALLED_APPS = (
     'apps.config',
     'apps.system',
     'apps.statistics',
+    'apps.history_record',
     'background',
 )
 
