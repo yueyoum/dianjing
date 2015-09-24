@@ -6,6 +6,8 @@ from .models import get_servers, DBHandle
 from json import JSONEncoder
 
 from apps.character.models import Character
+
+
 # Create your views here.
 
 
@@ -54,6 +56,16 @@ def data_s(request):
             tmp_data['server_id'] = c.server_id
         else:
             tmp_data['server_id'] = 'null'
+
+        if c.server_id:
+            tmp_data['last_login'] = c.last_login.strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            tmp_data['last_login'] = 'null'
+
+        if c.server_id:
+            tmp_data['login_times'] = c.login_times
+        else:
+            tmp_data['login_times'] = 'null'
 
         if c.create_at:
             print c.create_at

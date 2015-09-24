@@ -18,12 +18,13 @@
                     name += ' pure-table-odd';
                 }
 
+                var order = Number(l) + 1;
                 if (this.props.ladders[l].type == 1) {
                     name += ' link-tr';
                     var link = "/data/search/?server_id=" + serverID + "&type=club&text=" + this.props.ladders[l].club;
                     rows.push(
                             <tr className={name} data-href={link}>
-                                <td>{l}</td>
+                                <td>{order}</td>
                                 <td>{this.props.ladders[l].club}</td>
                                 <td>{this.props.ladders[l].score}</td>
                                 <td>{tp[this.props.ladders[l].type]}</td>
@@ -33,7 +34,7 @@
                 else {
                     rows.push(
                             <tr className={name}>
-                                <td>{l}</td>
+                                <td>{order}</td>
                                 <td>{this.props.ladders[l].club}</td>
                                 <td>{this.props.ladders[l].score}</td>
                                 <td>{tp[this.props.ladders[l].type]}</td>
