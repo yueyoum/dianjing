@@ -12,12 +12,19 @@ import traceback
 from django.http import HttpResponse
 
 from dianjing.exception import GameException
+
+from core.db import RedisDB, MongoDB
 from utils.http import ProtobufResponse
 from utils.session import GameSession
 from utils.message import NUM_FILED, MessagePipe
 
 from protomsg import PATH_TO_REQUEST, PATH_TO_RESPONSE, ID_TO_MESSAGE
 
+
+class GameLazyInitializeMiddleware(object):
+    def process_request(self, request):
+        RedisDB.connect()
+        MongoDB.connect()
 
 
 class GameRequestMiddleware(object):
@@ -31,7 +38,7 @@ class GameRequestMiddleware(object):
 
         try:
             # body 格式：  数量 ID 长度 真实数据
-            data = request.body[12:] # 去掉 数量 ID 长度
+            data = request.body[12:]  # 去掉 数量 ID 长度
             msg_file, msg_name = PATH_TO_REQUEST[request.path]
             msg_module = __import__('protomsg.{0}_pb2'.format(msg_file), fromlist=['*'])
 
@@ -125,4 +132,3 @@ class GameExceptionMiddleware(object):
         proto.session = ""
 
         return ProtobufResponse(proto)
-

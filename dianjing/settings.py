@@ -60,6 +60,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+
+    'dianjing.middleware.GameLazyInitializeMiddleware',
     'dianjing.middleware.GameRequestMiddleware',
     'dianjing.middleware.GameResponseMiddleware',
     'dianjing.middleware.GameExceptionMiddleware',
