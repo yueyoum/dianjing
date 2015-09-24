@@ -19,7 +19,7 @@ class RedisDB(object):
     @classmethod
     def connect(cls):
         if cls.DB:
-            raise RuntimeError("only can call redis.connect once!")
+            return
 
         db = 1 if settings.TEST else 0
         pool = redis.ConnectionPool(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=db)
@@ -49,7 +49,7 @@ class MongoDB(object):
         from apps.server.models import Server
 
         if cls.DBS:
-            raise RuntimeError("only can call mongo.connect once!")
+            return
 
         servers = Server.opened_servers()
         for s in servers:

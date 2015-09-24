@@ -75,12 +75,16 @@ class MailManager(object):
         MailManager(self.server_id, to_id).add(title, content, from_id=self.char_id)
 
     def add(self, title, content, attachment="", from_id=0, function=0):
+        from apps.history_record.models import MailHistoryRecord
+
+        now = arrow.utcnow()
+
         doc = MongoMail.document_mail()
         doc['from_id'] = from_id
         doc['title'] = title
         doc['content'] = content
         doc['attachment'] = attachment
-        doc['create_at'] = arrow.utcnow().timestamp
+        doc['create_at'] = now.timestamp
         doc['function'] = function
 
         mail_id = make_string_id()
@@ -88,6 +92,17 @@ class MailManager(object):
         MongoMail.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {'mails.{0}'.format(mail_id): doc}}
+        )
+
+        MailHistoryRecord.create(
+            _id=mail_id,
+            from_id=from_id,
+            to_id=self.char_id,
+            title=title,
+            content=content,
+            attachment=attachment,
+            function=function,
+            create_at=now.format("YYYY-MM-DD HH:mm:ssZ")
         )
 
         self.send_notify(ids=[mail_id])
@@ -102,6 +117,8 @@ class MailManager(object):
         self.send_remove_notify([mail_id])
 
     def open(self, mail_id):
+        from apps.history_record.models import MailHistoryRecord
+
         if not self.get_mail(mail_id):
             raise GameException(ConfigErrorMessage.get_error_id("MAIL_NOT_EXISTS"))
 
@@ -110,6 +127,7 @@ class MailManager(object):
             {'$set': {'mails.{0}.has_read'.format(mail_id): True}}
         )
 
+        MailHistoryRecord.set_read(mail_id)
         self.send_notify(ids=[mail_id])
 
     def get_attachment(self, mail_id):

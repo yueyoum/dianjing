@@ -30,10 +30,11 @@ def reward(request):
     char_id = request._game_session.char_id
 
     task = TaskManager(server_id, char_id)
-    task.get_reward(task_id)
+    drop = task.get_reward(task_id)
 
     response = TaskGetRewardResponse()
     response.ret = 0
+    response.drop.MergeFrom(drop)
     return ProtobufResponse(response)
 
 def doing(request):

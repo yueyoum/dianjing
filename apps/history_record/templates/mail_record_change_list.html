@@ -1,0 +1,13 @@
+{% extends "admin/change_list.html" %}
+{% block search %}
+    <div>
+        <p>搜索规则</p>
+        <ul>
+            <li>直接输入数字是对发送者和接收者进行模糊搜索。比如 1 会搜出发送者ID包含1的，或者接收者ID包含1的</li>
+            <li>f后面跟数字表示对 发送者(from)进行精确搜索。比如 f1 只会搜出发送者ID为1的</li>
+            <li>t后面跟数字表示对 接收者(to)进行精确搜索。比如 t1 只会搜出接收者ID为1的</li>
+            <li>可以同时有f,t。比如f123 t456 表示搜索发送者为123 并且 接收者为456的</li>
+        </ul>
+    </div>
+    {{ block.super }}
+{% endblock %}
