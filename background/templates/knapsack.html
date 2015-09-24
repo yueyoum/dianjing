@@ -1,0 +1,108 @@
+<div id="main"></div>
+<script type="text/jsx">
+    var StoreTable = React.createClass({
+        render: function(){
+            var rows = [];
+            var counter = 0;
+            for(var s in this.props.store){
+                var name = '';
+                counter++;
+                if(counter%2 === 0){
+                    name='alt'
+                }
+
+                rows.push(
+                        <tr className={name}>
+                            <td>{s}</td>
+                            <td>{this.props.store[s].oid}</td>
+                            <td>{this.props.store[s].item}</td>
+                        </tr>
+                );
+            }
+
+            return(
+                    <table className="pure-table-my">
+                        <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>oid</th>
+                                <th>item</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {rows}
+                        </tbody>
+                    </table>
+            );
+        }
+    });
+
+    var BagTable = React.createClass({
+        render: function(){
+            var rows = [];
+            var counter = 0;
+            for(var b in this.props.bag){
+                var name = '';
+                counter++;
+                if(counter%2 === 0){
+                    name='alt'
+                }
+
+                rows.push(
+                        <tr className={name}>
+                            <td>{b}</td>
+                            <td>{this.props.bag[b].oid}</td>
+                            <td>{this.props.bag[b].item}</td>
+                        </tr>
+                );
+            }
+
+            return(
+                    <table className="pure-table-my">
+                        <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>oid</th>
+                                <th>item</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {rows}
+                        </tbody>
+                    </table>
+            );
+        }
+    });
+
+    var TaskForm = React.createClass({
+        render: function(){
+            var tmp = JSON.parse(this.props.data);
+            if(!tmp|| Object.keys(tmp).length === 0){
+                return(
+                        <div>
+                            <h1>No Data</h1>
+                        </div>
+                );
+            }
+            else{
+                return(
+                        <div>
+                            <div className="item">
+                                <h2>Bag</h2>
+                                <BagTable bag={tmp.bag}/>
+                            </div>
+                            <div className="item">
+                                <h2>Store</h2>
+                                <StoreTable store={tmp.store}/>
+                            </div>
+                        </div>
+                );
+            }
+        }
+    });
+
+    React.render(
+            <TaskForm data="{{ data }}"/>,
+            document.getElementById('main')
+    )
+</script>

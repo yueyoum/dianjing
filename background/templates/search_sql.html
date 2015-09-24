@@ -1,0 +1,204 @@
+{% extends "base_index.html" %}
+
+{% block title %}
+    <title>Search</title>
+{% endblock %}
+
+{% block body %}
+    <div id="layout">
+        {% include "menu.html" %}
+        <div id="main" align="center">
+            <div class="header">
+                <h1>Search</h1>
+            </div>
+            <div class="area-search">
+                <input id="search-content" class="input-search" placeholder="搜索" title="(｀･ω･´)   (´･ω･｀)">
+                <button class="search-btn" title=' \("▔□▔)/\("▔□▔)/\("▔□▔)/'>Search</button>
+                <div class="select-type">
+                    <form>
+                        id
+                        <input title="┴┴︵╰（‵□′）╯︵┴┴ "
+                               type="radio" checked="checked" name="id" value="id"/>
+                        name
+                        <input title="( *￣▽￣)((≧︶≦*)   "
+                               type="radio" name="id" value="name"/>
+                        club
+                        <input title="( ' – ' ) ( ^３^ )╱~~　"
+                               type="radio" name="id" value="club"/>
+                    </form>
+                </div>
+            </div>
+            <div id="data"></div>
+            <div id="test"></div>
+
+            <script type="text/jsx">
+
+                var datas = '';
+                var input = '';
+                var selected = '';
+                var urlbase = '';
+                var counter = 0;
+
+                var data = "{{ text }}";
+                var tp = "{{ tp }}";
+                if (data != '') {
+                    if (location.href.indexOf("?") > -1) {
+                        var arr = location.href.split('?');
+                        urlbase = arr[0];
+                        var text = arr[1].split('&');
+                        var str = text[0].split('=');
+                        input = str[1];
+                        str = text[1].split('=');
+                        selected = str[1];
+                    }
+                    var tp = document.getElementsByName('id');
+                    var tmpcnt = tp.length;
+                    while (tmpcnt--) {
+                        if (tp[tmpcnt].value === selected) {
+                            tp[tmpcnt].checked = true;
+                        }
+                    }
+
+                    search();
+                }
+
+                document.getElementsByClassName("search-btn")[0].onclick = function () {
+                    input = document.getElementById('search-content').value;
+                    counter++;
+
+                    var tp = document.getElementsByName('id');
+                    var tmpcnt = tp.length;
+                    while (tmpcnt--) {
+                        if (tp[tmpcnt].checked) {
+                            selected = tp[tmpcnt].value;
+                        }
+                    }
+
+                    if (input === '') {
+                        return;
+                    }
+
+                    if (location.href.indexOf("?") > -1) {
+                        var arr = location.href.split('?');
+                        urlbase = arr[0];
+                    }
+
+                    search();
+                };
+
+                function search() {
+                    var xmlhttp;
+                    if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+                        xmlhttp = new XMLHttpRequest();
+                    }
+                    else {// code for IE6, IE5
+                        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+                    }
+
+                    xmlhttp.onreadystatechange = function () {
+                        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                            datas = xmlhttp.responseText;
+                        }
+                        change();
+
+                        $(document).ready(function () {
+                            $('table tr').click(function () {
+                                window.location = $(this).data('href');
+                                return false;
+                            });
+                        });
+                    };
+
+                    var url = urlbase + "s/?text=" + input + "&type=" + selected;
+                    window.history.pushState({}, 0, "http://192.168.1.124:8000/data/?text="
+                            + input + '&type=' + selected);
+
+                    xmlhttp.open("Get", url, true);
+                    xmlhttp.send();
+                }
+
+                function change() {
+                    if (datas === 'null') {
+                        document.getElementById('area-data').innerHTML = '<div><h1>No Data</h1></div>';
+                    }
+                    else {
+                        var tmp = JSON.parse(datas);
+                        var ResultTable = React.createClass({
+                            render: function () {
+                                if (Object.keys(tmp).length === 0) {
+                                    return (
+                                            <div>
+                                                <h1>Empty</h1>
+                                            </div>
+                                    );
+                                }
+
+                                var rows = [];
+                                var counter = 0;
+                                for (var r in tmp) {
+                                    var link = "search/?server_id=" + tmp[r].server_id
+                                            + "&type=id&text=" + tmp[r].account_id;
+                                    var name = 'link-tr';
+                                    if (counter % 2 === 0) {
+                                        name += ' pure-table-odd';
+                                    }
+                                    counter++;
+
+                                    rows.push(
+                                            <tr className={name} data-href={link}>
+                                                <td>{tmp[r].id}</td>
+                                                <td>{tmp[r].account_id}</td>
+                                                <td>{tmp[r].server_id}</td>
+                                                <td>{tmp[r].name}</td>
+                                                <td>{tmp[r].club_name}</td>
+                                                <td>{tmp[r].create_at}</td>
+                                                <td>{tmp[r].last_login}</td>
+                                                <td>{tmp[r].login_times}</td>
+                                            </tr>
+                                    );
+                                }
+
+                                return (
+
+                                        <table className="link-table-my">
+                                            <thead>
+                                                <tr>
+                                                    <th>Role ID</th>
+                                                    <th>帐号</th>
+                                                    <th>服务器</th>
+                                                    <th>角色</th>
+                                                    <th>俱乐部</th>
+                                                    <th>创建时间</th>
+                                                    <th>最后登录时间</th>
+                                                    <th>登陆次数</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {rows}
+                                            </tbody>
+                                        </table>
+                                );
+                            }
+                        });
+
+                        var ResultForm = React.createClass({
+                            render: function () {
+                                return (
+                                        <div>
+                                            <ResultTable />
+                                        </div>
+                                );
+                            }
+                        });
+
+                        React.render(
+                                <ResultForm />,
+                                document.getElementById('data')
+                        )
+                    }
+                }
+
+            </script>
+        </div>
+    </div>
+{% endblock %}

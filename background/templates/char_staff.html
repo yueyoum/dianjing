@@ -1,26 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-    <script src="/static/react.js"></script>
-    <script src="/static/JSXTransformer.js"></script>
-    <style type="text/css">
-        td {
-            text-align: center;
-            border: solid salmon;
-            border-width: 0px 0px 1px 1px
-        }
 
-        th {
-            text-align: center;
-            border: solid salmon;
-            border-width: 0px 0px 1px 1px
-        }
-    </style>
-</head>
-<body>
-<div id="content"></div>
+<div id="main"></div>
 <script type="text/jsx">
 
     var char_id = "{{ data.id }}";
@@ -70,9 +49,12 @@
         }
     });
 
+    var counter = 0;
     var MakeStaffRow = React.createClass({
         render: function () {
             var skillRows = [];
+            var name = '';
+
             this.props.staff.skills.forEach(function (skill) {
                 skillRows.push(<MakeSkillRow skill={skill}/>);
             });
@@ -82,8 +64,13 @@
                 skillRows.push(<MakeTrainingRow training={training}/>);
             });
 
+            if(counter % 2 === 0){
+                name='alt';
+            }
+            counter++;
+
             return (
-                    <tr>
+                    <tr className={name}>
                         <td>{this.props.staff.id}</td>
                         <td>{this.props.staff.exp}</td>
                         <td>{this.props.staff.level}</td>
@@ -106,7 +93,7 @@
             }.bind(this));
 
             return (
-                    <table>
+                    <table className="pure-table-my">
                         <thead>
                             <tr>
                                 <th>员工ID</th>
@@ -163,16 +150,21 @@
         render: function () {
             return (
                     <div>
-                        <h2>Character ID: {char_id}</h2>
-                        <SearchBar
-                                filterText={this.state.filterText}
-                                onUserInput={this.handleUserInput}
-                                />
-
-                        <StaffTable
-                                staffs={this.props.staffs}
-                                filterText={this.state.filterText}
-                                />
+                        <div className="header">
+                            <h1>Character ID: {char_id}</h1>
+                        </div>
+                        <div className="searchBar">
+                            <SearchBar
+                                    filterText={this.state.filterText}
+                                    onUserInput={this.handleUserInput}
+                                    />
+                        </div>
+                        <div className="middle">
+                            <StaffTable
+                                    staffs={this.props.staffs}
+                                    filterText={this.state.filterText}
+                                    />
+                        </div>
                     </div>
             );
         }
@@ -180,8 +172,6 @@
 
     React.render(
             <StaffForm staffs={staffs}/>,
-            document.getElementById('content')
+            document.getElementById('main')
     )
 </script>
-</body>
-</html>

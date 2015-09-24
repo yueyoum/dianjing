@@ -1,9 +1,87 @@
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, HttpResponse
+from django.http import Http404
 
 from .models import get_servers, DBHandle
 
+from json import JSONEncoder
+
+from apps.character.models import Character
+
 
 # Create your views here.
+
+
+def data(request):
+    try:
+        text = request.GET['text']
+        tp = request.GET['type']
+    except:
+        return render_to_response("search_sql.html")
+
+    return render_to_response("search_sql.html", {'text': text, 'tp': tp})
+
+
+def data_s(request):
+    try:
+        text = request.GET['text']
+        tp = request.GET['type']
+        if tp == 'name':
+            dataObj = Character.objects.filter(name__icontains=text)
+        if tp == 'id':
+            dataObj = Character.objects.filter(account_id__icontains=text)
+        if tp == 'club':
+            dataObj = Character.objects.filter(club_name__icontains=text)
+    except:
+        return HttpResponse('null')
+
+    get_data = []
+    for c in dataObj:
+        tmp_data = {}
+        if c.account_id:
+            tmp_data['id'] = c.id
+        else:
+            tmp_data['id'] = 'null'
+
+        if c.account_id:
+            tmp_data['account_id'] = c.account_id
+        else:
+            tmp_data['account_id'] = 'null'
+
+        if c.name:
+            tmp_data['name'] = c.name
+        else:
+            tmp_data['name'] = 'null'
+
+        if c.server_id:
+            tmp_data['server_id'] = c.server_id
+        else:
+            tmp_data['server_id'] = 'null'
+
+        if c.server_id:
+            tmp_data['last_login'] = c.last_login.strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            tmp_data['last_login'] = 'null'
+
+        if c.server_id:
+            tmp_data['login_times'] = c.login_times
+        else:
+            tmp_data['login_times'] = 'null'
+
+        if c.create_at:
+            print c.create_at
+            tmp_data['create_at'] = c.create_at.strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            tmp_data['create_at'] = 'null'
+
+        if c.club_name:
+            tmp_data['club_name'] = c.club_name
+        else:
+            tmp_data['club_name'] = 'null'
+
+        get_data.append(tmp_data)
+
+    tmp = JSONEncoder().encode(get_data)
+    return HttpResponse(tmp)
 
 
 def servers(request):
@@ -19,182 +97,156 @@ def servers(request):
         temp['mongo_port'] = s.mongo_port
         temp['mongo_db'] = s.mongo_db
         data.append(temp)
-        print data
-    return render_to_response('servers.html', {'servers': data})
+    return render_to_response('servers.html', {'servers': data, 'web_title': 'ServerList'})
 
 
-def collections(request):
+def search(request):
+    try:
+        server_id = request.GET['server_id']
+        tp = request.GET['type']
+        text = request.GET['text']
+    except:
+        raise Http404("Error URL")
+
+    one_data = DBHandle(int(server_id)).get_char(tp, text)
+    tmp = JSONEncoder().encode(one_data)
+    print tmp
+    return render_to_response("data_index.html",
+                              {'html': 'char.html',
+                               'server_id': server_id,
+                               'data': tmp,
+                               'web_title': 'Data'})
+
+
+def mails(request):
     server_id = request.GET['server_id']
-    collection_list = DBHandle(int(server_id)).get_collections()
-    return render_to_response('collections.html', {'data': collection_list, 'server_id': server_id})
-
-
-def building(request):
-    server_id = request.GET['server_id']
-    buildings = DBHandle(int(server_id)).get_building()
-    data = []
-    for d in buildings:
-        temp = {}
-        t = {}
-        temp['id'] = d['_id']
-        for k, v in d['buildings'].items():
-            t[str(k)] = v
-        temp['buildings'] = t
-        data.append(temp)
-    return render_to_response('building.html', {'data': data})
-
-
-def character(request):
-    server_id = request.GET['server_id']
-    chars = DBHandle(int(server_id)).get_char()
-    data = []
-    for c in chars:
-        c['id'] = c['_id']
-        c['club'] = c['club']['name']
-        data.append(c)
-    return render_to_response('char.html', {'data': data, 'server_id': server_id})
-
-
-def club(request):
-    servers_id = request.GET['server_id']
     char_id = request.GET['char_id']
-    char = DBHandle(int(servers_id)).get_club(int(char_id))
-    char['id'] = char['_id']
-    return render_to_response('club.html', {'data': char, 'servers_id': servers_id})
-
-
-def common(request):
-    server_id = request.GET['server_id']
-    common_data = DBHandle(int(server_id)).get_common()
-    data = []
-    for d in common_data:
-        print d
-    return render_to_response('common.html', {'data': data})
-
-
-def friend(request):
-    server_id = request.GET['server_id']
-    friend_data = DBHandle(int(server_id)).get_friend()
-    data = []
-    for d in friend_data:
-        friends = {}
-        friends['char_id'] = d['_id']
-        friends['friends'] = d['friends']
-        print friends
-        data.append(friends)
-    return render_to_response('friend.html', {'data': data})
-
-
-def league_event(request):
-    server_id = request.GET['server_id']
-    league_event_data = DBHandle(int(server_id)).get_league_event()
-    data = []
-    for l in league_event_data:
-        l['id'] = l['_id']
-        data.append(l)
-
-    return render_to_response('league_event.html', {'data': data})
-
-
-def league_group(request):
-    server_id = request.GET['server_id']
-    league_group_data = DBHandle(int(server_id)).get_league_group()
-    data = []
-    for l in league_group_data:
-        l['id'] = l['_id']
-        data.append(l)
-
-    return render_to_response('league_group.html', {'data': data})
-
-
-def mail(request):
-    server_id = request.GET['server_id']
-    mails = DBHandle(int(server_id)).get_mail()
-    data = []
-    for d in mails:
-        t = {}
-        t['id'] = d['_id']
-        title = []
-        for k, v in d['mails'].items():
-            mail_t = {}
-            mail_t['key'] = k
-            mail_t['title'] = v['title']
-            title.append(mail_t)
-
-        t['mails'] = title
-        print t
-        data.append(t)
-
-    return render_to_response('mail_index.html', {'data': data, 'server_id': server_id})
+    mail = DBHandle(int(server_id)).get_mail(int(char_id))
+    tmp = JSONEncoder().encode(mail)
+    print tmp
+    return render_to_response("data_index.html",
+                              {'html': 'mail_index.html',
+                               'server_id': server_id,
+                               'data': tmp,
+                               'web_title': 'Mail'})
 
 
 def mail_one(request):
     server_id = request.GET['server_id']
-    mail_id = request.GET['mail_id']
     char_id = request.GET['char_id']
-    mails = DBHandle(int(server_id)).get_mail_one(int(char_id), mail_id)
+    mail_id = request.GET['mail_id']
 
-    data = {}
-    for k, v in mails['mails'].items():
-        if k == mail_id:
-            data['char_id'] = char_id
-            data['key'] = k
-            data['title'] = v['title']
-            data['from_id'] = v['from_id']
-            data['content'] = v['content']
-            data['has_read'] = v['has_read']
-            data['create_at'] = v['create_at']
-            data['attachment'] = v['attachment']
+    mail = DBHandle(int(server_id)).get_one_mail(int(char_id), mail_id)
 
-    print data
-    return render_to_response('mail.html', {'data': data})
+    tmp = JSONEncoder().encode(mail)
+    print tmp
+    return render_to_response("data_index.html",
+                              {'html': 'mail.html',
+                               'server_id': server_id,
+                               'data': tmp,
+                               'web_title': 'Mail'})
 
 
 def staff(request):
     server_id = request.GET['server_id']
-    staffs = DBHandle(int(server_id)).get_staff()
-    data = []
-    for d in staffs:
-        temp = {}
-        temp['id'] = d['_id']
-        staff_list = []
-        for st_k, st_v in d['staffs'].items():
-            staff_list.append(st_k)
-        temp['staffs'] = staff_list
-        temp['trainings'] = d['trainings']
-        data.append(temp)
-    return render_to_response('staff.html', {'data': data, 'server_id': server_id})
+    char_id = request.GET['char_id']
+
+    friends = DBHandle(int(server_id)).get_staff(int(char_id))
+    tmp = JSONEncoder().encode(friends)
+    print tmp
+    return render_to_response("data_index.html",
+                              {'html': 'staff.html',
+                               'server_id': server_id,
+                               'data': tmp,
+                               'web_title': 'Staff'})
 
 
-def staff_char(request):
+def friend(request):
     server_id = request.GET['server_id']
     char_id = request.GET['char_id']
-    data = DBHandle(int(server_id)).get_char_staff(int(char_id))
-    data['id'] = data['_id']
-    print data
-    return render_to_response('char_staff.html', {'data': data})
+
+    friends = DBHandle(int(server_id)).get_friend(int(char_id))
+    tmp = JSONEncoder().encode(friends)
+    print tmp
+    return render_to_response("data_index.html",
+                              {'html': 'friend.html',
+                               'server_id': server_id,
+                               'data': tmp,
+                               'web_title': 'Mail'})
 
 
-def recruit(request):
+def knapsack(request):
     server_id = request.GET['server_id']
-    recruits = DBHandle(int(server_id)).get_recruit()
-    data = []
-    for r in recruits:
-        r['id'] = r['_id']
-        data.append(r)
+    char_id = request.GET['char_id']
 
-    print data
-    return render_to_response('recruit.html', {'data': data})
+    friends = DBHandle(int(server_id)).get_knapsack(int(char_id))
+    tmp = JSONEncoder().encode(friends)
+    print tmp
+    return render_to_response("data_index.html",
+                              {'html': 'knapsack.html',
+                               'server_id': server_id,
+                               'data': tmp,
+                               'web_title': 'Staff'})
 
 
-def training_store(request):
+def ladder(request):
     server_id = request.GET['server_id']
-    trainings = DBHandle(int(server_id)).get_training_store()
+    data_ladder = DBHandle(int(server_id)).get_ladder()
 
-    data = []
-    for t in trainings:
-        t['id'] = t['_id']
-        data.append(t)
-        print t
+    tmp_data = []
+    for l in data_ladder:
+        tmp_ladder = {}
+        if l['club_name']:
+            tmp_ladder['club'] = l['club_name']
+            tmp_ladder['type'] = 0
+        else:
+            club = DBHandle(int(server_id)).get_club(int(l['_id']))
+            tmp_ladder['club'] = club['club']['name']
+            tmp_ladder['type'] = 1
 
-    return render_to_response('training_store.html', {'data': data})
+        tmp_ladder['order'] = l['order']
+        tmp_ladder['score'] = l['score']
+
+        tmp_data.append(tmp_ladder)
+
+    tmp = JSONEncoder().encode(tmp_data)
+    print tmp
+    return render_to_response("data_index.html",
+                              {'html': 'ladder.html',
+                               'server_id': server_id,
+                               'data': tmp,
+                               'web_title': 'Staff'})
+
+
+def cup(request):
+    print request
+    try:
+        server_id = request.GET['server_id']
+    except:
+        raise Http404("Error!")
+
+    cup_data = DBHandle(int(server_id)).get_cup()
+    tmp_data = {}
+    tmp_club = {}
+    for c in cup_data:
+        for k in c['levels']['32']:
+            club = DBHandle(int(server_id)).get_cup_club(k)
+            tmp_club[k] = club['club_name']
+
+        tmp_data['levels'] = c['levels']
+        tmp_data['order'] = c['order']
+        if 'last_champion' in c:
+            tmp_data['last_champion'] = c['last_champion']
+        else:
+            tmp_data['last_champion'] = ''
+
+    tmp = JSONEncoder().encode(tmp_data)
+    print tmp
+    clubs = JSONEncoder().encode(tmp_club)
+    print clubs
+
+    return render_to_response('data_index.html',
+                              {'html': 'cup.html',
+                               'server_id': server_id,
+                               'data': tmp,
+                               'club': clubs})

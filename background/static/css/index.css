@@ -1,0 +1,728 @@
+/* Navigation Push Styles */
+#layout {
+    position: relative;
+    padding-left: 0;
+}
+
+#layout.active #menu {
+    left: 160px;
+    width: 160px;
+}
+
+/* Apply the .box class on the immediate parent of any grid element (pure-u-*) to apply some padding. */
+.l-box {
+    padding: 1em;
+}
+
+.l-wrap {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.content .l-wrap {
+    margin-left: -1em;
+    margin-right: -1em;
+}
+
+/* --------------------------
+ * Main Navigation Bar Styles
+ * --------------------------
+*/
+
+/* Add transition to containers so they can push in and out */
+#layout,
+#menu,
+.menu-link {
+    -webkit-transition: all 0.2s ease-out;
+    -moz-transition: all 0.2s ease-out;
+    -ms-transition: all 0.2s ease-out;
+    -o-transition: all 0.2s ease-out;
+    transition: all 0.2s ease-out;
+}
+
+#layout.active .menu-link {
+    left: 160px;
+}
+
+#menu {
+    margin-left: -160px; /* "#menu" width */
+    width: 160px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1000; /* so the menu or its navicon stays above all content */
+    background: #191818;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+#menu a {
+    color: #999;
+    border: none;
+    white-space: normal;
+    padding: 0.625em 1em;
+}
+
+#menu .pure-menu-open {
+    background: transparent;
+    border: 0;
+}
+
+#menu .pure-menu ul {
+    border: none;
+    background: transparent;
+    display: block;
+}
+
+#menu .pure-menu ul,
+#menu .pure-menu .menu-item-divided {
+    border-top: 1px solid #333;
+}
+
+/* 鼠标经过变色*/
+#menu .pure-menu li a:hover,
+#menu .pure-menu li a:focus {
+    background: #333;
+}
+
+.menu-link {
+    position: fixed;
+    display: block; /* show this only on small screens */
+    top: 0;
+    left: 0px; /* "#menu width" */
+    background: #000;
+    background: rgba(0, 0, 0, 0.7);
+    font-size: 10px; /* change this value to increase/decrease button size */
+    z-index: 11;
+    width: 2em;
+    height: 2em;
+    padding: 1em;
+}
+
+.menu-link:hover,
+.menu-link:focus {
+    background: #000;
+}
+
+.menu-link span {
+    position: relative;
+    display: block;
+    margin-top: 0.9em;
+}
+
+.menu-link span,
+.menu-link span:before,
+.menu-link span:after {
+    background-color: #fff;
+    width: 100%;
+    height: .2em;
+    -webkit-transition: all 0.4s;
+    -moz-transition: all 0.4s;
+    -ms-transition: all 0.4s;
+    -o-transition: all 0.4s;
+    transition: all 0.4s;
+}
+
+.menu-link span:before,
+.menu-link span:after {
+    position: absolute;
+    top: -.55em;
+    content: " ";
+}
+
+.menu-link span:after {
+    top: .55em;
+}
+
+.menu-link.active span {
+    background: transparent;
+}
+
+.menu-link.active span:before {
+    -webkit-transform: rotate(45deg) translate(.5em, .4em);
+    -moz-transform: rotate(45deg) translate(.5em, .4em);
+    -ms-transform: rotate(45deg) translate(.5em, .4em);
+    -o-transform: rotate(45deg) translate(.5em, .4em);
+    transform: rotate(45deg) translate(.5em, .4em);
+}
+
+.menu-link.active span:after {
+    -webkit-transform: rotate(-45deg) translate(.4em, -.3em);
+    -moz-transform: rotate(-45deg) translate(.4em, -.3em);
+    -ms-transform: rotate(-45deg) translate(.4em, -.3em);
+    -o-transform: rotate(-45deg) translate(.4em, -.3em);
+    transform: rotate(-45deg) translate(.4em, -.3em);
+}
+
+#menu .pure-menu-heading {
+    font-size: 125%;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: #fff;
+    margin-top: 0;
+    padding: 0.5em 0.8em;
+    text-transform: uppercase;
+}
+
+#menu .pure-menu-heading:hover,
+#menu .pure-menu-heading:focus {
+    color: #999;
+}
+
+#menu .pure-menu-selected {
+    background: #1f8dd6;
+}
+
+#menu .pure-menu-selected a {
+    color: #fff;
+}
+
+#menu li.pure-menu-selected a:hover,
+#menu li.pure-menu-selected a:focus {
+    background: none;
+}
+
+/* ---------------------
+ * Smaller Module Styles
+ * ---------------------
+*/
+/* --------------------------
+ * Header Module Styles
+ * --------------------------
+*/
+
+.header {
+    font-family: "Raleway", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 0.5em;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    background: #fff;
+    letter-spacing: 0.05em;
+}
+
+.header h1 {
+    font-size: 300%;
+    font-weight: 100;
+    margin: 0;
+}
+
+.header h2 {
+    font-size: 125%;
+    font-weight: 100;
+    line-height: 1.5;
+    margin: 0;
+    color: #666;
+    letter-spacing: -0.02em;
+}
+
+/* --------------------------
+ * Content Module Styles
+ * --------------------------
+*/
+
+.area-search {
+    position: relative;
+    top: 5px;
+
+    width: 980px;
+    min-height: 108px;
+    margin: auto;
+    padding: 0.5em;
+}
+
+.title-inner {
+    width: 200px;
+    height: 100px;
+
+    margin: auto;
+    position: absolute;
+    top: 13px;
+    left: 5px;
+    padding: 5px;
+}
+
+.input-search {
+    width: 442px;
+    height: 34px;
+
+    margin: auto;
+    position: absolute;
+    right: 330px;
+    top: 65px;
+    padding: 2px;
+}
+
+.search-btn {
+    width: 75px;
+    height: 38px;
+
+    margin: auto;
+    position: absolute;
+    right: 245px;
+    top: 65px;
+}
+
+.select-type {
+    max-width: 300px;
+    height: 20px;
+
+    margin: auto;
+    position: absolute;
+    left: 365px;
+    top: 35px;
+}
+
+.home-link {
+    width: 200px;
+    height: 100px;
+
+    margin: auto;
+    position: absolute;
+    right: 10px;
+    top: 13px;
+    padding: 5px;
+}
+
+.area-data{
+    width: 980px;
+    min-height: 0px;
+    margin: auto;
+    padding: 0.5em;
+}
+
+
+.block{
+    position: relative;
+    padding-left: 0;
+}
+
+.banner{
+    width: 950px;
+    height: 25px;
+    margin: auto;
+}
+
+.tab{
+    font-family: "Raleway", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: large;
+
+    width: 100px;
+    height: 35px;
+}
+
+.mainer{
+    width: 1050px;
+    margin: auto;
+    padding: 0.5em;
+}
+
+
+
+.middle {
+    max-width: 950px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 1em;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    background: #fff;
+    letter-spacing: 0.05em;
+}
+
+.middle-staff {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 1em;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    background: #fff;
+    letter-spacing: 0.05em;
+}
+
+a {
+    text-decoration: none;
+}
+
+li {
+    list-style-type: none;
+}
+
+/**
+*********************
+**  pure table
+*********************
+**/
+.pure-table-my {
+    border-collapse: collapse;
+    border-spacing: 0;
+    empty-cells: show;
+    border: 1px solid #cbcbcb;
+    padding: 10px;
+}
+
+.pure-table-my caption {
+    color: #000;
+    font: italic 85%/1 arial, sans-serif;
+    padding: 1em 0;
+    text-align: center
+}
+
+.pure-table-my tr.alt td {
+    background-color: #EAF2D3;
+}
+
+.pure-table-my td,
+.pure-table-my th {
+    border-left: 1px solid #cbcbcb;
+    border-width: 0 0 0 1px;
+    font-size: inherit;
+    margin: 0;
+    overflow: visible;
+    padding: .5em 1em;
+    text-align: center;
+}
+
+.pure-table-my td:first-child,
+.pure-table-my th:first-child {
+    border-left-width: 0
+}
+
+.pure-table-my thead {
+    background-color: #e0e0e0;
+    color: #000;
+    text-align: left;
+    vertical-align: bottom
+}
+
+.pure-table-my td {
+    background-color: transparent
+}
+
+.pure-table-odd td {
+    background-color: #f2f2f2
+}
+
+.pure-table-striped tr:nth-child(2n-1) td {
+    background-color: #f2f2f2
+}
+
+.pure-table-bordered td {
+    border-bottom: 1px solid #cbcbcb
+}
+
+.pure-table-bordered tbody > tr:last-child > td {
+    border-bottom-width: 0
+}
+
+.pure-table-horizontal td,
+.pure-table-horizontal th {
+    border-width: 0 0 1px;
+    border-bottom: 1px solid #cbcbcb
+}
+
+.pure-table-horizontal tbody > tr:last-child > td {
+    border-bottom-width: 0
+}
+
+@media (max-width: 58em) {
+    /* Only apply this when the window is smaller. Otherwise, the following
+    case results in extra padding on the left:
+        * Make the window small. (Rotate to portrait on a mobile.)
+        * Tap the menu to trigger the active state.
+        * Make the window large again. (Rotate to landscape on mobile.)
+    */
+    #layout.active {
+        position: relative;
+        left: 160px;
+    }
+}
+
+@media (min-width: 58em) {
+
+    #layout {
+        padding-left: 160px; /* left col width "#menu" */
+        left: 0;
+    }
+
+    #menu {
+        left: 160px;
+    }
+
+    .menu-link {
+        position: fixed;
+        left: 160px;
+        display: none;
+    }
+
+    #layout.active .menu-link {
+        left: 160px;
+    }
+
+}
+
+/**
+*********************
+**  pure table
+*********************
+**/
+
+.mail-form {
+    text-align: left;
+    max-width: 950px;
+    min-height: 300px;
+    height: auto !important; /*兼容FF,IE7也支持 !important标签*/
+
+    margin: auto;
+    padding: 1em;
+    border-left-width: 0
+}
+
+.mail-form-title h1 {
+    font-size: 20px;
+    font-family: "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace;
+}
+
+.mail-form-h1 h1 {
+    font-size: 15px;
+    font-family: "Raleway", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.title {
+    max-width: 750px;
+    min-height: 30px;
+    margin: auto;
+}
+
+.mail-title {
+    height: 30px;
+    width: 130px;
+    float: left;
+    margin: 0px;
+
+    font-size: large;
+}
+
+.mail-title-t {
+    width: 300px;
+    height: 30px;
+    float: left;
+    margin: -1px;
+    text-align: center;
+
+    font-family: "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace;
+    font-size: x-large;
+}
+
+.mail-info {
+    margin: 10px;
+    width: 750px;
+    height: 30px;
+}
+
+.mail-info-o {
+    width: 130px;
+    height: 30px;
+    float: left;
+    margin: 0px;
+}
+
+.mail-info-t {
+    width: 600px;
+    height: 30px;
+    float: left;
+    margin: 0px;
+    font-family: "Raleway", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.mail-form-content {
+    font-family: "Raleway", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 1em;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    letter-spacing: 0.05em;
+    font-size: x-large;
+}
+
+.mail-form-content-o {
+    width: 130px;
+    height: 30px;
+    float: left;
+    margin: 0px;
+}
+
+.mail-form-content-t {
+    font-family: "Raleway", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 1em;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    letter-spacing: 0.05em;
+    font-size: large;
+}
+
+/*
+*****************
+***my-form
+****************
+*/
+
+.empty-form-my {
+
+    max-width: 950px;
+    min-height: 75px;
+}
+
+.item{
+    max-width: 1060px;
+    min-height: 75px;
+    margin: auto;
+    padding: 0.5em;
+
+    text-align: left;
+}
+
+.item-name{
+    max-width: 550px;
+    min-height: 25px;
+    margin: auto;
+    text-align: center;
+}
+
+.item-name p{
+}
+
+.l-info{
+    position: relative;
+    margin: auto;
+    padding-left: 0em;
+}
+
+.account{
+    width: 150px;
+    margin: auto;
+    padding: 0em 0.5em 0em 0.5em;
+
+    font-family: "Lucida Grande", Verdana, Arial, sans-serif;
+}
+
+.cup-table-my {
+    border-collapse: collapse;
+    border-spacing: 0;
+    empty-cells: show;
+    border: 1px solid #e9322d;
+    padding: 10px;
+    margin: auto;
+}
+
+.table-head{
+}
+
+.cup-table-my tr.alt td {
+    color: #000000;
+    background-color: #EAF2D3;
+}
+
+.cup-table-td-32{
+    background-color: lightgray;
+}
+
+.cup-table-td-16{
+    background-color: lightgreen;
+}
+
+.cup-table-td-8{
+    background-color: dodgerblue;
+}
+
+.cup-table-td-4{
+    background-color: purple;
+}
+
+.cup-table-td-2{
+    background-color: orangered;
+}
+
+.cup-table-td-c{
+    background-color: red;
+}
+
+.cup-table-my td,
+.cup-table-my th {
+    border: 1px solid #cbcbcb;
+    font-size: inherit;
+    margin: 0;
+    overflow: visible;
+    padding: 0.5em 1em;
+    text-align: center;
+}
+
+
+
+.link-table-my {
+    border-collapse: collapse;
+    border-spacing: 0;
+    empty-cells: show;
+    border: 1px solid #cbcbcb;
+    padding: 10px;
+}
+
+.link-table-my caption {
+    color: #000;
+    font: italic 85%/1 arial, sans-serif;
+    padding: 1em 0;
+    text-align: center
+}
+
+.link-tr {
+    cursor: pointer;
+    color: blue;
+}
+
+.link-table-my tr.alt td {
+    background-color: #EAF2D3;
+}
+
+.link-table-my td,
+.link-table-my th {
+    border-left: 1px solid #cbcbcb;
+    border-width: 0 0 0 1px;
+    font-size: inherit;
+    margin: 0;
+    overflow: visible;
+    padding: .5em 1em;
+    text-align: center;
+}
+
+.link-table-my thead {
+    background-color: #e0e0e0;
+    color: #000;
+    text-align: left;
+    vertical-align: bottom
+}
+
+
+@media (min-width: 58em) {
+
+    #layout {
+        padding-left: 160px; /* left col width "#menu" */
+        left: 0;
+    }
+    #menu {
+        left: 160px;
+    }
+    .menu-link {
+        position: fixed;
+        left: 160px;
+        display: none;
+    }
+    #layout.active .menu-link {
+        left: 160px;
+    }
+
+}

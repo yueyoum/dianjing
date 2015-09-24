@@ -1,9 +1,10 @@
+
+<a href="#menu" class="menu-link" id="menuLink"></a>
 <div id="menu"></div>
 <script type="text/jsx">
-    var server_id = "{{ server_id }}";
     var CollectionRows = React.createClass({
         render: function () {
-            var link = "/data/" + this.props.collection + "/?server_id=" + server_id;
+            var link = "/data/" + this.props.collection;
             var tmp = window.location.href;
             var name = 'pure-menu-item';
             if(tmp.indexOf(link) != -1){
@@ -38,7 +39,7 @@
         }
     });
 
-    var list = ['character', 'staff', 'recruit', 'friend', 'mail', 'building'];
+    var list = ['server'];
 
     React.render(
             <CollectionListForm collections={list}/>,
@@ -81,4 +82,5 @@
 
     }(this, this.document));
 </script>
+
 

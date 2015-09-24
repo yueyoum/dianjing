@@ -1,147 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-    <script src="/static/react.js"></script>
-    <script src="/static/JSXTransformer.js"></script>
-    <style type="text/css">
-        table {text-align: center}
-        td {text-align: center;
-            border: solid salmon;
-            border-width: 0px 0px 1px 1px}
-        th {text-align: center;
-            border: solid salmon;
-            border-width: 0px 0px 1px 1px}
-    </style>
-</head>
-<body>
-<h1>Friends</h1>
 <div id="content"></div>
 <script type="text/jsx">
-    
-    var friends = [];
-    {% for d in data %}
-        var row = {};
-        row['char_id'] = "{{ d.char_id }}";
+    var FriendTbl = React.createClass({
+        render: function () {
+            var Rs = {
+                1: "FRIEND_STATUS_NOT",
+                2: "FRIEND_STATUS_OK",
+                3: "FRIEND_STATUS_PEER_CONFIRM",
+                4: "FRIEND_STATUS_SELF_CONFIRM"
+            };
 
-        var friend_list = [];
-        {% for k, v in d.friends.items %}
-            var friend = {};
-            friend['char_id'] = "{{ k }}";
-            friend['status'] = "{{ v }}";
-            friend_list.push(friend);
-        {% endfor %}
-        row['friends'] = friend_list;
-
-        friends.push(row);
-    {% endfor %}
-
-    var FriendRow = React.createClass({
-        render: function(){
-            return(
-                    <li>{this.props.friend.char_id}: {this.props.friend.status}</li>
-            );
-        }
-    });
-    
-    var Row = React.createClass({
-        render: function(){
-            var friendRows = [];
-            this.props.row.friends.forEach(function(friend){
-                friendRows.push(<FriendRow friend={friend} />)
-            }.bind(this));
-
-            return(
-                    <tr>
-                        <td>{this.props.row.char_id}</td>
-                        <td>{friendRows}</td>
-                    </tr>
-            );
-        }
-    });
-
-    var FriendsTable = React.createClass({
-        render: function(){
             var rows = [];
-            this.props.friends.forEach(function(row){
-                if( row.char_id.indexOf(this.props.filterText) === -1){
-                    return;
+            var counter = 0;
+
+            for (var f in this.props.friends) {
+                var name = '';
+                if (counter % 2 === 0) {
+                    name = 'pure-table-odd';
                 }
+                ++counter;
 
-                rows.push(<Row row={row} />);
-            }.bind(this));
-            return(
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Char_ID</th>
-                                <th>Friends</th>
-                            </tr>
-                        </thead>
-                        <tbody>{rows}</tbody>
-                    </table>
-            );
-        }
-    });
+                rows.push(
+                        <tr className={name}>
+                            <td>{f}</td>
+                            <td>{Rs[this.props.friends[f]]}</td>
+                        </tr>
+                );
+            }
 
-    var SearchBar = React.createClass({
-
-        handleChange: function(){
-            this.props.onUserInput(
-                    this.refs.filterTextInput.getDOMNode().value
-            );
-        },
-
-        render: function(){
-            return(
-                    <from>
-                        <input
-                            type="text"
-                            placeholder="Search...ID"
-                            value={this.props.filterText}
-                            ref="filterTextInput"
-                            onChange={this.handleChange}
-                            />
-                    </from>
+            return (
+                    <div className="item">
+                        <h2>Friend</h2>
+                        <table className="pure-table-my">
+                            <thead>
+                                <tr>
+                                    <th>Friend ID</th>
+                                    <th>RelationShip</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rows}
+                            </tbody>
+                        </table>
+                    </div>
             );
         }
     });
 
     var FriendForm = React.createClass({
-
-        getInitialState: function(){
-            return{
-                filterText: ''
-            };
-        },
-
-        handleUserInput:function(filterText){
-            this.setState({
-                filterText: filterText
-            });
-        },
-
         render: function(){
+            var tmp = JSON.parse(this.props.friends);
+            if(tmp === null || Object.keys(tmp.friends).length === 0){
+                return(
+                        <div>
+                            <h2>No Data</h2>
+                        </div>
+                );
+            }
+
             return(
                     <div>
-                        <SearchBar
-                                filterText={this.state.filterText}
-                                onUserInput={this.handleUserInput}
-                                />
-                        <FriendsTable
-                                friends={this.props.friends}
-                                filterText={this.state.filterText}
-                                />
+                        <FriendTbl friends={tmp.friends}/>
                     </div>
             );
         }
     });
-    
+
     React.render(
-            <FriendForm friends={friends} />,
+            <FriendForm friends="{{ data }}"/>,
             document.getElementById('content')
     )
 </script>
-</body>
-</html>
