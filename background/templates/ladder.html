@@ -1,144 +1,155 @@
-<div id="main"></div>
-<script type="text/jsx">
-    var serverID = "{{ server_id }}";
+{% extends "base_index.html" %}
 
-    var LadderTable = React.createClass({
-        render: function () {
-            var tp = ['NPC', '玩家'];
-            var rows = [];
-            var counter = 0;
-            for (var l in this.props.ladders) {
-                if (this.props.ladders[l].club.indexOf(this.props.filterText) === -1) {
-                    continue;
-                }
+{% block title %}
+    <title>{{ web_title }}</title>
+{% endblock %}
 
-                counter++;
-                var name = '';
-                if (counter % 2 === 0) {
-                    name += ' pure-table-odd';
-                }
+{% block body %}
+    <div id="layout" style="text-align: center">
+        {% include "menu.html" %}
+        <div id="main"></div>
+        <script type="text/jsx">
+            var serverID = "{{ server_id }}";
 
-                var order = Number(l) + 1;
-                if (this.props.ladders[l].type == 1) {
-                    name += ' link-tr';
-                    var link = "/data/search/?server_id=" + serverID + "&type=club&text=" + this.props.ladders[l].club;
-                    rows.push(
-                            <tr className={name} data-href={link}>
-                                <td>{order}</td>
-                                <td>{this.props.ladders[l].club}</td>
-                                <td>{this.props.ladders[l].score}</td>
-                                <td>{tp[this.props.ladders[l].type]}</td>
-                            </tr>
+            var LadderTable = React.createClass({
+                render: function () {
+                    var tp = ['NPC', '玩家'];
+                    var rows = [];
+                    var counter = 0;
+                    for (var l in this.props.ladders) {
+                        if (this.props.ladders[l].club.indexOf(this.props.filterText) === -1) {
+                            continue;
+                        }
+
+                        counter++;
+                        var name = '';
+                        if (counter % 2 === 0) {
+                            name += ' pure-table-odd';
+                        }
+
+                        var order = Number(l) + 1;
+                        if (this.props.ladders[l].type == 1) {
+                            name += ' link-tr';
+                            var link = "/data/search/?server_id=" + serverID + "&type=club&text=" + this.props.ladders[l].club;
+                            rows.push(
+                                    <tr className={name} data-href={link}>
+                                        <td>{order}</td>
+                                        <td>{this.props.ladders[l].club}</td>
+                                        <td>{this.props.ladders[l].score}</td>
+                                        <td>{tp[this.props.ladders[l].type]}</td>
+                                    </tr>
+                            );
+                        }
+                        else {
+                            rows.push(
+                                    <tr className={name}>
+                                        <td>{order}</td>
+                                        <td>{this.props.ladders[l].club}</td>
+                                        <td>{this.props.ladders[l].score}</td>
+                                        <td>{tp[this.props.ladders[l].type]}</td>
+                                    </tr>
+                            );
+                        }
+                    }
+
+                    return (
+                            <table className="pure-table middle">
+                                <thead>
+                                    <tr>
+                                        <th>排名</th>
+                                        <th>俱乐部名</th>
+                                        <th>积分</th>
+                                        <th>类型</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {rows}
+                                </tbody>
+                            </table>
                     );
                 }
-                else {
-                    rows.push(
-                            <tr className={name}>
-                                <td>{order}</td>
-                                <td>{this.props.ladders[l].club}</td>
-                                <td>{this.props.ladders[l].score}</td>
-                                <td>{tp[this.props.ladders[l].type]}</td>
-                            </tr>
-                    );
-                }
-            }
-
-            return (
-                    <table className="link-table-my">
-                        <thead>
-                            <tr>
-                                <th>排名</th>
-                                <th>俱乐部名</th>
-                                <th>积分</th>
-                                <th>类型</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {rows}
-                        </tbody>
-                    </table>
-            );
-        }
-    });
-
-    var SearchBar = React.createClass({
-
-        handleChange: function () {
-            this.props.onUserInput(
-                    this.refs.filterTextInput.getDOMNode().value
-            )
-        },
-
-        render: function () {
-            return (
-                    <form>
-                        <input
-                                type="text"
-                                placeholder="Search...Club"
-                                value={this.props.filterText}
-                                ref="filterTextInput"
-                                onChange={this.handleChange}
-                                />
-                    </form>
-            );
-        }
-    });
-
-    var LadderForm = React.createClass({
-        getInitialState: function () {
-            return {
-                filterText: ''
-            };
-        },
-
-        handleUserInput: function (filter) {
-            this.setState({
-                filterText: filter
             });
-        },
 
-        render: function () {
-            var tmp = JSON.parse(this.props.data);
-            if (tmp === null || Object.keys(tmp).length === 0) {
-                return (
-                        <div>
-                            <h1>No Data</h1>
-                        </div>
-                );
-            }
+            var SearchBar = React.createClass({
 
-            return (
-                    <div className="item">
-                        <h2>Ladder</h2>
-                        <div className="searchBar">
-                            <SearchBar
-                                    filterText={this.state.filterText}
-                                    onUserInput={this.handleUserInput}
-                                    />
-                        </div>
-                        <div>
-                            <LadderTable
-                                    ladders={tmp}
-                                    filterText={this.state.filterText}
-                                    />
-                        </div>
-                    </div>
+                handleChange: function () {
+                    this.props.onUserInput(
+                            this.refs.filterTextInput.getDOMNode().value
+                    )
+                },
+
+                render: function () {
+                    return (
+                            <form>
+                                <input
+                                        type="text"
+                                        placeholder="Search...Club"
+                                        value={this.props.filterText}
+                                        ref="filterTextInput"
+                                        onChange={this.handleChange}
+                                        />
+                            </form>
+                    );
+                }
+            });
+
+            var LadderForm = React.createClass({
+                getInitialState: function () {
+                    return {
+                        filterText: ''
+                    };
+                },
+
+                handleUserInput: function (filter) {
+                    this.setState({
+                        filterText: filter
+                    });
+                },
+
+                render: function () {
+                    var tmp = JSON.parse(this.props.data);
+                    if (tmp === null || Object.keys(tmp).length === 0) {
+                        return (
+                                <div>
+                                    <h1>No Data</h1>
+                                </div>
+                        );
+                    }
+
+                    return (
+                            <div>
+                                <h2>Ladder</h2>
+                                <div className="pure-form">
+                                    <SearchBar
+                                            filterText={this.state.filterText}
+                                            onUserInput={this.handleUserInput}
+                                            />
+                                </div>
+                                <div>
+                                    <LadderTable
+                                            ladders={tmp}
+                                            filterText={this.state.filterText}
+                                            />
+                                </div>
+                            </div>
+                    );
+                }
+            });
+
+            React.render(
+                    <LadderForm data="{{ data }}"
+                                pages="{{ pages }}"/>,
+                    document.getElementById('main')
             );
-        }
-    });
 
-    React.render(
-            <LadderForm data="{{ data }}"
-                        pages="{{ pages }}"/>,
-            document.getElementById('main')
-    );
-
-    $(document).ready(function(){
-        $('table tr').click( function(){
-            if(typeof($(this).data('href')) != 'undefined'){
-                window.location = $(this).data('href');
-            }
-            return false;
-        });
-    });
-</script>
+            $(document).ready(function () {
+                $('table tr').click(function () {
+                    if (typeof($(this).data('href')) != 'undefined') {
+                        window.location = $(this).data('href');
+                    }
+                    return false;
+                });
+            });
+        </script>
+    </div>
+{% endblock %}

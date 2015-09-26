@@ -1,72 +1,104 @@
-<div id="content"></div>
-<script type="text/jsx">
-    var FriendTbl = React.createClass({
-        render: function () {
-            var Rs = {
-                1: "FRIEND_STATUS_NOT",
-                2: "FRIEND_STATUS_OK",
-                3: "FRIEND_STATUS_PEER_CONFIRM",
-                4: "FRIEND_STATUS_SELF_CONFIRM"
-            };
+{% extends "base_index.html" %}
 
-            var rows = [];
-            var counter = 0;
+{% block title %}
+    <title>{{ web_title }}</title>
+{% endblock %}
 
-            for (var f in this.props.friends) {
-                var name = '';
-                if (counter % 2 === 0) {
-                    name = 'pure-table-odd';
+{% block body %}
+    <div id="layout">
+        {% include "menu.html" %}
+        <div id="content"></div>
+        <script type="text/jsx">
+            var FriendTbl = React.createClass({
+                render: function () {
+
+                    var Rs_dict = {
+                        2: [],
+                        3: [],
+                        4: []
+                    };
+                    var rows = [];
+                    for (var f in this.props.friends) {
+                        Rs_dict[this.props.friends[f]].push(f);
+                    }
+
+                    var counter = 1;
+                    while(counter){
+                        var Rs_2 = '';
+                        var Rs_3 = '';
+                        var Rs_4 = '';
+                        if(Rs_dict[2][counter-1]){
+                            Rs_2=Rs_dict[2][counter-1]
+                        }
+                        if(Rs_dict[3][counter-1]){
+                            Rs_3=Rs_dict[3][counter-1]
+                        }
+                        if(Rs_dict[4][counter-1]){
+                            Rs_4=Rs_dict[4][counter-1]
+                        }
+
+                        if(Rs_2==='' && Rs_3==='' && Rs_4===''){
+                            break;
+                        }
+
+                        var name = '';
+                        if(counter%2 ===0){
+                            name='pure-table-odd'
+                        }
+                        rows.push(
+                            <tr className={name}>
+                                <td>{Rs_2}</td>
+                                <td>{Rs_3}</td>
+                                <td>{Rs_4}</td>
+                            </tr>
+                        );
+                        counter++;
+                    }
+
+                    return (
+                            <table className="pure-table middle">
+                                <thead>
+                                    <tr>
+                                        <th>FRIEND_STATUS_OK</th>
+                                        <th>FRIEND_STATUS_PEER_CONFIRM</th>
+                                        <th>FRIEND_STATUS_SELF_CONFIRM</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {rows}
+                                </tbody>
+                            </table>
+                    );
                 }
-                ++counter;
+            });
 
-                rows.push(
-                        <tr className={name}>
-                            <td>{f}</td>
-                            <td>{Rs[this.props.friends[f]]}</td>
-                        </tr>
-                );
-            }
+            var FriendForm = React.createClass({
+                render: function () {
+                    var tmp = JSON.parse(this.props.friends);
+                    if (tmp === null || Object.keys(tmp.friends).length === 0) {
+                        return (
+                                <div>
+                                    <h2>No Data</h2>
+                                </div>
+                        );
+                    }
 
-            return (
-                    <div className="item">
-                        <h2>Friend</h2>
-                        <table className="pure-table-my">
-                            <thead>
-                                <tr>
-                                    <th>Friend ID</th>
-                                    <th>RelationShip</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {rows}
-                            </tbody>
-                        </table>
-                    </div>
-            );
-        }
-    });
+                    return (
+                            <div>
+                                <div className="header">
+                                    <h2>Friend</h2>
+                                </div>
+                                <FriendTbl friends={tmp.friends}/>
+                            </div>
+                    );
+                }
+            });
 
-    var FriendForm = React.createClass({
-        render: function(){
-            var tmp = JSON.parse(this.props.friends);
-            if(tmp === null || Object.keys(tmp.friends).length === 0){
-                return(
-                        <div>
-                            <h2>No Data</h2>
-                        </div>
-                );
-            }
+            React.render(
+                    <FriendForm friends="{{ data }}"/>,
+                    document.getElementById('content')
+            )
+        </script>
 
-            return(
-                    <div>
-                        <FriendTbl friends={tmp.friends}/>
-                    </div>
-            );
-        }
-    });
-
-    React.render(
-            <FriendForm friends="{{ data }}"/>,
-            document.getElementById('content')
-    )
-</script>
+    </div>
+{% endblock %}

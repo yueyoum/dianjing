@@ -17,16 +17,9 @@ class DBHandle(object):
     def __init__(self, server_id):
         self.server_id = server_id
 
-    def get_char(self, tp, text):
+    def get_char(self, text):
         data = {}
-        if tp == 'id' and re.match(r'[1-9][0-9]*$', text):
-            data['char'] = MongoCharacter.db(self.server_id).find_one({'_id': int(text)})
-        elif tp == 'name':
-            data['char'] = MongoCharacter.db(self.server_id).find_one({'name': text})
-        elif tp == 'club':
-            data['char'] = MongoCharacter.db(self.server_id).find_one({'club.name': text})
-        else:
-            return None
+        data['char'] = MongoCharacter.db(self.server_id).find_one({'_id': int(text)})
 
         if data['char'] == None:
             return None
