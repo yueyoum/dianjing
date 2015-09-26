@@ -9,11 +9,12 @@ from apps.character.models import Character
 
 import arrow
 
+from dianjing import settings
+
 # Create your views here.
 
 
 def data(request):
-    print request
     try:
         text = request.GET['text']
         tp = request.GET['type']
@@ -31,12 +32,13 @@ def data(request):
             tmp_data['id'] = c.pk
             tmp_data['account_id'] = c.account_id
             tmp_data['name'] = c.name
+
             tmp_data['server_id'] = c.server_id
-            tmp_data['last_login'] = c.last_login.strftime('%Y-%m-%d %H:%M:%S')
+            tmp_data['last_login'] = arrow.get(c.last_login).to(settings.TIME_ZONE).format("YYYY-MM-DD HH:mm:ss")
             tmp_data['login_times'] = c.login_times
 
             if c.create_at:
-                tmp_data['create_at'] = c.create_at.strftime('%Y-%m-%d %H:%M:%S')
+                tmp_data['create_at'] = arrow.get(c.create_at).to(settings.TIME_ZONE).format("YYYY-MM-DD HH:mm:ss")
             else:
                 tmp_data['create_at'] = 'null'
 
@@ -70,12 +72,12 @@ def servers(request):
 
 def char(request):
     try:
-        server_id = request.GET['server_id']
+        server_id = int(request.GET['server_id'])
         id = int(request.GET['id'])
     except:
         raise Http404("Error URL")
 
-    one_data = DBHandle(int(server_id)).get_char(id)
+    one_data = DBHandle(server_id).get_char(id)
     tmp = JSONEncoder().encode(one_data)
     return render_to_response("char.html",
                               {'server_id': server_id,
@@ -84,10 +86,13 @@ def char(request):
 
 
 def staff(request):
-    server_id = request.GET['server_id']
-    char_id = request.GET['char_id']
+    try:
+        server_id = int(request.GET['server_id'])
+        char_id = int(request.GET['char_id'])
+    except:
+        raise Http404('Error message')
 
-    friends = DBHandle(int(server_id)).get_staff(int(char_id))
+    friends = DBHandle(server_id).get_staff(char_id)
     tmp = JSONEncoder().encode(friends)
     return render_to_response("staff.html",
                               {'server_id': server_id,
@@ -96,10 +101,13 @@ def staff(request):
 
 
 def friend(request):
-    server_id = request.GET['server_id']
-    char_id = request.GET['char_id']
+    try:
+        server_id = int(request.GET['server_id'])
+        char_id = int(request.GET['char_id'])
+    except:
+        raise Http404('Error Message.')
 
-    friends = DBHandle(int(server_id)).get_friend(int(char_id))
+    friends = DBHandle(server_id).get_friend(char_id)
     tmp = JSONEncoder().encode(friends)
 
     return render_to_response("friend.html",
@@ -109,8 +117,11 @@ def friend(request):
 
 
 def ladder(request):
-    server_id = request.GET['server_id']
-    data_ladder = DBHandle(int(server_id)).get_ladder()
+    try:
+        server_id = int(request.GET['server_id'])
+        data_ladder = DBHandle(server_id).get_ladder()
+    except:
+        raise Http404("Error Message.")
 
     tmp_data = []
     for l in data_ladder:
@@ -119,7 +130,7 @@ def ladder(request):
             tmp_ladder['club'] = l['club_name']
             tmp_ladder['type'] = 0
         else:
-            club = DBHandle(int(server_id)).get_club(int(l['_id']))
+            club = DBHandle(server_id).get_club(int(l['_id']))
             tmp_ladder['club'] = club['club']['name']
             tmp_ladder['type'] = 1
 
@@ -136,18 +147,17 @@ def ladder(request):
 
 
 def cup(request):
-    print request
     try:
-        server_id = request.GET['server_id']
+        server_id = int(request.GET['server_id'])
     except:
         raise Http404("Error!")
 
-    cup_data = DBHandle(int(server_id)).get_cup()
+    cup_data = DBHandle(server_id).get_cup()
     tmp_data = {}
     tmp_club = {}
     for c in cup_data:
         for k in c['levels']['32']:
-            club = DBHandle(int(server_id)).get_cup_club(k)
+            club = DBHandle(server_id).get_cup_club(k)
             tmp_club[k] = club['club_name']
 
         tmp_data['levels'] = c['levels']
