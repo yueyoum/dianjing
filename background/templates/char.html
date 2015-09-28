@@ -20,8 +20,10 @@
                     var knapsack = "/data/knapsack/?server_id=" + server_id + "&char_id=" + this.props.char._id;
                     return (
                             <div>
-                                <h2>Character</h2>
                                 <table className="pure-table middle">
+                                    <caption>
+                                        <h1>Character</h1>
+                                    </caption>
                                     <thead>
                                         <tr>
                                             <th>帐号</th>
@@ -97,8 +99,8 @@
 
                     return (
                             <div>
-                                <h2>Club</h2>
                                 <table className="pure-table middle">
+                                    <caption><h1>Club</h1></caption>
                                     <thead>
                                         <tr>
                                             <th>俱乐部</th>
@@ -153,8 +155,8 @@
 
                         return (
                                 <div>
-                                    <h2>Building</h2>
                                     <table className="pure-table middle">
+                                        <caption><h1>Building</h1></caption>
                                         <thead>
                                             <tr>{th_rows}</tr>
                                         </thead>
@@ -197,8 +199,8 @@
 
                     return (
                             <div>
-                                <h2>Task</h2>
                                 <table className="pure-table middle">
+                                    <caption><h1>Task</h1></caption>
                                     <thead>
                                         <tr>
                                             <th>任务ID</th>
@@ -228,19 +230,19 @@
 
                     return (
                             <ul class="pure-u">
-                                <li>
+                                <div>
                                     <CharTbl char={tmp.char}/>
-                                </li>
-                                <li>
+                                </div>
+                                <div>
                                     <ClubTbl club={tmp.char.club}
                                              char_id={tmp.char._id}/>
-                                </li>
-                                <li>
+                                </div>
+                                <div>
                                     <BuildingTbl buildings={tmp.building}/>
-                                </li>
-                                <li>
+                                </div>
+                                <div>
                                     <TaskTbl tasks={tmp.task}/>
-                                </li>
+                                </div>
                             </ul>
                     );
                 }

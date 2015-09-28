@@ -61,6 +61,7 @@
                     return (
                             <div>
                                 <table className="pure-table middle">
+                                    <caption><h1>Staff</h1></caption>
                                     <thead>
                                         <tr>
                                             <th>员工ID</th>
@@ -86,9 +87,7 @@
                     if (Object.keys(tmp.staffs).length === 0) {
                         return (
                                 <div>
-                                    <div className="header">
-                                        <h1>Staff</h1>
-                                    </div>
+                                    s<h1>Staff</h1>
                                     <div>
                                         <h1>(╯‵□′)╯︵┻━┻ 没有朋友!</h1>
                                     </div>
@@ -98,12 +97,7 @@
                     else {
                         return (
                                 <div>
-                                    <div className="header">
-                                        <h1>Staff</h1>
-                                    </div>
-                                    <div>
-                                        <StaffTable staffs={tmp.staffs}/>
-                                    </div>
+                                    <StaffTable staffs={tmp.staffs}/>
                                 </div>
                         );
                     }

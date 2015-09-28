@@ -50,7 +50,9 @@ def data(request):
     except:
         return render_to_response("data_index.html")
 
-    print get_data
+    if get_data.__len__() == 0:
+        return render_to_response("data_index.html")
+
     return render_to_response("data_index.html", {'data': get_data})
 
 

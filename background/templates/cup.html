@@ -78,9 +78,10 @@
 
                     return (
                             <table className="pure-table middle">
+                                <caption><h1>Cup League</h1></caption>
                                 <thead>
                                     <tr>
-                                        <td colSpan="6" className="table-head">
+                                        <td colSpan="6" className="table-head middle">
                                             <h3>第 {this.props.order} 轮杯赛</h3>
                                         </td>
                                     </tr>
@@ -115,9 +116,6 @@
 
                     return (
                             <div>
-                                <div className="header">
-                                    <h1>Cup League</h1>
-                                </div>
                                 <CupTable
                                         cup={tmp_data.levels}
                                         order={tmp_data.order}
