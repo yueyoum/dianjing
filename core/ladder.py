@@ -115,6 +115,7 @@ class LadderMatch(object):
         self.club_two_object = LadderClub(self.server_id, self.club_two)
 
         self.club_one_win = False
+        self.club_one_add_score = 0
 
     def start(self):
         match = ClubMatch(self.club_one_object, self.club_two_object)
@@ -132,7 +133,7 @@ class LadderMatch(object):
         final_club_two_order = self.club_two['order']
 
         if self.club_one_win:
-            add_score = 10
+            self.club_one_add_score = 10
             if order_changed > 0:
                 # exchange the order
                 MongoLadder.db(self.server_id).update_one(
@@ -154,12 +155,12 @@ class LadderMatch(object):
                 self_log = (5, (self.club_two_object.name,))
                 target_log = (6, (self.club_one_object.name,))
         else:
-            add_score = 5
+            self.club_one_add_score = 5
             self_log = (2, (self.club_two_object.name,))
             target_log = (3, (self.club_one_object.name,))
 
         ladder_one = Ladder(self.server_id, int(self.club_one_object.id))
-        ladder_one.add_score(add_score, send_notify=False)
+        ladder_one.add_score(self.club_one_add_score, send_notify=False)
         ladder_one.add_log(self_log, send_notify=False)
 
         if isinstance(self.club_two_object, Club):
@@ -311,6 +312,7 @@ class Ladder(object):
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_TARGET_ORDER_CHANGED"))
 
         msg = None
+        drop = Drop()
         self_lock_key = 'ladder_match_{0}'.format(self.char_id)
         target_lock_key = 'ladder_match_{0}'.format(target_id)
 
@@ -323,6 +325,7 @@ class Ladder(object):
 
                         match = LadderMatch(self.server_id, club_one, club_two)
                         msg = match.start()
+                        drop.ladder_score = match.club_one_add_score
 
                 except LockTimeOut:
                     raise GameException(ConfigErrorMessage.get_error_id("LADDER_TARGET_IN_MATCH"))
@@ -330,7 +333,7 @@ class Ladder(object):
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_SELF_IN_MATCH"))
 
         self.make_refresh()
-        return msg
+        return msg, drop.make_protomsg()
 
     def add_score(self, score, send_notify=True):
         lock_key = "ladder_add_score_{0}".format(self.char_id)

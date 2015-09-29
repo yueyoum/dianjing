@@ -38,11 +38,12 @@ def match(request):
     target_id = request._proto.id
 
     ladder = Ladder(server_id, char_id)
-    msg = ladder.match(target_id)
+    msg, drop = ladder.match(target_id)
 
     response = LadderMatchResponse()
     response.ret = 0
     response.match.MergeFrom(msg)
+    response.drop.MergeFrom(drop)
     return ProtobufResponse(response)
 
 
