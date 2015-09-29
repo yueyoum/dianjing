@@ -15,10 +15,10 @@ from dianjing import settings
 
 
 def data(request):
+    print request
     try:
         text = request.GET['text']
         tp = request.GET['type']
-        print tp, text
         if tp == 'name':
             dataObj = Character.objects.filter(name__icontains=text)
         if tp == 'id':
