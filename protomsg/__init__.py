@@ -125,6 +125,10 @@ MESSAGE_TO_ID = {
     "ActivityLoginRewardNotify": 2004,
     "ActivityLoginRewardRequest": 2005,
     "ActivityLoginRewardResponse": 2006,
+    "ActiveValueNotify": 2100,
+    "ActiveFunctionNotify": 2101,
+    "ActiveValueGetRewardRequest": 2102,
+    "ActiveValueGetRewardResponse": 2103,
 }
 
 ID_TO_MESSAGE = {
@@ -253,6 +257,10 @@ ID_TO_MESSAGE = {
     2004: "ActivityLoginRewardNotify",
     2005: "ActivityLoginRewardRequest",
     2006: "ActivityLoginRewardResponse",
+    2100: "ActiveValueNotify",
+    2101: "ActiveFunctionNotify",
+    2102: "ActiveValueGetRewardRequest",
+    2103: "ActiveValueGetRewardResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -304,6 +312,7 @@ PATH_TO_REQUEST = {
     "/game/sponsor/getincome/": ["spread", "SponsorGetIncomeRequest"],
     "/game/signin/": ["activity", "ActivitySignInRequest"],
     "/game/activity/loginreward/": ["activity", "ActivityLoginRewardRequest"],
+    "/game/activevalue/getreward/": ["active_value", "ActiveValueGetRewardRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -355,4 +364,5 @@ PATH_TO_RESPONSE = {
     "/game/sponsor/getincome/": ["spread", "SponsorGetIncomeResponse"],
     "/game/signin/": ["activity", "ActivitySignInResponse"],
     "/game/activity/loginreward/": ["activity", "ActivityLoginRewardResponse"],
+    "/game/activevalue/getreward/": ["active_value", "ActiveValueGetRewardResponse"],
 }

@@ -29,6 +29,7 @@ from config.league import ConfigLeague
 from config.activity import ConfigActivityCategory
 from config.signin import ConfigSignIn
 from config.activity_login_reward import ConfigLoginReward
+from config.active_value import ConfigActiveFunction, ConfigActiveReward
 
 
 _has_configed = False
@@ -114,5 +115,9 @@ def load_config():
             ConfigSignIn.initialize(data)
         elif item == 'activity_login_reward.json':
             ConfigLoginReward.initialize(data)
+        elif item == 'active_function.json':
+            ConfigActiveFunction.initialize(data)
+        elif item == 'active_reward.json':
+            ConfigActiveReward.initialize(data)
 
     print "LOAD CONFIG FROM {0}".format(z_file)
