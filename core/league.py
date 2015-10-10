@@ -106,15 +106,18 @@ class LeagueBaseClubMixin(object):
     def send_day_mail(self, *args, **kwargs):
         pass
 
-    def get_staff_winning_rate(self):
+    def get_staff_winning_rate(self, staff_ids=None):
         pass
 
     def get_match_staffs_winning_rate(self):
         pass
 
+    def save_winning_rate(self, staff, race, winner=False):
+        pass
+
 
 class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
-    def __init__(self, group_id, club_id, club_name, manager_name, club_flag, staffs, server_id):
+    def __init__(self, server_id, group_id, club_id, club_name, manager_name, club_flag, staffs):
         super(LeagueNPCClub, self).__init__()
 
         self.id = '{0}:{1}'.format(group_id, club_id)
@@ -133,29 +136,42 @@ class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
         group_id, club_id = self.id.split(':')
         data = MongoLeagueGroup.db(self.server_id).find_one(
             {'_id': group_id},
-            {'clubs.{0}.staff_race_win_rate'.format(club_id): 1}
+            {'clubs.{0}.staff_winning_rate'.format(club_id): 1}
         )
         club = data['clubs'][club_id]
 
-        rate = []
+        rate = {}
         for s in self.match_staffs:
-            staff_rate = {}
             race_rate = {
                 '1': 0,
                 '2': 0,
                 '3': 0,
             }
 
-            if 'staff_winning_rate' in club:
-                for r in club['staff_winning_rate'][str(s)]:
-                    staff_winning_rate = club['staff_winning_rate'][str(s)][r]
-                    race_win_rate = staff_winning_rate['win'] * 100 / staff_winning_rate['total']
-                    race_rate[r] = race_win_rate
+            staff_winning_info = club.get('staff_winning_rate', {}).get(str(s), {})
+            for r in staff_winning_info:
+                staff_winning_rate = staff_winning_info[r]
+                race_win_rate = staff_winning_rate['win'] * 100 / staff_winning_rate['total']
+                race_rate[r] = race_win_rate
 
-            staff_rate[s] = race_rate
-            rate.append(staff_rate)
+            rate[s] = race_rate
 
         return rate
+
+    def save_winning_rate(self, staff, race, winner=False):
+        group_id, club_id = self.id.split(':')
+
+        if winner:
+            MongoLeagueGroup.db(self.server_id).update_one(
+                {'_id': group_id},
+                {'$inc': {"clubs.{0}.staff_winning_rate.{1}.{2}.total".format(club_id, staff, race): 1,
+                          "clubs.{0}.staff_winning_rate.{1}.{2}.win".format(club_id, staff, race): 1}}
+            )
+        else:
+            MongoLeagueGroup.db(self.server_id).update_one(
+                {'_id': group_id},
+                {'$inc': {"clubs.{0}.staff_winning_rate.{1}.{2}.total".format(club_id, staff, race): 1}}
+            )
 
 
 class LeagueRealClub(LeagueBaseClubMixin, Club):
@@ -163,36 +179,28 @@ class LeagueRealClub(LeagueBaseClubMixin, Club):
         m = MailManager(self.server_id, self.char_id)
         m.add(title, content, attachment=attachment)
 
-    def get_staff_winning_rate(self, *args):
-        data = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1})
+    def get_staff_winning_rate(self, staff_ids=None):
+        if staff_ids:
+            projection = {'staffs.{0}'.format(s): 1 for s in staff_ids}
+        else:
+            projection = {'staffs': 1}
+
+        data = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, projection)
         staffs = data['staffs']
 
-        tmp_staffs = []
-        if args.__len__():
-            for l in args:
-                for staff_id in l:
-                    tmp_staffs.append(staff_id)
-        else:
-            for k in staffs.keys():
-                tmp_staffs.append(k)
-
-        rate = []
-        for s in tmp_staffs:
-            staff_rate = {}
+        rate = {}
+        for s in staffs:
             race_rate = {
                 '1': 0,
                 '2': 0,
                 '3': 0,
             }
-            staff = staffs[str(s)]
-            if 'winning_rate' in staff:
-                for r in staff['winning_rate']:
-                    race_win_rate = staffs['winning_rate'][r]['win'] * 100 / staffs['winning_rate'][r]['total']
-                    race_rate[r] = race_win_rate
+            winning_rate = staffs[s].get('winning_rate', {})
+            for r in winning_rate:
+                race_win_rate = winning_rate[r]['win'] * 100 / winning_rate[r]['total']
+                race_rate[r] = race_win_rate
 
-            staff_rate[s] = race_rate
-            rate.append(staff_rate)
-
+            rate[s] = race_rate
         # example: rate = [
         #       {'91': {'1':0.333, '2':0.555, '3': 0.9}},  ... ]
         return rate
@@ -200,13 +208,26 @@ class LeagueRealClub(LeagueBaseClubMixin, Club):
     def get_match_staffs_winning_rate(self):
         return self.get_staff_winning_rate(self.match_staffs)
 
+    def save_winning_rate(self, staff, race, winner=False):
+        if winner:
+            MongoStaff.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$inc': {"staffs.{0}.winning_rate.{1}.total".format(staff, race): 1,
+                          "staffs.{0}.winning_rate.{1}.win".format(staff, race): 1}}
+            )
+        else:
+            MongoLeagueGroup.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$inc': {"staffs.{0}.winning_rate.{1}.total".format(staff, race): 1}}
+            )
+
 
 class LeagueClub(object):
     def __new__(cls, server_id, group_id, club):
         # club 是存在mongo中的数据
         if club['club_name']:
-            return LeagueNPCClub(group_id, club['club_id'], club['club_name'], club['manager_name'], club['club_flag'],
-                                 club['staffs'], server_id)
+            return LeagueNPCClub(server_id, group_id, club['club_id'], club['club_name'], club['manager_name'], club['club_flag'],
+                                 club['staffs'])
 
         return LeagueRealClub(server_id, int(club['club_id']))
 
@@ -232,6 +253,7 @@ class LeagueMatch(object):
         self.club_one_win = msg.club_one_win
 
         self.after_match()
+
         return msg
 
     def after_match(self):
@@ -460,58 +482,6 @@ class LeagueGame(object):
 
                 pairs[k]['club_one_win'] = msg.club_one_win
                 pairs[k]['log'] = base64.b64encode(msg.SerializeToString())
-
-                # 更新员工种族胜率
-                for m in msg.match:
-                    staff_one = m.staff_one_id
-                    staff_two = m.staff_two_id
-                    staff_win = m.staff_one_win
-
-                    staff_one_race = ConfigStaff.get(staff_one)
-                    staff_two_race = ConfigStaff.get(staff_two)
-
-                    # 增加总场数
-                    if isinstance(club_one, Club):
-                        MongoStaff.db(server_id).update_one(
-                            {'_id': club_one.char_id},
-                            {'$inc': {"staffs.{0}.winning_rate.{1}.total".format(staff_one, staff_two_race): 1}})
-                    else:
-                        MongoLeagueGroup.db(server_id).update_one(
-                            {'_id': g['_id']},
-                            {'$inc': {"clubs.{0}.staff_winning_rate.{1}.{2}.total".format(
-                                club_one_id, staff_one, staff_two_race): 1}})
-
-                    if isinstance(club_two, Club):
-                        MongoStaff.db(server_id).update_one(
-                            {'_id': club_two.char_id},
-                            {'$inc': {"staffs.{0}.winning_rate.{1}.total".format(staff_two, staff_one_race): 1}})
-                    else:
-                        MongoLeagueGroup.db(server_id).update_one(
-                            {'_id': g['_id']},
-                            {'$inc': {"clubs.{0}.staff_winning_rate.{1}.{2}.total".format(
-                                club_two_id, staff_two, staff_two_race): 1}})
-
-                    # 增加胜场数
-                    if staff_one == staff_win:
-                        if isinstance(club_one, Club):
-                            MongoStaff.db(server_id).update_one(
-                                {'_id': club_one.char_id},
-                                {'$inc': {"staffs.{0}.winning_rate.{1}.win".format(staff_one, staff_two_race): 1}})
-                        else:
-                            MongoLeagueGroup.db(server_id).update_one(
-                                {'_id': g['_id']},
-                                {'$inc': {"clubs.{0}.staff_winning_rate.{1}.{2}.win".format(
-                                    club_one_id, staff_one, staff_two_race): 1}})
-                    else:
-                        if isinstance(club_two, Club):
-                            MongoStaff.db(server_id).update_one(
-                                {'_id': club_two.char_id},
-                                {'$inc': {"staffs.{0}.winning_rate.{1}.win".format(staff_two, staff_one_race): 1}})
-                        else:
-                            MongoLeagueGroup.db(server_id).update_one(
-                                {'_id': g['_id']},
-                                {'$inc': {"clubs.{0}.staff_winning_rate.{1}.{2}.win".format(
-                                    club_two_id, staff_one, staff_two_race): 1}})
 
             group_clubs_updater = {}
             for k, v in clubs.iteritems():

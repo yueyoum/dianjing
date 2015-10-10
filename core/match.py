@@ -200,6 +200,8 @@ class ClubMatch(object):
         if not self.club_one.match_staffs_ready() or not self.club_two.match_staffs_ready():
             raise GameException(ConfigErrorMessage.get_error_id("MATCH_STAFF_NOT_READY"))
 
+        self.fight_info = {}
+
     def start(self):
         msg = MessageClubMatch()
         msg.club_one.MergeFrom(self.club_one.make_protomsg())
@@ -219,8 +221,10 @@ class ClubMatch(object):
             msg_match.MergeFrom(match_msg)
 
             if match_msg.staff_one_win:
+                self.fight_info[staff_one] = {staff_two: True}
                 club_one_winning_times += 1
             else:
+                self.fight_info[staff_one] = {staff_two: False}
                 club_two_winning_times += 1
 
         if club_one_winning_times >= 3:
@@ -229,3 +233,6 @@ class ClubMatch(object):
             msg.club_one_win = False
 
         return msg
+
+    def get_fight_info(self):
+        return self.fight_info
