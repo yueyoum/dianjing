@@ -131,10 +131,11 @@ class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
 
     def get_match_staffs_winning_rate(self):
         group_id, club_id = self.id.split(':')
-        staffs = MongoLeagueGroup.db(self.server_id).find_one(
+        data = MongoLeagueGroup.db(self.server_id).find_one(
             {'_id': group_id},
             {'clubs.{0}.staff_race_win_rate'.format(club_id): 1}
         )
+        club = data['clubs'][club_id]
 
         rate = []
         for s in self.match_staffs:
@@ -145,9 +146,10 @@ class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
                 '3': 0,
             }
 
-            if 'staff_winning_rate' in staffs['clubs'][club_id]:
-                for r in staffs[s]['staff_winning_rate']:
-                    race_win_rate = staffs[s]['staff_winning_rate'][r]['win'] / staffs[s]['staff_winning_rate'][r]['total']
+            if 'staff_winning_rate' in club:
+                for r in club['staff_winning_rate'][str(s)]:
+                    staff_winning_rate = club['staff_winning_rate'][str(s)][r]
+                    race_win_rate = staff_winning_rate['win'] * 100 / staff_winning_rate['total']
                     race_rate[r] = race_win_rate
 
             staff_rate[s] = race_rate
@@ -162,7 +164,8 @@ class LeagueRealClub(LeagueBaseClubMixin, Club):
         m.add(title, content, attachment=attachment)
 
     def get_staff_winning_rate(self, *args):
-        staffs = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1})
+        data = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1})
+        staffs = data['staffs']
 
         tmp_staffs = []
         if args.__len__():
@@ -170,7 +173,7 @@ class LeagueRealClub(LeagueBaseClubMixin, Club):
                 for staff_id in l:
                     tmp_staffs.append(staff_id)
         else:
-            for k in staffs['staffs'].keys():
+            for k in staffs.keys():
                 tmp_staffs.append(k)
 
         rate = []
@@ -181,10 +184,10 @@ class LeagueRealClub(LeagueBaseClubMixin, Club):
                 '2': 0,
                 '3': 0,
             }
-
-            if 'winning_rate' in staffs['staffs'][s]:
-                for r in staffs['staffs'][s]['winning_rate']:
-                    race_win_rate = staffs['staffs'][s]['winning_rate'][r]['win'] / staffs['staffs'][s]['winning_rate'][r]['total']
+            staff = staffs[str(s)]
+            if 'winning_rate' in staff:
+                for r in staff['winning_rate']:
+                    race_win_rate = staffs['winning_rate'][r]['win'] * 100 / staffs['winning_rate'][r]['total']
                     race_rate[r] = race_win_rate
 
             staff_rate[s] = race_rate

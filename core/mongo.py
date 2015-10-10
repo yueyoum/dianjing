@@ -330,6 +330,7 @@ class MongoLeagueGroup(BaseDocument):
         'manager_name': "",
         'club_flag': 1,
         'staffs': [],
+        # staff_winning_rate格式{staff_id: {'win': num, 'total': num}}
         'staff_winning_rate': {}
     }
 
