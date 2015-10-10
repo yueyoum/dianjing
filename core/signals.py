@@ -40,3 +40,5 @@ staff_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id
 
 # 充值
 purchase_done_signal = Signal(providing_args=['server_id', 'char_id', 'diamond'])
+# 训练获取奖励完毕
+training_got_reward_signal = Signal(providing_args=['server_id', 'char_id', 'training_id'])

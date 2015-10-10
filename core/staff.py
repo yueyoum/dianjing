@@ -18,7 +18,7 @@ from core.resource import Resource
 from core.common import CommonRecruitHot
 from core.skill import SkillManager
 from core.package import TrainingItem
-from core.signals import recruit_staff_signal, staff_level_up_signal
+from core.signals import recruit_staff_signal, staff_level_up_signal, training_got_reward_signal
 
 from config import (
     ConfigStaff, ConfigStaffHot, ConfigStaffRecruit,
@@ -318,17 +318,26 @@ class StaffManger(object):
         except IndexError:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_NOT_EXIST"))
 
-        if not self.is_training_finished(data['oid'], data['start_at']):
+        training_id = data['oid']
+
+        if not self.is_training_finished(training_id, data['start_at']):
             raise GameException(ConfigErrorMessage.get_error_id('TRAINING_NOT_FINISHED'))
 
         item = TrainingItem.loads_from_json(data['item'])
-        message = "Reward from training {0}".format(data['oid'])
-        Resource(self.server_id, self.char_id).save_training_item(staff_id, data['oid'], item, message=message)
+        message = "Reward from training {0}".format(training_id)
+        Resource(self.server_id, self.char_id).save_training_item(staff_id, training_id, item, message=message)
 
         trainings.pop(slot_id)
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {key: trainings}}
+        )
+
+        training_got_reward_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            training_id=training_id
         )
 
         self.send_notify(staff_ids=[staff_id])
