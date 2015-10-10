@@ -69,6 +69,7 @@ class ActiveValue(object):
         )
 
         self.send_function_notify(functions=[function_name])
+        self.send_value_notify()
 
     def get_reward(self, reward_id):
         config = ConfigActiveReward.get(reward_id)
