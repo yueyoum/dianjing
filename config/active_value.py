@@ -20,11 +20,10 @@ class ActiveReward(object):
 
 
 class ActiveFunction(object):
-    __slots__ = ['id', 'function_name', 'value', 'max_times']
+    __slots__ = ['id', 'value', 'max_times']
 
     def __init__(self):
         self.id = ''
-        self.function_name = ''
         self.value = 0
         self.max_times = 0
 
@@ -48,24 +47,6 @@ class ConfigActiveFunction(ConfigBase):
     INSTANCES = {}
     FILTER_CACHE = {}
 
-    FUNCTION_DICT = {}
-
-    @classmethod
-    def initialize(cls, fixture):
-        super(ConfigActiveFunction, cls).initialize(fixture)
-
-        for v in cls.INSTANCES.values():
-            cls.FUNCTION_DICT[v.function_name] = v
-
-    @classmethod
-    def get(cls, function_name):
-        """
-
-        :rtype : ActiveFunction
-        """
-
-        return cls.FUNCTION_DICT.get(function_name, None)
-
     @classmethod
     def all_functions(cls):
-        return cls.FUNCTION_DICT.keys()
+        return cls.INSTANCES.keys()
