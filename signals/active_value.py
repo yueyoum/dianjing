@@ -16,6 +16,7 @@ from core.signals import (
     challenge_match_signal,
     ladder_match_signal,
     friend_match_signal,
+    random_event_done_signal,
 )
 
 from config import ConfigTraining
@@ -47,3 +48,8 @@ def ladder_match_handler(server_id, char_id, target_id, win, **kwargs):
 @receiver(friend_match_signal, dispatch_uid='signals.active_value.friend_match_handler')
 def friend_match_handler(server_id, char_id, target_id, win, **kwargs):
     ActiveValue(server_id, char_id).trig("FUNCTION_FRIEND_MATCH")
+
+
+@receiver(random_event_done_signal, dispatch_uid='signals.active_value.random_event_done_handler')
+def random_event_done_handler(server_id, char_id, event_id, **kwargs):
+    ActiveValue(server_id, char_id).trig("FUNCTION_RANDOM_EVENT")

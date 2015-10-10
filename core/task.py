@@ -9,8 +9,9 @@ from core.package import Drop
 from core.resource import Resource
 from core.building import BuildingTaskCenter
 from core.common import CommonTask
+from core.signals import random_event_done_signal
 
-from config import ConfigErrorMessage, ConfigTask, ConfigBuilding
+from config import ConfigErrorMessage, ConfigTask, ConfigBuilding, ConfigRandomEvent
 
 from utils.message import MessagePipe
 
@@ -46,7 +47,7 @@ class TaskRefresh(object):
 
             task_num = task_center.get_level(level).value1
             try:
-                low_level_task_ids = random.sample(low_level_task_ids, task_num-1)
+                low_level_task_ids = random.sample(low_level_task_ids, task_num - 1)
             except ValueError:
                 pass
 
@@ -246,3 +247,27 @@ class TaskManager(object):
             s.drop.MergeFrom(Drop.generate(ConfigTask.get(k).package).make_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)
+
+
+class RandomEvent(object):
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+
+    def done(self, event_id):
+        config = ConfigRandomEvent.get(event_id)
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
+        random_event_done_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            event_id=event_id
+        )
+
+        drop = Drop.generate(config.package)
+        message = u"RandomEvent Done. {0}".format(event_id)
+        Resource(self.server_id, self.char_id).save_drop(drop, message)
+
+        return drop.make_protomsg()

@@ -60,6 +60,8 @@ urlpatterns = [
     url(r'^task/getreward/$', 'views.task.reward'),
     url(r'^task/doing/$', 'views.task.doing'),
 
+    url(r'^randomevent/done/$', 'views.task.random_event_done'),
+
     url(r'^chat/send/$', 'views.chat.send'),
 
     url(r'^notification/open/$', 'views.notification.open'),

@@ -21,7 +21,7 @@ from config.package import ConfigPackage
 from config.training import ConfigTraining
 from config.npc import ConfigNPC
 from config.skill import ConfigSkill
-from config.task import ConfigTask
+from config.task import ConfigTask, ConfigRandomEvent
 from config.club import ConfigClubLevel, ConfigClubFlag
 from config.ladder import ConfigLadderRankReward, ConfigLadderScoreStore
 from config.qianban import ConfigQianBan
@@ -97,6 +97,8 @@ def load_config():
             ConfigPolicy.initialize(data)
         elif item == 'task.json':
             ConfigTask.initialize(data)
+        elif item == 'random_event.json':
+            ConfigRandomEvent.initialize(data)
         elif item == 'club_level.json':
             ConfigClubLevel.initialize(data)
         elif item == 'club_flag.json':
