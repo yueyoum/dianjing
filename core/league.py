@@ -154,6 +154,7 @@ class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
                 race_win_rate = staff_winning_rate['win'] * 100 / staff_winning_rate['total']
                 race_rate[r] = race_win_rate
 
+            # rate格式 { staff_id:{'1':x, '2':x, '3':x}, ...}
             rate[s] = race_rate
 
         return rate
@@ -653,16 +654,6 @@ class League(object):
         club_info = league_group['clubs'][club_id]
         lc = LeagueClub(self.server_id, self.group_id, club_info)
         return lc.get_match_staffs_winning_rate()
-
-
-        # TODO real data
-        # winning_rate = {
-        #     't': 10,
-        #     'z': 10,
-        #     'p': 10,
-        # }
-
-        # return [(i, winning_rate) for i in range(10, 16)]
 
     def get_log(self, league_pair_id):
         event_id, pair_id = league_pair_id.split(':')

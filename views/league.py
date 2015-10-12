@@ -26,9 +26,9 @@ def get_statistics(request):
     for staff_id, winning_rate in data:
         ss = response.statistics.add()
         ss.staff_id = staff_id
-        ss.winning_rate_to_terran = winning_rate['t']
-        ss.winning_rate_to_zerg = winning_rate['z']
-        ss.winning_rate_to_protoss = winning_rate['p']
+        ss.winning_rate_to_terran = winning_rate['1']
+        ss.winning_rate_to_zerg = winning_rate['2']
+        ss.winning_rate_to_protoss = winning_rate['3']
 
     return ProtobufResponse(response)
 
