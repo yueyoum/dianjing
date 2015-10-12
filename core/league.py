@@ -167,14 +167,10 @@ class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
         projection_win = {"clubs.{0}.staff_winning_rate.{1}.{2}.win".format(club_id, r['self'], r['opp_race']): r['win']
                           for r in fight_info}
 
+        projection = dict(projection_total.items() + projection_win.items())
         MongoLeagueGroup.db(self.server_id).update_one(
             {'_id': group_id},
-            {'$inc': projection_total}
-        )
-
-        MongoLeagueGroup.db(self.server_id).update_one(
-            {'_id': group_id},
-            {'$inc': projection_win}
+            {'$inc': projection}
         )
 
 
@@ -219,14 +215,10 @@ class LeagueRealClub(LeagueBaseClubMixin, Club):
         projection_win = {"staff.staffs.{0}.winning_rate.{1}.win".format(self.char_id, r['opp_race']): r['win']
                           for r in fight_info}
 
+        projection = dict(projection_win.items() + projection_total.items())
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$inc': projection_total}
-        )
-
-        MongoStaff.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$inc': projection_win}
+            {'$inc': projection}
         )
 
 
