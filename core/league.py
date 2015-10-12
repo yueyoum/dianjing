@@ -112,7 +112,7 @@ class LeagueBaseClubMixin(object):
     def get_match_staffs_winning_rate(self):
         pass
 
-    def save_winning_rate(self, staff, race, winner=False):
+    def save_winning_rate(self, fight_info=None):
         pass
 
 
@@ -158,20 +158,24 @@ class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
 
         return rate
 
-    def save_winning_rate(self, staff, race, winner=False):
+    def save_winning_rate(self, fight_info=None):
         group_id, club_id = self.id.split(':')
 
-        if winner:
-            MongoLeagueGroup.db(self.server_id).update_one(
-                {'_id': group_id},
-                {'$inc': {"clubs.{0}.staff_winning_rate.{1}.{2}.total".format(club_id, staff, race): 1,
-                          "clubs.{0}.staff_winning_rate.{1}.{2}.win".format(club_id, staff, race): 1}}
-            )
-        else:
-            MongoLeagueGroup.db(self.server_id).update_one(
-                {'_id': group_id},
-                {'$inc': {"clubs.{0}.staff_winning_rate.{1}.{2}.total".format(club_id, staff, race): 1}}
-            )
+        projection_total = {"clubs.{0}.staff_winning_rate.{1}.{2}.total".format(club_id, r['self'], r['opp_race']): 1
+                            for r in fight_info}
+
+        projection_win = {"clubs.{0}.staff_winning_rate.{1}.{2}.win".format(club_id, r['self'], r['opp_race']): r['win']
+                          for r in fight_info}
+
+        MongoLeagueGroup.db(self.server_id).update_one(
+            {'_id': group_id},
+            {'$inc': projection_total}
+        )
+
+        MongoLeagueGroup.db(self.server_id).update_one(
+            {'_id': group_id},
+            {'$inc': projection_win}
+        )
 
 
 class LeagueRealClub(LeagueBaseClubMixin, Club):
@@ -208,18 +212,22 @@ class LeagueRealClub(LeagueBaseClubMixin, Club):
     def get_match_staffs_winning_rate(self):
         return self.get_staff_winning_rate(self.match_staffs)
 
-    def save_winning_rate(self, staff, race, winner=False):
-        if winner:
-            MongoStaff.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {'$inc': {"staffs.{0}.winning_rate.{1}.total".format(staff, race): 1,
-                          "staffs.{0}.winning_rate.{1}.win".format(staff, race): 1}}
-            )
-        else:
-            MongoLeagueGroup.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {'$inc': {"staffs.{0}.winning_rate.{1}.total".format(staff, race): 1}}
-            )
+    def save_winning_rate(self, fight_info=None):
+        projection_total = {"staff.staffs.{0}.winning_rate.{1}.total".format(self.char_id, r['opp_race']): 1
+                            for r in fight_info}
+
+        projection_win = {"staff.staffs.{0}.winning_rate.{1}.win".format(self.char_id, r['opp_race']): r['win']
+                          for r in fight_info}
+
+        MongoStaff.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$inc': projection_total}
+        )
+
+        MongoStaff.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$inc': projection_win}
+        )
 
 
 class LeagueClub(object):
@@ -253,6 +261,8 @@ class LeagueMatch(object):
         self.club_one_win = msg.club_one_win
 
         self.after_match()
+        self.club_one_object.save_winning_rate(match.get_club_one_fight_info())
+        self.club_two_object.save_winning_rate(match.get_club_two_fight_info())
 
         return msg
 

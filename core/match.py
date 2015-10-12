@@ -10,8 +10,7 @@ Description:
 import random
 from dianjing.exception import GameException
 
-
-from config import ConfigUnit, ConfigPolicy, ConfigErrorMessage, ConfigSkill
+from config import ConfigUnit, ConfigPolicy, ConfigErrorMessage, ConfigSkill, ConfigStaff
 
 from protomsg.match_pb2 import ClubMatch as MessageClubMatch
 from protomsg.match_pb2 import Match as MessageMatch
@@ -80,7 +79,6 @@ class Match(object):
         self.round_index = 0
         self.winning = None
 
-
     def round(self):
         msg = MessageRound()
         msg.round_index = self.round_index
@@ -113,7 +111,7 @@ class Match(object):
                 for name, percent in config_skill.addition_ids:
                     x += getattr(staff, name) * percent / 100.0
 
-                m = (config_skill.value_base + (staff.skills[skill_id]-1) * config_skill.level_grow) / 100.0
+                m = (config_skill.value_base + (staff.skills[skill_id] - 1) * config_skill.level_grow) / 100.0
                 j = (staff.xintai + staff.yishi + x) * m
 
             return (p, j)
@@ -146,7 +144,6 @@ class Match(object):
         msg.staff_two.advantage_end = int(self.advantage_two)
 
         return msg
-
 
     def start(self):
         msg = MessageMatch()
@@ -200,7 +197,8 @@ class ClubMatch(object):
         if not self.club_one.match_staffs_ready() or not self.club_two.match_staffs_ready():
             raise GameException(ConfigErrorMessage.get_error_id("MATCH_STAFF_NOT_READY"))
 
-        self.fight_info = {}
+        self.club_one_fight_info = []
+        self.club_two_fight_info = []
 
     def start(self):
         msg = MessageClubMatch()
@@ -220,12 +218,30 @@ class ClubMatch(object):
             msg_match = msg.match.add()
             msg_match.MergeFrom(match_msg)
 
+            staff_one_fight_info = {}
+            staff_two_fight_info = {}
+            staff_one_fight_info['self'] = staff_one.id
+            staff_two_fight_info['self'] = staff_two.id
+
+            staff_one_fight_info['opponent'] = staff_two.id
+            staff_two_fight_info['opponent'] = staff_one.id
+
+            race_two_cfg = ConfigStaff.get(staff_two.id)
+            staff_one_fight_info['opp_race'] = race_two_cfg.race
+            race_one_cfg = ConfigStaff.get(staff_two.id)
+            staff_two_fight_info['opp_race'] = race_one_cfg.race
+
             if match_msg.staff_one_win:
-                self.fight_info[staff_one] = {staff_two: True}
+                staff_one_fight_info['win'] = 1
+                staff_two_fight_info['win'] = 0
                 club_one_winning_times += 1
             else:
-                self.fight_info[staff_one] = {staff_two: False}
+                staff_one_fight_info['win'] = 0
+                staff_two_fight_info['win'] = 0
                 club_two_winning_times += 1
+
+            self.club_one_fight_info.append(staff_one_fight_info)
+            self.club_two_fight_info.append(staff_two_fight_info)
 
         if club_one_winning_times >= 3:
             msg.club_one_win = True
@@ -234,5 +250,8 @@ class ClubMatch(object):
 
         return msg
 
-    def get_fight_info(self):
-        return self.fight_info
+    def get_club_one_fight_info(self):
+        return self.club_one_fight_info
+
+    def get_club_two_fight_info(self):
+        return self.club_two_fight_info
