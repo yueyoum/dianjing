@@ -85,7 +85,7 @@ def match(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
-    friend_id = request._proto.friend_id
+    friend_id = request._proto.id
 
 
     fm = FriendManager(server_id, char_id)

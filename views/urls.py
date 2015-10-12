@@ -60,6 +60,8 @@ urlpatterns = [
     url(r'^task/getreward/$', 'views.task.reward'),
     url(r'^task/doing/$', 'views.task.doing'),
 
+    url(r'^randomevent/done/$', 'views.task.random_event_done'),
+
     url(r'^chat/send/$', 'views.chat.send'),
 
     url(r'^notification/open/$', 'views.notification.open'),
@@ -77,6 +79,8 @@ urlpatterns = [
     url(r'^sponsor/$', 'views.sponsor.sponsor'),
     url(r'^sponsor/getincome/$', 'views.sponsor.get_income'),
 
-    url(r'signin/$', 'views.activity.signin'),
-    url(r'activity/loginreward/$', 'views.activity.get_login_reward'),
+    url(r'^signin/$', 'views.activity.signin'),
+    url(r'^activity/loginreward/$', 'views.activity.get_login_reward'),
+
+    url(r'^activevalue/getreward/$', 'views.active_value.get_reward'),
 ]

@@ -1,7 +1,6 @@
-__author__ = 'hikaly'
 # -*- coding:utf-8 -*-
+
 from config.base import ConfigBase
-import random
 
 class Task(object):
     __slots__ = ['id', 'name', 'level',
@@ -24,6 +23,12 @@ class Task(object):
         return self.reward
 
 
+class RandomEvent(object):
+    __slots__ = ['id', 'package']
+    def __init__(self):
+        self.id = 0
+        self.package = 0
+
 class ConfigTask(ConfigBase):
     # 类实体
     EntityClass = Task
@@ -40,3 +45,16 @@ class ConfigTask(ConfigBase):
         """
         return super(ConfigTask, cls).get(id)
 
+
+class ConfigRandomEvent(ConfigBase):
+    EntityClass = RandomEvent
+    INSTANCES = {}
+    FILTER_CACHE = {}
+    
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype : RandomEvent
+        """
+        return super(ConfigRandomEvent, cls).get(_id)

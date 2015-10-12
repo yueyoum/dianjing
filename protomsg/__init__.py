@@ -65,6 +65,8 @@ MESSAGE_TO_ID = {
     "TaskGetRewardResponse": 1104,
     "TaskDoingRequest": 1105,
     "TaskDoingResponse": 1106,
+    "RandomEventDoneRequest": 1107,
+    "RandomEventDoneResponse": 1108,
     "FriendNotify": 1200,
     "FriendRemoveNotify": 1201,
     "FriendGetInfoRequest": 1202,
@@ -125,6 +127,10 @@ MESSAGE_TO_ID = {
     "ActivityLoginRewardNotify": 2004,
     "ActivityLoginRewardRequest": 2005,
     "ActivityLoginRewardResponse": 2006,
+    "ActiveValueNotify": 2100,
+    "ActiveFunctionNotify": 2101,
+    "ActiveValueGetRewardRequest": 2102,
+    "ActiveValueGetRewardResponse": 2103,
 }
 
 ID_TO_MESSAGE = {
@@ -193,6 +199,8 @@ ID_TO_MESSAGE = {
     1104: "TaskGetRewardResponse",
     1105: "TaskDoingRequest",
     1106: "TaskDoingResponse",
+    1107: "RandomEventDoneRequest",
+    1108: "RandomEventDoneResponse",
     1200: "FriendNotify",
     1201: "FriendRemoveNotify",
     1202: "FriendGetInfoRequest",
@@ -253,6 +261,10 @@ ID_TO_MESSAGE = {
     2004: "ActivityLoginRewardNotify",
     2005: "ActivityLoginRewardRequest",
     2006: "ActivityLoginRewardResponse",
+    2100: "ActiveValueNotify",
+    2101: "ActiveFunctionNotify",
+    2102: "ActiveValueGetRewardRequest",
+    2103: "ActiveValueGetRewardResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -281,6 +293,7 @@ PATH_TO_REQUEST = {
     "/game/task/acquire/": ["task", "TaskAcquireRequest"],
     "/game/task/getreward/": ["task", "TaskGetRewardRequest"],
     "/game/task/doing/": ["task", "TaskDoingRequest"],
+    "/game/randomevent/done/": ["task", "RandomEventDoneRequest"],
     "/game/friend/info/": ["friend", "FriendGetInfoRequest"],
     "/game/friend/add/": ["friend", "FriendAddRequest"],
     "/game/friend/remove/": ["friend", "FriendRemoveRequest"],
@@ -304,6 +317,7 @@ PATH_TO_REQUEST = {
     "/game/sponsor/getincome/": ["spread", "SponsorGetIncomeRequest"],
     "/game/signin/": ["activity", "ActivitySignInRequest"],
     "/game/activity/loginreward/": ["activity", "ActivityLoginRewardRequest"],
+    "/game/activevalue/getreward/": ["active_value", "ActiveValueGetRewardRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -332,6 +346,7 @@ PATH_TO_RESPONSE = {
     "/game/task/acquire/": ["task", "TaskAcquireResponse"],
     "/game/task/getreward/": ["task", "TaskGetRewardResponse"],
     "/game/task/doing/": ["task", "TaskDoingResponse"],
+    "/game/randomevent/done/": ["task", "RandomEventDoneResponse"],
     "/game/friend/info/": ["friend", "FriendGetInfoResponse"],
     "/game/friend/add/": ["friend", "FriendAddResponse"],
     "/game/friend/remove/": ["friend", "FriendRemoveResponse"],
@@ -355,4 +370,5 @@ PATH_TO_RESPONSE = {
     "/game/sponsor/getincome/": ["spread", "SponsorGetIncomeResponse"],
     "/game/signin/": ["activity", "ActivitySignInResponse"],
     "/game/activity/loginreward/": ["activity", "ActivityLoginRewardResponse"],
+    "/game/activevalue/getreward/": ["active_value", "ActiveValueGetRewardResponse"],
 }

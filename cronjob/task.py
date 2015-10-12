@@ -15,7 +15,7 @@ from core.task import TaskManager, TaskRefresh
 from cronjob.log import Logger
 
 
-@uwsgidecorators.cron(-10, -1, -1, -1, -1, target='spooler')
+@uwsgidecorators.cron(-30, -1, -1, -1, -1, target='spooler')
 def task_refresh(*args):
     logger = Logger("task_refresh")
     logger.write("Start")

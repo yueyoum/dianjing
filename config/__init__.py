@@ -21,7 +21,7 @@ from config.package import ConfigPackage
 from config.training import ConfigTraining
 from config.npc import ConfigNPC
 from config.skill import ConfigSkill
-from config.task import ConfigTask
+from config.task import ConfigTask, ConfigRandomEvent
 from config.club import ConfigClubLevel, ConfigClubFlag
 from config.ladder import ConfigLadderRankReward, ConfigLadderScoreStore
 from config.qianban import ConfigQianBan
@@ -29,6 +29,7 @@ from config.league import ConfigLeague
 from config.activity import ConfigActivityCategory
 from config.signin import ConfigSignIn
 from config.activity_login_reward import ConfigLoginReward
+from config.active_value import ConfigActiveFunction, ConfigActiveReward
 
 
 _has_configed = False
@@ -96,6 +97,8 @@ def load_config():
             ConfigPolicy.initialize(data)
         elif item == 'task.json':
             ConfigTask.initialize(data)
+        elif item == 'random_event.json':
+            ConfigRandomEvent.initialize(data)
         elif item == 'club_level.json':
             ConfigClubLevel.initialize(data)
         elif item == 'club_flag.json':
@@ -114,5 +117,9 @@ def load_config():
             ConfigSignIn.initialize(data)
         elif item == 'activity_login_reward.json':
             ConfigLoginReward.initialize(data)
+        elif item == 'active_function.json':
+            ConfigActiveFunction.initialize(data)
+        elif item == 'active_reward.json':
+            ConfigActiveReward.initialize(data)
 
     print "LOAD CONFIG FROM {0}".format(z_file)

@@ -469,3 +469,15 @@ class MongoSignIn(BaseDocument):
     @classmethod
     def document_sign(cls):
         return cls.SIGN_DOCUMENT.copy()
+
+
+# 活跃度
+class MongoActiveValue(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'value': 0,             # 活跃度
+        'rewards': [],          # 已经领奖的ID列表
+        'funcs': {},            # 已经触发的。 function_name: times
+    }
+
+    COLLECTION = 'active_value'
