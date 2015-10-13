@@ -197,8 +197,8 @@ class ClubMatch(object):
         if not self.club_one.match_staffs_ready() or not self.club_two.match_staffs_ready():
             raise GameException(ConfigErrorMessage.get_error_id("MATCH_STAFF_NOT_READY"))
 
-        self.club_one_fight_info = []
-        self.club_two_fight_info = []
+        self.club_one_fight_info = {}
+        self.club_two_fight_info = {}
 
     def start(self):
         msg = MessageClubMatch()
@@ -218,30 +218,13 @@ class ClubMatch(object):
             msg_match = msg.match.add()
             msg_match.MergeFrom(match_msg)
 
-            staff_one_fight_info = {}
-            staff_two_fight_info = {}
-            staff_one_fight_info['self'] = staff_one.id
-            staff_two_fight_info['self'] = staff_two.id
-
-            staff_one_fight_info['opponent'] = staff_two.id
-            staff_two_fight_info['opponent'] = staff_one.id
-
-            race_two_cfg = ConfigStaff.get(staff_two.id)
-            staff_one_fight_info['opp_race'] = race_two_cfg.race
-            race_one_cfg = ConfigStaff.get(staff_two.id)
-            staff_two_fight_info['opp_race'] = race_one_cfg.race
-
             if match_msg.staff_one_win:
-                staff_one_fight_info['win'] = 1
-                staff_two_fight_info['win'] = 0
                 club_one_winning_times += 1
             else:
-                staff_one_fight_info['win'] = 0
-                staff_two_fight_info['win'] = 0
                 club_two_winning_times += 1
 
-            self.club_one_fight_info.append(staff_one_fight_info)
-            self.club_two_fight_info.append(staff_two_fight_info)
+            self.club_one_fight_info[staff_one.id] = FightInfo(staff_two.id, match_msg.staff_one_win)
+            self.club_two_fight_info[staff_two.id] = FightInfo(staff_one.id, not match_msg.staff_one_win)
 
         if club_one_winning_times >= 3:
             msg.club_one_win = True
@@ -251,7 +234,23 @@ class ClubMatch(object):
         return msg
 
     def get_club_one_fight_info(self):
+        """
+
+        :rtype : dict[int, FightInfo]
+        """
         return self.club_one_fight_info
 
     def get_club_two_fight_info(self):
+        """
+        
+        :rtype: dict[int, FightInfo]
+        """
         return self.club_two_fight_info
+
+
+class FightInfo(object):
+    def __init__(self, rival, win=False):
+        self.riva = rival
+        self.win = win
+
+

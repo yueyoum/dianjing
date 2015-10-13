@@ -112,7 +112,7 @@ class LeagueBaseClubMixin(object):
     def get_match_staffs_winning_rate(self):
         pass
 
-    def save_winning_rate(self, fight_info=None):
+    def save_winning_rate(self, **kwargs):
         pass
 
 
@@ -149,29 +149,26 @@ class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
             }
 
             staff_winning_info = club.get('staff_winning_rate', {}).get(str(s), {})
-            for r in staff_winning_info:
-                staff_winning_rate = staff_winning_info[r]
-                race_win_rate = staff_winning_rate['win'] * 100 / staff_winning_rate['total']
-                race_rate[r] = race_win_rate
+            for k, v in staff_winning_info.iteritems():
+                race_rate[k] = v['win'] * 100 / v['total']
 
             # rate格式 { staff_id:{'1':x, '2':x, '3':x}, ...}
             rate[s] = race_rate
-
         return rate
 
-    def save_winning_rate(self, fight_info=None):
+    def save_winning_rate(self, **kwargs):
         group_id, club_id = self.id.split(':')
 
-        projection_total = {"clubs.{0}.staff_winning_rate.{1}.{2}.total".format(club_id, r['self'], r['opp_race']): 1
-                            for r in fight_info}
+        updater = {}
+        for k, v in kwargs.iteritems():
+            race_info = ConfigStaff.get(v.id)
+            updater['clubs.{0}.staff_winning_rate.{1}.{2}.total'.format(club_id, k, race_info.race)] = 1
+            if v.win:
+                updater['clubs.{0}.staff_winning_rate.{1}.{2}.win'.format(club_id, k, race_info.race)] = 1
 
-        projection_win = {"clubs.{0}.staff_winning_rate.{1}.{2}.win".format(club_id, r['self'], r['opp_race']): r['win']
-                          for r in fight_info}
-
-        projection = dict(projection_total, **projection_win)
         MongoLeagueGroup.db(self.server_id).update_one(
             {'_id': group_id},
-            {'$inc': projection}
+            {'$inc': updater}
         )
 
 
@@ -197,29 +194,27 @@ class LeagueRealClub(LeagueBaseClubMixin, Club):
                 '3': 0,
             }
             winning_rate = staffs[s].get('winning_rate', {})
-            for r in winning_rate:
-                race_win_rate = winning_rate[r]['win'] * 100 / winning_rate[r]['total']
-                race_rate[r] = race_win_rate
+            for k, v in winning_rate.iteritems():
+                race_rate[k] = v['win'] * 100 / v['total']
 
+            # example: rate ={'91': {'1':0.333, '2':0.555, '3': 0.9},  ... ]
             rate[s] = race_rate
-        # example: rate = [
-        #       {'91': {'1':0.333, '2':0.555, '3': 0.9}},  ... ]
         return rate
 
     def get_match_staffs_winning_rate(self):
         return self.get_staff_winning_rate(self.match_staffs)
 
-    def save_winning_rate(self, fight_info=None):
-        projection_total = {"staff.staffs.{0}.winning_rate.{1}.total".format(self.char_id, r['opp_race']): 1
-                            for r in fight_info}
+    def save_winning_rate(self, **kwargs):
+        updater = {}
+        for k, v in kwargs.iteritems():
+            race_info = ConfigStaff.get(v.id)
+            updater['staffs.{0}.winning_rate.{1}.total'.format(k, race_info.race)] = 1
+            if v.win:
+                updater['staffs.{0}.winning_rate.{1}.win'.format(k, race_info.race)] = 1
 
-        projection_win = {"staff.staffs.{0}.winning_rate.{1}.win".format(self.char_id, r['opp_race']): r['win']
-                          for r in fight_info}
-
-        projection = dict(projection_win, **projection_total)
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$inc': projection}
+            {'$inc': updater}
         )
 
 
@@ -254,7 +249,8 @@ class LeagueMatch(object):
         self.club_one_win = msg.club_one_win
 
         self.after_match()
-        self.club_one_object.save_winning_rate(match.get_club_one_fight_info())
+
+        self.club_one_object.save_winning_rate(match.get_club_one_fight_info)
         self.club_two_object.save_winning_rate(match.get_club_two_fight_info())
 
         return msg
@@ -653,6 +649,7 @@ class League(object):
 
         club_info = league_group['clubs'][club_id]
         lc = LeagueClub(self.server_id, self.group_id, club_info)
+
         return lc.get_match_staffs_winning_rate()
 
     def get_log(self, league_pair_id):
