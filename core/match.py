@@ -250,7 +250,7 @@ class ClubMatch(object):
 
 class FightInfo(object):
     def __init__(self, rival, win=False):
-        self.riva = rival
+        self.rival = rival
         self.win = win
 
 

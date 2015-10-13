@@ -149,8 +149,8 @@ class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
             }
 
             staff_winning_info = club.get('staff_winning_rate', {}).get(str(s), {})
-            for k, v in staff_winning_info.iteritems():
-                race_rate[k] = v['win'] * 100 / v['total']
+            for race, info in staff_winning_info.iteritems():
+                race_rate[str(race)] = info['win'] * 100 / info['total']
 
             # rate格式 { staff_id:{'1':x, '2':x, '3':x}, ...}
             rate[s] = race_rate
@@ -160,11 +160,11 @@ class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
         group_id, club_id = self.id.split(':')
 
         updater = {}
-        for k, v in kwargs.iteritems():
-            race_info = ConfigStaff.get(v.id)
-            updater['clubs.{0}.staff_winning_rate.{1}.{2}.total'.format(club_id, k, race_info.race)] = 1
-            if v.win:
-                updater['clubs.{0}.staff_winning_rate.{1}.{2}.win'.format(club_id, k, race_info.race)] = 1
+        for race, info in kwargs.iteritems():
+            race_info = ConfigStaff.get(info.rival)
+            updater['clubs.{0}.staff_winning_rate.{1}.{2}.total'.format(club_id, race, race_info.race)] = 1
+            if info.win:
+                updater['clubs.{0}.staff_winning_rate.{1}.{2}.win'.format(club_id, race, race_info.race)] = 1
 
         MongoLeagueGroup.db(self.server_id).update_one(
             {'_id': group_id},
@@ -194,8 +194,8 @@ class LeagueRealClub(LeagueBaseClubMixin, Club):
                 '3': 0,
             }
             winning_rate = staffs[s].get('winning_rate', {})
-            for k, v in winning_rate.iteritems():
-                race_rate[k] = v['win'] * 100 / v['total']
+            for race, info in winning_rate.iteritems():
+                race_rate[str(race)] = info['win'] * 100 / info['total']
 
             # example: rate ={'91': {'1':0.333, '2':0.555, '3': 0.9},  ... ]
             rate[s] = race_rate
