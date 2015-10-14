@@ -173,7 +173,7 @@ class SignActivity4(SignBaseActivity):
 
         while True:
             if next_day.day % 2 == 1:
-                return next_day
+                return arrow.get(next_day.date()).replace(tzinfo=self.now.tzinfo)
 
             next_day = next_day.replace(days=1)
 
@@ -192,7 +192,7 @@ class SignActivity5(SignBaseActivity):
 
         while True:
             if next_day.day % 2 == 0:
-                return next_day
+                return arrow.get(next_day.date()).replace(tzinfo=self.now.tzinfo)
 
             next_day = next_day.replace(days=1)
 
