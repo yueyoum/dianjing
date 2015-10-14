@@ -9,8 +9,8 @@ Description:
 
 from utils.http import ProtobufResponse
 
-from core.signin import SignIn
-from core.activity import ActivityLoginReward
+from core.activity.signin import SignIn
+from core.activity.login_reward import ActivityLoginReward
 
 from protomsg.activity_pb2 import ActivitySignInResponse, ActivityLoginRewardResponse
 

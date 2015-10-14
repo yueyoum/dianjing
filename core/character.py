@@ -45,7 +45,8 @@ class Character(object):
         TrainingBag(server_id, char_id).add_from_raw_training(1, send_notify=False)
 
     @property
-    def login_days(self):
+    def create_days(self):
+        # 从创建到现在是第几天。 从1开始
         doc = MongoCharacter.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'create_at': 1}
@@ -53,9 +54,8 @@ class Character(object):
 
         create_at = arrow.get(doc['create_at']).to(settings.TIME_ZONE)
         now = arrow.utcnow().to(settings.TIME_ZONE)
-
-        return (now.date() - create_at.date()).days
-
+        days = (now.date() - create_at.date()).days
+        return days + 1
 
     def set_login(self):
         from django.db.models import F
