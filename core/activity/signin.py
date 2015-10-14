@@ -246,14 +246,14 @@ class SignIn(object):
             MongoSignIn.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {'$set': {
-                    'sign.{0}'.format(sign_id): [se.now.format("YYYY-MM-DD HH:mm:ss")]
+                    'sign.{0}'.format(sign_id): [se.now.to('UTC').format("YYYY-MM-DD HH:mm:ss")]
                 }}
             )
         else:
             MongoSignIn.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {'$push': {
-                    'sign.{0}'.format(sign_id): se.now.format("YYYY-MM-DD HH:mm:ss")
+                    'sign.{0}'.format(sign_id): se.now.to('UTC').format("YYYY-MM-DD HH:mm:ss")
                 }}
             )
 
