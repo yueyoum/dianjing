@@ -10,8 +10,7 @@ Description:
 import random
 from dianjing.exception import GameException
 
-
-from config import ConfigUnit, ConfigPolicy, ConfigErrorMessage, ConfigSkill
+from config import ConfigUnit, ConfigPolicy, ConfigErrorMessage, ConfigSkill, ConfigStaff
 
 from protomsg.match_pb2 import ClubMatch as MessageClubMatch
 from protomsg.match_pb2 import Match as MessageMatch
@@ -80,7 +79,6 @@ class Match(object):
         self.round_index = 0
         self.winning = None
 
-
     def round(self):
         msg = MessageRound()
         msg.round_index = self.round_index
@@ -113,7 +111,7 @@ class Match(object):
                 for name, percent in config_skill.addition_ids:
                     x += getattr(staff, name) * percent / 100.0
 
-                m = (config_skill.value_base + (staff.skills[skill_id]-1) * config_skill.level_grow) / 100.0
+                m = (config_skill.value_base + (staff.skills[skill_id] - 1) * config_skill.level_grow) / 100.0
                 j = (staff.xintai + staff.yishi + x) * m
 
             return (p, j)
@@ -146,7 +144,6 @@ class Match(object):
         msg.staff_two.advantage_end = int(self.advantage_two)
 
         return msg
-
 
     def start(self):
         msg = MessageMatch()
@@ -200,6 +197,9 @@ class ClubMatch(object):
         if not self.club_one.match_staffs_ready() or not self.club_two.match_staffs_ready():
             raise GameException(ConfigErrorMessage.get_error_id("MATCH_STAFF_NOT_READY"))
 
+        self.club_one_fight_info = {}
+        self.club_two_fight_info = {}
+
     def start(self):
         msg = MessageClubMatch()
         msg.club_one.MergeFrom(self.club_one.make_protomsg())
@@ -223,9 +223,34 @@ class ClubMatch(object):
             else:
                 club_two_winning_times += 1
 
+            self.club_one_fight_info[staff_one.id] = FightInfo(staff_two.id, match_msg.staff_one_win)
+            self.club_two_fight_info[staff_two.id] = FightInfo(staff_one.id, not match_msg.staff_one_win)
+
         if club_one_winning_times >= 3:
             msg.club_one_win = True
         else:
             msg.club_one_win = False
 
         return msg
+
+    def get_club_one_fight_info(self):
+        """
+
+        :rtype : dict[int, FightInfo]
+        """
+        return self.club_one_fight_info
+
+    def get_club_two_fight_info(self):
+        """
+        
+        :rtype: dict[int, FightInfo]
+        """
+        return self.club_two_fight_info
+
+
+class FightInfo(object):
+    def __init__(self, rival, win=False):
+        self.rival = rival
+        self.win = win
+
+

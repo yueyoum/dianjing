@@ -125,6 +125,7 @@ class MongoStaff(BaseDocument):
         'status': 3,
         'skills': {},
         'trainings': [],
+        'winning_rate': {}
     }
 
     # 嵌入staff中
@@ -138,6 +139,12 @@ class MongoStaff(BaseDocument):
         'oid': null,
         'item': null,
         'start_at': null
+    }
+
+    # 嵌入到staff中
+    STAFF_WINNING_RATE_DOCUMENT = {
+        'win': 0,
+        'total': 0,
     }
 
     @classmethod
@@ -322,7 +329,14 @@ class MongoLeagueGroup(BaseDocument):
         'club_name': "",
         'manager_name': "",
         'club_flag': 1,
-        'staffs': []
+        'staffs': [],
+        # staff_winning_rate格式{staff_id: {'win': num, 'total': num}}
+        'staff_winning_rate': {}
+    }
+
+    STAFF_WINNING_RATE_DOCUMENT = {
+        'win': 0,
+        'total': 0
     }
 
     COLLECTION = "league_group"

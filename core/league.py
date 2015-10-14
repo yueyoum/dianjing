@@ -50,7 +50,7 @@ from django.conf import settings
 
 from dianjing.exception import GameException
 
-from core.mongo import MongoLeagueGroup, MongoLeagueEvent, MongoCharacter
+from core.mongo import MongoLeagueGroup, MongoLeagueEvent, MongoCharacter, MongoStaff
 from core.club import Club
 from core.match import ClubMatch
 from core.abstract import AbstractClub, AbstractStaff
@@ -106,15 +106,25 @@ class LeagueBaseClubMixin(object):
     def send_day_mail(self, *args, **kwargs):
         pass
 
+    def get_staff_winning_rate(self, staff_ids=None):
+        pass
+
+    def get_match_staffs_winning_rate(self):
+        pass
+
+    def save_winning_rate(self, **kwargs):
+        pass
+
 
 class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
-    def __init__(self, group_id, club_id, club_name, manager_name, club_flag, staffs):
+    def __init__(self, server_id, group_id, club_id, club_name, manager_name, club_flag, staffs):
         super(LeagueNPCClub, self).__init__()
 
         self.id = '{0}:{1}'.format(group_id, club_id)
         self.name = club_name
         self.manager_name = manager_name
         self.flag = club_flag
+        self.server_id = server_id
         # TODO
         self.policy = 1
 
@@ -122,18 +132,97 @@ class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
             self.match_staffs.append(s['id'])
             self.staffs[s['id']] = LeagueNPCStaff(s)
 
+    def get_match_staffs_winning_rate(self):
+        group_id, club_id = self.id.split(':')
+        data = MongoLeagueGroup.db(self.server_id).find_one(
+            {'_id': group_id},
+            {'clubs.{0}.staff_winning_rate'.format(club_id): 1}
+        )
+        club = data['clubs'][club_id]
+
+        rate = {}
+        for s in self.match_staffs:
+            race_rate = {
+                '1': 0,
+                '2': 0,
+                '3': 0,
+            }
+
+            staff_winning_info = club.get('staff_winning_rate', {}).get(str(s), {})
+            for race, info in staff_winning_info.iteritems():
+                race_rate[str(race)] = info['win'] * 100 / info['total']
+
+            # rate格式 { staff_id:{'1':x, '2':x, '3':x}, ...}
+            rate[s] = race_rate
+        return rate
+
+    def save_winning_rate(self, **kwargs):
+        group_id, club_id = self.id.split(':')
+
+        updater = {}
+        for race, info in kwargs.iteritems():
+            race_info = ConfigStaff.get(info.rival)
+            updater['clubs.{0}.staff_winning_rate.{1}.{2}.total'.format(club_id, race, race_info.race)] = 1
+            if info.win:
+                updater['clubs.{0}.staff_winning_rate.{1}.{2}.win'.format(club_id, race, race_info.race)] = 1
+
+        MongoLeagueGroup.db(self.server_id).update_one(
+            {'_id': group_id},
+            {'$inc': updater}
+        )
+
 
 class LeagueRealClub(LeagueBaseClubMixin, Club):
     def send_day_mail(self, title, content, attachment):
         m = MailManager(self.server_id, self.char_id)
         m.add(title, content, attachment=attachment)
 
+    def get_staff_winning_rate(self, staff_ids=None):
+        if staff_ids:
+            projection = {'staffs.{0}'.format(s): 1 for s in staff_ids}
+        else:
+            projection = {'staffs': 1}
+
+        data = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, projection)
+        staffs = data['staffs']
+
+        rate = {}
+        for s in staffs:
+            race_rate = {
+                '1': 0,
+                '2': 0,
+                '3': 0,
+            }
+            winning_rate = staffs[s].get('winning_rate', {})
+            for race, info in winning_rate.iteritems():
+                race_rate[str(race)] = info['win'] * 100 / info['total']
+
+            # example: rate ={'91': {'1':0.333, '2':0.555, '3': 0.9},  ... ]
+            rate[s] = race_rate
+        return rate
+
+    def get_match_staffs_winning_rate(self):
+        return self.get_staff_winning_rate(self.match_staffs)
+
+    def save_winning_rate(self, **kwargs):
+        updater = {}
+        for k, v in kwargs.iteritems():
+            race_info = ConfigStaff.get(v.id)
+            updater['staffs.{0}.winning_rate.{1}.total'.format(k, race_info.race)] = 1
+            if v.win:
+                updater['staffs.{0}.winning_rate.{1}.win'.format(k, race_info.race)] = 1
+
+        MongoStaff.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$inc': updater}
+        )
+
 
 class LeagueClub(object):
     def __new__(cls, server_id, group_id, club):
         # club 是存在mongo中的数据
         if club['club_name']:
-            return LeagueNPCClub(group_id, club['club_id'], club['club_name'], club['manager_name'], club['club_flag'],
+            return LeagueNPCClub(server_id, group_id, club['club_id'], club['club_name'], club['manager_name'], club['club_flag'],
                                  club['staffs'])
 
         return LeagueRealClub(server_id, int(club['club_id']))
@@ -160,6 +249,10 @@ class LeagueMatch(object):
         self.club_one_win = msg.club_one_win
 
         self.after_match()
+
+        self.club_one_object.save_winning_rate(match.get_club_one_fight_info)
+        self.club_two_object.save_winning_rate(match.get_club_two_fight_info())
+
         return msg
 
     def after_match(self):
@@ -555,15 +648,9 @@ class League(object):
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         club_info = league_group['clubs'][club_id]
+        lc = LeagueClub(self.server_id, self.group_id, club_info)
 
-        # TODO real data
-        winning_rate = {
-            't': 10,
-            'z': 10,
-            'p': 10,
-        }
-
-        return [(i, winning_rate) for i in range(10, 16)]
+        return lc.get_match_staffs_winning_rate()
 
     def get_log(self, league_pair_id):
         event_id, pair_id = league_pair_id.split(':')
