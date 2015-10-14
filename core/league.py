@@ -107,13 +107,17 @@ class LeagueBaseClubMixin(object):
         pass
 
     def get_staff_winning_rate(self, staff_ids=None):
-        pass
+        raise NotImplementedError()
 
     def get_match_staffs_winning_rate(self):
-        pass
+        raise NotImplementedError()
 
-    def save_winning_rate(self, **kwargs):
-        pass
+    def save_winning_rate(self, fight_info):
+        """
+
+        :type fight_info: dict[int, core.match.FightInfo]
+        """
+        raise NotImplementedError()
 
 
 class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
@@ -156,15 +160,19 @@ class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
             rate[s] = race_rate
         return rate
 
-    def save_winning_rate(self, **kwargs):
+    def save_winning_rate(self, fight_info):
+        """
+
+        :type fight_info: dict[int, core.match.FightInfo]
+        """
         group_id, club_id = self.id.split(':')
 
         updater = {}
-        for race, info in kwargs.iteritems():
-            race_info = ConfigStaff.get(info.rival)
-            updater['clubs.{0}.staff_winning_rate.{1}.{2}.total'.format(club_id, race, race_info.race)] = 1
+        for staff_id, info in fight_info.iteritems():
+            config_rival = ConfigStaff.get(info.rival)
+            updater['clubs.{0}.staff_winning_rate.{1}.{2}.total'.format(club_id, staff_id, config_rival.race)] = 1
             if info.win:
-                updater['clubs.{0}.staff_winning_rate.{1}.{2}.win'.format(club_id, race, race_info.race)] = 1
+                updater['clubs.{0}.staff_winning_rate.{1}.{2}.win'.format(club_id, staff_id, config_rival.race)] = 1
 
         MongoLeagueGroup.db(self.server_id).update_one(
             {'_id': group_id},
@@ -204,13 +212,17 @@ class LeagueRealClub(LeagueBaseClubMixin, Club):
     def get_match_staffs_winning_rate(self):
         return self.get_staff_winning_rate(self.match_staffs)
 
-    def save_winning_rate(self, **kwargs):
+    def save_winning_rate(self, fight_info):
+        """
+
+        :type fight_info: dict[int, core.match.FightInfo]
+        """
         updater = {}
-        for k, v in kwargs.iteritems():
-            race_info = ConfigStaff.get(v.id)
-            updater['staffs.{0}.winning_rate.{1}.total'.format(k, race_info.race)] = 1
+        for k, v in fight_info.iteritems():
+            config_rival = ConfigStaff.get(v.rival)
+            updater['staffs.{0}.winning_rate.{1}.total'.format(k, config_rival.race)] = 1
             if v.win:
-                updater['staffs.{0}.winning_rate.{1}.win'.format(k, race_info.race)] = 1
+                updater['staffs.{0}.winning_rate.{1}.win'.format(k, config_rival.race)] = 1
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -250,7 +262,7 @@ class LeagueMatch(object):
 
         self.after_match()
 
-        self.club_one_object.save_winning_rate(match.get_club_one_fight_info)
+        self.club_one_object.save_winning_rate(match.get_club_one_fight_info())
         self.club_two_object.save_winning_rate(match.get_club_two_fight_info())
 
         return msg
