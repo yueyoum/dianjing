@@ -455,20 +455,10 @@ class MongoActivity(BaseDocument):
 class MongoSignIn(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        'sign': {}
-    }
-
-    SIGN_DOCUMENT = {
-        'last_sign_at': 0,      # 日期
-        'last_sign_day': 0,     # day 是对应配置中的第几天。而不是真是日期中的天
-        'is_continued': True,
+        'sign': {},     # sign_id: [dates, dates...]
     }
 
     COLLECTION = "sign_in"
-
-    @classmethod
-    def document_sign(cls):
-        return cls.SIGN_DOCUMENT.copy()
 
 
 # 活跃度

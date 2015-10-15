@@ -10,26 +10,22 @@ Description:
 from config.base import ConfigBase
 
 class SignIn(object):
-    __slots__ = ['id', 'circle_times', 'circle_package',
-                 'valid_test_divisor', 'valid_test_value',
+    __slots__ = ['id', 'circle_package',
                  'day_reward',
                  'mail_title', 'mail_content',
-
-                 'days',
-                 'max_day',
+                 'days'
                  ]
 
     def __init__(self):
         self.id = 0
-        self.circle_times = 0
         self.circle_package = 0
-        self.valid_test_divisor = 0
-        self.valid_test_value = 0
-        self.day_reward = 0
-        self.mail_title = 0
-        self.mail_content = 0
+        self.day_reward = {}
+        self.mail_title = ''
+        self.mail_content = ''
         self.days = []
-        self.max_day = 0
+
+    def get_package_id(self, day):
+        return self.day_reward[day]
 
 
 class ConfigSignIn(ConfigBase):
@@ -45,8 +41,7 @@ class ConfigSignIn(ConfigBase):
             i.day_reward = {int(k): v for k, v in i.day_reward.iteritems()}
             i.days = i.day_reward.keys()
             i.days.sort()
-            i.max_day = max(i.days)
-    
+
     @classmethod
     def get(cls, _id):
         """

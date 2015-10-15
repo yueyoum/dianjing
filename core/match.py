@@ -10,7 +10,7 @@ Description:
 import random
 from dianjing.exception import GameException
 
-from config import ConfigUnit, ConfigPolicy, ConfigErrorMessage, ConfigSkill, ConfigStaff
+from config import ConfigUnit, ConfigPolicy, ConfigErrorMessage, ConfigSkill
 
 from protomsg.match_pb2 import ClubMatch as MessageClubMatch
 from protomsg.match_pb2 import Match as MessageMatch
@@ -114,7 +114,7 @@ class Match(object):
                 m = (config_skill.value_base + (staff.skills[skill_id] - 1) * config_skill.level_grow) / 100.0
                 j = (staff.xintai + staff.yishi + x) * m
 
-            return (p, j)
+            return p, j
 
         pone, jone = calculate(self.staff_one, unit_one)
         ptwo, jtwo = calculate(self.staff_two, unit_two)
@@ -129,7 +129,6 @@ class Match(object):
         else:
             self.advantage_one += abs(y)
             self.advantage_two -= abs(y)
-
 
         # policy addition
         config_policy = ConfigPolicy.get(self.policy_one)
@@ -252,5 +251,3 @@ class FightInfo(object):
     def __init__(self, rival, win=False):
         self.rival = rival
         self.win = win
-
-

@@ -27,8 +27,9 @@ from core.notification import Notification
 from core.ladder import Ladder, LadderStore
 from core.statistics import FinanceStatistics
 from core.sponsor import SponsorManager
-from core.activity import ActivityCategory, ActivityLoginReward
-from core.signin import SignIn
+from core.activity import ActivityCategory
+from core.activity.login_reward import ActivityLoginReward
+from core.activity.signin import SignIn
 from core.active_value import ActiveValue
 
 

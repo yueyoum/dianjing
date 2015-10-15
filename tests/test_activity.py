@@ -9,7 +9,7 @@ Description:
 from dianjing.exception import GameException
 
 from core.mongo import MongoActivity
-from core.activity import ActivityLoginReward
+from core.activity.login_reward import ActivityLoginReward
 from config import ConfigErrorMessage, ConfigLoginReward
 
 class TestLoginReward(object):
