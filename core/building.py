@@ -6,6 +6,7 @@ Date Created:   2015-07-21 00:33
 Description:
 
 """
+import arrow
 
 from dianjing.exception import GameException
 
@@ -20,12 +21,12 @@ from utils.message import MessagePipe
 from protomsg.building_pb2 import BuildingNotify
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
-BUILDING_HEADQUARTERS = 1       # 总部大楼
-BUILDING_TRAINING_CENTER = 2    # 任务中心
-BUILDING_STAFF_CENTER = 3       # 员工中心
-BUILDING_TASK_CENTER = 4        # 任务中心
-BUILDING_LEAGUE_CENTER = 5      # 联赛中心
-BUILDING_SPONSOR_CENTER = 6     # 赞助商中心
+BUILDING_HEADQUARTERS = 1  # 总部大楼
+BUILDING_TRAINING_CENTER = 2  # 任务中心
+BUILDING_STAFF_CENTER = 3  # 员工中心
+BUILDING_TASK_CENTER = 4  # 任务中心
+BUILDING_LEAGUE_CENTER = 5  # 联赛中心
+BUILDING_SPONSOR_CENTER = 6  # 赞助商中心
 
 
 class BuildingManager(object):
@@ -37,13 +38,18 @@ class BuildingManager(object):
         if not doc:
             doc = MongoBuilding.document()
             doc['_id'] = self.char_id
-            doc['buildings'] = {str(i): 1 for i in ConfigBuilding.INSTANCES.keys()}
+            doc['buildings'] = {str(i): {'current_level': 1,
+                                         'complete_time': -1} for i in ConfigBuilding.INSTANCES.keys()}
             MongoBuilding.db(server_id).insert_one(doc)
         else:
             updater = {}
             for i in ConfigBuilding.INSTANCES.keys():
+                # 检查建筑升级是佛完成
+                self.levelup_confirm(i, False)
+
                 if str(i) not in doc['buildings']:
-                    updater['buildings.{0}'.format(i)] = 1
+                    updater['buildings.{0}.current_level'.format(i)] = 1
+                    updater['buildings.{0}.complete_time'.format(i)] = -1
 
             if updater:
                 MongoBuilding.db(server_id).update_one(
@@ -76,16 +82,35 @@ class BuildingManager(object):
 
         check = {
             "gold": -b.get_level(current_level).up_need_gold,
-            "message": u"Building {0} level up to {1}".format(building_id, current_level+1)
+            "message": u"Building {0} level up to {1}".format(building_id, current_level + 1)
         }
 
         with Resource(self.server_id, self.char_id).check(**check):
+            complete_time = arrow.utcnow().timestamp + b.get_level(current_level).up_need_minutes * 60
             MongoBuilding.db(self.server_id).update_one(
                 {'_id': self.char_id},
-                {'$set': {'buildings.{0}'.format(building_id): current_level+1}}
+                {'$set': {'buildings.{0}.complete_time'.format(building_id): complete_time}}
             )
 
         self.send_notify(building_ids=[building_id])
+
+    def levelup_confirm(self, building_id, is_send_notify=True):
+        building_data = MongoBuilding.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'buildings.{0}'.format(building_id): 1}
+        )
+
+        current_level = self.get_level(building_id)
+        up_finish_timestamp = building_data['buildings'][str(building_id)]['complete_time']
+        if up_finish_timestamp <= arrow.utcnow().timestamp:
+            MongoBuilding.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {'buildings.{0}.complete_time'.format(building_id): -1,
+                          'buildings.{0}.current_level'.format(building_id): current_level + 1}}
+            )
+
+        if is_send_notify:
+            self.send_notify(building_ids=[building_id])
 
     def send_notify(self, building_ids=None):
         if building_ids:
@@ -137,6 +162,7 @@ class BuildingTaskCenter(BaseBuilding):
 
 class BuildingLeagueCenter(BaseBuilding):
     BUILDING_ID = BUILDING_LEAGUE_CENTER
+
 
 class BuildingSponsorCenter(BaseBuilding):
     BUILDING_ID = BUILDING_SPONSOR_CENTER

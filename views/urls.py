@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^challenge/start/$', 'views.challenge.start'),
 
     url(r'^building/levelup/$', 'views.building.levelup'),
+    url(r'^building/levelup/confirm/$', 'views.building.levelup_confirm'),
 
     url(r'^training/buy/$', 'views.training.buy'),
     url(r'^training/refresh/$', 'views.training.refresh'),
