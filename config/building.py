@@ -11,13 +11,15 @@ from config.base import ConfigBase
 
 
 class BuildingLevel(object):
-    __slots__ = ['level', 'up_need_club_level', 'up_need_gold', 'up_need_diamond', 'value1', 'value2']
+    __slots__ = ['level', 'up_need_club_level', 'up_need_gold', 'up_need_diamond',
+                 'up_need_time_min', 'value1', 'value2']
 
     def __init__(self):
         self.level = 0
         self.up_need_club_level = 0
         self.up_need_gold = 0
         self.up_need_diamond = 0
+        self.up_need_time_min = 0
         self.value1 = 0
         self.value2 = 0
 
