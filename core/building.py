@@ -100,18 +100,19 @@ class BuildingManager(object):
             projection = {'buildings.{0}'.format(i): 1 for i in building_ids}
 
         building_data = MongoBuilding.db(self.server_id).find_one(
-                {'_id': self.char_id},
-                {projection}
+            {'_id': self.char_id},
+            {projection}
         )
 
         updater = {}
-        now_timestamp = arrow.utcnow().timestamp()
+        now_timestamp = arrow.utcnow().timestamp
         for k, v in building_data['buildings'].iteritems():
-            current_level = v.get('current_level', 1)
-            up_finish_timestamp = v.get('complete_time', 1)
-            if now_timestamp >= up_finish_timestamp:
-                updater['buildings.{0}.current_level'.format(k)] = current_level+1
-                updater['buildings.{0}.complete_time'.format(k)] = -1
+            current_level = v['current_level']
+            up_finish_timestamp = v['complete_time']
+            if up_finish_timestamp > -1:
+                if now_timestamp >= up_finish_timestamp:
+                    updater['buildings.{0}.current_level'.format(k)] = current_level + 1
+                    updater['buildings.{0}.complete_time'.format(k)] = -1
 
         if updater:
             MongoBuilding.db(self.server_id).update_one(
@@ -141,6 +142,7 @@ class BuildingManager(object):
             notify_building = notify.buildings.add()
             notify_building.id = b.id
             notify_building.level = doc['buildings'][str(b.id)]['current_level']
+            notify_building.up_finish_timestamp = doc['building'][str(b.id)]['complete_time']
 
         MessagePipe(self.char_id).put(msg=notify)
 
