@@ -44,9 +44,6 @@ class BuildingManager(object):
         else:
             updater = {}
             for i in ConfigBuilding.INSTANCES.keys():
-                # 检查建筑升级是佛完成
-                self.levelup_confirm(i, False)
-
                 if str(i) not in doc['buildings']:
                     updater['buildings.{0}.current_level'.format(i)] = 1
                     updater['buildings.{0}.complete_time'.format(i)] = -1
@@ -56,14 +53,16 @@ class BuildingManager(object):
                     {'_id': self.char_id},
                     {'$set': updater}
                 )
+        # 检查建筑升级是佛完成
+        self.levelup_confirm(None, False)
 
     def get_level(self, building_id):
         doc = MongoBuilding.db(self.server_id).find_one(
             {'_id': self.char_id},
-            {'buildings.{0}'.format(building_id): 1}
+            {'buildings.{0}.current_level'.format(building_id): 1}
         )
 
-        return doc['buildings'].get(str(building_id), 1)
+        return doc['buildings'].get(str(building_id), {}).get('current_level', 1)
 
     def level_up(self, building_id):
         b = ConfigBuilding.get(building_id)
@@ -94,23 +93,34 @@ class BuildingManager(object):
 
         self.send_notify(building_ids=[building_id])
 
-    def levelup_confirm(self, building_id, is_send_notify=True):
+    def levelup_confirm(self, building_ids=None, send_notify=True):
+        if building_ids:
+            projection = {'buildings': 1}
+        else:
+            projection = {'buildings.{0}'.format(i): 1 for i in building_ids}
+
         building_data = MongoBuilding.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {'buildings.{0}'.format(building_id): 1}
+                {'_id': self.char_id},
+                {projection}
         )
 
-        current_level = self.get_level(building_id)
-        up_finish_timestamp = building_data['buildings'][str(building_id)]['complete_time']
-        if up_finish_timestamp <= arrow.utcnow().timestamp:
+        updater = {}
+        now_timestamp = arrow.utcnow().timestamp()
+        for k, v in building_data['buildings'].iteritems():
+            current_level = v.get('current_level', 1)
+            up_finish_timestamp = v.get('complete_time', 1)
+            if now_timestamp >= up_finish_timestamp:
+                updater['buildings.{0}.current_level'.format(k)] = current_level+1
+                updater['buildings.{0}.complete_time'.format(k)] = -1
+
+        if updater:
             MongoBuilding.db(self.server_id).update_one(
                 {'_id': self.char_id},
-                {'$set': {'buildings.{0}.complete_time'.format(building_id): -1,
-                          'buildings.{0}.current_level'.format(building_id): current_level + 1}}
+                {'$set': updater}
             )
 
-        if is_send_notify:
-            self.send_notify(building_ids=[building_id])
+        if send_notify:
+            self.send_notify(building_ids=[building_ids])
 
     def send_notify(self, building_ids=None):
         if building_ids:
@@ -130,7 +140,7 @@ class BuildingManager(object):
 
             notify_building = notify.buildings.add()
             notify_building.id = b.id
-            notify_building.level = doc['buildings'][str(b.id)]
+            notify_building.level = doc['buildings'][str(b.id)]['current_level']
 
         MessagePipe(self.char_id).put(msg=notify)
 
