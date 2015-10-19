@@ -95,13 +95,13 @@ class BuildingManager(object):
 
     def levelup_confirm(self, building_ids=None, send_notify=True):
         if building_ids:
-            projection = {'buildings': 1}
-        else:
             projection = {'buildings.{0}'.format(i): 1 for i in building_ids}
+        else:
+            projection = {'buildings': 1}
 
         building_data = MongoBuilding.db(self.server_id).find_one(
             {'_id': self.char_id},
-            {projection}
+            projection
         )
 
         updater = {}
@@ -142,7 +142,7 @@ class BuildingManager(object):
             notify_building = notify.buildings.add()
             notify_building.id = b.id
             notify_building.level = doc['buildings'][str(b.id)]['current_level']
-            notify_building.up_finish_timestamp = doc['building'][str(b.id)]['complete_time']
+            notify_building.up_finish_timestamp = doc['buildings'][str(b.id)]['complete_time']
 
         MessagePipe(self.char_id).put(msg=notify)
 

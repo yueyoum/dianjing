@@ -51,7 +51,7 @@ INSTALLED_APPS = (
     'apps.system',
     'apps.statistics',
     'apps.history_record',
-    'background',
+    # 'background',
 )
 
 MIDDLEWARE_CLASSES = (

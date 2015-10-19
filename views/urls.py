@@ -33,12 +33,11 @@ urlpatterns = [
     url(r'^building/levelup/$', 'views.building.levelup'),
     url(r'^building/levelup/confirm/$', 'views.building.levelup_confirm'),
 
-    url(r'^training/buy/$', 'views.training.buy'),
-    url(r'^training/refresh/$', 'views.training.refresh'),
+    url(r'^training/exp/start/$', 'views.training.exp_start'),
+    url(r'^training/exp/cancel/$', 'views.training.exp_cancel'),
+    url(r'^training/exp/speedup/$', 'views.training.exp_speedup'),
+    url(r'^training/exp/getreward/$', 'views.training.exp_get_reward'),
 
-    url(r'^staff/training/$', 'views.training.training'),
-
-    url(r'^staff/training/getreward/$', 'views.staff.training_get_reward'),
     #
     url(r'^league/statistics/$', 'views.league.get_statistics'),
     url(r'^league/log/$', 'views.league.get_log'),

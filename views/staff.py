@@ -13,7 +13,6 @@ from core.staff import StaffRecruit, StaffManger
 from protomsg.staff_pb2 import (
     StaffRecruitRefreshResponse,
     StaffRecruitResponse,
-    StaffTrainingGetRewardResponse,
     StaffFireResponse,
 )
 
@@ -56,20 +55,5 @@ def fire(request):
     sm.remove(staff_id)
 
     response = StaffFireResponse()
-    response.ret = 0
-    return ProtobufResponse(response)
-
-
-def training_get_reward(request):
-    server_id = request._game_session.server_id
-    char_id = request._game_session.char_id
-
-    staff_id = request._proto.staff_id
-    slot_id = request._proto.slot_id
-
-    sm = StaffManger(server_id, char_id)
-    sm.training_get_reward(staff_id, slot_id)
-
-    response = StaffTrainingGetRewardResponse()
     response.ret = 0
     return ProtobufResponse(response)

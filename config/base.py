@@ -9,6 +9,7 @@ Description:
 
 import json
 
+
 class ConfigBase(object):
     EntityClass = None
 
@@ -32,12 +33,9 @@ class ConfigBase(object):
     def all_values(cls):
         return cls.INSTANCES.values()
 
-
     @classmethod
-    def get(cls, id):
-        return cls.INSTANCES.get(id, None)
-
-
+    def get(cls, _id):
+        return cls.INSTANCES.get(_id, None)
 
     @classmethod
     def filter(cls, **condition):
@@ -56,7 +54,6 @@ class ConfigBase(object):
             cls.FILTER_CACHE[cache_key] = result
 
         return cls.FILTER_CACHE[cache_key]
-
 
     @classmethod
     def _do_filter(cls, obj, **condition):

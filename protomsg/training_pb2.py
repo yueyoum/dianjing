@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='training.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=b'\n\x0etraining.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"R\n\x08Training\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0b\n\x03oid\x18\x02 \x02(\x05\x12-\n\x04item\x18\x03 \x02(\x0b\x32\x1f.Dianjing.protocol.TrainingItem\"~\n\x13TrainingStoreNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12.\n\ttrainings\x18\x03 \x03(\x0b\x32\x1b.Dianjing.protocol.Training\"9\n\x19TrainingStoreRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t\".\n\x1bTrainingStoreRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"<\n\x1cTrainingStoreRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"y\n\x0eTrainingNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12.\n\ttrainings\x18\x03 \x03(\x0b\x32\x1b.Dianjing.protocol.Training\"4\n\x14TrainingRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t\"1\n\x12TrainingBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"3\n\x13TrainingBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c'
+  serialized_pb=b'\n\x0etraining.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\xce\x02\n\x15TrainingExpSlotNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12G\n\x05slots\x18\x03 \x03(\x0b\x32\x38.Dianjing.protocol.TrainingExpSlotNotify.TrainingExpSlot\x1a\xb2\x01\n\x0fTrainingExpSlot\x12\n\n\x02id\x18\x01 \x02(\x05\x12U\n\x05staff\x18\x02 \x01(\x0b\x32\x46.Dianjing.protocol.TrainingExpSlotNotify.TrainingExpSlot.TrainingStaff\x1a<\n\rTrainingStaff\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0f\n\x07got_exp\x18\x02 \x02(\x05\x12\x0e\n\x06\x65nd_at\x18\x03 \x02(\x03\"M\n\x17TrainingExpStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x10\n\x08staff_id\x18\x03 \x02(\x05\"8\n\x18TrainingExpStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"<\n\x18TrainingExpCancelRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\"h\n\x19TrainingExpCancelResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12-\n\x08property\x18\x03 \x01(\x0b\x32\x1b.Dianjing.protocol.Property\"=\n\x19TrainingExpSpeedupRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\":\n\x1aTrainingExpSpeedupResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"?\n\x1bTrainingExpGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\"k\n\x1cTrainingExpGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12-\n\x08property\x18\x03 \x01(\x0b\x32\x1b.Dianjing.protocol.Property\"\xdd\x02\n\x16TrainingPropertyNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12G\n\x06staffs\x18\x03 \x03(\x0b\x32\x37.Dianjing.protocol.TrainingPropertyNotify.TrainingStaff\x1a\xc0\x01\n\rTrainingStaff\x12\x10\n\x08staff_id\x18\x01 \x02(\x05\x12W\n\ttrainings\x18\x02 \x03(\x0b\x32\x44.Dianjing.protocol.TrainingPropertyNotify.TrainingStaff.TrainingItem\x1a\x44\n\x0cTrainingItem\x12\x0f\n\x07slot_id\x18\x01 \x02(\x05\x12\x13\n\x0btraining_id\x18\x02 \x02(\x05\x12\x0e\n\x06\x65nd_at\x18\x03 \x02(\x03\"V\n\x1cTrainingPropertyStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x13\n\x0btraining_id\x18\x03 \x02(\x05\"=\n\x1dTrainingPropertyStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"S\n\x1dTrainingPropertyCancelRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\">\n\x1eTrainingPropertyCancelResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"T\n\x1eTrainingPropertySpeedupRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\"?\n\x1fTrainingPropertySpeedupResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"V\n TrainingPropertyGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\"p\n!TrainingPropertyGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12-\n\x08property\x18\x03 \x01(\x0b\x32\x1b.Dianjing.protocol.Property'
   ,
   dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -27,30 +27,277 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
-_TRAINING = _descriptor.Descriptor(
-  name='Training',
-  full_name='Dianjing.protocol.Training',
+_TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT_TRAININGSTAFF = _descriptor.Descriptor(
+  name='TrainingStaff',
+  full_name='Dianjing.protocol.TrainingExpSlotNotify.TrainingExpSlot.TrainingStaff',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='id', full_name='Dianjing.protocol.Training.id', index=0,
-      number=1, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      name='id', full_name='Dianjing.protocol.TrainingExpSlotNotify.TrainingExpSlot.TrainingStaff.id', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='oid', full_name='Dianjing.protocol.Training.oid', index=1,
+      name='got_exp', full_name='Dianjing.protocol.TrainingExpSlotNotify.TrainingExpSlot.TrainingStaff.got_exp', index=1,
       number=2, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='item', full_name='Dianjing.protocol.Training.item', index=2,
-      number=3, type=11, cpp_type=10, label=2,
+      name='end_at', full_name='Dianjing.protocol.TrainingExpSlotNotify.TrainingExpSlot.TrainingStaff.end_at', index=2,
+      number=3, type=3, cpp_type=2, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=341,
+  serialized_end=401,
+)
+
+_TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT = _descriptor.Descriptor(
+  name='TrainingExpSlot',
+  full_name='Dianjing.protocol.TrainingExpSlotNotify.TrainingExpSlot',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.TrainingExpSlotNotify.TrainingExpSlot.id', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='staff', full_name='Dianjing.protocol.TrainingExpSlotNotify.TrainingExpSlot.staff', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[_TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT_TRAININGSTAFF, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=223,
+  serialized_end=401,
+)
+
+_TRAININGEXPSLOTNOTIFY = _descriptor.Descriptor(
+  name='TrainingExpSlotNotify',
+  full_name='Dianjing.protocol.TrainingExpSlotNotify',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TrainingExpSlotNotify.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='act', full_name='Dianjing.protocol.TrainingExpSlotNotify.act', index=1,
+      number=2, type=14, cpp_type=8, label=2,
+      has_default_value=False, default_value=1,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='slots', full_name='Dianjing.protocol.TrainingExpSlotNotify.slots', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[_TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=67,
+  serialized_end=401,
+)
+
+
+_TRAININGEXPSTARTREQUEST = _descriptor.Descriptor(
+  name='TrainingExpStartRequest',
+  full_name='Dianjing.protocol.TrainingExpStartRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TrainingExpStartRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='slot_id', full_name='Dianjing.protocol.TrainingExpStartRequest.slot_id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='staff_id', full_name='Dianjing.protocol.TrainingExpStartRequest.staff_id', index=2,
+      number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=403,
+  serialized_end=480,
+)
+
+
+_TRAININGEXPSTARTRESPONSE = _descriptor.Descriptor(
+  name='TrainingExpStartResponse',
+  full_name='Dianjing.protocol.TrainingExpStartResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.TrainingExpStartResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TrainingExpStartResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=482,
+  serialized_end=538,
+)
+
+
+_TRAININGEXPCANCELREQUEST = _descriptor.Descriptor(
+  name='TrainingExpCancelRequest',
+  full_name='Dianjing.protocol.TrainingExpCancelRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TrainingExpCancelRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='slot_id', full_name='Dianjing.protocol.TrainingExpCancelRequest.slot_id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=540,
+  serialized_end=600,
+)
+
+
+_TRAININGEXPCANCELRESPONSE = _descriptor.Descriptor(
+  name='TrainingExpCancelResponse',
+  full_name='Dianjing.protocol.TrainingExpCancelResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.TrainingExpCancelResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TrainingExpCancelResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='property', full_name='Dianjing.protocol.TrainingExpCancelResponse.property', index=2,
+      number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -67,36 +314,29 @@ _TRAINING = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=66,
-  serialized_end=148,
+  serialized_start=602,
+  serialized_end=706,
 )
 
 
-_TRAININGSTORENOTIFY = _descriptor.Descriptor(
-  name='TrainingStoreNotify',
-  full_name='Dianjing.protocol.TrainingStoreNotify',
+_TRAININGEXPSPEEDUPREQUEST = _descriptor.Descriptor(
+  name='TrainingExpSpeedupRequest',
+  full_name='Dianjing.protocol.TrainingExpSpeedupRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.TrainingStoreNotify.session', index=0,
+      name='session', full_name='Dianjing.protocol.TrainingExpSpeedupRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='act', full_name='Dianjing.protocol.TrainingStoreNotify.act', index=1,
-      number=2, type=14, cpp_type=8, label=2,
-      has_default_value=False, default_value=1,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='trainings', full_name='Dianjing.protocol.TrainingStoreNotify.trainings', index=2,
-      number=3, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
+      name='slot_id', full_name='Dianjing.protocol.TrainingExpSpeedupRequest.slot_id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -112,96 +352,27 @@ _TRAININGSTORENOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=150,
-  serialized_end=276,
+  serialized_start=708,
+  serialized_end=769,
 )
 
 
-_TRAININGSTOREREMOVENOTIFY = _descriptor.Descriptor(
-  name='TrainingStoreRemoveNotify',
-  full_name='Dianjing.protocol.TrainingStoreRemoveNotify',
+_TRAININGEXPSPEEDUPRESPONSE = _descriptor.Descriptor(
+  name='TrainingExpSpeedupResponse',
+  full_name='Dianjing.protocol.TrainingExpSpeedupResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.TrainingStoreRemoveNotify.session', index=0,
-      number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value=b"",
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='ids', full_name='Dianjing.protocol.TrainingStoreRemoveNotify.ids', index=1,
-      number=2, type=9, cpp_type=9, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=278,
-  serialized_end=335,
-)
-
-
-_TRAININGSTOREREFRESHREQUEST = _descriptor.Descriptor(
-  name='TrainingStoreRefreshRequest',
-  full_name='Dianjing.protocol.TrainingStoreRefreshRequest',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.TrainingStoreRefreshRequest.session', index=0,
-      number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value=b"",
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=337,
-  serialized_end=383,
-)
-
-
-_TRAININGSTOREREFRESHRESPONSE = _descriptor.Descriptor(
-  name='TrainingStoreRefreshResponse',
-  full_name='Dianjing.protocol.TrainingStoreRefreshResponse',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='ret', full_name='Dianjing.protocol.TrainingStoreRefreshResponse.ret', index=0,
+      name='ret', full_name='Dianjing.protocol.TrainingExpSpeedupResponse.ret', index=0,
       number=1, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.TrainingStoreRefreshResponse.session', index=1,
+      name='session', full_name='Dianjing.protocol.TrainingExpSpeedupResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
@@ -219,34 +390,198 @@ _TRAININGSTOREREFRESHRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=385,
-  serialized_end=445,
+  serialized_start=771,
+  serialized_end=829,
 )
 
 
-_TRAININGNOTIFY = _descriptor.Descriptor(
-  name='TrainingNotify',
-  full_name='Dianjing.protocol.TrainingNotify',
+_TRAININGEXPGETREWARDREQUEST = _descriptor.Descriptor(
+  name='TrainingExpGetRewardRequest',
+  full_name='Dianjing.protocol.TrainingExpGetRewardRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.TrainingNotify.session', index=0,
+      name='session', full_name='Dianjing.protocol.TrainingExpGetRewardRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='act', full_name='Dianjing.protocol.TrainingNotify.act', index=1,
+      name='slot_id', full_name='Dianjing.protocol.TrainingExpGetRewardRequest.slot_id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=831,
+  serialized_end=894,
+)
+
+
+_TRAININGEXPGETREWARDRESPONSE = _descriptor.Descriptor(
+  name='TrainingExpGetRewardResponse',
+  full_name='Dianjing.protocol.TrainingExpGetRewardResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.TrainingExpGetRewardResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TrainingExpGetRewardResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='property', full_name='Dianjing.protocol.TrainingExpGetRewardResponse.property', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=896,
+  serialized_end=1003,
+)
+
+
+_TRAININGPROPERTYNOTIFY_TRAININGSTAFF_TRAININGITEM = _descriptor.Descriptor(
+  name='TrainingItem',
+  full_name='Dianjing.protocol.TrainingPropertyNotify.TrainingStaff.TrainingItem',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='slot_id', full_name='Dianjing.protocol.TrainingPropertyNotify.TrainingStaff.TrainingItem.slot_id', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='training_id', full_name='Dianjing.protocol.TrainingPropertyNotify.TrainingStaff.TrainingItem.training_id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='end_at', full_name='Dianjing.protocol.TrainingPropertyNotify.TrainingStaff.TrainingItem.end_at', index=2,
+      number=3, type=3, cpp_type=2, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1287,
+  serialized_end=1355,
+)
+
+_TRAININGPROPERTYNOTIFY_TRAININGSTAFF = _descriptor.Descriptor(
+  name='TrainingStaff',
+  full_name='Dianjing.protocol.TrainingPropertyNotify.TrainingStaff',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='staff_id', full_name='Dianjing.protocol.TrainingPropertyNotify.TrainingStaff.staff_id', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='trainings', full_name='Dianjing.protocol.TrainingPropertyNotify.TrainingStaff.trainings', index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[_TRAININGPROPERTYNOTIFY_TRAININGSTAFF_TRAININGITEM, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1163,
+  serialized_end=1355,
+)
+
+_TRAININGPROPERTYNOTIFY = _descriptor.Descriptor(
+  name='TrainingPropertyNotify',
+  full_name='Dianjing.protocol.TrainingPropertyNotify',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TrainingPropertyNotify.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='act', full_name='Dianjing.protocol.TrainingPropertyNotify.act', index=1,
       number=2, type=14, cpp_type=8, label=2,
       has_default_value=False, default_value=1,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='trainings', full_name='Dianjing.protocol.TrainingNotify.trainings', index=2,
+      name='staffs', full_name='Dianjing.protocol.TrainingPropertyNotify.staffs', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -255,7 +590,7 @@ _TRAININGNOTIFY = _descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[],
+  nested_types=[_TRAININGPROPERTYNOTIFY_TRAININGSTAFF, ],
   enum_types=[
   ],
   options=None,
@@ -264,29 +599,36 @@ _TRAININGNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=447,
-  serialized_end=568,
+  serialized_start=1006,
+  serialized_end=1355,
 )
 
 
-_TRAININGREMOVENOTIFY = _descriptor.Descriptor(
-  name='TrainingRemoveNotify',
-  full_name='Dianjing.protocol.TrainingRemoveNotify',
+_TRAININGPROPERTYSTARTREQUEST = _descriptor.Descriptor(
+  name='TrainingPropertyStartRequest',
+  full_name='Dianjing.protocol.TrainingPropertyStartRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.TrainingRemoveNotify.session', index=0,
+      name='session', full_name='Dianjing.protocol.TrainingPropertyStartRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='ids', full_name='Dianjing.protocol.TrainingRemoveNotify.ids', index=1,
-      number=2, type=9, cpp_type=9, label=3,
-      has_default_value=False, default_value=[],
+      name='staff_id', full_name='Dianjing.protocol.TrainingPropertyStartRequest.staff_id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='training_id', full_name='Dianjing.protocol.TrainingPropertyStartRequest.training_id', index=2,
+      number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -302,65 +644,27 @@ _TRAININGREMOVENOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=570,
-  serialized_end=622,
+  serialized_start=1357,
+  serialized_end=1443,
 )
 
 
-_TRAININGBUYREQUEST = _descriptor.Descriptor(
-  name='TrainingBuyRequest',
-  full_name='Dianjing.protocol.TrainingBuyRequest',
+_TRAININGPROPERTYSTARTRESPONSE = _descriptor.Descriptor(
+  name='TrainingPropertyStartResponse',
+  full_name='Dianjing.protocol.TrainingPropertyStartResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.TrainingBuyRequest.session', index=0,
-      number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value=b"",
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='id', full_name='Dianjing.protocol.TrainingBuyRequest.id', index=1,
-      number=2, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=624,
-  serialized_end=673,
-)
-
-
-_TRAININGBUYRESPONSE = _descriptor.Descriptor(
-  name='TrainingBuyResponse',
-  full_name='Dianjing.protocol.TrainingBuyResponse',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='ret', full_name='Dianjing.protocol.TrainingBuyResponse.ret', index=0,
+      name='ret', full_name='Dianjing.protocol.TrainingPropertyStartResponse.ret', index=0,
       number=1, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.TrainingBuyResponse.session', index=1,
+      name='session', full_name='Dianjing.protocol.TrainingPropertyStartResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
@@ -378,87 +682,455 @@ _TRAININGBUYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=675,
-  serialized_end=726,
+  serialized_start=1445,
+  serialized_end=1506,
 )
 
-_TRAINING.fields_by_name['item'].message_type = package__pb2._TRAININGITEM
-_TRAININGSTORENOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
-_TRAININGSTORENOTIFY.fields_by_name['trainings'].message_type = _TRAINING
-_TRAININGNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
-_TRAININGNOTIFY.fields_by_name['trainings'].message_type = _TRAINING
-DESCRIPTOR.message_types_by_name['Training'] = _TRAINING
-DESCRIPTOR.message_types_by_name['TrainingStoreNotify'] = _TRAININGSTORENOTIFY
-DESCRIPTOR.message_types_by_name['TrainingStoreRemoveNotify'] = _TRAININGSTOREREMOVENOTIFY
-DESCRIPTOR.message_types_by_name['TrainingStoreRefreshRequest'] = _TRAININGSTOREREFRESHREQUEST
-DESCRIPTOR.message_types_by_name['TrainingStoreRefreshResponse'] = _TRAININGSTOREREFRESHRESPONSE
-DESCRIPTOR.message_types_by_name['TrainingNotify'] = _TRAININGNOTIFY
-DESCRIPTOR.message_types_by_name['TrainingRemoveNotify'] = _TRAININGREMOVENOTIFY
-DESCRIPTOR.message_types_by_name['TrainingBuyRequest'] = _TRAININGBUYREQUEST
-DESCRIPTOR.message_types_by_name['TrainingBuyResponse'] = _TRAININGBUYRESPONSE
 
-Training = _reflection.GeneratedProtocolMessageType('Training', (_message.Message,), dict(
-  DESCRIPTOR = _TRAINING,
-  __module__ = 'training_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.Training)
-  ))
-_sym_db.RegisterMessage(Training)
+_TRAININGPROPERTYCANCELREQUEST = _descriptor.Descriptor(
+  name='TrainingPropertyCancelRequest',
+  full_name='Dianjing.protocol.TrainingPropertyCancelRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TrainingPropertyCancelRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='staff_id', full_name='Dianjing.protocol.TrainingPropertyCancelRequest.staff_id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='slot_id', full_name='Dianjing.protocol.TrainingPropertyCancelRequest.slot_id', index=2,
+      number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1508,
+  serialized_end=1591,
+)
 
-TrainingStoreNotify = _reflection.GeneratedProtocolMessageType('TrainingStoreNotify', (_message.Message,), dict(
-  DESCRIPTOR = _TRAININGSTORENOTIFY,
-  __module__ = 'training_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingStoreNotify)
-  ))
-_sym_db.RegisterMessage(TrainingStoreNotify)
 
-TrainingStoreRemoveNotify = _reflection.GeneratedProtocolMessageType('TrainingStoreRemoveNotify', (_message.Message,), dict(
-  DESCRIPTOR = _TRAININGSTOREREMOVENOTIFY,
-  __module__ = 'training_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingStoreRemoveNotify)
-  ))
-_sym_db.RegisterMessage(TrainingStoreRemoveNotify)
+_TRAININGPROPERTYCANCELRESPONSE = _descriptor.Descriptor(
+  name='TrainingPropertyCancelResponse',
+  full_name='Dianjing.protocol.TrainingPropertyCancelResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.TrainingPropertyCancelResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TrainingPropertyCancelResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1593,
+  serialized_end=1655,
+)
 
-TrainingStoreRefreshRequest = _reflection.GeneratedProtocolMessageType('TrainingStoreRefreshRequest', (_message.Message,), dict(
-  DESCRIPTOR = _TRAININGSTOREREFRESHREQUEST,
-  __module__ = 'training_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingStoreRefreshRequest)
-  ))
-_sym_db.RegisterMessage(TrainingStoreRefreshRequest)
 
-TrainingStoreRefreshResponse = _reflection.GeneratedProtocolMessageType('TrainingStoreRefreshResponse', (_message.Message,), dict(
-  DESCRIPTOR = _TRAININGSTOREREFRESHRESPONSE,
-  __module__ = 'training_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingStoreRefreshResponse)
-  ))
-_sym_db.RegisterMessage(TrainingStoreRefreshResponse)
+_TRAININGPROPERTYSPEEDUPREQUEST = _descriptor.Descriptor(
+  name='TrainingPropertySpeedupRequest',
+  full_name='Dianjing.protocol.TrainingPropertySpeedupRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TrainingPropertySpeedupRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='staff_id', full_name='Dianjing.protocol.TrainingPropertySpeedupRequest.staff_id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='slot_id', full_name='Dianjing.protocol.TrainingPropertySpeedupRequest.slot_id', index=2,
+      number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1657,
+  serialized_end=1741,
+)
 
-TrainingNotify = _reflection.GeneratedProtocolMessageType('TrainingNotify', (_message.Message,), dict(
-  DESCRIPTOR = _TRAININGNOTIFY,
-  __module__ = 'training_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingNotify)
-  ))
-_sym_db.RegisterMessage(TrainingNotify)
 
-TrainingRemoveNotify = _reflection.GeneratedProtocolMessageType('TrainingRemoveNotify', (_message.Message,), dict(
-  DESCRIPTOR = _TRAININGREMOVENOTIFY,
-  __module__ = 'training_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingRemoveNotify)
-  ))
-_sym_db.RegisterMessage(TrainingRemoveNotify)
+_TRAININGPROPERTYSPEEDUPRESPONSE = _descriptor.Descriptor(
+  name='TrainingPropertySpeedupResponse',
+  full_name='Dianjing.protocol.TrainingPropertySpeedupResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.TrainingPropertySpeedupResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TrainingPropertySpeedupResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1743,
+  serialized_end=1806,
+)
 
-TrainingBuyRequest = _reflection.GeneratedProtocolMessageType('TrainingBuyRequest', (_message.Message,), dict(
-  DESCRIPTOR = _TRAININGBUYREQUEST,
-  __module__ = 'training_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingBuyRequest)
-  ))
-_sym_db.RegisterMessage(TrainingBuyRequest)
 
-TrainingBuyResponse = _reflection.GeneratedProtocolMessageType('TrainingBuyResponse', (_message.Message,), dict(
-  DESCRIPTOR = _TRAININGBUYRESPONSE,
+_TRAININGPROPERTYGETREWARDREQUEST = _descriptor.Descriptor(
+  name='TrainingPropertyGetRewardRequest',
+  full_name='Dianjing.protocol.TrainingPropertyGetRewardRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TrainingPropertyGetRewardRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='staff_id', full_name='Dianjing.protocol.TrainingPropertyGetRewardRequest.staff_id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='slot_id', full_name='Dianjing.protocol.TrainingPropertyGetRewardRequest.slot_id', index=2,
+      number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1808,
+  serialized_end=1894,
+)
+
+
+_TRAININGPROPERTYGETREWARDRESPONSE = _descriptor.Descriptor(
+  name='TrainingPropertyGetRewardResponse',
+  full_name='Dianjing.protocol.TrainingPropertyGetRewardResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.TrainingPropertyGetRewardResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TrainingPropertyGetRewardResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='property', full_name='Dianjing.protocol.TrainingPropertyGetRewardResponse.property', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1896,
+  serialized_end=2008,
+)
+
+_TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT_TRAININGSTAFF.containing_type = _TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT
+_TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT.fields_by_name['staff'].message_type = _TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT_TRAININGSTAFF
+_TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT.containing_type = _TRAININGEXPSLOTNOTIFY
+_TRAININGEXPSLOTNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
+_TRAININGEXPSLOTNOTIFY.fields_by_name['slots'].message_type = _TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT
+_TRAININGEXPCANCELRESPONSE.fields_by_name['property'].message_type = package__pb2._PROPERTY
+_TRAININGEXPGETREWARDRESPONSE.fields_by_name['property'].message_type = package__pb2._PROPERTY
+_TRAININGPROPERTYNOTIFY_TRAININGSTAFF_TRAININGITEM.containing_type = _TRAININGPROPERTYNOTIFY_TRAININGSTAFF
+_TRAININGPROPERTYNOTIFY_TRAININGSTAFF.fields_by_name['trainings'].message_type = _TRAININGPROPERTYNOTIFY_TRAININGSTAFF_TRAININGITEM
+_TRAININGPROPERTYNOTIFY_TRAININGSTAFF.containing_type = _TRAININGPROPERTYNOTIFY
+_TRAININGPROPERTYNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
+_TRAININGPROPERTYNOTIFY.fields_by_name['staffs'].message_type = _TRAININGPROPERTYNOTIFY_TRAININGSTAFF
+_TRAININGPROPERTYGETREWARDRESPONSE.fields_by_name['property'].message_type = package__pb2._PROPERTY
+DESCRIPTOR.message_types_by_name['TrainingExpSlotNotify'] = _TRAININGEXPSLOTNOTIFY
+DESCRIPTOR.message_types_by_name['TrainingExpStartRequest'] = _TRAININGEXPSTARTREQUEST
+DESCRIPTOR.message_types_by_name['TrainingExpStartResponse'] = _TRAININGEXPSTARTRESPONSE
+DESCRIPTOR.message_types_by_name['TrainingExpCancelRequest'] = _TRAININGEXPCANCELREQUEST
+DESCRIPTOR.message_types_by_name['TrainingExpCancelResponse'] = _TRAININGEXPCANCELRESPONSE
+DESCRIPTOR.message_types_by_name['TrainingExpSpeedupRequest'] = _TRAININGEXPSPEEDUPREQUEST
+DESCRIPTOR.message_types_by_name['TrainingExpSpeedupResponse'] = _TRAININGEXPSPEEDUPRESPONSE
+DESCRIPTOR.message_types_by_name['TrainingExpGetRewardRequest'] = _TRAININGEXPGETREWARDREQUEST
+DESCRIPTOR.message_types_by_name['TrainingExpGetRewardResponse'] = _TRAININGEXPGETREWARDRESPONSE
+DESCRIPTOR.message_types_by_name['TrainingPropertyNotify'] = _TRAININGPROPERTYNOTIFY
+DESCRIPTOR.message_types_by_name['TrainingPropertyStartRequest'] = _TRAININGPROPERTYSTARTREQUEST
+DESCRIPTOR.message_types_by_name['TrainingPropertyStartResponse'] = _TRAININGPROPERTYSTARTRESPONSE
+DESCRIPTOR.message_types_by_name['TrainingPropertyCancelRequest'] = _TRAININGPROPERTYCANCELREQUEST
+DESCRIPTOR.message_types_by_name['TrainingPropertyCancelResponse'] = _TRAININGPROPERTYCANCELRESPONSE
+DESCRIPTOR.message_types_by_name['TrainingPropertySpeedupRequest'] = _TRAININGPROPERTYSPEEDUPREQUEST
+DESCRIPTOR.message_types_by_name['TrainingPropertySpeedupResponse'] = _TRAININGPROPERTYSPEEDUPRESPONSE
+DESCRIPTOR.message_types_by_name['TrainingPropertyGetRewardRequest'] = _TRAININGPROPERTYGETREWARDREQUEST
+DESCRIPTOR.message_types_by_name['TrainingPropertyGetRewardResponse'] = _TRAININGPROPERTYGETREWARDRESPONSE
+
+TrainingExpSlotNotify = _reflection.GeneratedProtocolMessageType('TrainingExpSlotNotify', (_message.Message,), dict(
+
+  TrainingExpSlot = _reflection.GeneratedProtocolMessageType('TrainingExpSlot', (_message.Message,), dict(
+
+    TrainingStaff = _reflection.GeneratedProtocolMessageType('TrainingStaff', (_message.Message,), dict(
+      DESCRIPTOR = _TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT_TRAININGSTAFF,
+      __module__ = 'training_pb2'
+      # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingExpSlotNotify.TrainingExpSlot.TrainingStaff)
+      ))
+    ,
+    DESCRIPTOR = _TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT,
+    __module__ = 'training_pb2'
+    # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingExpSlotNotify.TrainingExpSlot)
+    ))
+  ,
+  DESCRIPTOR = _TRAININGEXPSLOTNOTIFY,
   __module__ = 'training_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingBuyResponse)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingExpSlotNotify)
   ))
-_sym_db.RegisterMessage(TrainingBuyResponse)
+_sym_db.RegisterMessage(TrainingExpSlotNotify)
+_sym_db.RegisterMessage(TrainingExpSlotNotify.TrainingExpSlot)
+_sym_db.RegisterMessage(TrainingExpSlotNotify.TrainingExpSlot.TrainingStaff)
+
+TrainingExpStartRequest = _reflection.GeneratedProtocolMessageType('TrainingExpStartRequest', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGEXPSTARTREQUEST,
+  __module__ = 'training_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingExpStartRequest)
+  ))
+_sym_db.RegisterMessage(TrainingExpStartRequest)
+
+TrainingExpStartResponse = _reflection.GeneratedProtocolMessageType('TrainingExpStartResponse', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGEXPSTARTRESPONSE,
+  __module__ = 'training_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingExpStartResponse)
+  ))
+_sym_db.RegisterMessage(TrainingExpStartResponse)
+
+TrainingExpCancelRequest = _reflection.GeneratedProtocolMessageType('TrainingExpCancelRequest', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGEXPCANCELREQUEST,
+  __module__ = 'training_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingExpCancelRequest)
+  ))
+_sym_db.RegisterMessage(TrainingExpCancelRequest)
+
+TrainingExpCancelResponse = _reflection.GeneratedProtocolMessageType('TrainingExpCancelResponse', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGEXPCANCELRESPONSE,
+  __module__ = 'training_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingExpCancelResponse)
+  ))
+_sym_db.RegisterMessage(TrainingExpCancelResponse)
+
+TrainingExpSpeedupRequest = _reflection.GeneratedProtocolMessageType('TrainingExpSpeedupRequest', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGEXPSPEEDUPREQUEST,
+  __module__ = 'training_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingExpSpeedupRequest)
+  ))
+_sym_db.RegisterMessage(TrainingExpSpeedupRequest)
+
+TrainingExpSpeedupResponse = _reflection.GeneratedProtocolMessageType('TrainingExpSpeedupResponse', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGEXPSPEEDUPRESPONSE,
+  __module__ = 'training_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingExpSpeedupResponse)
+  ))
+_sym_db.RegisterMessage(TrainingExpSpeedupResponse)
+
+TrainingExpGetRewardRequest = _reflection.GeneratedProtocolMessageType('TrainingExpGetRewardRequest', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGEXPGETREWARDREQUEST,
+  __module__ = 'training_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingExpGetRewardRequest)
+  ))
+_sym_db.RegisterMessage(TrainingExpGetRewardRequest)
+
+TrainingExpGetRewardResponse = _reflection.GeneratedProtocolMessageType('TrainingExpGetRewardResponse', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGEXPGETREWARDRESPONSE,
+  __module__ = 'training_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingExpGetRewardResponse)
+  ))
+_sym_db.RegisterMessage(TrainingExpGetRewardResponse)
+
+TrainingPropertyNotify = _reflection.GeneratedProtocolMessageType('TrainingPropertyNotify', (_message.Message,), dict(
+
+  TrainingStaff = _reflection.GeneratedProtocolMessageType('TrainingStaff', (_message.Message,), dict(
+
+    TrainingItem = _reflection.GeneratedProtocolMessageType('TrainingItem', (_message.Message,), dict(
+      DESCRIPTOR = _TRAININGPROPERTYNOTIFY_TRAININGSTAFF_TRAININGITEM,
+      __module__ = 'training_pb2'
+      # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingPropertyNotify.TrainingStaff.TrainingItem)
+      ))
+    ,
+    DESCRIPTOR = _TRAININGPROPERTYNOTIFY_TRAININGSTAFF,
+    __module__ = 'training_pb2'
+    # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingPropertyNotify.TrainingStaff)
+    ))
+  ,
+  DESCRIPTOR = _TRAININGPROPERTYNOTIFY,
+  __module__ = 'training_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingPropertyNotify)
+  ))
+_sym_db.RegisterMessage(TrainingPropertyNotify)
+_sym_db.RegisterMessage(TrainingPropertyNotify.TrainingStaff)
+_sym_db.RegisterMessage(TrainingPropertyNotify.TrainingStaff.TrainingItem)
+
+TrainingPropertyStartRequest = _reflection.GeneratedProtocolMessageType('TrainingPropertyStartRequest', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGPROPERTYSTARTREQUEST,
+  __module__ = 'training_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingPropertyStartRequest)
+  ))
+_sym_db.RegisterMessage(TrainingPropertyStartRequest)
+
+TrainingPropertyStartResponse = _reflection.GeneratedProtocolMessageType('TrainingPropertyStartResponse', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGPROPERTYSTARTRESPONSE,
+  __module__ = 'training_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingPropertyStartResponse)
+  ))
+_sym_db.RegisterMessage(TrainingPropertyStartResponse)
+
+TrainingPropertyCancelRequest = _reflection.GeneratedProtocolMessageType('TrainingPropertyCancelRequest', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGPROPERTYCANCELREQUEST,
+  __module__ = 'training_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingPropertyCancelRequest)
+  ))
+_sym_db.RegisterMessage(TrainingPropertyCancelRequest)
+
+TrainingPropertyCancelResponse = _reflection.GeneratedProtocolMessageType('TrainingPropertyCancelResponse', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGPROPERTYCANCELRESPONSE,
+  __module__ = 'training_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingPropertyCancelResponse)
+  ))
+_sym_db.RegisterMessage(TrainingPropertyCancelResponse)
+
+TrainingPropertySpeedupRequest = _reflection.GeneratedProtocolMessageType('TrainingPropertySpeedupRequest', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGPROPERTYSPEEDUPREQUEST,
+  __module__ = 'training_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingPropertySpeedupRequest)
+  ))
+_sym_db.RegisterMessage(TrainingPropertySpeedupRequest)
+
+TrainingPropertySpeedupResponse = _reflection.GeneratedProtocolMessageType('TrainingPropertySpeedupResponse', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGPROPERTYSPEEDUPRESPONSE,
+  __module__ = 'training_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingPropertySpeedupResponse)
+  ))
+_sym_db.RegisterMessage(TrainingPropertySpeedupResponse)
+
+TrainingPropertyGetRewardRequest = _reflection.GeneratedProtocolMessageType('TrainingPropertyGetRewardRequest', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGPROPERTYGETREWARDREQUEST,
+  __module__ = 'training_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingPropertyGetRewardRequest)
+  ))
+_sym_db.RegisterMessage(TrainingPropertyGetRewardRequest)
+
+TrainingPropertyGetRewardResponse = _reflection.GeneratedProtocolMessageType('TrainingPropertyGetRewardResponse', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGPROPERTYGETREWARDRESPONSE,
+  __module__ = 'training_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingPropertyGetRewardResponse)
+  ))
+_sym_db.RegisterMessage(TrainingPropertyGetRewardResponse)
 
 
 # @@protoc_insertion_point(module_scope)
