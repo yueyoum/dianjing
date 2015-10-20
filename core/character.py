@@ -24,7 +24,6 @@ class Character(object):
     def create(cls, server_id, char_id, char_name, club_name, club_flag):
         from core.staff import StaffManger
         from core.club import Club
-        from core.training import TrainingBag
 
         doc = MongoCharacter.document()
         doc['_id'] = char_id
@@ -42,7 +41,6 @@ class Character(object):
             sm.add(i, send_notify=False)
 
         Club(server_id, char_id).set_match_staffs(staff_ids + [0] * 5)
-        TrainingBag(server_id, char_id).add_from_raw_training(1, send_notify=False)
 
     @property
     def create_days(self):

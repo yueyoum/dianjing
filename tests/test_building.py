@@ -17,6 +17,8 @@ from core.building import BuildingManager
 
 from config import ConfigErrorMessage, ConfigBuilding
 
+import time
+
 
 class TestBuilding(object):
     def reset(self):
@@ -29,13 +31,14 @@ class TestBuilding(object):
             }}
         )
 
-
     def setUp(self):
         self.reset()
 
     def tearDown(self):
         self.reset()
 
+    def test_getLevel(self):
+        BuildingManager(1, 1).get_level(1)
 
     def test_send_notify(self):
         BuildingManager(1, 1).send_notify()
@@ -48,13 +51,13 @@ class TestBuilding(object):
         else:
             raise Exception("can not be here!")
 
-
     def test_level_up_already_max_level(self):
         b = random.choice(ConfigBuilding.INSTANCES.values())
 
         MongoDB.get(1).building.update_one(
             {'_id': 1},
-            {'$set': {'buildings.{0}'.format(b.id): b.max_levels}},
+            {'$set': {'buildings.{0}.current_level'.format(b.id): b.max_levels,
+                      'buildings.{0}.complete_time'.format(b.id): -1}},
             upsert=True
         )
 
@@ -72,7 +75,8 @@ class TestBuilding(object):
 
         MongoDB.get(1).building.update_one(
             {'_id': 1},
-            {'$set': {'buildings.{0}'.format(b.id): level}},
+            {'$set': {'buildings.{0}.current_level'.format(b.id): level,
+                      'buildings.{0}.complete_time'.format(b.id): -1}},
             upsert=True
         )
 
@@ -83,7 +87,6 @@ class TestBuilding(object):
         else:
             raise Exception("can not be here!")
 
-
     def test_level_up_gold_not_enough(self):
         b = random.choice(ConfigBuilding.INSTANCES.values())
 
@@ -91,7 +94,8 @@ class TestBuilding(object):
 
         MongoDB.get(1).building.update_one(
             {'_id': 1},
-            {'$set': {'buildings.{0}'.format(b.id): level}},
+            {'$set': {'buildings.{0}.current_level'.format(b.id): level,
+                      'buildings.{0}.complete_time'.format(b.id): -1}},
             upsert=True
         )
 
@@ -108,7 +112,6 @@ class TestBuilding(object):
         else:
             raise Exception("can not be here!")
 
-
     def test_level_up(self):
         b = random.choice(ConfigBuilding.INSTANCES.values())
 
@@ -116,7 +119,8 @@ class TestBuilding(object):
 
         MongoDB.get(1).building.update_one(
             {'_id': 1},
-            {'$set': {'buildings.{0}'.format(b.id): level}},
+            {'$set': {'buildings.{0}.current_level'.format(b.id): level,
+                      'buildings.{0}.complete_time'.format(b.id): -1}},
             upsert=True
         )
 
@@ -133,6 +137,37 @@ class TestBuilding(object):
 
         BuildingManager(1, 1).level_up(b.id)
 
-        assert BuildingManager(1, 1).get_level(b.id) == b.max_levels
+        data = MongoDB.get(1).building.find_one({'_id': 1}, {'buildings.{0}'.format(b.id): 1})
+        assert data['buildings'][str(b.id)]['complete_time'] != -1
         assert MongoDB.get(1).character.find_one({'_id': 1})['club']['gold'] == 0
 
+    def test_levelComfirm(self):
+        b = random.choice(ConfigBuilding.INSTANCES.values())
+        level = b.max_levels - 1
+
+        MongoDB.get(1).building.update_one(
+            {'_id': 1},
+            {'$set': {'buildings.{0}.current_level'.format(b.id): level,
+                      'buildings.{0}.complete_time'.format(b.id): -1}},
+            upsert=True
+        )
+
+        club_level = b.get_level(level).up_need_club_level
+        gold = b.get_level(level).up_need_gold
+
+        MongoDB.get(1).character.update_one(
+            {'_id': 1},
+            {'$set': {
+                'club.level': club_level,
+                'club.gold': gold
+            }}
+        )
+
+        BuildingManager(1, 1).level_up(b.id)
+
+        MongoDB.get(1).building.update_one(
+            {'_id': 1},
+            {'$set': {'buildings.{0}.complete_time'.format(b.id): 0}}
+        )
+        BuildingManager(1, 1).levelup_confirm()
+        assert BuildingManager(1, 1).get_level(b.id) == b.max_levels
