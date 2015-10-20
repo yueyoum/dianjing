@@ -137,6 +137,11 @@ class TrainingExp(object):
 
         self.current_building_level = BuildingTrainingCenter(self.server_id, self.char_id).get_level()
 
+        if not MongoTrainingExp.exist(self.server_id, self.char_id):
+            doc = MongoTrainingExp.document()
+            doc['_id'] = self.char_id
+            MongoTrainingExp.db(self.server_id).insert_one(doc)
+
     def get_slot_status(self, slot_id):
         """
 
@@ -167,7 +172,7 @@ class TrainingExp(object):
         )
 
         for k, v in doc['slots'].iteritems():
-            if v['staff_id'] == staff_id:
+            if v.get('staff_id', 0) == staff_id:
                 raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_STAFF_IN_TRAINING"))
 
         timestamp = arrow.utcnow().timestamp
@@ -212,6 +217,9 @@ class TrainingExp(object):
 
         # TODO 优化
         StaffManger(self.server_id, self.char_id).update(staff_id, exp=exp)
+        
+        self.clean(slot_id)
+
         p = Property()
         p_exp = p.resources.add()
         p_exp.resource_id = 'staff_exp'
@@ -273,6 +281,16 @@ class TrainingExp(object):
         # TODO
         StaffManger(self.server_id, self.char_id).update(ss.staff_id, exp=exp)
 
+        self.clean(slot_id)
+
+        p = Property()
+        p_exp = p.resources.add()
+        p_exp.resource_id = 'staff_exp'
+        p_exp.value = exp
+        return p
+
+
+    def clean(self, slot_id):
         MongoTrainingExp.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
@@ -282,11 +300,6 @@ class TrainingExp(object):
 
         self.send_notify(slot_ids=[slot_id])
 
-        p = Property()
-        p_exp = p.resources.add()
-        p_exp.resource_id = 'staff_exp'
-        p_exp.value = exp
-        return p
 
     def send_notify(self, slot_ids=None):
         if slot_ids:
@@ -325,8 +338,12 @@ class TrainingExp(object):
             if ss.status == ExpSlotStatus.EMPTY:
                 continue
 
-            notify_slot.id = ss.staff_id
-            notify_slot.got_exp = ss.current_exp
-            notify_slot.end_at = ss.end_at
+            notify_slot.staff.id = ss.staff_id
+            notify_slot.staff.got_exp = ss.current_exp
+
+            if ss.status == ExpSlotStatus.FINISH:
+                notify_slot.staff.end_at = -1
+            else:
+                notify_slot.staff.end_at = ss.end_at
 
         MessagePipe(self.char_id).put(msg=notify)
