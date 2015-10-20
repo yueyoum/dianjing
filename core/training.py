@@ -6,206 +6,327 @@ Date Created:   2015-07-21 15:45
 Description:
 
 """
+import arrow
+
 from dianjing.exception import GameException
 
-from core.mongo import MongoTraining
-from core.staff import StaffManger
+from core.mongo import MongoTrainingExp
+from core.staff import StaffManger, staff_level_up_need_exp
 from core.building import BuildingTrainingCenter
 from core.resource import Resource
-from core.package import TrainingItem
 
 from utils.message import MessagePipe
-from utils.functional import make_string_id
 
-from config import ConfigErrorMessage, ConfigTraining, ConfigBuilding
+from config import ConfigErrorMessage, ConfigBuilding
 
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
-from protomsg.training_pb2 import (
-    TrainingNotify,
-    TrainingRemoveNotify,
-    TrainingStoreNotify,
-    TrainingStoreRemoveNotify,
-)
+from protomsg.training_pb2 import TrainingExpSlotNotify
+from protomsg.package_pb2 import Property
+
+TOTAL_SECONDS = 8 * 3600  # 8 hours
 
 
-class TrainingStore(object):
-    def __init__(self, server_id, char_id):
+class ExpSlotStatus(object):
+    NOT_EXIST = 1
+    NOT_OPEN = 2
+    EMPTY = 3
+    TRAINING = 4
+    FINISH = 5
+
+    def __init__(self, server_id, char_id, slot_id, current_building_level):
         self.server_id = server_id
         self.char_id = char_id
+        self.slot_id = slot_id
+        self.current_building_level = current_building_level
 
-        doc = MongoTraining.db(server_id).find_one({'_id': self.char_id})
-        if not doc:
-            doc = MongoTraining.document()
-            doc['_id'] = self.char_id
-            MongoTraining.db(server_id).insert_one(doc)
+        self.status = ExpSlotStatus.EMPTY
+        self.staff_id = 0
+        self.start_at = 0
+        self.end_at = 0
+        self.speedup = False
+        self.time_point = 0
+        self.exp = 0
 
-        if not doc['store']:
-            self.refresh(send_notify=False)
+    @property
+    def finished(self):
+        if self.speedup:
+            return True
 
-    def refresh(self, send_notify=True):
-        level = BuildingTrainingCenter(self.server_id, self.char_id).get_level()
-        amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(level).value1
+        return arrow.utcnow().timestamp >= self.end_at
 
-        ids = ConfigTraining.refreshed_ids(level, amount)
+    @property
+    def current_exp(self):
+        if self.finished:
+            return self.exp
 
-        trainings = {}
-        for i in ids:
-            this_id = make_string_id()
-            this_doc = MongoTraining.document_training_item()
-            this_doc['oid'] = i
-            this_doc['item'] = TrainingItem.generate_from_training_id(i).to_json()
+        new_exp = self.calculate_new_exp()
+        return self.exp + new_exp
 
-            trainings[this_id] = this_doc
+    def calculate_new_exp(self, end_at=None):
+        # 计算上个time_point到当前增加的经验
+        if not end_at:
+            end_at = arrow.utcnow().timestamp
 
-        MongoTraining.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': {'store': trainings}}
-        )
+        last_time_point = self.time_point if self.time_point else self.start_at
 
-        if send_notify:
-            self.send_notify()
+        config_building_level = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(
+            self.current_building_level)
+        new_exp = (end_at - last_time_point) / 60 * config_building_level.value1
+        return new_exp
 
-        return trainings
+    def _check_slot_id(self):
+        max_building_level = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).max_levels
+        max_slots_amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(max_building_level).value2
+        if self.slot_id > max_slots_amount:
+            self.status = ExpSlotStatus.NOT_EXIST
+            return False
 
-    def get_training(self, training_id):
-        doc = MongoTraining.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {'store.{0}'.format(training_id): 1}
-        )
-
-        return doc.get('store', {}).get(str(training_id), None)
-
-    def buy(self, training_id):
-        training = self.get_training(training_id)
-        if not training:
-            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_NOT_EXIST"))
-
-        check = {'message': u'Buy Training. oid: {0}'.format(training['oid'])}
-        config = ConfigTraining.get(training['oid'])
-        if config.cost_type == 1:
-            check['gold'] = -config.cost_value
-        else:
-            check['diamond'] = -config.cost_value
-
-        with Resource(self.server_id, self.char_id).check(**check):
-            self.remove(training_id)
-            TrainingBag(self.server_id, self.char_id).add(training_id, training['oid'], training['item'])
-
-    def remove(self, training_id):
-        MongoTraining.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$unset': {'store.{0}'.format(training_id): 1}}
-        )
-
-        notify = TrainingStoreRemoveNotify()
-        notify.ids.append(training_id)
-        MessagePipe(self.char_id).put(msg=notify)
-
-    def send_notify(self):
-        notify = TrainingStoreNotify()
-        notify.act = ACT_INIT
-
-        doc = MongoTraining.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {'store': 1}
-        )
-
-        trainings = doc.get('store', {})
-        for k, v in trainings.iteritems():
-            notify_training = notify.trainings.add()
-            notify_training.id = k
-            notify_training.oid = v['oid']
-
-            obj = TrainingItem.loads_from_json(v['item'])
-            notify_training.item.MergeFrom(obj.make_protomsg())
-
-        MessagePipe(self.char_id).put(msg=notify)
-
-
-class TrainingBag(object):
-    def __init__(self, server_id, char_id):
-        self.server_id = server_id
-        self.char_id = char_id
-
-        doc = MongoTraining.db(server_id).find_one({'_id': self.char_id}, {'_id': 1})
-        if not doc:
-            doc = MongoTraining.document()
-            doc['_id'] = self.char_id
-            MongoTraining.db(server_id).insert_one(doc)
-
-    def has_training(self, training_ids):
-        if not isinstance(training_ids, (list, tuple)):
-            training_ids = [training_ids]
-
-        projection = {"bag.{0}".format(i): 1 for i in training_ids}
-        doc = MongoTraining.db(self.server_id).find_one({'_id': self.char_id}, projection)
-        for tid in training_ids:
-            if tid not in doc['bag']:
-                return False
+        current_slots_amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(
+            self.current_building_level).value2
+        if self.slot_id > current_slots_amount:
+            self.status = ExpSlotStatus.NOT_OPEN
+            return False
 
         return True
 
-    def add_from_raw_training(self, oid, send_notify=True):
-        # 直接从配置中的 训练id 添加
-        training_id = make_string_id()
-        item = TrainingItem.generate_from_training_id(oid).to_json()
-        self.add(training_id, oid, item, send_notify=send_notify)
+    def parse_data(self, slots_data):
+        check_result = self._check_slot_id()
+        if not check_result:
+            return
 
-    def add(self, training_id, training_oid, training_item, send_notify=True):
-        doc = MongoTraining.document_training_item()
-        doc['oid'] = training_oid
-        doc['item'] = training_item
+        data = slots_data.get(str(self.slot_id), {})
+        self._calculate(data)
 
-        MongoTraining.db(self.server_id).update_one(
+    def load_data(self):
+        check_result = self._check_slot_id()
+        if not check_result:
+            return
+
+        doc = MongoTrainingExp.db(self.server_id).find_one(
             {'_id': self.char_id},
-            {'$set': {'bag.{0}'.format(training_id): doc}}
+            {'slots.{0}'.format(self.slot_id): 1}
         )
 
-        if send_notify:
-            self.send_notify(ids=[training_id])
+        data = doc['slots'].get(str(self.slot_id), {})
+        self._calculate(data)
 
-    def use(self, staff_id, training_id):
-        key = "bag.{0}".format(training_id)
-        doc = MongoTraining.db(self.server_id).find_one({'_id': self.char_id}, {key: 1})
+    def _calculate(self, data):
+        if not data:
+            return
 
-        bag = doc.get('bag', {})
-        if training_id not in bag:
-            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_NOT_EXIST"))
+        self.staff_id = data['staff_id']
+        if not self.staff_id:
+            return
 
-        sm = StaffManger(self.server_id, self.char_id)
-        if not sm.has_staff(staff_id):
+        self.start_at = data['start_at']
+        self.end_at = data['start_at'] + TOTAL_SECONDS
+        self.speedup = data['speedup']
+        self.time_point = data['time_point']
+        self.exp = data['exp']
+
+        if self.finished:
+            self.status = ExpSlotStatus.FINISH
+        else:
+            self.status = ExpSlotStatus.TRAINING
+
+
+class TrainingExp(object):
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+
+        self.current_building_level = BuildingTrainingCenter(self.server_id, self.char_id).get_level()
+
+    def get_slot_status(self, slot_id):
+        """
+
+        :rtype : ExpSlotStatus
+        """
+        return ExpSlotStatus(self.server_id, self.char_id, slot_id, self.current_building_level)
+
+    def start(self, slot_id, staff_id):
+        staff = StaffManger(self.server_id, self.char_id).get_staff(staff_id)
+        if not staff:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
-        this_training = bag[training_id]
-        sm.training_start(staff_id, this_training['oid'], this_training['item'])
+        ss = self.get_slot_status(slot_id)
+        ss.load_data()
 
-        MongoTraining.db(self.server_id).update_one(
+        if ss.status == ExpSlotStatus.NOT_EXIST:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_EXIST"))
+
+        if ss.status == ExpSlotStatus.NOT_OPEN:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_OPEN"))
+
+        if ss.status != ExpSlotStatus.EMPTY:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_IN_USE"))
+
+        doc = MongoTrainingExp.db(self.server_id).find_one(
             {'_id': self.char_id},
-            {'$unset': {key: 1}}
+            {'slots': 1}
         )
 
-        notify = TrainingRemoveNotify()
-        notify.ids.append(training_id)
-        MessagePipe(self.char_id).put(msg=notify)
+        for k, v in doc['slots'].iteritems():
+            if v['staff_id'] == staff_id:
+                raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_STAFF_IN_TRAINING"))
 
-    def send_notify(self, ids=None):
-        if not ids:
-            projection = {'bag': 1}
-            act = ACT_INIT
-        else:
-            projection = {'bag.{0}'.format(i): 1 for i in ids}
+        timestamp = arrow.utcnow().timestamp
+        training_doc = MongoTrainingExp.document_training()
+        training_doc['staff_id'] = staff_id
+        training_doc['start_at'] = timestamp
+        training_doc['time_point'] = timestamp
+        training_doc['exp'] = 0
+        training_doc['speedup'] = False
+
+        need_gold = staff_level_up_need_exp(staff_id, staff['level'])
+        message = u"Training Exp For Staff {0}".format(staff_id)
+
+        with Resource(self.server_id, self.char_id).check(gold=-need_gold, message=message):
+            MongoTrainingExp.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {
+                    'slots.{0}'.format(slot_id): training_doc
+                }}
+            )
+
+            self.send_notify(slot_ids=[slot_id])
+
+    def cancel(self, slot_id):
+        ss = self.get_slot_status(slot_id)
+        ss.load_data()
+
+        if ss.status == ExpSlotStatus.NOT_EXIST:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_EXIST"))
+
+        if ss.status == ExpSlotStatus.NOT_OPEN:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_OPEN"))
+
+        if ss.status == ExpSlotStatus.EMPTY:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_EMPTY"))
+
+        if ss.status == ExpSlotStatus.FINISH:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_FINISH_CANNOT_OPERATE"))
+
+        staff_id = ss.staff_id
+        exp = ss.current_exp
+
+        # TODO 优化
+        StaffManger(self.server_id, self.char_id).update(staff_id, exp=exp)
+        p = Property()
+        p_exp = p.resources.add()
+        p_exp.resource_id = 'staff_exp'
+        p_exp.value = exp
+        return p
+
+    def speedup(self, slot_id):
+        ss = self.get_slot_status(slot_id)
+        ss.load_data()
+
+        if ss.status == ExpSlotStatus.NOT_EXIST:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_EXIST"))
+
+        if ss.status == ExpSlotStatus.NOT_OPEN:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_OPEN"))
+
+        if ss.status == ExpSlotStatus.EMPTY:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_EMPTY"))
+
+        if ss.status == ExpSlotStatus.FINISH:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_FINISH_CANNOT_OPERATE"))
+
+        behind_seconds = ss.end_at - arrow.utcnow().timestamp
+        minutes, seconds = divmod(behind_seconds, 60)
+        if seconds:
+            minutes += 1
+
+        need_diamond = minutes * 10
+        message = u"Training Exp Speedup."
+        with Resource(self.server_id, self.char_id).check(diamond=-need_diamond, message=message):
+            new_exp = ss.calculate_new_exp(end_at=ss.end_at)
+            exp = ss.exp + new_exp
+
+            MongoTrainingExp.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {
+                    'slots.{0}.exp'.format(slot_id): exp,
+                    'slots.{0}.speedup'.format(slot_id): True
+                }}
+            )
+
+            self.send_notify(slot_ids=[slot_id])
+
+    def get_reward(self, slot_id):
+        ss = self.get_slot_status(slot_id)
+        ss.load_data()
+
+        if ss.status == ExpSlotStatus.NOT_EXIST:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_EXIST"))
+
+        if ss.status == ExpSlotStatus.NOT_OPEN:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_OPEN"))
+
+        if ss.status != ExpSlotStatus.FINISH:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_NOT_FINISH"))
+
+        exp = ss.current_exp
+
+        # TODO
+        StaffManger(self.server_id, self.char_id).update(ss.staff_id, exp=exp)
+
+        MongoTrainingExp.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'slots.{0}'.format(slot_id): {}
+            }}
+        )
+
+        self.send_notify(slot_ids=[slot_id])
+
+        p = Property()
+        p_exp = p.resources.add()
+        p_exp.resource_id = 'staff_exp'
+        p_exp.value = exp
+        return p
+
+    def send_notify(self, slot_ids=None):
+        if slot_ids:
+            projection = {'slots.{0}'.format(i): 1 for i in slot_ids}
             act = ACT_UPDATE
+        else:
+            projection = {'slots': 1}
+            act = ACT_INIT
 
-        doc = MongoTraining.db(self.server_id).find_one({'_id': self.char_id}, projection)
-        notify = TrainingNotify()
+        slots_amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(
+            self.current_building_level).value2
+
+        doc = MongoTrainingExp.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            projection
+        )
+
+        slots_data = doc['slots']
+
+        notify = TrainingExpSlotNotify()
         notify.act = act
 
-        for k, v in doc['bag'].iteritems():
-            notify_training = notify.trainings.add()
-            notify_training.id = k
-            notify_training.oid = v['oid']
+        for i in range(1, slots_amount + 1):
+            if act == ACT_UPDATE and i not in slot_ids:
+                continue
 
-            obj = TrainingItem.loads_from_json(v['item'])
-            notify_training.item.MergeFrom(obj.make_protomsg())
+            notify_slot = notify.slots.add()
+            notify_slot.id = i
+
+            ss = self.get_slot_status(i)
+            ss.parse_data(slots_data)
+
+            if ss.status == ExpSlotStatus.NOT_OPEN or ss.status == ExpSlotStatus.NOT_EXIST:
+                raise RuntimeError("exp slot error: status = {0}".format(ss.status))
+
+            if ss.status == ExpSlotStatus.EMPTY:
+                continue
+
+            notify_slot.id = ss.staff_id
+            notify_slot.got_exp = ss.current_exp
+            notify_slot.end_at = ss.end_at
 
         MessagePipe(self.char_id).put(msg=notify)

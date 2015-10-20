@@ -18,7 +18,7 @@ from config.challenge import ConfigChallengeType, ConfigChallengeMatch
 from config.unit import ConfigUnit, ConfigPolicy
 from config.building import ConfigBuilding
 from config.package import ConfigPackage
-from config.training import ConfigTraining
+from config.training import ConfigTrainingSkillItem, ConfigTrainingProperty
 from config.npc import ConfigNPC
 from config.skill import ConfigSkill
 from config.task import ConfigTask, ConfigRandomEvent
@@ -83,8 +83,10 @@ def load_config():
             ConfigBuilding.initialize(data)
         elif item == 'package.json':
             ConfigPackage.initialize(data)
-        elif item == 'training.json':
-            ConfigTraining.initialize(data)
+        elif item == 'training_property.json':
+            ConfigTrainingProperty.initialize(data)
+        elif item == 'training_skill.json':
+            ConfigTrainingSkillItem.initialize(data)
         elif item == 'npc_club.json':
             ConfigNPC.initialize(data)
         elif item == 'npc_club_name.json':

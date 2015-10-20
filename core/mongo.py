@@ -162,24 +162,31 @@ class MongoStaff(BaseDocument):
     COLLECTION = "staff"
 
 
-# 训练商店 和 背包
-class MongoTraining(BaseDocument):
+# 经验训练
+class MongoTrainingExp(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        'store': {},
-        'bag': {}
+        'slots': {}
     }
 
-    TRAINING_ITEM_DOCUMENT = {
-        'oid': null,
-        'item': null,
+    TRAINING_DOCUMENT = {
+        'staff_id': 0,
+        'start_at': 0,
+        'time_point': 0,
+        'exp': 0,
+        # exp 记录的是当前时间点（time_point）获取的经验值
+        # 因为在训练过程中 训练中心可能会升级，
+        # 所以在升级完成时记录一下当前的 time_point，并且计算当前获取的 exp，并保存
+        'speedup': False,
+        # 如果是加速完成的，这里是True
+        # 所以在判断训练是否完成时，要注意这个数值
     }
 
     @classmethod
-    def document_training_item(cls):
-        return cls.TRAINING_ITEM_DOCUMENT.copy()
+    def document_training(cls):
+        return cls.TRAINING_DOCUMENT.copy()
 
-    COLLECTION = "training"
+    COLLECTION = 'training_exp'
 
 
 # 招募刷新

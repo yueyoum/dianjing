@@ -7,8 +7,6 @@ Description:
 
 """
 
-import arrow
-
 from dianjing.exception import GameException
 
 from core.base import STAFF_ATTRS
@@ -17,23 +15,25 @@ from core.mongo import MongoStaff, MongoRecruit
 from core.resource import Resource
 from core.common import CommonRecruitHot
 from core.skill import SkillManager
-from core.package import TrainingItem
-from core.signals import recruit_staff_signal, staff_level_up_signal, training_got_reward_signal
+from core.signals import recruit_staff_signal, staff_level_up_signal
 
 from config import (
     ConfigStaff, ConfigStaffHot, ConfigStaffRecruit,
-    ConfigTraining, ConfigStaffLevel, ConfigErrorMessage
+    ConfigStaffLevel, ConfigErrorMessage
 )
 
 from utils.message import MessagePipe
 
-from protomsg.staff_pb2 import StaffRecruitNotify, StaffNotify, StaffRemoveNotify, Staff as MsgStaff
+from protomsg.staff_pb2 import StaffRecruitNotify, StaffNotify, StaffRemoveNotify
 from protomsg.staff_pb2 import RECRUIT_DIAMOND, RECRUIT_GOLD, RECRUIT_HOT, RECRUIT_NORMAL
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 
 def staff_level_up_need_exp(staff_id, current_level):
     return ConfigStaffLevel.get(current_level).exp[ConfigStaff.get(staff_id).quality]
+
+def staff_training_exp_need_gold(staff_id, staff_level):
+    return staff_level * 1000
 
 
 class Staff(AbstractStaff):
@@ -278,69 +278,6 @@ class StaffManger(object):
         notify.id.append(staff_id)
         MessagePipe(self.char_id).put(msg=notify)
 
-    def training_start(self, staff_id, training_oid, training_item):
-        # training_start 是在 外部 Training.use 中调用的，
-        # 已经在外部做了错误检测。这里不用对 staff_id, 和 training_id 再次检查了
-        # TODO check training num full ?
-
-        item = TrainingItem.loads_from_json(training_item)
-        if item.skill_id:
-            # 如果是技能训练，如果员工没有此技能，就不能训练
-            skills = SkillManager(self.server_id, self.char_id).get_skill(staff_id)
-            if not skills or str(item.skill_id) not in skills:
-                raise GameException(ConfigErrorMessage.get_error_id("TRAINING_HAS_NO_SKILL"))
-
-        doc = MongoStaff.document_staff_trainings()
-        doc['start_at'] = arrow.utcnow().timestamp
-        doc['oid'] = training_oid
-        doc['item'] = training_item
-
-        key = 'staffs.{0}.trainings'.format(staff_id)
-
-        MongoStaff.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$push': {key: doc}}
-        )
-
-        self.send_notify(staff_ids=[staff_id])
-
-    def training_get_reward(self, staff_id, slot_id):
-        if not self.has_staff(staff_id):
-            raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
-
-        key = "staffs.{0}.trainings".format(staff_id)
-
-        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {key: 1})
-        trainings = doc['staffs'][str(staff_id)]['trainings']
-
-        try:
-            data = trainings[slot_id]
-        except IndexError:
-            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_NOT_EXIST"))
-
-        training_id = data['oid']
-
-        if not self.is_training_finished(training_id, data['start_at']):
-            raise GameException(ConfigErrorMessage.get_error_id('TRAINING_NOT_FINISHED'))
-
-        item = TrainingItem.loads_from_json(data['item'])
-        message = "Reward from training {0}".format(training_id)
-        Resource(self.server_id, self.char_id).save_training_item(staff_id, training_id, item, message=message)
-
-        trainings.pop(slot_id)
-        MongoStaff.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': {key: trainings}}
-        )
-
-        training_got_reward_signal.send(
-            sender=None,
-            server_id=self.server_id,
-            char_id=self.char_id,
-            training_id=training_id
-        )
-
-        self.send_notify(staff_ids=[staff_id])
 
     def update(self, staff_id, **kwargs):
         exp = kwargs.get('exp', 0)
@@ -429,32 +366,7 @@ class StaffManger(object):
         msg.yishi = int(staff.yishi)
         msg.caozuo = int(staff.caozuo)
 
-        training = staff_data.get('trainings', [])
-        for i in range(5):
-            msg_training_slot = msg.training_slots.add()
-            msg_training_slot.slot_id = i
-
-            try:
-                tr = training[i]
-                msg_training_slot.training_id = tr['oid']
-                msg_training_slot.training_item.MergeFrom(TrainingItem.loads_from_json(tr['item']).make_protomsg())
-                msg_training_slot.end_at = tr['start_at'] + ConfigTraining.get(tr['oid']).minutes * 60
-                if msg_training_slot.end_at <= arrow.utcnow().timestamp:
-                    msg_training_slot.status = MsgStaff.TrainingSlot.TS_FINISHED
-                else:
-                    msg_training_slot.status = MsgStaff.TrainingSlot.TS_TRAINING
-
-            except IndexError:
-                msg_training_slot.status = MsgStaff.TrainingSlot.TS_EMPTY
-
-        # 只有一个处于正在训练的状态
-        in_queue = False
-        for i in msg.training_slots:
-            if i.status == MsgStaff.TrainingSlot.TS_TRAINING:
-                if not in_queue:
-                    in_queue = True
-                else:
-                    i.status = MsgStaff.TrainingSlot.TS_QUEUE
+        msg.training_exp_need_gold = staff_level_up_need_exp(staff.id, staff.level)
 
     def send_notify(self, staff_ids=None):
         if not staff_ids:
@@ -474,8 +386,3 @@ class StaffManger(object):
             self.msg_staff(s, int(k), v)
 
         MessagePipe(self.char_id).put(msg=notify)
-
-    @staticmethod
-    def is_training_finished(training_id, start_at):
-        now = arrow.utcnow().timestamp
-        return now - start_at > ConfigTraining.get(training_id).minutes * 60

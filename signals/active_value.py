@@ -19,15 +19,15 @@ from core.signals import (
     random_event_done_signal,
 )
 
-from config import ConfigTraining
-
 
 @receiver(training_got_reward_signal, dispatch_uid='signals.active_value.training_got_reward_handler')
 def training_got_reward_handler(server_id, char_id, training_id, **kwargs):
-    config = ConfigTraining.get(training_id)
-    function_name = "FUNCTION_TRAINING_TYPE_{0}".format(config.tp)
-
-    ActiveValue(server_id, char_id).trig(function_name)
+    pass
+    # TODO
+    # config = ConfigTraining.get(training_id)
+    # function_name = "FUNCTION_TRAINING_TYPE_{0}".format(config.tp)
+    #
+    # ActiveValue(server_id, char_id).trig(function_name)
 
 
 @receiver(chat_signal, dispatch_uid='signals.active_value.chat_handler')

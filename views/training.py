@@ -7,50 +7,72 @@ Description:
 
 """
 
-from core.training import TrainingBag, TrainingStore
+from core.training import TrainingExp
 
 from utils.http import ProtobufResponse
 
-from protomsg.training_pb2 import TrainingBuyResponse, TrainingStoreRefreshResponse
-from protomsg.staff_pb2 import StaffTrainingResponse
+from protomsg.training_pb2 import (
+    TrainingExpStartResponse,
+    TrainingExpCancelResponse,
+    TrainingExpSpeedupResponse,
+    TrainingExpGetRewardResponse,
+)
 
-def buy(request):
+
+def exp_start(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
-    training_id = request._proto.id
-
-    tr = TrainingStore(server_id, char_id)
-    tr.buy(training_id)
-
-
-    response = TrainingBuyResponse()
-    response.ret = 0
-    return ProtobufResponse(response)
-
-
-def refresh(request):
-    server_id = request._game_session.server_id
-    char_id = request._game_session.char_id
-
-    TrainingStore(server_id, char_id).refresh()
-
-    response = TrainingStoreRefreshResponse()
-    response.ret = 0
-    return ProtobufResponse(response)
-
-
-def training(request):
-    server_id = request._game_session.server_id
-    char_id = request._game_session.char_id
-
+    slot_id = request._proto.slot_id
     staff_id = request._proto.staff_id
-    training_id = request._proto.training_id
 
-    tr = TrainingBag(server_id, char_id)
-    tr.use(staff_id, training_id)
+    te = TrainingExp(server_id, char_id)
+    te.start(slot_id, staff_id)
 
-    response = StaffTrainingResponse()
+    response = TrainingExpStartResponse()
     response.ret = 0
     return ProtobufResponse(response)
 
+
+def exp_cancel(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    slot_id = request._proto.slot_id
+
+    te = TrainingExp(server_id, char_id)
+    p = te.cancel(slot_id)
+
+    response = TrainingExpCancelResponse()
+    response.ret = 0
+    response.property.MergeFrom(p)
+    return ProtobufResponse(response)
+
+
+def exp_speedup(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    slot_id = request._proto.slot_id
+
+    te = TrainingExp(server_id, char_id)
+    te.speedup(slot_id)
+
+    response = TrainingExpSpeedupResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+
+def exp_get_reward(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    slot_id = request._proto.slot_id
+
+    te = TrainingExp(server_id, char_id)
+    p = te.get_reward(slot_id)
+
+    response = TrainingExpGetRewardResponse()
+    response.ret = 0
+    response.property.MergeFrom(p)
+    return ProtobufResponse(response)

@@ -7,78 +7,57 @@ Description:
 
 """
 
-import random
 
 from config.base import ConfigBase
 
-class Training(object):
+class TrainingProperty(object):
     __slots__ = [
-        'id', 'on_sell', 'need_building_level', 'tp',
-        'cost_type', 'cost_value', 'minutes',
-        'package',
-        'skill_id', 'skill_level',
+        'id', 'minutes', 'need_items',
+        'cost_type', 'cost_value', 'package'
     ]
-    
+
     def __init__(self):
         self.id = 0
-        self.on_sell = 0
-        self.need_building_level = 0
-        self.tp = 0
+        self.minutes = 0
+        self.need_items = []
         self.cost_type = 0
         self.cost_value = 0
-        self.minutes = 0
         self.package = 0
-        self.skill_id = 0
-        self.skill_level = 0
 
 
-class ConfigTraining(ConfigBase):
-    EntityClass = Training
+class TrainingSkillItem(object):
+    __slots__ = [
+        'id', 'minutes'
+    ]
+
+    def __init__(self):
+        self.id = 0
+        self.minutes = 0
+
+
+class ConfigTrainingProperty(ConfigBase):
+    EntityClass = TrainingProperty
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype : TrainingProperty
+        """
+        return super(ConfigTrainingProperty, cls).get(_id)
+
+
+class ConfigTrainingSkillItem(ConfigBase):
+    EntityClass = TrainingSkillItem
     INSTANCES = {}
     FILTER_CACHE = {}
     
     @classmethod
-    def get(cls, id):
+    def get(cls, _id):
         """
 
-        :rtype : Training
+        :rtype : TrainingSkill
         """
-        return super(ConfigTraining, cls).get(id)
-
-
-    @classmethod
-    def refreshed_ids(cls, level, amount):
-        if level == 1:
-            trainings = cls.filter(need_building_level=1, on_sell=True)
-            return random.sample(trainings.keys(), amount)
-
-        ids = []
-
-        # 保证当前等级有一个
-        # 然后从小于当前等级的训练中取其他的，
-        # 但是也要保证每个等级至少有一个
-        trainings = cls.filter(need_building_level=level, on_sell=True)
-        ids.append(random.choice(trainings.keys()))
-
-        level -= 1
-        training_ids = []
-
-        while level >= 1:
-            this_level_trainings = cls.filter(need_building_level=level, on_sell=True)
-            this_level_ids = this_level_trainings.keys()
-            this_id = random.choice(this_level_ids)
-
-            ids.append(this_id)
-
-            this_level_ids.remove(this_id)
-            training_ids.extend(this_level_ids)
-
-            level -= 1
-
-        need_additional_amount = amount - len(ids)
-        ids.extend(random.sample(training_ids, need_additional_amount))
-
-        return ids
-
-
-
+        return super(ConfigTrainingSkillItem, cls).get(_id)

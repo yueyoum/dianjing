@@ -8,15 +8,13 @@ Description:
 """
 
 import json
-import base64
 import random
 
 from core.base import STAFF_ATTRS
-from config import ConfigPackage, ConfigTraining
+from config import ConfigPackage
 
 from protomsg.package_pb2 import (
     Drop as MsgDrop,
-    TrainingItem as MsgTrainingItem
 )
 
 # 这个对应编辑器中的 Package
@@ -162,78 +160,3 @@ class Drop(PackageBase):
 
         return obj
 
-
-class TrainingItem(PackageBase):
-    # FIELDS also has skill_id, skill_level
-
-    def __init__(self):
-        super(TrainingItem, self).__init__()
-        self.skill_id = 0
-        self.skill_level = 0
-
-    @classmethod
-    def generate_from_training_id(cls, tid):
-        """
-
-        :rtype : TrainingItem
-        """
-        obj = cls()
-
-        config = ConfigTraining.get(tid)
-        if not config:
-            raise RuntimeError("training not exist: {0}".format(tid))
-
-        if config.skill_id:
-            # 这是技能训练，就不会其他加成了
-            obj.skill_id = config.skill_id
-            obj.skill_level = config.skill_level
-            return obj
-
-        return cls.generate(config.package)
-
-    def make_protomsg(self):
-        msg = MsgTrainingItem()
-
-        if self.skill_id:
-            msg.skill.id = self.skill_id
-            msg.skill.level = self.skill_level
-        else:
-            for attr in self.FIELDS:
-                value = getattr(self, attr)
-                if not value:
-                    continue
-
-                msg_resources = msg.resources.add()
-                msg_resources.resource_id = attr
-                msg_resources.value = value
-
-        return msg
-
-    def to_json(self):
-        data = {}
-        if self.skill_id:
-            data['skill_id'] = self.skill_id
-            data['skill_level'] = self.skill_level
-        else:
-            for attr in self.FIELDS:
-                value = getattr(self, attr)
-                if not value:
-                    continue
-
-                data[attr] = value
-
-        return json.dumps(data)
-
-    @classmethod
-    def loads_from_json(cls, data):
-        """
-
-        :rtype : TrainingItem
-        """
-        data = json.loads(data)
-
-        obj = cls()
-        for k, v in data.iteritems():
-            setattr(obj, k, v)
-
-        return obj
