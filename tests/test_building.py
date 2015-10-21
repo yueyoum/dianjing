@@ -12,12 +12,11 @@ import random
 from dianjing.exception import GameException
 
 from core.db import MongoDB
+from core.mongo import MongoBuilding
 
 from core.building import BuildingManager
 
 from config import ConfigErrorMessage, ConfigBuilding
-
-import time
 
 
 class TestBuilding(object):
@@ -33,9 +32,11 @@ class TestBuilding(object):
 
     def setUp(self):
         self.reset()
+        BuildingManager(1, 1)
 
     def tearDown(self):
         self.reset()
+        MongoBuilding.db(1).drop()
 
     def test_getLevel(self):
         BuildingManager(1, 1).get_level(1)
@@ -89,7 +90,6 @@ class TestBuilding(object):
 
     def test_level_up_gold_not_enough(self):
         b = random.choice(ConfigBuilding.INSTANCES.values())
-
         level = b.max_levels - 1
 
         MongoDB.get(1).building.update_one(

@@ -217,7 +217,7 @@ class TrainingExp(object):
 
         # TODO 优化
         StaffManger(self.server_id, self.char_id).update(staff_id, exp=exp)
-        
+
         self.clean(slot_id)
 
         p = Property()
@@ -289,7 +289,6 @@ class TrainingExp(object):
         p_exp.value = exp
         return p
 
-
     def clean(self, slot_id):
         MongoTrainingExp.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -299,7 +298,6 @@ class TrainingExp(object):
         )
 
         self.send_notify(slot_ids=[slot_id])
-
 
     def send_notify(self, slot_ids=None):
         if slot_ids:
