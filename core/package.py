@@ -15,7 +15,9 @@ from config import ConfigPackage
 
 from protomsg.package_pb2 import (
     Drop as MsgDrop,
+    Property as MsgProperty,
 )
+
 
 # 这个对应编辑器中的 Package
 class PackageBase(object):
@@ -26,21 +28,21 @@ class PackageBase(object):
     # fields also contains trainings
 
     def __init__(self):
-        self.jingong = 0                # 员工 - 进攻
-        self.qianzhi = 0                # 员工 - 牵制
-        self.xintai = 0                 # 员工 - 心态
-        self.baobing = 0                # 员工 - 暴兵
-        self.fangshou = 0               # 员工 - 防守
-        self.yunying = 0                # 员工 - 运营
-        self.yishi = 0                  # 员工 - 意识
-        self.caozuo = 0                 # 员工 - 操作
-        self.staff_exp = 0              # 员工 - 经验
-        self.gold = 0                   # 角色 - 金币/软妹币
-        self.diamond = 0                # 角色 - 钻石
-        self.club_renown = 0            # 角色 - 俱乐部声望
-        self.ladder_score = 0           # 角色 - 天梯赛积分
-        self.league_score = 0           # 角色 - 联赛积分
-        self.trainings = []             # 角色 - 训练道具
+        self.jingong = 0  # 员工 - 进攻
+        self.qianzhi = 0  # 员工 - 牵制
+        self.xintai = 0  # 员工 - 心态
+        self.baobing = 0  # 员工 - 暴兵
+        self.fangshou = 0  # 员工 - 防守
+        self.yunying = 0  # 员工 - 运营
+        self.yishi = 0  # 员工 - 意识
+        self.caozuo = 0  # 员工 - 操作
+        self.staff_exp = 0  # 员工 - 经验
+        self.gold = 0  # 角色 - 金币/软妹币
+        self.diamond = 0  # 角色 - 钻石
+        self.club_renown = 0  # 角色 - 俱乐部声望
+        self.ladder_score = 0  # 角色 - 天梯赛积分
+        self.league_score = 0  # 角色 - 联赛积分
+        self.trainings = []  # 角色 - 训练道具
 
     @classmethod
     def generate(cls, pid):
@@ -99,6 +101,9 @@ class PackageBase(object):
             set_value(attr, getattr(config, attr))
 
         return p
+
+    def make_protomsg(self):
+        raise NotImplementedError()
 
     def to_json(self):
         raise NotImplementedError()
@@ -160,3 +165,31 @@ class Drop(PackageBase):
 
         return obj
 
+
+class Property(PackageBase):
+    FIELDS = STAFF_ATTRS + ['staff_exp']
+
+    def make_protomsg(self):
+        msg = MsgProperty()
+
+        for attr in self.FIELDS:
+            value = getattr(self, attr)
+            if not value:
+                continue
+
+            msg_item = msg.resources.add()
+            msg_item.resource_id = attr
+            msg_item.value = value
+
+        return msg
+
+    def to_dict(self):
+        data = {}
+        for attr in self.FIELDS:
+            value = getattr(self, attr)
+            if not value:
+                continue
+
+            data[attr] = value
+
+        return data

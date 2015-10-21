@@ -19,6 +19,7 @@ from config.unit import ConfigUnit, ConfigPolicy
 from config.building import ConfigBuilding
 from config.package import ConfigPackage
 from config.training import ConfigTrainingSkillItem, ConfigTrainingProperty
+from config.item import ConfigItem
 from config.npc import ConfigNPC
 from config.skill import ConfigSkill
 from config.task import ConfigTask, ConfigRandomEvent
@@ -85,8 +86,10 @@ def load_config():
             ConfigPackage.initialize(data)
         elif item == 'training_property.json':
             ConfigTrainingProperty.initialize(data)
-        elif item == 'training_skill.json':
+        elif item == 'training_skill_item.json':
             ConfigTrainingSkillItem.initialize(data)
+        elif item == 'item.json':
+            ConfigItem.initialize(data)
         elif item == 'npc_club.json':
             ConfigNPC.initialize(data)
         elif item == 'npc_club_name.json':

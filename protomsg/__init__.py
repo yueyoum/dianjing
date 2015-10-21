@@ -141,6 +141,10 @@ MESSAGE_TO_ID = {
     "ActiveFunctionNotify": 2101,
     "ActiveValueGetRewardRequest": 2102,
     "ActiveValueGetRewardResponse": 2103,
+    "TrainingSkillItemNotify": 2200,
+    "TrainingSkillItemRemoveNotify": 2201,
+    "ItemNotify": 2202,
+    "ItemRemoveNotify": 2203,
 }
 
 ID_TO_MESSAGE = {
@@ -285,6 +289,10 @@ ID_TO_MESSAGE = {
     2101: "ActiveFunctionNotify",
     2102: "ActiveValueGetRewardRequest",
     2103: "ActiveValueGetRewardResponse",
+    2200: "TrainingSkillItemNotify",
+    2201: "TrainingSkillItemRemoveNotify",
+    2202: "ItemNotify",
+    2203: "ItemRemoveNotify",
 }
 
 PATH_TO_REQUEST = {

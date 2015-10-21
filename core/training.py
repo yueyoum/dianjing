@@ -13,6 +13,7 @@ from dianjing.exception import GameException
 from core.mongo import MongoTrainingExp
 from core.staff import StaffManger, staff_level_up_need_exp
 from core.building import BuildingTrainingCenter
+from core.package import Property
 from core.resource import Resource
 
 from utils.message import MessagePipe
@@ -20,8 +21,7 @@ from utils.message import MessagePipe
 from config import ConfigErrorMessage, ConfigBuilding
 
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
-from protomsg.training_pb2 import TrainingExpSlotNotify
-from protomsg.package_pb2 import Property
+from protomsg.training_pb2 import TrainingExpSlotNotify, TrainingPropertyNotify
 
 TOTAL_SECONDS = 8 * 3600  # 8 hours
 
@@ -217,14 +217,12 @@ class TrainingExp(object):
 
         # TODO 优化
         StaffManger(self.server_id, self.char_id).update(staff_id, exp=exp)
-        
+
         self.clean(slot_id)
 
         p = Property()
-        p_exp = p.resources.add()
-        p_exp.resource_id = 'staff_exp'
-        p_exp.value = exp
-        return p
+        p.staff_exp = exp
+        return p.make_protomsg()
 
     def speedup(self, slot_id):
         ss = self.get_slot_status(slot_id)
@@ -284,11 +282,8 @@ class TrainingExp(object):
         self.clean(slot_id)
 
         p = Property()
-        p_exp = p.resources.add()
-        p_exp.resource_id = 'staff_exp'
-        p_exp.value = exp
-        return p
-
+        p.staff_exp = exp
+        return p.make_protomsg()
 
     def clean(self, slot_id):
         MongoTrainingExp.db(self.server_id).update_one(
@@ -299,7 +294,6 @@ class TrainingExp(object):
         )
 
         self.send_notify(slot_ids=[slot_id])
-
 
     def send_notify(self, slot_ids=None):
         if slot_ids:
@@ -347,3 +341,13 @@ class TrainingExp(object):
                 notify_slot.staff.end_at = ss.end_at
 
         MessagePipe(self.char_id).put(msg=notify)
+
+
+
+class TrainingProperty(object):
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+
+    def send_notify(self, staff_ids=None):
+        pass
