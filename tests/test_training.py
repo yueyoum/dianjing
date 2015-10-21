@@ -95,7 +95,6 @@ class TestTrainingExp(object):
         try:
             TrainingExp(1, 1).start(1, self.staff_id)
         except GameException as e:
-            print e.error_id
             assert e.error_id == ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_IN_USE")
         else:
             raise Exception('Error')
@@ -117,17 +116,26 @@ class TestTrainingExp(object):
         try:
             TrainingExp(1, 1).start(2, self.staff_id)
         except GameException as e:
-            print e.error_id
             assert e.error_id == ConfigErrorMessage.get_error_id("TRAINING_EXP_STAFF_IN_TRAINING")
         else:
             raise Exception('Error')
+
+    def test_start_gold_not_enough(self):
+        MongoTrainingExp.db(1).delete_one({'_id': 1})
+        try:
+            TrainingExp(1, 1).start(1, self.staff_id)
+        except GameException as e:
+            print e.error_id
+            assert e.error_id == ConfigErrorMessage.get_error_id("GOLD_NOT_ENOUGH")
+        else:
+            raise Exception('error')
 
     def test_start(self):
         Club(1, 1).update(gold=8000)
         MongoTrainingExp.db(1).delete_one({'_id': 1})
         TrainingExp(1, 1).start(1, self.staff_id)
         data = MongoTrainingExp.db(1).find_one({'_id': 1}, {'slots.{0}'.format(1): 1})
-        assert data['slots']['1']['staff_id'] == self.staff_id
+        assert data['slots']['1']['staff_id'] == 1000
 
     def test_cancel_cannot_operate(self):
         MongoTrainingExp.db(1).update_one(
@@ -147,7 +155,6 @@ class TestTrainingExp(object):
         try:
             TrainingExp(1, 1).cancel(1)
         except GameException as e:
-            print e.error_id
             assert e.error_id == ConfigErrorMessage.get_error_id("TRAINING_EXP_FINISH_CANNOT_OPERATE")
 
     def test_cancel(self):
