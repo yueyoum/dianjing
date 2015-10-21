@@ -20,4 +20,9 @@
         <port>6379</port>
         <cache-seconds>3600</cache-seconds>
     </redis>
+
+    <mongodb>
+        <user></user>
+        <password></password>
+    </mongodb>
 </config>

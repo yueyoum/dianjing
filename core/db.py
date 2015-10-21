@@ -57,7 +57,15 @@ class MongoDB(object):
             port = int(s.mongo_port)
             mongo_instance_key = "{0}:{1}".format(host, port)
             if mongo_instance_key not in cls.INSTANCES:
-                cls.INSTANCES[mongo_instance_key] = MongoClient(host=host, port=port)
+
+                if settings.MONGODB_USER:
+                    mongo_url = "mongodb://{0}:{1}@{2}:{3}".format(
+                        settings.MONGODB_USER, settings.MONGODB_PASSWORD, host, port
+                    )
+                else:
+                    mongo_url = "mongodb://{0}:{1}".format(host, port)
+
+                cls.INSTANCES[mongo_instance_key] = MongoClient(mongo_url)
 
             instance = cls.INSTANCES[mongo_instance_key]
 

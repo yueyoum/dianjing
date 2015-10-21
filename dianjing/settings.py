@@ -193,6 +193,12 @@ REDIS_HOST = doc.find('redis/host').text
 REDIS_PORT = int( doc.find('redis/port').text )
 REDIS_CACHE_SECONDS = int( doc.find('redis/cache-seconds').text )
 
+if doc.find('mongodb/user'):
+    MONGODB_USER = doc.find('mongodb/user').text
+    MONGODB_PASSWORD = doc.find('mongodb/password').text
+else:
+    MONGODB_USER = None
+    MONGODB_PASSWORD = None
 
 del doc
 del tree

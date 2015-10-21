@@ -15,6 +15,7 @@ from core.character import Character
 from core.club import Club
 from core.staff import StaffRecruit, StaffManger
 from core.skill import SkillManager
+from core.training import TrainingExp
 from core.challenge import Challenge
 from core.building import BuildingManager
 from core.league import League
@@ -51,6 +52,8 @@ def game_start_handler(server_id, char_id, **kwargs):
     StaffRecruit(server_id, char_id).send_notify()
     StaffManger(server_id, char_id).send_notify()
     SkillManager(server_id, char_id).send_notify()
+
+    TrainingExp(server_id, char_id).send_notify()
 
     Challenge(server_id, char_id).send_notify()
     BuildingManager(server_id, char_id).send_notify()

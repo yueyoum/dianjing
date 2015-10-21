@@ -162,5 +162,7 @@ class SkillManager(object):
                 notify_staff_skill.id = int(sid)
                 notify_staff_skill.level = sinfo['level']
                 notify_staff_skill.locked = sinfo['locked'] == 1
+                # TODO
+                notify_staff_skill.upgrade_end_at = -1
 
         MessagePipe(self.char_id).put(msg=notify)
