@@ -30,7 +30,9 @@ class CharacterAdmin(admin.ModelAdmin):
     search_fields = ['name', 'club_name', ]
 
     action_form = MyActionForm
-    actions = ['add_gold', 'add_diamond', 'add_club_level', 'add_ladder_score', 'add_purchase_diamond',]
+    actions = ['add_gold', 'add_diamond', 'add_club_level', 'add_ladder_score', 'add_purchase_diamond',
+               'add_training_skill_item', 'add_item',
+               ]
 
     def Info(self, obj):
         doc = MongoCharacter.db(obj.server_id).find_one(
@@ -141,3 +143,28 @@ class CharacterAdmin(admin.ModelAdmin):
             )
 
     add_purchase_diamond.short_description = u"添加充值钻石"
+
+
+    def add_training_skill_item(self, request, queryset):
+        value = self.check_value(request)
+        if not value:
+            return
+
+        # TODO
+        from core.bag import BagTrainingSkill
+        for q in queryset:
+            BagTrainingSkill(q.server_id, q.id).add([(value, 1)])
+
+    add_training_skill_item.short_description = u"添加技能训练书"
+
+    def add_item(self, request, queryset):
+        value = self.check_value(request)
+        if not value:
+            return
+
+        # TODO
+        from core.bag import BagItem
+        for q in queryset:
+            BagItem(q.server_id, q.id).add([(value, 1)])
+
+    add_item.short_description = u"添加道具"
