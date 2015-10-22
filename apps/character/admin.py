@@ -150,6 +150,10 @@ class CharacterAdmin(admin.ModelAdmin):
         if not value:
             return
 
+        from config import ConfigTrainingSkillItem
+        if not ConfigTrainingSkillItem.get(value):
+            return
+
         # TODO
         from core.bag import BagTrainingSkill
         for q in queryset:
@@ -160,6 +164,10 @@ class CharacterAdmin(admin.ModelAdmin):
     def add_item(self, request, queryset):
         value = self.check_value(request)
         if not value:
+            return
+
+        from config import ConfigItem
+        if not ConfigItem.get(value):
             return
 
         # TODO
