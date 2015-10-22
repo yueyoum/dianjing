@@ -24,7 +24,8 @@ from config import ConfigErrorMessage, ConfigBuilding, ConfigTrainingProperty
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 from protomsg.training_pb2 import TrainingExpSlotNotify, TrainingPropertyNotify
 
-TOTAL_SECONDS = 8 * 3600  # 8 hours
+EXP_TRAINING_TOTAL_SECONDS = 8 * 3600  # 8 hours
+PROPERTY_TRAINING_SLOTS_AMOUNT = 4
 
 
 class ExpSlotStatus(object):
@@ -120,7 +121,7 @@ class ExpSlotStatus(object):
             return
 
         self.start_at = data['start_at']
-        self.end_at = data['start_at'] + TOTAL_SECONDS
+        self.end_at = data['start_at'] + EXP_TRAINING_TOTAL_SECONDS
         self.speedup = data['speedup']
         self.time_point = data['time_point']
         self.exp = data['exp']
@@ -420,7 +421,7 @@ class PropertyTrainingList(object):
         self.training_list = training_list
         self.slots = []
 
-        for i in range(4):
+        for i in range(PROPERTY_TRAINING_SLOTS_AMOUNT):
             try:
                 data = self.training_list[i]
             except IndexError:
@@ -440,7 +441,7 @@ class PropertyTrainingList(object):
 
     def calculate(self):
         self.slots[0].calculate()
-        for i in range(1, 4):
+        for i in range(1, PROPERTY_TRAINING_SLOTS_AMOUNT):
             self.slots[i].start_at = self.slots[i - 1].end_at
             if not self.slots[i].speedup:
                 # 如果是加速完成的，就不能清空end_at
@@ -465,7 +466,7 @@ class PropertyTrainingList(object):
             self.slots[0].training_id = training_id
             self.slots[0].start_at = arrow.utcnow().timestamp
         else:
-            for i in range(1, 4):
+            for i in range(1, PROPERTY_TRAINING_SLOTS_AMOUNT):
                 if self.slots[i].status == PropertySlotStatus.EMPTY:
                     self.slots[i].training_id = training_id
                     self.slots[i].start_at = self.slots[i - 1].end_at
@@ -515,7 +516,7 @@ def slot_id_check(func):
 
         :type self : TrainingProperty
         """
-        if slot_id < 1 or slot_id > 4:
+        if slot_id < 1 or slot_id > PROPERTY_TRAINING_SLOTS_AMOUNT:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_PROPERTY_SLOT_NOT_EXIST"))
 
         return func(self, staff_id, slot_id)
@@ -647,6 +648,7 @@ class TrainingProperty(object):
             projection = {'staffs.{0}'.format(i): 1 for i in staff_ids}
             act = ACT_UPDATE
         else:
+            staff_ids = StaffManger(self.server_id, self.char_id).get_all_staff_ids()
             projection = {'staffs': 1}
             act = ACT_INIT
 
@@ -658,14 +660,16 @@ class TrainingProperty(object):
         notify = TrainingPropertyNotify()
         notify.act = act
 
-        for staff_id, training_list in doc['staffs'].iteritems():
+        for staff_id in staff_ids:
+            training_list = doc['staffs'].get(str(staff_id), [])
+
             notify_staff = notify.staffs.add()
-            notify_staff.staff_id = int(staff_id)
+            notify_staff.staff_id = staff_id
 
             pl = PropertyTrainingList(training_list)
 
-            # 每个人有4个训练位
-            for i in range(1, 5):
+            # 每个人有 PROPERTY_TRAINING_SLOTS_AMOUNT 个训练位
+            for i in range(1, PROPERTY_TRAINING_SLOTS_AMOUNT+1):
                 notify_staff_training = notify_staff.trainings.add()
                 notify_staff_training.slot_id = i
 
