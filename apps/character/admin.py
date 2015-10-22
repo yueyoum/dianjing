@@ -14,7 +14,7 @@ from core.signals import purchase_done_signal
 
 
 class MyActionForm(ActionForm):
-    value = forms.IntegerField(required=True)
+    value = forms.CharField(required=True)
 
 
 @admin.register(Character)
