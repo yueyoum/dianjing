@@ -155,7 +155,7 @@ class CharacterAdmin(admin.ModelAdmin):
 
 
     def add_training_skill_item(self, request, queryset):
-        value, amount = self.check_value(request)
+        value, amount = self.check_value_and_amount(request)
         if not value:
             return
 
@@ -171,7 +171,7 @@ class CharacterAdmin(admin.ModelAdmin):
     add_training_skill_item.short_description = u"添加技能训练书"
 
     def add_item(self, request, queryset):
-        value, amount= self.check_value(request)
+        value, amount= self.check_value_and_amount(request)
         if not value:
             return
 
