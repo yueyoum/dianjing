@@ -12,7 +12,7 @@ from utils.http import ProtobufResponse
 
 from core.skill import SkillManager
 
-from protomsg.skill_pb2 import SkillLockToggleResponse, SkillWashResponse
+from protomsg.skill_pb2 import SkillLockToggleResponse, SkillWashResponse, SkillUpgradeResponse, SkillUpgradeSpeedupResponse
 
 
 
@@ -45,3 +45,31 @@ def wash(request):
     response.ret = 0
     return ProtobufResponse(response)
 
+
+def upgrade(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    staff_id = request._proto.staff_id
+    skill_id = request._proto.skill_id
+
+    sk = SkillManager(server_id, char_id)
+    sk.upgrade(staff_id, skill_id)
+
+    response = SkillUpgradeResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+def upgrade_speedup(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    staff_id = request._proto.staff_id
+    skill_id = request._proto.skill_id
+
+    sk = SkillManager(server_id, char_id)
+    sk.upgrade_speedup(staff_id, skill_id)
+
+    response = SkillUpgradeSpeedupResponse()
+    response.ret = 0
+    return ProtobufResponse(response)

@@ -128,7 +128,9 @@ class MongoStaff(BaseDocument):
     # 嵌入staff中
     STAFF_SKILL_DOCUMENT = {
         'level': 1,
-        'locked': 0
+        'locked': 0,
+        # 升级结束时间戳
+        'upgrade_end_at': 0,
     }
 
     # 嵌入到staff中

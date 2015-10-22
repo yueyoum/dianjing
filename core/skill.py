@@ -8,17 +8,20 @@ Description:
 """
 
 import random
+import arrow
 
 from dianjing.exception import GameException
 
 from core.mongo import MongoStaff
+from core.bag import BagTrainingSkill
+from core.resource import Resource
 
 from utils.message import MessagePipe
 
 from protomsg.skill_pb2 import SkillNotify
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
-from config import ConfigStaff, ConfigSkill, ConfigErrorMessage
+from config import ConfigStaff, ConfigSkill, ConfigErrorMessage, ConfigTrainingSkillItem
 
 
 class SkillManager(object):
@@ -62,28 +65,59 @@ class SkillManager(object):
 
         return None
 
-    def add_level(self, staff_id, skill_id, level_addition):
+    def upgrade(self, staff_id, skill_id):
         this_skill = self.check(staff_id, skill_id)
-
-        if not isinstance(level_addition, (int, long)) or level_addition <= 0:
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+        if this_skill.get('upgrade_end_at', 0):
+            raise GameException(ConfigErrorMessage.get_error_id("SKILL_ALREADY_IN_UPGRADE"))
 
         config = ConfigSkill.get(skill_id)
         level = this_skill['level']
         if level >= config.max_level:
             raise GameException(ConfigErrorMessage.get_error_id("SKILL_ALREADY_MAX_LEVEL"))
 
-        if level + level_addition > config.max_level:
-            raise GameException(ConfigErrorMessage.get_error_id("SKILL_WILL_BEYOND_MAX_LEVEL"))
+        need_id, need_amount = config.get_upgrade_needs(level)
 
-        key = "staffs.{0}.skills.{1}.level".format(staff_id, skill_id)
+        with BagTrainingSkill(self.server_id, self.char_id).remove_context(need_id, need_amount):
+            key = "staffs.{0}.skills.{1}.upgrade_end_at".format(staff_id, skill_id)
+            value = arrow.utcnow().timestamp + ConfigTrainingSkillItem.get(need_id).minutes * 60
 
-        MongoStaff.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': {key: level + level_addition}}
-        )
+            MongoStaff.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {key: value}}
+            )
 
         self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
+
+    def upgrade_speedup(self, staff_id, skill_id):
+        def finish():
+            key = "staffs.{0}.skills.{1}.level".format(staff_id, skill_id)
+
+            MongoStaff.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$inc': {key: 1}}
+            )
+
+            self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
+
+        this_skill = self.check(staff_id, skill_id)
+        end_at = this_skill.get('upgrade_end_at', 0)
+        if not end_at:
+            raise GameException(ConfigErrorMessage.get_error_id("SKILL_UPGRADE_SPEEDUP_CANNOT"))
+
+        behind_seconds = end_at - arrow.utcnow().timestamp
+        if behind_seconds <= 0:
+            finish()
+            return
+
+        minutes, seconds = divmod(behind_seconds, 60)
+        if seconds:
+            minutes += 1
+
+        need_diamond = minutes * 10
+        message = u"Skill Upgrade SpeedUp"
+
+        with Resource(self.server_id, self.char_id).check(diamond=-need_diamond, message=message):
+            finish()
 
     def lock_toggle(self, staff_id, skill_id):
         self.check(staff_id, skill_id)
@@ -162,7 +196,6 @@ class SkillManager(object):
                 notify_staff_skill.id = int(sid)
                 notify_staff_skill.level = sinfo['level']
                 notify_staff_skill.locked = sinfo['locked'] == 1
-                # TODO
-                notify_staff_skill.upgrade_end_at = -1
+                notify_staff_skill.upgrade_end_at = sinfo.get('upgrade_end_at', 0)
 
         MessagePipe(self.char_id).put(msg=notify)

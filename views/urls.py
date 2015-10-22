@@ -49,6 +49,8 @@ urlpatterns = [
 
     url(r'^skill/locktoggle/$', 'views.skill.lock_toggle'),
     url(r'^skill/wash/$', 'views.skill.wash'),
+    url(r'^skill/upgrade/$', 'views.skill.upgrade'),
+    url(r'^skill/upgrade/speedup/$', 'views.skill.upgrade_speedup'),
 
     url(r'^friend/info/$', 'views.friend.get_info'),
     url(r'^friend/add/$', 'views.friend.add'),
