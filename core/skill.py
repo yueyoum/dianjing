@@ -90,11 +90,15 @@ class SkillManager(object):
 
     def upgrade_speedup(self, staff_id, skill_id):
         def finish():
-            key = "staffs.{0}.skills.{1}.level".format(staff_id, skill_id)
+            key_level = "staffs.{0}.skills.{1}.level".format(staff_id, skill_id)
+            key_end_at = "staffs.{0}.skills.{1}.upgrade_end_at".format(staff_id, skill_id)
 
             MongoStaff.db(self.server_id).update_one(
                 {'_id': self.char_id},
-                {'$inc': {key: 1}}
+                {
+                    '$inc': {key_level: 1},
+                    '$set': {key_end_at: 0},
+                }
             )
 
             self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
