@@ -71,6 +71,15 @@ class CharacterAdmin(admin.ModelAdmin):
             self.message_user(request, u"填入的数字错误", level=messages.ERROR)
             return False
 
+    def check_value_and_amount(self, request):
+        try:
+            data = request.POST['value']
+            value, amount = data.split(':')
+            return int(value), int(amount)
+        except:
+            self.message_user(request, u"应该填入ID:数量", level=messages.ERROR)
+            return False, False
+
 
     def add_gold(self, request, queryset):
         value = self.check_value(request)
@@ -146,7 +155,7 @@ class CharacterAdmin(admin.ModelAdmin):
 
 
     def add_training_skill_item(self, request, queryset):
-        value = self.check_value(request)
+        value, amount = self.check_value(request)
         if not value:
             return
 
@@ -157,12 +166,12 @@ class CharacterAdmin(admin.ModelAdmin):
         # TODO
         from core.bag import BagTrainingSkill
         for q in queryset:
-            BagTrainingSkill(q.server_id, q.id).add([(value, 1)])
+            BagTrainingSkill(q.server_id, q.id).add([(value, amount)])
 
     add_training_skill_item.short_description = u"添加技能训练书"
 
     def add_item(self, request, queryset):
-        value = self.check_value(request)
+        value, amount= self.check_value(request)
         if not value:
             return
 
@@ -173,6 +182,6 @@ class CharacterAdmin(admin.ModelAdmin):
         # TODO
         from core.bag import BagItem
         for q in queryset:
-            BagItem(q.server_id, q.id).add([(value, 1)])
+            BagItem(q.server_id, q.id).add([(value, amount)])
 
     add_item.short_description = u"添加道具"
