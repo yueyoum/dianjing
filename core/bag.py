@@ -44,25 +44,26 @@ class BagBase(object):
             doc['_id'] = self.char_id
             MongoBag.db(self.server_id).insert_one(doc)
 
-    def has(self, ids):
-        if not isinstance(ids, (list, tuple)):
-            ids = [ids]
+    def has(self, items):
+        # items = [(id, amount)...]
+        items_dict = {}
+        for _id, _amount in items:
+            items_dict[_id] = items_dict.get(_id, 0) + _amount
 
-        projection = {'{0}.{1}'.format(self.MONGODB_FIELD_NAME, i): 1 for i in ids}
+        projection = {'{0}.{1}'.format(self.MONGODB_FIELD_NAME, i): 1 for i in items_dict.keys()}
         doc = MongoBag.db(self.server_id).find_one(
             {'_id': self.char_id},
             projection
         )
 
-        for i in ids:
-            if not doc[self.MONGODB_FIELD_NAME].get(str(i), 0):
+        for k, v in items_dict.iteritems():
+            if doc[self.MONGODB_FIELD_NAME].get(str(k), 0) < v:
                 return False
 
         return True
 
     def add(self, items):
         # items = [(id, amount)...]
-
         items_dict = {}
         for _id, _amount in items:
             items_dict[_id] = items_dict.get(_id, 0) + _amount

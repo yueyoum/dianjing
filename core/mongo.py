@@ -192,14 +192,14 @@ class MongoTrainingExp(BaseDocument):
 class MongoTrainingProperty(BaseDocument):
     DOCUMENT = {
         '_id': null,
+        # staff_id: []
         'staffs': {}
     }
 
     TRAINING_DOCUMENT = {
         'id': null,
-        'start_at': 0,
-        # 加速完成，speedup为True
-        'speedup': False,
+        'end_at': 0,
+        # 加速会改变这个end_at
     }
 
     @classmethod
