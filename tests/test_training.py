@@ -11,29 +11,33 @@ import arrow
 
 from dianjing.exception import GameException
 
-from core.mongo import MongoCharacter, MongoTrainingExp, MongoStaff, MongoBuilding
+from core.mongo import MongoTrainingExp, MongoStaff, MongoBuilding
 from core.training import TrainingExp
 from core.club import Club
-from core.building import BuildingTrainingCenter, BUILDING_TRAINING_CENTER
+from core.building import BuildingTrainingCenter
+from core.staff import staff_level_up_need_exp
 
 from config import ConfigErrorMessage, ConfigStaff, ConfigBuilding
 
-NOT_EXIST = 1
-NOT_OPEN = 2
-EMPTY = 3
-TRAINING = 4
-FINISH = 5
+
+def set_slot_test_data(staff_id, slot_id):
+    MongoTrainingExp.db(1).update_one(
+        {'_id': 1},
+        {'$set': {'slots.{0}'.format(slot_id): {'staff_id': staff_id,
+                                                'start_at': arrow.utcnow().timestamp,
+                                                'time_point': 0,
+                                                'exp': 0,
+                                                'speedup': False}}},
+    )
+
+
+def get_valid_slot():
+    return ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(1).value2 - 1
 
 
 class TestTrainingExp(object):
     def reset(self):
-        MongoCharacter.db(1).update_one(
-            {'_id': 1},
-            {'$set': {'club.level': 3}}
-        )
         self.staff_id = random.choice(ConfigStaff.INSTANCES.keys())
-        TrainingExp(1, 1)
-
         MongoStaff.db(1).update_one(
             {'_id': 1},
             {'$set': {'staffs.{0}'.format(self.staff_id): {'exp': 0, 'level': 1, 'status': 3,
@@ -43,6 +47,7 @@ class TestTrainingExp(object):
 
     def setup(self):
         self.reset()
+        TrainingExp(1, 1)
 
     def teardown(self):
         self.reset()
@@ -55,7 +60,6 @@ class TestTrainingExp(object):
             if str(i) not in staffs['staffs'].keys():
                 staff_id = i
                 break
-
         try:
             TrainingExp(1, 1).start(1, staff_id)
         except GameException as e:
@@ -83,15 +87,7 @@ class TestTrainingExp(object):
             raise Exception('Error')
 
     def test_start_slot_in_use(self):
-        MongoTrainingExp.db(1).update_one(
-            {'_id': 1},
-            {'$set': {'slots.{0}'.format(1): {'staff_id': self.staff_id,
-                                              'start_at': arrow.utcnow().timestamp,
-                                              'time_point': 0,
-                                              'exp': 0,
-                                              'speedup': False}}},
-        )
-
+        set_slot_test_data(self.staff_id, 1)
         try:
             TrainingExp(1, 1).start(1, self.staff_id)
         except GameException as e:
@@ -100,18 +96,10 @@ class TestTrainingExp(object):
             raise Exception('Error')
 
     def test_start_staff_in_training(self):
-        MongoTrainingExp.db(1).update_one(
-            {'_id': 1},
-            {'$set': {'slots.{0}'.format(1): {'staff_id': self.staff_id,
-                                              'start_at': arrow.utcnow().timestamp,
-                                              'time_point': 0,
-                                              'exp': 0,
-                                              'speedup': False}}},
-        )
-
+        set_slot_test_data(self.staff_id, 1)
         MongoBuilding.db(1).update_one(
             {'_id': 1},
-            {'$set': {'buildings.{0}.current_level'.format(BUILDING_TRAINING_CENTER): 3}}
+            {'$set': {'buildings.{0}.current_level'.format(BuildingTrainingCenter.BUILDING_ID): 3}}
         )
         try:
             TrainingExp(1, 1).start(2, self.staff_id)
@@ -135,17 +123,10 @@ class TestTrainingExp(object):
         MongoTrainingExp.db(1).delete_one({'_id': 1})
         TrainingExp(1, 1).start(1, self.staff_id)
         data = MongoTrainingExp.db(1).find_one({'_id': 1}, {'slots.{0}'.format(1): 1})
-        assert data['slots']['1']['staff_id'] == 1000
+        assert data['slots']['1']['staff_id'] == self.staff_id
 
     def test_cancel_cannot_operate(self):
-        MongoTrainingExp.db(1).update_one(
-            {'_id': 1},
-            {'$set': {'slots.{0}'.format(1): {'staff_id': self.staff_id,
-                                              'start_at': arrow.utcnow().timestamp,
-                                              'time_point': 0,
-                                              'exp': 0,
-                                              'speedup': True}}},
-        )
+        set_slot_test_data(self.staff_id, 1)
         doc = MongoTrainingExp.db(1).find_one(
             {'_id': 1},
             {'slots.{0}'.format(1): 1}
@@ -158,14 +139,7 @@ class TestTrainingExp(object):
             assert e.error_id == ConfigErrorMessage.get_error_id("TRAINING_EXP_FINISH_CANNOT_OPERATE")
 
     def test_cancel(self):
-        MongoTrainingExp.db(1).update_one(
-            {'_id': 1},
-            {'$set': {'slots.{0}'.format(1): {'staff_id': self.staff_id,
-                                              'start_at': arrow.utcnow().timestamp,
-                                              'time_point': 0,
-                                              'exp': 0,
-                                              'speedup': False}}},
-        )
+        set_slot_test_data(self.staff_id, 1)
 
         TrainingExp(1, 1).cancel(1)
 
@@ -193,7 +167,7 @@ class TestTrainingExp(object):
             raise Exception('error')
 
     def test_get_reward(self):
-        Club(1, 1).update(gold=8000, diamond=8000)
+        Club(1, 1).update(gold=staff_level_up_need_exp(1, 1), diamond=8000)
         TrainingExp(1, 1).start(1, self.staff_id)
         TrainingExp(1, 1).speedup(1)
         TrainingExp(1, 1).get_reward(1)
