@@ -15,7 +15,7 @@ from core.mongo import MongoTrainingExp, MongoStaff, MongoBuilding, MongoCharact
 from core.training import TrainingExp
 from core.club import Club
 from core.building import BuildingTrainingCenter
-from core.staff import staff_level_up_need_exp
+from core.staff import staff_training_exp_need_gold
 
 from config import ConfigErrorMessage, ConfigStaff, ConfigBuilding
 
@@ -122,7 +122,7 @@ class TestTrainingExp(object):
             raise Exception('error')
 
     def test_start(self):
-        Club(1, 1).update(gold=8000)
+        Club(1, 1).update(gold=staff_training_exp_need_gold(self.staff_id, 1))
         MongoTrainingExp.db(1).delete_one({'_id': 1})
         TrainingExp(1, 1).start(1, self.staff_id)
         data = MongoTrainingExp.db(1).find_one({'_id': 1}, {'slots.{0}'.format(1): 1})
@@ -152,7 +152,7 @@ class TestTrainingExp(object):
             raise Exception('error')
 
     def test_speedup(self):
-        Club(1, 1).update(diamond=8000, gold=8000)
+        Club(1, 1).update(diamond=8000, gold=staff_training_exp_need_gold(self.staff_id, 1))
         TrainingExp(1, 1).start(1, self.staff_id)
         TrainingExp(1, 1).speedup(1)
 
@@ -160,7 +160,7 @@ class TestTrainingExp(object):
         assert data['slots'][str(1)]['speedup'] == True
 
     def test_get_reward_not_finish(self):
-        Club(1, 1).update(gold=8000)
+        Club(1, 1).update(gold=staff_training_exp_need_gold(self.staff_id, 1))
         TrainingExp(1, 1).start(1, self.staff_id)
         try:
             TrainingExp(1, 1).get_reward(1)
@@ -170,7 +170,7 @@ class TestTrainingExp(object):
             raise Exception('error')
 
     def test_get_reward(self):
-        Club(1, 1).update(gold=staff_level_up_need_exp(self.staff_id, 1), diamond=8000)
+        Club(1, 1).update(gold=staff_training_exp_need_gold(self.staff_id, 1), diamond=8000)
         TrainingExp(1, 1).start(1, self.staff_id)
         TrainingExp(1, 1).speedup(1)
         TrainingExp(1, 1).get_reward(1)
@@ -178,7 +178,7 @@ class TestTrainingExp(object):
         assert data['staffs'][str(self.staff_id)]['exp'] > 0
 
     def test_clean(self):
-        Club(1, 1).update(gold=1, diamond=8000)
+        Club(1, 1).update(gold=staff_training_exp_need_gold(self.staff_id, 1), diamond=8000)
         TrainingExp(1, 1).start(1, self.staff_id)
         TrainingExp(1, 1).clean(1)
         data = MongoTrainingExp.db(1).find_one({'_id': 1}, {'slots.1': 1})
