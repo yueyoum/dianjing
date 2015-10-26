@@ -11,7 +11,7 @@ import arrow
 
 from dianjing.exception import GameException
 
-from core.mongo import MongoTrainingExp, MongoStaff, MongoBuilding
+from core.mongo import MongoTrainingExp, MongoStaff, MongoBuilding, MongoCharacter
 from core.training import TrainingExp
 from core.club import Club
 from core.building import BuildingTrainingCenter
@@ -109,11 +109,14 @@ class TestTrainingExp(object):
             raise Exception('Error')
 
     def test_start_gold_not_enough(self):
+        MongoCharacter.db(1).update_one(
+            {'_id': 1},
+            {'$set': {'club.gold': 0}}
+        )
         MongoTrainingExp.db(1).delete_one({'_id': 1})
         try:
             TrainingExp(1, 1).start(1, self.staff_id)
         except GameException as e:
-            print e.error_id
             assert e.error_id == ConfigErrorMessage.get_error_id("GOLD_NOT_ENOUGH")
         else:
             raise Exception('error')
@@ -167,7 +170,7 @@ class TestTrainingExp(object):
             raise Exception('error')
 
     def test_get_reward(self):
-        Club(1, 1).update(gold=staff_level_up_need_exp(1, 1), diamond=8000)
+        Club(1, 1).update(gold=staff_level_up_need_exp(self.staff_id, 1), diamond=8000)
         TrainingExp(1, 1).start(1, self.staff_id)
         TrainingExp(1, 1).speedup(1)
         TrainingExp(1, 1).get_reward(1)
@@ -175,7 +178,7 @@ class TestTrainingExp(object):
         assert data['staffs'][str(self.staff_id)]['exp'] > 0
 
     def test_clean(self):
-        Club(1, 1).update(gold=8000, diamond=8000)
+        Club(1, 1).update(gold=1, diamond=8000)
         TrainingExp(1, 1).start(1, self.staff_id)
         TrainingExp(1, 1).clean(1)
         data = MongoTrainingExp.db(1).find_one({'_id': 1}, {'slots.1': 1})
