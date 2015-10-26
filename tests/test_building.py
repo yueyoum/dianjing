@@ -45,7 +45,7 @@ def get_not_exist_building():
 
 class TestBuilding(object):
     def reset(self):
-        MongoBuilding.db(1).building.delete_one({'_id': 1})
+        MongoBuilding.db(1).delete_one({'_id': 1})
 
     def setUp(self):
         self.reset()
