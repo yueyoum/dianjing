@@ -48,6 +48,9 @@ urlpatterns = [
     url(r'^training/broadcast/speedup/$', 'views.training.broadcast_speedup'),
     url(r'^training/broadcast/getreward/$', 'views.training.broadcast_get_reward'),
 
+    url(r'^training/shop/start/$', 'views.training.shop_start'),
+    url(r'^training/sponsor/start/$', 'views.training.sponsor_start'),
+
     #
     url(r'^league/statistics/$', 'views.league.get_statistics'),
     url(r'^league/log/$', 'views.league.get_log'),

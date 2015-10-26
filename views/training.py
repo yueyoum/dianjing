@@ -7,7 +7,7 @@ Description:
 
 """
 
-from core.training import TrainingExp, TrainingProperty, TrainingBroadcast
+from core.training import TrainingExp, TrainingProperty, TrainingBroadcast, TrainingShop, TrainingSponsor
 
 from utils.http import ProtobufResponse
 
@@ -26,6 +26,10 @@ from protomsg.training_pb2 import (
     TrainingBroadcastCancelResponse,
     TrainingBroadcastSpeedupResponse,
     TrainingBroadcastGetRewardResponse,
+
+    TrainingShopStartResponse,
+
+    TrainingSponsorStartResponse,
 )
 
 
@@ -205,4 +209,31 @@ def broadcast_get_reward(request):
     response = TrainingBroadcastGetRewardResponse()
     response.ret = 0
     response.drop.MergeFrom(drop)
+    return ProtobufResponse(response)
+
+def shop_start(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    shop_id = request._proto.slot_id
+    staff_id = request._proto.staff_id
+
+    ts = TrainingShop(server_id, char_id)
+    ts.start(shop_id, staff_id)
+
+    response = TrainingShopStartResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+def sponsor_start(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    sponsor_id = request._proto.id
+
+    ts = TrainingSponsor(server_id, char_id)
+    ts.start(sponsor_id)
+
+    response = TrainingPropertyStartResponse()
+    response.ret = 0
     return ProtobufResponse(response)

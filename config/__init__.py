@@ -19,6 +19,7 @@ from config.unit import ConfigUnit, ConfigPolicy
 from config.building import ConfigBuilding
 from config.package import ConfigPackage
 from config.training import ConfigTrainingSkillItem, ConfigTrainingProperty
+from config.business import ConfigSponsor, ConfigShop
 from config.item import ConfigItem
 from config.npc import ConfigNPC
 from config.skill import ConfigSkill
@@ -90,6 +91,10 @@ def load_config():
             ConfigTrainingSkillItem.initialize(data)
         elif item == 'item.json':
             ConfigItem.initialize(data)
+        elif item == 'shop.json':
+            ConfigShop.initialize(data)
+        elif item == 'sponsor.json':
+            ConfigSponsor.initialize(data)
         elif item == 'npc_club.json':
             ConfigNPC.initialize(data)
         elif item == 'npc_club_name.json':

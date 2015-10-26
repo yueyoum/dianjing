@@ -231,6 +231,26 @@ class MongoTrainingBroadcast(BaseDocument):
 
     COLLECTION = 'training_broadcast'
 
+# 网店训练
+class MongoTrainingShop(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # shop_id: staff_id. staff_id 0 表示这个网店没人
+        'shops': {},
+    }
+
+    COLLECTION = 'training_shop'
+
+# 赞助训练
+class MongoSponsor(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # sponsor_id: start_at_timestamp.  timestamp 0 表示没有签约
+        'sponsors': {}
+    }
+
+    COLLECTION = 'training_sponsor'
+
 
 # 招募刷新
 class MongoRecruit(BaseDocument):

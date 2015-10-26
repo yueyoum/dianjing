@@ -15,7 +15,7 @@ from core.character import Character
 from core.club import Club
 from core.staff import StaffRecruit, StaffManger
 from core.skill import SkillManager
-from core.training import TrainingExp, TrainingProperty, TrainingBroadcast
+from core.training import TrainingExp, TrainingProperty, TrainingBroadcast, TrainingShop, TrainingSponsor
 from core.bag import BagTrainingSkill, BagItem
 from core.challenge import Challenge
 from core.building import BuildingManager
@@ -57,6 +57,8 @@ def game_start_handler(server_id, char_id, **kwargs):
     TrainingExp(server_id, char_id).send_notify()
     TrainingProperty(server_id, char_id).send_notify()
     TrainingBroadcast(server_id, char_id).send_notify()
+    TrainingShop(server_id, char_id).send_notify()
+    TrainingSponsor(server_id, char_id).send_notify()
 
     BagTrainingSkill(server_id, char_id).send_notify()
     BagItem(server_id, char_id).send_notify()

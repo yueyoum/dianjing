@@ -10,7 +10,7 @@ import arrow
 
 from dianjing.exception import GameException
 
-from core.mongo import MongoTrainingExp, MongoTrainingProperty, MongoTrainingBroadcast
+from core.mongo import MongoTrainingExp, MongoTrainingProperty, MongoTrainingBroadcast, MongoTrainingShop, MongoSponsor
 from core.staff import StaffManger, staff_level_up_need_exp
 from core.building import BuildingTrainingCenter, BuildingBusinessCenter
 from core.package import Property, Drop
@@ -19,7 +19,7 @@ from core.bag import BagItem
 
 from utils.message import MessagePipe
 
-from config import ConfigErrorMessage, ConfigBuilding, ConfigTrainingProperty
+from config import ConfigErrorMessage, ConfigBuilding, ConfigTrainingProperty, ConfigShop, ConfigSponsor
 
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 from protomsg.training_pb2 import (
@@ -31,6 +31,8 @@ from protomsg.training_pb2 import (
     TrainingExpSlotNotify,
     TrainingPropertyNotify,
     TrainingBroadcastNotify,
+    TrainingShopNotify,
+    TrainingSponsorNotify,
 )
 
 EXP_TRAINING_TOTAL_SECONDS = 8 * 3600  # 8 hours
@@ -710,6 +712,7 @@ class BroadcastSlotStatus(object):
         self.status = BroadcastSlotStatus.EMPTY
         self.staff_id = 0
         self.start_at = 0
+        self.end_at = 0
         self.finish = False
 
     @property
@@ -737,13 +740,13 @@ class BroadcastSlotStatus(object):
         max_building_level = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).max_levels
         max_slots_amount = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).get_level(max_building_level).value2
         if self.slot_id > max_slots_amount:
-            self.status = ExpSlotStatus.NOT_EXIST
+            self.status = BroadcastSlotStatus.NOT_EXIST
             return False
 
         current_slots_amount = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).get_level(
             self.current_building_level).value2
         if self.slot_id > current_slots_amount:
-            self.status = ExpSlotStatus.NOT_OPEN
+            self.status = BroadcastSlotStatus.NOT_OPEN
             return False
 
         return True
@@ -762,7 +765,7 @@ class BroadcastSlotStatus(object):
         if not check_result:
             return
 
-        doc = MongoTrainingExp.db(self.server_id).find_one(
+        doc = MongoTrainingBroadcast.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'slots.{0}'.format(self.slot_id): 1}
         )
@@ -779,12 +782,12 @@ class BroadcastSlotStatus(object):
             return
 
         self.start_at = data['start_at']
+        self.finish = data['finish']
 
         if self.is_finished:
-            self.status = ExpSlotStatus.FINISH
-            self.end_at = 0
+            self.status = BroadcastSlotStatus.FINISH
         else:
-            self.status = ExpSlotStatus.TRAINING
+            self.status = BroadcastSlotStatus.TRAINING
             self.end_at = self.start_at + BROADCAST_TOTAL_SECONDS
 
 
@@ -927,7 +930,7 @@ class TrainingBroadcast(object):
         MongoTrainingBroadcast.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
-                'slots.{0}'.format(slot_id): True
+                'slots.{0}'.format(slot_id): {}
             }}
         )
 
@@ -981,6 +984,240 @@ class TrainingBroadcast(object):
             if slot.staff_id:
                 notify_slot.staff.id = slot.staff_id
                 notify_slot.staff.got_gold = slot.current_gold
-                notify_slot.end_at = slot.end_at
+                notify_slot.staff.end_at = slot.end_at
+
+        MessagePipe(self.char_id).put(msg=notify)
+
+
+# 网店
+class TrainingShop(object):
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+
+        if not MongoTrainingShop.exist(self.server_id, self.char_id):
+            doc = MongoTrainingShop.document()
+            doc['_id'] = self.char_id
+
+            for shop_id in ConfigShop.INSTANCES.keys():
+                if ConfigShop.get(shop_id).unlock_type == 1:
+                    # 无需解锁
+                    doc['shops'][str(shop_id)] = 0
+
+            MongoTrainingShop.db(self.server_id).insert_one(doc)
+
+
+    def trig_open_by_club_level(self, club_level):
+        doc = MongoTrainingShop.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'shops': 1}
+        )
+
+        opened_shop_ids = []
+        for shop_id in ConfigShop.INSTANCES.keys():
+            if ConfigShop.get(shop_id).unlock_type != 2:
+                continue
+
+            if ConfigShop.get(shop_id).unlock_value > club_level:
+                continue
+
+            if str(shop_id) in doc['shops']:
+                continue
+
+            opened_shop_ids.append(shop_id)
+
+        if opened_shop_ids:
+            self.open(opened_shop_ids)
+
+    def trig_open_by_vip_level(self, vip_level):
+        doc = MongoTrainingShop.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'shops': 1}
+        )
+
+        opened_shop_ids = []
+        for shop_id in ConfigShop.INSTANCES.keys():
+            if ConfigShop.get(shop_id).unlock_type != 3:
+                continue
+
+            if ConfigShop.get(shop_id).unlock_value > vip_level:
+                continue
+
+            if str(shop_id) in doc['shops']:
+                continue
+
+            opened_shop_ids.append(shop_id)
+
+        if opened_shop_ids:
+            self.open(opened_shop_ids)
+
+    def open(self, shop_ids):
+        updater = {'shops.{0}'.format(i): 0 for i in shop_ids}
+
+        MongoTrainingShop.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': updater}
+        )
+        self.send_notify(shop_ids=shop_ids)
+
+    def start(self, shop_id, staff_id):
+        if not StaffManger(self.server_id, self.char_id).has_staff(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
+
+        if not ConfigShop.get(shop_id):
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_SHOP_NOT_EXIST"))
+
+        doc = MongoTrainingShop.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'shops': 1}
+        )
+
+        if str(shop_id) not in doc['shops']:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_SHOP_NOT_OPEN"))
+
+        for k, v in doc['shops'].iteritems():
+            if v == staff_id:
+                raise GameException(ConfigErrorMessage.get_error_id("TRAINING_SHOP_STAFF_IN_TRAINING"))
+
+        MongoTrainingShop.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'shops.{0}'.format(shop_id): staff_id
+            }}
+        )
+
+        # TODO 每天的收益
+
+        self.send_notify(shop_ids=[shop_id])
+
+
+    def send_notify(self, shop_ids=None):
+        if shop_ids:
+            act = ACT_UPDATE
+            projections = {'shops.{0}'.format(i): 1 for i in shop_ids}
+        else:
+            act = ACT_INIT
+            projections = {'shops': 1}
+            shop_ids = ConfigShop.INSTANCES.keys()
+
+        doc = MongoTrainingShop.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            projections
+        )
+
+        notify = TrainingShopNotify()
+        notify.act = act
+
+        for i in shop_ids:
+            notify_slot = notify.slots.add()
+            notify_slot.id = i
+
+            if str(i) not in doc['shops']:
+                notify_slot.status = TRAINING_SLOT_NOT_OPEN
+            else:
+                staff_id = doc['shops'][str(i)]
+                if staff_id:
+                    notify_slot.status = TRAINING_SLOT_TRAINING
+                    notify_slot.staff_id = staff_id
+                else:
+                    notify_slot.status = TRAINING_SLOT_EMPTY
+
+        MessagePipe(self.char_id).put(msg=notify)
+
+
+# 赞助
+class TrainingSponsor(object):
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+
+        if not MongoSponsor.exist(self.server_id, self.char_id):
+            doc = MongoSponsor.document()
+            doc['_id'] = self.char_id
+            MongoSponsor.db(self.server_id).insert_one(doc)
+
+    def open(self, challenge_id):
+        # TODO maybe problem
+        # TODO day reward cron job
+        doc = MongoSponsor.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'sponsors': 1}
+        )
+
+        updater = {}
+        for sponsor_id in ConfigSponsor.INSTANCES.keys():
+            if ConfigSponsor.get(sponsor_id).condition != challenge_id:
+                continue
+
+            if str(sponsor_id) in doc['sponsors']:
+                continue
+
+            updater[str(sponsor_id)] = 0
+
+        if not updater:
+            return
+
+        MongoSponsor.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': updater}
+        )
+
+        self.send_notify(sponsor_ids=updater.keys())
+
+    def start(self, sponsor_id):
+        if not ConfigSponsor.get(sponsor_id):
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_SPONSOR_NOT_EXIST"))
+
+        doc = MongoSponsor.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'sponsors.{0}'.format(sponsor_id): 1}
+        )
+
+        if str(sponsor_id) not in doc['sponsors']:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_SPONSOR_NOT_OPEN"))
+
+        if doc['sponsors'][str(sponsor_id)]:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_SPONSOR_ALREADY_START"))
+
+        MongoSponsor.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'sponsors.{0}'.format(sponsor_id): arrow.utcnow().timestamp
+            }}
+        )
+
+        self.send_notify(sponsor_ids=[sponsor_id])
+
+    def send_notify(self, sponsor_ids=None):
+        if sponsor_ids:
+            act = ACT_UPDATE
+            projection = {'sponsors.{0}'.format(i): 1 for i in sponsor_ids}
+        else:
+            act = ACT_INIT
+            projection = {'sponsors': 1}
+            sponsor_ids = ConfigSponsor.INSTANCES.keys()
+
+        doc = MongoSponsor.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            projection
+        )
+
+        notify = TrainingSponsorNotify()
+        notify.act = act
+
+        for i in sponsor_ids:
+            notify_slot = notify.slots.add()
+            notify_slot.id = i
+
+            if str(i) not in doc['sponsors']:
+                notify_slot.status = TRAINING_SLOT_NOT_OPEN
+            else:
+                start_at_timestamp = doc['sponsors'][str(i)]
+                if start_at_timestamp:
+                    notify_slot.status = TRAINING_SLOT_TRAINING
+                    # TODO
+                    notify_slot.remained_days = 3
+                else:
+                    notify_slot.status = TRAINING_SLOT_EMPTY
 
         MessagePipe(self.char_id).put(msg=notify)
