@@ -58,6 +58,6 @@ class ConfigTrainingSkillItem(ConfigBase):
     def get(cls, _id):
         """
 
-        :rtype : TrainingSkill
+        :rtype : TrainingSkillItem
         """
         return super(ConfigTrainingSkillItem, cls).get(_id)

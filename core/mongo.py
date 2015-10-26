@@ -115,8 +115,6 @@ class MongoStaff(BaseDocument):
         '_id': null,
         # 员工， 定义见下面的 STAFF
         'staffs': {},
-        # 拥有的训练 训练商店中生产的是 已经生成 好的训练，所以这里是 字典 要记录训练数据
-        'trainings': {}
     }
 
     STAFF_DOCUMENT = {
@@ -124,21 +122,15 @@ class MongoStaff(BaseDocument):
         'level': 1,
         'status': 3,
         'skills': {},
-        'trainings': [],
         'winning_rate': {}
     }
 
     # 嵌入staff中
     STAFF_SKILL_DOCUMENT = {
         'level': 1,
-        'locked': 0
-    }
-
-    # 嵌入staff中
-    STAFF_TRAININGS_DOCUMENT = {
-        'oid': null,
-        'item': null,
-        'start_at': null
+        'locked': 0,
+        # 升级结束时间戳
+        'upgrade_end_at': 0,
     }
 
     # 嵌入到staff中
@@ -155,11 +147,21 @@ class MongoStaff(BaseDocument):
     def document_staff_skill(cls):
         return cls.STAFF_SKILL_DOCUMENT.copy()
 
-    @classmethod
-    def document_staff_trainings(cls):
-        return cls.STAFF_TRAININGS_DOCUMENT.copy()
 
     COLLECTION = "staff"
+
+
+# 背包
+class MongoBag(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # 技能训练书 id: amount
+        'training_skills': {},
+        # 道具 id: amount
+        'items': {},
+    }
+
+    COLLECTION = 'bag'
 
 
 # 经验训练
@@ -187,6 +189,26 @@ class MongoTrainingExp(BaseDocument):
         return cls.TRAINING_DOCUMENT.copy()
 
     COLLECTION = 'training_exp'
+
+# 属性训练
+class MongoTrainingProperty(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # staff_id: []
+        'staffs': {}
+    }
+
+    TRAINING_DOCUMENT = {
+        'id': null,
+        'end_at': 0,
+        # 加速会改变这个end_at
+    }
+
+    @classmethod
+    def document_training(cls):
+        return cls.TRAINING_DOCUMENT.copy()
+
+    COLLECTION = 'training_property'
 
 
 # 招募刷新

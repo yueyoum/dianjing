@@ -68,6 +68,8 @@ MESSAGE_TO_ID = {
     "SkillWashResponse": 1004,
     "SkillUpgradeSpeedupRequest": 1005,
     "SkillUpgradeSpeedupResponse": 1006,
+    "SkillUpgradeRequest": 1007,
+    "SkillUpgradeResponse": 1008,
     "TaskNotify": 1100,
     "TaskAcquireRequest": 1101,
     "TaskAcquireResponse": 1102,
@@ -141,6 +143,10 @@ MESSAGE_TO_ID = {
     "ActiveFunctionNotify": 2101,
     "ActiveValueGetRewardRequest": 2102,
     "ActiveValueGetRewardResponse": 2103,
+    "TrainingSkillItemNotify": 2200,
+    "TrainingSkillItemRemoveNotify": 2201,
+    "ItemNotify": 2202,
+    "ItemRemoveNotify": 2203,
 }
 
 ID_TO_MESSAGE = {
@@ -212,6 +218,8 @@ ID_TO_MESSAGE = {
     1004: "SkillWashResponse",
     1005: "SkillUpgradeSpeedupRequest",
     1006: "SkillUpgradeSpeedupResponse",
+    1007: "SkillUpgradeRequest",
+    1008: "SkillUpgradeResponse",
     1100: "TaskNotify",
     1101: "TaskAcquireRequest",
     1102: "TaskAcquireResponse",
@@ -285,6 +293,10 @@ ID_TO_MESSAGE = {
     2101: "ActiveFunctionNotify",
     2102: "ActiveValueGetRewardRequest",
     2103: "ActiveValueGetRewardResponse",
+    2200: "TrainingSkillItemNotify",
+    2201: "TrainingSkillItemRemoveNotify",
+    2202: "ItemNotify",
+    2203: "ItemRemoveNotify",
 }
 
 PATH_TO_REQUEST = {
@@ -316,6 +328,7 @@ PATH_TO_REQUEST = {
     "/game/skill/locktoggle/": ["skill", "SkillLockToggleRequest"],
     "/game/skill/wash/": ["skill", "SkillWashRequest"],
     "/game/skill/upgrade/speedup/": ["skill", "SkillUpgradeSpeedupRequest"],
+    "/game/skill/upgrade/": ["skill", "SkillUpgradeRequest"],
     "/game/task/acquire/": ["task", "TaskAcquireRequest"],
     "/game/task/getreward/": ["task", "TaskGetRewardRequest"],
     "/game/task/doing/": ["task", "TaskDoingRequest"],
@@ -375,6 +388,7 @@ PATH_TO_RESPONSE = {
     "/game/skill/locktoggle/": ["skill", "SkillLockToggleResponse"],
     "/game/skill/wash/": ["skill", "SkillWashResponse"],
     "/game/skill/upgrade/speedup/": ["skill", "SkillUpgradeSpeedupResponse"],
+    "/game/skill/upgrade/": ["skill", "SkillUpgradeResponse"],
     "/game/task/acquire/": ["task", "TaskAcquireResponse"],
     "/game/task/getreward/": ["task", "TaskGetRewardResponse"],
     "/game/task/doing/": ["task", "TaskDoingResponse"],

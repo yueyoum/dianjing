@@ -38,12 +38,19 @@ urlpatterns = [
     url(r'^training/exp/speedup/$', 'views.training.exp_speedup'),
     url(r'^training/exp/getreward/$', 'views.training.exp_get_reward'),
 
+    url(r'^training/property/start/$', 'views.training.property_start'),
+    url(r'^training/property/cancel/$', 'views.training.property_cancel'),
+    url(r'^training/property/speedup/$', 'views.training.property_speedup'),
+    url(r'^training/property/getreward/$', 'views.training.property_get_reward'),
+
     #
     url(r'^league/statistics/$', 'views.league.get_statistics'),
     url(r'^league/log/$', 'views.league.get_log'),
 
     url(r'^skill/locktoggle/$', 'views.skill.lock_toggle'),
     url(r'^skill/wash/$', 'views.skill.wash'),
+    url(r'^skill/upgrade/$', 'views.skill.upgrade'),
+    url(r'^skill/upgrade/speedup/$', 'views.skill.upgrade_speedup'),
 
     url(r'^friend/info/$', 'views.friend.get_info'),
     url(r'^friend/add/$', 'views.friend.add'),

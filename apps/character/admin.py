@@ -14,7 +14,7 @@ from core.signals import purchase_done_signal
 
 
 class MyActionForm(ActionForm):
-    value = forms.IntegerField(required=True)
+    value = forms.CharField(required=True)
 
 
 @admin.register(Character)
@@ -30,7 +30,9 @@ class CharacterAdmin(admin.ModelAdmin):
     search_fields = ['name', 'club_name', ]
 
     action_form = MyActionForm
-    actions = ['add_gold', 'add_diamond', 'add_club_level', 'add_ladder_score', 'add_purchase_diamond',]
+    actions = ['add_gold', 'add_diamond', 'add_club_level', 'add_ladder_score', 'add_purchase_diamond',
+               'add_training_skill_item', 'add_item',
+               ]
 
     def Info(self, obj):
         doc = MongoCharacter.db(obj.server_id).find_one(
@@ -68,6 +70,15 @@ class CharacterAdmin(admin.ModelAdmin):
         except:
             self.message_user(request, u"填入的数字错误", level=messages.ERROR)
             return False
+
+    def check_value_and_amount(self, request):
+        try:
+            data = request.POST['value']
+            value, amount = data.split(':')
+            return int(value), int(amount)
+        except:
+            self.message_user(request, u"应该填入ID:数量", level=messages.ERROR)
+            return False, False
 
 
     def add_gold(self, request, queryset):
@@ -141,3 +152,36 @@ class CharacterAdmin(admin.ModelAdmin):
             )
 
     add_purchase_diamond.short_description = u"添加充值钻石"
+
+
+    def add_training_skill_item(self, request, queryset):
+        value, amount = self.check_value_and_amount(request)
+        if not value:
+            return
+
+        from config import ConfigTrainingSkillItem
+        if not ConfigTrainingSkillItem.get(value):
+            return
+
+        # TODO
+        from core.bag import BagTrainingSkill
+        for q in queryset:
+            BagTrainingSkill(q.server_id, q.id).add([(value, amount)])
+
+    add_training_skill_item.short_description = u"添加技能训练书"
+
+    def add_item(self, request, queryset):
+        value, amount= self.check_value_and_amount(request)
+        if not value:
+            return
+
+        from config import ConfigItem
+        if not ConfigItem.get(value):
+            return
+
+        # TODO
+        from core.bag import BagItem
+        for q in queryset:
+            BagItem(q.server_id, q.id).add([(value, amount)])
+
+    add_item.short_description = u"添加道具"
