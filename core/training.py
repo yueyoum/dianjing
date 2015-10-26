@@ -10,7 +10,7 @@ import arrow
 
 from dianjing.exception import GameException
 
-from core.mongo import MongoTrainingExp, MongoTrainingProperty, MongoTrainingBroadcast, MongoTrainingShop, MongoSponsor
+from core.mongo import MongoTrainingExp, MongoTrainingProperty, MongoTrainingBroadcast, MongoTrainingShop, MongoTrainingSponsor
 from core.staff import StaffManger, staff_level_up_need_exp
 from core.building import BuildingTrainingCenter, BuildingBusinessCenter
 from core.package import Property, Drop
@@ -1131,15 +1131,15 @@ class TrainingSponsor(object):
         self.server_id = server_id
         self.char_id = char_id
 
-        if not MongoSponsor.exist(self.server_id, self.char_id):
-            doc = MongoSponsor.document()
+        if not MongoTrainingSponsor.exist(self.server_id, self.char_id):
+            doc = MongoTrainingSponsor.document()
             doc['_id'] = self.char_id
-            MongoSponsor.db(self.server_id).insert_one(doc)
+            MongoTrainingSponsor.db(self.server_id).insert_one(doc)
 
     def open(self, challenge_id):
         # TODO maybe problem
         # TODO day reward cron job
-        doc = MongoSponsor.db(self.server_id).find_one(
+        doc = MongoTrainingSponsor.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'sponsors': 1}
         )
@@ -1157,7 +1157,7 @@ class TrainingSponsor(object):
         if not updater:
             return
 
-        MongoSponsor.db(self.server_id).update_one(
+        MongoTrainingSponsor.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': updater}
         )
@@ -1168,7 +1168,7 @@ class TrainingSponsor(object):
         if not ConfigSponsor.get(sponsor_id):
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_SPONSOR_NOT_EXIST"))
 
-        doc = MongoSponsor.db(self.server_id).find_one(
+        doc = MongoTrainingSponsor.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'sponsors.{0}'.format(sponsor_id): 1}
         )
@@ -1179,7 +1179,7 @@ class TrainingSponsor(object):
         if doc['sponsors'][str(sponsor_id)]:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_SPONSOR_ALREADY_START"))
 
-        MongoSponsor.db(self.server_id).update_one(
+        MongoTrainingSponsor.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
                 'sponsors.{0}'.format(sponsor_id): arrow.utcnow().timestamp
@@ -1197,7 +1197,7 @@ class TrainingSponsor(object):
             projection = {'sponsors': 1}
             sponsor_ids = ConfigSponsor.INSTANCES.keys()
 
-        doc = MongoSponsor.db(self.server_id).find_one(
+        doc = MongoTrainingSponsor.db(self.server_id).find_one(
             {'_id': self.char_id},
             projection
         )

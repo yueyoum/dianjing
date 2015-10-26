@@ -242,7 +242,7 @@ class MongoTrainingShop(BaseDocument):
     COLLECTION = 'training_shop'
 
 # 赞助训练
-class MongoSponsor(BaseDocument):
+class MongoTrainingSponsor(BaseDocument):
     DOCUMENT = {
         '_id': null,
         # sponsor_id: start_at_timestamp.  timestamp 0 表示没有签约
