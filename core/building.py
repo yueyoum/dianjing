@@ -96,7 +96,7 @@ class BuildingManager(object):
 
     def levelup_confirm(self, building_ids=None, send_notify=True):
         if building_ids:
-            projection = {'buildings.{0}'.format(i): 1 for i in building_ids}
+            projection = {'buildings.{0}'.format(building_ids): 1}
         else:
             projection = {'buildings': 1}
 
