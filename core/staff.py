@@ -365,6 +365,8 @@ class StaffManger(object):
         msg.yunying = int(staff.yunying)
         msg.yishi = int(staff.yishi)
         msg.caozuo = int(staff.caozuo)
+        # TODO
+        msg.zhimingdu = 100
 
         msg.training_exp_need_gold = staff_level_up_need_exp(staff.id, staff.level)
 

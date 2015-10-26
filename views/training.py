@@ -7,7 +7,7 @@ Description:
 
 """
 
-from core.training import TrainingExp, TrainingProperty
+from core.training import TrainingExp, TrainingProperty, TrainingBroadcast
 
 from utils.http import ProtobufResponse
 
@@ -16,10 +16,16 @@ from protomsg.training_pb2 import (
     TrainingExpCancelResponse,
     TrainingExpSpeedupResponse,
     TrainingExpGetRewardResponse,
+
     TrainingPropertyStartResponse,
     TrainingPropertyCancelResponse,
     TrainingPropertySpeedupResponse,
     TrainingPropertyGetRewardResponse,
+
+    TrainingBroadcastStartResponse,
+    TrainingBroadcastCancelResponse,
+    TrainingBroadcastSpeedupResponse,
+    TrainingBroadcastGetRewardResponse,
 )
 
 
@@ -96,6 +102,7 @@ def property_start(request):
     response.ret = 0
     return ProtobufResponse(response)
 
+
 def property_cancel(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
@@ -125,6 +132,7 @@ def property_speedup(request):
     response.ret = 0
     return ProtobufResponse(response)
 
+
 def property_get_reward(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
@@ -138,4 +146,63 @@ def property_get_reward(request):
     response = TrainingPropertyGetRewardResponse()
     response.ret = 0
     response.property.MergeFrom(p)
+    return ProtobufResponse(response)
+
+
+def broadcast_start(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    slot_id = request._proto.slot_id
+    staff_id = request._proto.staff_id
+
+    tb = TrainingBroadcast(server_id, char_id)
+    tb.start(slot_id, staff_id)
+
+    response = TrainingBroadcastStartResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+
+def broadcast_cancel(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    slot_id = request._proto.slot_id
+
+    tb = TrainingBroadcast(server_id, char_id)
+    drop = tb.cancel(slot_id)
+
+    response = TrainingBroadcastCancelResponse()
+    response.ret = 0
+    response.drop.MergeFrom(drop)
+    return ProtobufResponse(response)
+
+
+def broadcast_speedup(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    slot_id = request._proto.slot_id
+
+    tb = TrainingBroadcast(server_id, char_id)
+    tb.speedup(slot_id)
+
+    response = TrainingBroadcastSpeedupResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+
+def broadcast_get_reward(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    slot_id = request._proto.slot_id
+
+    tb = TrainingBroadcast(server_id, char_id)
+    drop = tb.get_reward(slot_id)
+
+    response = TrainingBroadcastGetRewardResponse()
+    response.ret = 0
+    response.drop.MergeFrom(drop)
     return ProtobufResponse(response)

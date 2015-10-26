@@ -154,7 +154,7 @@ class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
 
             staff_winning_info = club.get('staff_winning_rate', {}).get(str(s), {})
             for race, info in staff_winning_info.iteritems():
-                race_rate[str(race)] = info['win'] * 100 / info['total']
+                race_rate[str(race)] = info.get('win', 0) * 100 / info['total']
 
             # rate格式 { staff_id:{'1':x, '2':x, '3':x}, ...}
             rate[s] = race_rate
@@ -203,10 +203,10 @@ class LeagueRealClub(LeagueBaseClubMixin, Club):
             }
             winning_rate = staffs[s].get('winning_rate', {})
             for race, info in winning_rate.iteritems():
-                race_rate[str(race)] = info['win'] * 100 / info['total']
+                race_rate[str(race)] = info.get('win', 0) * 100 / info['total']
 
-            # example: rate ={'91': {'1':0.333, '2':0.555, '3': 0.9},  ... ]
-            rate[s] = race_rate
+            # example: rate ={91: {'1':0.333, '2':0.555, '3': 0.9},  ... ]
+            rate[int(s)] = race_rate
         return rate
 
     def get_match_staffs_winning_rate(self):

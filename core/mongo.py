@@ -211,6 +211,27 @@ class MongoTrainingProperty(BaseDocument):
     COLLECTION = 'training_property'
 
 
+# 直播训练
+class MongoTrainingBroadcast(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'slots': {}
+    }
+
+    SLOT_DOCUMENT = {
+        'staff_id': 0,
+        'start_at': 0,
+        'finish': False,
+        # 只要是 finish，肯定就是训练时间满了，不管是加速还是正常结束
+    }
+
+    @classmethod
+    def document_slot(cls):
+        return cls.SLOT_DOCUMENT.copy()
+
+    COLLECTION = 'training_broadcast'
+
+
 # 招募刷新
 class MongoRecruit(BaseDocument):
     DOCUMENT = {

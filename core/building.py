@@ -27,6 +27,7 @@ BUILDING_STAFF_CENTER = 3  # 员工中心
 BUILDING_TASK_CENTER = 4  # 任务中心
 BUILDING_LEAGUE_CENTER = 5  # 联赛中心
 BUILDING_SPONSOR_CENTER = 6  # 赞助商中心
+BUILDING_BUSINESS_CENTER = 7 # 商务部
 
 
 class BuildingManager(object):
@@ -178,3 +179,7 @@ class BuildingLeagueCenter(BaseBuilding):
 
 class BuildingSponsorCenter(BaseBuilding):
     BUILDING_ID = BUILDING_SPONSOR_CENTER
+
+
+class BuildingBusinessCenter(BaseBuilding):
+    BUILDING_ID = BUILDING_BUSINESS_CENTER

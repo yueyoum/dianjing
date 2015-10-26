@@ -23,7 +23,7 @@ def get_statistics(request):
 
     response = LeagueGetStatisticsResponse()
     response.ret = 0
-    for staff_id, winning_rate in data:
+    for staff_id, winning_rate in data.iteritems():
         ss = response.statistics.add()
         ss.staff_id = staff_id
         ss.winning_rate_to_terran = winning_rate['1']
