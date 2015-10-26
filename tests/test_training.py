@@ -6,162 +6,188 @@ Date Created:   2015-08-05 17:42
 Description:
 
 """
-
 import random
+import arrow
 
 from dianjing.exception import GameException
 
-from core.mongo import MongoTraining, MongoCharacter
+from core.mongo import MongoTrainingExp, MongoStaff, MongoBuilding, MongoCharacter
+from core.training import TrainingExp
 
-from core.staff import StaffManger
-from core.training import TrainingBag, TrainingStore
-from core.club import Club
+from core.building import BuildingTrainingCenter
+from core.staff import staff_training_exp_need_gold, staff_level_up_need_exp
 
-from config import ConfigTraining, ConfigErrorMessage, ConfigStaff
-
-
-class TestTrainingStore(object):
-    def setup(self):
-        refreshed = TrainingStore(1, 1).refresh()
-        while len(refreshed):
-            tid = random.choice(refreshed.keys())
-            config = ConfigTraining.get(refreshed[tid]['oid'])
-            if config.cost_value:
-                break
-
-            refreshed.pop(tid)
-        else:
-            raise Exception("Error!!!")
-
-        self.tid = tid
-        oid = refreshed[self.tid]['oid']
-        self.config = ConfigTraining.get(oid)
-
-    def teardown(self):
-        MongoTraining.db(1).drop()
-
-    def test_send_notify(self):
-        TrainingStore(1, 1).send_notify()
-
-    def test_refresh(self):
-        refresh = TrainingStore(1, 1).refresh()
-
-        doc = MongoTraining.db(1).find_one({'_id': 1}, {'store': 1})
-        assert len(refresh) == len(doc['store'])
-
-        for k in refresh.keys():
-            assert k in doc['store']
+from config import ConfigErrorMessage, ConfigStaff, ConfigBuilding
 
 
-    def test_buy(self):
-        if self.config.cost_type == 1:
-            needs = {'gold': self.config.cost_value}
-        else:
-            needs = {'diamond': self.config.cost_value}
-
-        Club(1, 1).update(**needs)
-
-        assert TrainingBag(1, 1).has_training(self.tid) is False
-        TrainingStore(1, 1).buy(self.tid)
-        assert TrainingBag(1, 1).has_training(self.tid) is True
-
-        assert getattr(Club(1, 1), needs.keys()[0]) == 0
+def set_slot_test_data(staff_id, slot_id):
+    MongoTrainingExp.db(1).update_one(
+        {'_id': 1},
+        {'$set': {'slots.{0}'.format(slot_id): {'staff_id': staff_id,
+                                                'start_at': arrow.utcnow().timestamp,
+                                                'time_point': 0,
+                                                'exp': 0,
+                                                'speedup': False}}},
+    )
 
 
-    def test_buy_not_exist(self):
-        try:
-            TrainingStore(1, 1).buy(9999)
-        except GameException as e:
-            assert e.error_id == ConfigErrorMessage.get_error_id("TRAINING_NOT_EXIST")
-        else:
-            raise Exception("can not be here!")
+def get_valid_slot():
+    return ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(1).value2 - 1
 
 
-    def test_buy_no_money(self):
-        if self.config.cost_type == 1:
-            error = "GOLD_NOT_ENOUGH"
-        else:
-            error = "DIAMOND_NOT_ENOUGH"
-
-        try:
-            TrainingStore(1, 1).buy(self.tid)
-        except GameException as e:
-            assert e.error_id == ConfigErrorMessage.get_error_id(error)
-        else:
-            raise Exception("can not be here!")
+def set_enough_gold_and_diamond(staff_id):
+    MongoCharacter.db(1).update_one(
+        {'_id': 1},
+        {'$set': {'club.gold': staff_training_exp_need_gold(staff_id, 1),
+                  'club.diamond': 8000}}
+    )
 
 
-    def test_remove(self):
-        refresh = TrainingStore(1, 1).refresh()
-
-        tid = random.choice(refresh.keys())
-
-        assert TrainingStore(1, 1).get_training(tid) is not None
-        TrainingStore(1, 1).remove(tid)
-        assert TrainingStore(1, 1).get_training(tid) is None
-
-
-class TestTrainingBag(object):
+class TestTrainingExp(object):
     def reset(self):
-        MongoTraining.db(1).drop()
-        MongoCharacter.db(1).update_one(
+        self.staff_id = random.choice(ConfigStaff.INSTANCES.keys())
+        MongoStaff.db(1).update_one(
             {'_id': 1},
-            {'$set': {
-                'club.gold': 0,
-                'club.diamond': 0,
-            }}
+            {'$set': {'staffs.{0}'.format(self.staff_id): {'exp': 0, 'level': 1, 'status': 3,
+                                                           'skills': {}, 'trainings': [],
+                                                           'winning_rate': {}}}}
         )
-
+        set_enough_gold_and_diamond(self.staff_id)
 
     def setup(self):
         self.reset()
-        refreshed = TrainingStore(1, 1).refresh()
-        self.tid = random.choice(refreshed.keys())
-        oid = refreshed[self.tid]['oid']
-        self.config = ConfigTraining.get(oid)
-
+        TrainingExp(1, 1)
 
     def teardown(self):
         self.reset()
+        MongoTrainingExp.db(1).drop()
 
-
-    def test_send_notify(self):
-        TrainingBag(1, 1).send_notify()
-
-
-    def test_use_no_training(self):
+    def test_start_staff_not_exist(self):
+        staffs = MongoStaff.db(1).find_one({'_id': 1}, {'staffs': 1})
+        staff_id = 0
+        for i in range(1, 999):
+            if str(i) not in staffs['staffs'].keys():
+                staff_id = i
+                break
         try:
-            TrainingBag(1, 1).use(9999, 9999)
-        except GameException as e:
-            assert e.error_id == ConfigErrorMessage.get_error_id("TRAINING_NOT_EXIST")
-        else:
-            raise Exception("can not be here!")
-
-
-    def test_use_no_staff(self):
-        TrainingBag(1, 1).add(1, self.config.id, '{}')
-
-        try:
-            TrainingBag(1, 1).use(9999, '1')
+            TrainingExp(1, 1).start(1, staff_id)
         except GameException as e:
             assert e.error_id == ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST")
         else:
-            raise Exception("can not be here!")
+            raise Exception('Error')
 
-
-    def test_use(self):
-        ts = TestTrainingStore()
-        ts.setup()
-        ts.test_buy()
-
-        sid = random.choice(ConfigStaff.INSTANCES.keys())
-        StaffManger(1, 1).add(sid)
-
-        TrainingBag(1, 1).use(sid, ts.tid)
+    def test_start_slot_not_exist(self):
+        max_building_level = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).max_levels
+        max_slots_amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(max_building_level).value2
 
         try:
-            StaffManger(1, 1).training_get_reward(sid, 0)
+            TrainingExp(1, 1).start(max_slots_amount + 1, self.staff_id)
         except GameException as e:
-            assert e.error_id == ConfigErrorMessage.get_error_id("TRAINING_NOT_FINISHED")
+            assert e.error_id == ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_EXIST")
+        else:
+            raise Exception('Error')
 
-        ts.teardown()
+    def test_start_slot_not_open(self):
+        current_slots_amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(1).value2
+        try:
+            TrainingExp(1, 1).start(current_slots_amount + 1, self.staff_id)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_OPEN")
+        else:
+            raise Exception('Error')
+
+    def test_start_slot_in_use(self):
+        set_slot_test_data(self.staff_id, 1)
+        try:
+            TrainingExp(1, 1).start(1, self.staff_id)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_IN_USE")
+        else:
+            raise Exception('Error')
+
+    def test_start_staff_in_training(self):
+        MongoBuilding.db(1).update_one(
+            {'_id': 1},
+            {'$set': {'buildings.{0}.current_level'.format(BuildingTrainingCenter.BUILDING_ID): 3}}
+        )
+        try:
+            TrainingExp(1, 1).start(1, self.staff_id)
+            TrainingExp(1, 1).start(2, self.staff_id)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id("TRAINING_EXP_STAFF_IN_TRAINING")
+        else:
+            raise Exception('Error')
+
+    def test_start_gold_not_enough(self):
+        MongoCharacter.db(1).update_one(
+            {'_id': 1},
+            {'$set': {'club.gold': 0}}
+        )
+        MongoTrainingExp.db(1).delete_one({'_id': 1})
+        try:
+            TrainingExp(1, 1).start(1, self.staff_id)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id("GOLD_NOT_ENOUGH")
+        else:
+            raise Exception('error')
+
+    def test_start(self):
+        MongoTrainingExp.db(1).delete_one({'_id': 1})
+        TrainingExp(1, 1).start(1, self.staff_id)
+
+        data = MongoTrainingExp.db(1).find_one({'_id': 1}, {'slots.{0}'.format(1): 1})
+        assert data['slots']['1']['staff_id'] == self.staff_id
+        gold = MongoCharacter.db(1).find_one({'_id': 1}, {'club.gold': 1})
+        assert gold['club']['gold'] == 0
+
+    def test_cancel_cannot_operate(self):
+        try:
+            TrainingExp(1, 1).start(1, self.staff_id)
+            TrainingExp(1, 1).speedup(1)
+            TrainingExp(1, 1).cancel(1)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id("TRAINING_EXP_FINISH_CANNOT_OPERATE")
+        else:
+            raise Exception('error')
+
+    def test_cancel(self):
+        TrainingExp(1, 1).start(1, self.staff_id)
+        TrainingExp(1, 1).cancel(1)
+
+        data = MongoTrainingExp.db(1).find_one({'_id': 1}, {'slots': 1})
+        if data['slots'].get(str(1), None):
+            raise Exception('error')
+
+    def test_speedup(self):
+        TrainingExp(1, 1).start(1, self.staff_id)
+        TrainingExp(1, 1).speedup(1)
+
+        data = MongoTrainingExp.db(1).find_one({'_id': 1}, {'slots.{0}'.format(1): 1})
+        assert data['slots'][str(1)]['speedup'] == True
+        gold = MongoCharacter.db(1).find_one({'_id': 1}, {'club.gold': 1})
+        assert gold['club']['gold'] == 0
+
+    def test_get_reward_not_finish(self):
+        TrainingExp(1, 1).start(1, self.staff_id)
+        try:
+            TrainingExp(1, 1).get_reward(1)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id("TRAINING_EXP_NOT_FINISH")
+        else:
+            raise Exception('error')
+
+    def test_get_reward(self):
+        TrainingExp(1, 1).start(1, self.staff_id)
+        TrainingExp(1, 1).speedup(1)
+        TrainingExp(1, 1).get_reward(1)
+        data = MongoStaff.db(1).find_one({'_id': 1}, {'staffs.{0}'.format(self.staff_id): 1})
+        assert data['staffs'][str(self.staff_id)]['exp'] > 0
+
+    def test_clean(self):
+        TrainingExp(1, 1).start(1, self.staff_id)
+        TrainingExp(1, 1).clean(1)
+        data = MongoTrainingExp.db(1).find_one({'_id': 1}, {'slots.1': 1})
+        assert data['slots'][str(1)] == {}
+
+    def test_send_notify(self):
+        TrainingExp(1, 1).send_notify([1])
