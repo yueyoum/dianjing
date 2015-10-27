@@ -99,29 +99,27 @@ class Match(object):
             :type unit_id: int
             """
 
-            p = staff.jingong + staff.baobing + staff.caozuo + staff.qianzhi + staff.fangshou + staff.yunying
+            base_attribute = staff.jingong + staff.baobing + staff.caozuo + staff.qianzhi + staff.fangshou + staff.yunying
+            base_attribute = base_attribute * staff.xintai / 1000 * 1
 
             skill_id = ConfigUnit.get(unit_id).skill
-            if skill_id not in staff.skills:
-                j = 0
-            else:
-                config_skill = ConfigSkill.get(skill_id)
+            config_skill = ConfigSkill.get(skill_id)
 
-                x = 0
-                for name, percent in config_skill.addition_ids:
-                    x += getattr(staff, name) * percent / 100.0
+            skill_addition = 0
+            for name, percent in config_skill.addition_ids:
+                skill_addition += getattr(staff, name) * percent / 100.0
 
-                m = (config_skill.value_base + (staff.skills[skill_id] - 1) * config_skill.level_grow) / 100.0
-                j = (staff.xintai + staff.yishi + x) * m
+            skill_addition *= 1
 
-            return p, j
+            skill_strength = (config_skill.value_base + staff.skills.get(skill_id, 0) * config_skill.level_grow) / 10
+            skill_strength = skill_addition * skill_strength * staff.yishi / 1000 * 1
 
-        pone, jone = calculate(self.staff_one, unit_one)
-        ptwo, jtwo = calculate(self.staff_two, unit_two)
+            return int(base_attribute + skill_strength)
 
-        s = pone + jone + ptwo + jtwo
+        a = calculate(self.staff_one, unit_one)
+        b = calculate(self.staff_two, unit_two)
 
-        y = (((pone + jone) - (ptwo + jtwo)) / float(s)) * 100
+        y = ((a-b)/(a+b)) * 100
 
         if y < 0:
             self.advantage_one -= abs(y)
