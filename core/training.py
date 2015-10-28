@@ -1162,7 +1162,7 @@ class TrainingSponsor(object):
             {'$set': updater}
         )
 
-        self.send_notify(sponsor_ids=updater.keys())
+        self.send_notify(sponsor_ids=[int(k) for k in updater.keys()])
 
     def start(self, sponsor_id):
         if not ConfigSponsor.get(sponsor_id):
