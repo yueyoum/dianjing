@@ -11,7 +11,7 @@ import arrow
 from dianjing.exception import GameException
 
 from core.mongo import MongoTrainingExp, MongoTrainingProperty, MongoTrainingBroadcast, MongoTrainingShop, MongoTrainingSponsor
-from core.staff import StaffManger, staff_level_up_need_exp
+from core.staff import StaffManger
 from core.building import BuildingTrainingCenter, BuildingBusinessCenter
 from core.package import Property, Drop
 from core.resource import Resource
@@ -34,6 +34,8 @@ from protomsg.training_pb2 import (
     TrainingShopNotify,
     TrainingSponsorNotify,
 )
+
+import formula
 
 EXP_TRAINING_TOTAL_SECONDS = 8 * 3600  # 8 hours
 PROPERTY_TRAINING_SLOTS_AMOUNT = 4
@@ -196,7 +198,7 @@ class TrainingExp(object):
         training_doc['exp'] = 0
         training_doc['speedup'] = False
 
-        need_gold = staff_level_up_need_exp(staff_id, staff['level'])
+        need_gold = formula.staff_training_exp_need_gold(staff['level'])
         message = u"Training Exp For Staff {0}".format(staff_id)
 
         with Resource(self.server_id, self.char_id).check(gold=-need_gold, message=message):
@@ -254,11 +256,7 @@ class TrainingExp(object):
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_FINISH_CANNOT_OPERATE"))
 
         behind_seconds = ss.end_at - arrow.utcnow().timestamp
-        minutes, seconds = divmod(behind_seconds, 60)
-        if seconds:
-            minutes += 1
-
-        need_diamond = minutes * 10
+        need_diamond = formula.training_speedup_need_diamond(behind_seconds)
         message = u"Training Exp Speedup."
         with Resource(self.server_id, self.char_id).check(diamond=-need_diamond, message=message):
             new_exp = ss.calculate_new_exp(end_at=ss.end_at)
@@ -614,12 +612,8 @@ class TrainingProperty(object):
         slot = pl.get_slot(slot_id)
 
         behind_seconds = slot.end_at - arrow.utcnow().timestamp
-        minutes, seconds = divmod(behind_seconds, 60)
-        if seconds:
-            minutes += 1
-
-        need_diamond = minutes * 10
-        message = u"Training Staff {0} Property Speedup, Minutes {0}".format(staff_id, minutes)
+        need_diamond = formula.training_speedup_need_diamond(behind_seconds)
+        message = u"Training Staff {0} Property Speedup".format(staff_id)
 
         with Resource(self.server_id, self.char_id).check(diamond=-need_diamond, message=message):
             try:
@@ -906,6 +900,7 @@ class TrainingBroadcast(object):
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_BROADCAST_NOT_TRAINING"))
 
         # TODO calcel timer
+        # TODO need diamond
         
         MongoTrainingBroadcast.db(self.server_id).update_one(
             {'_id': self.char_id},

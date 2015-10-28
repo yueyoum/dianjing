@@ -1,3 +1,6 @@
 [submodule "protobuf"]
 	path = protobuf
 	url = https://muzhishidai@bitbucket.org/muzhi/dianjing-protobuf.git
+[submodule "c_src"]
+	path = c_src
+	url = https://muzhishidai@bitbucket.org/muzhi/dianjing-c_src.git
