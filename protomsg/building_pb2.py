@@ -18,7 +18,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='building.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=b'\n\x0e\x62uilding.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xcc\x01\n\x0e\x42uildingNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12=\n\tbuildings\x18\x02 \x03(\x0b\x32*.Dianjing.protocol.BuildingNotify.Building\x12&\n\x03\x61\x63t\x18\x03 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x1a\x42\n\x08\x42uilding\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x1b\n\x13up_finish_timestamp\x18\x03 \x02(\x03\"5\n\x16\x42uildingLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"7\n\x17\x42uildingLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"B\n#BuildingLevelUpFinishConfirmRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"D\n$BuildingLevelUpFinishConfirmResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c'
+  serialized_pb=b'\n\x0e\x62uilding.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xbf\x01\n\x0e\x42uildingNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12=\n\tbuildings\x18\x02 \x03(\x0b\x32*.Dianjing.protocol.BuildingNotify.Building\x12&\n\x03\x61\x63t\x18\x03 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x1a\x35\n\x08\x42uilding\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0e\n\x06\x65nd_at\x18\x03 \x02(\x03\"5\n\x16\x42uildingLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"7\n\x17\x42uildingLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c'
   ,
   dependencies=[common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -48,7 +48,7 @@ _BUILDINGNOTIFY_BUILDING = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='up_finish_timestamp', full_name='Dianjing.protocol.BuildingNotify.Building.up_finish_timestamp', index=2,
+      name='end_at', full_name='Dianjing.protocol.BuildingNotify.Building.end_at', index=2,
       number=3, type=3, cpp_type=2, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -67,7 +67,7 @@ _BUILDINGNOTIFY_BUILDING = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=190,
-  serialized_end=256,
+  serialized_end=243,
 )
 
 _BUILDINGNOTIFY = _descriptor.Descriptor(
@@ -111,7 +111,7 @@ _BUILDINGNOTIFY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=52,
-  serialized_end=256,
+  serialized_end=243,
 )
 
 
@@ -148,8 +148,8 @@ _BUILDINGLEVELUPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=258,
-  serialized_end=311,
+  serialized_start=245,
+  serialized_end=298,
 )
 
 
@@ -186,84 +186,8 @@ _BUILDINGLEVELUPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=313,
-  serialized_end=368,
-)
-
-
-_BUILDINGLEVELUPFINISHCONFIRMREQUEST = _descriptor.Descriptor(
-  name='BuildingLevelUpFinishConfirmRequest',
-  full_name='Dianjing.protocol.BuildingLevelUpFinishConfirmRequest',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.BuildingLevelUpFinishConfirmRequest.session', index=0,
-      number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value=b"",
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='id', full_name='Dianjing.protocol.BuildingLevelUpFinishConfirmRequest.id', index=1,
-      number=2, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=370,
-  serialized_end=436,
-)
-
-
-_BUILDINGLEVELUPFINISHCONFIRMRESPONSE = _descriptor.Descriptor(
-  name='BuildingLevelUpFinishConfirmResponse',
-  full_name='Dianjing.protocol.BuildingLevelUpFinishConfirmResponse',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='ret', full_name='Dianjing.protocol.BuildingLevelUpFinishConfirmResponse.ret', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.BuildingLevelUpFinishConfirmResponse.session', index=1,
-      number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value=b"",
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=438,
-  serialized_end=506,
+  serialized_start=300,
+  serialized_end=355,
 )
 
 _BUILDINGNOTIFY_BUILDING.containing_type = _BUILDINGNOTIFY
@@ -272,8 +196,6 @@ _BUILDINGNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 DESCRIPTOR.message_types_by_name['BuildingNotify'] = _BUILDINGNOTIFY
 DESCRIPTOR.message_types_by_name['BuildingLevelUpRequest'] = _BUILDINGLEVELUPREQUEST
 DESCRIPTOR.message_types_by_name['BuildingLevelUpResponse'] = _BUILDINGLEVELUPRESPONSE
-DESCRIPTOR.message_types_by_name['BuildingLevelUpFinishConfirmRequest'] = _BUILDINGLEVELUPFINISHCONFIRMREQUEST
-DESCRIPTOR.message_types_by_name['BuildingLevelUpFinishConfirmResponse'] = _BUILDINGLEVELUPFINISHCONFIRMRESPONSE
 
 BuildingNotify = _reflection.GeneratedProtocolMessageType('BuildingNotify', (_message.Message,), dict(
 
@@ -303,20 +225,6 @@ BuildingLevelUpResponse = _reflection.GeneratedProtocolMessageType('BuildingLeve
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.BuildingLevelUpResponse)
   ))
 _sym_db.RegisterMessage(BuildingLevelUpResponse)
-
-BuildingLevelUpFinishConfirmRequest = _reflection.GeneratedProtocolMessageType('BuildingLevelUpFinishConfirmRequest', (_message.Message,), dict(
-  DESCRIPTOR = _BUILDINGLEVELUPFINISHCONFIRMREQUEST,
-  __module__ = 'building_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.BuildingLevelUpFinishConfirmRequest)
-  ))
-_sym_db.RegisterMessage(BuildingLevelUpFinishConfirmRequest)
-
-BuildingLevelUpFinishConfirmResponse = _reflection.GeneratedProtocolMessageType('BuildingLevelUpFinishConfirmResponse', (_message.Message,), dict(
-  DESCRIPTOR = _BUILDINGLEVELUPFINISHCONFIRMRESPONSE,
-  __module__ = 'building_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.BuildingLevelUpFinishConfirmResponse)
-  ))
-_sym_db.RegisterMessage(BuildingLevelUpFinishConfirmResponse)
 
 
 # @@protoc_insertion_point(module_scope)

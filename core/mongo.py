@@ -274,7 +274,17 @@ class MongoBuilding(BaseDocument):
         'buildings': {}
     }
 
+    BUILDING_DOCUMENT = {
+        'level': 1,
+        'end_at': 0,
+        'key': '',  # 定时器key
+    }
+
     COLLECTION = "building"
+
+    @classmethod
+    def document_building(cls):
+        return cls.BUILDING_DOCUMENT.copy()
 
 
 # 好友
