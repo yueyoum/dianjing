@@ -35,14 +35,14 @@ class Chat(object):
 
         char_doc = MongoCharacter.db(self.server_id).find_one(
             {'_id': self.char_id},
-            {'name': 1, 'club.vip': 1}
+            {'club.name': 1, 'club.vip': 1}
         )
 
         msg = ChatMessage()
         msg.channel = channel
-        msg.char.id = str(self.char_id)
-        msg.char.name = char_doc['name']
-        msg.char.vip = char_doc['club']['vip']
+        msg.club.id = str(self.char_id)
+        msg.club.name = char_doc['club']['name']
+        msg.club.vip = char_doc['club']['vip']
         msg.msg = text
 
         data = base64.b64encode(msg.SerializeToString())
