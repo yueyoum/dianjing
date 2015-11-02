@@ -21,6 +21,10 @@ class ProjectConfig(AppConfig):
         from config import load_config
         load_config()
 
+        from utils.api import Timerd
+        # TODO replace with ping or status
+        Timerd.cancel('test')
+
         import signals
 
         if os.environ.get('UWSGI_RUNNING', '0') == '1':

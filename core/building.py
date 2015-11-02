@@ -16,6 +16,7 @@ from core.resource import Resource
 
 from config import ConfigBuilding, ConfigErrorMessage
 
+from utils.api import Timerd
 from utils.message import MessagePipe
 
 from protomsg.building_pb2 import BuildingNotify
@@ -91,8 +92,40 @@ class BuildingManager(object):
                 {'_id': self.char_id},
                 {'$set': {'buildings.{0}.complete_time'.format(building_id): complete_time}}
             )
+            # register to timerd
+            # data = {
+            #     'sid': self.server_id,
+            #     'cid': self.char_id,
+            #     'building_id': building_id
+            # }
+            # key = Timerd.register(complete_time, '/api/timerd/building/', data)
+
+            # save the key
 
         self.send_notify(building_ids=[building_id])
+
+    def levelup_callback(self, building_id):
+        # 定时任务回调
+        doc = MongoBuilding.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'buildings.{0}'.format(building_id): 1}
+        )
+
+        end_at = doc['buildings'][str(building_id)]['complete_time']
+        if end_at > arrow.utcnow().timestamp:
+            # not finish
+            return end_at
+
+        MongoBuilding.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'buildings.{0}.current_level': doc['buildings'][str(building_id)]['current_level'] + 1,
+                'buildings.{0}.complete_time': 0
+            }}
+        )
+
+        self.send_notify(building_ids=[building_id])
+        return 0
 
     def levelup_confirm(self, building_ids=None, send_notify=True):
         if building_ids:

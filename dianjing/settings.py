@@ -184,6 +184,7 @@ DATABASES = {
 
 
 TIME_ZONE = doc.find('timezone').text
+SERVER_HOST = doc.find('host').text
 
 
 AES_KEY = doc.find('crypto/key').text
@@ -199,6 +200,8 @@ if doc.find('mongodb/user') is not None:
 else:
     MONGODB_USER = None
     MONGODB_PASSWORD = None
+
+TIMERD_URL = doc.find('timerd').text
 
 del doc
 del tree
