@@ -33,9 +33,9 @@ from core.activity.login_reward import ActivityLoginReward
 from core.activity.signin import SignIn
 from core.active_value import ActiveValue
 
-
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
+
 
 @receiver(game_start_signal, dispatch_uid='signals.game.game_start_handler')
 def game_start_handler(server_id, char_id, **kwargs):
