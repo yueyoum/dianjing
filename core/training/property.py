@@ -14,16 +14,24 @@ from core.staff import StaffManger
 from core.package import Property
 from core.resource import Resource
 from core.bag import BagItem
+
+from utils.api import Timerd
 from utils.message import MessagePipe
 from config import ConfigErrorMessage, ConfigTrainingProperty
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 from protomsg.training_pb2 import (
+    TRAINING_SLOT_EMPTY,
+    TRAINING_SLOT_FINISH,
+    TRAINING_SLOT_TRAINING,
+    TRAINING_SLOT_WAITING,
+
     TrainingPropertyNotify,
 )
 
 import formula
 
 PROPERTY_TRAINING_SLOTS_AMOUNT = 4
+TIMERD_CALLBACK_PATH = '/api/timerd/training/property/'
 
 
 class PropertySlotStatus(object):
@@ -43,7 +51,6 @@ class PropertySlotStatus(object):
         self.training_id = slot_data.get('id', 0)
         self.end_at = slot_data.get('end_at', 0)
         self.status = PropertySlotStatus.EMPTY
-        self.speedup = False
 
         self.calculate()
 
@@ -61,6 +68,10 @@ class PropertySlotStatus(object):
             return "<FINISH>"
 
     def calculate(self):
+        # 计算状态
+        # 如果没有训练ID，那么就是空，直接返回
+        # 有训练ID，要么是训练，要么是完成，要么是等待
+        # 这里就是根据 end_at 和 start_at 来判断的
         if not self.training_id:
             self.status = PropertySlotStatus.EMPTY
             return
@@ -124,10 +135,6 @@ class PropertyTrainingList(object):
         self.slots[0].calculate()
         for i in range(1, PROPERTY_TRAINING_SLOTS_AMOUNT):
             self.slots[i].start_at = self.slots[i - 1].end_at
-            if not self.slots[i].speedup:
-                # 如果是加速完成的，就不能清空end_at
-                # 否则就要清空end_at，让其重新计算
-                self.slots[i].end_at = 0
             self.slots[i].calculate()
 
     def get_slot(self, slot_id):
@@ -142,20 +149,23 @@ class PropertyTrainingList(object):
         return [slot.to_document() for slot in self.slots]
 
     def add(self, training_id):
-        if self.slots[0].status == PropertySlotStatus.EMPTY:
-            # 这个员工没有训练
-            self.slots[0].training_id = training_id
-            self.slots[0].start_at = arrow.utcnow().timestamp
+        for i in range(PROPERTY_TRAINING_SLOTS_AMOUNT):
+            if self.slots[i].status == PropertySlotStatus.EMPTY:
+                self.slots[i].training_id = training_id
+                if i == 0:
+                    # 只有第一个才需要设置start_at
+                    self.slots[i].start_at = arrow.utcnow().timestamp
+                break
         else:
-            for i in range(1, PROPERTY_TRAINING_SLOTS_AMOUNT):
-                if self.slots[i].status == PropertySlotStatus.EMPTY:
-                    self.slots[i].training_id = training_id
-                    self.slots[i].start_at = self.slots[i - 1].end_at
-                    break
-            else:
-                raise PropertyTrainingList.ListFull()
+            raise PropertyTrainingList.ListFull()
 
         self.calculate()
+
+        # 如果是第一个，就返回第一个的end_at，并且注册定时器
+        # 否则其他的只是排队，不注册定时器
+        if i == 0:
+            return self.slots[i].end_at
+        return 0
 
     def finish(self, slot_id):
         index = slot_id - 1
@@ -170,9 +180,7 @@ class PropertyTrainingList(object):
         if slot.status == PropertySlotStatus.FINISH:
             raise PropertyTrainingList.SlotFinish()
 
-        slot.speedup = True
         slot.end_at = arrow.utcnow().timestamp
-
         self.calculate()
 
     def remove(self, slot_id):
@@ -228,12 +236,15 @@ class TrainingProperty(object):
         training_list = doc['staffs'].get(str(staff_id), [])
         return PropertyTrainingList(training_list)
 
-    def update_training_list(self, staff_id, new_list):
+    def update_training_list(self, staff_id, new_list, key=None):
+        updater = {'staffs.{0}'.format(staff_id): new_list}
+
+        if key is not None:
+            updater['keys.{0}'.format(staff_id)] = key
+
         MongoTrainingProperty.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': {
-                'staffs.{0}'.format(staff_id): new_list
-            }}
+            {'$set': updater}
         )
 
         self.send_notify(staff_ids=[staff_id])
@@ -253,15 +264,26 @@ class TrainingProperty(object):
         pl = self.get_training_list(staff_id)
 
         try:
-            pl.add(training_id)
+            end_at = pl.add(training_id)
         except PropertyTrainingList.ListFull:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_PROPERTY_SLOT_FULL"))
 
+        if end_at:
+            data = {
+                'sid': self.server_id,
+                'cid': self.char_id,
+                'staff_id': staff_id
+            }
+            key = Timerd.register(end_at, TIMERD_CALLBACK_PATH, data)
+        else:
+            key = None
+
         new_list = pl.get_document_list()
-        self.update_training_list(staff_id, new_list)
+        self.update_training_list(staff_id, new_list, key)
 
     @slot_id_check
     def cancel(self, staff_id, slot_id):
+        # 只能取消排队的
         pl = self.get_training_list(staff_id)
         slot = pl.get_slot(slot_id)
 
@@ -297,8 +319,33 @@ class TrainingProperty(object):
             except PropertyTrainingList.SlotFinish:
                 raise GameException(ConfigErrorMessage.get_error_id("TRAINING_PROPERTY_SPEEDUP_CANNOT_FINISH"))
 
+            # 加速后，取消旧定时器，开启新定时器
+            doc = MongoTrainingProperty.db(self.server_id).find_one(
+                {'_id': self.char_id},
+                {'keys.{0}'.format(staff_id): 1}
+            )
+
+            key = doc['keys'][str(staff_id)]
+            Timerd.cancel(key)
+
             new_list = pl.get_document_list()
-            self.update_training_list(staff_id, new_list)
+            new_pl = PropertyTrainingList(new_list)
+
+            for i in range(1, PROPERTY_TRAINING_SLOTS_AMOUNT + 1):
+                slot = new_pl.get_slot(i)
+                if slot.status == PropertySlotStatus.TRAINING:
+                    end_at = slot.end_at
+                    data = {
+                        'sid': self.server_id,
+                        'cid': self.char_id,
+                        'staff_id': staff_id
+                    }
+                    new_key = Timerd.register(end_at, TIMERD_CALLBACK_PATH, data)
+                    break
+            else:
+                new_key = ''
+
+            self.update_training_list(staff_id, new_list, new_key)
 
     @slot_id_check
     def get_reward(self, staff_id, slot_id):
@@ -319,6 +366,40 @@ class TrainingProperty(object):
         self.update_training_list(staff_id, new_list)
 
         return p.make_protomsg()
+
+    def callback(self, staff_id):
+        pl = self.get_training_list(staff_id)
+        for i in range(1, PROPERTY_TRAINING_SLOTS_AMOUNT + 1):
+            slot = pl.get_slot(i)
+
+            if slot.status == PropertySlotStatus.TRAINING:
+                if slot.end_at > arrow.utcnow().timestamp:
+                    return slot.end_at
+
+                pl.finish(i)
+                break
+        else:
+            return 0
+
+        new_list = pl.get_document_list()
+        new_pl = PropertyTrainingList(new_list)
+
+        for i in range(1, PROPERTY_TRAINING_SLOTS_AMOUNT + 1):
+            slot = new_pl.get_slot(i)
+            if slot.status == PropertySlotStatus.TRAINING:
+                end_at = slot.end_at
+                data = {
+                    'sid': self.server_id,
+                    'cid': self.char_id,
+                    'staff_id': staff_id
+                }
+                key = Timerd.register(end_at, TIMERD_CALLBACK_PATH, data)
+                break
+        else:
+            key = ''
+
+        self.update_training_list(staff_id, new_list, key)
+        return 0
 
     def send_notify(self, staff_ids=None):
         if staff_ids:
@@ -351,6 +432,15 @@ class TrainingProperty(object):
                 notify_staff_training.slot_id = i
 
                 slot = pl.get_slot(i)
+                if slot.status == PropertySlotStatus.EMPTY:
+                    notify_staff_training.status = TRAINING_SLOT_EMPTY
+                elif slot.status == PropertySlotStatus.FINISH:
+                    notify_staff_training.status = TRAINING_SLOT_FINISH
+                elif slot.status == PropertySlotStatus.TRAINING:
+                    notify_staff_training.status = TRAINING_SLOT_TRAINING
+                else:
+                    notify_staff_training.status = TRAINING_SLOT_WAITING
+
                 notify_staff_training.training_id = slot.training_id
                 notify_staff_training.end_at = slot.end_at
 

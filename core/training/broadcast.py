@@ -17,6 +17,7 @@ from core.building import BuildingBusinessCenter
 from core.package import Drop
 from core.resource import Resource
 
+from utils.api import Timerd
 from utils.message import MessagePipe
 
 from config import ConfigErrorMessage, ConfigBuilding
@@ -31,8 +32,18 @@ from protomsg.training_pb2 import (
     TrainingBroadcastNotify,
 )
 
+import formula
+
 # 直播
 BROADCAST_TOTAL_SECONDS = 8 * 3600
+TIMERD_CALLBACK_PATH = '/api/timerd/training/broadcast/'
+
+
+def current_got_gold(passed_seconds, current_building_level):
+    config_building_level = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).get_level(current_building_level)
+    gold = passed_seconds / 60 * config_building_level.value1
+    # TODO 技能加成，知名度加成
+    return gold
 
 
 class BroadcastSlotStatus(object):
@@ -52,28 +63,20 @@ class BroadcastSlotStatus(object):
         self.staff_id = 0
         self.start_at = 0
         self.end_at = 0
-        self.finish = False
+        self.gold = -1
+        self.key = ''
 
     @property
-    def is_finished(self):
-        if self.finish:
-            return True
-
-        return arrow.utcnow().timestamp >= self.start_at + BROADCAST_TOTAL_SECONDS
+    def finished(self):
+        return self.gold > -1
 
     @property
     def current_gold(self):
-        if self.is_finished:
-            passed_seconds = BROADCAST_TOTAL_SECONDS
-        else:
-            passed_seconds = arrow.utcnow().timestamp - self.start_at
+        if self.finished:
+            return self.gold
 
-        config_building_level = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).get_level(
-            self.current_building_level)
-        gold = passed_seconds / 60 * config_building_level.value1
-
-        # TODO 技能加成和知名度加成
-        return gold
+        passed_seconds = arrow.utcnow().timestamp - self.start_at
+        return current_got_gold(passed_seconds, self.current_building_level)
 
     def _check_slot_id(self):
         max_building_level = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).max_levels
@@ -120,9 +123,10 @@ class BroadcastSlotStatus(object):
             return
 
         self.start_at = data['start_at']
-        self.finish = data['finish']
+        self.gold = data['gold']
+        self.key = data['key']
 
-        if self.is_finished:
+        if self.finished:
             self.status = BroadcastSlotStatus.FINISH
         else:
             self.status = BroadcastSlotStatus.TRAINING
@@ -196,10 +200,21 @@ class TrainingBroadcast(object):
             if v and v.get('staff_id', 0) == staff_id:
                 raise GameException(ConfigErrorMessage.get_error_id("TRAINING_BROADCAST_STAFF_IN_TRAINING"))
 
+        timestamp = arrow.utcnow().timestamp
+        end_at = timestamp + BROADCAST_TOTAL_SECONDS
+        data = {
+            'sid': self.server_id,
+            'cid': self.char_id,
+            'slot_id': slot_id
+        }
+
+        key = Timerd.register(end_at, TIMERD_CALLBACK_PATH, data)
+
         slot_doc = MongoTrainingBroadcast.document_slot()
         slot_doc['staff_id'] = staff_id
         slot_doc['start_at'] = arrow.utcnow().timestamp
-        slot_doc['finish'] = False
+        slot_doc['gold'] = -1
+        slot_doc['key'] = key
 
         MongoTrainingBroadcast.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -207,8 +222,6 @@ class TrainingBroadcast(object):
                 'slots.{0}'.format(slot_id): slot_doc
             }}
         )
-
-        # TODO send to timer server
 
         self.send_notify(slot_ids=[slot_id])
 
@@ -222,7 +235,7 @@ class TrainingBroadcast(object):
         message = u"Broadcast Training Cancel For Staff {0}".format(slot.staff_id)
         Resource(self.server_id, self.char_id).save_drop(drop, message)
 
-        # TODO cancel timer
+        Timerd.cancel(slot.key)
 
         MongoTrainingBroadcast.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -239,13 +252,43 @@ class TrainingBroadcast(object):
         if slot.status != BroadcastSlotStatus.TRAINING:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_BROADCAST_NOT_TRAINING"))
 
-        # TODO calcel timer
-        # TODO need diamond
+        behind_seconds = slot.end_at - arrow.utcnow().timestamp
+        need_diamond = formula.training_speedup_need_diamond(behind_seconds)
+        message = u"Training Broadcast Speedup."
+
+        with Resource(self.server_id, self.char_id).check(diamond=-need_diamond, message=message):
+            Timerd.cancel(slot.key)
+
+            current_building_level = BuildingBusinessCenter(self.server_id, self.char_id).get_level()
+            gold = current_got_gold(BROADCAST_TOTAL_SECONDS, current_building_level)
+
+            MongoTrainingBroadcast.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {
+                    'slots.{0}.gold'.format(slot_id): gold,
+                    'slots.{0}.key'.format(slot_id): ''
+                }}
+            )
+
+        self.send_notify(slot_ids=[slot_id])
+
+    def callback(self, slot_id):
+        slot = self.get_slot(slot_id)
+        if slot.status != BroadcastSlotStatus.TRAINING:
+            return 0
+
+        end_at = slot.end_at
+        if end_at > arrow.utcnow().timestamp:
+            return end_at
+
+        current_building_level = BuildingBusinessCenter(self.server_id, self.char_id).get_level()
+        gold = current_got_gold(BROADCAST_TOTAL_SECONDS, current_building_level)
 
         MongoTrainingBroadcast.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
-                'slots.{0}.finish'.format(slot_id): True
+                'slots.{0}.gold'.format(slot_id): gold,
+                'slots.{0}.key'.format(slot_id): ''
             }}
         )
 

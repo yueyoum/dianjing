@@ -11,4 +11,7 @@ from django.conf.urls import url
 
 urlpatterns = [
     url(r'^timerd/building/$', 'views.api.timerd.building_levelup_callback'),
+    url(r'^timerd/training/exp/$', 'views.api.timerd.training_exp_callback'),
+    url(r'^timerd/training/property/$', 'views.api.timerd.training_property_callback'),
+    url(r'^timerd/training/broadcast/$', 'views.api.timerd.training_broadcast_callback'),
 ]

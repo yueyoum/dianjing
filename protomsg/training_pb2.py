@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='training.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=b'\n\x0etraining.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\xce\x02\n\x15TrainingExpSlotNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12G\n\x05slots\x18\x03 \x03(\x0b\x32\x38.Dianjing.protocol.TrainingExpSlotNotify.TrainingExpSlot\x1a\xb2\x01\n\x0fTrainingExpSlot\x12\n\n\x02id\x18\x01 \x02(\x05\x12U\n\x05staff\x18\x02 \x01(\x0b\x32\x46.Dianjing.protocol.TrainingExpSlotNotify.TrainingExpSlot.TrainingStaff\x1a<\n\rTrainingStaff\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0f\n\x07got_exp\x18\x02 \x02(\x05\x12\x0e\n\x06\x65nd_at\x18\x03 \x02(\x03\"M\n\x17TrainingExpStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x10\n\x08staff_id\x18\x03 \x02(\x05\"8\n\x18TrainingExpStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"<\n\x18TrainingExpCancelRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\"h\n\x19TrainingExpCancelResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12-\n\x08property\x18\x03 \x01(\x0b\x32\x1b.Dianjing.protocol.Property\"=\n\x19TrainingExpSpeedupRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\":\n\x1aTrainingExpSpeedupResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"?\n\x1bTrainingExpGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\"k\n\x1cTrainingExpGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12-\n\x08property\x18\x03 \x01(\x0b\x32\x1b.Dianjing.protocol.Property\"\xdd\x02\n\x16TrainingPropertyNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12G\n\x06staffs\x18\x03 \x03(\x0b\x32\x37.Dianjing.protocol.TrainingPropertyNotify.TrainingStaff\x1a\xc0\x01\n\rTrainingStaff\x12\x10\n\x08staff_id\x18\x01 \x02(\x05\x12W\n\ttrainings\x18\x02 \x03(\x0b\x32\x44.Dianjing.protocol.TrainingPropertyNotify.TrainingStaff.TrainingItem\x1a\x44\n\x0cTrainingItem\x12\x0f\n\x07slot_id\x18\x01 \x02(\x05\x12\x13\n\x0btraining_id\x18\x02 \x02(\x05\x12\x0e\n\x06\x65nd_at\x18\x03 \x02(\x03\"V\n\x1cTrainingPropertyStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x13\n\x0btraining_id\x18\x03 \x02(\x05\"=\n\x1dTrainingPropertyStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"S\n\x1dTrainingPropertyCancelRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\">\n\x1eTrainingPropertyCancelResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"T\n\x1eTrainingPropertySpeedupRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\"?\n\x1fTrainingPropertySpeedupResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"V\n TrainingPropertyGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\"p\n!TrainingPropertyGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12-\n\x08property\x18\x03 \x01(\x0b\x32\x1b.Dianjing.protocol.Property\"\x86\x03\n\x17TrainingBroadcastNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12G\n\x05slots\x18\x03 \x03(\x0b\x32\x38.Dianjing.protocol.TrainingBroadcastNotify.BroadcastSlot\x1a\xe8\x01\n\rBroadcastSlot\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x35\n\x06status\x18\x02 \x02(\x0e\x32%.Dianjing.protocol.TrainingSlotStatus\x12U\n\x05staff\x18\x03 \x01(\x0b\x32\x46.Dianjing.protocol.TrainingBroadcastNotify.BroadcastSlot.TrainingStaff\x1a=\n\rTrainingStaff\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x10\n\x08got_gold\x18\x02 \x02(\x05\x12\x0e\n\x06\x65nd_at\x18\x03 \x02(\x03\"S\n\x1dTrainingBroadcastStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x10\n\x08staff_id\x18\x03 \x02(\x05\">\n\x1eTrainingBroadcastStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"B\n\x1eTrainingBroadcastCancelRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\"f\n\x1fTrainingBroadcastCancelResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"C\n\x1fTrainingBroadcastSpeedupRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\"@\n TrainingBroadcastSpeedupResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"E\n!TrainingBroadcastGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\"i\n\"TrainingBroadcastGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\xed\x01\n\x12TrainingShopNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12=\n\x05slots\x18\x03 \x03(\x0b\x32..Dianjing.protocol.TrainingShopNotify.ShopSlot\x1a_\n\x08ShopSlot\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x35\n\x06status\x18\x02 \x02(\x0e\x32%.Dianjing.protocol.TrainingSlotStatus\x12\x10\n\x08staff_id\x18\x03 \x01(\x05\"N\n\x18TrainingShopStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x10\n\x08staff_id\x18\x03 \x02(\x05\"9\n\x19TrainingShopStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\xfe\x01\n\x15TrainingSponsorNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x43\n\x05slots\x18\x03 \x03(\x0b\x32\x34.Dianjing.protocol.TrainingSponsorNotify.SponsorSlot\x1ag\n\x0bSponsorSlot\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x35\n\x06status\x18\x02 \x02(\x0e\x32%.Dianjing.protocol.TrainingSlotStatus\x12\x15\n\rremained_days\x18\x03 \x01(\x05\":\n\x1bTrainingSponsorStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"<\n\x1cTrainingSponsorStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*\x7f\n\x12TrainingSlotStatus\x12\x1a\n\x16TRAINING_SLOT_NOT_OPEN\x10\x01\x12\x17\n\x13TRAINING_SLOT_EMPTY\x10\x02\x12\x1a\n\x16TRAINING_SLOT_TRAINING\x10\x03\x12\x18\n\x14TRAINING_SLOT_FINISH\x10\x04'
+  serialized_pb=b'\n\x0etraining.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\x85\x03\n\x15TrainingExpSlotNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12G\n\x05slots\x18\x03 \x03(\x0b\x32\x38.Dianjing.protocol.TrainingExpSlotNotify.TrainingExpSlot\x1a\xe9\x01\n\x0fTrainingExpSlot\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x35\n\x06status\x18\x02 \x02(\x0e\x32%.Dianjing.protocol.TrainingSlotStatus\x12U\n\x05staff\x18\x03 \x01(\x0b\x32\x46.Dianjing.protocol.TrainingExpSlotNotify.TrainingExpSlot.TrainingStaff\x1a<\n\rTrainingStaff\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0f\n\x07got_exp\x18\x02 \x02(\x05\x12\x0e\n\x06\x65nd_at\x18\x03 \x02(\x03\"M\n\x17TrainingExpStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x10\n\x08staff_id\x18\x03 \x02(\x05\"8\n\x18TrainingExpStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"<\n\x18TrainingExpCancelRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\"h\n\x19TrainingExpCancelResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12-\n\x08property\x18\x03 \x01(\x0b\x32\x1b.Dianjing.protocol.Property\"=\n\x19TrainingExpSpeedupRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\":\n\x1aTrainingExpSpeedupResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"?\n\x1bTrainingExpGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\"k\n\x1cTrainingExpGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12-\n\x08property\x18\x03 \x01(\x0b\x32\x1b.Dianjing.protocol.Property\"\x94\x03\n\x16TrainingPropertyNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12G\n\x06staffs\x18\x03 \x03(\x0b\x32\x37.Dianjing.protocol.TrainingPropertyNotify.TrainingStaff\x1a\xf7\x01\n\rTrainingStaff\x12\x10\n\x08staff_id\x18\x01 \x02(\x05\x12W\n\ttrainings\x18\x02 \x03(\x0b\x32\x44.Dianjing.protocol.TrainingPropertyNotify.TrainingStaff.TrainingItem\x1a{\n\x0cTrainingItem\x12\x0f\n\x07slot_id\x18\x01 \x02(\x05\x12\x35\n\x06status\x18\x02 \x02(\x0e\x32%.Dianjing.protocol.TrainingSlotStatus\x12\x13\n\x0btraining_id\x18\x03 \x02(\x05\x12\x0e\n\x06\x65nd_at\x18\x04 \x02(\x03\"V\n\x1cTrainingPropertyStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x13\n\x0btraining_id\x18\x03 \x02(\x05\"=\n\x1dTrainingPropertyStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"S\n\x1dTrainingPropertyCancelRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\">\n\x1eTrainingPropertyCancelResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"T\n\x1eTrainingPropertySpeedupRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\"?\n\x1fTrainingPropertySpeedupResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"V\n TrainingPropertyGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\"p\n!TrainingPropertyGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12-\n\x08property\x18\x03 \x01(\x0b\x32\x1b.Dianjing.protocol.Property\"\x86\x03\n\x17TrainingBroadcastNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12G\n\x05slots\x18\x03 \x03(\x0b\x32\x38.Dianjing.protocol.TrainingBroadcastNotify.BroadcastSlot\x1a\xe8\x01\n\rBroadcastSlot\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x35\n\x06status\x18\x02 \x02(\x0e\x32%.Dianjing.protocol.TrainingSlotStatus\x12U\n\x05staff\x18\x03 \x01(\x0b\x32\x46.Dianjing.protocol.TrainingBroadcastNotify.BroadcastSlot.TrainingStaff\x1a=\n\rTrainingStaff\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x10\n\x08got_gold\x18\x02 \x02(\x05\x12\x0e\n\x06\x65nd_at\x18\x03 \x02(\x03\"S\n\x1dTrainingBroadcastStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x10\n\x08staff_id\x18\x03 \x02(\x05\">\n\x1eTrainingBroadcastStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"B\n\x1eTrainingBroadcastCancelRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\"f\n\x1fTrainingBroadcastCancelResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"C\n\x1fTrainingBroadcastSpeedupRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\"@\n TrainingBroadcastSpeedupResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"E\n!TrainingBroadcastGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\"i\n\"TrainingBroadcastGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\xed\x01\n\x12TrainingShopNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12=\n\x05slots\x18\x03 \x03(\x0b\x32..Dianjing.protocol.TrainingShopNotify.ShopSlot\x1a_\n\x08ShopSlot\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x35\n\x06status\x18\x02 \x02(\x0e\x32%.Dianjing.protocol.TrainingSlotStatus\x12\x10\n\x08staff_id\x18\x03 \x01(\x05\"N\n\x18TrainingShopStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x10\n\x08staff_id\x18\x03 \x02(\x05\"9\n\x19TrainingShopStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\xfe\x01\n\x15TrainingSponsorNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x43\n\x05slots\x18\x03 \x03(\x0b\x32\x34.Dianjing.protocol.TrainingSponsorNotify.SponsorSlot\x1ag\n\x0bSponsorSlot\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x35\n\x06status\x18\x02 \x02(\x0e\x32%.Dianjing.protocol.TrainingSlotStatus\x12\x15\n\rremained_days\x18\x03 \x01(\x05\":\n\x1bTrainingSponsorStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"<\n\x1cTrainingSponsorStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*\x9a\x01\n\x12TrainingSlotStatus\x12\x1a\n\x16TRAINING_SLOT_NOT_OPEN\x10\x01\x12\x17\n\x13TRAINING_SLOT_EMPTY\x10\x02\x12\x1a\n\x16TRAINING_SLOT_TRAINING\x10\x03\x12\x18\n\x14TRAINING_SLOT_FINISH\x10\x04\x12\x19\n\x15TRAINING_SLOT_WAITING\x10\x05'
   ,
   dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -47,11 +47,15 @@ _TRAININGSLOTSTATUS = _descriptor.EnumDescriptor(
       name='TRAINING_SLOT_FINISH', index=3, number=4,
       options=None,
       type=None),
+    _descriptor.EnumValueDescriptor(
+      name='TRAINING_SLOT_WAITING', index=4, number=5,
+      options=None,
+      type=None),
   ],
   containing_type=None,
   options=None,
-  serialized_start=3795,
-  serialized_end=3922,
+  serialized_start=3906,
+  serialized_end=4060,
 )
 _sym_db.RegisterEnumDescriptor(_TRAININGSLOTSTATUS)
 
@@ -60,6 +64,7 @@ TRAINING_SLOT_NOT_OPEN = 1
 TRAINING_SLOT_EMPTY = 2
 TRAINING_SLOT_TRAINING = 3
 TRAINING_SLOT_FINISH = 4
+TRAINING_SLOT_WAITING = 5
 
 
 
@@ -103,8 +108,8 @@ _TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT_TRAININGSTAFF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=341,
-  serialized_end=401,
+  serialized_start=396,
+  serialized_end=456,
 )
 
 _TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT = _descriptor.Descriptor(
@@ -122,8 +127,15 @@ _TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='staff', full_name='Dianjing.protocol.TrainingExpSlotNotify.TrainingExpSlot.staff', index=1,
-      number=2, type=11, cpp_type=10, label=1,
+      name='status', full_name='Dianjing.protocol.TrainingExpSlotNotify.TrainingExpSlot.status', index=1,
+      number=2, type=14, cpp_type=8, label=2,
+      has_default_value=False, default_value=1,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='staff', full_name='Dianjing.protocol.TrainingExpSlotNotify.TrainingExpSlot.staff', index=2,
+      number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -141,7 +153,7 @@ _TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=223,
-  serialized_end=401,
+  serialized_end=456,
 )
 
 _TRAININGEXPSLOTNOTIFY = _descriptor.Descriptor(
@@ -185,7 +197,7 @@ _TRAININGEXPSLOTNOTIFY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=67,
-  serialized_end=401,
+  serialized_end=456,
 )
 
 
@@ -229,8 +241,8 @@ _TRAININGEXPSTARTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=403,
-  serialized_end=480,
+  serialized_start=458,
+  serialized_end=535,
 )
 
 
@@ -267,8 +279,8 @@ _TRAININGEXPSTARTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=482,
-  serialized_end=538,
+  serialized_start=537,
+  serialized_end=593,
 )
 
 
@@ -305,8 +317,8 @@ _TRAININGEXPCANCELREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=540,
-  serialized_end=600,
+  serialized_start=595,
+  serialized_end=655,
 )
 
 
@@ -350,8 +362,8 @@ _TRAININGEXPCANCELRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=602,
-  serialized_end=706,
+  serialized_start=657,
+  serialized_end=761,
 )
 
 
@@ -388,8 +400,8 @@ _TRAININGEXPSPEEDUPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=708,
-  serialized_end=769,
+  serialized_start=763,
+  serialized_end=824,
 )
 
 
@@ -426,8 +438,8 @@ _TRAININGEXPSPEEDUPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=771,
-  serialized_end=829,
+  serialized_start=826,
+  serialized_end=884,
 )
 
 
@@ -464,8 +476,8 @@ _TRAININGEXPGETREWARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=831,
-  serialized_end=894,
+  serialized_start=886,
+  serialized_end=949,
 )
 
 
@@ -509,8 +521,8 @@ _TRAININGEXPGETREWARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=896,
-  serialized_end=1003,
+  serialized_start=951,
+  serialized_end=1058,
 )
 
 
@@ -529,15 +541,22 @@ _TRAININGPROPERTYNOTIFY_TRAININGSTAFF_TRAININGITEM = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='training_id', full_name='Dianjing.protocol.TrainingPropertyNotify.TrainingStaff.TrainingItem.training_id', index=1,
-      number=2, type=5, cpp_type=1, label=2,
+      name='status', full_name='Dianjing.protocol.TrainingPropertyNotify.TrainingStaff.TrainingItem.status', index=1,
+      number=2, type=14, cpp_type=8, label=2,
+      has_default_value=False, default_value=1,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='training_id', full_name='Dianjing.protocol.TrainingPropertyNotify.TrainingStaff.TrainingItem.training_id', index=2,
+      number=3, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='end_at', full_name='Dianjing.protocol.TrainingPropertyNotify.TrainingStaff.TrainingItem.end_at', index=2,
-      number=3, type=3, cpp_type=2, label=2,
+      name='end_at', full_name='Dianjing.protocol.TrainingPropertyNotify.TrainingStaff.TrainingItem.end_at', index=3,
+      number=4, type=3, cpp_type=2, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -554,8 +573,8 @@ _TRAININGPROPERTYNOTIFY_TRAININGSTAFF_TRAININGITEM = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1287,
-  serialized_end=1355,
+  serialized_start=1342,
+  serialized_end=1465,
 )
 
 _TRAININGPROPERTYNOTIFY_TRAININGSTAFF = _descriptor.Descriptor(
@@ -591,8 +610,8 @@ _TRAININGPROPERTYNOTIFY_TRAININGSTAFF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1163,
-  serialized_end=1355,
+  serialized_start=1218,
+  serialized_end=1465,
 )
 
 _TRAININGPROPERTYNOTIFY = _descriptor.Descriptor(
@@ -635,8 +654,8 @@ _TRAININGPROPERTYNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1006,
-  serialized_end=1355,
+  serialized_start=1061,
+  serialized_end=1465,
 )
 
 
@@ -680,8 +699,8 @@ _TRAININGPROPERTYSTARTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1357,
-  serialized_end=1443,
+  serialized_start=1467,
+  serialized_end=1553,
 )
 
 
@@ -718,8 +737,8 @@ _TRAININGPROPERTYSTARTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1445,
-  serialized_end=1506,
+  serialized_start=1555,
+  serialized_end=1616,
 )
 
 
@@ -763,8 +782,8 @@ _TRAININGPROPERTYCANCELREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1508,
-  serialized_end=1591,
+  serialized_start=1618,
+  serialized_end=1701,
 )
 
 
@@ -801,8 +820,8 @@ _TRAININGPROPERTYCANCELRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1593,
-  serialized_end=1655,
+  serialized_start=1703,
+  serialized_end=1765,
 )
 
 
@@ -846,8 +865,8 @@ _TRAININGPROPERTYSPEEDUPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1657,
-  serialized_end=1741,
+  serialized_start=1767,
+  serialized_end=1851,
 )
 
 
@@ -884,8 +903,8 @@ _TRAININGPROPERTYSPEEDUPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1743,
-  serialized_end=1806,
+  serialized_start=1853,
+  serialized_end=1916,
 )
 
 
@@ -929,8 +948,8 @@ _TRAININGPROPERTYGETREWARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1808,
-  serialized_end=1894,
+  serialized_start=1918,
+  serialized_end=2004,
 )
 
 
@@ -974,8 +993,8 @@ _TRAININGPROPERTYGETREWARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1896,
-  serialized_end=2008,
+  serialized_start=2006,
+  serialized_end=2118,
 )
 
 
@@ -1019,8 +1038,8 @@ _TRAININGBROADCASTNOTIFY_BROADCASTSLOT_TRAININGSTAFF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2340,
-  serialized_end=2401,
+  serialized_start=2450,
+  serialized_end=2511,
 )
 
 _TRAININGBROADCASTNOTIFY_BROADCASTSLOT = _descriptor.Descriptor(
@@ -1063,8 +1082,8 @@ _TRAININGBROADCASTNOTIFY_BROADCASTSLOT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2169,
-  serialized_end=2401,
+  serialized_start=2279,
+  serialized_end=2511,
 )
 
 _TRAININGBROADCASTNOTIFY = _descriptor.Descriptor(
@@ -1107,8 +1126,8 @@ _TRAININGBROADCASTNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2011,
-  serialized_end=2401,
+  serialized_start=2121,
+  serialized_end=2511,
 )
 
 
@@ -1152,8 +1171,8 @@ _TRAININGBROADCASTSTARTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2403,
-  serialized_end=2486,
+  serialized_start=2513,
+  serialized_end=2596,
 )
 
 
@@ -1190,8 +1209,8 @@ _TRAININGBROADCASTSTARTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2488,
-  serialized_end=2550,
+  serialized_start=2598,
+  serialized_end=2660,
 )
 
 
@@ -1228,8 +1247,8 @@ _TRAININGBROADCASTCANCELREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2552,
-  serialized_end=2618,
+  serialized_start=2662,
+  serialized_end=2728,
 )
 
 
@@ -1273,8 +1292,8 @@ _TRAININGBROADCASTCANCELRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2620,
-  serialized_end=2722,
+  serialized_start=2730,
+  serialized_end=2832,
 )
 
 
@@ -1311,8 +1330,8 @@ _TRAININGBROADCASTSPEEDUPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2724,
-  serialized_end=2791,
+  serialized_start=2834,
+  serialized_end=2901,
 )
 
 
@@ -1349,8 +1368,8 @@ _TRAININGBROADCASTSPEEDUPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2793,
-  serialized_end=2857,
+  serialized_start=2903,
+  serialized_end=2967,
 )
 
 
@@ -1387,8 +1406,8 @@ _TRAININGBROADCASTGETREWARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2859,
-  serialized_end=2928,
+  serialized_start=2969,
+  serialized_end=3038,
 )
 
 
@@ -1432,8 +1451,8 @@ _TRAININGBROADCASTGETREWARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2930,
-  serialized_end=3035,
+  serialized_start=3040,
+  serialized_end=3145,
 )
 
 
@@ -1477,8 +1496,8 @@ _TRAININGSHOPNOTIFY_SHOPSLOT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3180,
-  serialized_end=3275,
+  serialized_start=3290,
+  serialized_end=3385,
 )
 
 _TRAININGSHOPNOTIFY = _descriptor.Descriptor(
@@ -1521,8 +1540,8 @@ _TRAININGSHOPNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3038,
-  serialized_end=3275,
+  serialized_start=3148,
+  serialized_end=3385,
 )
 
 
@@ -1566,8 +1585,8 @@ _TRAININGSHOPSTARTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3277,
-  serialized_end=3355,
+  serialized_start=3387,
+  serialized_end=3465,
 )
 
 
@@ -1604,8 +1623,8 @@ _TRAININGSHOPSTARTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3357,
-  serialized_end=3414,
+  serialized_start=3467,
+  serialized_end=3524,
 )
 
 
@@ -1649,8 +1668,8 @@ _TRAININGSPONSORNOTIFY_SPONSORSLOT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3568,
-  serialized_end=3671,
+  serialized_start=3678,
+  serialized_end=3781,
 )
 
 _TRAININGSPONSORNOTIFY = _descriptor.Descriptor(
@@ -1693,8 +1712,8 @@ _TRAININGSPONSORNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3417,
-  serialized_end=3671,
+  serialized_start=3527,
+  serialized_end=3781,
 )
 
 
@@ -1731,8 +1750,8 @@ _TRAININGSPONSORSTARTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3673,
-  serialized_end=3731,
+  serialized_start=3783,
+  serialized_end=3841,
 )
 
 
@@ -1769,17 +1788,19 @@ _TRAININGSPONSORSTARTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3733,
-  serialized_end=3793,
+  serialized_start=3843,
+  serialized_end=3903,
 )
 
 _TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT_TRAININGSTAFF.containing_type = _TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT
+_TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT.fields_by_name['status'].enum_type = _TRAININGSLOTSTATUS
 _TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT.fields_by_name['staff'].message_type = _TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT_TRAININGSTAFF
 _TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT.containing_type = _TRAININGEXPSLOTNOTIFY
 _TRAININGEXPSLOTNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _TRAININGEXPSLOTNOTIFY.fields_by_name['slots'].message_type = _TRAININGEXPSLOTNOTIFY_TRAININGEXPSLOT
 _TRAININGEXPCANCELRESPONSE.fields_by_name['property'].message_type = package__pb2._PROPERTY
 _TRAININGEXPGETREWARDRESPONSE.fields_by_name['property'].message_type = package__pb2._PROPERTY
+_TRAININGPROPERTYNOTIFY_TRAININGSTAFF_TRAININGITEM.fields_by_name['status'].enum_type = _TRAININGSLOTSTATUS
 _TRAININGPROPERTYNOTIFY_TRAININGSTAFF_TRAININGITEM.containing_type = _TRAININGPROPERTYNOTIFY_TRAININGSTAFF
 _TRAININGPROPERTYNOTIFY_TRAININGSTAFF.fields_by_name['trainings'].message_type = _TRAININGPROPERTYNOTIFY_TRAININGSTAFF_TRAININGITEM
 _TRAININGPROPERTYNOTIFY_TRAININGSTAFF.containing_type = _TRAININGPROPERTYNOTIFY

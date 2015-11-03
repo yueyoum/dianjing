@@ -174,14 +174,12 @@ class MongoTrainingExp(BaseDocument):
     TRAINING_DOCUMENT = {
         'staff_id': 0,
         'start_at': 0,
-        'time_point': 0,
-        'exp': 0,
-        # exp 记录的是当前时间点（time_point）获取的经验值
-        # 因为在训练过程中 训练中心可能会升级，
-        # 所以在升级完成时记录一下当前的 time_point，并且计算当前获取的 exp，并保存
-        'speedup': False,
-        # 如果是加速完成的，这里是True
-        # 所以在判断训练是否完成时，要注意这个数值
+        'exp': -1,
+        # exp 是完成时的经验值，领奖就领的是这个
+        # 只有在完成时（加速或者正常完成），才设置这个值
+        # 所以只要exp > -1，就表示训练完成了
+        'key': '',
+        # timer key
     }
 
     @classmethod
@@ -194,14 +192,16 @@ class MongoTrainingExp(BaseDocument):
 class MongoTrainingProperty(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        # staff_id: []
-        'staffs': {}
+        'staffs': {},
+        'keys': {},  # 定时器key, staff_id: key
     }
 
     TRAINING_DOCUMENT = {
         'id': null,
         'end_at': 0,
         # 加速会改变这个end_at
+        # 属性训练只和使用的id训练有关，所以这里直接记录完成的end_at，
+        # 不用考虑其他变量
     }
 
     @classmethod
@@ -221,8 +221,9 @@ class MongoTrainingBroadcast(BaseDocument):
     SLOT_DOCUMENT = {
         'staff_id': 0,
         'start_at': 0,
-        'finish': False,
-        # 只要是 finish，肯定就是训练时间满了，不管是加速还是正常结束
+        'gold': -1,
+        # 只要 gold > -1，肯定就是训练时间满了，不管是加速还是正常结束
+        'key': '',
     }
 
     @classmethod

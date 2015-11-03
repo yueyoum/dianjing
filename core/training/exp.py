@@ -15,16 +15,28 @@ from core.building import BuildingTrainingCenter
 from core.package import Property
 from core.resource import Resource
 from utils.message import MessagePipe
+from utils.api import Timerd
+
 from config import ConfigErrorMessage, ConfigBuilding
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 from protomsg.training_pb2 import (
+    TRAINING_SLOT_EMPTY,
+    TRAINING_SLOT_TRAINING,
+    TRAINING_SLOT_NOT_OPEN,
+    TRAINING_SLOT_FINISH,
+
     TrainingExpSlotNotify,
 )
 
 import formula
 
-
 EXP_TRAINING_TOTAL_SECONDS = 8 * 3600  # 8 hours
+TIMERD_CALLBACK_PATH = '/api/timerd/training/exp/'
+
+
+def current_got_exp(passed_seconds, current_building_level):
+    config_building_level = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(current_building_level)
+    return passed_seconds / 60 * config_building_level.value1
 
 
 class ExpSlotStatus(object):
@@ -44,36 +56,20 @@ class ExpSlotStatus(object):
         self.staff_id = 0
         self.start_at = 0
         self.end_at = 0
-        self.speedup = False
-        self.time_point = 0
-        self.exp = 0
+        self.exp = -1
+        self.key = ''
 
     @property
     def finished(self):
-        if self.speedup:
-            return True
-
-        return arrow.utcnow().timestamp >= self.end_at
+        return self.exp > -1
 
     @property
     def current_exp(self):
         if self.finished:
             return self.exp
 
-        new_exp = self.calculate_new_exp()
-        return self.exp + new_exp
-
-    def calculate_new_exp(self, end_at=None):
-        # 计算上个time_point到当前增加的经验
-        if not end_at:
-            end_at = arrow.utcnow().timestamp
-
-        last_time_point = self.time_point if self.time_point else self.start_at
-
-        config_building_level = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(
-            self.current_building_level)
-        new_exp = (end_at - last_time_point) / 60 * config_building_level.value1
-        return new_exp
+        passed_seconds = arrow.utcnow().timestamp - self.start_at
+        return current_got_exp(passed_seconds, self.current_building_level)
 
     def _check_slot_id(self):
         max_building_level = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).max_levels
@@ -120,15 +116,14 @@ class ExpSlotStatus(object):
             return
 
         self.start_at = data['start_at']
-        self.end_at = data['start_at'] + EXP_TRAINING_TOTAL_SECONDS
-        self.speedup = data['speedup']
-        self.time_point = data['time_point']
         self.exp = data['exp']
+        self.key = data['key']
 
         if self.finished:
             self.status = ExpSlotStatus.FINISH
         else:
             self.status = ExpSlotStatus.TRAINING
+            self.end_at = self.start_at + EXP_TRAINING_TOTAL_SECONDS
 
 
 class TrainingExp(object):
@@ -136,35 +131,36 @@ class TrainingExp(object):
         self.server_id = server_id
         self.char_id = char_id
 
-        self.current_building_level = BuildingTrainingCenter(self.server_id, self.char_id).get_level()
-
         if not MongoTrainingExp.exist(self.server_id, self.char_id):
             doc = MongoTrainingExp.document()
             doc['_id'] = self.char_id
             MongoTrainingExp.db(self.server_id).insert_one(doc)
 
-    def get_slot_status(self, slot_id):
+    def get_slot(self, slot_id):
         """
 
         :rtype : ExpSlotStatus
         """
-        return ExpSlotStatus(self.server_id, self.char_id, slot_id, self.current_building_level)
+        current_building_level = BuildingTrainingCenter(self.server_id, self.char_id).get_level()
+        slot = ExpSlotStatus(self.server_id, self.char_id, slot_id, current_building_level)
+        slot.load_data()
+
+        if slot.status == ExpSlotStatus.NOT_EXIST:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_EXIST"))
+
+        if slot.status == ExpSlotStatus.NOT_OPEN:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_OPEN"))
+
+        return slot
 
     def start(self, slot_id, staff_id):
         staff = StaffManger(self.server_id, self.char_id).get_staff(staff_id)
         if not staff:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
-        ss = self.get_slot_status(slot_id)
-        ss.load_data()
+        slot = self.get_slot(slot_id)
 
-        if ss.status == ExpSlotStatus.NOT_EXIST:
-            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_EXIST"))
-
-        if ss.status == ExpSlotStatus.NOT_OPEN:
-            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_OPEN"))
-
-        if ss.status != ExpSlotStatus.EMPTY:
+        if slot.status != ExpSlotStatus.EMPTY:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_IN_USE"))
 
         doc = MongoTrainingExp.db(self.server_id).find_one(
@@ -176,18 +172,27 @@ class TrainingExp(object):
             if v.get('staff_id', 0) == staff_id:
                 raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_STAFF_IN_TRAINING"))
 
-        timestamp = arrow.utcnow().timestamp
-        training_doc = MongoTrainingExp.document_training()
-        training_doc['staff_id'] = staff_id
-        training_doc['start_at'] = timestamp
-        training_doc['time_point'] = timestamp
-        training_doc['exp'] = 0
-        training_doc['speedup'] = False
-
         need_gold = formula.staff_training_exp_need_gold(staff['level'])
         message = u"Training Exp For Staff {0}".format(staff_id)
 
         with Resource(self.server_id, self.char_id).check(gold=-need_gold, message=message):
+            timestamp = arrow.utcnow().timestamp
+
+            end_at = timestamp + EXP_TRAINING_TOTAL_SECONDS
+            data = {
+                'sid': self.server_id,
+                'cid': self.char_id,
+                'slot_id': slot_id
+            }
+
+            key = Timerd.register(end_at, TIMERD_CALLBACK_PATH, data)
+
+            training_doc = MongoTrainingExp.document_training()
+            training_doc['staff_id'] = staff_id
+            training_doc['start_at'] = timestamp
+            training_doc['exp'] = -1
+            training_doc['key'] = key
+
             MongoTrainingExp.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {'$set': {
@@ -195,91 +200,90 @@ class TrainingExp(object):
                 }}
             )
 
-            self.send_notify(slot_ids=[slot_id])
+        self.send_notify(slot_ids=[slot_id])
 
     def cancel(self, slot_id):
-        ss = self.get_slot_status(slot_id)
-        ss.load_data()
+        slot = self.get_slot(slot_id)
 
-        if ss.status == ExpSlotStatus.NOT_EXIST:
-            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_EXIST"))
-
-        if ss.status == ExpSlotStatus.NOT_OPEN:
-            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_OPEN"))
-
-        if ss.status == ExpSlotStatus.EMPTY:
+        if slot.status == ExpSlotStatus.EMPTY:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_EMPTY"))
 
-        if ss.status == ExpSlotStatus.FINISH:
+        if slot.status == ExpSlotStatus.FINISH:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_FINISH_CANNOT_OPERATE"))
 
-        staff_id = ss.staff_id
-        exp = ss.current_exp
-
-        # TODO 优化
-        StaffManger(self.server_id, self.char_id).update(staff_id, exp=exp)
-
-        self.clean(slot_id)
+        Timerd.cancel(slot.key)
 
         p = Property()
-        p.staff_exp = exp
+        p.staff_exp = slot.current_exp
+        adds = p.to_dict()
+
+        StaffManger(self.server_id, self.char_id).update(slot.staff_id, **adds)
+        self.clean(slot_id)
+
         return p.make_protomsg()
 
     def speedup(self, slot_id):
-        ss = self.get_slot_status(slot_id)
-        ss.load_data()
+        slot = self.get_slot(slot_id)
 
-        if ss.status == ExpSlotStatus.NOT_EXIST:
-            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_EXIST"))
-
-        if ss.status == ExpSlotStatus.NOT_OPEN:
-            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_OPEN"))
-
-        if ss.status == ExpSlotStatus.EMPTY:
+        if slot.status == ExpSlotStatus.EMPTY:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_EMPTY"))
 
-        if ss.status == ExpSlotStatus.FINISH:
+        if slot.status == ExpSlotStatus.FINISH:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_FINISH_CANNOT_OPERATE"))
 
-        behind_seconds = ss.end_at - arrow.utcnow().timestamp
+        behind_seconds = slot.end_at - arrow.utcnow().timestamp
         need_diamond = formula.training_speedup_need_diamond(behind_seconds)
         message = u"Training Exp Speedup."
         with Resource(self.server_id, self.char_id).check(diamond=-need_diamond, message=message):
-            new_exp = ss.calculate_new_exp(end_at=ss.end_at)
-            exp = ss.exp + new_exp
+            Timerd.cancel(slot.key)
+
+            current_building_level = BuildingTrainingCenter(self.server_id, self.char_id).get_level()
+            exp = current_got_exp(EXP_TRAINING_TOTAL_SECONDS, current_building_level)
 
             MongoTrainingExp.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {'$set': {
                     'slots.{0}.exp'.format(slot_id): exp,
-                    'slots.{0}.speedup'.format(slot_id): True
+                    'slots.{0}.key'.format(slot_id): ''
                 }}
             )
 
-            self.send_notify(slot_ids=[slot_id])
+        self.send_notify(slot_ids=[slot_id])
+
+    def callback(self, slot_id):
+        slot = self.get_slot(slot_id)
+        if slot.status != ExpSlotStatus.TRAINING:
+            return 0
+
+        end_at = slot.end_at
+        if end_at > arrow.utcnow().timestamp:
+            return end_at
+
+        current_building_level = BuildingTrainingCenter(self.server_id, self.char_id).get_level()
+        exp = current_got_exp(EXP_TRAINING_TOTAL_SECONDS, current_building_level)
+
+        MongoTrainingExp.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'slots.{0}.exp'.format(slot_id): exp,
+                'slots.{0}.key'.format(slot_id): ''
+            }}
+        )
+
+        self.send_notify(slot_ids=[slot_id])
 
     def get_reward(self, slot_id):
-        ss = self.get_slot_status(slot_id)
-        ss.load_data()
+        slot = self.get_slot(slot_id)
 
-        if ss.status == ExpSlotStatus.NOT_EXIST:
-            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_EXIST"))
-
-        if ss.status == ExpSlotStatus.NOT_OPEN:
-            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_OPEN"))
-
-        if ss.status != ExpSlotStatus.FINISH:
+        if slot.status != ExpSlotStatus.FINISH:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_NOT_FINISH"))
 
-        exp = ss.current_exp
-
-        # TODO
-        StaffManger(self.server_id, self.char_id).update(ss.staff_id, exp=exp)
-
-        self.clean(slot_id)
-
         p = Property()
-        p.staff_exp = exp
+        p.staff_exp = slot.current_exp
+        adds = p.to_dict()
+
+        StaffManger(self.server_id, self.char_id).update(slot.staff_id, **adds)
+        self.clean(slot_id)
         return p.make_protomsg()
 
     def clean(self, slot_id):
@@ -293,15 +297,18 @@ class TrainingExp(object):
         self.send_notify(slot_ids=[slot_id])
 
     def send_notify(self, slot_ids=None):
+        building_max_level = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).max_levels
+        max_slot_amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(building_max_level).value2
+
+        current_building_level = BuildingTrainingCenter(self.server_id, self.char_id).get_level()
+
         if slot_ids:
             projection = {'slots.{0}'.format(i): 1 for i in slot_ids}
             act = ACT_UPDATE
         else:
             projection = {'slots': 1}
             act = ACT_INIT
-
-        slots_amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(
-            self.current_building_level).value2
+            slot_ids = range(1, max_slot_amount + 1)
 
         doc = MongoTrainingExp.db(self.server_id).find_one(
             {'_id': self.char_id},
@@ -313,28 +320,28 @@ class TrainingExp(object):
         notify = TrainingExpSlotNotify()
         notify.act = act
 
-        for i in range(1, slots_amount + 1):
-            if act == ACT_UPDATE and i not in slot_ids:
-                continue
-
+        for i in slot_ids:
             notify_slot = notify.slots.add()
             notify_slot.id = i
 
-            ss = self.get_slot_status(i)
-            ss.parse_data(slots_data)
+            slot = ExpSlotStatus(self.server_id, self.char_id, i, current_building_level)
+            slot.parse_data(slots_data)
 
-            if ss.status == ExpSlotStatus.NOT_OPEN or ss.status == ExpSlotStatus.NOT_EXIST:
-                raise RuntimeError("exp slot error: status = {0}".format(ss.status))
+            if slot.status == ExpSlotStatus.NOT_EXIST:
+                raise RuntimeError("Exp slot {0} not exist".format(i))
 
-            if ss.status == ExpSlotStatus.EMPTY:
-                continue
-
-            notify_slot.staff.id = ss.staff_id
-            notify_slot.staff.got_exp = ss.current_exp
-
-            if ss.status == ExpSlotStatus.FINISH:
-                notify_slot.staff.end_at = -1
+            if slot.status == ExpSlotStatus.NOT_OPEN:
+                notify_slot.status = TRAINING_SLOT_NOT_OPEN
+            elif slot.status == ExpSlotStatus.TRAINING:
+                notify_slot.status = TRAINING_SLOT_TRAINING
+            elif slot.status == ExpSlotStatus.FINISH:
+                notify_slot.status = TRAINING_SLOT_FINISH
             else:
-                notify_slot.staff.end_at = ss.end_at
+                notify_slot.status = TRAINING_SLOT_EMPTY
+
+            if slot.staff_id:
+                notify_slot.staff.id = slot.staff_id
+                notify_slot.staff.got_exp = slot.current_exp
+                notify_slot.staff.end_at = slot.end_at
 
         MessagePipe(self.char_id).put(msg=notify)
