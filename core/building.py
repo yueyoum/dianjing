@@ -109,12 +109,16 @@ class BuildingManager(object):
             # not finish
             return end_at
 
+        data = {
+            'level': doc['buildings'][str(building_id)]['level'] + 1,
+            'end_at': 0,
+            'key': ''
+        }
+
         MongoBuilding.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
-                'buildings.{0}.level': doc['buildings'][str(building_id)]['level'] + 1,
-                'buildings.{0}.end_at': 0,
-                'buildings.{0}.key': '',
+                'buildings.{0}'.format(building_id): data
             }}
         )
 
