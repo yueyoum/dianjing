@@ -139,8 +139,8 @@ class BuildingManager(object):
 
             notify_building = notify.buildings.add()
             notify_building.id = b.id
-            notify_building.level = doc['buildings'][str(b.id)]['current_level']
-            notify_building.up_finish_timestamp = doc['buildings'][str(b.id)]['complete_time']
+            notify_building.level = doc['buildings'][str(b.id)]['level']
+            notify_building.end_at = doc['buildings'][str(b.id)]['end_at']
 
         MessagePipe(self.char_id).put(msg=notify)
 
