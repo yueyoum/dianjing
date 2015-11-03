@@ -34,7 +34,17 @@ class ConfigSkill(ConfigBase):
     EntityClass = Skill
     INSTANCES = {}
     FILTER_CACHE = {}
-    
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigSkill, cls).initialize(fixture)
+        for v in cls.INSTANCES.values():
+            addition_ids = []
+            for item in v.addition_ids:
+                addition_ids.append((item['key'], item['value']))
+
+            v.addition_ids = addition_ids
+
     @classmethod
     def get(cls, id):
         """
