@@ -136,6 +136,30 @@ class TrainingExp(object):
             doc['_id'] = self.char_id
             MongoTrainingExp.db(self.server_id).insert_one(doc)
 
+    def open_slots_by_building_level_up(self):
+        current_level = BuildingTrainingCenter(self.server_id, self.char_id).get_level()
+        old_level = current_level - 1
+
+        current_slot_amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(current_level).value2
+        old_slot_amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(old_level).value2
+
+        if current_slot_amount <= old_slot_amount:
+            return
+
+        notify = TrainingExpSlotNotify()
+        notify.act = ACT_UPDATE
+
+        for i in range(1, current_slot_amount + 1):
+            if i <= old_slot_amount:
+                continue
+
+            notify_slot = notify.slots.add()
+            notify_slot.id = i
+            notify_slot.status = TRAINING_SLOT_EMPTY
+
+        MessagePipe(self.char_id).put(msg=notify)
+
+
     def get_slot(self, slot_id):
         """
 

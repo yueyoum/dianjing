@@ -44,3 +44,16 @@ purchase_done_signal = Signal(providing_args=['server_id', 'char_id', 'diamond']
 training_got_reward_signal = Signal(providing_args=['server_id', 'char_id', 'training_id'])
 # 完成随机事件
 random_event_done_signal = Signal(providing_args=['server_id', 'char_id', 'event_id'])
+
+# 训练中心升级
+building_training_center_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])
+# 员工中心升级
+building_staff_center_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])
+# 任务中心
+building_task_center_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])
+# 联赛中心
+building_league_center_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])
+# 赞助商中心
+building_sponsor_center_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])
+# 商务部
+building_business_center_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])

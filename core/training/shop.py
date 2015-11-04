@@ -11,6 +11,8 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoTrainingShop
 from core.staff import StaffManger
+from core.package import Drop
+from core.mail import MailManager
 
 from utils.message import MessagePipe
 
@@ -87,6 +89,27 @@ class TrainingShop(object):
         if opened_shop_ids:
             self.open(opened_shop_ids)
 
+    def cronjob(self):
+        # 每天发送邮件
+        doc = MongoTrainingShop.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'shops': 1}
+        )
+
+        for shop_id, staff_id in doc['shops'].iteritems():
+            if not staff_id:
+                continue
+
+            config = ConfigShop.get(shop_id)
+            drop = Drop()
+            drop.gold = config.income
+            attachment = drop.to_json()
+
+            m = MailManager(self.server_id, self.char_id)
+            m.add(config.mail_title, config.mail_content, attachment=attachment)
+
+        self.send_notify()
+
     def open(self, shop_ids):
         updater = {'shops.{0}'.format(i): 0 for i in shop_ids}
 
@@ -121,8 +144,6 @@ class TrainingShop(object):
                 'shops.{0}'.format(shop_id): staff_id
             }}
         )
-
-        # TODO 每天的收益
 
         self.send_notify(shop_ids=[shop_id])
 

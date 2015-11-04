@@ -10,9 +10,8 @@ Description:
 import os
 import arrow
 
-
-
 from django.conf import settings
+
 
 class Logger(object):
     def __init__(self, name):
@@ -32,7 +31,6 @@ class Logger(object):
     def now(self):
         return arrow.utcnow().to(settings.TIME_ZONE).format("YYYY-MM-DD HH:mm:ss")
 
-
     def write(self, text):
         self.f.write("{0} {1}\n".format(self.now, text))
 
@@ -41,7 +39,6 @@ class Logger(object):
         self.write("==== ERROR ====")
         self.write(text)
         self.write("==== ===== ====")
-
 
     def close(self):
         self.f.close()

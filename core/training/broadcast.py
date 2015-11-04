@@ -145,7 +145,7 @@ class TrainingBroadcast(object):
 
     def open_slots_by_building_level_up(self):
         current_level = BuildingBusinessCenter(self.server_id, self.char_id).get_level()
-        old_level = current_level
+        old_level = current_level - 1
 
         current_slot_amount = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).get_level(current_level).value2
         old_slot_amount = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).get_level(old_level).value2

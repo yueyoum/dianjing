@@ -11,7 +11,8 @@ from config.base import ConfigBase
 
 class Shop(object):
     __slots__ = [
-        'id', 'unlock_type', 'unlock_value', 'income'
+        'id', 'unlock_type', 'unlock_value', 'income',
+        'mail_title', 'mail_content',
     ]
 
     def __init__(self):
@@ -19,11 +20,14 @@ class Shop(object):
         self.unlock_type = 0
         self.unlock_value = 0
         self.income = 0
+        self.mail_title = ''
+        self.mail_content = ''
 
 
 class Sponsor(object):
     __slots__ = [
-        'id', 'condition', 'income', 'total_days'
+        'id', 'condition', 'income', 'total_days',
+        'mail_title', 'mail_content',
     ]
     
     def __init__(self):
@@ -31,6 +35,8 @@ class Sponsor(object):
         self.condition = 0
         self.income = 0
         self.total_days = 0
+        self.mail_title = ''
+        self.mail_content = ''
 
 
 class ConfigShop(ConfigBase):
