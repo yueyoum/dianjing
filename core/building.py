@@ -72,9 +72,18 @@ class BuildingManager(object):
         if not b.max_levels:
             raise GameException(ConfigErrorMessage.get_error_id("BUILDING_CAN_NOT_LEVEL_UP"))
 
-        current_level = self.get_level(building_id)
+        doc = MongoBuilding.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'buildings.{0}'.format(building_id): 1}
+        )
+
+        current_level = doc['buildings'][str(building_id)]['level']
         if current_level >= b.max_levels:
             raise GameException(ConfigErrorMessage.get_error_id("BUILDING_ALREADY_MAX_LEVEL"))
+
+        end_at = doc['buildings'][str(building_id)]['end_at']
+        if end_at:
+            raise GameException(ConfigErrorMessage.get_error_id("BUILDING_IN_UPGRADING"))
 
         if Club(self.server_id, self.char_id).level < b.get_level(current_level).up_need_club_level:
             raise GameException(ConfigErrorMessage.get_error_id("CLUB_LEVEL_NOT_ENOUGH"))
