@@ -114,7 +114,7 @@ class Match(object):
             skill_strength = (config_skill.value_base + staff.skills.get(skill_id, 0) * config_skill.level_grow) / 10
             skill_strength = skill_addition * skill_strength * staff.yishi / 1000 * 1
 
-            return int(base_attribute + skill_strength)
+            return base_attribute + skill_strength
 
         a = calculate(self.staff_one, unit_one)
         b = calculate(self.staff_two, unit_two)
@@ -132,10 +132,12 @@ class Match(object):
         config_policy = ConfigPolicy.get(self.policy_one)
         if config_policy.advantage_add_round == self.round_index:
             self.advantage_one += config_policy.advantage_add_value
+            self.advantage_two -= config_policy.advantage_add_value
 
         config_policy = ConfigPolicy.get(self.policy_two)
         if config_policy.advantage_add_round == self.round_index:
             self.advantage_two += config_policy.advantage_add_value
+            self.advantage_one -= config_policy.advantage_add_value
 
         msg.staff_one.advantage_end = int(self.advantage_one)
         msg.staff_two.advantage_end = int(self.advantage_two)

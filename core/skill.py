@@ -21,7 +21,7 @@ from utils.message import MessagePipe
 from protomsg.skill_pb2 import SkillNotify
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
-from config import ConfigStaff, ConfigSkill, ConfigErrorMessage, ConfigTrainingSkillItem
+from config import ConfigStaff, ConfigSkill, ConfigErrorMessage, ConfigTrainingSkillItem, ConfigSkillWashCost
 
 
 class SkillManager(object):
@@ -148,6 +148,8 @@ class SkillManager(object):
             if v['locked'] == 1:
                 new_skills[k] = v
 
+        locked_skill_amount = len(new_skills)
+
         race = ConfigStaff.get(staff_id).race
         race_skills = ConfigSkill.filter(race=race)
         race_skill_ids = race_skills.keys()
@@ -165,10 +167,14 @@ class SkillManager(object):
         if len(new_skills) < 4:
             raise RuntimeError("Not enough skills for race {0}".format(race))
 
-        MongoStaff.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': {"staffs.{0}.skills".format(staff_id): new_skills}}
-        )
+        cost = ConfigSkillWashCost.get_cost(locked_skill_amount)
+        cost['message'] = u"Skill Wash. locked amount {0}".format(locked_skill_amount)
+
+        with Resource(self.server_id, self.char_id).check(**cost):
+            MongoStaff.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {"staffs.{0}.skills".format(staff_id): new_skills}}
+            )
 
         self.send_notify()
 

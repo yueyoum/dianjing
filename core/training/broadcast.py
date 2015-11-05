@@ -143,6 +143,18 @@ class TrainingBroadcast(object):
             doc['_id'] = self.char_id
             MongoTrainingBroadcast.db(self.server_id).insert_one(doc)
 
+    def staff_is_training(self, staff_id):
+        doc = MongoTrainingBroadcast.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'slots': 1}
+        )
+
+        for slot in doc['slots'].values():
+            if slot.get('staff_id', 0) == staff_id:
+                return True
+
+        return False
+
     def open_slots_by_building_level_up(self):
         current_level = BuildingBusinessCenter(self.server_id, self.char_id).get_level()
         old_level = current_level - 1
@@ -184,12 +196,21 @@ class TrainingBroadcast(object):
         return slot
 
     def start(self, slot_id, staff_id):
+        from core.training import TrainingExp, TrainingShop
+
         if not StaffManger(self.server_id, self.char_id).has_staff(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
         slot = self.get_slot(slot_id)
         if slot.status != BroadcastSlotStatus.EMPTY:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_BROADCAST_NOT_EMPTY"))
+
+        # 不能同时进行
+        if TrainingExp(self.server_id, self.char_id).staff_is_training(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_DOING_EXP"))
+
+        if TrainingShop(self.server_id, self.char_id).staff_is_training(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_DOING_SHOP"))
 
         doc = MongoTrainingBroadcast.db(self.server_id).find_one(
             {'_id': self.char_id},

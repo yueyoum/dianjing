@@ -4,7 +4,7 @@ import random
 
 from dianjing.exception import GameException
 
-from core.mongo import MongoTask
+from core.mongo import MongoTask, MongoRecord
 from core.package import Drop
 from core.resource import Resource
 from core.building import BuildingTaskCenter
@@ -13,9 +13,9 @@ from core.signals import random_event_done_signal
 
 from config import ConfigErrorMessage, ConfigTask, ConfigBuilding, ConfigRandomEvent
 
-from utils.message import MessagePipe
+from utils.message import MessagePipe, MessageFactory
 
-from protomsg.task_pb2 import TaskNotify
+from protomsg.task_pb2 import TaskNotify, RandomEventNotify
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 TASK_STATUS_UNRECEIVED = 0
@@ -250,9 +250,35 @@ class TaskManager(object):
 
 
 class RandomEvent(object):
+    KEY = 'random_events'
+
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
+
+        if not MongoRecord.exist(self.server_id, self.char_id):
+            doc = MongoRecord.document()
+            doc['_id'] = self.char_id
+            MongoRecord.db(self.server_id).insert_one(doc)
+
+    @classmethod
+    def cronjob(cls, server_id):
+        MongoRecord.db(server_id).update_many(
+            {},
+            {'$unset': {
+                'records.{0}'.format(cls.KEY): 1
+            }}
+        )
+
+        # TODO filter chars
+        notify = RandomEventNotify()
+        notify.times = 0
+        data = MessageFactory.pack(notify)
+
+        from core.mongo import MongoCharacter
+        for char in MongoCharacter.db(server_id).find():
+            char_id = char['_id']
+            MessagePipe(char_id).put(data=data)
 
     def done(self, event_id):
         config = ConfigRandomEvent.get(event_id)
@@ -270,4 +296,22 @@ class RandomEvent(object):
         message = u"RandomEvent Done. {0}".format(event_id)
         Resource(self.server_id, self.char_id).save_drop(drop, message)
 
+        MongoRecord.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$inc': {
+                'records.{0}'.format(self.KEY): 1
+            }}
+        )
+
+        self.send_notify()
         return drop.make_protomsg()
+
+    def send_notify(self):
+        doc = MongoRecord.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'records.{0}'.format(self.KEY): 1}
+        )
+
+        notify = RandomEventNotify()
+        notify.times = doc['records'].get(self.KEY, 0)
+        MessagePipe(self.char_id).put(msg=notify)

@@ -190,6 +190,11 @@ class Property(PackageBase):
             if not value:
                 continue
 
+            # package 中员工经验是 staff_exp
+            # 但是 StaffManager 的 update 接受的 exp
+            # 所以这里把名字改一下
+            if attr == 'staff_exp':
+                attr = 'exp'
             data[attr] = value
 
         return data

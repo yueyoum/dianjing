@@ -19,7 +19,7 @@ from core.signals import recruit_staff_signal, staff_level_up_signal
 
 from config import (
     ConfigStaff, ConfigStaffHot, ConfigStaffRecruit,
-    ConfigStaffLevel, ConfigErrorMessage
+    ConfigStaffLevel, ConfigErrorMessage, ConfigClubLevel
 )
 
 from utils.message import MessagePipe
@@ -210,6 +210,10 @@ class StaffManger(object):
             doc['_id'] = self.char_id
             MongoStaff.db(server_id).insert_one(doc)
 
+    @property
+    def staffs_amount(self):
+        return len(self.get_all_staffs())
+
     def get_all_staff_ids(self):
         return [int(i) for i in self.get_all_staffs().keys()]
 
@@ -239,11 +243,17 @@ class StaffManger(object):
         return True
 
     def add(self, staff_id, send_notify=True):
+        from core.club import Club
+
         if not ConfigStaff.get(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
         if self.has_staff(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_ALREADY_HAVE"))
+
+        club_level = Club(self.server_id, self.char_id).level
+        if self.staffs_amount >= ConfigClubLevel.get(club_level).max_staff_amount:
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_AMOUNT_REACH_MAX_LIMIT"))
 
         doc = MongoStaff.document_staff()
         default_skills = ConfigStaff.get(staff_id).skill_ids

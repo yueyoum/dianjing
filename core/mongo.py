@@ -342,7 +342,6 @@ class MongoTask(BaseDocument):
     def document_task(cls):
         return cls.TASK_DOCUMENT.copy()
 
-
 # 天梯
 class MongoLadder(BaseDocument):
     DOCUMENT = {
@@ -552,3 +551,13 @@ class MongoActiveValue(BaseDocument):
     }
 
     COLLECTION = 'active_value'
+
+# 各种记录
+class MongoRecord(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # sign: value
+        'records': {}
+    }
+
+    COLLECTION = 'record'

@@ -223,6 +223,16 @@ class TrainingProperty(object):
             doc['_id'] = self.char_id
             MongoTrainingProperty.db(self.server_id).insert_one(doc)
 
+    def staff_is_training(self, staff_id):
+        pl = self.get_training_list(staff_id)
+        for i in range(1, PROPERTY_TRAINING_SLOTS_AMOUNT+1):
+            slot = pl.get_slot(i)
+
+            if slot.status == PropertySlotStatus.FINISH or slot.status == PropertySlotStatus.TRAINING:
+                return True
+
+        return False
+
     def get_training_list(self, staff_id):
         """
 
