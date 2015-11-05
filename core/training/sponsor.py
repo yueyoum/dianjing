@@ -41,8 +41,6 @@ class TrainingSponsor(object):
             MongoTrainingSponsor.db(self.server_id).insert_one(doc)
 
     def open(self, challenge_id):
-        # TODO maybe problem
-        # TODO day reward cron job
         doc = MongoTrainingSponsor.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'sponsors': 1}
@@ -56,7 +54,7 @@ class TrainingSponsor(object):
             if str(sponsor_id) in doc['sponsors']:
                 continue
 
-            updater[str(sponsor_id)] = 0
+            updater['sponsors.{0}'.format(challenge_id)] = 0
 
         if not updater:
             return
@@ -67,7 +65,6 @@ class TrainingSponsor(object):
         )
 
         self.send_notify(sponsor_ids=[int(k) for k in updater.keys()])
-
 
     def cronjob(self):
         # 每天发送奖励
@@ -108,8 +105,8 @@ class TrainingSponsor(object):
 
         self.send_notify()
 
-
-    def get_remained_days(self, sponsor_id, start_at_timestamp):
+    @staticmethod
+    def get_remained_days(sponsor_id, start_at_timestamp):
         config = ConfigSponsor.get(sponsor_id)
 
         now = arrow.utcnow().to(settings.TIME_ZONE)
@@ -121,7 +118,6 @@ class TrainingSponsor(object):
             remained_days = 0
 
         return remained_days
-
 
     def start(self, sponsor_id):
         if not ConfigSponsor.get(sponsor_id):
