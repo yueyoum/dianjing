@@ -281,6 +281,9 @@ class TrainingProperty(object):
         new_list = pl.get_document_list()
         self.update_training_list(staff_id, new_list, key)
 
+        for item_id, item_amount in config.need_items:
+            bag.remove(item_id, item_amount)
+
     @slot_id_check
     def cancel(self, staff_id, slot_id):
         # 只能取消排队的
