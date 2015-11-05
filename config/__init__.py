@@ -22,7 +22,7 @@ from config.training import ConfigTrainingSkillItem, ConfigTrainingProperty
 from config.business import ConfigSponsor, ConfigShop
 from config.item import ConfigItem
 from config.npc import ConfigNPC
-from config.skill import ConfigSkill
+from config.skill import ConfigSkill, ConfigSkillWashCost
 from config.task import ConfigTask, ConfigRandomEvent
 from config.club import ConfigClubLevel, ConfigClubFlag
 from config.ladder import ConfigLadderRankReward, ConfigLadderScoreStore
@@ -103,6 +103,8 @@ def load_config():
             ConfigNPC.initialize_manager_name(data)
         elif item == 'skill.json':
             ConfigSkill.initialize(data)
+        elif item == 'skill_wash_cost.json':
+            ConfigSkillWashCost.initialize(data)
         elif item == 'policy.json':
             ConfigPolicy.initialize(data)
         elif item == 'task.json':

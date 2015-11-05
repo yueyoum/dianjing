@@ -30,6 +30,14 @@ class Skill(object):
         return needs['upgrade_training_id'], needs['upgrade_training_amount']
 
 
+class SkillWashCost(object):
+    __slots__ = ['id', 'cost_type', 'cost_value']
+    def __init__(self):
+        self.id = 0
+        self.cost_type = 0
+        self.cost_value = 0
+
+
 class ConfigSkill(ConfigBase):
     EntityClass = Skill
     INSTANCES = {}
@@ -54,3 +62,18 @@ class ConfigSkill(ConfigBase):
         return super(ConfigSkill, cls).get(id)
 
 
+class ConfigSkillWashCost(ConfigBase):
+    EntityClass = SkillWashCost
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get_cost(cls, locked_skill_amount):
+        """
+
+        :rtype : dict
+        """
+        obj = cls.INSTANCES[locked_skill_amount]
+        if obj.cost_type == 1:
+            return {'gold': -obj.cost_value}
+        return {'diamond': -obj.cost_value}
