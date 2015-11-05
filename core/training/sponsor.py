@@ -46,25 +46,23 @@ class TrainingSponsor(object):
             {'sponsors': 1}
         )
 
-        updater = {}
         for sponsor_id in ConfigSponsor.INSTANCES.keys():
-            if ConfigSponsor.get(sponsor_id).condition != challenge_id:
-                continue
-
             if str(sponsor_id) in doc['sponsors']:
                 continue
 
-            updater['sponsors.{0}'.format(challenge_id)] = 0
-
-        if not updater:
+            if ConfigSponsor.get(sponsor_id).condition == challenge_id:
+                break
+        else:
             return
 
         MongoTrainingSponsor.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': updater}
+            {'$set': {
+                'sponsors.{0}'.format(sponsor_id): 0
+            }}
         )
 
-        self.send_notify(sponsor_ids=[int(k) for k in updater.keys()])
+        self.send_notify(sponsor_ids=[sponsor_id])
 
     def cronjob(self):
         # 每天发送奖励
