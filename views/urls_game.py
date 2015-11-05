@@ -97,4 +97,6 @@ urlpatterns = [
     url(r'^activity/loginreward/$', 'views.activity.get_login_reward'),
 
     url(r'^activevalue/getreward/$', 'views.active_value.get_reward'),
+
+    url(r'^itemshop/buy/$', 'views.shop.item_shop_buy'),
 ]

@@ -160,6 +160,8 @@ MESSAGE_TO_ID = {
     "TrainingSkillItemRemoveNotify": 2201,
     "ItemNotify": 2202,
     "ItemRemoveNotify": 2203,
+    "ItemShopBuyRequest": 2300,
+    "ItemShopBuyResponse": 2301,
 }
 
 ID_TO_MESSAGE = {
@@ -323,6 +325,8 @@ ID_TO_MESSAGE = {
     2201: "TrainingSkillItemRemoveNotify",
     2202: "ItemNotify",
     2203: "ItemRemoveNotify",
+    2300: "ItemShopBuyRequest",
+    2301: "ItemShopBuyResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -388,6 +392,7 @@ PATH_TO_REQUEST = {
     "/game/signin/": ["activity", "ActivitySignInRequest"],
     "/game/activity/loginreward/": ["activity", "ActivityLoginRewardRequest"],
     "/game/activevalue/getreward/": ["active_value", "ActiveValueGetRewardRequest"],
+    "/game/itemshop/buy/": ["shop", "ItemShopBuyRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -453,4 +458,5 @@ PATH_TO_RESPONSE = {
     "/game/signin/": ["activity", "ActivitySignInResponse"],
     "/game/activity/loginreward/": ["activity", "ActivityLoginRewardResponse"],
     "/game/activevalue/getreward/": ["active_value", "ActiveValueGetRewardResponse"],
+    "/game/itemshop/buy/": ["shop", "ItemShopBuyResponse"],
 }
