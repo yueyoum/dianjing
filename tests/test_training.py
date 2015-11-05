@@ -9,25 +9,25 @@ Description:
 import random
 import arrow
 
+
 from dianjing.exception import GameException
 
 from core.mongo import MongoTrainingExp, MongoStaff, MongoBuilding, MongoCharacter
 from core.training import TrainingExp
 
 from core.building import BuildingTrainingCenter
-from core.staff import staff_training_exp_need_gold, staff_level_up_need_exp
+from core.staff import staff_training_exp_need_gold, staff_level_up_need_exp, StaffManger
 
 from config import ConfigErrorMessage, ConfigStaff, ConfigBuilding
-
+from core.package import Property
 
 def set_slot_test_data(staff_id, slot_id):
     MongoTrainingExp.db(1).update_one(
         {'_id': 1},
         {'$set': {'slots.{0}'.format(slot_id): {'staff_id': staff_id,
                                                 'start_at': arrow.utcnow().timestamp,
-                                                'time_point': 0,
-                                                'exp': 0,
-                                                'speedup': False}}},
+                                                'exp': -1,
+                                                'key': ''}}},
     )
 
 
@@ -44,22 +44,12 @@ def set_enough_gold_and_diamond(staff_id):
 
 
 class TestTrainingExp(object):
-    def reset(self):
-        self.staff_id = random.choice(ConfigStaff.INSTANCES.keys())
-        MongoStaff.db(1).update_one(
-            {'_id': 1},
-            {'$set': {'staffs.{0}'.format(self.staff_id): {'exp': 0, 'level': 1, 'status': 3,
-                                                           'skills': {}, 'trainings': [],
-                                                           'winning_rate': {}}}}
-        )
+    def setup(self):
+        self.staff_id = random.choice(StaffManger(1, 1).get_all_staff_ids())
+        TrainingExp(1, 1)
         set_enough_gold_and_diamond(self.staff_id)
 
-    def setup(self):
-        self.reset()
-        TrainingExp(1, 1)
-
     def teardown(self):
-        self.reset()
         MongoTrainingExp.db(1).drop()
 
     def test_start_staff_not_exist(self):
@@ -163,7 +153,7 @@ class TestTrainingExp(object):
         TrainingExp(1, 1).speedup(1)
 
         data = MongoTrainingExp.db(1).find_one({'_id': 1}, {'slots.{0}'.format(1): 1})
-        assert data['slots'][str(1)]['speedup'] == True
+        assert data['slots'][str(1)]['exp'] >= -1
         gold = MongoCharacter.db(1).find_one({'_id': 1}, {'club.gold': 1})
         assert gold['club']['gold'] == 0
 
@@ -179,8 +169,11 @@ class TestTrainingExp(object):
     def test_get_reward(self):
         TrainingExp(1, 1).start(1, self.staff_id)
         TrainingExp(1, 1).speedup(1)
-        TrainingExp(1, 1).get_reward(1)
+        p = TrainingExp(1, 1).get_reward(1)
+        print p
+
         data = MongoStaff.db(1).find_one({'_id': 1}, {'staffs.{0}'.format(self.staff_id): 1})
+        print data['staffs'][str(self.staff_id)]
         assert data['staffs'][str(self.staff_id)]['exp'] > 0
 
     def test_clean(self):
@@ -191,3 +184,33 @@ class TestTrainingExp(object):
 
     def test_send_notify(self):
         TrainingExp(1, 1).send_notify([1])
+
+    def test_callback(self):
+        # this test need to modify EXP_TRAINING_TOTAL_SECONDS = 0
+        TrainingExp(1, 1).start(1, self.staff_id)
+        TrainingExp(1, 1).callback(1)
+        data = MongoTrainingExp.db(1).find_one({"_id": 1}, {"slots": 1})
+        assert data['slots']['1']['exp'] > -1
+
+    def test_get_slot_not_exist(self):
+        max_building_level = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).max_levels
+        max_slots_amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(max_building_level).value2
+        try:
+            TrainingExp(1, 1).get_slot(max_slots_amount + 1)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_EXIST")
+        else:
+            raise Exception('error')
+
+    def test_get_slot_not_open(self):
+        max_building_level = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).max_levels
+        max_slots_amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(max_building_level).value2
+        try:
+            TrainingExp(1, 1).get_slot(max_slots_amount - 1)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id("TRAINING_EXP_SLOT_NOT_OPEN")
+        else:
+            raise Exception('error')
+
+    def test_get_slot(self):
+        assert TrainingExp(1, 1).get_slot(1)
