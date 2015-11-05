@@ -45,6 +45,18 @@ class TrainingShop(object):
 
             MongoTrainingShop.db(self.server_id).insert_one(doc)
 
+    def staff_is_training(self, staff_id):
+        doc = MongoTrainingShop.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'shops': 1}
+        )
+
+        for v in doc['shops'].values():
+            if v == staff_id:
+                return True
+
+        return False
+
     def trig_open_by_club_level(self, club_level):
         doc = MongoTrainingShop.db(self.server_id).find_one(
             {'_id': self.char_id},
@@ -120,11 +132,20 @@ class TrainingShop(object):
         self.send_notify(shop_ids=shop_ids)
 
     def start(self, shop_id, staff_id):
+        from core.training import TrainingExp, TrainingBroadcast
+
         if not StaffManger(self.server_id, self.char_id).has_staff(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
         if not ConfigShop.get(shop_id):
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_SHOP_NOT_EXIST"))
+
+        # 不能同时进行
+        if TrainingExp(self.server_id, self.char_id).staff_is_training(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_DOING_EXP"))
+
+        if TrainingBroadcast(self.server_id, self.char_id).staff_is_training(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_DOING_BROADCAST"))
 
         doc = MongoTrainingShop.db(self.server_id).find_one(
             {'_id': self.char_id},
