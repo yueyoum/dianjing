@@ -342,6 +342,15 @@ class MongoTask(BaseDocument):
     def document_task(cls):
         return cls.TASK_DOCUMENT.copy()
 
+# 随机事件
+class MongoRandomEvent(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # id: times
+        'events': {}
+    }
+
+    COLLECTION = "random_event"
 
 # 天梯
 class MongoLadder(BaseDocument):
