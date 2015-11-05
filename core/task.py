@@ -256,6 +256,11 @@ class RandomEvent(object):
         self.server_id = server_id
         self.char_id = char_id
 
+        if not MongoRecord.exist(self.server_id, self.char_id):
+            doc = MongoRecord.document()
+            doc['_id'] = self.char_id
+            MongoRecord.db(self.server_id).insert_one(doc)
+
     @classmethod
     def cronjob(cls, server_id):
         MongoRecord.db(server_id).update_many(
@@ -308,5 +313,5 @@ class RandomEvent(object):
         )
 
         notify = RandomEventNotify()
-        notify.times = doc.get('records', {}).get(self.KEY, 0)
+        notify.times = doc['records'].get(self.KEY, 0)
         MessagePipe(self.char_id).put(msg=notify)
