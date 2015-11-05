@@ -143,7 +143,7 @@ class TrainingExp(object):
         )
 
         for slot in doc['slots'].values():
-            if slot['staff_id'] == staff_id:
+            if slot.get('staff_id', 0) == staff_id:
                 return True
 
         return False
