@@ -120,13 +120,14 @@ class Match(object):
         b = calculate(self.staff_two, unit_two)
 
         y = ((a-b)/(a+b)) * 100
+        advantage_change = abs(y) / 2
 
         if y < 0:
-            self.advantage_one -= abs(y)
-            self.advantage_two += abs(y)
+            self.advantage_one -= advantage_change
+            self.advantage_two += advantage_change
         else:
-            self.advantage_one += abs(y)
-            self.advantage_two -= abs(y)
+            self.advantage_one += advantage_change
+            self.advantage_two -= advantage_change
 
         # policy addition
         config_policy = ConfigPolicy.get(self.policy_one)
@@ -141,6 +142,14 @@ class Match(object):
 
         msg.staff_one.advantage_end = int(self.advantage_one)
         msg.staff_two.advantage_end = int(self.advantage_two)
+
+        # round to 100
+        diff = 100 - (msg.staff_one.advantage_end + msg.staff_two.advantage_end)
+        if diff:
+            if msg.staff_one.advantage_end >= msg.staff_two.advantage_end:
+                msg.staff_one.advantage_end += diff
+            else:
+                msg.staff_two.advantage_end += diff
 
         return msg
 
