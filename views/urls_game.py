@@ -10,7 +10,8 @@ Description:
 from django.conf.urls import url
 
 urlpatterns = [
-    url(r'^sync/$', 'views.sync.sync'),
+    url(r'^sync/$', 'views.common.sync'),
+    url(r'^ping/$', 'views.common.ping'),
 
     url(r'^account/register/$', 'views.account.register'),
     url(r'^account/login/$', 'views.account.login'),

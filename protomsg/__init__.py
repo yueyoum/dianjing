@@ -3,6 +3,8 @@ MESSAGE_TO_ID = {
     "UTCNotify": 10,
     "SyncRequest": 11,
     "SyncResponse": 12,
+    "PingRequest": 13,
+    "PingResponse": 14,
     "GetServerListRequest": 100,
     "GetServerListResponse": 101,
     "StartGameRequest": 102,
@@ -169,6 +171,8 @@ ID_TO_MESSAGE = {
     10: "UTCNotify",
     11: "SyncRequest",
     12: "SyncResponse",
+    13: "PingRequest",
+    14: "PingResponse",
     100: "GetServerListRequest",
     101: "GetServerListResponse",
     102: "StartGameRequest",
@@ -333,6 +337,7 @@ ID_TO_MESSAGE = {
 
 PATH_TO_REQUEST = {
     "/game/sync/": ["common", "SyncRequest"],
+    "/game/ping/": ["common", "PingRequest"],
     "/game/servers/": ["server", "GetServerListRequest"],
     "/game/start/": ["server", "StartGameRequest"],
     "/game/account/register/": ["account", "RegisterRequest"],
@@ -399,6 +404,7 @@ PATH_TO_REQUEST = {
 
 PATH_TO_RESPONSE = {
     "/game/sync/": ["common", "SyncResponse"],
+    "/game/sync/": ["common", "PingResponse"],
     "/game/servers/": ["server", "GetServerListResponse"],
     "/game/start/": ["server", "StartGameResponse"],
     "/game/account/register/": ["account", "RegisterResponse"],
