@@ -13,6 +13,7 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoTrainingBroadcast
 from core.staff import StaffManger
+from core.skill import SkillManager
 from core.building import BuildingBusinessCenter
 from core.package import Drop
 from core.resource import Resource
@@ -20,7 +21,7 @@ from core.resource import Resource
 from utils.api import Timerd
 from utils.message import MessagePipe
 
-from config import ConfigErrorMessage, ConfigBuilding
+from config import ConfigErrorMessage, ConfigBuilding, ConfigSkill
 
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 from protomsg.training_pb2 import (
@@ -39,10 +40,23 @@ BROADCAST_TOTAL_SECONDS = 8 * 3600
 TIMERD_CALLBACK_PATH = '/api/timerd/training/broadcast/'
 
 
-def current_got_gold(passed_seconds, current_building_level):
+def current_got_gold(server_id, char_id, staff_id, passed_seconds, current_building_level):
+    staff = StaffManger(server_id, char_id).get_staff(staff_id)
+    config_skill = ConfigSkill.get(ConfigSkill.BROADCAST_SKILL_ID)
+
+    skill_level = SkillManager(server_id, char_id).get_staff_broadcast_skill_level(staff_id)
+
     config_building_level = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).get_level(current_building_level)
-    gold = passed_seconds / 60 * config_building_level.value1
-    # TODO 技能加成，知名度加成
+    gold_per_minute = formula.staff_training_broadcast_reward_gold_per_minute(
+        staff.level,
+        0,
+        config_skill.value_base,
+        config_skill.level_grow,
+        skill_level,
+        config_building_level.value1
+    )
+
+    gold = passed_seconds / 60 * gold_per_minute
     return gold
 
 
@@ -76,7 +90,8 @@ class BroadcastSlotStatus(object):
             return self.gold
 
         passed_seconds = arrow.utcnow().timestamp - self.start_at
-        return current_got_gold(passed_seconds, self.current_building_level)
+        return current_got_gold(self.server_id, self.char_id, self.staff_id, passed_seconds,
+                                self.current_building_level)
 
     def _check_slot_id(self):
         max_building_level = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).max_levels
@@ -281,7 +296,8 @@ class TrainingBroadcast(object):
             Timerd.cancel(slot.key)
 
             current_building_level = BuildingBusinessCenter(self.server_id, self.char_id).get_level()
-            gold = current_got_gold(BROADCAST_TOTAL_SECONDS, current_building_level)
+            gold = current_got_gold(self.server_id, self.char_id, slot.staff_id, BROADCAST_TOTAL_SECONDS,
+                                    current_building_level)
 
             MongoTrainingBroadcast.db(self.server_id).update_one(
                 {'_id': self.char_id},
@@ -303,7 +319,8 @@ class TrainingBroadcast(object):
             return end_at
 
         current_building_level = BuildingBusinessCenter(self.server_id, self.char_id).get_level()
-        gold = current_got_gold(BROADCAST_TOTAL_SECONDS, current_building_level)
+        gold = current_got_gold(self.server_id, self.char_id, slot.staff_id, BROADCAST_TOTAL_SECONDS,
+                                current_building_level)
 
         MongoTrainingBroadcast.db(self.server_id).update_one(
             {'_id': self.char_id},

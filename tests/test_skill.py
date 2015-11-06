@@ -31,12 +31,12 @@ class TestSkillManager(object):
 
 
     def test_add_level(self):
-        skills = SkillManager(1, 1).get_skill(self.staff_id)
+        skills = SkillManager(1, 1).get_staff_skills(self.staff_id)
         sid = random.choice(skills.keys())
 
         SkillManager(1, 1).add_level(self.staff_id, int(sid), 1)
 
-        skills = SkillManager(1, 1).get_skill(self.staff_id)
+        skills = SkillManager(1, 1).get_staff_skills(self.staff_id)
         assert skills[sid]['level'] == 2
 
 
@@ -50,7 +50,7 @@ class TestSkillManager(object):
 
 
     def test_add_level_skill_not_own(self):
-        skills = SkillManager(1, 1).get_skill(self.staff_id)
+        skills = SkillManager(1, 1).get_staff_skills(self.staff_id)
         skill_ids = [int(i) for i in skills.keys()]
 
         def get_skill_id():
@@ -70,7 +70,7 @@ class TestSkillManager(object):
 
 
     def test_add_level_already_reach_max(self):
-        skills = SkillManager(1, 1).get_skill(self.staff_id)
+        skills = SkillManager(1, 1).get_staff_skills(self.staff_id)
 
         sid = random.choice(skills.keys())
         sid = int(sid)
@@ -92,11 +92,11 @@ class TestSkillManager(object):
         else:
             raise Exception("can not be here!")
 
-        assert SkillManager(1, 1).get_skill(self.staff_id)[str(sid)]['level'] == max_level
+        assert SkillManager(1, 1).get_staff_skills(self.staff_id)[str(sid)]['level'] == max_level
 
 
     def test_add_level_beyond_max(self):
-        skills = SkillManager(1, 1).get_skill(self.staff_id)
+        skills = SkillManager(1, 1).get_staff_skills(self.staff_id)
         sid = random.choice(skills.keys())
         sid = int(sid)
 
@@ -117,19 +117,19 @@ class TestSkillManager(object):
         else:
             raise Exception("can not be here!")
 
-        assert SkillManager(1, 1).get_skill(self.staff_id)[str(sid)]['level'] == max_level-1
+        assert SkillManager(1, 1).get_staff_skills(self.staff_id)[str(sid)]['level'] == max_level-1
 
 
     def test_add_toggle(self):
-        skills = SkillManager(1, 1).get_skill(self.staff_id)
+        skills = SkillManager(1, 1).get_staff_skills(self.staff_id)
         sid = random.choice(skills.keys())
 
         SkillManager(1, 1).lock_toggle(self.staff_id, int(sid))
-        skills = SkillManager(1, 1).get_skill(self.staff_id)
+        skills = SkillManager(1, 1).get_staff_skills(self.staff_id)
         assert skills[sid]['locked'] == 1
 
         SkillManager(1, 1).lock_toggle(self.staff_id, int(sid))
-        skills = SkillManager(1, 1).get_skill(self.staff_id)
+        skills = SkillManager(1, 1).get_staff_skills(self.staff_id)
         assert skills[sid]['locked'] == 0
 
 
@@ -138,12 +138,12 @@ class TestSkillManager(object):
 
 
     def test_wash_with_lock(self):
-        skills = SkillManager(1 ,1).get_skill(self.staff_id)
+        skills = SkillManager(1 ,1).get_staff_skills(self.staff_id)
         sid = random.choice(skills.keys())
 
         SkillManager(1, 1).lock_toggle(self.staff_id, int(sid))
 
         SkillManager(1, 1).wash(self.staff_id)
 
-        skills = SkillManager(1, 1).get_skill(self.staff_id)
+        skills = SkillManager(1, 1).get_staff_skills(self.staff_id)
         assert sid in skills

@@ -32,6 +32,7 @@ from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 def staff_level_up_need_exp(staff_id, current_level):
     return ConfigStaffLevel.get(current_level).exp[ConfigStaff.get(staff_id).quality]
 
+
 def staff_training_exp_need_gold(staff_id, staff_level):
     return staff_level * 1000
 
@@ -222,8 +223,15 @@ class StaffManger(object):
         return doc['staffs']
 
     def get_staff(self, staff_id):
+        """
+
+        :rtype : Staff
+        """
         doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs.{0}'.format(staff_id): 1})
-        return doc['staffs'].get(str(staff_id), None)
+        data = doc['staffs'].get(str(staff_id), None)
+        if not data:
+            return data
+        return Staff(staff_id, data)
 
     def has_staff(self, staff_ids):
         if not isinstance(staff_ids, (list, tuple)):
@@ -288,7 +296,6 @@ class StaffManger(object):
         notify.id.append(staff_id)
         MessagePipe(self.char_id).put(msg=notify)
 
-
     def update(self, staff_id, **kwargs):
         exp = kwargs.get('exp', 0)
         jingong = kwargs.get('jingong', 0)
@@ -306,8 +313,8 @@ class StaffManger(object):
 
         # update
         level_updated = False
-        current_level = this_staff['level']
-        current_exp = this_staff['exp'] + exp
+        current_level = this_staff.level
+        current_exp = this_staff.exp + exp
         while True:
             need_exp = staff_level_up_need_exp(staff_id, current_level)
 

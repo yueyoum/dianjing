@@ -29,7 +29,7 @@ class SkillManager(object):
         self.server_id = server_id
         self.char_id = char_id
 
-    def get_skill(self, staff_id):
+    def get_staff_skills(self, staff_id):
         key = "staffs.{0}.skills".format(staff_id)
         doc = MongoStaff.db(self.server_id).find_one(
             {'_id': self.char_id},
@@ -40,6 +40,33 @@ class SkillManager(object):
             return None
 
         return doc['staffs'][str(staff_id)]['skills']
+
+    def get_staff_skill_level(self, staff_id, skill_id):
+        key = 'staffs.{0}.skills.{1}'.format(staff_id, skill_id)
+        doc = MongoStaff.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {key: 1}
+        )
+
+        staff = doc['staffs'].get(str(staff_id), {})
+        if not staff:
+            return 0
+
+        skill = staff['skills'].get(str(skill_id), {})
+        if not skill:
+            return 0
+
+        return skill['level']
+
+
+    def get_staff_shop_skill_level(self, staff_id):
+        return self.get_staff_skill_level(staff_id, ConfigSkill.SHOP_SKILL_ID)
+
+    def get_staff_broadcast_skill_level(self, staff_id):
+        return self.get_staff_skill_level(staff_id, ConfigSkill.BROADCAST_SKILL_ID)
+
+    def get_staff_sponsor_skill_level(self, staff_id):
+        return self.get_staff_skill_level(staff_id, ConfigSkill.SPONSOR_SKILL_ID)
 
     def check(self, staff_id, skill_id=None):
         from core.staff import StaffManger
