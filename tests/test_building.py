@@ -160,7 +160,6 @@ class TestBuilding(object):
         BuildingManager(1, 1).level_up(b.id)
 
         t = get_up_need_time(b.id, 1)
-        print t
         import time
         time.sleep(t * 60)
         BuildingManager(1, 1).levelup_callback(b.id)
