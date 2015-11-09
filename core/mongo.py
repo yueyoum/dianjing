@@ -441,7 +441,7 @@ class MongoLeagueEvent(BaseDocument):
         # 战斗日志，用来回放
         'log': "",
         # 比分
-        'points': null
+        'points': [0, 0]
     }
 
     COLLECTION = "league_event"
