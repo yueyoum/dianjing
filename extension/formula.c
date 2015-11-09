@@ -7,7 +7,7 @@
 float skill_strength(int base_value, int grow, int level)
 {
     if(level<=0) return 0;
-    return (base_value + grow * level)/100.0f;
+    return (base_value + grow * (level-1))/100.0f;
 }
 
 // 员工经验训练需要花费多少金币
@@ -94,8 +94,8 @@ int staff_training_shop_reward(
 // seconds_to_finish: 还需要多少秒才能完成
 int training_speedup_need_diamond(int seconds_to_finish)
 {
-    int minutes = seconds_to_finish / 60;
-    int seconds = seconds_to_finish % 60;
+    int minutes = seconds_to_finish / 600;
+    int seconds = seconds_to_finish % 600;
     if(seconds>0) ++minutes;
 
     return minutes * 10;
