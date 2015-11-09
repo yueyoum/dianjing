@@ -440,6 +440,8 @@ class MongoLeagueEvent(BaseDocument):
         'club_one_win': False,
         # 战斗日志，用来回放
         'log': "",
+        # 比分
+        'points': null
     }
 
     COLLECTION = "league_event"

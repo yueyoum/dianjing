@@ -253,12 +253,14 @@ class LeagueMatch(object):
         self.club_two_object = LeagueClub(self.server_id, self.group_id, self.club_two)
 
         self.club_one_win = False
+        self.points = (0, 0)
 
     def start(self):
 
         match = ClubMatch(self.club_one_object, self.club_two_object)
         msg = match.start()
         self.club_one_win = msg.club_one_win
+        self.points = match.points
 
         self.after_match()
 
@@ -493,6 +495,7 @@ class LeagueGame(object):
 
                 pairs[k]['club_one_win'] = msg.club_one_win
                 pairs[k]['log'] = base64.b64encode(msg.SerializeToString())
+                pairs[k]['points'] = match.points
 
             group_clubs_updater = {}
             for k, v in clubs.iteritems():
@@ -504,6 +507,7 @@ class LeagueGame(object):
             for k, v in pairs.iteritems():
                 event_pairs_updater["pairs.{0}.club_one_win".format(k)] = v['club_one_win']
                 event_pairs_updater["pairs.{0}.log".format(k)] = v['log']
+                event_pairs_updater["pairs.{0}.points".format(k)] = v['points']
 
             # 更新小组中 clubs 的信息
             MongoLeagueGroup.db(server_id).update_one(
@@ -735,5 +739,6 @@ class League(object):
                 notify_event_pair.club_one_id = clubs_id_table[v['club_one']]
                 notify_event_pair.club_two_id = clubs_id_table[v['club_two']]
                 notify_event_pair.club_one_win = v['club_one_win']
+                notify_event_pair.points.extend(v['points'])
 
         MessagePipe(self.char_id).put(msg=notify)

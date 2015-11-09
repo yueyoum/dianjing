@@ -207,14 +207,24 @@ class ClubMatch(object):
 
         self.club_one_fight_info = {}
         self.club_two_fight_info = {}
+        self.club_one_winning_times = 0
+        self.club_two_winning_times = 0
+
+    @property
+    def points(self):
+        # 比分
+        """
+
+        :rtype : tuple
+        """
+        return self.club_one_winning_times, self.club_two_winning_times
 
     def start(self):
         msg = MessageClubMatch()
         msg.club_one.MergeFrom(self.club_one.make_protomsg())
         msg.club_two.MergeFrom(self.club_two.make_protomsg())
 
-        club_one_winning_times = 0
-        club_two_winning_times = 0
+
 
         for i in range(5):
             staff_one = self.club_one.staffs[self.club_one.match_staffs[i]]
@@ -227,14 +237,14 @@ class ClubMatch(object):
             msg_match.MergeFrom(match_msg)
 
             if match_msg.staff_one_win:
-                club_one_winning_times += 1
+                self.club_one_winning_times += 1
             else:
-                club_two_winning_times += 1
+                self.club_two_winning_times += 1
 
             self.club_one_fight_info[staff_one.id] = FightInfo(staff_two.id, match_msg.staff_one_win)
             self.club_two_fight_info[staff_two.id] = FightInfo(staff_one.id, not match_msg.staff_one_win)
 
-        if club_one_winning_times >= 3:
+        if self.club_one_winning_times >= 3:
             msg.club_one_win = True
         else:
             msg.club_one_win = False
@@ -257,6 +267,6 @@ class ClubMatch(object):
 
 
 class FightInfo(object):
-    def __init__(self, rival, win=False):
+    def __init__(self, rival, win):
         self.rival = rival
         self.win = win
