@@ -10,4 +10,5 @@ Description:
 STAFF_ATTRS = [
     'jingong', 'qianzhi', 'xintai', 'baobing',
     'fangshou', 'yunying', 'yishi', 'caozuo',
+    'zhimingdu',
 ]

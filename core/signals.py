@@ -17,6 +17,8 @@ char_created_signal = Signal(providing_args=['char_id', 'char_name'])
 game_start_signal = Signal(providing_args=['server_id', 'char_id'])
 # 参赛员工设置完成
 match_staffs_set_done_signal = Signal(providing_args=['server_id', 'char_id', 'match_staffs'])
+# 员工进行了任意一场比赛
+staff_any_match_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id', 'win'])
 # 进行了一场挑战赛
 challenge_match_signal = Signal(providing_args=['server_id', 'char_id', 'challenge_id', 'win'])
 # 好友切磋比赛

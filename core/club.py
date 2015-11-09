@@ -63,7 +63,7 @@ class Club(AbstractClub):
         self.tibu_staffs = club.get('tibu_staffs', [])  # 替补员工
 
         for k, v in staffs.iteritems():
-            self.staffs[int(k)] = Staff(int(k), v)
+            self.staffs[int(k)] = Staff(self.server_id, self.char_id, int(k), v)
 
         qc = QianBanContainer(self.all_match_staffs())
         for i in itertools.chain(self.match_staffs, self.tibu_staffs):

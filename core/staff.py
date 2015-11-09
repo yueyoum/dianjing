@@ -40,8 +40,11 @@ def staff_training_exp_need_gold(staff_id, staff_level):
 class Staff(AbstractStaff):
     __slots__ = ['id', 'level', 'exp', 'status', 'skills'] + STAFF_ATTRS
 
-    def __init__(self, _id, data):
+    def __init__(self, server_id, char_id,  _id, data):
         super(Staff, self).__init__()
+
+        self.server_id = server_id
+        self.char_id = char_id
 
         self.id = _id  # 员工id
         self.level = data.get('level', 1)  # 员工等级
@@ -61,6 +64,7 @@ class Staff(AbstractStaff):
         self.yunying = config_staff.yunying + config_staff.yunying_grow * (self.level - 1) + data.get('yunying', 0)
         self.yishi = config_staff.yishi + config_staff.yunying_grow * (self.level - 1) + data.get('yishi', 0)
         self.caozuo = config_staff.caozuo + config_staff.caozuo_grow * (self.level - 1) + data.get('caozuo', 0)
+        self.zhimingdu = data.get('zhimingdu', 0)
 
         skills = data.get('skills', {})
         self.skills = {int(k): v['level'] for k, v in skills.iteritems()}
@@ -231,7 +235,7 @@ class StaffManger(object):
         data = doc['staffs'].get(str(staff_id), None)
         if not data:
             return data
-        return Staff(staff_id, data)
+        return Staff(self.server_id, self.char_id, staff_id, data)
 
     def has_staff(self, staff_ids):
         if not isinstance(staff_ids, (list, tuple)):
@@ -306,6 +310,7 @@ class StaffManger(object):
         yunying = kwargs.get('yunying', 0)
         yishi = kwargs.get('yishi', 0)
         caozuo = kwargs.get('caozuo', 0)
+        zhimingdu = kwargs.get('zhimingdu', 0)
 
         this_staff = self.get_staff(staff_id)
         if not this_staff:
@@ -349,6 +354,7 @@ class StaffManger(object):
                     'staffs.{0}.yunying'.format(staff_id): yunying,
                     'staffs.{0}.yishi'.format(staff_id): yishi,
                     'staffs.{0}.caozuo'.format(staff_id): caozuo,
+                    'staffs.{0}.zhimingdu'.format(staff_id): zhimingdu,
                 },
             }
         )
@@ -364,9 +370,8 @@ class StaffManger(object):
 
         self.send_notify(staff_ids=[staff_id])
 
-    @staticmethod
-    def msg_staff(msg, sid, staff_data):
-        staff = Staff(sid, staff_data)
+    def msg_staff(self, msg, sid, staff_data):
+        staff = Staff(self.server_id, self.char_id, sid, staff_data)
 
         msg.id = staff.id
         msg.level = staff.level
@@ -382,8 +387,7 @@ class StaffManger(object):
         msg.yunying = int(staff.yunying)
         msg.yishi = int(staff.yishi)
         msg.caozuo = int(staff.caozuo)
-        # TODO
-        msg.zhimingdu = 100
+        msg.zhimingdu = int(staff.zhimingdu)
 
         msg.training_exp_need_gold = staff_level_up_need_exp(staff.id, staff.level)
 
