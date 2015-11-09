@@ -171,7 +171,6 @@ class TrainingExp(object):
 
         MessagePipe(self.char_id).put(msg=notify)
 
-
     def get_slot(self, slot_id):
         """
 
@@ -208,7 +207,6 @@ class TrainingExp(object):
         if TrainingShop(self.server_id, self.char_id).staff_is_training(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_DOING_SHOP"))
 
-
         doc = MongoTrainingExp.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'slots': 1}
@@ -218,7 +216,7 @@ class TrainingExp(object):
             if v.get('staff_id', 0) == staff_id:
                 raise GameException(ConfigErrorMessage.get_error_id("TRAINING_EXP_STAFF_IN_TRAINING"))
 
-        need_gold = formula.staff_training_exp_need_gold(staff['level'])
+        need_gold = formula.staff_training_exp_need_gold(staff.level)
         message = u"Training Exp For Staff {0}".format(staff_id)
 
         with Resource(self.server_id, self.char_id).check(gold=-need_gold, message=message):

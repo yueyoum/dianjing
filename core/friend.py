@@ -94,7 +94,7 @@ class FriendManager(object):
         return status in expect_status
 
     def add(self, name):
-        doc = MongoCharacter.db(self.server_id).find_one({'name': name}, {'_id': 1})
+        doc = MongoCharacter.db(self.server_id).find_one({'club.name': name}, {'_id': 1})
         if not doc:
             raise GameException(ConfigErrorMessage.get_error_id("CHAR_NOT_EXIST"))
 

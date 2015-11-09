@@ -9,12 +9,17 @@ Description:
 
 from utils.http import ProtobufResponse
 
-from protomsg.common_pb2 import SyncResponse
+from protomsg.common_pb2 import SyncResponse, PingResponse
 
 def sync(request):
     # server_id = request._game_session.server_id
     # char_id = request._game_session.char_id
 
     response = SyncResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+def ping(request):
+    response = PingResponse()
     response.ret = 0
     return ProtobufResponse(response)

@@ -246,13 +246,13 @@ class TestStaffManager(object):
 
         StaffManger(1, 1).add(s.id)
 
-        assert StaffManger(1, 1).get_staff(s.id)['level'] == 1
-        assert StaffManger(1, 1).get_staff(s.id)['exp'] == 0
+        assert StaffManger(1, 1).get_staff(s.id).level == 1
+        assert StaffManger(1, 1).get_staff(s.id).exp == 0
 
         StaffManger(1, 1).update(s.id, exp=exp)
 
-        assert StaffManger(1, 1).get_staff(s.id)['level'] == level
-        assert StaffManger(1, 1).get_staff(s.id)['exp'] == 1
+        assert StaffManger(1, 1).get_staff(s.id).level == level
+        assert StaffManger(1, 1).get_staff(s.id).exp == 1
 
 
     def test_level_up_to_max_level(self):
@@ -274,10 +274,10 @@ class TestStaffManager(object):
 
         StaffManger(1, 1).add(s.id)
 
-        assert StaffManger(1, 1).get_staff(s.id)['level'] == 1
-        assert StaffManger(1, 1).get_staff(s.id)['exp'] == 0
+        assert StaffManger(1, 1).get_staff(s.id).level == 1
+        assert StaffManger(1, 1).get_staff(s.id).exp == 0
 
         StaffManger(1, 1).update(s.id, exp=exp)
 
-        assert StaffManger(1, 1).get_staff(s.id)['level'] == max_level
-        assert StaffManger(1, 1).get_staff(s.id)['exp'] == ConfigStaffLevel.get(max_level).exp[s.quality]-1
+        assert StaffManger(1, 1).get_staff(s.id).level == max_level
+        assert StaffManger(1, 1).get_staff(s.id).exp == ConfigStaffLevel.get(max_level).exp[s.quality]-1

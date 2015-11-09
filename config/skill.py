@@ -43,15 +43,26 @@ class ConfigSkill(ConfigBase):
     INSTANCES = {}
     FILTER_CACHE = {}
 
+    SHOP_SKILL_ID = 0
+    BROADCAST_SKILL_ID = 0
+    SPONSOR_SKILL_ID = 0
+
     @classmethod
     def initialize(cls, fixture):
         super(ConfigSkill, cls).initialize(fixture)
-        for v in cls.INSTANCES.values():
+        for k, v in cls.INSTANCES.iteritems():
             addition_ids = []
             for item in v.addition_ids:
                 addition_ids.append((item['key'], item['value']))
 
             v.addition_ids = addition_ids
+
+            if v.type_id == 1:
+                cls.SHOP_SKILL_ID = k
+            elif v.type_id == 3:
+                cls.BROADCAST_SKILL_ID = k
+            elif v.type_id == 4:
+                cls.SPONSOR_SKILL_ID = k
 
     @classmethod
     def get(cls, id):

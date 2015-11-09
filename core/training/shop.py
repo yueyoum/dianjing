@@ -13,10 +13,11 @@ from core.mongo import MongoTrainingShop
 from core.staff import StaffManger
 from core.package import Drop
 from core.mail import MailManager
+from core.skill import SkillManager
 
 from utils.message import MessagePipe
 
-from config import ConfigErrorMessage, ConfigShop
+from config import ConfigErrorMessage, ConfigShop, ConfigSkill
 
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 from protomsg.training_pb2 import (
@@ -26,6 +27,8 @@ from protomsg.training_pb2 import (
 
     TrainingShopNotify,
 )
+
+import formula
 
 
 # 网店
@@ -112,13 +115,26 @@ class TrainingShop(object):
             if not staff_id:
                 continue
 
-            config = ConfigShop.get(shop_id)
+            config_shop = ConfigShop.get(shop_id)
+            config_skill = ConfigSkill.get(ConfigSkill.SHOP_SKILL_ID)
+            shop_skill_level = SkillManager(self.server_id, self.char_id).get_staff_shop_skill_level(staff_id)
+            staff = StaffManger(self.server_id, self.char_id).get_staff(staff_id)
+
+            reward = formula.staff_training_shop_reward_gold(
+                config_shop.income,
+                staff.xintai,
+                staff.yishi,
+                config_skill.value_base,
+                config_skill.level_grow,
+                shop_skill_level
+            )
+
             drop = Drop()
-            drop.gold = config.income
+            drop.gold = reward
             attachment = drop.to_json()
 
             m = MailManager(self.server_id, self.char_id)
-            m.add(config.mail_title, config.mail_content, attachment=attachment)
+            m.add(config_shop.mail_title, config_shop.mail_content, attachment=attachment)
 
         self.send_notify()
 

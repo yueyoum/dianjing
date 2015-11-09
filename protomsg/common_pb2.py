@@ -18,7 +18,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='common.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=b'\n\x0c\x63ommon.proto\x12\x11\x44ianjing.protocol\"/\n\tUTCNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\ttimestamp\x18\x02 \x02(\x03\"*\n\rStaffBaseInfo\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\"\x1e\n\x0bSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\",\n\x0cSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*C\n\x0bNextOperate\x12\n\n\x06OPT_OK\x10\x01\x12\x13\n\x0fOPT_CREATE_CHAR\x10\x02\x12\x13\n\x0fOPT_CREATE_CLUB\x10\x03*&\n\x06\x41\x63tion\x12\x0c\n\x08\x41\x43T_INIT\x10\x01\x12\x0e\n\nACT_UPDATE\x10\x02*\xc1\x01\n\x0bLeagueLevel\x12\x12\n\x0eLEAGUE_LEVEL_1\x10\x01\x12\x12\n\x0eLEAGUE_LEVEL_2\x10\x02\x12\x12\n\x0eLEAGUE_LEVEL_3\x10\x03\x12\x12\n\x0eLEAGUE_LEVEL_4\x10\x04\x12\x12\n\x0eLEAGUE_LEVEL_5\x10\x05\x12\x12\n\x0eLEAGUE_LEVEL_6\x10\x06\x12\x12\n\x0eLEAGUE_LEVEL_7\x10\x07\x12\x12\n\x0eLEAGUE_LEVEL_8\x10\x08\x12\x12\n\x0eLEAGUE_LEVEL_9\x10\t*1\n\x08\x43lubType\x12\x12\n\x0e\x43LUB_TYPE_REAL\x10\x01\x12\x11\n\rCLUB_TYPE_NPC\x10\x02'
+  serialized_pb=b'\n\x0c\x63ommon.proto\x12\x11\x44ianjing.protocol\"/\n\tUTCNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\ttimestamp\x18\x02 \x02(\x03\"*\n\rStaffBaseInfo\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\"\x1e\n\x0bSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\",\n\x0cSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\x1e\n\x0bPingRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\",\n\x0cPingResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*C\n\x0bNextOperate\x12\n\n\x06OPT_OK\x10\x01\x12\x13\n\x0fOPT_CREATE_CHAR\x10\x02\x12\x13\n\x0fOPT_CREATE_CLUB\x10\x03*&\n\x06\x41\x63tion\x12\x0c\n\x08\x41\x43T_INIT\x10\x01\x12\x0e\n\nACT_UPDATE\x10\x02*\xc1\x01\n\x0bLeagueLevel\x12\x12\n\x0eLEAGUE_LEVEL_1\x10\x01\x12\x12\n\x0eLEAGUE_LEVEL_2\x10\x02\x12\x12\n\x0eLEAGUE_LEVEL_3\x10\x03\x12\x12\n\x0eLEAGUE_LEVEL_4\x10\x04\x12\x12\n\x0eLEAGUE_LEVEL_5\x10\x05\x12\x12\n\x0eLEAGUE_LEVEL_6\x10\x06\x12\x12\n\x0eLEAGUE_LEVEL_7\x10\x07\x12\x12\n\x0eLEAGUE_LEVEL_8\x10\x08\x12\x12\n\x0eLEAGUE_LEVEL_9\x10\t*1\n\x08\x43lubType\x12\x12\n\x0e\x43LUB_TYPE_REAL\x10\x01\x12\x11\n\rCLUB_TYPE_NPC\x10\x02'
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -43,8 +43,8 @@ _NEXTOPERATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=206,
-  serialized_end=273,
+  serialized_start=284,
+  serialized_end=351,
 )
 _sym_db.RegisterEnumDescriptor(_NEXTOPERATE)
 
@@ -66,8 +66,8 @@ _ACTION = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=275,
-  serialized_end=313,
+  serialized_start=353,
+  serialized_end=391,
 )
 _sym_db.RegisterEnumDescriptor(_ACTION)
 
@@ -117,8 +117,8 @@ _LEAGUELEVEL = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=316,
-  serialized_end=509,
+  serialized_start=394,
+  serialized_end=587,
 )
 _sym_db.RegisterEnumDescriptor(_LEAGUELEVEL)
 
@@ -140,8 +140,8 @@ _CLUBTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=511,
-  serialized_end=560,
+  serialized_start=589,
+  serialized_end=638,
 )
 _sym_db.RegisterEnumDescriptor(_CLUBTYPE)
 
@@ -309,10 +309,81 @@ _SYNCRESPONSE = _descriptor.Descriptor(
   serialized_end=204,
 )
 
+
+_PINGREQUEST = _descriptor.Descriptor(
+  name='PingRequest',
+  full_name='Dianjing.protocol.PingRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.PingRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=206,
+  serialized_end=236,
+)
+
+
+_PINGRESPONSE = _descriptor.Descriptor(
+  name='PingResponse',
+  full_name='Dianjing.protocol.PingResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.PingResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.PingResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=238,
+  serialized_end=282,
+)
+
 DESCRIPTOR.message_types_by_name['UTCNotify'] = _UTCNOTIFY
 DESCRIPTOR.message_types_by_name['StaffBaseInfo'] = _STAFFBASEINFO
 DESCRIPTOR.message_types_by_name['SyncRequest'] = _SYNCREQUEST
 DESCRIPTOR.message_types_by_name['SyncResponse'] = _SYNCRESPONSE
+DESCRIPTOR.message_types_by_name['PingRequest'] = _PINGREQUEST
+DESCRIPTOR.message_types_by_name['PingResponse'] = _PINGRESPONSE
 DESCRIPTOR.enum_types_by_name['NextOperate'] = _NEXTOPERATE
 DESCRIPTOR.enum_types_by_name['Action'] = _ACTION
 DESCRIPTOR.enum_types_by_name['LeagueLevel'] = _LEAGUELEVEL
@@ -345,6 +416,20 @@ SyncResponse = _reflection.GeneratedProtocolMessageType('SyncResponse', (_messag
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.SyncResponse)
   ))
 _sym_db.RegisterMessage(SyncResponse)
+
+PingRequest = _reflection.GeneratedProtocolMessageType('PingRequest', (_message.Message,), dict(
+  DESCRIPTOR = _PINGREQUEST,
+  __module__ = 'common_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.PingRequest)
+  ))
+_sym_db.RegisterMessage(PingRequest)
+
+PingResponse = _reflection.GeneratedProtocolMessageType('PingResponse', (_message.Message,), dict(
+  DESCRIPTOR = _PINGRESPONSE,
+  __module__ = 'common_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.PingResponse)
+  ))
+_sym_db.RegisterMessage(PingResponse)
 
 
 # @@protoc_insertion_point(module_scope)
