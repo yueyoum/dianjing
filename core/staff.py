@@ -38,8 +38,7 @@ def staff_training_exp_need_gold(staff_id, staff_level):
 
 
 class Staff(AbstractStaff):
-    __slots__ = ['id', 'level', 'exp', 'status', 'skills'] + STAFF_ATTRS
-
+    __slots__ = []
     def __init__(self, server_id, char_id, _id, data):
         super(Staff, self).__init__()
 
@@ -238,6 +237,24 @@ class StaffManger(object):
         if not data:
             return data
         return Staff(self.server_id, self.char_id, staff_id, data)
+
+    def get_staff_by_ids(self, ids):
+        """
+
+        :rtype : dict[int, Staff]
+        """
+        projection = {'staffs.{0}'.format(i): 1 for i in ids}
+        doc = MongoStaff.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            projection
+        )
+
+        staffs = {}
+        for k, v in doc['staffs'].iteritems():
+            staffs[int(k)] = Staff(self.server_id, self.char_id, int(k), v)
+
+        return staffs
+
 
     def has_staff(self, staff_ids):
         if not isinstance(staff_ids, (list, tuple)):

@@ -14,6 +14,12 @@ from protomsg.staff_pb2 import Staff as MessageStaff
 
 
 class AbstractStaff(object):
+    __slots__ = [
+        'server_id', 'char_id', 'id', 'race', 'level', 'exp', 'status', 'quality',
+        'jingong', 'qianzhi', 'xintai', 'baobing', 'fangshou', 'yunying',
+        'yishi', 'caozuo', 'zhimingdu',
+        'skills'
+    ]
     def __init__(self, *args, **kwargs):
         self.server_id = 0
         self.char_id = 0
@@ -58,6 +64,13 @@ class AbstractStaff(object):
 
 
 class AbstractClub(object):
+    __slots__ = [
+        'id', 'name', 'manager_name', 'flag', 'level',
+        'renown', 'vip', 'gold', 'diamond',
+        'staffs', 'match_staffs', 'tibu_staffs',
+        'policy'
+    ]
+
     def __init__(self, *args, **kwargs):
         self.id = 0
         self.name = ""
@@ -73,7 +86,7 @@ class AbstractClub(object):
         self.match_staffs = []  # int
         self.tibu_staffs = []  # int
 
-        self.policy = 0
+        self.policy = 1
 
     def match_staffs_ready(self):
         return len(self.match_staffs) == 5 and all([i != 0 for i in self.match_staffs])

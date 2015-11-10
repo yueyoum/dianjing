@@ -11,7 +11,6 @@ import itertools
 
 from core.mongo import MongoCharacter
 from core.abstract import AbstractClub
-from core.staff import Staff
 from core.signals import match_staffs_set_done_signal, club_level_up_signal
 from core.staff import StaffManger
 from core.qianban import QianBanContainer
@@ -27,9 +26,9 @@ from config import (
     ConfigErrorMessage
 )
 
-from protomsg.club_pb2 import ClubNotify, ClubStaffSlotsAmountNotify
+from config.settings import BUY_STAFF_SLOT_COST
 
-BUY_STAFF_SLOT_COST = 50
+from protomsg.club_pb2 import ClubNotify, ClubStaffSlotsAmountNotify
 
 
 def club_level_up_need_renown(level):
@@ -37,18 +36,18 @@ def club_level_up_need_renown(level):
 
 
 class Club(AbstractClub):
+    __slots__ = [
+        'server_id', 'char_id', 'buy_slots'
+    ]
+
     def __init__(self, server_id, char_id):
         super(Club, self).__init__()
 
         self.server_id = server_id
         self.char_id = char_id
-        self.load_data()
 
-    def load_data(self):
-        doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'club': 1, 'name': 1})
-
+        doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'club': 1, 'name': 1, 'buy_slots': 1})
         club = doc['club']
-        staffs = StaffManger(self.server_id, self.char_id).get_all_staffs()
 
         self.id = self.char_id  # 玩家ID
         self.name = club['name']  # 俱乐部名
@@ -58,17 +57,17 @@ class Club(AbstractClub):
         self.renown = club['renown']  # 俱乐部声望
         self.vip = club['vip']  # vip等级
         self.gold = club['gold']  # 游戏币
-        # FIXME
-        self.diamond = int(club['diamond'])  # 钻石
+        self.diamond = club['diamond']  # 钻石
         self.policy = club.get('policy', 1)  # 战术
 
         self.match_staffs = club.get('match_staffs', [])  # 出战员工
         self.tibu_staffs = club.get('tibu_staffs', [])  # 替补员工
 
-        for k, v in staffs.iteritems():
-            self.staffs[int(k)] = Staff(self.server_id, self.char_id, int(k), v)
+        self.buy_slots = doc.get('buy_slots', 0)
 
-        qc = QianBanContainer(self.all_match_staffs())
+        all_match_staff_ids = self.all_match_staffs()
+        self.staffs = StaffManger(self.server_id, self.char_id).get_staff_by_ids(all_match_staff_ids)
+        qc = QianBanContainer(all_match_staff_ids)
         for i in itertools.chain(self.match_staffs, self.tibu_staffs):
             if i == 0:
                 continue
@@ -77,14 +76,12 @@ class Club(AbstractClub):
 
     @property
     def max_slots_amount(self):
-        doc = MongoCharacter.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {'club.level': 1, 'buy_slots': 1}
-        )
+        config = ConfigClubLevel.get(self.level)
+        return config.max_staff_amount + self.buy_slots
 
-        buy_slots = doc.get('buy_slots', 0)
-        config = ConfigClubLevel.get(doc['club']['level'])
-        return config.max_staff_amount + buy_slots
+    def load_all_staffs(self):
+        all_staff_ids = StaffManger(self.server_id, self.char_id).get_all_staff_ids()
+        self.staffs = StaffManger(self.server_id, self.char_id).get_staff_by_ids(all_staff_ids)
 
     def is_staff_in_match(self, staff_id):
         return staff_id in self.match_staffs or staff_id in self.tibu_staffs
@@ -136,7 +133,6 @@ class Club(AbstractClub):
                 match_staffs=match_staffs
             )
 
-        self.load_data()
         self.send_notify()
 
     def update(self, **kwargs):

@@ -62,6 +62,7 @@ CUP_PROCESS_TABLE = {
 
 
 class CupNpcClub(AbstractClub):
+    __slots__ = []
     def __init__(self, club_data):
         super(CupNpcClub, self).__init__()
         self.id = club_data['_id']

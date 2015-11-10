@@ -79,6 +79,7 @@ def time_string_to_datetime(day_text, time_text):
 
 
 class LeagueNPCStaff(AbstractStaff):
+    __slots__ = []
     def __init__(self, staff_attribute):
         super(LeagueNPCStaff, self).__init__()
 
@@ -121,6 +122,7 @@ class LeagueBaseClubMixin(object):
 
 
 class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
+    __slots__ = []
     def __init__(self, server_id, group_id, club_id, club_name, manager_name, club_flag, staffs):
         super(LeagueNPCClub, self).__init__()
 

@@ -25,6 +25,7 @@ from protomsg.challenge_pb2 import ChallengeNotify
 
 
 class ChallengeNPCStaff(AbstractStaff):
+    __slots__ = []
     def __init__(self, _id, level, strength):
         super(ChallengeNPCStaff, self).__init__()
 
@@ -48,6 +49,7 @@ class ChallengeNPCStaff(AbstractStaff):
 
 
 class ChallengeNPCClub(AbstractClub):
+    __slots__ = []
     def __init__(self, challenge_match_id):
         super(ChallengeNPCClub, self).__init__()
 

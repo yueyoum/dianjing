@@ -14,14 +14,23 @@ from utils.message import MessagePipe
 
 from protomsg.character_pb2 import CharacterNotify, Character as MsgCharacter
 
+from config.settings import (
+    CHAR_INIT_DIAMOND,
+    CHAR_INIT_GOLD,
+    CHAR_INIT_STAFFS,
+)
+
 
 class Character(object):
+    __slots__ = ['server_id', 'char_id']
+
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
 
     @classmethod
     def create(cls, server_id, char_id, char_name, club_name, club_flag):
+        # 这里是club创建完毕后再调用的
         from core.staff import StaffManger
         from core.club import Club
 
@@ -31,16 +40,23 @@ class Character(object):
         doc['create_at'] = arrow.utcnow().timestamp
         doc['club']['name'] = club_name
         doc['club']['flag'] = club_flag
-        doc['club']['gold'] = 100000
+        doc['club']['gold'] = CHAR_INIT_GOLD
+        doc['club']['diamond'] = CHAR_INIT_DIAMOND
 
         MongoCharacter.db(server_id).insert_one(doc)
 
         sm = StaffManger(server_id, char_id)
-        staff_ids = [2, 3, 4, 5, 6]
-        for i in staff_ids:
+        for i in CHAR_INIT_STAFFS:
             sm.add(i, send_notify=False)
 
-        Club(server_id, char_id).set_match_staffs(staff_ids + [0] * 5)
+        Club(server_id, char_id).set_match_staffs(CHAR_INIT_STAFFS + [0] * 5)
+
+    @classmethod
+    def get_recent_login_char_ids(cls, server_id, recent_days=30):
+        day_limit = arrow.utcnow().replace(days=-recent_days)
+        timestamp = day_limit.timestamp
+        doc = MongoCharacter.db(server_id).find({'last_login': {'$gte': timestamp}})
+        return (d['_id'] for d in doc)
 
     @property
     def create_days(self):
@@ -75,7 +91,6 @@ class Character(object):
         else:
             char = MongoCharacter.db(self.server_id).find_one(
                 {'_id': self.char_id},
-                # TODO field
                 {'name': 1}
             )
 
