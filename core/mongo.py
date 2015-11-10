@@ -330,19 +330,14 @@ class MongoMail(BaseDocument):
 class MongoTask(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        'tasks': {}
-    }
-
-    TASK_DOCUMENT = {
-        'num': 0,
-        'status': 0,
+        # target_id : num
+        'doing': {},
+        'finish': {},
+        'history': [],
     }
 
     COLLECTION = "task"
 
-    @classmethod
-    def document_task(cls):
-        return cls.TASK_DOCUMENT.copy()
 
 # 天梯
 class MongoLadder(BaseDocument):
