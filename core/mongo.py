@@ -86,6 +86,8 @@ class MongoCharacter(BaseDocument):
         'league_level': 1,
         # 是否报名参加了杯赛
         'in_cup': 0,
+        # 购买的员工格子数
+        'buy_slots': 0,
     }
 
     COLLECTION = "character"

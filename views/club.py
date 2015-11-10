@@ -24,7 +24,8 @@ from core.club import Club
 from protomsg.club_pb2 import (
     CreateClubResponse,
     ClubSetPolicyResponse,
-    ClubSetMatchStaffResponse
+    ClubSetMatchStaffResponse,
+    ClubStaffSlotBuyResponse,
 )
 
 
@@ -88,3 +89,13 @@ def set_match_staffs(request):
     response.ret = 0
     return ProtobufResponse(response)
 
+def buy_slots(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    club = Club(server_id, char_id)
+    club.buy_slot()
+
+    response = ClubStaffSlotBuyResponse()
+    response.ret = 0
+    return ProtobufResponse(response)

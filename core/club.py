@@ -15,6 +15,7 @@ from core.staff import Staff
 from core.signals import match_staffs_set_done_signal, club_level_up_signal
 from core.staff import StaffManger
 from core.qianban import QianBanContainer
+from core.resource import Resource
 
 from dianjing.exception import GameException
 
@@ -26,7 +27,9 @@ from config import (
     ConfigErrorMessage
 )
 
-from protomsg.club_pb2 import ClubNotify
+from protomsg.club_pb2 import ClubNotify, ClubStaffSlotsAmountNotify
+
+BUY_STAFF_SLOT_COST = 50
 
 
 def club_level_up_need_renown(level):
@@ -71,6 +74,17 @@ class Club(AbstractClub):
                 continue
 
             qc.affect(self.staffs[i])
+
+    @property
+    def max_slots_amount(self):
+        doc = MongoCharacter.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'club.level': 1, 'buy_slots': 1}
+        )
+
+        buy_slots = doc.get('buy_slots', 0)
+        config = ConfigClubLevel.get(doc['club']['level'])
+        return config.max_staff_amount + buy_slots
 
     def is_staff_in_match(self, staff_id):
         return staff_id in self.match_staffs or staff_id in self.tibu_staffs
@@ -171,8 +185,23 @@ class Club(AbstractClub):
 
         self.send_notify()
 
+    def buy_slot(self):
+        with Resource(self.server_id, self.char_id).check(diamond=-BUY_STAFF_SLOT_COST, message=u"Club Buy Slot"):
+            MongoCharacter.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$inc': {'buy_slots': 1}}
+            )
+
+        self.send_staff_slots_notify()
+
     def send_notify(self):
         msg = self.make_protomsg()
         notify = ClubNotify()
         notify.club.MergeFrom(msg)
         MessagePipe(self.char_id).put(notify)
+
+    def send_staff_slots_notify(self):
+        notify = ClubStaffSlotsAmountNotify()
+        notify.amount = self.max_slots_amount
+        notify.cost_diamond = BUY_STAFF_SLOT_COST
+        MessagePipe(self.char_id).put(msg=notify)

@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^club/create/$', 'views.club.create'),
     url(r'^club/policy/$', 'views.club.set_policy'),
     url(r'^club/matchstaff/$', 'views.club.set_match_staffs'),
+    url(r'^club/staffslots/buy/$', 'views.club.buy_slots'),
 
     url(r'^staff/recruit/refresh/$', 'views.staff.recruit_refresh'),
     url(r'^staff/recruit/$', 'views.staff.recruit_staff'),
