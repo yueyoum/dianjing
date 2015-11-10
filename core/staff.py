@@ -263,8 +263,8 @@ class StaffManger(object):
         if self.has_staff(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_ALREADY_HAVE"))
 
-        club_level = Club(self.server_id, self.char_id).level
-        if self.staffs_amount >= ConfigClubLevel.get(club_level).max_staff_amount:
+        club = Club(self.server_id, self.char_id)
+        if self.staffs_amount >= club.max_slots_amount:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_AMOUNT_REACH_MAX_LIMIT"))
 
         doc = MongoStaff.document_staff()

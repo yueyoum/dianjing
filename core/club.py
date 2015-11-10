@@ -183,6 +183,8 @@ class Club(AbstractClub):
                 new_level=self.level
             )
 
+            self.send_staff_slots_notify()
+
         self.send_notify()
 
     def buy_slot(self):
