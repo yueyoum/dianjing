@@ -17,6 +17,7 @@ from core.skill import SkillManager
 from core.building import BuildingBusinessCenter
 from core.package import Drop
 from core.resource import Resource
+from core.signals import staff_broadcast_signal
 
 from utils.api import Timerd
 from utils.message import MessagePipe
@@ -260,6 +261,13 @@ class TrainingBroadcast(object):
         )
 
         self.send_notify(slot_ids=[slot_id])
+
+        staff_broadcast_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            staff_id=staff_id,
+        )
 
     def cancel(self, slot_id):
         slot = self.get_slot(slot_id)
