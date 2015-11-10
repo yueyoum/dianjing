@@ -19,7 +19,7 @@ from core.signals import recruit_staff_signal, staff_level_up_signal
 
 from config import (
     ConfigStaff, ConfigStaffHot, ConfigStaffRecruit,
-    ConfigStaffLevel, ConfigErrorMessage, ConfigClubLevel
+    ConfigStaffLevel, ConfigErrorMessage, ConfigStaffStatus
 )
 
 from utils.message import MessagePipe
@@ -40,17 +40,16 @@ def staff_training_exp_need_gold(staff_id, staff_level):
 class Staff(AbstractStaff):
     __slots__ = ['id', 'level', 'exp', 'status', 'skills'] + STAFF_ATTRS
 
-    def __init__(self, server_id, char_id,  _id, data):
+    def __init__(self, server_id, char_id, _id, data):
         super(Staff, self).__init__()
 
         self.server_id = server_id
         self.char_id = char_id
 
-        self.id = _id  # 员工id
-        self.level = data.get('level', 1)  # 员工等级
-        self.exp = data.get('exp', 0)  # 员工经验
-        # TODO 默认status
-        self.status = data.get('status', 3)  # 状态 1:恶劣 2:低迷 3:一般 4:良好 5:优秀 6:GOD
+        self.id = _id
+        self.level = data.get('level', 1)
+        self.exp = data.get('exp', 0)
+        self.status = data.get('status', ConfigStaffStatus.DEFAULT_STATUS)  # 状态 1:恶劣 2:低迷 3:一般 4:良好 5:优秀 6:GOD
 
         config_staff = ConfigStaff.get(self.id)
         self.race = config_staff.race
@@ -64,6 +63,7 @@ class Staff(AbstractStaff):
         self.yunying = config_staff.yunying + config_staff.yunying_grow * (self.level - 1) + data.get('yunying', 0)
         self.yishi = config_staff.yishi + config_staff.yunying_grow * (self.level - 1) + data.get('yishi', 0)
         self.caozuo = config_staff.caozuo + config_staff.caozuo_grow * (self.level - 1) + data.get('caozuo', 0)
+        # 知名度没有默认值，只会在游戏过程中增加
         self.zhimingdu = data.get('zhimingdu', 0)
 
         skills = data.get('skills', {})
@@ -205,6 +205,8 @@ class StaffRecruit(object):
 
 
 class StaffManger(object):
+    __slots__ = ['server_id', 'char_id']
+
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
@@ -268,6 +270,7 @@ class StaffManger(object):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_AMOUNT_REACH_MAX_LIMIT"))
 
         doc = MongoStaff.document_staff()
+        doc['status'] = ConfigStaffStatus.DEFAULT_STATUS
         default_skills = ConfigStaff.get(staff_id).skill_ids
 
         skills = {str(sid): MongoStaff.document_staff_skill() for sid in default_skills}
@@ -370,27 +373,6 @@ class StaffManger(object):
 
         self.send_notify(staff_ids=[staff_id])
 
-    def msg_staff(self, msg, sid, staff_data):
-        staff = Staff(self.server_id, self.char_id, sid, staff_data)
-
-        msg.id = staff.id
-        msg.level = staff.level
-        msg.cur_exp = staff.exp
-        msg.max_exp = ConfigStaffLevel.get(staff.level).exp[staff.quality]
-        msg.status = staff.status
-
-        msg.jingong = int(staff.jingong)
-        msg.qianzhi = int(staff.qianzhi)
-        msg.xintai = int(staff.xintai)
-        msg.baobing = int(staff.baobing)
-        msg.fangshou = int(staff.fangshou)
-        msg.yunying = int(staff.yunying)
-        msg.yishi = int(staff.yishi)
-        msg.caozuo = int(staff.caozuo)
-        msg.zhimingdu = int(staff.zhimingdu)
-
-        msg.training_exp_need_gold = staff_level_up_need_exp(staff.id, staff.level)
-
     def send_notify(self, staff_ids=None):
         if not staff_ids:
             projection = {'staffs': 1}
@@ -405,7 +387,8 @@ class StaffManger(object):
         notify = StaffNotify()
         notify.act = act
         for k, v in staffs.iteritems():
-            s = notify.staffs.add()
-            self.msg_staff(s, int(k), v)
+            notify_staff = notify.staffs.add()
+            staff = Staff(self.server_id, self.char_id, int(k), v)
+            notify_staff.MergeFrom(staff.make_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)

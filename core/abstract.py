@@ -8,7 +8,9 @@ Description:
 """
 
 from itertools import chain
+from config import ConfigStaffLevel
 from protomsg.club_pb2 import Club as MessageClub
+from protomsg.staff_pb2 import Staff as MessageStaff
 
 
 class AbstractStaff(object):
@@ -31,8 +33,28 @@ class AbstractStaff(object):
         self.yunying = 0
         self.yishi = 0
         self.caozuo = 0
+        self.zhimingdu = 0
 
         self.skills = {}
+
+    def make_protomsg(self):
+        msg = MessageStaff()
+
+        msg.id = self.id
+        msg.level = self.level
+        msg.cur_exp = self.exp
+        msg.max_exp = ConfigStaffLevel.get(self.level).exp[self.quality]
+        msg.status = self.status
+
+        msg.jingong = int(self.jingong)
+        msg.qianzhi = int(self.qianzhi)
+        msg.xintai = int(self.xintai)
+        msg.baobing = int(self.baobing)
+        msg.fangshou = int(self.fangshou)
+        msg.yunying = int(self.yunying)
+        msg.yishi = int(self.yishi)
+        msg.caozuo = int(self.caozuo)
+        msg.zhimingdu = int(self.zhimingdu)
 
 
 class AbstractClub(object):
@@ -58,6 +80,7 @@ class AbstractClub(object):
 
     def make_protomsg(self):
         msg = MessageClub()
+        # 因为NPC的ID是UUID，所以这里为了统一，club的ID 都是 str
         msg.id = str(self.id)
         msg.name = self.name
         msg.manager = self.manager_name

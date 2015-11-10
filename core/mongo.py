@@ -122,9 +122,10 @@ class MongoStaff(BaseDocument):
     STAFF_DOCUMENT = {
         'exp': 0,
         'level': 1,
-        'status': 3,
+        'status': null,
         'skills': {},
-        'winning_rate': {}
+        'winning_rate': {},
+        # 此外这里还有属性
     }
 
     # 嵌入staff中

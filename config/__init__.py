@@ -13,7 +13,7 @@ import zipfile
 
 
 from config.errormsg import ConfigErrorMessage
-from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigStaffLevel
+from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigStaffLevel, ConfigStaffStatus
 from config.challenge import ConfigChallengeType, ConfigChallengeMatch
 from config.unit import ConfigUnit, ConfigPolicy
 from config.building import ConfigBuilding
@@ -64,7 +64,6 @@ def load_config():
 
         data = json.loads(content)
 
-
         if item == 'errormsg.json':
             ConfigErrorMessage.initialize(data)
         elif item == 'staff.json':
@@ -75,6 +74,8 @@ def load_config():
             ConfigStaffRecruit.initialize(data)
         elif item == 'staff_level.json':
             ConfigStaffLevel.initialize(data)
+        elif item == 'staff_status.json':
+            ConfigStaffStatus.initialize(data)
         elif item == 'challenge_type.json':
             ConfigChallengeType.initialize(data)
         elif item == 'challenge_match.json':
