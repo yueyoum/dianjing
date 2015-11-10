@@ -15,7 +15,6 @@ from core.skill import SkillManager
 from protomsg.skill_pb2 import SkillLockToggleResponse, SkillWashResponse, SkillUpgradeResponse, SkillUpgradeSpeedupResponse
 
 
-
 def lock_toggle(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
@@ -29,7 +28,6 @@ def lock_toggle(request):
     response = SkillLockToggleResponse()
     response.ret = 0
     return ProtobufResponse(response)
-
 
 
 def wash(request):
@@ -60,6 +58,7 @@ def upgrade(request):
     response.ret = 0
     return ProtobufResponse(response)
 
+
 def upgrade_speedup(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
@@ -73,3 +72,5 @@ def upgrade_speedup(request):
     response = SkillUpgradeSpeedupResponse()
     response.ret = 0
     return ProtobufResponse(response)
+
+

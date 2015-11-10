@@ -130,7 +130,9 @@ class MongoStaff(BaseDocument):
         'level': 1,
         'locked': 0,
         # 升级结束时间戳
-        'upgrade_end_at': 0,
+        'end_at': 0,
+        # timerd callback key
+        'key': ''
     }
 
     # 嵌入到staff中

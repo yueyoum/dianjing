@@ -14,4 +14,5 @@ urlpatterns = [
     url(r'^timerd/training/exp/$', 'views.api.timerd.training_exp_callback'),
     url(r'^timerd/training/property/$', 'views.api.timerd.training_property_callback'),
     url(r'^timerd/training/broadcast/$', 'views.api.timerd.training_broadcast_callback'),
+    url(r'^timerd/skills/$', 'views.api.timerd.skill_upgrade_callback'),
 ]

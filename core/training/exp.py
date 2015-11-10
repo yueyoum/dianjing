@@ -315,6 +315,7 @@ class TrainingExp(object):
         )
 
         self.send_notify(slot_ids=[slot_id])
+        return 0
 
     def get_reward(self, slot_id):
         slot = self.get_slot(slot_id)
