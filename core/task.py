@@ -7,11 +7,9 @@ from dianjing.exception import GameException
 from core.mongo import MongoTask, MongoRecord
 from core.package import Drop
 from core.resource import Resource
-from core.building import BuildingTaskCenter
-from core.common import CommonTask
-from core.signals import random_event_done_signal
+from core.signals import random_event_done_signal, daily_task_finish
 
-from config import ConfigErrorMessage, ConfigTask, ConfigBuilding, ConfigRandomEvent
+from config import ConfigErrorMessage, ConfigTask, ConfigRandomEvent
 
 from utils.message import MessagePipe, MessageFactory
 
@@ -175,6 +173,7 @@ class TaskManager(object):
                 config = ConfigTask.get(int(k))
                 if v[str(target_id)] + num > config.targets[target_id]:
                     v[str(target_id)] = config.targets[target_id]
+        self.finish()
 
     def finish(self):
         docs = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'doing': 1})
@@ -194,6 +193,7 @@ class TaskManager(object):
             if finish:
                 unsetter['doing.{0}'.format(k)] = ''
                 projection['finish.{0}'.format(k)] = setter
+
         MongoTask.db(self.server_id).update_one(
             {'_id': 1},
             {
@@ -240,7 +240,7 @@ class TaskManager(object):
 
     def send_notify(self, ids=None, status=TASK_STATUS_DOING):
         if not ids:
-            projection = ''
+            projection = None
             act = ACT_INIT
         else:
             act = ACT_UPDATE

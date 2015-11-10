@@ -47,6 +47,8 @@ staff_exp_training_signal = Signal(providing_args=['server_id', 'char_id', 'staf
 staff_exp_training_speedup_signal = Signal(providing_args=['server_id', 'char_id'])
 # staff broadcast
 staff_broadcast_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
+# finish one daily task
+daily_task_finish = Signal(providing_args=['server_id', 'char_id', 'task_id'])
 
 # 充值
 purchase_done_signal = Signal(providing_args=['server_id', 'char_id', 'diamond'])
