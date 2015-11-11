@@ -40,7 +40,7 @@ class Club(AbstractClub):
         'server_id', 'char_id', 'buy_slots'
     ]
 
-    def __init__(self, server_id, char_id):
+    def __init__(self, server_id, char_id, load_staff=True):
         super(Club, self).__init__()
 
         self.server_id = server_id
@@ -65,14 +65,15 @@ class Club(AbstractClub):
 
         self.buy_slots = doc.get('buy_slots', 0)
 
-        all_match_staff_ids = self.all_match_staffs()
-        self.staffs = StaffManger(self.server_id, self.char_id).get_staff_by_ids(all_match_staff_ids)
-        qc = QianBanContainer(all_match_staff_ids)
-        for i in itertools.chain(self.match_staffs, self.tibu_staffs):
-            if i == 0:
-                continue
+        if load_staff:
+            all_match_staff_ids = self.all_match_staffs()
+            self.staffs = StaffManger(self.server_id, self.char_id).get_staff_by_ids(all_match_staff_ids)
+            qc = QianBanContainer(all_match_staff_ids)
+            for i in itertools.chain(self.match_staffs, self.tibu_staffs):
+                if i == 0:
+                    continue
 
-            qc.affect(self.staffs[i])
+                qc.affect(self.staffs[i])
 
     @property
     def max_slots_amount(self):

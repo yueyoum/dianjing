@@ -376,31 +376,28 @@ class MongoLadder(BaseDocument):
 
 # 联赛
 class MongoLeagueGroup(BaseDocument):
+    # 一个小组
+    # 联赛分组完后，就有很多个group
+
     DOCUMENT = {
         '_id': null,
         'level': null,
         # clubs 记录了这个小组中的14个club 信息
-        # 见下面的 LEAGUE_EMBEDDED_CLUB_DOCUMENT
+        # 见下面的 CLUB_DOCUMENT
         'clubs': {},
-        # events 是记录的一组一组的比赛，一共14场
+        # events 是记录的这个小组里的一场一场的比赛，一共14场
         # 要打哪一场是根据 LeagueGame.find_order() 来决定的，
         # 这里面记录是的 event_id
         'events': [],
     }
 
-    # club 嵌入 group 中
-    # 为了降低查询IO请求
-    # 如果不嵌入，那么查询过程是这样的：
-    # 从 group 中根据 order 取到 [pair_id, pair_id,...]
-    # 再遍历这7个pair_id，并以此从 pair 中取到 club_one_id和 club_two_id
-    # 然后 再根据这些 club_id 到 club 中取 club 信息...
-    # 每次 取完 group 和 pair 后，还有 额外的14次IO
-    # 如果 有大量的分组 (group)，那么这个IO开销将是很消耗系统资源的
-    # 如果嵌套起来， 那么只有两次IO
-    # 因为取 group 的时候，这些 clubs 信息也一起返回了
-    # 但是要注意协议中ID的处理
-    # 而且 一个group中 club 只有14个，其大小是比较小的
-    # 所以可以嵌入
+    # club 嵌入 group 中 (为了方便查询)
+    # 进行比赛查询过程是这样的：
+    # 从 group 中根据 order 取到 event_id
+    # 从 MongoLeagueEvent 中 根据 event_id 获取到 7 个pair
+    # 再遍历这7个pair，并一次取到 club_one_id 和 club_two_id
+    # 因为club是嵌套在group中的，所以可以直接获取 club信息
+    # 最后开打，保存
     CLUB_DOCUMENT = {
         # 真实玩家为 str(club id), npc为uuid
         'club_id': 0,
@@ -430,6 +427,9 @@ class MongoLeagueGroup(BaseDocument):
 
 
 class MongoLeagueEvent(BaseDocument):
+    # 每个group中对应14场 event
+    # 每场会进行 7组比赛， pairs 的数量是7
+    # 所以一个group总共会打 14 * 7 = 98组比赛
     DOCUMENT = {
         '_id': null,
         'start_at': 0,

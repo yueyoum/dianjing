@@ -52,10 +52,17 @@ class Character(object):
         Club(server_id, char_id).set_match_staffs(CHAR_INIT_STAFFS + [0] * 5)
 
     @classmethod
-    def get_recent_login_char_ids(cls, server_id, recent_days=30):
+    def get_recent_login_char_ids(cls, server_id, recent_days=30, other_conditions=None):
         day_limit = arrow.utcnow().replace(days=-recent_days)
         timestamp = day_limit.timestamp
-        doc = MongoCharacter.db(server_id).find({'last_login': {'$gte': timestamp}})
+
+        condition = {'last_login': {'$gte': timestamp}}
+        if other_conditions:
+            condition = [condition]
+            condition.extend(other_conditions)
+            condition = {'$and': condition}
+
+        doc = MongoCharacter.db(server_id).find(condition)
         return (d['_id'] for d in doc)
 
     @property
@@ -74,6 +81,7 @@ class Character(object):
     def set_login(self):
         from django.db.models import F
         from apps.character.models import Character as ModelCharacter
+        from core.league import LeagueGame
 
         now = arrow.utcnow()
         ModelCharacter.objects.filter(id=self.char_id).update(
@@ -84,6 +92,10 @@ class Character(object):
             {'_id': self.char_id},
             {'$set': {'last_login': now.timestamp}}
         )
+
+        # 联赛只匹配最近一段时间登录的帐号，如果一个帐号很久没登录，那么他将不在联赛里
+        # 当他再次登录的时候，这里要检测一下
+        LeagueGame.join_already_started_league(self.server_id, self.char_id, send_notify=False)
 
     def make_protomsg(self, **kwargs):
         if kwargs:
