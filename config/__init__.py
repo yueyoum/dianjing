@@ -23,7 +23,7 @@ from config.business import ConfigSponsor, ConfigShop
 from config.item import ConfigItem
 from config.npc import ConfigNPC
 from config.skill import ConfigSkill, ConfigSkillWashCost
-from config.task import ConfigTask, ConfigRandomEvent
+from config.task import ConfigTask, ConfigRandomEvent, ConfigTargetType
 from config.club import ConfigClubLevel, ConfigClubFlag
 from config.ladder import ConfigLadderRankReward, ConfigLadderScoreStore
 from config.qianban import ConfigQianBan
@@ -134,5 +134,7 @@ def load_config():
             ConfigActiveFunction.initialize(data)
         elif item == 'active_reward.json':
             ConfigActiveReward.initialize(data)
+        elif item == 'task_target.json':
+            ConfigTargetType.initialize(data)
 
     print "LOAD CONFIG FROM {0}".format(z_file)

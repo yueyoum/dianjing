@@ -30,61 +30,37 @@ from core.signals import (
     building_league_center_level_up_signal,
 )
 
-from core.task import (
-    RECRUIT_STAFF,
-    CHANGE_MATCH_STAFF,
-    PASS_CHALLENGE,
-    PROPERTY_TRAINING,
-    UPDATE_CLUB,
-    UPDATE_TRAINING_CENTER,
-    STAFF_EXP_TRAINING,
-    STAFF_EXP_TRAINING_SPEEDUP,
-    STAFF_BROADCAST,
-    UPDATE_LEAGUE_CENTER,
-    LADDER_MATCH,
-    FINISH_DAILY_TASK,
-    CLUB_LEVEL_ARRIVE,
-    PLAY_ONE_CHALLENGE,
-    CLICK_RANDOM_BOBBLE,
-    FRIEND_MATCH,
-    MANAGER_ONLINE_SHOP,
-    TAKE_CAR,
+from core.task import CREATE_CHAR_AUTO_RECEIVE
 
-    # trig type
-    CREATE_CHAR_AUTO_RECEIVE
-)
+# target type
+RECRUIT_STAFF = 1
+CHANGE_MATCH_STAFF = 2
+PASS_CHALLENGE = 3
+PROPERTY_TRAINING = 4
+UPDATE_CLUB = 5
+UPDATE_TRAINING_CENTER = 6
+STAFF_EXP_TRAINING = 7
+STAFF_EXP_TRAINING_SPEEDUP = 8
+STAFF_BROADCAST = 9
+UPDATE_LEAGUE_CENTER = 10
+LADDER_MATCH = 11
+FINISH_DAILY_TASK = 12
+CLUB_LEVEL_ARRIVE = 13
+PLAY_ONE_CHALLENGE = 14
+CLICK_RANDOM_BOBBLE = 15
+FRIEND_MATCH = 16
+
+MANAGER_ONLINE_SHOP = 18
+TAKE_CAR = 19
 
 
+# trigger
 @receiver(char_created_signal, dispatch_uid='signals.task.char_created_handler')
 def char_created_handler(server_id, char_id, char_name, win, **kwargs):
     TaskManager(server_id, char_id).trigger(CREATE_CHAR_AUTO_RECEIVE, 1)
 
 
-@receiver(league_match_signal, dispatch_uid='signals.task.league_match_handler')
-def league_match_handler(server_id, char_id, target_id, win, **kwargs):
-    TaskManager(server_id, char_id).update(4, 1)
-
-
-@receiver(join_cup_signal, dispatch_uid='signals.task.join_cup_handler')
-def join_cup_handler(server_id, char_id, **kwargs):
-    TaskManager(server_id, char_id).update(7, 1)
-
-
-@receiver(chat_signal, dispatch_uid='signals.task.chat_handler')
-def chat_handler(server_id, char_id, **kwargs):
-    TaskManager(server_id, char_id).update(3, 1)
-
-
-@receiver(friend_ok_signal, dispatch_uid='signals.task.friend_ok_handler')
-def friend_ok_handler(server_id, char_id, friend_id, **kwargs):
-    TaskManager(server_id, char_id).update(1, 1)
-
-
-@receiver(staff_level_up_signal, dispatch_uid='signals.task.staff_level_up_handler')
-def staff_level_up_handler(server_id, char_id, staff_id, new_level, **kwargs):
-    TaskManager(server_id, char_id).update(10, 1)
-
-
+# update
 @receiver(recruit_staff_signal, dispatch_uid='signals.task.recruit_staff_handler')
 def recruit_staff_handler(server_id, char_id, staff_id, **kwargs):
     TaskManager(server_id, char_id).update(RECRUIT_STAFF, 1)

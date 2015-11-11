@@ -37,6 +37,14 @@ class RandomEvent(object):
         self.package = 0
 
 
+class TargetType(object):
+    __slots__ = ['id', 'model']
+
+    def __init__(self):
+        self.id = None
+        self.model = None
+
+
 class ConfigTask(ConfigBase):
     # 类实体
     EntityClass = Task
@@ -79,3 +87,17 @@ class ConfigRandomEvent(ConfigBase):
         :rtype : RandomEvent
         """
         return super(ConfigRandomEvent, cls).get(_id)
+
+
+class ConfigTargetType(ConfigBase):
+    EntityClass = TargetType
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype : TargetType
+        """
+        return super(ConfigTargetType, cls).get(_id)

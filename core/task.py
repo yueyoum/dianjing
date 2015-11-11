@@ -8,7 +8,7 @@ from core.package import Drop
 from core.resource import Resource
 from core.signals import random_event_done_signal
 
-from config import ConfigErrorMessage, ConfigTask, ConfigRandomEvent
+from config import ConfigErrorMessage, ConfigTask, ConfigRandomEvent, ConfigTargetType
 
 from utils.message import MessagePipe, MessageFactory
 
@@ -23,27 +23,6 @@ TASK_STATUS_FINISH = 2
 MAIN_TASK = 1
 BRANCH_TASK = 2
 DAILY_TASK = 3
-
-# target type
-RECRUIT_STAFF = 1
-CHANGE_MATCH_STAFF = 2
-PASS_CHALLENGE = 3
-PROPERTY_TRAINING = 4
-UPDATE_CLUB = 5
-UPDATE_TRAINING_CENTER = 6
-STAFF_EXP_TRAINING = 7
-STAFF_EXP_TRAINING_SPEEDUP = 8
-STAFF_BROADCAST = 9
-UPDATE_LEAGUE_CENTER = 10
-LADDER_MATCH = 11
-FINISH_DAILY_TASK = 12
-CLUB_LEVEL_ARRIVE = 13
-PLAY_ONE_CHALLENGE = 14
-CLICK_RANDOM_BOBBLE = 15
-FRIEND_MATCH = 16
-
-MANAGER_ONLINE_SHOP = 18
-TAKE_CAR = 19
 
 # trig type
 CREATE_CHAR_AUTO_RECEIVE = 1
@@ -182,21 +161,14 @@ class TaskManager(object):
                     continue
 
                 # add to database
-                if target_id in (
-                        RECRUIT_STAFF, CHANGE_MATCH_STAFF, PROPERTY_TRAINING,
-                        STAFF_EXP_TRAINING, STAFF_EXP_TRAINING_SPEEDUP, STAFF_BROADCAST,
-                        LADDER_MATCH, FINISH_DAILY_TASK, PLAY_ONE_CHALLENGE, CLICK_RANDOM_BOBBLE,
-                        FRIEND_MATCH, MANAGER_ONLINE_SHOP, MANAGER_ONLINE_SHOP,
-                ):
+                target = ConfigTargetType.get(target_id)
+                if target.model == 1:
                     if target_value + num >= config.targets[target_id]:
                         target_value = config.targets[target_id]
                     else:
                         target_value += num
 
-                elif target_id in (
-                        PASS_CHALLENGE, UPDATE_CLUB, UPDATE_TRAINING_CENTER,
-                        UPDATE_LEAGUE_CENTER, CLUB_LEVEL_ARRIVE,
-                ):
+                else:
                     if num == config.targets[target_id]:
                         target_value = config.targets[target_id]
 
