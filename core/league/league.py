@@ -226,7 +226,7 @@ class LeagueGame(object):
                         target=m.club_two_object.name,
                         score_got=m.club_one_object.score_change,
                         gold_got=m.club_one_object.got_gold,
-                        score_rank=club_orders.index(m.club_one_object.id) + 1
+                        score_rank=club_orders.index(str(m.club_one_object.id)) + 1
                     )
 
                 if isinstance(m.club_two_object, Club):
@@ -236,7 +236,7 @@ class LeagueGame(object):
                         target=m.club_one_object.name,
                         score_got=m.club_two_object.score_change,
                         gold_got=m.club_two_object.got_gold,
-                        score_rank=club_orders.index(m.club_two_object.id) + 1
+                        score_rank=club_orders.index(str(m.club_two_object.id)) + 1
                     )
 
             # 进阶
