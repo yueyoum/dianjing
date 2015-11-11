@@ -6,7 +6,7 @@ from dianjing.exception import GameException
 from core.mongo import MongoTask, MongoRecord
 from core.package import Drop
 from core.resource import Resource
-from core.signals import random_event_done_signal
+from core.signals import random_event_done_signal, daily_task_finish_signal
 
 from config import ConfigErrorMessage, ConfigTask, ConfigRandomEvent, ConfigTaskTargetType
 
@@ -23,9 +23,6 @@ TASK_STATUS_FINISH = 2
 MAIN_TASK = 1
 BRANCH_TASK = 2
 DAILY_TASK = 3
-
-# trig type
-CREATE_CHAR_AUTO_RECEIVE = 1
 
 
 def is_daily_task(task_id):
@@ -187,16 +184,18 @@ class TaskManager(object):
         push_ids = []
         for task_id in task_ids:
             task = docs['doing'].get(str(task_id), {})
-            if task:
-                config = ConfigTask.get(int(task_id))
+            if not task:
+                continue
 
-                for target_id, value in config.targets.iteritems():
-                    target = task.get(str(target_id), 0)
-                    if not target or target != value:
-                        break
+            config = ConfigTask.get(int(task_id))
+            for target_id, value in config.targets.iteritems():
+                target = task.get(str(target_id), 0)
+                if target != value:
+                    break
 
-                    unsetter['doing.{0}'.format(task_id)] = ''
-                    push_ids.append(task_id)
+            unsetter['doing.{0}'.format(task_id)] = ''
+            push_ids.append(task_id)
+
         if unsetter:
             MongoTask.db(self.server_id).update_one(
                 {'_id': 1},
@@ -205,6 +204,15 @@ class TaskManager(object):
                     '$push': {'finish': {'$each': push_ids}},
                 },
             )
+
+        for k in push_ids:
+            if is_daily_task(k):
+                daily_task_finish_signal.send(
+                    sender=None,
+                    server_id=self.server_id,
+                    char_id=self.char_id,
+                    task_id=k,
+                )
 
     def trig_by_id(self, task_id, num):
         # 按照任务ID来触发
