@@ -17,11 +17,14 @@ from core.bag import BagTrainingSkill
 from core.resource import Resource
 
 from utils.message import MessagePipe
+from utils.api import Timerd
 
 from protomsg.skill_pb2 import SkillNotify
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
 from config import ConfigStaff, ConfigSkill, ConfigErrorMessage, ConfigTrainingSkillItem, ConfigSkillWashCost
+
+TIMER_UPGRADE_PATH = "/api/timerd/skill"
 
 
 class SkillManager(object):
@@ -35,29 +38,17 @@ class SkillManager(object):
             {'_id': self.char_id},
             {key: 1}
         )
-
         if not doc or str(staff_id) not in doc['staffs']:
             return None
 
         return doc['staffs'][str(staff_id)]['skills']
 
     def get_staff_skill_level(self, staff_id, skill_id):
-        key = 'staffs.{0}.skills.{1}'.format(staff_id, skill_id)
-        doc = MongoStaff.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {key: 1}
-        )
-
-        staff = doc['staffs'].get(str(staff_id), {})
-        if not staff:
+        skills = self.get_staff_skills(staff_id)
+        if skills and skills.get(str(skill_id), None):
+            return skills[str(skill_id)]['level']
+        else:
             return 0
-
-        skill = staff['skills'].get(str(skill_id), {})
-        if not skill:
-            return 0
-
-        return skill['level']
-
 
     def get_staff_shop_skill_level(self, staff_id):
         return self.get_staff_skill_level(staff_id, ConfigSkill.SHOP_SKILL_ID)
@@ -94,7 +85,7 @@ class SkillManager(object):
 
     def upgrade(self, staff_id, skill_id):
         this_skill = self.check(staff_id, skill_id)
-        if this_skill.get('upgrade_end_at', 0):
+        if this_skill.get('end_at', 0):
             raise GameException(ConfigErrorMessage.get_error_id("SKILL_ALREADY_IN_UPGRADE"))
 
         config = ConfigSkill.get(skill_id)
@@ -105,50 +96,49 @@ class SkillManager(object):
         need_id, need_amount = config.get_upgrade_needs(level)
 
         with BagTrainingSkill(self.server_id, self.char_id).remove_context(need_id, need_amount):
-            key = "staffs.{0}.skills.{1}.upgrade_end_at".format(staff_id, skill_id)
             value = arrow.utcnow().timestamp + ConfigTrainingSkillItem.get(need_id).minutes * 60
+
+            data = {
+                'sid': self.server_id,
+                'cid': self.char_id,
+                'staff_id': staff_id,
+                'skill_id': skill_id,
+            }
+
+            key = Timerd.register(value, TIMER_UPGRADE_PATH, data)
 
             MongoStaff.db(self.server_id).update_one(
                 {'_id': self.char_id},
-                {'$set': {key: value}}
+                {'$set': {
+                    "staffs.{0}.skills.{1}.end_at".format(staff_id, skill_id): value,
+                    "staffs.{0}.skills.{1}.key".format(staff_id, skill_id): key,
+                }}
             )
 
         self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
 
     def upgrade_speedup(self, staff_id, skill_id):
-        def finish():
-            key_level = "staffs.{0}.skills.{1}.level".format(staff_id, skill_id)
-            key_end_at = "staffs.{0}.skills.{1}.upgrade_end_at".format(staff_id, skill_id)
-
-            MongoStaff.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {
-                    '$inc': {key_level: 1},
-                    '$set': {key_end_at: 0},
-                }
-            )
-
-            self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
-
         this_skill = self.check(staff_id, skill_id)
-        end_at = this_skill.get('upgrade_end_at', 0)
+        end_at = this_skill.get('end_at', 0)
         if not end_at:
             raise GameException(ConfigErrorMessage.get_error_id("SKILL_UPGRADE_SPEEDUP_CANNOT"))
 
         behind_seconds = end_at - arrow.utcnow().timestamp
         if behind_seconds <= 0:
-            finish()
-            return
+            self.update(skill_id, skill_id)
+        else:
+            minutes, seconds = divmod(behind_seconds, 60)
+            if seconds:
+                minutes += 1
 
-        minutes, seconds = divmod(behind_seconds, 60)
-        if seconds:
-            minutes += 1
+            need_diamond = minutes * 10
+            message = u"Skill Upgrade SpeedUp"
 
-        need_diamond = minutes * 10
-        message = u"Skill Upgrade SpeedUp"
+            with Resource(self.server_id, self.char_id).check(diamond=-need_diamond, message=message):
+                self.update(staff_id, skill_id)
 
-        with Resource(self.server_id, self.char_id).check(diamond=-need_diamond, message=message):
-            finish()
+        if this_skill['key']:
+            Timerd.cancel(this_skill['key'])
 
     def lock_toggle(self, staff_id, skill_id):
         self.check(staff_id, skill_id)
@@ -164,16 +154,15 @@ class SkillManager(object):
     def wash(self, staff_id):
         self.check(staff_id)
 
-        doc = MongoStaff.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {'staffs.{0}.skills'.format(staff_id): 1}
-        )
+        skills = self.get_staff_skills(staff_id)
 
-        skills = doc['staffs'][str(staff_id)]['skills']
+        wash_skills = {}
         new_skills = {}
         for k, v in skills.iteritems():
             if v['locked'] == 1:
                 new_skills[k] = v
+            else:
+                wash_skills[k] = v
 
         locked_skill_amount = len(new_skills)
 
@@ -202,6 +191,10 @@ class SkillManager(object):
                 {'_id': self.char_id},
                 {'$set': {"staffs.{0}.skills".format(staff_id): new_skills}}
             )
+
+            for k, v in wash_skills.iteritems():
+                if v['key']:
+                    Timerd.cancel(v['key'])
 
         self.send_notify()
 
@@ -233,6 +226,33 @@ class SkillManager(object):
                 notify_staff_skill.id = int(sid)
                 notify_staff_skill.level = sinfo['level']
                 notify_staff_skill.locked = sinfo['locked'] == 1
-                notify_staff_skill.upgrade_end_at = sinfo.get('upgrade_end_at', 0)
+                notify_staff_skill.upgrade_end_at = sinfo.get('end_at', 0)
 
         MessagePipe(self.char_id).put(msg=notify)
+
+    def update(self, staff_id, skill_id):
+        level = "staffs.{0}.skills.{1}.level".format(staff_id, skill_id)
+        end_at = "staffs.{0}.skills.{1}.end_at".format(staff_id, skill_id)
+        key = "staffs.{0}.skills.{1}.key".format(staff_id, skill_id)
+
+        MongoStaff.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {
+                '$inc': {level: 1},
+                '$set': {end_at: 0, key: ''},
+            }
+        )
+
+        self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
+
+    def timer_callback(self, staff_id, skill_id):
+        data = self.get_staff_skills(staff_id)
+        if 0 < data[str(skill_id)]['end_at'] <= arrow.utcnow().timestamp:
+            self.update(staff_id, skill_id)
+        else:
+            return data[str(skill_id)]['end_at']
+
+        return 0
+
+
+

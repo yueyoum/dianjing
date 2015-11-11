@@ -14,6 +14,8 @@ from core.staff import StaffManger
 from core.building import BuildingTrainingCenter
 from core.package import Property
 from core.resource import Resource
+from core.signals import staff_exp_training_signal, staff_exp_training_speedup_signal
+
 from utils.message import MessagePipe
 from utils.api import Timerd
 
@@ -246,6 +248,13 @@ class TrainingExp(object):
 
         self.send_notify(slot_ids=[slot_id])
 
+        staff_exp_training_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            staff_id=staff_id,
+        )
+
     def cancel(self, slot_id):
         slot = self.get_slot(slot_id)
 
@@ -294,6 +303,12 @@ class TrainingExp(object):
 
         self.send_notify(slot_ids=[slot_id])
 
+        staff_exp_training_speedup_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+        )
+
     def callback(self, slot_id):
         slot = self.get_slot(slot_id)
         if slot.status != ExpSlotStatus.TRAINING:
@@ -315,6 +330,7 @@ class TrainingExp(object):
         )
 
         self.send_notify(slot_ids=[slot_id])
+        return 0
 
     def get_reward(self, slot_id):
         slot = self.get_slot(slot_id)

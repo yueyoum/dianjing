@@ -11,7 +11,7 @@ import itertools
 
 from core.mongo import MongoCharacter
 from core.abstract import AbstractClub
-from core.signals import match_staffs_set_done_signal, club_level_up_signal
+from core.signals import match_staffs_set_done_signal, club_level_up_signal, match_staffs_set_change_signal
 from core.staff import StaffManger
 from core.qianban import QianBanContainer
 from core.resource import Resource
@@ -119,6 +119,17 @@ class Club(AbstractClub):
 
         match_staffs = staff_ids[:5]
         tibu_staffs = staff_ids[5:]
+
+        old_data = MongoCharacter.db(self.server_id).find_one({'_id': 1}, {'club': 1})
+        old_match = set(old_data['club']['match_staffs'])
+        old_tibu = set(old_data['club']['tibu_staffs'])
+
+        if len(set(staff_ids) | old_match | old_tibu) > 10:
+            match_staffs_set_change_signal.send(
+                sender=None,
+                server_id=self.server_id,
+                char_id=self.char_id,
+            )
 
         MongoCharacter.db(self.server_id).update_one(
             {'_id': self.char_id},

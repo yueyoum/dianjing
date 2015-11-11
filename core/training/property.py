@@ -15,6 +15,7 @@ from core.package import Property
 from core.resource import Resource
 from core.bag import BagItem
 from core.building import BuildingTrainingCenter
+from core.signals import staff_property_training_signal
 
 from utils.api import Timerd
 from utils.message import MessagePipe
@@ -298,6 +299,13 @@ class TrainingProperty(object):
 
         for item_id, item_amount in config.need_items:
             bag.remove(item_id, item_amount)
+
+        staff_property_training_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            staff_id=staff_id,
+        )
 
     @slot_id_check
     def cancel(self, staff_id, slot_id):

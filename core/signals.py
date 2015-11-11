@@ -39,6 +39,16 @@ recruit_staff_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'
 club_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])
 # 升级了员工
 staff_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id', 'new_level'])
+# 更换出阵队员
+match_staffs_set_change_signal = Signal(providing_args=['server_id', 'char_id'])
+# 员工强化培训
+staff_property_training_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
+# 员工exp训练
+staff_exp_training_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
+# exp_training_speedup
+staff_exp_training_speedup_signal = Signal(providing_args=['server_id', 'char_id'])
+# staff broadcast
+staff_broadcast_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
 
 # 充值
 purchase_done_signal = Signal(providing_args=['server_id', 'char_id', 'diamond'])

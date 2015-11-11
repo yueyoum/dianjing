@@ -203,29 +203,29 @@ class BaseBuilding(object):
         return self.bm.level_up(self.BUILDING_ID)
 
 
-# 总部大楼 id = 1
+# 俱乐部总部 id = 1
 
-# 训练中心
+# 培训中心
 class BuildingTrainingCenter(BaseBuilding):
     BUILDING_ID = 2
 
 
-# 员工中心
+# 人才市场
 class BuildingStaffCenter(BaseBuilding):
     BUILDING_ID = 3
 
 
-# 任务中心
+# 精彩活动
 class BuildingTaskCenter(BaseBuilding):
     BUILDING_ID = 4
 
 
-# 联赛中心
+# 电竞赛场
 class BuildingLeagueCenter(BaseBuilding):
     BUILDING_ID = 5
 
 
-# 赞助商中心
+# 赞助商事务所
 class BuildingSponsorCenter(BaseBuilding):
     BUILDING_ID = 6
 

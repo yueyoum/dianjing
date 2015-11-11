@@ -133,7 +133,9 @@ class MongoStaff(BaseDocument):
         'level': 1,
         'locked': 0,
         # 升级结束时间戳
-        'upgrade_end_at': 0,
+        'end_at': 0,
+        # timerd callback key
+        'key': ''
     }
 
     # 嵌入到staff中
@@ -331,19 +333,14 @@ class MongoMail(BaseDocument):
 class MongoTask(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        'tasks': {}
-    }
-
-    TASK_DOCUMENT = {
-        'num': 0,
-        'status': 0,
+        # target_id : num
+        'doing': {},
+        'finish': {},
+        'history': [],
     }
 
     COLLECTION = "task"
 
-    @classmethod
-    def document_task(cls):
-        return cls.TASK_DOCUMENT.copy()
 
 # 天梯
 class MongoLadder(BaseDocument):

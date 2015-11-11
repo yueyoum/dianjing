@@ -11,6 +11,7 @@ from django.http import JsonResponse
 
 from core.building import BuildingManager
 from core.training import TrainingExp, TrainingProperty, TrainingBroadcast
+from core.skill import SkillManager
 
 
 def building_levelup_callback(request):
@@ -64,3 +65,17 @@ def training_broadcast_callback(request):
     tb = TrainingBroadcast(server_id, char_id)
     timestamp = tb.callback(slot_id)
     return JsonResponse({'end': timestamp})
+
+
+def skill_upgrade_callback(request):
+    data = request.POST['data']
+    data = json.loads(data)
+
+    server_id = data['sid']
+    char_id = data['cid']
+    staff_id = data['staff_id']
+    skill_id = data['skill_id']
+
+    timestamp = SkillManager(server_id, char_id).timer_callback(staff_id, skill_id)
+    return JsonResponse({'end': timestamp})
+
