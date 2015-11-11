@@ -37,7 +37,7 @@ class RandomEvent(object):
         self.package = 0
 
 
-class TargetType(object):
+class TaskTargetType(object):
     __slots__ = ['id', 'model']
 
     def __init__(self):
@@ -89,8 +89,8 @@ class ConfigRandomEvent(ConfigBase):
         return super(ConfigRandomEvent, cls).get(_id)
 
 
-class ConfigTargetType(ConfigBase):
-    EntityClass = TargetType
+class ConfigTaskTargetType(ConfigBase):
+    EntityClass = TaskTargetType
     INSTANCES = {}
     FILTER_CACHE = {}
 
@@ -100,4 +100,4 @@ class ConfigTargetType(ConfigBase):
 
         :rtype : TargetType
         """
-        return super(ConfigTargetType, cls).get(_id)
+        return super(ConfigTaskTargetType, cls).get(_id)

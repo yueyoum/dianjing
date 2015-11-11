@@ -107,7 +107,8 @@ class TaskManager(object):
         task_ids = ConfigTask.filter(trigger=trigger)
         doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id})
 
-        doc_ids = set(doc['history']) | set(doc['finish']) | set(doc['doing'].keys())
+        doing_ids = [int(i) for i in doc['doing'].keys()]
+        doc_ids = set(doc['history']) | set(doc['finish']) | set(doing_ids)
         # 没做过, 条件值满足, add
         for task_id in task_ids:
             config = ConfigTask.get(task_id)
@@ -150,29 +151,25 @@ class TaskManager(object):
         change_ids = []
 
         for task_id in task_ids:
-            if str(task_id) in doc['doing']:
-                change_ids.append(task_id)
-                config = ConfigTask.get(int(task_id))
-                target_value = doc['doing'][str(task_id)].get(str(target_id), 0)
-                """:type: int"""
-                # 新增配置field
-                if not target_value:
-                    target_modify['doing.{0}.{1}'.format(task_id, target_id)] = num
-                    continue
+            if str(task_id) not in doc['doing']:
+                continue
 
-                # add to database
-                target = ConfigTargetType.get(target_id)
-                if target.model == 1:
-                    if target_value + num >= config.targets[target_id]:
-                        target_value = config.targets[target_id]
-                    else:
-                        target_value += num
+            change_ids.append(task_id)
+            config = ConfigTask.get(int(task_id))
+            target_value = doc['doing'][str(task_id)].get(str(target_id), 0)
+            """:type: int"""
 
+            target = ConfigTargetType.get(target_id)
+            if target.model == 1:
+                if target_value + num >= config.targets[target_id]:
+                    target_value = config.targets[target_id]
                 else:
-                    if num == config.targets[target_id]:
-                        target_value = config.targets[target_id]
+                    target_value += num
+            else:
+                if num == config.targets[target_id]:
+                    target_value = config.targets[target_id]
 
-                target_modify['doing.{0}.{1}'.format(task_id, target_id)] = target_value
+            target_modify['doing.{0}.{1}'.format(task_id, target_id)] = target_value
 
         if target_modify:
             MongoTask.db(self.server_id).update_one(
