@@ -8,7 +8,7 @@ from core.package import Drop
 from core.resource import Resource
 from core.signals import random_event_done_signal
 
-from config import ConfigErrorMessage, ConfigTask, ConfigRandomEvent, ConfigTargetType
+from config import ConfigErrorMessage, ConfigTask, ConfigRandomEvent, ConfigTaskTargetType
 
 from utils.message import MessagePipe, MessageFactory
 
@@ -159,7 +159,7 @@ class TaskManager(object):
             target_value = doc['doing'][str(task_id)].get(str(target_id), 0)
             """:type: int"""
 
-            target = ConfigTargetType.get(target_id)
+            target = ConfigTaskTargetType.get(target_id)
             if target.model == 1:
                 if target_value + num >= config.targets[target_id]:
                     target_value = config.targets[target_id]
