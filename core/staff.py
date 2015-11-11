@@ -210,8 +210,7 @@ class StaffManger(object):
         self.server_id = server_id
         self.char_id = char_id
 
-        doc = MongoStaff.db(server_id).find_one({'_id': self.char_id}, {'_id': 1})
-        if not doc:
+        if not MongoStaff.exist(self.server_id, self.char_id):
             doc = MongoStaff.document()
             doc['_id'] = self.char_id
             MongoStaff.db(server_id).insert_one(doc)

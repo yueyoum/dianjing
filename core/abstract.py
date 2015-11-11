@@ -62,6 +62,8 @@ class AbstractStaff(object):
         msg.caozuo = int(self.caozuo)
         msg.zhimingdu = int(self.zhimingdu)
 
+        return msg
+
 
 class AbstractClub(object):
     __slots__ = [
