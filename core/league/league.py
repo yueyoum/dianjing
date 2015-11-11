@@ -165,6 +165,7 @@ class LeagueGame(object):
             league_level = g['level']
             event_id = g['events'][order - 1]
             clubs = g['clubs']
+            """:type: dict[str, dict]"""
 
             matchs = []
             """:type: list[LeagueMatch]"""
@@ -235,7 +236,7 @@ class LeagueGame(object):
                         target=m.club_one_object.name,
                         score_got=m.club_two_object.score_change,
                         gold_got=m.club_two_object.got_gold,
-                        score_rank=clubs.index(m.club_two_object.id) + 1
+                        score_rank=club_orders.index(m.club_two_object.id) + 1
                     )
 
             # 进阶

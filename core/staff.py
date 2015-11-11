@@ -280,7 +280,7 @@ class StaffManger(object):
         if self.has_staff(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_ALREADY_HAVE"))
 
-        club = Club(self.server_id, self.char_id)
+        club = Club(self.server_id, self.char_id, load_staff=False)
         if self.staffs_amount >= club.max_slots_amount:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_AMOUNT_REACH_MAX_LIMIT"))
 
