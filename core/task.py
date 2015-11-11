@@ -232,10 +232,10 @@ class TaskManager(object):
             notify_task.id = int(k)
             notify_task.status = TASK_DOING
 
-            for target_id, target_value in v.iteritems():
+            for target_id, target_value in ConfigTask.get(int(k)).targets.iteritems():
                 notify_task_target = notify_task.target.add()
                 notify_task_target.id = target_id
-                notify_task_target.target_value = target_value
+                notify_task_target.target_value = v.get(str(target_id), 0)
 
         for k in doc['finish']:
             notify_task = notify.task.add()
