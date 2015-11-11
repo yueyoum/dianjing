@@ -72,7 +72,6 @@ urlpatterns = [
     url(r'^mail/delete/$', 'views.mail.delete'),
     url(r'^mail/getattachment/$', 'views.mail.get_attachment'),
 
-    url(r'^task/acquire/$', 'views.task.receive'),
     url(r'^task/getreward/$', 'views.task.reward'),
     url(r'^task/doing/$', 'views.task.doing'),
 
