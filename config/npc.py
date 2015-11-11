@@ -97,21 +97,52 @@ class ConfigNPC(ConfigBase):
         from config import ConfigClubFlag
 
         flags = ConfigClubFlag.INSTANCES.keys()
-
         values = cls.filter(league=league_level).values()
 
         npcs = []
+
+        club_names = cls.get_club_names()
+        manager_names = cls.get_manager_names()
+        club_name_used = set()
+        manager_name_used = set()
+
+        def _get_club_name():
+            while True:
+                if not club_names:
+                    raise RuntimeError("not enough club name")
+
+                name = random.choice(club_names)
+                club_names.remove(name)
+                if name not in club_name_used:
+                    club_name_used.add(name)
+                    return name
+
+        def _get_manager_name():
+            while True:
+                if not manager_names:
+                    raise RuntimeError("not enough manager name")
+
+                name = random.choice(manager_names)
+                manager_names.remove(name)
+                if name not in manager_name_used:
+                    manager_name_used.add(name)
+                    return name
+
+
         while len(npcs) < amount:
             v = random.choice(values)
+            # 这里仅仅是获取NPC俱乐部配置，然后其他都是随机的，所以这里不用删除v
 
             npc = {}
-            npc['club_name'] = random.choice(cls.CLUB_NAMES)
+
+            npc['club_name'] = _get_club_name()
+            npc['manager_name'] = _get_manager_name()
             npc['club_flag'] = random.choice(flags)
-            npc['manager_name'] = random.choice(cls.MANAGER_NAMES)
             staffs = []
 
             staff_ids = ConfigStaff.random_ids(5)
             for i in range(5):
+                # NPC staff 不用设置知名度属性，因为它对战斗无用
                 staffs.append({
                     'id': staff_ids[i],
                     'jingong': random.randint(v.jingong_low, v.jingong_high),
@@ -126,7 +157,6 @@ class ConfigNPC(ConfigBase):
                 })
 
             npc['staffs'] = staffs
-
             npcs.append(npc)
 
         return npcs

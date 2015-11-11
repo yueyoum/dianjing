@@ -7,9 +7,7 @@ Description:
 
 """
 
-
 from django.db import IntegrityError
-from django.db import transaction
 
 from dianjing.exception import GameException
 from apps.character.models import Character as ModelCharacter
@@ -24,9 +22,9 @@ from core.club import Club
 from protomsg.club_pb2 import (
     CreateClubResponse,
     ClubSetPolicyResponse,
-    ClubSetMatchStaffResponse
+    ClubSetMatchStaffResponse,
+    ClubStaffSlotBuyResponse,
 )
-
 
 
 def create(request):
@@ -39,17 +37,15 @@ def create(request):
 
     char = ModelCharacter.objects.get(id=char_id)
     if char.club_name:
-        raise GameException( ConfigErrorMessage.get_error_id("CLUB_ALREADY_CREATED") )
+        raise GameException(ConfigErrorMessage.get_error_id("CLUB_ALREADY_CREATED"))
 
+    try:
+        char.club_name = name
+        char.save()
+    except IntegrityError:
+        raise GameException(ConfigErrorMessage.get_error_id("CLUB_NAME_TAKEN"))
 
-    with transaction.atomic():
-        try:
-            char.club_name = name
-            char.save()
-        except IntegrityError:
-            raise GameException( ConfigErrorMessage.get_error_id("CLUB_NAME_TAKEN") )
-
-        Character.create(server_id, char_id, char.name, name, flag)
+    Character.create(server_id, char_id, char.name, name, flag)
 
     game_start_signal.send(
         sender=None,
@@ -88,3 +84,14 @@ def set_match_staffs(request):
     response.ret = 0
     return ProtobufResponse(response)
 
+
+def buy_slots(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    club = Club(server_id, char_id)
+    club.buy_slot()
+
+    response = ClubStaffSlotBuyResponse()
+    response.ret = 0
+    return ProtobufResponse(response)

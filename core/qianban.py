@@ -91,7 +91,6 @@ class QianBanContainer(object):
     def get_effect(self, staff_id, staff_skill_ids):
         """
 
-        :type staff: core.abstract.AbstractStaff
         :rtype : QianBanEffect
         """
         config_staff = ConfigStaff.get(staff_id)

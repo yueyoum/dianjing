@@ -14,14 +14,23 @@ from utils.message import MessagePipe
 
 from protomsg.character_pb2 import CharacterNotify, Character as MsgCharacter
 
+from config.settings import (
+    CHAR_INIT_DIAMOND,
+    CHAR_INIT_GOLD,
+    CHAR_INIT_STAFFS,
+)
+
 
 class Character(object):
+    __slots__ = ['server_id', 'char_id']
+
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
 
     @classmethod
     def create(cls, server_id, char_id, char_name, club_name, club_flag):
+        # 这里是club创建完毕后再调用的
         from core.staff import StaffManger
         from core.club import Club
 
@@ -31,16 +40,30 @@ class Character(object):
         doc['create_at'] = arrow.utcnow().timestamp
         doc['club']['name'] = club_name
         doc['club']['flag'] = club_flag
-        doc['club']['gold'] = 100000
+        doc['club']['gold'] = CHAR_INIT_GOLD
+        doc['club']['diamond'] = CHAR_INIT_DIAMOND
 
         MongoCharacter.db(server_id).insert_one(doc)
 
         sm = StaffManger(server_id, char_id)
-        staff_ids = [2, 3, 4, 5, 6]
-        for i in staff_ids:
+        for i in CHAR_INIT_STAFFS:
             sm.add(i, send_notify=False)
 
-        Club(server_id, char_id).set_match_staffs(staff_ids + [0] * 5)
+        Club(server_id, char_id).set_match_staffs(CHAR_INIT_STAFFS + [0] * 5)
+
+    @classmethod
+    def get_recent_login_char_ids(cls, server_id, recent_days=30, other_conditions=None):
+        day_limit = arrow.utcnow().replace(days=-recent_days)
+        timestamp = day_limit.timestamp
+
+        condition = {'last_login': {'$gte': timestamp}}
+        if other_conditions:
+            condition = [condition]
+            condition.extend(other_conditions)
+            condition = {'$and': condition}
+
+        doc = MongoCharacter.db(server_id).find(condition)
+        return (d['_id'] for d in doc)
 
     @property
     def create_days(self):
@@ -58,6 +81,7 @@ class Character(object):
     def set_login(self):
         from django.db.models import F
         from apps.character.models import Character as ModelCharacter
+        from core.league import LeagueGame
 
         now = arrow.utcnow()
         ModelCharacter.objects.filter(id=self.char_id).update(
@@ -69,13 +93,16 @@ class Character(object):
             {'$set': {'last_login': now.timestamp}}
         )
 
+        # 联赛只匹配最近一段时间登录的帐号，如果一个帐号很久没登录，那么他将不在联赛里
+        # 当他再次登录的时候，这里要检测一下
+        LeagueGame.join_already_started_league(self.server_id, self.char_id, send_notify=False)
+
     def make_protomsg(self, **kwargs):
         if kwargs:
             char = kwargs
         else:
             char = MongoCharacter.db(self.server_id).find_one(
                 {'_id': self.char_id},
-                # TODO field
                 {'name': 1}
             )
 

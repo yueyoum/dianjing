@@ -49,7 +49,10 @@ def game_start_handler(server_id, char_id, **kwargs):
     c.set_login()
     c.send_notify()
 
-    Club(server_id, char_id).send_notify()
+    club = Club(server_id, char_id)
+    club.send_notify()
+    club.send_staff_slots_notify()
+
     StaffRecruit(server_id, char_id).send_notify()
     StaffManger(server_id, char_id).send_notify()
     SkillManager(server_id, char_id).send_notify()

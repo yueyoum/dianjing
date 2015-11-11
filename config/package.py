@@ -12,7 +12,7 @@ from config.base import ConfigBase
 class Package(object):
     __slots__ = ['id', 'attr_mode', 'attr_random_amount', 'attr_random_value',
                  'jingong', 'qianzhi', 'xintai', 'baobing',
-                 'fangshou', 'yunying', 'yishi', 'caozuo',
+                 'fangshou', 'yunying', 'yishi', 'caozuo', 'zhimingdu',
                  'gold', 'diamond',
                  'staff_exp', 'club_renown',
                  'ladder_score', 'league_score',
@@ -33,6 +33,7 @@ class Package(object):
         self.yunying = 0
         self.yishi = 0
         self.caozuo = 0
+        self.zhimingdu = 0
         
         self.gold = 0
         self.diamond = 0

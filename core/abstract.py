@@ -8,33 +8,71 @@ Description:
 """
 
 from itertools import chain
+from config import ConfigStaffLevel
 from protomsg.club_pb2 import Club as MessageClub
-
+from protomsg.staff_pb2 import Staff as MessageStaff
 
 
 class AbstractStaff(object):
+    __slots__ = [
+        'server_id', 'char_id', 'id', 'race', 'level', 'exp', 'status', 'quality',
+        'jingong', 'qianzhi', 'xintai', 'baobing', 'fangshou', 'yunying',
+        'yishi', 'caozuo', 'zhimingdu',
+        'skills'
+    ]
     def __init__(self, *args, **kwargs):
-        self.id = None
-        self.race = None
-        self.level = None
-        self.exp = None
-        self.status = None
-        self.quality = None
+        self.server_id = 0
+        self.char_id = 0
 
-        self.jingong = None
-        self.qianzhi = None
-        self.xintai = None
-        self.baobing = None
-        self.fangshou = None
-        self.yunying = None
-        self.yishi = None
-        self.caozuo = None
+        self.id = 0
+        self.race = 0
+        self.level = 0
+        self.exp = 0
+        self.status = 0
+        self.quality = 0
+
+        self.jingong = 0
+        self.qianzhi = 0
+        self.xintai = 0
+        self.baobing = 0
+        self.fangshou = 0
+        self.yunying = 0
+        self.yishi = 0
+        self.caozuo = 0
+        self.zhimingdu = 0
 
         self.skills = {}
 
+    def make_protomsg(self):
+        msg = MessageStaff()
+
+        msg.id = self.id
+        msg.level = self.level
+        msg.cur_exp = self.exp
+        msg.max_exp = ConfigStaffLevel.get(self.level).exp[self.quality]
+        msg.status = self.status
+
+        msg.jingong = int(self.jingong)
+        msg.qianzhi = int(self.qianzhi)
+        msg.xintai = int(self.xintai)
+        msg.baobing = int(self.baobing)
+        msg.fangshou = int(self.fangshou)
+        msg.yunying = int(self.yunying)
+        msg.yishi = int(self.yishi)
+        msg.caozuo = int(self.caozuo)
+        msg.zhimingdu = int(self.zhimingdu)
+
+        return msg
 
 
 class AbstractClub(object):
+    __slots__ = [
+        'id', 'name', 'manager_name', 'flag', 'level',
+        'renown', 'vip', 'gold', 'diamond',
+        'staffs', 'match_staffs', 'tibu_staffs',
+        'policy'
+    ]
+
     def __init__(self, *args, **kwargs):
         self.id = 0
         self.name = ""
@@ -46,19 +84,18 @@ class AbstractClub(object):
         self.gold = 0
         self.diamond = 0
 
-        self.staffs = {} # Staff
-        self.match_staffs = [] # int
-        self.tibu_staffs = [] # int
+        self.staffs = {}  # Staff
+        self.match_staffs = []  # int
+        self.tibu_staffs = []  # int
 
-        self.policy = 0
-
+        self.policy = 1
 
     def match_staffs_ready(self):
-        return len(self.match_staffs) == 5 and all([i!=0 for i in self.match_staffs])
-
+        return len(self.match_staffs) == 5 and all([i != 0 for i in self.match_staffs])
 
     def make_protomsg(self):
         msg = MessageClub()
+        # 因为NPC的ID是UUID，所以这里为了统一，club的ID 都是 str
         msg.id = str(self.id)
         msg.name = self.name
         msg.manager = self.manager_name

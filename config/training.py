@@ -13,7 +13,8 @@ from config.base import ConfigBase
 class TrainingProperty(object):
     __slots__ = [
         'id', 'minutes', 'need_items',
-        'cost_type', 'cost_value', 'package'
+        'cost_type', 'cost_value', 'package',
+        'need_building_level'
     ]
 
     def __init__(self):
@@ -23,6 +24,7 @@ class TrainingProperty(object):
         self.cost_type = 0
         self.cost_value = 0
         self.package = 0
+        self.need_building_level = 0
 
 
 class TrainingSkillItem(object):

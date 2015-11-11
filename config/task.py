@@ -36,15 +36,6 @@ class RandomEvent(object):
         self.id = 0
         self.package = 0
 
-
-class Target(object):
-    __slots__ = ['target_id', 'target_value']
-
-    def __init__(self):
-        self.target_id = None
-        self.target_value = None
-
-
 class ConfigTask(ConfigBase):
     # 类实体
     EntityClass = Task

@@ -62,6 +62,10 @@ class Staff(object):
 class StaffHot(object):
     __slots__ = ['id', 'cost']
 
+    def __init__(self):
+        self.id = 0
+        self.cost = 0
+
 
 
 class StaffRecruit(object):
@@ -113,6 +117,12 @@ class StaffLevel(object):
         self.exp = {}
         self.next_level = 0
 
+
+class StaffStatus(object):
+    __slots__ = ['id', 'value']
+    def __init__(self):
+        self.id = 0
+        self.value = 0
 
 class ConfigStaff(ConfigBase):
     EntityClass = Staff
@@ -216,3 +226,29 @@ class ConfigStaffLevel(ConfigBase):
         :rtype : StaffLevel
         """
         return super(ConfigStaffLevel, cls).get(id)
+
+class ConfigStaffStatus(ConfigBase):
+    EntityClass = StaffStatus
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    DEFAULT_STATUS = 0
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigStaffStatus, cls).initialize(fixture)
+
+        for k, v in cls.INSTANCES.iteritems():
+            if v.value == 0:
+                cls.DEFAULT_STATUS = k
+                break
+        else:
+            raise Exception("can not find default staff status")
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype : StaffStatus
+        """
+        return super(ConfigStaffStatus, cls).get(_id)

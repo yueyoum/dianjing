@@ -14,6 +14,7 @@ from core.staff import StaffManger
 from core.package import Property
 from core.resource import Resource
 from core.bag import BagItem
+from core.building import BuildingTrainingCenter
 from core.signals import staff_property_training_signal
 
 from utils.api import Timerd
@@ -267,6 +268,10 @@ class TrainingProperty(object):
         config = ConfigTrainingProperty.get(training_id)
         if not config:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_PROPERTY_NOT_EXIST"))
+
+        building_level = BuildingTrainingCenter(self.server_id, self.char_id).get_level()
+        if building_level < config.need_building_level:
+            raise GameException(ConfigErrorMessage.get_error_id("BUILDING_TRAINING_CENTER_LEVEL_NOT_ENOUGH"))
 
         bag = BagItem(self.server_id, self.char_id)
         if not bag.has(config.need_items):

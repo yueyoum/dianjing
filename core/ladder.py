@@ -46,6 +46,7 @@ DEFAULT_MATCH_TIMES = 10
 
 
 class LadderNPCStaff(AbstractStaff):
+    __slots__ = []
     def __init__(self, data):
         super(LadderNPCStaff, self).__init__()
 
@@ -70,6 +71,7 @@ class LadderNPCStaff(AbstractStaff):
 
 
 class LadderNPCClub(AbstractClub):
+    __slots__ = ['order', 'score']
     def __init__(self, ladder_id, club_name, manager_name, club_flag, staffs, order, score):
         super(LadderNPCClub, self).__init__()
         self.id = ladder_id

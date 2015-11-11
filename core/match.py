@@ -9,6 +9,7 @@ Description:
 
 import random
 from dianjing.exception import GameException
+from core.signals import staff_any_match_signal
 
 from config import ConfigUnit, ConfigPolicy, ConfigErrorMessage, ConfigSkill
 
@@ -99,7 +100,8 @@ class Match(object):
             :type unit_id: int
             """
 
-            base_attribute = staff.jingong + staff.baobing + staff.caozuo + staff.qianzhi + staff.fangshou + staff.yunying
+            base_attribute = staff.jingong + staff.baobing + staff.caozuo + \
+                             staff.qianzhi + staff.fangshou + staff.yunying
             base_attribute = base_attribute * staff.xintai / 1000 * 1
 
             skill_id = ConfigUnit.get(unit_id).skill
@@ -119,7 +121,7 @@ class Match(object):
         a = calculate(self.staff_one, unit_one)
         b = calculate(self.staff_two, unit_two)
 
-        y = ((a-b)/(a+b)) * 100
+        y = ((a - b) / (a + b)) * 100
         advantage_change = abs(y) / 2
 
         if y < 0:
@@ -188,6 +190,26 @@ class Match(object):
                     self.winning = self.staff_two
 
         msg.staff_one_win = self.winning is self.staff_one
+
+        # send signal
+        if self.staff_one.server_id:
+            staff_any_match_signal.send(
+                sender=None,
+                server_id=self.staff_one.server_id,
+                char_id=self.staff_one.char_id,
+                staff_id=self.staff_one.id,
+                win=msg.staff_one_win
+            )
+
+        if self.staff_two.server_id:
+            staff_any_match_signal.send(
+                sender=None,
+                server_id=self.staff_two.server_id,
+                char_id=self.staff_two.char_id,
+                staff_id=self.staff_two.id,
+                win=not msg.staff_one_win
+            )
+
         return msg
 
 
@@ -207,14 +229,22 @@ class ClubMatch(object):
 
         self.club_one_fight_info = {}
         self.club_two_fight_info = {}
+        self.club_one_winning_times = 0
+        self.club_two_winning_times = 0
+
+    @property
+    def points(self):
+        # 比分
+        """
+
+        :rtype : tuple
+        """
+        return self.club_one_winning_times, self.club_two_winning_times
 
     def start(self):
         msg = MessageClubMatch()
         msg.club_one.MergeFrom(self.club_one.make_protomsg())
         msg.club_two.MergeFrom(self.club_two.make_protomsg())
-
-        club_one_winning_times = 0
-        club_two_winning_times = 0
 
         for i in range(5):
             staff_one = self.club_one.staffs[self.club_one.match_staffs[i]]
@@ -227,14 +257,14 @@ class ClubMatch(object):
             msg_match.MergeFrom(match_msg)
 
             if match_msg.staff_one_win:
-                club_one_winning_times += 1
+                self.club_one_winning_times += 1
             else:
-                club_two_winning_times += 1
+                self.club_two_winning_times += 1
 
             self.club_one_fight_info[staff_one.id] = FightInfo(staff_two.id, match_msg.staff_one_win)
             self.club_two_fight_info[staff_two.id] = FightInfo(staff_one.id, not match_msg.staff_one_win)
 
-        if club_one_winning_times >= 3:
+        if self.club_one_winning_times >= 3:
             msg.club_one_win = True
         else:
             msg.club_one_win = False
@@ -257,6 +287,6 @@ class ClubMatch(object):
 
 
 class FightInfo(object):
-    def __init__(self, rival, win=False):
+    def __init__(self, rival, win):
         self.rival = rival
         self.win = win

@@ -11,7 +11,7 @@ import traceback
 
 import uwsgidecorators
 from apps.server.models import Server
-from core.task import TaskManager, TaskRefresh, RandomEvent
+from core.task import TaskManager, RandomEvent
 from cronjob.log import Logger
 
 
@@ -22,7 +22,6 @@ def task_refresh(*args):
 
     try:
         for sid in Server.opened_server_ids():
-            TaskRefresh.cron_job(sid)
             TaskManager.clean(sid)
     except:
         logger.error(traceback.format_exc())

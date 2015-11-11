@@ -11,10 +11,10 @@ import itertools
 
 from core.mongo import MongoCharacter
 from core.abstract import AbstractClub
-from core.staff import Staff
 from core.signals import match_staffs_set_done_signal, club_level_up_signal, match_staffs_set_change_signal
 from core.staff import StaffManger
 from core.qianban import QianBanContainer
+from core.resource import Resource
 
 from dianjing.exception import GameException
 
@@ -26,7 +26,9 @@ from config import (
     ConfigErrorMessage
 )
 
-from protomsg.club_pb2 import ClubNotify
+from config.settings import BUY_STAFF_SLOT_COST
+
+from protomsg.club_pb2 import ClubNotify, ClubStaffSlotsAmountNotify
 
 
 def club_level_up_need_renown(level):
@@ -34,18 +36,18 @@ def club_level_up_need_renown(level):
 
 
 class Club(AbstractClub):
-    def __init__(self, server_id, char_id):
+    __slots__ = [
+        'server_id', 'char_id', 'buy_slots'
+    ]
+
+    def __init__(self, server_id, char_id, load_staff=True):
         super(Club, self).__init__()
 
         self.server_id = server_id
         self.char_id = char_id
-        self.load_data()
 
-    def load_data(self):
-        doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'club': 1, 'name': 1})
-
+        doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'club': 1, 'name': 1, 'buy_slots': 1})
         club = doc['club']
-        staffs = StaffManger(self.server_id, self.char_id).get_all_staffs()
 
         self.id = self.char_id  # 玩家ID
         self.name = club['name']  # 俱乐部名
@@ -55,22 +57,35 @@ class Club(AbstractClub):
         self.renown = club['renown']  # 俱乐部声望
         self.vip = club['vip']  # vip等级
         self.gold = club['gold']  # 游戏币
-        # FIXME
-        self.diamond = int(club['diamond'])  # 钻石
+        self.diamond = club['diamond']  # 钻石
         self.policy = club.get('policy', 1)  # 战术
 
         self.match_staffs = club.get('match_staffs', [])  # 出战员工
         self.tibu_staffs = club.get('tibu_staffs', [])  # 替补员工
 
-        for k, v in staffs.iteritems():
-            self.staffs[int(k)] = Staff(int(k), v)
+        self.buy_slots = doc.get('buy_slots', 0)
 
-        qc = QianBanContainer(self.all_match_staffs())
-        for i in itertools.chain(self.match_staffs, self.tibu_staffs):
-            if i == 0:
-                continue
+        if load_staff:
+            all_match_staff_ids = self.all_match_staffs()
+            if not all_match_staff_ids:
+                return
 
-            qc.affect(self.staffs[i])
+            self.staffs = StaffManger(self.server_id, self.char_id).get_staff_by_ids(all_match_staff_ids)
+            qc = QianBanContainer(all_match_staff_ids)
+            for i in itertools.chain(self.match_staffs, self.tibu_staffs):
+                if i == 0:
+                    continue
+
+                qc.affect(self.staffs[i])
+
+    @property
+    def max_slots_amount(self):
+        config = ConfigClubLevel.get(self.level)
+        return config.max_staff_amount + self.buy_slots
+
+    def load_all_staffs(self):
+        all_staff_ids = StaffManger(self.server_id, self.char_id).get_all_staff_ids()
+        self.staffs = StaffManger(self.server_id, self.char_id).get_staff_by_ids(all_staff_ids)
 
     def is_staff_in_match(self, staff_id):
         return staff_id in self.match_staffs or staff_id in self.tibu_staffs
@@ -133,7 +148,6 @@ class Club(AbstractClub):
                 match_staffs=match_staffs
             )
 
-        self.load_data()
         self.send_notify()
 
     def update(self, **kwargs):
@@ -180,10 +194,27 @@ class Club(AbstractClub):
                 new_level=self.level
             )
 
+            self.send_staff_slots_notify()
+
         self.send_notify()
+
+    def buy_slot(self):
+        with Resource(self.server_id, self.char_id).check(diamond=-BUY_STAFF_SLOT_COST, message=u"Club Buy Slot"):
+            MongoCharacter.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$inc': {'buy_slots': 1}}
+            )
+
+        self.send_staff_slots_notify()
 
     def send_notify(self):
         msg = self.make_protomsg()
         notify = ClubNotify()
         notify.club.MergeFrom(msg)
         MessagePipe(self.char_id).put(notify)
+
+    def send_staff_slots_notify(self):
+        notify = ClubStaffSlotsAmountNotify()
+        notify.amount = self.max_slots_amount
+        notify.cost_diamond = BUY_STAFF_SLOT_COST
+        MessagePipe(self.char_id).put(msg=notify)

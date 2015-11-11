@@ -36,6 +36,7 @@ class PackageBase(object):
         self.yunying = 0  # 员工 - 运营
         self.yishi = 0  # 员工 - 意识
         self.caozuo = 0  # 员工 - 操作
+        self.zhimingdu = 0  # 员工 - 知名度
         self.staff_exp = 0  # 员工 - 经验
         self.gold = 0  # 角色 - 金币/软妹币
         self.diamond = 0  # 角色 - 钻石
@@ -51,19 +52,19 @@ class PackageBase(object):
         :rtype : PackageBase
         """
 
-        def set_value(attr, values):
+        def set_value(attr_name, values):
             if not values:
                 return
 
             low, high = values
-            new_value = getattr(p, attr) + random.randint(low, high)
-            setattr(p, attr, new_value)
+            new_value = getattr(p, attr_name) + random.randint(low, high)
+            setattr(p, attr_name, new_value)
 
         config = ConfigPackage.get(pid)
 
         p = cls()
 
-        # 训练(道具)
+        # 经验书(道具)
         p.trainings = config.trainings
 
         # 员工经验， 软妹币，钻石，荣耀，天梯赛积分，联赛积分
@@ -198,3 +199,10 @@ class Property(PackageBase):
             data[attr] = value
 
         return data
+
+    def to_json(self):
+        raise NotImplementedError()
+
+    @classmethod
+    def loads_from_json(cls, data):
+        raise NotImplementedError()
