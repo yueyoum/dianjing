@@ -9,7 +9,6 @@ Description:
 
 from dianjing.exception import GameException
 
-from core.base import STAFF_ATTRS
 from core.abstract import AbstractStaff
 from core.mongo import MongoStaff, MongoRecruit
 from core.resource import Resource
@@ -39,6 +38,7 @@ def staff_training_exp_need_gold(staff_id, staff_level):
 
 class Staff(AbstractStaff):
     __slots__ = []
+
     def __init__(self, server_id, char_id, _id, data):
         super(Staff, self).__init__()
 
@@ -253,7 +253,6 @@ class StaffManger(object):
             staffs[int(k)] = Staff(self.server_id, self.char_id, int(k), v)
 
         return staffs
-
 
     def has_staff(self, staff_ids):
         if not isinstance(staff_ids, (list, tuple)):

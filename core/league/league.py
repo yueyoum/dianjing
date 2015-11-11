@@ -213,7 +213,7 @@ class LeagueGame(object):
             )
 
             club_orders = [(k, v.score) for k, v in club_objects.iteritems()]
-            club_orders.sort(key=lambda item: item.score, reverse=True)
+            club_orders.sort(key=lambda item: item[1], reverse=True)
             club_orders = [k for k, v in club_orders]
 
             # 发送通知
