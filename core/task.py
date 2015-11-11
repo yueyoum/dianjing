@@ -22,6 +22,27 @@ MAIN_TASK = 1
 BRANCH_TASK = 2
 DAILY_TASK = 3
 
+# target type
+RECRUIT_STAFF = 1
+CHANGE_MATCH_STAFF = 2
+PASS_CHALLENGE = 3
+PROPERTY_TRAINING = 4
+UPDATE_CLUB = 5
+UPDATE_TRAINING_CENTER = 6
+STAFF_EXP_TRAINING = 7
+STAFF_EXP_TRAINING_SPEEDUP = 8
+STAFF_BROADCAST = 9
+UPDATE_LEAGUE_CENTER = 10
+LADDER = 11
+FINISH_DAILY_TASK = 12
+CLUB_LEVEL_ARRIVE = 13
+PLAY_ONE_CHALLENGE = 14
+CLICK_RANDOM_BOBBLE = 15
+FRIEND_MATCH = 16
+
+MANAGER_ONLINE_SHOP = 18
+TAKE_CAR = 19
+
 
 def is_daily_task(task_id):
     return ConfigTask.get(task_id).tp == DAILY_TASK
@@ -97,18 +118,9 @@ class TaskManager(object):
         self.send_notify(ids=[task_id])
         return drop.make_protomsg()
 
-    # def finish(self, task_id):
-    #     MongoTask.db(self.server_id).update_one(
-    #         {'_id': self.char_id},
-    #         {
-    #             '$unset': {'doing.{0}'.format(task_id): ''},
-    #             '$push': {'finish': task_id}
-    #         }
-    #     )
-
-    def trig_by_tp(self, trigger, num):
+    def trig_by_tp(self, tp, num):
         # 按照类型来触发
-        task_ids = ConfigTask.filter(trigger=trigger)
+        task_ids = ConfigTask.filter(tp=tp)
         doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'history': 1})
 
         # 没做过, 条件值满足, add
@@ -146,41 +158,79 @@ class TaskManager(object):
             self.send_notify()
 
     def update(self, target_id, num):
-        docs = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'doing': 1})
+        task_ids = ConfigTask.TARGET_TASKS[target_id]
+        doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'doing': 1})
 
-        for k, v in docs['doing']:
-            if target_id in v.keys():
-                config = ConfigTask.get(int(k))
-                if v[str(target_id)] + num > config.targets[target_id]:
-                    v[str(target_id)] = config.targets[target_id]
-        self.finish()
+        target_modify = {}
+        change_ids = []
 
-    def finish(self):
+        for task_id in task_ids:
+            if str(task_id) in doc['doing'].keys():
+                task = doc['doing'].get(str(task_id), {})
+                change_ids.append(task_id)
+                config = ConfigTask.get(int(task_id))
+                target = task.get(str(target_id), 0)
+                # 新增配置field
+                if not target:
+                    target_modify['doing.{0}.{1}'.format(task_id, target_id)] = num
+                    continue
+
+                # add to database
+                if target_id in (
+                        RECRUIT_STAFF, CHANGE_MATCH_STAFF, PROPERTY_TRAINING,
+                        STAFF_EXP_TRAINING, STAFF_EXP_TRAINING_SPEEDUP, STAFF_BROADCAST,
+                        LADDER, FINISH_DAILY_TASK, PLAY_ONE_CHALLENGE, CLICK_RANDOM_BOBBLE,
+                        FRIEND_MATCH, MANAGER_ONLINE_SHOP, MANAGER_ONLINE_SHOP,
+                ):
+                    if target[str(target_id)] + num >= config.targets[target_id]:
+                        target[str(target_id)] = config.targets[target_id]
+                    else:
+                        target[str(target_id)] += num
+
+                elif target_id in (
+                        PASS_CHALLENGE, UPDATE_CLUB, UPDATE_TRAINING_CENTER,
+                        UPDATE_LEAGUE_CENTER, CLUB_LEVEL_ARRIVE,
+                ):
+                    if num == config.targets[target_id]:
+                        target[str(target_id)] = config.targets[target_id]
+                else:
+                    raise GameException(ConfigErrorMessage.get_error_id('TARGET_TYPE_NOT_EXIST'))
+
+                target_modify['doing.{0}.{1}'.format(task_id, target_id)] = target[str(target_id)]
+
+        if target_modify:
+            MongoTask.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': target_modify},
+            )
+        if change_ids:
+            self.finish(change_ids)
+
+    def finish(self, task_ids):
         docs = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'doing': 1})
 
         unsetter = {}
-        projection = {}
-        for k, v in docs['doing'].iteritems():
-            config = ConfigTask.get(int(k))
-            finish = True
-            setter = {}
-            for target_id, value in v.iteritems():
-                if config.targets[target_id] > value:
-                    finish = False
-                    break
-                setter[str(target_id)] = config.targets[target_id]
+        pull_ids = []
+        for task_id in task_ids:
+            task = docs['doing'].get(str(task_id), {})
+            if task:
+                config = ConfigTask.get(int(task_id))
 
-            if finish:
-                unsetter['doing.{0}'.format(k)] = ''
-                projection['finish.{0}'.format(k)] = setter
+                for target_id, value in config.targets.iteritems():
+                    target = task.get(str(target_id), 0)
+                    if not target or target != value:
+                        break
 
-        MongoTask.db(self.server_id).update_one(
-            {'_id': 1},
-            {
-                '$unset': unsetter,
-                '$set': projection,
-            }
-        )
+                    unsetter['doing.{0}'.format(task_id)] = ''
+                    pull_ids.append(task_id)
+        if unsetter:
+            MongoTask.db(self.server_id).update_one(
+                {'_id': 1},
+                {
+                    '$unset': unsetter,
+                    '$push': {'finish': {'$each': pull_ids}},
+                },
+            )
 
     def trig_by_id(self, task_id, num):
         # 按照任务ID来触发
