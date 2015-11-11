@@ -23,7 +23,7 @@ from core.notification import Notification
 from utils.message import MessagePipe
 
 from config.settings import LEAGUE_START_TIME_ONE, LEAGUE_START_TIME_TWO
-from config import ConfigErrorMessage
+from config import ConfigErrorMessage, ConfigLeague
 
 from protomsg.league_pb2 import LeagueNotify
 
@@ -103,9 +103,8 @@ class LeagueGame(object):
     def new(server_id):
         # 分组，确定一周的联赛
         LeagueGame.clean(server_id)
-        # XXX 联赛等级是写死的1到9
 
-        for i in range(1, 10):
+        for i in range(ConfigLeague.MIN_LEVEL, ConfigLeague.MAX_LEVEL+1):
             char_ids = Character.get_recent_login_char_ids(server_id, other_conditions=[{'league_level': i}])
             g = LeagueGroup(server_id, i)
 
@@ -124,18 +123,18 @@ class LeagueGame(object):
             g.finish()
 
     @staticmethod
-    def join_already_started_league(server_id, club_id, send_notify=True):
+    def join_already_started_league(server_id, char_id, send_notify=True):
         # 新用户都要做这个事情，把其放入联赛
         # 当这些帐号进入下一周后， 就会自动匹配
-        if not Club(server_id, club_id, load_staff=False).match_staffs_ready():
+        if not Club(server_id, char_id, load_staff=False).match_staffs_ready():
             return
 
-        group_id = League(server_id, club_id).group_id
-        if group_id and MongoLeagueGroup.exist(server_id, group_id):
+        league = League(server_id, char_id)
+        if league.group_id and MongoLeagueGroup.exist(server_id, league.group_id):
             return
 
-        g = LeagueGroup(server_id, 1)
-        g.add(club_id)
+        g = LeagueGroup(server_id, league.league_level)
+        g.add(char_id)
         g.finish()
 
         order = LeagueGame.find_order()
@@ -143,7 +142,7 @@ class LeagueGame(object):
             LeagueGame.start_match(server_id, group_ids=[g.id], order=i)
 
         if send_notify:
-            League(server_id, club_id).send_notify()
+            League(server_id, char_id).send_notify()
 
     @staticmethod
     def start_match(server_id, group_ids=None, order=None):
@@ -254,14 +253,15 @@ class LeagueGame(object):
 
 
 class League(object):
-    __slots__ = ['server_id', 'char_id', 'group_id']
+    __slots__ = ['server_id', 'char_id', 'group_id', 'league_level']
 
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
 
-        doc = MongoCharacter.db(server_id).find_one({'_id': self.char_id}, {'league_group': 1})
+        doc = MongoCharacter.db(server_id).find_one({'_id': self.char_id}, {'league_group': 1, 'league_level': 1})
         self.group_id = doc.get('league_group', "")
+        self.league_level = doc.get('league_level', 1)
 
     def get_statistics(self, club_id):
         if ':' in club_id:

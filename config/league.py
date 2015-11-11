@@ -25,12 +25,15 @@ class ConfigLeague(ConfigBase):
     INSTANCES = {}
     FILTER_CACHE = {}
 
+    MIN_LEVEL = 0
     MAX_LEVEL = 0
 
     @classmethod
     def initialize(cls, fixture):
         super(ConfigLeague, cls).initialize(fixture)
-        cls.MAX_LEVEL = max(cls.INSTANCES.keys())
+        levels = cls.INSTANCES.keys()
+        cls.MIN_LEVEL = min(levels)
+        cls.MAX_LEVEL = max(levels)
 
     @classmethod
     def get(cls, id):
