@@ -335,7 +335,9 @@ class MongoTask(BaseDocument):
         '_id': null,
         # target_id : num
         'doing': {},
-        'finish': {},
+        # 可以领奖
+        'finish': [],
+        # 彻底完成
         'history': [],
     }
 

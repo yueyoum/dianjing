@@ -1,31 +1,30 @@
 # -*- coding:utf-8 -*-
 
-import random
 
 from dianjing.exception import GameException
 
 from core.mongo import MongoTask, MongoRecord
 from core.package import Drop
 from core.resource import Resource
-from core.building import BuildingTaskCenter
-from core.common import CommonTask
 from core.signals import random_event_done_signal
 
-from config import ConfigErrorMessage, ConfigTask, ConfigBuilding, ConfigRandomEvent
+from config import ConfigErrorMessage, ConfigTask, ConfigRandomEvent
 
 from utils.message import MessagePipe, MessageFactory
 
-from protomsg.task_pb2 import TaskNotify, RandomEventNotify
+from protomsg.task_pb2 import TaskNotify, RandomEventNotify, TASK_DOING, TASK_FINISH
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
-# TASK_STATUS_UNRECEIVED = 0
 TASK_STATUS_DOING = 1
 TASK_STATUS_FINISH = 2
-# TASK_STATUS_END = 3
 
 MAIN_TASK = 1
 BRANCH_TASK = 2
 DAILY_TASK = 3
+
+
+def is_daily_task(task_id):
+    return ConfigTask.get(task_id).tp == DAILY_TASK
 
 
 class TaskManager(object):
@@ -33,18 +32,10 @@ class TaskManager(object):
         self.server_id = server_id
         self.char_id = char_id
 
-        if not MongoTask.exist(server_id, self.char_id):
-            MongoTask.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {
-                    '$set': {
-                        'doing': {},
-                        'finish': {},
-                        'history': [],
-                    }
-                },
-                upsert=True
-            )
+        if not MongoTask.exist(self.server_id, self.char_id):
+            doc = MongoTask.document()
+            doc['_id'] = self.char_id
+            MongoTask.db(self.server_id).insert_one(doc)
 
             self.refresh()
 
@@ -54,15 +45,7 @@ class TaskManager(object):
         new_doc = {}
         task_ids = ConfigTask.filter(tp=DAILY_TASK, task_begin=True)
         for task_id in task_ids:
-            new_tasks_doc = {}
-            config = ConfigTask.get(task_id)
-            if not config:
-                continue
-
-            for k, v in config.targets.iteritems():
-                new_tasks_doc[str(k)] = 0
-
-            new_doc['doing.{0}'.format(task_id)] = new_tasks_doc
+            new_doc['doing.{0}'.format(task_id)] = {}
 
         MongoTask.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -74,20 +57,12 @@ class TaskManager(object):
         if not config:
             raise GameException(ConfigErrorMessage.get_error_id('TASK_NOT_EXIST'))
 
-        doc = {}
-        for k, v in config.targets.iteritems():
-            doc[str(k)] = 0
-
         MongoTask.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': {'doing.{0}'.format(task_id): doc}}
+            {'$set': {'doing.{0}'.format(task_id): {}}}
         )
 
-        self.send_notify(ids=task_id)
-
-    def is_daily(self, task_id):
-        daily_ids = ConfigTask.filter(tp=DAILY_TASK).keys()
-        return True if task_id in daily_ids else False
+        self.send_notify(ids=[task_id])
 
     def get_reward(self, task_id):
         config = ConfigTask.get(task_id)
@@ -95,26 +70,25 @@ class TaskManager(object):
             raise GameException(ConfigErrorMessage.get_error_id("TASK_NOT_EXIST"))
 
         doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'finish': 1})
-        task_ids = doc['finish']
-        if task_id not in task_ids.keys():
+        if task_id not in doc['finish']:
             raise GameException(ConfigErrorMessage.get_error_id("TASK_NOT_DONE"))
 
         drop = Drop.generate(config.package)
         message = u"Reward from task {0}".format(task_id)
         Resource(self.server_id, self.char_id).save_drop(drop, message=message)
 
-        if not self.is_daily(task_id):
+        if not is_daily_task(task_id):
             MongoTask.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {
                     '$push': {'history': task_id},
-                    '$unset': {'finish.{0}'.format(task_id): ''}
-                 }
+                    '$pull': {'finish': task_id}
+                }
             )
         else:
             MongoTask.db(self.server_id).update_one(
                 {'_id': self.char_id},
-                {'$unset': {'finish.{0}'.format(task_id): ''}}
+                {'$pull': {'finish': task_id}}
             )
 
         if config.next_task:
@@ -145,27 +119,31 @@ class TaskManager(object):
                 self.add_task(task_id)
 
     def clean_daily(self):
-        doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id})
+        doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'history': 0})
 
         doing_ids = doc['doing'].keys()
-        finish_ids = doc['finish'].keys()
+        finish_ids = doc['finish']
 
-        unsetter = {}
-        if doing_ids:
-            for doing_id in doing_ids:
-                if self.is_daily(doing_id):
-                    unsetter['doing.{0}'.format(doing_id)] = ''
+        daily_doing_updater = {}
+        for i in doing_ids:
+            if is_daily_task(i):
+                daily_doing_updater['doing.{0}'.format(i)] = 1
 
-        if finish_ids:
-            for finish_id in finish_ids:
-                if self.is_daily(finish_id):
-                    unsetter['finish.{0}'.format(finish_id)] = ''
+        daily_finish_updater = []
+        for i in finish_ids:
+            if is_daily_task(i):
+                daily_finish_updater.append(i)
 
-        if unsetter:
+        if daily_doing_updater or daily_finish_updater:
             MongoTask.db(self.server_id).update_one(
                 {'_id': self.char_id},
-                {'$unset': unsetter}
+                {
+                    '$unset': daily_doing_updater,
+                    '$pullAll': daily_finish_updater
+                }
             )
+
+            self.send_notify()
 
     def update(self, target_id, num):
         docs = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'doing': 1})
@@ -238,45 +216,31 @@ class TaskManager(object):
 
         self.send_notify(ids=[task_id])
 
-    def send_notify(self, ids=None, status=TASK_STATUS_DOING):
+    def send_notify(self, ids=None):
         if not ids:
-            projection = ''
             act = ACT_INIT
         else:
             act = ACT_UPDATE
-            if status == TASK_STATUS_DOING:
-                projection = {'doing.{0}'.format(i): 1 for i in ids}
-            else:
-                projection = {'finish': 1}
 
-        doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, projection)
+        doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'history': 0})
 
         notify = TaskNotify()
         notify.act = act
 
-        tasks = doc.get('finish', {})
-        if tasks:
-            for k, v in tasks.iteritems():
-                s = notify.task.add()
-                s.id = int(k)
-                s.status = TASK_STATUS_FINISH
-                s.drop.MergeFrom(Drop.generate(ConfigTask.get(k).package).make_protomsg())
-                for target, value in v.iteritems():
-                    t = s.target.add()
-                    t.id = int(target)
-                    t.value = value
+        for k, v in doc['doing'].iteritems():
+            notify_task = notify.task.add()
+            notify_task.id = int(k)
+            notify_task.status = TASK_DOING
 
-        tasks = doc.get('doing', {})
-        if tasks:
-            for k, v in tasks.iteritems():
-                s = notify.task.add()
-                s.id = int(k)
-                s.status = TASK_STATUS_FINISH
-                s.drop.MergeFrom(Drop.generate(ConfigTask.get(k).package).make_protomsg())
-                for target, value in v.iteritems():
-                    t = s.target.add()
-                    t.id = int(target)
-                    t.value = value
+            for target_id, target_value in v.iteritems():
+                notify_task_target = notify_task.target.add()
+                notify_task_target.id = target_id
+                notify_task_target.target_value = target_value
+
+        for k in doc['finish']:
+            notify_task = notify.task.add()
+            notify_task.id = k
+            notify_task.status = TASK_FINISH
 
         MessagePipe(self.char_id).put(msg=notify)
 
