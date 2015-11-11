@@ -50,6 +50,7 @@ def create(request):
 
     char_created_signal.send(
         sender=None,
+        server_id=server_id,
         char_id=char.id,
         char_name=name
     )

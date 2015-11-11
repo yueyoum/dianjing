@@ -15,9 +15,11 @@ from utils.message import MessagePipe, MessageFactory
 from protomsg.task_pb2 import TaskNotify, RandomEventNotify, TASK_DOING, TASK_FINISH
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
+# task status
 TASK_STATUS_DOING = 1
 TASK_STATUS_FINISH = 2
 
+# task branch
 MAIN_TASK = 1
 BRANCH_TASK = 2
 DAILY_TASK = 3
@@ -33,7 +35,7 @@ STAFF_EXP_TRAINING = 7
 STAFF_EXP_TRAINING_SPEEDUP = 8
 STAFF_BROADCAST = 9
 UPDATE_LEAGUE_CENTER = 10
-LADDER = 11
+LADDER_MATCH = 11
 FINISH_DAILY_TASK = 12
 CLUB_LEVEL_ARRIVE = 13
 PLAY_ONE_CHALLENGE = 14
@@ -42,6 +44,9 @@ FRIEND_MATCH = 16
 
 MANAGER_ONLINE_SHOP = 18
 TAKE_CAR = 19
+
+# trig type
+CREATE_CHAR_AUTO_RECEIVE = 1
 
 
 def is_daily_task(task_id):
@@ -118,16 +123,17 @@ class TaskManager(object):
         self.send_notify(ids=[task_id])
         return drop.make_protomsg()
 
-    def trig_by_tp(self, tp, num):
+    def trigger(self, trigger, num):
         # 按照类型来触发
-        task_ids = ConfigTask.filter(tp=tp)
-        doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'history': 1})
+        task_ids = ConfigTask.filter(trigger=trigger)
+        doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id})
 
+        doc_ids = set(doc['history']) | set(doc['finish']) | set(doc['doing'].keys())
         # 没做过, 条件值满足, add
         for task_id in task_ids:
             config = ConfigTask.get(task_id)
 
-            if config.trigger_value <= num and config.id not in doc['history']:
+            if config.trigger_value <= num and config.id not in doc_ids:
                 self.add_task(task_id)
 
     def clean_daily(self):
@@ -165,13 +171,13 @@ class TaskManager(object):
         change_ids = []
 
         for task_id in task_ids:
-            if str(task_id) in doc['doing'].keys():
-                task = doc['doing'].get(str(task_id), {})
+            if str(task_id) in doc['doing']:
                 change_ids.append(task_id)
                 config = ConfigTask.get(int(task_id))
-                target = task.get(str(target_id), 0)
+                target_value = doc['doing'][str(task_id)].get(str(target_id), 0)
+                """:type: int"""
                 # 新增配置field
-                if not target:
+                if not target_value:
                     target_modify['doing.{0}.{1}'.format(task_id, target_id)] = num
                     continue
 
@@ -179,30 +185,29 @@ class TaskManager(object):
                 if target_id in (
                         RECRUIT_STAFF, CHANGE_MATCH_STAFF, PROPERTY_TRAINING,
                         STAFF_EXP_TRAINING, STAFF_EXP_TRAINING_SPEEDUP, STAFF_BROADCAST,
-                        LADDER, FINISH_DAILY_TASK, PLAY_ONE_CHALLENGE, CLICK_RANDOM_BOBBLE,
+                        LADDER_MATCH, FINISH_DAILY_TASK, PLAY_ONE_CHALLENGE, CLICK_RANDOM_BOBBLE,
                         FRIEND_MATCH, MANAGER_ONLINE_SHOP, MANAGER_ONLINE_SHOP,
                 ):
-                    if target[str(target_id)] + num >= config.targets[target_id]:
-                        target[str(target_id)] = config.targets[target_id]
+                    if target_value + num >= config.targets[target_id]:
+                        target_value = config.targets[target_id]
                     else:
-                        target[str(target_id)] += num
+                        target_value += num
 
                 elif target_id in (
                         PASS_CHALLENGE, UPDATE_CLUB, UPDATE_TRAINING_CENTER,
                         UPDATE_LEAGUE_CENTER, CLUB_LEVEL_ARRIVE,
                 ):
                     if num == config.targets[target_id]:
-                        target[str(target_id)] = config.targets[target_id]
-                else:
-                    raise GameException(ConfigErrorMessage.get_error_id('TARGET_TYPE_NOT_EXIST'))
+                        target_value = config.targets[target_id]
 
-                target_modify['doing.{0}.{1}'.format(task_id, target_id)] = target[str(target_id)]
+                target_modify['doing.{0}.{1}'.format(task_id, target_id)] = target_value
 
         if target_modify:
             MongoTask.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {'$set': target_modify},
             )
+
         if change_ids:
             self.finish(change_ids)
 
@@ -210,7 +215,7 @@ class TaskManager(object):
         docs = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'doing': 1})
 
         unsetter = {}
-        pull_ids = []
+        push_ids = []
         for task_id in task_ids:
             task = docs['doing'].get(str(task_id), {})
             if task:
@@ -222,13 +227,13 @@ class TaskManager(object):
                         break
 
                     unsetter['doing.{0}'.format(task_id)] = ''
-                    pull_ids.append(task_id)
+                    push_ids.append(task_id)
         if unsetter:
             MongoTask.db(self.server_id).update_one(
                 {'_id': 1},
                 {
                     '$unset': unsetter,
-                    '$push': {'finish': {'$each': pull_ids}},
+                    '$push': {'finish': {'$each': push_ids}},
                 },
             )
 
