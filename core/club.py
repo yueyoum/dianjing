@@ -113,7 +113,7 @@ class Club(AbstractClub):
         self.policy = policy
         self.send_notify()
 
-    def set_match_staffs(self, staff_ids):
+    def set_match_staffs(self, staff_ids, trig_signal=True):
         if len(staff_ids) != 10:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
@@ -123,11 +123,16 @@ class Club(AbstractClub):
         match_staffs = staff_ids[:5]
         tibu_staffs = staff_ids[5:]
 
-        old_data = MongoCharacter.db(self.server_id).find_one({'_id': 1}, {'club': 1})
-        old_match = set(old_data['club']['match_staffs'])
-        old_tibu = set(old_data['club']['tibu_staffs'])
+        doc = MongoCharacter.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {
+                'club.match_staffs': 1,
+                'club.tibu_staffs': 1
+            }
+        )
 
-        if len(set(staff_ids) | old_match | old_tibu) > 10:
+        old_staff_ids = doc['club']['match_staffs'] + doc['club']['tibu_staffs']
+        if trig_signal and staff_ids != old_staff_ids:
             match_staffs_set_change_signal.send(
                 sender=None,
                 server_id=self.server_id,
@@ -146,7 +151,7 @@ class Club(AbstractClub):
         self.tibu_staffs = tibu_staffs
         self.load_match_staffs()
 
-        if all([i != 0 for i in match_staffs]):
+        if trig_signal and all([i != 0 for i in match_staffs]):
             # set done
             match_staffs_set_done_signal.send(
                 sender=None,

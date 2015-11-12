@@ -49,7 +49,7 @@ class Character(object):
         for i in CHAR_INIT_STAFFS:
             sm.add(i, send_notify=False)
 
-        Club(server_id, char_id).set_match_staffs(CHAR_INIT_STAFFS + [0] * 5)
+        Club(server_id, char_id).set_match_staffs(CHAR_INIT_STAFFS + [0] * 5, trig_signal=False)
 
     @classmethod
     def get_recent_login_char_ids(cls, server_id, recent_days=30, other_conditions=None):
