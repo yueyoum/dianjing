@@ -170,13 +170,11 @@ class TaskManager(object):
             target_value = doc['doing'][str(task_id)].get(str(target_id), 0)
 
             if config_target.mode == 1:
-                if target_value + num >= config_task.targets[target_id]:
+                target_value += num
+                if target_value >= config_task.targets[target_id]:
                     target_value = config_task.targets[target_id]
-                else:
-                    target_value += num
             else:
-                if num == config_task.targets[target_id]:
-                    target_value = config_task.targets[target_id]
+                target_value = num
 
             target_modify['doing.{0}.{1}'.format(task_id, target_id)] = target_value
 
@@ -205,19 +203,27 @@ class TaskManager(object):
 
         unsetter = {}
         finish_ids = []
-        for task_id in task_ids:
-            task = docs['doing'].get(str(task_id), {})
+
+        for tid in task_ids:
+            task = docs['doing'].get(str(tid), {})
             if not task:
                 continue
 
-            config = ConfigTask.get(task_id)
-            for target_id, value in config.targets.iteritems():
-                doing_value = task.get(str(target_id), 0)
-                if doing_value != value:
-                    break
+            config_task = ConfigTask.get(tid)
 
-            unsetter['doing.{0}'.format(task_id)] = ''
-            finish_ids.append(task_id)
+            for target_id, value in config_task.targets.iteritems():
+                config_target = ConfigTaskTargetType.get(target_id)
+                doing_value = task.get(str(target_id), 0)
+
+                if config_target.compare_type == 1:
+                    if not doing_value >= value:
+                        break
+                else:
+                    if not doing_value <= value:
+                        break
+            else:
+                unsetter['doing.{0}'.format(tid)] = ''
+                finish_ids.append(tid)
 
         if unsetter:
             MongoTask.db(self.server_id).update_one(

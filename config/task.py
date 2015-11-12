@@ -46,11 +46,12 @@ class RandomEvent(object):
 
 
 class TaskTargetType(object):
-    __slots__ = ['id', 'mode', 'type_category']
+    __slots__ = ['id', 'mode', 'compare_type', 'type_category']
 
     def __init__(self):
         self.id = 0
         self.mode = 0
+        self.compare_type = 0
         self.type_category = 0
 
 
