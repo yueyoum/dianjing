@@ -25,7 +25,7 @@ class PackageBase(object):
     FIELDS = ATTRS + [
         'staff_exp', 'gold', 'diamond', 'club_renown', 'ladder_score', 'league_score',
     ]
-    # fields also contains trainings
+    # fields also contains trainings, items
 
     def __init__(self):
         self.jingong = 0  # 员工 - 进攻
@@ -43,7 +43,8 @@ class PackageBase(object):
         self.club_renown = 0  # 角色 - 俱乐部声望
         self.ladder_score = 0  # 角色 - 天梯赛积分
         self.league_score = 0  # 角色 - 联赛积分
-        self.trainings = []  # 角色 - 训练道具
+        self.trainings = []  # 角色 - 训练书
+        self.items = [] # 角色 - 道具
 
     @classmethod
     def generate(cls, pid):
@@ -64,8 +65,9 @@ class PackageBase(object):
 
         p = cls()
 
-        # 经验书(道具)
+        # 技能训练书
         p.trainings = config.trainings
+        p.items = config.items
 
         # 员工经验， 软妹币，钻石，荣耀，天梯赛积分，联赛积分
         set_value('staff_exp', config.staff_exp)
@@ -117,7 +119,7 @@ class PackageBase(object):
 # 对应只会给角色加的物品。 关卡掉落，奖励，邮件附件 这些
 class Drop(PackageBase):
     FIELDS = ['gold', 'diamond', 'club_renown', 'ladder_score', 'league_score']
-    # 还有 trainings
+    # 还有 trainings, items
 
     def make_protomsg(self):
         msg = MsgDrop()
@@ -131,10 +133,15 @@ class Drop(PackageBase):
             msg_item.resource_id = attr
             msg_item.value = value
 
-        for tid, amount in self.trainings:
+        for _id, _amount in self.trainings:
             msg_training = msg.trainings.add()
-            msg_training.id = tid
-            msg_training.amount = amount
+            msg_training.id = _id
+            msg_training.amount = _amount
+
+        for _id, _amount in self.items:
+            msg_item = msg.items.add()
+            msg_item.id = _id
+            msg_item.amount = _amount
 
         return msg
 
@@ -149,6 +156,9 @@ class Drop(PackageBase):
 
         if self.trainings:
             data['trainings'] = self.trainings
+
+        if self.items:
+            data['items'] = self.items
 
         return json.dumps(data)
 

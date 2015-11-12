@@ -17,6 +17,7 @@ class Package(object):
                  'staff_exp', 'club_renown',
                  'ladder_score', 'league_score',
                  'trainings',
+                 'items',
                  ]
     
     def __init__(self):
@@ -45,6 +46,7 @@ class Package(object):
         self.league_score = 0
 
         self.trainings = []
+        self.items = []
 
 
 class ConfigPackage(ConfigBase):

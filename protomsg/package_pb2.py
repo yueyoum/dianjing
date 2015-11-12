@@ -17,7 +17,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='package.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=b'\n\rpackage.proto\x12\x11\x44ianjing.protocol\".\n\x08Resource\x12\x13\n\x0bresource_id\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\x05\"\x95\x01\n\x04\x44rop\x12.\n\tresources\x18\x01 \x03(\x0b\x32\x1b.Dianjing.protocol.Resource\x12\x34\n\ttrainings\x18\x02 \x03(\x0b\x32!.Dianjing.protocol.Drop.Trainings\x1a\'\n\tTrainings\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0e\n\x06\x61mount\x18\x02 \x02(\x05\":\n\x08Property\x12.\n\tresources\x18\x01 \x03(\x0b\x32\x1b.Dianjing.protocol.Resource\"\xa8\x01\n\x0cTrainingItem\x12.\n\tresources\x18\x01 \x03(\x0b\x32\x1b.Dianjing.protocol.Resource\x12<\n\x05skill\x18\x02 \x01(\x0b\x32-.Dianjing.protocol.TrainingItem.TrainingSkill\x1a*\n\rTrainingSkill\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05'
+  serialized_pb=b'\n\rpackage.proto\x12\x11\x44ianjing.protocol\".\n\x08Resource\x12\x13\n\x0bresource_id\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\x05\"\xee\x01\n\x04\x44rop\x12.\n\tresources\x18\x01 \x03(\x0b\x32\x1b.Dianjing.protocol.Resource\x12\x38\n\ttrainings\x18\x02 \x03(\x0b\x32%.Dianjing.protocol.Drop.TrainingSkill\x12+\n\x05items\x18\x03 \x03(\x0b\x32\x1c.Dianjing.protocol.Drop.Item\x1a+\n\rTrainingSkill\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0e\n\x06\x61mount\x18\x02 \x02(\x05\x1a\"\n\x04Item\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0e\n\x06\x61mount\x18\x02 \x02(\x05\":\n\x08Property\x12.\n\tresources\x18\x01 \x03(\x0b\x32\x1b.Dianjing.protocol.Resource'
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -62,22 +62,22 @@ _RESOURCE = _descriptor.Descriptor(
 )
 
 
-_DROP_TRAININGS = _descriptor.Descriptor(
-  name='Trainings',
-  full_name='Dianjing.protocol.Drop.Trainings',
+_DROP_TRAININGSKILL = _descriptor.Descriptor(
+  name='TrainingSkill',
+  full_name='Dianjing.protocol.Drop.TrainingSkill',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='id', full_name='Dianjing.protocol.Drop.Trainings.id', index=0,
+      name='id', full_name='Dianjing.protocol.Drop.TrainingSkill.id', index=0,
       number=1, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='amount', full_name='Dianjing.protocol.Drop.Trainings.amount', index=1,
+      name='amount', full_name='Dianjing.protocol.Drop.TrainingSkill.amount', index=1,
       number=2, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -95,8 +95,45 @@ _DROP_TRAININGS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=195,
-  serialized_end=234,
+  serialized_start=244,
+  serialized_end=287,
+)
+
+_DROP_ITEM = _descriptor.Descriptor(
+  name='Item',
+  full_name='Dianjing.protocol.Drop.Item',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.Drop.Item.id', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='amount', full_name='Dianjing.protocol.Drop.Item.amount', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=289,
+  serialized_end=323,
 )
 
 _DROP = _descriptor.Descriptor(
@@ -120,10 +157,17 @@ _DROP = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='items', full_name='Dianjing.protocol.Drop.items', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
-  nested_types=[_DROP_TRAININGS, ],
+  nested_types=[_DROP_TRAININGSKILL, _DROP_ITEM, ],
   enum_types=[
   ],
   options=None,
@@ -133,7 +177,7 @@ _DROP = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=85,
-  serialized_end=234,
+  serialized_end=323,
 )
 
 
@@ -163,96 +207,19 @@ _PROPERTY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=236,
-  serialized_end=294,
+  serialized_start=325,
+  serialized_end=383,
 )
 
-
-_TRAININGITEM_TRAININGSKILL = _descriptor.Descriptor(
-  name='TrainingSkill',
-  full_name='Dianjing.protocol.TrainingItem.TrainingSkill',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='id', full_name='Dianjing.protocol.TrainingItem.TrainingSkill.id', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='level', full_name='Dianjing.protocol.TrainingItem.TrainingSkill.level', index=1,
-      number=2, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=423,
-  serialized_end=465,
-)
-
-_TRAININGITEM = _descriptor.Descriptor(
-  name='TrainingItem',
-  full_name='Dianjing.protocol.TrainingItem',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='resources', full_name='Dianjing.protocol.TrainingItem.resources', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='skill', full_name='Dianjing.protocol.TrainingItem.skill', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[_TRAININGITEM_TRAININGSKILL, ],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=297,
-  serialized_end=465,
-)
-
-_DROP_TRAININGS.containing_type = _DROP
+_DROP_TRAININGSKILL.containing_type = _DROP
+_DROP_ITEM.containing_type = _DROP
 _DROP.fields_by_name['resources'].message_type = _RESOURCE
-_DROP.fields_by_name['trainings'].message_type = _DROP_TRAININGS
+_DROP.fields_by_name['trainings'].message_type = _DROP_TRAININGSKILL
+_DROP.fields_by_name['items'].message_type = _DROP_ITEM
 _PROPERTY.fields_by_name['resources'].message_type = _RESOURCE
-_TRAININGITEM_TRAININGSKILL.containing_type = _TRAININGITEM
-_TRAININGITEM.fields_by_name['resources'].message_type = _RESOURCE
-_TRAININGITEM.fields_by_name['skill'].message_type = _TRAININGITEM_TRAININGSKILL
 DESCRIPTOR.message_types_by_name['Resource'] = _RESOURCE
 DESCRIPTOR.message_types_by_name['Drop'] = _DROP
 DESCRIPTOR.message_types_by_name['Property'] = _PROPERTY
-DESCRIPTOR.message_types_by_name['TrainingItem'] = _TRAININGITEM
 
 Resource = _reflection.GeneratedProtocolMessageType('Resource', (_message.Message,), dict(
   DESCRIPTOR = _RESOURCE,
@@ -263,10 +230,17 @@ _sym_db.RegisterMessage(Resource)
 
 Drop = _reflection.GeneratedProtocolMessageType('Drop', (_message.Message,), dict(
 
-  Trainings = _reflection.GeneratedProtocolMessageType('Trainings', (_message.Message,), dict(
-    DESCRIPTOR = _DROP_TRAININGS,
+  TrainingSkill = _reflection.GeneratedProtocolMessageType('TrainingSkill', (_message.Message,), dict(
+    DESCRIPTOR = _DROP_TRAININGSKILL,
     __module__ = 'package_pb2'
-    # @@protoc_insertion_point(class_scope:Dianjing.protocol.Drop.Trainings)
+    # @@protoc_insertion_point(class_scope:Dianjing.protocol.Drop.TrainingSkill)
+    ))
+  ,
+
+  Item = _reflection.GeneratedProtocolMessageType('Item', (_message.Message,), dict(
+    DESCRIPTOR = _DROP_ITEM,
+    __module__ = 'package_pb2'
+    # @@protoc_insertion_point(class_scope:Dianjing.protocol.Drop.Item)
     ))
   ,
   DESCRIPTOR = _DROP,
@@ -274,7 +248,8 @@ Drop = _reflection.GeneratedProtocolMessageType('Drop', (_message.Message,), dic
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.Drop)
   ))
 _sym_db.RegisterMessage(Drop)
-_sym_db.RegisterMessage(Drop.Trainings)
+_sym_db.RegisterMessage(Drop.TrainingSkill)
+_sym_db.RegisterMessage(Drop.Item)
 
 Property = _reflection.GeneratedProtocolMessageType('Property', (_message.Message,), dict(
   DESCRIPTOR = _PROPERTY,
@@ -282,21 +257,6 @@ Property = _reflection.GeneratedProtocolMessageType('Property', (_message.Messag
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.Property)
   ))
 _sym_db.RegisterMessage(Property)
-
-TrainingItem = _reflection.GeneratedProtocolMessageType('TrainingItem', (_message.Message,), dict(
-
-  TrainingSkill = _reflection.GeneratedProtocolMessageType('TrainingSkill', (_message.Message,), dict(
-    DESCRIPTOR = _TRAININGITEM_TRAININGSKILL,
-    __module__ = 'package_pb2'
-    # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingItem.TrainingSkill)
-    ))
-  ,
-  DESCRIPTOR = _TRAININGITEM,
-  __module__ = 'package_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingItem)
-  ))
-_sym_db.RegisterMessage(TrainingItem)
-_sym_db.RegisterMessage(TrainingItem.TrainingSkill)
 
 
 # @@protoc_insertion_point(module_scope)
