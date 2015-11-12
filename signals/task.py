@@ -48,6 +48,7 @@ def match_staffs_change_handler(server_id, char_id, **kwargs):
 
 @receiver(challenge_match_signal, dispatch_uid='signals.task.challenge_match_handler')
 def challenge_match_handler(server_id, char_id, challenge_id, win, **kwargs):
+    TaskManager(server_id, char_id).update(14, 1)
     if win:
         TaskManager(server_id, char_id).update(3, challenge_id)
 

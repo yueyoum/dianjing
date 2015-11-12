@@ -152,7 +152,10 @@ class TaskManager(object):
                 self.add_task(task_id)
 
     def update(self, target_id, num):
-        task_ids = ConfigTask.TARGET_TASKS[target_id]
+        task_ids = ConfigTask.TARGET_TASKS.get(target_id, [])
+        if not task_ids:
+            return
+
         doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'doing': 1})
 
         config_target = ConfigTaskTargetType.get(target_id)
