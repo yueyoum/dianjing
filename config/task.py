@@ -36,6 +36,15 @@ class RandomEvent(object):
         self.id = 0
         self.package = 0
 
+
+class TaskTargetType(object):
+    __slots__ = ['id', 'model']
+
+    def __init__(self):
+        self.id = None
+        self.model = None
+
+
 class ConfigTask(ConfigBase):
     # 类实体
     EntityClass = Task
@@ -43,6 +52,9 @@ class ConfigTask(ConfigBase):
     INSTANCES = {}
     # 过滤缓存
     FILTER_CACHE = {}
+
+    # target and task_ids
+    TARGET_TASKS = {}
 
     @classmethod
     def get(cls, id):
@@ -57,6 +69,10 @@ class ConfigTask(ConfigBase):
         super(ConfigTask, cls).initialize(fixture)
         for v in cls.INSTANCES.values():
             v.targets = {a: b for a, b in v.targets}
+            for k in v.targets.keys():
+                if not cls.TARGET_TASKS.get(k, []):
+                    cls.TARGET_TASKS[k] = []
+                cls.TARGET_TASKS[k].append(v.id)
 
 
 class ConfigRandomEvent(ConfigBase):
@@ -71,3 +87,17 @@ class ConfigRandomEvent(ConfigBase):
         :rtype : RandomEvent
         """
         return super(ConfigRandomEvent, cls).get(_id)
+
+
+class ConfigTaskTargetType(ConfigBase):
+    EntityClass = TaskTargetType
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype : TargetType
+        """
+        return super(ConfigTaskTargetType, cls).get(_id)

@@ -14,6 +14,7 @@ from core.staff import StaffManger
 from core.package import Drop
 from core.mail import MailManager
 from core.skill import SkillManager
+from core.signals import set_staff_in_shop_signal
 
 from utils.message import MessagePipe
 
@@ -183,6 +184,13 @@ class TrainingShop(object):
         )
 
         self.send_notify(shop_ids=[shop_id])
+
+        set_staff_in_shop_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            staff_id=staff_id,
+        )
 
     def send_notify(self, shop_ids=None):
         if shop_ids:

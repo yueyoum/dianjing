@@ -57,9 +57,7 @@ class TestTask(object):
 
         task_ids = ConfigTask.filter(tp=DAILY_TASK, task_begin=True)
 
-        print doing_ids
         for task_id in task_ids:
-            print task_id
             assert str(task_id) in doing_ids
 
     def test_add_task_not_exist(self):
@@ -82,6 +80,18 @@ class TestTask(object):
 
         doc = MongoTask.db(1).find_one({'_id': 1}, {'doing': 1})
         assert doc['doing'][str(task_id)]
+
+    def test_update(self):
+        task_id = random.choice(ConfigTask.INSTANCES.keys())
+        TaskManager(1, 1).add_task(task_id)
+        task = ConfigTask.get(task_id)
+
+        target_id = random.choice(task.targets.keys())
+        num = task.targets[target_id]
+        TaskManager(1, 1).update(target_id, num)
+
+        data = MongoTask.db(1).find_one({'_id': 1}, {'finish': 1})
+        assert task_id in data['finish']
 
 
 

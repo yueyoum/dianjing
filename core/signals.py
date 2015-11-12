@@ -12,7 +12,7 @@ from django.dispatch import Signal
 # 帐号登录
 account_login_signal = Signal(providing_args=['account_id', 'ip', 'to_server_id'])
 # 创建角色
-char_created_signal = Signal(providing_args=['char_id', 'char_name'])
+char_created_signal = Signal(providing_args=['server_id', 'char_id', 'char_name'])
 # 游戏开始
 game_start_signal = Signal(providing_args=['server_id', 'char_id'])
 # 参赛员工设置完成
@@ -33,12 +33,11 @@ join_cup_signal = Signal(providing_args=['server_id', 'char_id'])
 chat_signal = Signal(providing_args=['server_id', 'char_id'])
 # 成为好友
 friend_ok_signal = Signal(providing_args=['server_id', 'char_id', 'friend_id'])
-# 招募了员工
-recruit_staff_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
 # 升级了俱乐部
 club_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])
 # 升级了员工
 staff_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id', 'new_level'])
+
 # 更换出阵队员
 match_staffs_set_change_signal = Signal(providing_args=['server_id', 'char_id'])
 # 员工强化培训
@@ -49,6 +48,10 @@ staff_exp_training_signal = Signal(providing_args=['server_id', 'char_id', 'staf
 staff_exp_training_speedup_signal = Signal(providing_args=['server_id', 'char_id'])
 # staff broadcast
 staff_broadcast_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
+# 招募了员工
+recruit_staff_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
+# staff in shop
+set_staff_in_shop_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
 
 # 充值
 purchase_done_signal = Signal(providing_args=['server_id', 'char_id', 'diamond'])
@@ -56,6 +59,7 @@ purchase_done_signal = Signal(providing_args=['server_id', 'char_id', 'diamond']
 training_got_reward_signal = Signal(providing_args=['server_id', 'char_id', 'training_id'])
 # 完成随机事件
 random_event_done_signal = Signal(providing_args=['server_id', 'char_id', 'event_id'])
+
 
 # 训练中心升级
 building_training_center_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])
@@ -69,3 +73,6 @@ building_league_center_level_up_signal = Signal(providing_args=['server_id', 'ch
 building_sponsor_center_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])
 # 商务部
 building_business_center_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])
+
+# finish one daily task
+daily_task_finish_signal = Signal(providing_args=['server_id', 'char_id', 'task_id'])
