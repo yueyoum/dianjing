@@ -4,6 +4,7 @@
 from dianjing.exception import GameException
 
 from core.mongo import MongoTask, MongoRecord
+from core.character import Character
 from core.package import Drop
 from core.resource import Resource
 from core.signals import random_event_done_signal, daily_task_finish_signal
@@ -25,10 +26,6 @@ BRANCH_TASK = 2
 DAILY_TASK = 3
 
 
-def is_daily_task(task_id):
-    return ConfigTask.get(task_id).tp == DAILY_TASK
-
-
 class TaskManager(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
@@ -37,27 +34,68 @@ class TaskManager(object):
         if not MongoTask.exist(self.server_id, self.char_id):
             doc = MongoTask.document()
             doc['_id'] = self.char_id
+
+            # 初始化主线 和 日常
+            doing = {}
+            for tid in ConfigTask.HEAD_TASKS:
+                config = ConfigTask.get(tid)
+                if config.is_daily_task() or config.is_main_task():
+                    doing[str(tid)] = {}
+
+            doc['doing'] = doing
             MongoTask.db(self.server_id).insert_one(doc)
 
-            self.refresh()
+    @classmethod
+    def cronjob(cls, server_id):
+        char_ids = Character.get_recent_login_char_ids(server_id)
+        for cid in char_ids:
+            cls(server_id, cid).refresh()
 
     def refresh(self):
-        self.clean_daily()
+        doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'history': 0})
 
-        new_doc = {}
+        doing_ids = doc['doing'].keys()
+        finish_ids = doc['finish']
+
+        daily_doing_updater = {}
+        for i in doing_ids:
+            if ConfigTask.get(i).is_daily_task():
+                daily_doing_updater['doing.{0}'.format(i)] = 1
+
+        daily_finish_updater = []
+        for i in finish_ids:
+            if ConfigTask.get(i).is_daily_task():
+                daily_finish_updater.append(i)
+
+        if daily_doing_updater or daily_finish_updater:
+            MongoTask.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {
+                    '$unset': daily_doing_updater,
+                    '$pullAll': {'finish': daily_finish_updater}
+                }
+            )
+
+        updater = {}
         task_ids = ConfigTask.filter(tp=DAILY_TASK, task_begin=True)
-        for task_id in task_ids.keys():
-            new_doc['doing.{0}'.format(task_id)] = {}
+        for tid in task_ids.keys():
+            updater['doing.{0}'.format(tid)] = {}
 
         MongoTask.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': new_doc},
+            {'$set': updater},
         )
+
+        self.send_notify()
 
     def add_task(self, task_id):
         config = ConfigTask.get(task_id)
         if not config:
             raise GameException(ConfigErrorMessage.get_error_id('TASK_NOT_EXIST'))
+
+        doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id})
+        if str(task_id) in doc['doing'] or task_id in doc['finish'] or task_id in doc['history']:
+            return
 
         MongoTask.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -79,7 +117,7 @@ class TaskManager(object):
         message = u"Reward from task {0}".format(task_id)
         Resource(self.server_id, self.char_id).save_drop(drop, message=message)
 
-        if not is_daily_task(task_id):
+        if not config.is_daily_task():
             MongoTask.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {
@@ -101,72 +139,57 @@ class TaskManager(object):
 
     def trigger(self, trigger, num):
         # 按照类型来触发
-        task_ids = ConfigTask.filter(trigger=trigger)
+        task_ids = ConfigTask.filter(trigger=trigger).keys()
         doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id})
 
         doing_ids = [int(i) for i in doc['doing'].keys()]
-        doc_ids = set(doc['history']) | set(doc['finish']) | set(doing_ids)
+        doc_task_ids = set(doc['history']) | set(doc['finish']) | set(doing_ids)
         # 没做过, 条件值满足, add
         for task_id in task_ids:
             config = ConfigTask.get(task_id)
 
-            if config.trigger_value <= num and config.id not in doc_ids:
+            # TODO, 更完备的判断
+            if config.trigger_value <= num and config.id not in doc_task_ids:
                 self.add_task(task_id)
-
-    def clean_daily(self):
-        doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'history': 0})
-
-        doing_ids = doc['doing'].keys()
-        finish_ids = doc['finish']
-
-        daily_doing_updater = {}
-        for i in doing_ids:
-            if is_daily_task(i):
-                daily_doing_updater['doing.{0}'.format(i)] = 1
-
-        daily_finish_updater = []
-        for i in finish_ids:
-            if is_daily_task(i):
-                daily_finish_updater.append(i)
-
-        if daily_doing_updater or daily_finish_updater:
-            MongoTask.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {
-                    '$unset': daily_doing_updater,
-                    '$pullAll': daily_finish_updater
-                }
-            )
-
-            self.send_notify()
 
     def update(self, target_id, num):
         task_ids = ConfigTask.TARGET_TASKS[target_id]
         doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'doing': 1})
 
+        config_target = ConfigTaskTargetType.get(target_id)
+
         target_modify = {}
         change_ids = []
+
+        # 这个目标类型做完后，还可能要触发大类
+        categories = {}
 
         for task_id in task_ids:
             if str(task_id) not in doc['doing']:
                 continue
 
             change_ids.append(task_id)
-            config = ConfigTask.get(int(task_id))
+            config_task = ConfigTask.get(int(task_id))
             target_value = doc['doing'][str(task_id)].get(str(target_id), 0)
-            """:type: int"""
 
-            target = ConfigTaskTargetType.get(target_id)
-            if target.model == 1:
-                if target_value + num >= config.targets[target_id]:
-                    target_value = config.targets[target_id]
+            if config_target.mode == 1:
+                if target_value + num >= config_task.targets[target_id]:
+                    target_value = config_task.targets[target_id]
                 else:
                     target_value += num
             else:
-                if num == config.targets[target_id]:
-                    target_value = config.targets[target_id]
+                if num == config_task.targets[target_id]:
+                    target_value = config_task.targets[target_id]
 
             target_modify['doing.{0}.{1}'.format(task_id, target_id)] = target_value
+
+            if not config_target.type_category:
+                continue
+
+            if config_target.type_category not in categories:
+                categories[config_target.type_category] = 1
+            else:
+                categories[config_target.type_category] += 1
 
         if target_modify:
             MongoTask.db(self.server_id).update_one(
@@ -177,36 +200,40 @@ class TaskManager(object):
         if change_ids:
             self.finish(change_ids)
 
+        # 更新大类
+        for k, v in categories.iteritems():
+            self.update(k, v)
+
     def finish(self, task_ids):
         docs = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'doing': 1})
 
         unsetter = {}
-        push_ids = []
+        finish_ids = []
         for task_id in task_ids:
             task = docs['doing'].get(str(task_id), {})
             if not task:
                 continue
 
-            config = ConfigTask.get(int(task_id))
+            config = ConfigTask.get(task_id)
             for target_id, value in config.targets.iteritems():
-                target = task.get(str(target_id), 0)
-                if target != value:
+                doing_value = task.get(str(target_id), 0)
+                if doing_value != value:
                     break
 
             unsetter['doing.{0}'.format(task_id)] = ''
-            push_ids.append(task_id)
+            finish_ids.append(task_id)
 
         if unsetter:
             MongoTask.db(self.server_id).update_one(
-                {'_id': 1},
+                {'_id': self.char_id},
                 {
                     '$unset': unsetter,
-                    '$push': {'finish': {'$each': push_ids}},
+                    '$push': {'finish': {'$each': finish_ids}},
                 },
             )
 
-        for k in push_ids:
-            if is_daily_task(k):
+        for k in finish_ids:
+            if ConfigTask.get(k).is_daily_task():
                 daily_task_finish_signal.send(
                     sender=None,
                     server_id=self.server_id,
@@ -224,31 +251,8 @@ class TaskManager(object):
         if not config.client_task:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
-        doc = MongoTask.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {'tasks.{0}'.format(task_id): 1}
-        )
-
-        try:
-            this_task = doc['tasks'][str(task_id)]
-        except KeyError:
-            return
-
-        if this_task['status'] != TASK_STATUS_DOING:
-            return
-
-        updater = {}
-        new_num = this_task['num'] + num
-        updater['tasks.{0}.num'.format(task_id)] = new_num
-        if new_num >= config.trigger_value:
-            updater['tasks.{0}.status'.format(task_id)] = TASK_STATUS_FINISH
-
-        MongoTask.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': updater}
-        )
-
-        self.send_notify(ids=[task_id])
+        for target_id, target_num in config.targets.iteritems():
+            self.update(target_id, target_num)
 
     def send_notify(self, ids=None):
         if not ids:

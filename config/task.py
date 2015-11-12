@@ -4,7 +4,7 @@ from config.base import ConfigBase
 
 
 class Task(object):
-    __slots__ = ['id', 'name', 'des', 'next_task', 'trigger',
+    __slots__ = ['id', 'next_task', 'trigger',
                  'trigger_value', 'tp', 'reward',
                  'client_task', 'success_rate',
                  'task_begin', 'targets'
@@ -12,8 +12,6 @@ class Task(object):
 
     def __init__(self):
         self.id = None
-        self.name = None
-        self.des = None
         self.next_task = None
         self.trigger = None
         self.trigger_value = 0
@@ -28,21 +26,32 @@ class Task(object):
     def package(self):
         return self.reward
 
+    def is_main_task(self):
+        return self.tp == 1
+
+    def is_branch_task(self):
+        return self.tp == 2
+
+    def is_daily_task(self):
+        return self.tp == 3
+
 
 class RandomEvent(object):
-    __slots__ = ['id', 'package']
+    __slots__ = ['id', 'target', 'package']
 
     def __init__(self):
         self.id = 0
+        self.target = 0
         self.package = 0
 
 
 class TaskTargetType(object):
-    __slots__ = ['id', 'model']
+    __slots__ = ['id', 'mode', 'type_category']
 
     def __init__(self):
-        self.id = None
-        self.model = None
+        self.id = 0
+        self.mode = 0
+        self.type_category = 0
 
 
 class ConfigTask(ConfigBase):
@@ -55,14 +64,16 @@ class ConfigTask(ConfigBase):
 
     # target and task_ids
     TARGET_TASKS = {}
+    # 任务链起始任务
+    HEAD_TASKS = []
 
     @classmethod
-    def get(cls, id):
+    def get(cls, _id):
         """
 
         :rtype : Task
         """
-        return super(ConfigTask, cls).get(id)
+        return super(ConfigTask, cls).get(_id)
 
     @classmethod
     def initialize(cls, fixture):
@@ -70,16 +81,20 @@ class ConfigTask(ConfigBase):
         for v in cls.INSTANCES.values():
             v.targets = {a: b for a, b in v.targets}
             for k in v.targets.keys():
-                if not cls.TARGET_TASKS.get(k, []):
-                    cls.TARGET_TASKS[k] = []
-                cls.TARGET_TASKS[k].append(v.id)
+                if k not in cls.TARGET_TASKS:
+                    cls.TARGET_TASKS[k] = [v.id]
+                else:
+                    cls.TARGET_TASKS[k].append(v.id)
+
+            if v.task_begin:
+                cls.HEAD_TASKS.append(v.id)
 
 
 class ConfigRandomEvent(ConfigBase):
     EntityClass = RandomEvent
     INSTANCES = {}
     FILTER_CACHE = {}
-    
+
     @classmethod
     def get(cls, _id):
         """
@@ -98,6 +113,6 @@ class ConfigTaskTargetType(ConfigBase):
     def get(cls, _id):
         """
 
-        :rtype : TargetType
+        :rtype : TaskTargetType
         """
         return super(ConfigTaskTargetType, cls).get(_id)

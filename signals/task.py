@@ -30,14 +30,10 @@ from core.signals import (
     building_league_center_level_up_signal,
     daily_task_finish_signal,
     set_staff_in_shop_signal,
+    random_event_done_signal,
 )
 
-
-# trigger
-@receiver(char_created_signal, dispatch_uid='signals.task.char_created_handler')
-def char_created_handler(server_id, char_id, char_name, win, **kwargs):
-    TaskManager(server_id, char_id).trigger(1, 1)
-
+from config import ConfigRandomEvent
 
 # update
 @receiver(recruit_staff_signal, dispatch_uid='signals.task.recruit_staff_handler')
@@ -52,7 +48,8 @@ def match_staffs_change_handler(server_id, char_id, **kwargs):
 
 @receiver(challenge_match_signal, dispatch_uid='signals.task.challenge_match_handler')
 def challenge_match_handler(server_id, char_id, challenge_id, win, **kwargs):
-    TaskManager(server_id, char_id).update(3, challenge_id)
+    if win:
+        TaskManager(server_id, char_id).update(3, challenge_id)
 
 
 @receiver(staff_property_training_signal, dispatch_uid='signals.task.staff_property_training_handler')
@@ -119,3 +116,9 @@ def friend_match_handler(server_id, char_id, target_id, win, **kwargs):
 def set_staff_in_shop_handler(server_id, char_id, staff_id, **kwargs):
     TaskManager(server_id, char_id).update(18, 1)
 
+
+@receiver(random_event_done_signal, dispatch_uid='signals.task.random_event_done_handler')
+def random_event_done_handler(server_id, char_id, event_id, **kwargs):
+    config = ConfigRandomEvent.get(event_id)
+    if config.target:
+        TaskManager(server_id, char_id).update(config.target, 1)
