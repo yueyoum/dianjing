@@ -66,22 +66,25 @@ class Club(AbstractClub):
         self.buy_slots = doc.get('buy_slots', 0)
 
         if load_staff:
-            all_match_staff_ids = self.all_match_staffs()
-            if not all_match_staff_ids:
-                return
-
-            self.staffs = StaffManger(self.server_id, self.char_id).get_staff_by_ids(all_match_staff_ids)
-            qc = QianBanContainer(all_match_staff_ids)
-            for i in itertools.chain(self.match_staffs, self.tibu_staffs):
-                if i == 0:
-                    continue
-
-                qc.affect(self.staffs[i])
+            self.load_match_staffs()
 
     @property
     def max_slots_amount(self):
         config = ConfigClubLevel.get(self.level)
         return config.max_staff_amount + self.buy_slots
+
+    def load_match_staffs(self):
+        all_match_staff_ids = self.all_match_staffs()
+        if not all_match_staff_ids:
+            return
+
+        self.staffs = StaffManger(self.server_id, self.char_id).get_staff_by_ids(all_match_staff_ids)
+        qc = QianBanContainer(all_match_staff_ids)
+        for i in itertools.chain(self.match_staffs, self.tibu_staffs):
+            if i == 0:
+                continue
+
+            qc.affect(self.staffs[i])
 
     def load_all_staffs(self):
         all_staff_ids = StaffManger(self.server_id, self.char_id).get_all_staff_ids()
@@ -138,6 +141,10 @@ class Club(AbstractClub):
                 'club.tibu_staffs': tibu_staffs
             }}
         )
+
+        self.match_staffs = match_staffs
+        self.tibu_staffs = tibu_staffs
+        self.load_match_staffs()
 
         if all([i != 0 for i in match_staffs]):
             # set done
