@@ -134,7 +134,6 @@ class TaskManager(object):
         if config.next_task:
             self.add_task(config.next_task)
 
-        self.send_notify(ids=[task_id])
         return drop.make_protomsg()
 
     def trigger(self, trigger, num):
@@ -159,7 +158,6 @@ class TaskManager(object):
         config_target = ConfigTaskTargetType.get(target_id)
 
         target_modify = {}
-        change_ids = []
 
         # 这个目标类型做完后，还可能要触发大类
         categories = {}
@@ -168,7 +166,6 @@ class TaskManager(object):
             if str(task_id) not in doc['doing']:
                 continue
 
-            change_ids.append(task_id)
             config_task = ConfigTask.get(int(task_id))
             target_value = doc['doing'][str(task_id)].get(str(target_id), 0)
 
@@ -197,8 +194,7 @@ class TaskManager(object):
                 {'$set': target_modify},
             )
 
-        if change_ids:
-            self.finish(change_ids)
+        self.finish(task_ids)
 
         # 更新大类
         for k, v in categories.iteritems():
@@ -240,6 +236,8 @@ class TaskManager(object):
                     char_id=self.char_id,
                     task_id=k,
                 )
+
+        self.send_notify(ids=task_ids)
 
     def trig_by_id(self, task_id, num):
         # 按照任务ID来触发
