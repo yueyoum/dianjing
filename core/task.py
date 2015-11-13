@@ -120,7 +120,7 @@ class TaskManager(object):
             {'$set': {'doing.{0}'.format(task_id): {}}}
         )
 
-        self.finish([task_id])
+        self.check([task_id])
 
     def get_reward(self, task_id):
         config = ConfigTask.get(task_id)
@@ -204,9 +204,9 @@ class TaskManager(object):
                 {'$set': updater},
             )
 
-        self.finish(task_ids)
+        self.check(task_ids)
 
-    def finish(self, task_ids):
+    def check(self, task_ids):
         docs = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'doing': 1})
 
         unsetter = {}
