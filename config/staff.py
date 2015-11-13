@@ -146,7 +146,7 @@ class ConfigStaff(ConfigBase):
     def get_random_ids_by_condition(cls, amount, **condition):
         """
 
-        :rtype : list
+        :rtype : list[int]
         """
         data = cls.filter(**condition)
         return random.sample(data.keys(), amount)
@@ -177,7 +177,7 @@ class ConfigStaffHot(ConfigBase):
     def random_three(cls):
         """
 
-        :rtype : list
+        :rtype : list[int]
         """
         ids = cls.INSTANCES.keys()
         return random.sample(ids, 3)

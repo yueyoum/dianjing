@@ -93,6 +93,9 @@ class StaffRecruit(object):
         value = CommonRecruitHot.get(self.server_id)
         if not value:
             value = ConfigStaffHot.random_three()
+            # XXX
+            value.insert(0, 11)
+            value = value[:3]
             CommonRecruitHot.set(self.server_id, value)
 
         return value
@@ -136,6 +139,10 @@ class StaffRecruit(object):
                 staffs = []
                 for quality, amount in result:
                     staffs.extend(ConfigStaff.get_random_ids_by_condition(amount, quality=quality))
+
+                # XXX
+                staffs.insert(0, 11)
+                staffs = staffs[:3]
 
         MongoRecruit.db(self.server_id).update_one(
             {'_id': self.char_id},

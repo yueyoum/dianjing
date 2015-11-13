@@ -291,12 +291,13 @@ class TaskManager(object):
             notify_task.id = int(k)
             notify_task.status = TASK_DOING
 
-            for target_id, target_conf in ConfigTask.get(int(k)).targets.iteritems():
+            for target_key, _ in ConfigTask.get(int(k)).targets.iteritems():
+                target_id, param = target_key
                 notify_task_target = notify_task.targets.add()
                 notify_task_target.id = target_id
-                notify_task_target.param = target_conf[0]
+                notify_task_target.param = param
                 notify_task_target.current_value = get_target_current_value(self.server_id, self.char_id, target_id,
-                                                                            target_conf[0], v)
+                                                                            param, v)
 
         for k in doc['finish']:
             notify_task = notify.task.add()
