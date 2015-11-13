@@ -120,7 +120,7 @@ class TaskManager(object):
             {'$set': {'doing.{0}'.format(task_id): {}}}
         )
 
-        self.send_notify(ids=[task_id])
+        self.finish([task_id])
 
     def get_reward(self, task_id):
         config = ConfigTask.get(task_id)
@@ -213,8 +213,8 @@ class TaskManager(object):
         finish_ids = []
 
         for tid in task_ids:
-            task_data = docs['doing'].get(str(tid), {})
-            if not task_data:
+            task_data = docs['doing'].get(str(tid), None)
+            if task_data is None:
                 continue
 
             config_task = ConfigTask.get(tid)
