@@ -67,6 +67,8 @@ class ChallengeNPCClub(AbstractClub):
 
 
 class Challenge(object):
+    __slots__ = ['server_id', 'char_id', 'challenge_id']
+
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
@@ -84,8 +86,16 @@ class Challenge(object):
                 {'$set': {'challenge_id': self.challenge_id}}
             )
 
+    def current_challenge_id(self):
+        if self.challenge_id == ConfigChallengeMatch.FIRST_ID:
+            return 0
+        return self.challenge_id - 1
+
     def set_next_match_id(self):
-        next_id = ConfigChallengeMatch.get(self.challenge_id).next_id
+        if self.challenge_id == ConfigChallengeMatch.LAST_ID:
+            next_id = 0
+        else:
+            next_id = self.challenge_id + 1
         MongoCharacter.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {'challenge_id': next_id}}
@@ -97,6 +107,9 @@ class Challenge(object):
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_ALL_FINISHED"))
 
         club_one = Club(self.server_id, self.char_id)
+        if club_one.current_level() < ConfigChallengeMatch.get(self.challenge_id).need_club_level:
+            raise GameException(ConfigErrorMessage.get_error_id("CLUB_LEVEL_NOT_ENOUGH"))
+
         club_two = ChallengeNPCClub(self.challenge_id)
         match = ClubMatch(club_one, club_two)
 

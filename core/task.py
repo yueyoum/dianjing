@@ -13,7 +13,7 @@ from config import ConfigErrorMessage, ConfigTask, ConfigRandomEvent, ConfigTask
 
 from utils.message import MessagePipe, MessageFactory
 
-from protomsg.task_pb2 import TaskNotify, RandomEventNotify, TASK_DOING, TASK_FINISH
+from protomsg.task_pb2 import TaskNotify, TaskRemoveNotify, RandomEventNotify, TASK_DOING, TASK_FINISH
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 # task status
@@ -24,6 +24,24 @@ TASK_STATUS_FINISH = 2
 MAIN_TASK = 1
 BRANCH_TASK = 2
 DAILY_TASK = 3
+
+
+def get_target_current_value(server_id, char_id, target_id, param, task_data):
+    config = ConfigTaskTargetType.get(target_id)
+    if config.mode == 1:
+        key = '{0}:{1}'.format(target_id, param)
+        return task_data.get(key, 0)
+
+    module, class_name, func_name = config.compare_source.rsplit('.', 2)
+    module = __import__(module, fromlist=[class_name], level=0)
+    Cls = getattr(module, class_name)
+    obj = Cls(server_id, char_id)
+
+    func = getattr(obj, func_name)
+    if config.has_param:
+        return func(param)
+    else:
+        return func()
 
 
 class TaskManager(object):
@@ -132,6 +150,7 @@ class TaskManager(object):
             )
 
         if config.next_task:
+            self.send_remove_notify(task_id)
             self.add_task(config.next_task)
 
         return drop.make_protomsg()
@@ -151,55 +170,41 @@ class TaskManager(object):
             if config.trigger_value <= num and config.id not in doc_task_ids:
                 self.add_task(task_id)
 
-    def update(self, target_id, num):
+    def update(self, target_id, param, value):
         task_ids = ConfigTask.TARGET_TASKS.get(target_id, [])
         if not task_ids:
             return
 
         doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'doing': 1})
-
         config_target = ConfigTaskTargetType.get(target_id)
 
-        target_modify = {}
-
-        # 这个目标类型做完后，还可能要触发大类
-        categories = {}
+        updater = {}
+        target_key = (target_id, param)
 
         for task_id in task_ids:
             if str(task_id) not in doc['doing']:
                 continue
 
             config_task = ConfigTask.get(int(task_id))
-            target_value = doc['doing'][str(task_id)].get(str(target_id), 0)
-
             if config_target.mode == 1:
-                target_value += num
-                if target_value >= config_task.targets[target_id]:
-                    target_value = config_task.targets[target_id]
-            else:
-                target_value = num
 
-            target_modify['doing.{0}.{1}'.format(task_id, target_id)] = target_value
+                expected_value = config_task.targets[target_key]
+                target_value = get_target_current_value(self.server_id, self.char_id, target_id, param,
+                                                        doc['doing'][str(task_id)])
+                target_value += value
 
-            if not config_target.type_category:
-                continue
+                if target_value > expected_value:
+                    target_value = expected_value
 
-            if config_target.type_category not in categories:
-                categories[config_target.type_category] = 1
-            else:
-                categories[config_target.type_category] += 1
+                updater['doing.{0}.{1}:{2}'.format(task_id, target_id, param)] = target_value
 
-        if target_modify:
+        if updater:
             MongoTask.db(self.server_id).update_one(
                 {'_id': self.char_id},
-                {'$set': target_modify},
+                {'$set': updater},
             )
 
         self.finish(task_ids)
-
-        # 更新大类
-        for k, v in categories.iteritems():
-            self.update(k, v)
 
     def finish(self, task_ids):
         docs = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'doing': 1})
@@ -208,24 +213,27 @@ class TaskManager(object):
         finish_ids = []
 
         for tid in task_ids:
-            task = docs['doing'].get(str(tid), {})
-            if not task:
+            task_data = docs['doing'].get(str(tid), {})
+            if not task_data:
                 continue
 
             config_task = ConfigTask.get(tid)
 
-            for target_id, value in config_task.targets.iteritems():
+            for target_key, expected_value in config_task.targets.iteritems():
+                target_id, param = target_key
+
                 config_target = ConfigTaskTargetType.get(target_id)
-                doing_value = task.get(str(target_id), 0)
+                current_value = get_target_current_value(self.server_id, self.char_id, target_id, param, task_data)
 
                 if config_target.compare_type == 1:
-                    if not doing_value >= value:
+                    if not current_value >= expected_value:
                         break
                 else:
-                    if not doing_value <= value:
+                    if not current_value <= expected_value:
                         break
             else:
-                unsetter['doing.{0}'.format(tid)] = ''
+                # finish
+                unsetter['doing.{0}'.format(tid)] = 1
                 finish_ids.append(tid)
 
         if unsetter:
@@ -248,7 +256,7 @@ class TaskManager(object):
 
         self.send_notify(ids=task_ids)
 
-    def trig_by_id(self, task_id, num):
+    def trig_by_id(self, task_id):
         # 按照任务ID来触发
         # 目前只用于客户端触发的任务，比如点击NPC
         config = ConfigTask.get(task_id)
@@ -258,8 +266,14 @@ class TaskManager(object):
         if not config.client_task:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
-        for target_id, target_num in config.targets.iteritems():
-            self.update(target_id, target_num)
+        for target_key, expected_value in config.targets.iteritems():
+            target_id, param = target_key
+            self.update(target_id, param, expected_value)
+
+    def send_remove_notify(self, _id):
+        notify = TaskRemoveNotify()
+        notify.id = _id
+        MessagePipe(self.char_id).put(msg=notify)
 
     def send_notify(self, ids=None):
         if not ids:
@@ -277,10 +291,12 @@ class TaskManager(object):
             notify_task.id = int(k)
             notify_task.status = TASK_DOING
 
-            for target_id, target_value in ConfigTask.get(int(k)).targets.iteritems():
+            for target_id, target_conf in ConfigTask.get(int(k)).targets.iteritems():
                 notify_task_target = notify_task.targets.add()
                 notify_task_target.id = target_id
-                notify_task_target.value = v.get(str(target_id), 0)
+                notify_task_target.param = target_conf[0]
+                notify_task_target.current_value = get_target_current_value(self.server_id, self.char_id, target_id,
+                                                                            target_conf[0], v)
 
         for k in doc['finish']:
             notify_task = notify.task.add()

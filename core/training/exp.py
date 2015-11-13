@@ -14,7 +14,7 @@ from core.staff import StaffManger
 from core.building import BuildingTrainingCenter
 from core.package import Property
 from core.resource import Resource
-from core.signals import staff_exp_training_signal, staff_exp_training_speedup_signal
+from core.signals import staff_exp_training_start_signal, staff_exp_training_speedup_signal
 
 from utils.message import MessagePipe
 from utils.api import Timerd
@@ -151,7 +151,7 @@ class TrainingExp(object):
         return False
 
     def open_slots_by_building_level_up(self):
-        current_level = BuildingTrainingCenter(self.server_id, self.char_id).get_level()
+        current_level = BuildingTrainingCenter(self.server_id, self.char_id).current_level()
         old_level = current_level - 1
 
         current_slot_amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(current_level).value2
@@ -178,7 +178,7 @@ class TrainingExp(object):
 
         :rtype : ExpSlotStatus
         """
-        current_building_level = BuildingTrainingCenter(self.server_id, self.char_id).get_level()
+        current_building_level = BuildingTrainingCenter(self.server_id, self.char_id).current_level()
         slot = ExpSlotStatus(self.server_id, self.char_id, slot_id, current_building_level)
         slot.load_data()
 
@@ -248,7 +248,7 @@ class TrainingExp(object):
 
         self.send_notify(slot_ids=[slot_id])
 
-        staff_exp_training_signal.send(
+        staff_exp_training_start_signal.send(
             sender=None,
             server_id=self.server_id,
             char_id=self.char_id,
@@ -290,7 +290,7 @@ class TrainingExp(object):
         with Resource(self.server_id, self.char_id).check(diamond=-need_diamond, message=message):
             Timerd.cancel(slot.key)
 
-            current_building_level = BuildingTrainingCenter(self.server_id, self.char_id).get_level()
+            current_building_level = BuildingTrainingCenter(self.server_id, self.char_id).current_level()
             exp = current_got_exp(EXP_TRAINING_TOTAL_SECONDS, current_building_level)
 
             MongoTrainingExp.db(self.server_id).update_one(
@@ -307,6 +307,7 @@ class TrainingExp(object):
             sender=None,
             server_id=self.server_id,
             char_id=self.char_id,
+            staff_id=slot.staff_id
         )
 
     def callback(self, slot_id):
@@ -318,7 +319,7 @@ class TrainingExp(object):
         if end_at > arrow.utcnow().timestamp:
             return end_at
 
-        current_building_level = BuildingTrainingCenter(self.server_id, self.char_id).get_level()
+        current_building_level = BuildingTrainingCenter(self.server_id, self.char_id).current_level()
         exp = current_got_exp(EXP_TRAINING_TOTAL_SECONDS, current_building_level)
 
         MongoTrainingExp.db(self.server_id).update_one(
@@ -360,7 +361,7 @@ class TrainingExp(object):
         building_max_level = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).max_levels
         max_slot_amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(building_max_level).value2
 
-        current_building_level = BuildingTrainingCenter(self.server_id, self.char_id).get_level()
+        current_building_level = BuildingTrainingCenter(self.server_id, self.char_id).current_level()
 
         if slot_ids:
             projection = {'slots.{0}'.format(i): 1 for i in slot_ids}

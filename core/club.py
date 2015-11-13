@@ -68,6 +68,15 @@ class Club(AbstractClub):
         if load_staff:
             self.load_match_staffs()
 
+    # 这些 current_* 接口是给 编辑器使用的
+    # 比如需要俱乐部等级的任务 里面只要填写 core.club.Club.current_level
+    # 那么代码就可以找到对应需要的值
+    def current_level(self):
+        return self.level
+
+    def current_vip(self):
+        return self.vip
+
     @property
     def max_slots_amount(self):
         config = ConfigClubLevel.get(self.level)

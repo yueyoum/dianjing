@@ -333,7 +333,17 @@ class MongoMail(BaseDocument):
 class MongoTask(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        # target_id : num
+        # 只记录数值累加的，比较的 从 比较源 实时获取数据
+        # {
+        #     'task_id1': {
+        #         'target_id:param': current_value,
+        #         'target_id:param': current_value,
+        #     },
+        #     'task_id1': {
+        #         'target_id:param': current_value,
+        #         'target_id:param': current_value,
+        #     },
+        # }
         'doing': {},
         # 可以领奖
         'finish': [],

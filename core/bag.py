@@ -11,6 +11,7 @@ from contextlib import contextmanager
 from dianjing.exception import GameException
 
 from core.mongo import MongoBag
+from core.signals import item_got_signal, training_skill_item_got_signal
 
 from utils.message import MessagePipe
 
@@ -62,6 +63,16 @@ class BagBase(object):
 
         return True
 
+    def current_amount(self, _id):
+        key = '{0}.{1}'.format(self.MONGODB_FIELD_NAME, _id)
+
+        doc = MongoBag.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {key: 1}
+        )
+
+        return doc[self.MONGODB_FIELD_NAME].get(str(_id), 0)
+
     def add(self, items):
         # items = [(id, amount)...]
         items_dict = {}
@@ -80,6 +91,18 @@ class BagBase(object):
         )
 
         self.send_notify(ids=ids)
+
+        if self.MONGODB_FIELD_NAME == BagItem.MONGODB_FIELD_NAME:
+            s = item_got_signal
+        else:
+            s = training_skill_item_got_signal
+
+        s.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            items=items
+        )
 
     def _remove_check(self, _id, amount):
         doc = MongoBag.db(self.server_id).find_one(

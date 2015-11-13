@@ -30,7 +30,7 @@ def doing(request):
     char_id = request._game_session.char_id
 
     task = TaskManager(server_id, char_id)
-    task.trig_by_id(task_id, 1)
+    task.trig_by_id(task_id)
 
     response = TaskDoingResponse()
     response.ret = 0

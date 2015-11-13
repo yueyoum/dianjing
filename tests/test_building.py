@@ -65,7 +65,7 @@ class TestBuilding(object):
     def test_get_level(self):
         b = get_random_valid_building()
         set_building_level(b.id, b.max_levels)
-        assert BuildingManager(1, 1).get_level(b.id) == b.max_levels
+        assert BuildingManager(1, 1).current_level(b.id) == b.max_levels
 
     def test_send_notify(self):
         BuildingManager(1, 1).send_notify()

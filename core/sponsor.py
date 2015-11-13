@@ -87,7 +87,7 @@ class SponsorManager(object):
         if step > 2:
             return
 
-        level = BuildingSponsorCenter(self.server_id, self.char_id).get_level()
+        level = BuildingSponsorCenter(self.server_id, self.char_id).current_level()
         config = ConfigBuilding.get(BuildingSponsorCenter.BUILDING_ID).get_level(level)
 
         value = config.value1 if step == 1 else config.value2

@@ -43,9 +43,9 @@ match_staffs_set_change_signal = Signal(providing_args=['server_id', 'char_id'])
 # 员工强化培训
 staff_property_training_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
 # 员工exp训练
-staff_exp_training_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
+staff_exp_training_start_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
 # exp_training_speedup
-staff_exp_training_speedup_signal = Signal(providing_args=['server_id', 'char_id'])
+staff_exp_training_speedup_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
 # staff broadcast
 staff_broadcast_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
 # 招募了员工
@@ -60,19 +60,18 @@ training_got_reward_signal = Signal(providing_args=['server_id', 'char_id', 'tra
 # 完成随机事件
 random_event_done_signal = Signal(providing_args=['server_id', 'char_id', 'event_id'])
 
-
-# 训练中心升级
-building_training_center_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])
-# 员工中心升级
-building_staff_center_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])
-# 任务中心
-building_task_center_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])
-# 联赛中心
-building_league_center_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])
-# 赞助商中心
-building_sponsor_center_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])
-# 商务部
-building_business_center_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])
+# 建筑升级 - 开始
+building_level_up_start_signal = Signal(providing_args=['server_id', 'char_id', 'building_id'])
+# 建筑升级 -结束
+building_level_up_done_signal = Signal(providing_args=['server_id', 'char_id', 'building_id'])
 
 # finish one daily task
 daily_task_finish_signal = Signal(providing_args=['server_id', 'char_id', 'task_id'])
+
+# 获得新道具
+item_got_signal = Signal(providing_args=['server_id', 'char_id', 'items'])
+# 获得技能训练书
+training_skill_item_got_signal = Signal(providing_args=['server_id', 'char_id', 'items'])
+
+# 坐车
+in_car_signal = Signal(providing_args=['server_id', 'char_id'])

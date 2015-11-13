@@ -269,7 +269,7 @@ class TrainingProperty(object):
         if not config:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_PROPERTY_NOT_EXIST"))
 
-        building_level = BuildingTrainingCenter(self.server_id, self.char_id).get_level()
+        building_level = BuildingTrainingCenter(self.server_id, self.char_id).current_level()
         if building_level < config.need_building_level:
             raise GameException(ConfigErrorMessage.get_error_id("BUILDING_TRAINING_CENTER_LEVEL_NOT_ENOUGH"))
 

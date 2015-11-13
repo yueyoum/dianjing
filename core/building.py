@@ -13,15 +13,7 @@ from dianjing.exception import GameException
 from core.mongo import MongoBuilding
 from core.club import Club
 from core.resource import Resource
-from core.signals import (
-    building_business_center_level_up_signal,
-    building_league_center_level_up_signal,
-    building_sponsor_center_level_up_signal,
-    building_staff_center_level_up_signal,
-    building_task_center_level_up_signal,
-    building_training_center_level_up_signal
-)
-
+from core.signals import building_level_up_done_signal, building_level_up_start_signal
 from config import ConfigBuilding, ConfigErrorMessage
 
 from utils.api import Timerd
@@ -56,7 +48,7 @@ class BuildingManager(object):
                     {'$set': updater}
                 )
 
-    def get_level(self, building_id):
+    def current_level(self, building_id):
         doc = MongoBuilding.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'buildings.{0}.level'.format(building_id): 1}
@@ -114,6 +106,15 @@ class BuildingManager(object):
 
         self.send_notify(building_ids=[building_id])
 
+        building_level_up_start_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            building_id=building_id
+        )
+
+
+
     def levelup_callback(self, building_id):
         # 定时任务回调
         doc = MongoBuilding.db(self.server_id).find_one(
@@ -142,26 +143,11 @@ class BuildingManager(object):
 
         self.send_notify(building_ids=[building_id])
 
-        if building_id == BuildingTrainingCenter.BUILDING_ID:
-            signal_type = building_training_center_level_up_signal
-        elif building_id == BuildingStaffCenter.BUILDING_ID:
-            signal_type = building_staff_center_level_up_signal
-        elif building_id == BuildingTaskCenter.BUILDING_ID:
-            signal_type = building_task_center_level_up_signal
-        elif building_id == BuildingLeagueCenter.BUILDING_ID:
-            signal_type = building_league_center_level_up_signal
-        elif building_id == BuildingSponsorCenter.BUILDING_ID:
-            signal_type = building_sponsor_center_level_up_signal
-        elif building_id == BuildingBusinessCenter.BUILDING_ID:
-            signal_type = building_business_center_level_up_signal
-        else:
-            return 0
-
-        signal_type.send(
+        building_level_up_done_signal.send(
             sender=None,
             server_id=self.server_id,
             char_id=self.char_id,
-            new_level=new_level
+            building_id=building_id
         )
 
         return 0
@@ -196,8 +182,8 @@ class BaseBuilding(object):
     def __init__(self, server_id, char_id):
         self.bm = BuildingManager(server_id, char_id)
 
-    def get_level(self):
-        return self.bm.get_level(self.BUILDING_ID)
+    def current_level(self):
+        return self.bm.current_level(self.BUILDING_ID)
 
     def level_up(self):
         return self.bm.level_up(self.BUILDING_ID)

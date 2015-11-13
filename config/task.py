@@ -37,22 +37,22 @@ class Task(object):
 
 
 class RandomEvent(object):
-    __slots__ = ['id', 'target', 'package']
+    __slots__ = ['id', 'package']
 
     def __init__(self):
         self.id = 0
-        self.target = 0
         self.package = 0
 
 
 class TaskTargetType(object):
-    __slots__ = ['id', 'mode', 'compare_type', 'type_category']
+    __slots__ = ['id', 'mode', 'compare_type', 'compare_source', 'has_param']
 
     def __init__(self):
         self.id = 0
         self.mode = 0
         self.compare_type = 0
-        self.type_category = 0
+        self.compare_source = ''
+        self.has_param = False
 
 
 class ConfigTask(ConfigBase):
@@ -80,12 +80,16 @@ class ConfigTask(ConfigBase):
     def initialize(cls, fixture):
         super(ConfigTask, cls).initialize(fixture)
         for v in cls.INSTANCES.values():
-            v.targets = {a: b for a, b in v.targets}
-            for k in v.targets.keys():
-                if k not in cls.TARGET_TASKS:
-                    cls.TARGET_TASKS[k] = [v.id]
+            v.targets = {(target_id, target_param): expected_value for target_id, target_param, expected_value in v.targets}
+
+            for target_key in v.targets.keys():
+                target_id, _ = target_key
+
+                if target_id not in cls.TARGET_TASKS:
+                    cls.TARGET_TASKS[target_id] = [v.id]
                 else:
-                    cls.TARGET_TASKS[k].append(v.id)
+                    if v.id not in cls.TARGET_TASKS[target_id]:
+                        cls.TARGET_TASKS[target_id].append(v.id)
 
             if v.task_begin:
                 cls.HEAD_TASKS.append(v.id)

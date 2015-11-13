@@ -172,7 +172,7 @@ class TrainingBroadcast(object):
         return False
 
     def open_slots_by_building_level_up(self):
-        current_level = BuildingBusinessCenter(self.server_id, self.char_id).get_level()
+        current_level = BuildingBusinessCenter(self.server_id, self.char_id).current_level()
         old_level = current_level - 1
 
         current_slot_amount = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).get_level(current_level).value2
@@ -199,7 +199,7 @@ class TrainingBroadcast(object):
 
         :rtype : BroadcastSlotStatus
         """
-        current_building_level = BuildingBusinessCenter(self.server_id, self.char_id).get_level()
+        current_building_level = BuildingBusinessCenter(self.server_id, self.char_id).current_level()
         slot = BroadcastSlotStatus(self.server_id, self.char_id, slot_id, current_building_level)
         slot.load_data()
 
@@ -303,7 +303,7 @@ class TrainingBroadcast(object):
         with Resource(self.server_id, self.char_id).check(diamond=-need_diamond, message=message):
             Timerd.cancel(slot.key)
 
-            current_building_level = BuildingBusinessCenter(self.server_id, self.char_id).get_level()
+            current_building_level = BuildingBusinessCenter(self.server_id, self.char_id).current_level()
             gold = current_got_gold(self.server_id, self.char_id, slot.staff_id, BROADCAST_TOTAL_SECONDS,
                                     current_building_level)
 
@@ -326,7 +326,7 @@ class TrainingBroadcast(object):
         if end_at > arrow.utcnow().timestamp:
             return end_at
 
-        current_building_level = BuildingBusinessCenter(self.server_id, self.char_id).get_level()
+        current_building_level = BuildingBusinessCenter(self.server_id, self.char_id).current_level()
         gold = current_got_gold(self.server_id, self.char_id, slot.staff_id, BROADCAST_TOTAL_SECONDS,
                                 current_building_level)
 
@@ -365,7 +365,7 @@ class TrainingBroadcast(object):
         building_max_level = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).max_levels
         max_slot_amount = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).get_level(building_max_level).value2
 
-        current_building_level = BuildingBusinessCenter(self.server_id, self.char_id).get_level()
+        current_building_level = BuildingBusinessCenter(self.server_id, self.char_id).current_level()
 
         if slot_ids:
             act = ACT_UPDATE
