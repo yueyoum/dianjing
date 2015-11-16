@@ -54,7 +54,7 @@ class Timerd(object):
 
         callback_url = urljoin(settings.SERVER_HOST, callback_path)
         data = {
-            'end': end,
+            'end': end-1,   # 提前1秒完成，为了避免特殊情况：客户端先来查询状态，但timerd的回调还没到
             'url': callback_url,
             'data': json.dumps(callback_data)
         }
