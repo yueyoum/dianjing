@@ -141,8 +141,8 @@ class StaffRecruit(object):
                     staffs.extend(ConfigStaff.get_random_ids_by_condition(amount, quality=quality))
 
                 # XXX
-                staffs.insert(0, 11)
-                staffs = staffs[:3]
+                staffs = staffs[:7]
+                staffs.append(11)
 
         MongoRecruit.db(self.server_id).update_one(
             {'_id': self.char_id},
