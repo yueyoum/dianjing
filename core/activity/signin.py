@@ -231,6 +231,9 @@ class SignIn(object):
         if not config:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
+        if not config.display:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
         doc = MongoSignIn.db(self.server_id).find_one({'_id': self.char_id})
         sign_sequence = doc['sign'].get(str(sign_id), [])
         se = SignEntry(sign_id)
@@ -291,6 +294,9 @@ class SignIn(object):
         doc = MongoSignIn.db(self.server_id).find_one({'_id': self.char_id})
 
         for i in ids:
+            if not ConfigSignIn.get(i).display:
+                continue
+
             sign_sequence = doc['sign'].get(str(i), [])
             se = SignEntry(i)
             ss = se.get_sign_status(sign_sequence)

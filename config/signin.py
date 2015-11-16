@@ -10,7 +10,7 @@ Description:
 from config.base import ConfigBase
 
 class SignIn(object):
-    __slots__ = ['id', 'circle_package',
+    __slots__ = ['id', 'display', 'circle_package',
                  'day_reward',
                  'mail_title', 'mail_content',
                  'days'
@@ -18,6 +18,7 @@ class SignIn(object):
 
     def __init__(self):
         self.id = 0
+        self.display = False
         self.circle_package = 0
         self.day_reward = {}
         self.mail_title = ''
