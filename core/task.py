@@ -155,8 +155,8 @@ class TaskManager(object):
                 {'$pull': {'finish': task_id}}
             )
 
+        self.send_remove_notify(task_id)
         if config.next_task:
-            self.send_remove_notify(task_id)
             self.add_task(config.next_task)
 
         return drop.make_protomsg()
