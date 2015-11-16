@@ -44,7 +44,16 @@ class PackageBase(object):
         self.ladder_score = 0  # 角色 - 天梯赛积分
         self.league_score = 0  # 角色 - 联赛积分
         self.trainings = []  # 角色 - 训练书
-        self.items = [] # 角色 - 道具
+        self.items = []  # 角色 - 道具
+
+    def __str__(self):
+        data = {}
+        for attr in self.FIELDS + ['trainings', 'items']:
+            value = getattr(self, attr)
+            if value:
+                data[attr] = value
+
+        return json.dumps(data)
 
     @classmethod
     def generate(cls, pid):

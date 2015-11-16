@@ -10,8 +10,6 @@ Description:
 from contextlib import contextmanager
 from dianjing.exception import GameException
 
-from core.base import STAFF_ATTRS
-from core.package import PackageBase
 from core.statistics import FinanceStatistics
 
 from config import ConfigErrorMessage
@@ -22,14 +20,14 @@ class Resource(object):
         self.server_id = server_id
         self.char_id = char_id
 
-
     def save_drop(self, drop, message=""):
         """
 
-        :type drop: PackageBase
+        :type drop: core.package.Drop
         """
         from core.club import Club
         from core.ladder import Ladder
+        from core.bag import BagItem, BagTrainingSkill
 
         if drop.club_renown or drop.gold or drop.diamond:
             club_data = {
@@ -51,11 +49,10 @@ class Resource(object):
 
         # TODO drop.league_score ?
 
-        # if drop.trainings:
-        #     tb = TrainingBag(self.server_id, self.char_id)
-        #     for tid, amount in drop.trainings:
-        #         for i in range(amount):
-        #             tb.add_from_raw_training(tid)
+        if drop.trainings:
+            BagTrainingSkill(self.server_id, self.char_id).add(drop.trainings)
+        if drop.items:
+            BagItem(self.server_id, self.char_id).add(drop.items)
 
     @contextmanager
     def check(self, **kwargs):
