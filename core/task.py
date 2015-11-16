@@ -77,7 +77,7 @@ class TaskManager(object):
 
         daily_doing_updater = {}
         for i in doing_ids:
-            if ConfigTask.get(i).is_daily_task():
+            if ConfigTask.get(int(i)).is_daily_task():
                 daily_doing_updater['doing.{0}'.format(i)] = 1
 
         daily_finish_updater = []
@@ -85,15 +85,21 @@ class TaskManager(object):
             if ConfigTask.get(i).is_daily_task():
                 daily_finish_updater.append(i)
 
-        if daily_doing_updater or daily_finish_updater:
+        # remove old
+        updater = {}
+        if daily_doing_updater:
+            updater['$unset'] = daily_doing_updater
+
+        if daily_finish_updater:
+            updater['$pullAll'] = {'finish': daily_finish_updater}
+
+        if updater:
             MongoTask.db(self.server_id).update_one(
                 {'_id': self.char_id},
-                {
-                    '$unset': daily_doing_updater,
-                    '$pullAll': {'finish': daily_finish_updater}
-                }
+                updater
             )
 
+        # set new
         updater = {}
         task_ids = ConfigTask.filter(tp=DAILY_TASK, task_begin=True)
         for tid in task_ids.keys():
