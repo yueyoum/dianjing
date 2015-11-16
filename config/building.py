@@ -11,12 +11,12 @@ from config.base import ConfigBase
 
 
 class BuildingLevel(object):
-    __slots__ = ['level', 'up_need_club_level', 'up_need_gold',
+    __slots__ = ['level', 'up_condition_value', 'up_need_gold',
                  'up_need_minutes', 'value1', 'value2']
 
     def __init__(self):
         self.level = 0
-        self.up_need_club_level = 0
+        self.up_condition_value = 0
         self.up_need_gold = 0
         self.up_need_minutes = 0
         self.value1 = 0
@@ -32,11 +32,12 @@ class BuildingLevel(object):
 
 
 class Building(object):
-    __slots__ = ['id', 'max_levels', 'levels']
+    __slots__ = ['id', 'level_up_condition_type', 'max_levels', 'levels']
 
     def __init__(self):
-        self.id = None
-        self.max_levels = None
+        self.id = 0
+        self.level_up_condition_type = 0
+        self.max_levels = 0
         self.levels = {}
 
     def get_level(self, lv):

@@ -57,11 +57,11 @@ class BuildingManager(object):
         return doc['buildings'].get(str(building_id), {}).get('level', 1)
 
     def level_up(self, building_id):
-        b = ConfigBuilding.get(building_id)
-        if not b:
+        config = ConfigBuilding.get(building_id)
+        if not config:
             raise GameException(ConfigErrorMessage.get_error_id("BUILDING_NOT_EXIST"))
 
-        if not b.max_levels:
+        if not config.max_levels:
             raise GameException(ConfigErrorMessage.get_error_id("BUILDING_CAN_NOT_LEVEL_UP"))
 
         doc = MongoBuilding.db(self.server_id).find_one(
@@ -70,23 +70,27 @@ class BuildingManager(object):
         )
 
         current_level = doc['buildings'][str(building_id)]['level']
-        if current_level >= b.max_levels:
+        if current_level >= config.max_levels:
             raise GameException(ConfigErrorMessage.get_error_id("BUILDING_ALREADY_MAX_LEVEL"))
 
         end_at = doc['buildings'][str(building_id)]['end_at']
         if end_at:
             raise GameException(ConfigErrorMessage.get_error_id("BUILDING_IN_UPGRADING"))
 
-        if Club(self.server_id, self.char_id).level < b.get_level(current_level).up_need_club_level:
-            raise GameException(ConfigErrorMessage.get_error_id("CLUB_LEVEL_NOT_ENOUGH"))
+        if config.level_up_condition_type == 1:
+            if Club(self.server_id, self.char_id).level < config.get_level(current_level).up_condition_value:
+                raise GameException(ConfigErrorMessage.get_error_id("CLUB_LEVEL_NOT_ENOUGH"))
+        else:
+            if BuildingClubCenter(self.server_id, self.char_id).current_level() < config.get_level(current_level).up_condition_value:
+                raise GameException(ConfigErrorMessage.get_error_id("BUILDING_CLUB_CENTER_LEVEL_NOT_ENOUGH"))
 
         check = {
-            "gold": -b.get_level(current_level).up_need_gold,
+            "gold": -config.get_level(current_level).up_need_gold,
             "message": u"Building {0} level up to {1}".format(building_id, current_level + 1)
         }
 
         with Resource(self.server_id, self.char_id).check(**check):
-            end_at = arrow.utcnow().timestamp + b.get_level(current_level).up_need_minutes * 60
+            end_at = arrow.utcnow().timestamp + config.get_level(current_level).up_need_minutes * 60
             # register to timerd
             data = {
                 'sid': self.server_id,
@@ -189,7 +193,9 @@ class BaseBuilding(object):
         return self.bm.level_up(self.BUILDING_ID)
 
 
-# 俱乐部总部 id = 1
+# 俱乐部总部
+class BuildingClubCenter(BaseBuilding):
+    BUILDING_ID = 1
 
 # 培训中心
 class BuildingTrainingCenter(BaseBuilding):
