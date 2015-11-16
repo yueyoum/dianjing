@@ -115,10 +115,6 @@ class Challenge(object):
 
         msg = match.start()
 
-
-        if not msg.club_one_win:
-            return msg, None
-
         next_id = self.set_next_match_id()
         self.send_notify(challenge_id=next_id)
 
@@ -129,6 +125,9 @@ class Challenge(object):
             challenge_id=self.challenge_id,
             win=msg.club_one_win,
         )
+
+        if not msg.club_one_win:
+            return msg, None
 
         drop = Drop.generate(ConfigChallengeMatch.get(self.challenge_id).package)
         message = u"Drop from challenge {0}".format(self.challenge_id)
