@@ -96,12 +96,12 @@ class TestClubMatch(object):
         club_one = ChallengeNPCClub(config.id)
         club_two = ChallengeNPCClub(config.id)
 
-        start = time.clock()
+        start = time.time()
         for i in range(1, 2000 + 1):
             msg = ClubMatch(club_one, club_two).start()
             assert msg
 
-        print time.clock() - start
+        print time.time() - start
 
 
 
