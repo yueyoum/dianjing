@@ -30,22 +30,19 @@ class LadderStore(object):
         self.server_id = server_id
         self.char_id = char_id
 
-        self.items = CommonLadderStore.get(self.server_id)
-        if not self.items:
-            self.refresh(send_notify=False)
+        self.items = LadderStore.refresh(self.server_id)
 
+    @staticmethod
+    def refresh(server_id, force=False):
+        with LadderStoreLock(server_id).lock():
+            items = CommonLadderStore.get(server_id)
+            if not force and items:
+                return items
 
-    def refresh(self, send_notify=True):
-        with LadderStoreLock(self.server_id).lock():
-            self.items = CommonLadderStore.get(self.server_id)
-            if self.items:
-                return
+            items = random.sample(ConfigLadderScoreStore.INSTANCES.keys(), 9)
+            CommonLadderStore.set(server_id, items)
 
-            self.items = random.sample(ConfigLadderScoreStore.INSTANCES.keys(), 9)
-            CommonLadderStore.set(self.server_id, self.items)
-
-        if send_notify:
-            self.send_notify()
+        return items
 
     def buy(self, item_id):
         from core.ladder import Ladder
