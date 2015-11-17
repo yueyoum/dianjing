@@ -37,11 +37,9 @@ class ActiveValue(object):
             doc['_id'] = self.char_id
             MongoActiveValue.db(self.server_id).insert_one(doc)
 
-
     @classmethod
     def cron_job(cls, server_id):
         MongoActiveValue.db(server_id).drop()
-
 
     def trig(self, function_name):
         config = ConfigActiveFunction.get(function_name)
@@ -99,7 +97,6 @@ class ActiveValue(object):
         self.send_value_notify()
         return drop.make_protomsg()
 
-
     def send_value_notify(self):
         doc = MongoActiveValue.db(self.server_id).find_one(
             {'_id': self.char_id},
@@ -128,7 +125,6 @@ class ActiveValue(object):
 
         MessagePipe(self.char_id).put(msg=notify)
 
-
     def send_function_notify(self, functions=None):
         if functions:
             projection = {'funcs.{0}'.format(func): 1 for func in functions}
@@ -136,6 +132,7 @@ class ActiveValue(object):
         else:
             projection = {'funcs': 1}
             act = ACT_INIT
+            functions = ConfigActiveFunction.all_functions()
 
         doc = MongoActiveValue.db(self.server_id).find_one(
             {'_id': self.char_id},
@@ -145,7 +142,6 @@ class ActiveValue(object):
         notify = ActiveFunctionNotify()
         notify.act = act
 
-        functions = ConfigActiveFunction.all_functions()
         for func in functions:
             notify_function = notify.functions.add()
             notify_function.function_name = func
