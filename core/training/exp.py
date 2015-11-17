@@ -311,14 +311,6 @@ class TrainingExp(object):
         )
 
     def callback(self, slot_id):
-        slot = self.get_slot(slot_id)
-        if slot.status != ExpSlotStatus.TRAINING:
-            return 0
-
-        end_at = slot.end_at
-        if end_at > arrow.utcnow().timestamp:
-            return end_at
-
         current_building_level = BuildingTrainingCenter(self.server_id, self.char_id).current_level()
         exp = current_got_exp(EXP_TRAINING_TOTAL_SECONDS, current_building_level)
 
@@ -331,7 +323,6 @@ class TrainingExp(object):
         )
 
         self.send_notify(slot_ids=[slot_id])
-        return 0
 
     def get_reward(self, slot_id):
         slot = self.get_slot(slot_id)

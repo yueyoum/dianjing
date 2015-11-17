@@ -29,6 +29,7 @@ def _setup(func):
 class Timerd(object):
     _SETUP = False
 
+    URL_PING = ''
     URL_REGISTER = ''
     URL_QUERY = ''
     URL_CANCEL = ''
@@ -37,11 +38,18 @@ class Timerd(object):
     def setup(cls):
         from django.conf import settings
 
+        cls.URL_PING = urljoin(settings.TIMERD_URL, '/ping/')
         cls.URL_REGISTER = urljoin(settings.TIMERD_URL, '/register/')
         cls.URL_QUERY = urljoin(settings.TIMERD_URL, '/query/')
         cls.URL_CANCEL = urljoin(settings.TIMERD_URL, '/cancel/')
 
         cls._SETUP = True
+
+    @classmethod
+    @_setup
+    def ping(cls):
+        req = requests.post(cls.URL_PING)
+        assert req.ok is True
 
     @classmethod
     @_setup
@@ -85,4 +93,3 @@ class Timerd(object):
 
         req = requests.post(cls.URL_CANCEL, data=data)
         assert req.ok is True
-        return None

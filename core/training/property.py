@@ -399,13 +399,8 @@ class TrainingProperty(object):
             slot = pl.get_slot(i)
 
             if slot.status == PropertySlotStatus.TRAINING:
-                if slot.end_at > arrow.utcnow().timestamp:
-                    return slot.end_at
-
                 pl.finish(i)
                 break
-        else:
-            return 0
 
         new_list = pl.get_document_list()
         new_pl = PropertyTrainingList(new_list)
@@ -425,7 +420,6 @@ class TrainingProperty(object):
             key = ''
 
         self.update_training_list(staff_id, new_list, key)
-        return 0
 
     def send_notify(self, staff_ids=None):
         if staff_ids:

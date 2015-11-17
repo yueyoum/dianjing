@@ -81,7 +81,8 @@ class BuildingManager(object):
             if Club(self.server_id, self.char_id).level < config.get_level(current_level).up_condition_value:
                 raise GameException(ConfigErrorMessage.get_error_id("CLUB_LEVEL_NOT_ENOUGH"))
         else:
-            if BuildingClubCenter(self.server_id, self.char_id).current_level() < config.get_level(current_level).up_condition_value:
+            if BuildingClubCenter(self.server_id, self.char_id).current_level() < config.get_level(
+                    current_level).up_condition_value:
                 raise GameException(ConfigErrorMessage.get_error_id("BUILDING_CLUB_CENTER_LEVEL_NOT_ENOUGH"))
 
         check = {
@@ -117,32 +118,17 @@ class BuildingManager(object):
             building_id=building_id
         )
 
-
-
     def levelup_callback(self, building_id):
         # 定时任务回调
-        doc = MongoBuilding.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {'buildings.{0}'.format(building_id): 1}
-        )
-
-        end_at = doc['buildings'][str(building_id)]['end_at']
-        if end_at > arrow.utcnow().timestamp:
-            # not finish
-            return end_at
-
-        new_level = doc['buildings'][str(building_id)]['level'] + 1
-        data = {
-            'level': new_level,
-            'end_at': 0,
-            'key': ''
-        }
-
         MongoBuilding.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': {
-                'buildings.{0}'.format(building_id): data
-            }}
+            {
+                '$inc': {'buildings.{0}.level'.format(building_id): 1},
+                '$set': {
+                    'buildings.{0}.end_at'.format(building_id): 0,
+                    'buildings.{0}.key'.format(building_id): ''
+                }
+            }
         )
 
         self.send_notify(building_ids=[building_id])
@@ -153,8 +139,6 @@ class BuildingManager(object):
             char_id=self.char_id,
             building_id=building_id
         )
-
-        return 0
 
     def send_notify(self, building_ids=None):
         if building_ids:
@@ -196,6 +180,7 @@ class BaseBuilding(object):
 # 俱乐部总部
 class BuildingClubCenter(BaseBuilding):
     BUILDING_ID = 1
+
 
 # 培训中心
 class BuildingTrainingCenter(BaseBuilding):

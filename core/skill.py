@@ -246,13 +246,4 @@ class SkillManager(object):
         self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
 
     def timer_callback(self, staff_id, skill_id):
-        data = self.get_staff_skills(staff_id)
-        if 0 < data[str(skill_id)]['end_at'] <= arrow.utcnow().timestamp:
-            self.update(staff_id, skill_id)
-        else:
-            return data[str(skill_id)]['end_at']
-
-        return 0
-
-
-
+        self.update(staff_id, skill_id)

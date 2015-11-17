@@ -7,7 +7,7 @@ Description:
 
 """
 import json
-from django.http import JsonResponse
+from django.http import HttpResponse
 
 from core.building import BuildingManager
 from core.training import TrainingExp, TrainingProperty, TrainingBroadcast
@@ -23,9 +23,9 @@ def building_levelup_callback(request):
     building_id = data['building_id']
 
     bm = BuildingManager(server_id, char_id)
-    timestamp = bm.levelup_callback(building_id)
+    bm.levelup_callback(building_id)
 
-    return JsonResponse({'end': timestamp})
+    return HttpResponse()
 
 
 def training_exp_callback(request):
@@ -37,8 +37,8 @@ def training_exp_callback(request):
     slot_id = data['slot_id']
 
     te = TrainingExp(server_id, char_id)
-    timestamp = te.callback(slot_id)
-    return JsonResponse({'end': timestamp})
+    te.callback(slot_id)
+    return HttpResponse()
 
 
 def training_property_callback(request):
@@ -50,8 +50,8 @@ def training_property_callback(request):
     staff_id = data['staff_id']
 
     tp = TrainingProperty(server_id, char_id)
-    timestamp = tp.callback(staff_id)
-    return JsonResponse({'end': timestamp})
+    tp.callback(staff_id)
+    return HttpResponse()
 
 
 def training_broadcast_callback(request):
@@ -63,8 +63,8 @@ def training_broadcast_callback(request):
     slot_id = data['slot_id']
 
     tb = TrainingBroadcast(server_id, char_id)
-    timestamp = tb.callback(slot_id)
-    return JsonResponse({'end': timestamp})
+    tb.callback(slot_id)
+    return HttpResponse()
 
 
 def skill_upgrade_callback(request):
@@ -76,6 +76,6 @@ def skill_upgrade_callback(request):
     staff_id = data['staff_id']
     skill_id = data['skill_id']
 
-    timestamp = SkillManager(server_id, char_id).timer_callback(staff_id, skill_id)
-    return JsonResponse({'end': timestamp})
+    SkillManager(server_id, char_id).timer_callback(staff_id, skill_id)
+    return HttpResponse()
 
