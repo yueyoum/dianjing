@@ -94,9 +94,17 @@ int staff_training_shop_reward(
 // seconds_to_finish: 还需要多少秒才能完成
 int training_speedup_need_diamond(int seconds_to_finish)
 {
+    if (seconds_to_finish <= 0)
+    {
+        return 0;
+    }
+
     int minutes = seconds_to_finish / 600;
     int seconds = seconds_to_finish % 600;
-    if(seconds>0) ++minutes;
+    if (seconds > 0)
+    {
+        ++minutes;
+    }
 
     return minutes * 10;
 }

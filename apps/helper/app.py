@@ -22,10 +22,10 @@ class ProjectConfig(AppConfig):
         load_config()
 
         from utils.api import Timerd
-        # TODO replace with ping or status
-        Timerd.cancel('test')
+        Timerd.ping()
 
         import signals
+        import formula
 
         if os.environ.get('UWSGI_RUNNING', '0') == '1':
             import cronjob
