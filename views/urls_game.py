@@ -100,4 +100,7 @@ urlpatterns = [
     url(r'^activevalue/getreward/$', 'views.active_value.get_reward'),
 
     url(r'^itemshop/buy/$', 'views.shop.item_shop_buy'),
+
+    url(r'^sell/item/$', 'views.bag.item_sell'),
+    url(r'^sell/trainingskill/$', 'views.bag.training_skill_sell'),
 ]

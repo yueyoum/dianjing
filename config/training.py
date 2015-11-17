@@ -29,12 +29,13 @@ class TrainingProperty(object):
 
 class TrainingSkillItem(object):
     __slots__ = [
-        'id', 'minutes'
+        'id', 'minutes', 'sell_gold',
     ]
 
     def __init__(self):
         self.id = 0
         self.minutes = 0
+        self.sell_gold = 0
 
 
 class ConfigTrainingProperty(ConfigBase):

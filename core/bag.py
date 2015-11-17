@@ -12,6 +12,8 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoBag
 from core.signals import item_got_signal, training_skill_item_got_signal
+from core.package import Drop
+from core.resource import Resource
 
 from utils.message import MessagePipe
 
@@ -148,6 +150,16 @@ class BagBase(object):
         new_amount = self._remove_check(_id, amount)
         yield
         self._remove_done(_id, new_amount)
+
+    def sell(self, _id, amount):
+        with self.remove_context(_id, amount):
+            config = self.CONFIG.get(_id)
+            gold = config.sell_gold * amount
+
+        drop = Drop()
+        drop.gold = gold
+        message = u"sell {0}. id: {1}, amount: {2}".format(self.MONGODB_FIELD_NAME, _id, amount)
+        Resource(self.server_id, self.char_id).save_drop(drop, message)
 
     def send_remove_notify(self, ids):
         notify = self.MSG_REMOVE_NOTIFY()
