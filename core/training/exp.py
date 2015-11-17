@@ -14,7 +14,7 @@ from core.staff import StaffManger
 from core.building import BuildingTrainingCenter
 from core.package import Property
 from core.resource import Resource
-from core.signals import staff_exp_training_start_signal, staff_exp_training_speedup_signal
+from core.signals import training_exp_start_signal, training_exp_done_signal, training_exp_speedup_signal
 
 from utils.message import MessagePipe
 from utils.api import Timerd
@@ -248,7 +248,7 @@ class TrainingExp(object):
 
         self.send_notify(slot_ids=[slot_id])
 
-        staff_exp_training_start_signal.send(
+        training_exp_start_signal.send(
             sender=None,
             server_id=self.server_id,
             char_id=self.char_id,
@@ -289,21 +289,9 @@ class TrainingExp(object):
         message = u"Training Exp Speedup."
         with Resource(self.server_id, self.char_id).check(diamond=-need_diamond, message=message):
             Timerd.cancel(slot.key)
+            self.make_done(slot_id, staff_id=slot.staff_id)
 
-            current_building_level = BuildingTrainingCenter(self.server_id, self.char_id).current_level()
-            exp = current_got_exp(EXP_TRAINING_TOTAL_SECONDS, current_building_level)
-
-            MongoTrainingExp.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {'$set': {
-                    'slots.{0}.exp'.format(slot_id): exp,
-                    'slots.{0}.key'.format(slot_id): ''
-                }}
-            )
-
-        self.send_notify(slot_ids=[slot_id])
-
-        staff_exp_training_speedup_signal.send(
+        training_exp_speedup_signal.send(
             sender=None,
             server_id=self.server_id,
             char_id=self.char_id,
@@ -311,6 +299,12 @@ class TrainingExp(object):
         )
 
     def callback(self, slot_id):
+        self.make_done(slot_id)
+
+    def make_done(self, slot_id, staff_id=None):
+        if not staff_id:
+            staff_id = self.get_slot(slot_id).staff_id
+
         current_building_level = BuildingTrainingCenter(self.server_id, self.char_id).current_level()
         exp = current_got_exp(EXP_TRAINING_TOTAL_SECONDS, current_building_level)
 
@@ -323,6 +317,13 @@ class TrainingExp(object):
         )
 
         self.send_notify(slot_ids=[slot_id])
+
+        training_exp_done_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            staff_id=staff_id
+        )
 
     def get_reward(self, slot_id):
         slot = self.get_slot(slot_id)

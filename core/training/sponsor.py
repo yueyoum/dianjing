@@ -15,6 +15,7 @@ from dianjing.exception import GameException
 from core.mongo import MongoTrainingSponsor
 from core.mail import MailManager
 from core.package import Drop
+from core.signals import training_sponsor_start_signal
 
 from utils.message import MessagePipe
 
@@ -140,6 +141,13 @@ class TrainingSponsor(object):
         )
 
         self.send_notify(sponsor_ids=[sponsor_id])
+
+        training_sponsor_start_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            sponsor_id=sponsor_id
+        )
 
     def send_notify(self, sponsor_ids=None):
         if sponsor_ids:
