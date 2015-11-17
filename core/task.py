@@ -119,7 +119,7 @@ class TaskManager(object):
 
         doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id})
         if str(task_id) in doc['doing'] or task_id in doc['finish'] or task_id in doc['history']:
-            return
+            GameException(ConfigErrorMessage.get_error_id('TASK_CAN_NOT_REPRODUCE'))
 
         MongoTask.db(self.server_id).update_one(
             {'_id': self.char_id},

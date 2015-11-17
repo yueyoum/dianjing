@@ -13,20 +13,22 @@ from dianjing.exception import GameException
 from core.mongo import MongoTask
 
 from core.task import (
+    get_target_current_value,
     TaskManager,
     TASK_STATUS_DOING,
     TASK_STATUS_FINISH,
+    MAIN_TASK,
     DAILY_TASK,
 )
 
-from config import ConfigErrorMessage, ConfigTask
+from config import ConfigErrorMessage, ConfigTask, ConfigTaskTargetType
 
 
-def get_none_exist_task_id():
-    while 1:
-        task_id = random.randint(1, 10000)
-        if task_id not in ConfigTask.INSTANCES.keys():
-            return task_id
+def get_not_exist_task_id():
+        while 1:
+            task_id = random.randint(1, 10000)
+            if task_id not in ConfigTask.INSTANCES.keys():
+                return task_id
 
 
 def get_random_task_id(level=None):
@@ -36,8 +38,20 @@ def get_random_task_id(level=None):
 
 
 class TestTask(object):
+    def __init__(self):
+        self.char_id = 1
+        self.server_id = 1
+
+    def set_finish_daily_task(self):
+        task_ids = ConfigTask.filter(tp=DAILY_TASK, task_begin=True).keys()
+        MongoTask.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {'finish': task_ids}}
+        )
+        return task_ids
+
     def setup(self):
-        MongoTask.db(1).update_one(
+        MongoTask.db(self.server_id).update_one(
             {'_id': 1},
             {'$set': {
                 'doing': {},
@@ -48,50 +62,97 @@ class TestTask(object):
         )
 
     def teardown(self):
-        MongoTask.db(1).delete_one({'_id': 1})
+        MongoTask.db(self.server_id).delete_one({'_id': self.char_id})
 
     def test_refresh(self):
+        self.set_finish_daily_task()
+
         TaskManager(1, 1).refresh()
-        data = MongoTask.db(1).find_one({'_id': 1}, {'doing': 1})
-        doing_ids = data['doing'].keys()
+        doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'history': 0})
 
         task_ids = ConfigTask.filter(tp=DAILY_TASK, task_begin=True)
-
         for task_id in task_ids:
-            assert str(task_id) in doing_ids
+            assert str(task_id) in doc['doing']
+            assert task_id not in doc['finish']
 
     def test_add_task_not_exist(self):
-        task_ids = ConfigTask.INSTANCES.keys()
-        test_id = 0
-        for i in range(10000, 2000):
-            if i not in task_ids:
-                test_id = i
-
+        task_id = get_not_exist_task_id()
         try:
-            TaskManager(1, 1).add_task(test_id)
+            TaskManager(1, 1).add_task(task_id)
         except GameException as e:
             assert e.error_id == ConfigErrorMessage.get_error_id('TASK_NOT_EXIST')
         else:
             raise Exception('error')
 
+    def test_add_task_reduce(self):
+        task_id = get_random_task_id()
+        MongoTask.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$push': {'history': task_id}}
+        )
+
+        try:
+            TaskManager(1, 1).add_task(task_id)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id('TASK_CAN_NOT_REPRODUCE')
+        else:
+            raise Exception('error')
+
     def test_add_task(self):
-        task_id = random.choice(ConfigTask.INSTANCES.keys())
+        task_id = get_random_task_id()
         TaskManager(1, 1).add_task(task_id)
 
-        doc = MongoTask.db(1).find_one({'_id': 1}, {'doing': 1})
-        assert doc['doing'][str(task_id)]
+        doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'doing': 1})
+        assert str(task_id) in doc['doing']
+
+    def test_get_reward_task_not_exist(self):
+        task_id = get_not_exist_task_id()
+        try:
+            TaskManager(1, 1).get_reward(task_id)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id('TASK_NOT_EXIST')
+        else:
+            raise Exception('error')
+
+    def test_get_reward_task_not_done(self):
+        task_id = get_random_task_id()
+        try:
+            TaskManager(1, 1).get_reward(task_id)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id('TASK_NOT_DONE')
+        else:
+            raise Exception('error')
+
+    def test_get_reward(self):
+        task_id = random.choice(self.set_finish_daily_task())
+        TaskManager(1, 1).get_reward(task_id)
+
+        doc = MongoTask.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'finish': 1}
+        )
+
+        assert task_id not in doc['finish']
 
     def test_update(self):
-        task_id = random.choice(ConfigTask.INSTANCES.keys())
-        TaskManager(1, 1).add_task(task_id)
-        task = ConfigTask.get(task_id)
+        # judge will fail
+        task_id = get_random_task_id()
+        MongoTask.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {'doing.{0}'.format(task_id): {}}}
+        )
 
-        target_id = random.choice(task.targets.keys())
-        num = task.targets[target_id]
-        TaskManager(1, 1).update(target_id, num)
+        task_config = ConfigTask.get(task_id)
+        for key, value in task_config.targets.iteritems():
+            TaskManager(1, 1).update(key[0], key[1], value)
 
-        data = MongoTask.db(1).find_one({'_id': 1}, {'finish': 1})
-        assert task_id in data['finish']
+        doc = MongoTask.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'finish': 1}
+        )
+        print doc['finish'], task_id
+        assert task_id in doc['finish']
 
-
+    def test_send_notify(self):
+        TaskManager(1, 1).send_notify()
 
