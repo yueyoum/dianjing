@@ -47,7 +47,7 @@ def game_start_handler(server_id, char_id, **kwargs):
 
     c = Character(server_id, char_id)
     c.send_notify()
-    
+
     StaffManger(server_id, char_id).send_notify()
 
     c.set_login()
