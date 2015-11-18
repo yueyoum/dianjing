@@ -12,6 +12,8 @@ import uwsgidecorators
 
 from django.conf import settings
 from apps.server.models import Server
+from apps.history_record.models import MailHistoryRecord
+
 from cronjob.log import Logger
 from core.mail import get_mail_clean_time
 from core.mail import MailManager
@@ -29,6 +31,21 @@ def clean_mail(*args):
         for s in server_ids:
             cleaned_amount = MailManager.cronjob(s)
             logger.write("server {0} cleaned amount {1}".format(s, cleaned_amount))
+    except:
+        logger.error(traceback.format_exc())
+    else:
+        logger.write("Done")
+    finally:
+        logger.close()
+
+
+@uwsgidecorators.cron(0, 4, -1, -1, -1, target="spooler")
+def clean_mail_history(*args):
+    logger = Logger("clean_mail_history")
+    logger.write("Start")
+
+    try:
+        MailHistoryRecord.cronjob()
     except:
         logger.error(traceback.format_exc())
     else:

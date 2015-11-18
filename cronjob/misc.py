@@ -6,24 +6,32 @@ Date Created:   2015-08-06 16:44
 Description:
 
 """
+import traceback
 
 import uwsgidecorators
 from apps.server.models import Server
+from apps.statistics.models import Statistics
+
 from core.common import CommonRecruitHot
 from core.active_value import ActiveValue
 from cronjob.log import Logger
+
 
 @uwsgidecorators.cron(0, 0, -1, -1, -1, target='spooler')
 def recruit_hot_reset(*args):
     logger = Logger("recruit_hot_reset")
     logger.write("Start")
 
-    server_ids = Server.opened_server_ids()
-    for s in server_ids:
-        CommonRecruitHot.delete(s)
-
-    logger.write("Done")
-    logger.close()
+    try:
+        server_ids = Server.opened_server_ids()
+        for s in server_ids:
+            CommonRecruitHot.delete(s)
+    except:
+        logger.error(traceback.format_exc())
+    else:
+        logger.write("Done")
+    finally:
+        logger.close()
 
 
 @uwsgidecorators.cron(0, 0, -1, -1, -1, target='spooler')
@@ -31,9 +39,28 @@ def active_value_reset(*args):
     logger = Logger("active_value_reset")
     logger.write("Start")
 
-    server_ids = Server.opened_server_ids()
-    for s in server_ids:
-        ActiveValue.cronjob(s)
+    try:
+        server_ids = Server.opened_server_ids()
+        for s in server_ids:
+            ActiveValue.cronjob(s)
+    except:
+        logger.error(traceback.format_exc())
+    else:
+        logger.write("Done")
+    finally:
+        logger.close()
 
-    logger.write("Done")
-    logger.close()
+
+@uwsgidecorators.cron(10, 4, -1, -1, -1, target='spooler')
+def clean_statistics(*args):
+    logger = Logger("clean_statistics")
+    logger.write("Start")
+
+    try:
+        Statistics.cronjob()
+    except:
+        logger.error(traceback.format_exc())
+    else:
+        logger.write("Done")
+    finally:
+        logger.close()
