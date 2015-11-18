@@ -309,12 +309,29 @@ class StaffManger(object):
 
     def remove(self, staff_id):
         from core.club import Club
+        from core.training import TrainingShop, TrainingBroadcast, TrainingExp, TrainingProperty
+        from core.skill import SkillManager
 
         if not self.has_staff(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
         if Club(self.server_id, self.char_id).is_staff_in_match(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_CAN_NOT_REMOVE_IN_MATCH"))
+
+        if TrainingShop(self.server_id, self.char_id).staff_is_training(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_FIRE_TRAINING_SHOP"))
+
+        if TrainingBroadcast(self.server_id, self.char_id).staff_is_training(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_FIRE_TRAINING_BROADCAST"))
+
+        if TrainingExp(self.server_id, self.char_id).staff_is_training(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_FIRE_TRAINING_EXP"))
+
+        if TrainingProperty(self.server_id, self.char_id).staff_is_training(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_FIRE_TRAINING_PROPERTY"))
+
+        if SkillManager(self.server_id, self.char_id).staff_is_training(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_FIRE_TRAINING_SKILL"))
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},

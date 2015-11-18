@@ -34,6 +34,17 @@ class SkillManager(object):
         self.server_id = server_id
         self.char_id = char_id
 
+    def staff_is_training(self, staff_id):
+        skills = self.get_staff_skills(staff_id)
+        if not skills:
+            return False
+
+        for v in skills.values():
+            if v['end_at']:
+                return True
+
+        return False
+
     def get_staff_skills(self, staff_id):
         key = "staffs.{0}.skills".format(staff_id)
         doc = MongoStaff.db(self.server_id).find_one(
