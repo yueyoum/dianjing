@@ -11,6 +11,7 @@ import traceback
 import uwsgidecorators
 from apps.server.models import Server
 from apps.statistics.models import Statistics
+from apps.account.models import AccountLoginLog
 
 from core.common import CommonRecruitHot
 from core.active_value import ActiveValue
@@ -58,6 +59,21 @@ def clean_statistics(*args):
 
     try:
         Statistics.cronjob()
+    except:
+        logger.error(traceback.format_exc())
+    else:
+        logger.write("Done")
+    finally:
+        logger.close()
+
+
+@uwsgidecorators.cron(20, 4, -1, -1, -1, target='spooler')
+def clean_account_log(*args):
+    logger = Logger('clean_account_log')
+    logger.write("Start")
+
+    try:
+        AccountLoginLog.cronjob()
     except:
         logger.error(traceback.format_exc())
     else:
