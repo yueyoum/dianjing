@@ -69,6 +69,12 @@ class Staff(AbstractStaff):
         self.skills = {int(k): v['level'] for k, v in skills.iteritems()}
 
 
+RECRUIT_ENUM_TO_CONFIG_ID = {
+    RECRUIT_NORMAL: 1,
+    RECRUIT_GOLD: 2,
+    RECRUIT_DIAMOND: 3,
+}
+
 class StaffRecruit(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
@@ -93,28 +99,19 @@ class StaffRecruit(object):
         value = CommonRecruitHot.get(self.server_id)
         if not value:
             value = ConfigStaffHot.random_three()
-            # XXX
-            value.insert(0, 11)
-            value = value[:3]
             CommonRecruitHot.set(self.server_id, value)
 
         return value
 
     def refresh(self, tp):
+        if tp not in [RECRUIT_HOT, RECRUIT_NORMAL, RECRUIT_GOLD, RECRUIT_DIAMOND]:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
         if tp == RECRUIT_HOT:
             staffs = self.get_hot_staffs()
         else:
-            if tp == RECRUIT_NORMAL:
-                refresh_id = 1
-            elif tp == RECRUIT_GOLD:
-                refresh_id = 2
-            elif tp == RECRUIT_DIAMOND:
-                refresh_id = 3
-            else:
-                raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
-
             check = {'message': u'Recruit refresh. type {0}'.format(tp)}
-            config = ConfigStaffRecruit.get(refresh_id)
+            config = ConfigStaffRecruit.get( RECRUIT_ENUM_TO_CONFIG_ID[tp] )
             if config.cost_type == 1:
                 check['gold'] = -config.cost_value
             else:
@@ -122,10 +119,10 @@ class StaffRecruit(object):
 
             doc = MongoRecruit.db(self.server_id).find_one(
                 {'_id': self.char_id},
-                {'times.{0}'.format(refresh_id): 1}
+                {'times.{0}'.format(tp): 1}
             )
 
-            times = doc['times'].get(str(refresh_id), 0)
+            times = doc['times'].get(str(tp), 0)
             is_first = False
             is_lucky = False
             if times == 0:
@@ -135,7 +132,7 @@ class StaffRecruit(object):
                     is_lucky = True
 
             with Resource(self.server_id, self.char_id).check(**check):
-                result = ConfigStaffRecruit.get(refresh_id).get_refreshed_staffs(first=is_first, lucky=is_lucky)
+                result = ConfigStaffRecruit.get( RECRUIT_ENUM_TO_CONFIG_ID[tp] ).get_refreshed_staffs(first=is_first, lucky=is_lucky)
                 staffs = []
                 for quality, amount in result:
                     staffs.extend(ConfigStaff.get_random_ids_by_condition(amount, quality=quality))
