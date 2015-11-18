@@ -42,7 +42,7 @@ class Ladder(object):
         # 每天按照排名发送奖励
         char_ids = Character.get_recent_login_char_ids(server_id)
         for cid in char_ids:
-            doc = MongoLadder.db(server_id).find_one({'_id': cid}, {'order': 1})
+            doc = MongoLadder.db(server_id).find_one({'_id': str(cid)}, {'order': 1})
             if not doc:
                 continue
 
