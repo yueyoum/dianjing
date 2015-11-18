@@ -24,7 +24,9 @@ from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
 from config import ConfigStaff, ConfigSkill, ConfigErrorMessage, ConfigTrainingSkillItem, ConfigSkillWashCost
 
-TIMER_UPGRADE_PATH = "/api/timerd/skill"
+import formula
+
+TIMER_CALLBACK_PATH = "/api/timerd/skill/"
 
 
 class SkillManager(object):
@@ -96,7 +98,7 @@ class SkillManager(object):
         need_id, need_amount = config.get_upgrade_needs(level)
 
         with BagTrainingSkill(self.server_id, self.char_id).remove_context(need_id, need_amount):
-            value = arrow.utcnow().timestamp + ConfigTrainingSkillItem.get(need_id).minutes * 60
+            end_at = arrow.utcnow().timestamp + ConfigTrainingSkillItem.get(need_id).minutes * 60
 
             data = {
                 'sid': self.server_id,
@@ -105,12 +107,12 @@ class SkillManager(object):
                 'skill_id': skill_id,
             }
 
-            key = Timerd.register(value, TIMER_UPGRADE_PATH, data)
+            key = Timerd.register(end_at, TIMER_CALLBACK_PATH, data)
 
             MongoStaff.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {'$set': {
-                    "staffs.{0}.skills.{1}.end_at".format(staff_id, skill_id): value,
+                    "staffs.{0}.skills.{1}.end_at".format(staff_id, skill_id): end_at,
                     "staffs.{0}.skills.{1}.key".format(staff_id, skill_id): key,
                 }}
             )
@@ -124,15 +126,11 @@ class SkillManager(object):
             raise GameException(ConfigErrorMessage.get_error_id("SKILL_UPGRADE_SPEEDUP_CANNOT"))
 
         behind_seconds = end_at - arrow.utcnow().timestamp
-        if behind_seconds <= 0:
-            self.update(skill_id, skill_id)
+        need_diamond = formula.training_speedup_need_diamond(behind_seconds)
+        if need_diamond == 0:
+            self.update(staff_id, skill_id)
         else:
-            minutes, seconds = divmod(behind_seconds, 60)
-            if seconds:
-                minutes += 1
-
-            need_diamond = minutes * 10
-            message = u"Skill Upgrade SpeedUp"
+            message = u"Skill Upgrade SpeedUp, staff_id: {0}, skill_id: {1}".format(staff_id, skill_id)
 
             with Resource(self.server_id, self.char_id).check(diamond=-need_diamond, message=message):
                 self.update(staff_id, skill_id)
@@ -200,7 +198,7 @@ class SkillManager(object):
 
     def send_notify(self, act=ACT_INIT, staff_id=None, skill_id=None):
         # 这个必须在 StaffNotify 之后
-        # 这里的 act 必须手动指定，因为添加新员工后，这里的sill notify 得是 ACT_INIT
+        # 这里的 act 必须手动指定，因为添加新员工后，这里的skill notify 得是 ACT_INIT
         if not staff_id:
             projection = {'staffs': 1}
         else:
