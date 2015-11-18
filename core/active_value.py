@@ -10,6 +10,7 @@ Description:
 from dianjing.exception import GameException
 
 from core.mongo import MongoActiveValue
+from core.character import Character
 from core.package import Drop
 from core.resource import Resource
 
@@ -37,9 +38,22 @@ class ActiveValue(object):
             doc['_id'] = self.char_id
             MongoActiveValue.db(self.server_id).insert_one(doc)
 
-    @classmethod
-    def cron_job(cls, server_id):
-        MongoActiveValue.db(server_id).drop()
+    @staticmethod
+    def cronjob(server_id):
+        MongoActiveValue.db(server_id).update_many(
+            {},
+            {
+                '$set': {
+                    'rewards': [],
+                    'funcs': {}
+                }
+            }
+        )
+
+        for char_id in Character.get_recent_login_char_ids(server_id):
+            av = ActiveValue(server_id, char_id)
+            av.send_function_notify()
+            av.send_value_notify()
 
     def trig(self, function_name):
         config = ConfigActiveFunction.get(function_name)

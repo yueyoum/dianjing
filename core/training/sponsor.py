@@ -13,6 +13,7 @@ from django.conf import settings
 from dianjing.exception import GameException
 
 from core.mongo import MongoTrainingSponsor
+from core.character import Character
 from core.mail import MailManager
 from core.package import Drop
 from core.signals import training_sponsor_start_signal
@@ -31,6 +32,20 @@ from protomsg.training_pb2 import (
 )
 
 
+def get_remained_days(sponsor_id, start_at_timestamp):
+    config = ConfigSponsor.get(int(sponsor_id))
+
+    now = arrow.utcnow().to(settings.TIME_ZONE)
+    start = arrow.get(start_at_timestamp).to(settings.TIME_ZONE)
+    passed_days = (now.date() - start.date()).days
+
+    remained_days = config.total_days - passed_days
+    if remained_days < 0:
+        remained_days = 0
+
+    return remained_days
+
+
 class TrainingSponsor(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
@@ -40,6 +55,47 @@ class TrainingSponsor(object):
             doc = MongoTrainingSponsor.document()
             doc['_id'] = self.char_id
             MongoTrainingSponsor.db(self.server_id).insert_one(doc)
+
+    @classmethod
+    def cronjob(cls, server_id):
+        # 每天发送奖励
+        # 取消到期合约
+        for char_id in Character.get_recent_login_char_ids(server_id):
+            doc = MongoTrainingSponsor.db(server_id).find_one(
+                {'_id': char_id},
+                {'sponsors': 1}
+            )
+
+            expired = []
+
+            for sponsor_id, start_at_timestamp in doc['sponsors'].iteritems():
+                if not start_at_timestamp:
+                    continue
+
+                remained_days = get_remained_days(sponsor_id, start_at_timestamp)
+                if remained_days > 0:
+                    # send mail
+                    config = ConfigSponsor.get(sponsor_id)
+
+                    drop = Drop()
+                    drop.gold = config.income
+                    attachment = drop.to_json()
+
+                    m = MailManager(server_id, char_id)
+                    m.add(config.mail_title, config.mail_content, attachment=attachment)
+                else:
+                    # expired
+                    expired.append(sponsor_id)
+
+            if expired:
+                # 把过期的， start_at_timestamp 设置为0
+                updater = {'sponsors.{0}'.format(i): 0 for i in expired}
+                MongoTrainingSponsor.db(server_id).update_one(
+                    {'_id': char_id},
+                    {'$set': updater}
+                )
+
+            TrainingSponsor(server_id, char_id).send_notify()
 
     def open(self, challenge_id):
         doc = MongoTrainingSponsor.db(self.server_id).find_one(
@@ -64,59 +120,6 @@ class TrainingSponsor(object):
         )
 
         self.send_notify(sponsor_ids=[sponsor_id])
-
-    def cronjob(self):
-        # 每天发送奖励
-        # 取消到期合约
-        doc = MongoTrainingSponsor.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {'sponsors': 1}
-        )
-
-        expired = []
-
-        for sponsor_id, start_at_timestamp in doc['sponsors'].iteritems():
-            if not start_at_timestamp:
-                continue
-
-            remained_days = self.get_remained_days(sponsor_id, start_at_timestamp)
-            if remained_days > 0:
-                # send mail
-                config = ConfigSponsor.get(sponsor_id)
-
-                drop = Drop()
-                drop.gold = config.income
-                attachment = drop.to_json()
-
-                m = MailManager(self.server_id, self.char_id)
-                m.add(config.mail_title, config.mail_content, attachment=attachment)
-            else:
-                # expired
-                expired.append(sponsor_id)
-
-        if expired:
-            # 把过期的， start_at_timestamp 设置为0
-            updater = {'sponsors.{0}'.format(i): 0 for i in expired}
-            MongoTrainingSponsor.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {'$set': updater}
-            )
-
-        self.send_notify()
-
-    @staticmethod
-    def get_remained_days(sponsor_id, start_at_timestamp):
-        config = ConfigSponsor.get(sponsor_id)
-
-        now = arrow.utcnow().to(settings.TIME_ZONE)
-        start = arrow.get(start_at_timestamp).to(settings.TIME_ZONE)
-        passed_days = (now.date() - start.date()).days
-
-        remained_days = config.total_days - passed_days
-        if remained_days < 0:
-            remained_days = 0
-
-        return remained_days
 
     def start(self, sponsor_id):
         if not ConfigSponsor.get(sponsor_id):
@@ -176,7 +179,7 @@ class TrainingSponsor(object):
                 start_at_timestamp = doc['sponsors'][str(i)]
                 if start_at_timestamp:
                     notify_slot.status = TRAINING_SLOT_TRAINING
-                    notify_slot.remained_days = self.get_remained_days(i, start_at_timestamp)
+                    notify_slot.remained_days = get_remained_days(i, start_at_timestamp)
                 else:
                     notify_slot.status = TRAINING_SLOT_EMPTY
 

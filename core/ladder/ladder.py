@@ -38,7 +38,8 @@ class Ladder(object):
         self.add_self_to_ladder()
 
     @classmethod
-    def send_rank_reward(cls, server_id):
+    def cronjob(cls, server_id):
+        # 每天按照排名发送奖励
         char_ids = Character.get_recent_login_char_ids(server_id)
         for cid in char_ids:
             doc = MongoLadder.db(server_id).find_one({'_id': cid}, {'order': 1})

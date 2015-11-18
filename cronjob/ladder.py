@@ -11,10 +11,10 @@ import traceback
 import uwsgidecorators
 
 from apps.server.models import Server
-from core.mongo import MongoLadder
 from cronjob.log import Logger
 
-from core.ladder import Ladder
+from core.ladder import Ladder, LadderStore
+
 
 @uwsgidecorators.cron(30, 21, -1, -1, -1, target="spooler")
 def ladder_send_rank_reward(*args):
@@ -22,9 +22,8 @@ def ladder_send_rank_reward(*args):
     logger.write("Start")
 
     try:
-        server_ids = Server.opened_server_ids()
-        for s in server_ids:
-            Ladder.send_rank_reward(s)
+        for s in Server.opened_server_ids():
+            Ladder.cronjob(s)
             logger.write("Server {0} finish".format(s))
     except:
         logger.error(traceback.format_exc())
@@ -41,11 +40,7 @@ def ladder_store_clean_buy_times(*args):
 
     try:
         for s in Server.opened_server_ids():
-            MongoLadder.db(s).update_many(
-                {},
-                {'$set': {'buy_times': {}}}
-            )
-
+            LadderStore.cronjob(s)
             logger.write("Server {0} finish".format(s))
     except:
         logger.error(traceback.format_exc())

@@ -10,6 +10,7 @@ Description:    网店
 from dianjing.exception import GameException
 
 from core.mongo import MongoTrainingShop
+from core.character import Character
 from core.staff import StaffManger
 from core.package import Drop
 from core.mail import MailManager
@@ -48,6 +49,42 @@ class TrainingShop(object):
                     doc['shops'][str(shop_id)] = 0
 
             MongoTrainingShop.db(self.server_id).insert_one(doc)
+
+    @classmethod
+    def cronjob(cls, server_id):
+        # 每天发送邮件
+
+        for char_id in Character.get_recent_login_char_ids(server_id):
+
+            doc = MongoTrainingShop.db(server_id).find_one(
+                {'_id': char_id},
+                {'shops': 1}
+            )
+
+            for shop_id, staff_id in doc['shops'].iteritems():
+                if not staff_id:
+                    continue
+
+                config_shop = ConfigShop.get(int(shop_id))
+                config_skill = ConfigSkill.get(ConfigSkill.SHOP_SKILL_ID)
+                shop_skill_level = SkillManager(server_id, char_id).get_staff_shop_skill_level(staff_id)
+                staff = StaffManger(server_id, char_id).get_staff(staff_id)
+
+                reward = formula.staff_training_shop_reward_gold(
+                    config_shop.income,
+                    staff.xintai,
+                    staff.yishi,
+                    config_skill.value_base,
+                    config_skill.level_grow,
+                    shop_skill_level
+                )
+
+                drop = Drop()
+                drop.gold = reward
+                attachment = drop.to_json()
+
+                m = MailManager(server_id, char_id)
+                m.add(config_shop.mail_title, config_shop.mail_content, attachment=attachment)
 
     def staff_is_training(self, staff_id):
         doc = MongoTrainingShop.db(self.server_id).find_one(
@@ -104,40 +141,6 @@ class TrainingShop(object):
 
         if opened_shop_ids:
             self.open(opened_shop_ids)
-
-    def cronjob(self):
-        # 每天发送邮件
-        doc = MongoTrainingShop.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {'shops': 1}
-        )
-
-        for shop_id, staff_id in doc['shops'].iteritems():
-            if not staff_id:
-                continue
-
-            config_shop = ConfigShop.get(shop_id)
-            config_skill = ConfigSkill.get(ConfigSkill.SHOP_SKILL_ID)
-            shop_skill_level = SkillManager(self.server_id, self.char_id).get_staff_shop_skill_level(staff_id)
-            staff = StaffManger(self.server_id, self.char_id).get_staff(staff_id)
-
-            reward = formula.staff_training_shop_reward_gold(
-                config_shop.income,
-                staff.xintai,
-                staff.yishi,
-                config_skill.value_base,
-                config_skill.level_grow,
-                shop_skill_level
-            )
-
-            drop = Drop()
-            drop.gold = reward
-            attachment = drop.to_json()
-
-            m = MailManager(self.server_id, self.char_id)
-            m.add(config_shop.mail_title, config_shop.mail_content, attachment=attachment)
-
-        self.send_notify()
 
     def open(self, shop_ids):
         updater = {'shops.{0}'.format(i): 0 for i in shop_ids}

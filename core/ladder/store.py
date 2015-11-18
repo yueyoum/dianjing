@@ -33,6 +33,15 @@ class LadderStore(object):
         self.items = LadderStore.refresh(self.server_id)
 
     @staticmethod
+    def cronjob(server_id):
+        # 每天刷新购买次数
+        MongoLadder.db(server_id).update_many(
+            {},
+            {'$set': {'buy_times': {}}}
+        )
+
+
+    @staticmethod
     def refresh(server_id, force=False):
         with LadderStoreLock(server_id).lock():
             items = CommonLadderStore.get(server_id)

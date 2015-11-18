@@ -334,14 +334,11 @@ class RandomEvent(object):
             }}
         )
 
-        # TODO filter chars
         notify = RandomEventNotify()
         notify.times = 0
         data = MessageFactory.pack(notify)
 
-        from core.mongo import MongoCharacter
-        for char in MongoCharacter.db(server_id).find():
-            char_id = char['_id']
+        for char_id in Character.get_recent_login_char_ids(server_id):
             MessagePipe(char_id).put(data=data)
 
     def done(self, event_id):

@@ -13,7 +13,6 @@ import uwsgidecorators
 from django.conf import settings
 from apps.server.models import Server
 from cronjob.log import Logger
-from core.mongo import MongoMail
 from core.mail import get_mail_clean_time
 from core.mail import MailManager
 
@@ -28,12 +27,7 @@ def clean_mail(*args):
     try:
         server_ids = Server.opened_server_ids()
         for s in server_ids:
-            cleaned_amount = 0
-            doc = MongoMail.db(s).find({}, {'_id': 1})
-            for d in doc:
-                mm = MailManager(s, d['_id'])
-                cleaned_amount += mm.clean_expired()
-
+            cleaned_amount = MailManager.cronjob(s)
             logger.write("server {0} cleaned amount {1}".format(s, cleaned_amount))
     except:
         logger.error(traceback.format_exc())

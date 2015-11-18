@@ -105,7 +105,7 @@ class LeagueGame(object):
         LeagueGame.clean(server_id)
 
         for i in range(ConfigLeague.MIN_LEVEL, ConfigLeague.MAX_LEVEL+1):
-            char_ids = Character.get_recent_login_char_ids(server_id, other_conditions=[{'league_level': i}])
+            char_ids = Character.get_recent_login_char_ids(server_id, recent_days=14, other_conditions=[{'league_level': i}])
             g = LeagueGroup(server_id, i)
 
             for cid in char_ids:
