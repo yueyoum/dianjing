@@ -23,7 +23,7 @@ from core.signals import (
     daily_task_finish_signal,
     training_shop_start_signal,
     random_event_done_signal,
-    building_level_up_start_signal,
+    building_level_up_done_signal,
     item_got_signal,
     training_skill_item_got_signal,
     in_car_signal,
@@ -53,8 +53,7 @@ def staff_property_training_handler(server_id, char_id, staff_id, **kwargs):
     TaskManager(server_id, char_id).update(4, 0, 1)
 
 
-# TODO
-@receiver(building_level_up_start_signal, dispatch_uid='signals.task.building_level_up_handle')
+@receiver(building_level_up_done_signal, dispatch_uid='signals.task.building_level_up_handle')
 def building_level_up_handle(server_id, char_id, building_id, **kwargs):
     TaskManager(server_id, char_id).update(5, 0, 0)
 
