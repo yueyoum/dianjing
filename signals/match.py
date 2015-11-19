@@ -11,8 +11,8 @@ from django.dispatch import receiver
 
 from core.signals import challenge_match_signal, league_match_signal
 from core.training import TrainingSponsor
-from core.staff import StaffManger
 from core.club import Club
+
 
 @receiver(challenge_match_signal, dispatch_uid='signals.match.challenge_match_handler')
 def challenge_match_handler(server_id, char_id, challenge_id, win, **kwargs):
@@ -23,9 +23,7 @@ def challenge_match_handler(server_id, char_id, challenge_id, win, **kwargs):
 
     # zhimingdu
     club = Club(server_id, char_id)
-    sm = StaffManger(server_id, char_id)
-    for staff_id in club.match_staffs:
-        sm.update(staff_id, zhimingdu=1)
+    club.batch_add_zhimingdu_for_match_staffs(1)
 
 
 @receiver(league_match_signal, dispatch_uid='signals.match.league_match_handler')
@@ -35,7 +33,4 @@ def league_match_handler(server_id, char_id, target_id, win, **kwargs):
 
     # zhimingdu
     club = Club(server_id, char_id)
-    sm = StaffManger(server_id, char_id)
-    for staff_id in club.match_staffs:
-        sm.update(staff_id, zhimingdu=1)
-
+    club.batch_add_zhimingdu_for_match_staffs(1)
