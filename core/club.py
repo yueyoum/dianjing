@@ -9,7 +9,7 @@ Description:
 
 import itertools
 
-from core.mongo import MongoCharacter
+from core.mongo import MongoCharacter, MongoStaff
 from core.abstract import AbstractClub
 from core.signals import match_staffs_set_done_signal, club_level_up_signal, match_staffs_set_change_signal
 from core.staff import StaffManger
@@ -227,6 +227,19 @@ class Club(AbstractClub):
             )
 
         self.send_staff_slots_notify()
+
+    def batch_add_zhimingdu_for_match_staffs(self, zhimingdu=1):
+        # 降低IO，批量操作
+        updater = {}
+        for s in self.match_staffs:
+            updater['staffs.{0}.zhimingdu'.format(s)] = zhimingdu
+
+        MongoStaff.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$inc': updater}
+        )
+
+        StaffManger(self.server_id, self.char_id).send_notify(staff_ids=self.match_staffs)
 
     def send_notify(self):
         msg = self.make_protomsg()

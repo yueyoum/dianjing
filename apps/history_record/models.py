@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+import arrow
 
 from django.conf import settings
 
 from django.db import models
+from django.db import connection
+
 
 class MailHistoryRecord(models.Model):
     id = models.UUIDField(primary_key=True)
@@ -22,7 +25,7 @@ class MailHistoryRecord(models.Model):
 
     class Meta:
         db_table = 'mail_history_record'
-        ordering = ['-create_at',]
+        ordering = ['-create_at', ]
         verbose_name = '邮件历史记录'
         verbose_name_plural = '邮件历史记录'
 
@@ -49,3 +52,10 @@ class MailHistoryRecord(models.Model):
             return
 
         cls.objects.filter(id=_id).update(has_read=True)
+
+    @classmethod
+    def cronjob(cls):
+        connection.close()
+
+        limit = arrow.utcnow().replace(days=-30).format("YYYY-MM-DD HH:mm:ssZ")
+        cls.objects.filter(create_at__lte=limit).delete()

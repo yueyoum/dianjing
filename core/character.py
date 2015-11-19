@@ -52,7 +52,7 @@ class Character(object):
         Club(server_id, char_id).set_match_staffs(CHAR_INIT_STAFFS + [0] * 5, trig_signal=False)
 
     @classmethod
-    def get_recent_login_char_ids(cls, server_id, recent_days=30, other_conditions=None):
+    def get_recent_login_char_ids(cls, server_id, recent_days=7, other_conditions=None):
         day_limit = arrow.utcnow().replace(days=-recent_days)
         timestamp = day_limit.timestamp
 
@@ -63,7 +63,8 @@ class Character(object):
             condition = {'$and': condition}
 
         doc = MongoCharacter.db(server_id).find(condition)
-        return (d['_id'] for d in doc)
+        for d in doc:
+            yield d['_id']
 
     @property
     def create_days(self):

@@ -28,11 +28,11 @@ class ItemShop(object):
             raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_SELL"))
 
         if config.buy_type == 1:
-            check = {'gold': -config.buy_cost}
+            check = {'gold': -config.buy_cost * amount}
         else:
-            check = {'diamond': -config.buy_cost}
+            check = {'diamond': -config.buy_cost * amount}
 
-        check['message'] = u"Buy Item {0}".format(item_id)
+        check['message'] = u"Buy Item {0}, amount {1}".format(item_id, amount)
 
         with Resource(self.server_id, self.char_id).check(**check):
             BagItem(self.server_id, self.char_id).add([(item_id, amount)])

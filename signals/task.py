@@ -16,14 +16,14 @@ from core.signals import (
     recruit_staff_signal,
     club_level_up_signal,
     match_staffs_set_change_signal,
-    staff_property_training_signal,
-    staff_exp_training_start_signal,
-    staff_exp_training_speedup_signal,
-    staff_broadcast_signal,
+    training_property_start_signal,
+    training_exp_start_signal,
+    training_exp_speedup_signal,
+    training_broadcast_start_signal,
     daily_task_finish_signal,
-    set_staff_in_shop_signal,
+    training_shop_start_signal,
     random_event_done_signal,
-    building_level_up_start_signal,
+    building_level_up_done_signal,
     item_got_signal,
     training_skill_item_got_signal,
     in_car_signal,
@@ -48,28 +48,27 @@ def challenge_match_handler(server_id, char_id, challenge_id, win, **kwargs):
         TaskManager(server_id, char_id).update(3, 0, 0)
 
 
-@receiver(staff_property_training_signal, dispatch_uid='signals.task.staff_property_training_handler')
+@receiver(training_property_start_signal, dispatch_uid='signals.task.staff_property_training_handler')
 def staff_property_training_handler(server_id, char_id, staff_id, **kwargs):
     TaskManager(server_id, char_id).update(4, 0, 1)
 
 
-# TODO
-@receiver(building_level_up_start_signal, dispatch_uid='signals.task.building_level_up_handle')
+@receiver(building_level_up_done_signal, dispatch_uid='signals.task.building_level_up_handle')
 def building_level_up_handle(server_id, char_id, building_id, **kwargs):
     TaskManager(server_id, char_id).update(5, 0, 0)
 
 
-@receiver(staff_exp_training_start_signal, dispatch_uid='signals.task.staff_exp_training_start_handler')
+@receiver(training_exp_start_signal, dispatch_uid='signals.task.staff_exp_training_start_handler')
 def staff_exp_training_start_handler(server_id, char_id, staff_id, **kwargs):
     TaskManager(server_id, char_id).update(6, 0, 1)
 
 
-@receiver(staff_exp_training_speedup_signal, dispatch_uid='signals.task.staff_exp_training_speedup_handler')
+@receiver(training_exp_speedup_signal, dispatch_uid='signals.task.staff_exp_training_speedup_handler')
 def staff_exp_training_speedup_handler(server_id, char_id, staff_id, **kwargs):
     TaskManager(server_id, char_id).update(7, 0, 1)
 
 
-@receiver(staff_broadcast_signal, dispatch_uid='signals.task.staff_broadcast_handler')
+@receiver(training_broadcast_start_signal, dispatch_uid='signals.task.staff_broadcast_handler')
 def staff_broadcast_handler(server_id, char_id, staff_id, **kwargs):
     TaskManager(server_id, char_id).update(8, 0, 1)
 
@@ -99,8 +98,8 @@ def item_got_handler(server_id, char_id, items, **kwargs):
     TaskManager(server_id, char_id).update(15, 0, 0)
 
 
-@receiver(set_staff_in_shop_signal, dispatch_uid='signals.task.set_staff_in_shop_handler')
-def set_staff_in_shop_handler(server_id, char_id, staff_id, **kwargs):
+@receiver(training_shop_start_signal, dispatch_uid='signals.task.training_shop_start_handler')
+def training_shop_start_handler(server_id, char_id, staff_id, **kwargs):
     TaskManager(server_id, char_id).update(16, 0, 1)
 
 

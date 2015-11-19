@@ -11,9 +11,9 @@ import traceback
 
 import uwsgidecorators
 from apps.server.models import Server
-from core.mongo import MongoCharacter
 from core.training import TrainingShop, TrainingSponsor
 from cronjob.log import Logger
+
 
 @uwsgidecorators.cron(0, 0, -1, -1, -1, target="spooler")
 def training_shop_cronjob(*args):
@@ -22,11 +22,7 @@ def training_shop_cronjob(*args):
 
     try:
         for s in Server.opened_server_ids():
-            chars = MongoCharacter.db(s).find({}, {'_id': 1})
-            for c in chars:
-                cid = c['_id']
-                TrainingShop(s, cid).cronjob()
-
+            TrainingShop.cronjob(s)
             logger.write("Server {0} finish".format(s))
     except:
         logger.error(traceback.format_exc())
@@ -35,6 +31,7 @@ def training_shop_cronjob(*args):
     finally:
         logger.close()
 
+
 @uwsgidecorators.cron(0, 0, -1, -1, -1, target="spooler")
 def training_sponsor_cronjob(*args):
     logger = Logger('training_sponsor')
@@ -42,11 +39,7 @@ def training_sponsor_cronjob(*args):
 
     try:
         for s in Server.opened_server_ids():
-            chars = MongoCharacter.db(s).find({}, {'_id': 1})
-            for c in chars:
-                cid = c['_id']
-                TrainingSponsor(s, cid).cronjob()
-
+            TrainingSponsor.cronjob(s)
             logger.write("Server {0} finish".format(s))
     except:
         logger.error(traceback.format_exc())

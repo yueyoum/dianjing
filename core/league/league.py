@@ -20,7 +20,7 @@ from core.league.group import LeagueGroup
 from core.league.match import LeagueMatch, LeagueClub
 from core.notification import Notification
 
-from utils.message import MessagePipe
+from utils.message import MessagePipe, MessageFactory
 
 from config.settings import LEAGUE_START_TIME_ONE, LEAGUE_START_TIME_TWO
 from config import ConfigErrorMessage, ConfigLeague
@@ -104,8 +104,9 @@ class LeagueGame(object):
         # 分组，确定一周的联赛
         LeagueGame.clean(server_id)
 
-        for i in range(ConfigLeague.MIN_LEVEL, ConfigLeague.MAX_LEVEL+1):
-            char_ids = Character.get_recent_login_char_ids(server_id, other_conditions=[{'league_level': i}])
+        for i in range(ConfigLeague.MIN_LEVEL, ConfigLeague.MAX_LEVEL + 1):
+            char_ids = Character.get_recent_login_char_ids(server_id, recent_days=14,
+                                                           other_conditions=[{'league_level': i}])
             g = LeagueGroup(server_id, i)
 
             for cid in char_ids:
@@ -161,6 +162,7 @@ class LeagueGame(object):
             league_groups = MongoLeagueGroup.db(server_id).find()
 
         for g in league_groups:
+            group_id = g['_id']
             league_level = g['level']
             event_id = g['events'][order - 1]
             clubs = g['clubs']
@@ -169,7 +171,7 @@ class LeagueGame(object):
             matchs = []
             """:type: list[LeagueMatch]"""
 
-            club_objects = {k: LeagueClub(server_id, g['_id'], league_level, v) for k, v in clubs.iteritems()}
+            club_objects = {k: LeagueClub(server_id, group_id, league_level, v) for k, v in clubs.iteritems()}
             """:type: dict[str, core.league.match.LeagueNPCClub | core.league.match.LeagueRealClub]"""
 
             league_event = MongoLeagueEvent.db(server_id).find_one({'_id': event_id})
@@ -202,7 +204,7 @@ class LeagueGame(object):
 
             # 更新小组中 clubs 的信息
             MongoLeagueGroup.db(server_id).update_one(
-                {'_id': g['_id']},
+                {'_id': group_id},
                 {'$set': group_clubs_updater}
             )
 
@@ -247,9 +249,11 @@ class LeagueGame(object):
                 club_objects[club_orders[0]].league_level_up()
                 club_objects[club_orders[1]].league_level_up()
 
+            notify = League.make_notify(server_id, group_id)
+            notify_data = MessageFactory.pack(notify)
             for club in club_objects.values():
                 if isinstance(club, Club):
-                    League(club.server_id, club.char_id).send_notify()
+                    MessagePipe(club.char_id).put(data=notify_data)
 
 
 class League(object):
@@ -301,12 +305,10 @@ class League(object):
 
         return base64.b64decode(log)
 
-    def send_notify(self):
-        if not self.group_id:
-            return
-
-        league_group = MongoLeagueGroup.db(self.server_id).find_one({'_id': self.group_id})
-        league_events = MongoLeagueEvent.db(self.server_id).find({'_id': {'$in': league_group['events']}})
+    @staticmethod
+    def make_notify(server_id, group_id):
+        league_group = MongoLeagueGroup.db(server_id).find_one({'_id': group_id})
+        league_events = MongoLeagueEvent.db(server_id).find({'_id': {'$in': league_group['events']}})
 
         events = {e['_id']: e for e in league_events}
 
@@ -320,7 +322,7 @@ class League(object):
         # clubs
         for k, v in league_group['clubs'].iteritems():
             notify_club = notify.league.clubs.add()
-            lc = LeagueClub(self.server_id, self.group_id, league_group['level'], v)
+            lc = LeagueClub(server_id, group_id, league_group['level'], v)
             notify_club.MergeFrom(lc.make_protomsg())
 
             if not v['match_times']:
@@ -357,4 +359,11 @@ class League(object):
                 notify_event_pair.club_one_win = v['club_one_win']
                 notify_event_pair.points.extend(v['points'])
 
+        return notify
+
+    def send_notify(self):
+        if not self.group_id:
+            return
+
+        notify = League.make_notify(self.server_id, self.group_id)
         MessagePipe(self.char_id).put(msg=notify)

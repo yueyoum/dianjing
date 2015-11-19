@@ -63,6 +63,8 @@ class TaskManager(object):
             doc['doing'] = doing
             MongoTask.db(self.server_id).insert_one(doc)
 
+        self.check(send_notify=False)
+
     @classmethod
     def cronjob(cls, server_id):
         char_ids = Character.get_recent_login_char_ids(server_id)
@@ -126,7 +128,7 @@ class TaskManager(object):
             {'$set': {'doing.{0}'.format(task_id): {}}}
         )
 
-        self.check([task_id])
+        self.check(task_ids=[task_id])
 
     def get_reward(self, task_id):
         config = ConfigTask.get(task_id)
@@ -210,10 +212,12 @@ class TaskManager(object):
                 {'$set': updater},
             )
 
-        self.check(task_ids)
+        self.check(task_ids=task_ids)
 
-    def check(self, task_ids):
+    def check(self, task_ids=None, send_notify=True):
         docs = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'doing': 1})
+        if not task_ids:
+            task_ids = [int(i) for i in docs['doing']]
 
         unsetter = {}
         finish_ids = []
@@ -260,7 +264,8 @@ class TaskManager(object):
                     task_id=k,
                 )
 
-        self.send_notify(ids=task_ids)
+        if send_notify:
+            self.send_notify(ids=task_ids)
 
     def trig_by_id(self, task_id):
         # 按照任务ID来触发
@@ -334,14 +339,11 @@ class RandomEvent(object):
             }}
         )
 
-        # TODO filter chars
         notify = RandomEventNotify()
         notify.times = 0
         data = MessageFactory.pack(notify)
 
-        from core.mongo import MongoCharacter
-        for char in MongoCharacter.db(server_id).find():
-            char_id = char['_id']
+        for char_id in Character.get_recent_login_char_ids(server_id):
             MessagePipe(char_id).put(data=data)
 
     def done(self, event_id):

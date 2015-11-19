@@ -46,15 +46,17 @@ def game_start_handler(server_id, char_id, **kwargs):
     MessagePipe(char_id).put(msg=msg)
 
     c = Character(server_id, char_id)
-    c.set_login()
     c.send_notify()
+
+    StaffManger(server_id, char_id).send_notify()
+
+    c.set_login()
 
     club = Club(server_id, char_id)
     club.send_notify()
     club.send_staff_slots_notify()
 
     StaffRecruit(server_id, char_id).send_notify()
-    StaffManger(server_id, char_id).send_notify()
     SkillManager(server_id, char_id).send_notify()
 
     TrainingExp(server_id, char_id).send_notify()

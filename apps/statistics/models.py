@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import arrow
+
 import uuid
 from django.db import models
+from django.db import connection
+
 
 class Statistics(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
@@ -18,5 +22,12 @@ class Statistics(models.Model):
     class Meta:
         db_table = 'statistics'
         ordering = ['-create_at']
-        verbose_name = '统计'
-        verbose_name_plural = '统计'
+        verbose_name = '财务统计'
+        verbose_name_plural = '财务统计'
+
+    @classmethod
+    def cronjob(cls):
+        connection.close()
+
+        limit = arrow.utcnow().replace(days=-30).format("YYYY-MM-DD HH:mm:ssZ")
+        cls.objects.filter(create_at__lte=limit).delete()

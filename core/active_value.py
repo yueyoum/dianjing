@@ -10,6 +10,7 @@ Description:
 from dianjing.exception import GameException
 
 from core.mongo import MongoActiveValue
+from core.character import Character
 from core.package import Drop
 from core.resource import Resource
 
@@ -37,11 +38,22 @@ class ActiveValue(object):
             doc['_id'] = self.char_id
             MongoActiveValue.db(self.server_id).insert_one(doc)
 
+    @staticmethod
+    def cronjob(server_id):
+        MongoActiveValue.db(server_id).update_many(
+            {},
+            {
+                '$set': {
+                    'rewards': [],
+                    'funcs': {}
+                }
+            }
+        )
 
-    @classmethod
-    def cron_job(cls, server_id):
-        MongoActiveValue.db(server_id).drop()
-
+        for char_id in Character.get_recent_login_char_ids(server_id):
+            av = ActiveValue(server_id, char_id)
+            av.send_function_notify()
+            av.send_value_notify()
 
     def trig(self, function_name):
         config = ConfigActiveFunction.get(function_name)
@@ -99,7 +111,6 @@ class ActiveValue(object):
         self.send_value_notify()
         return drop.make_protomsg()
 
-
     def send_value_notify(self):
         doc = MongoActiveValue.db(self.server_id).find_one(
             {'_id': self.char_id},
@@ -128,7 +139,6 @@ class ActiveValue(object):
 
         MessagePipe(self.char_id).put(msg=notify)
 
-
     def send_function_notify(self, functions=None):
         if functions:
             projection = {'funcs.{0}'.format(func): 1 for func in functions}
@@ -136,6 +146,7 @@ class ActiveValue(object):
         else:
             projection = {'funcs': 1}
             act = ACT_INIT
+            functions = ConfigActiveFunction.all_functions()
 
         doc = MongoActiveValue.db(self.server_id).find_one(
             {'_id': self.char_id},
@@ -145,7 +156,6 @@ class ActiveValue(object):
         notify = ActiveFunctionNotify()
         notify.act = act
 
-        functions = ConfigActiveFunction.all_functions()
         for func in functions:
             notify_function = notify.functions.add()
             notify_function.function_name = func

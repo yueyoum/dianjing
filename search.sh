@@ -22,5 +22,5 @@ else
     fi
 fi
 
-grep $OPT "$QUERY" --color -n * -r --exclude-dir=env --exclude-dir=tests --exclude-dir=protomsg --exclude-dir=protobuf --exclude-dir=static --exclude-dir=run --exclude=\*.pyc
+grep $OPT "$QUERY" --color -n * -r --exclude-dir=env --exclude-dir=tests --exclude-dir=protomsg --exclude-dir=protobuf --exclude-dir=static --exclude-dir=run --exclude-dir=logs --exclude=\*.pyc
 

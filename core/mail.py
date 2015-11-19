@@ -8,7 +8,7 @@ Description:
 """
 
 import arrow
-
+from django.conf import settings
 from dianjing.exception import GameException
 
 from core.mongo import MongoMail, MongoCharacter
@@ -33,11 +33,11 @@ from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
 
 def get_mail_clean_time():
-    now = arrow.utcnow().replace(days=-MAIL_KEEP_DAYS)
-    date_string = "{0} {1}".format(now.format("YYYY-MM-DD"), MAIL_CLEAN_AT)
+    limit = arrow.utcnow().to(settings.TIME_ZONE).replace(days=-MAIL_KEEP_DAYS)
+    date_string = "{0} {1}".format(limit.format("YYYY-MM-DD"), MAIL_CLEAN_AT)
     date = arrow.get(date_string, "YYYY-MM-DD HH:mm:ssZ").to('UTC')
 
-    if date < now:
+    if date < limit:
         date = date.replace(days=1)
 
     return date
@@ -53,6 +53,17 @@ class MailManager(object):
             doc = MongoMail.document()
             doc['_id'] = char_id
             MongoMail.db(server_id).insert_one(doc)
+
+    @staticmethod
+    def cronjob(server_id):
+        # 删除过期邮件
+        cleaned_amount = 0
+        doc = MongoMail.db(server_id).find({}, {'_id': 1})
+        for d in doc:
+            mm = MailManager(server_id, d['_id'])
+            cleaned_amount += mm.clean_expired()
+
+        return cleaned_amount
 
     def get_mail(self, mail_id):
         doc = MongoMail.db(self.server_id).find_one(
@@ -157,18 +168,22 @@ class MailManager(object):
         doc = MongoMail.db(self.server_id).find_one({'_id': self.char_id}, {'mails': 1})
         expired = []
 
+        total_amount = len(doc['mails'])
+
         for k, v in doc['mails'].iteritems():
-            remained_seconds = v['create_at'] - limit_timestamp
-            if remained_seconds < 0:
+            if v['create_at'] <= limit_timestamp:
                 expired.append(k)
 
         if expired:
-            updater = {"mails.{0}".format(i): 1 for i in expired}
+            if len(expired) == total_amount:
+                MongoMail.db(self.server_id).drop()
+            else:
+                updater = {"mails.{0}".format(i): 1 for i in expired}
 
-            MongoMail.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {'$unset': updater}
-            )
+                MongoMail.db(self.server_id).update_one(
+                    {'_id': self.char_id},
+                    {'$unset': updater}
+                )
 
             self.send_remove_notify(expired)
         return len(expired)

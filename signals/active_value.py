@@ -11,23 +11,18 @@ from django.dispatch import receiver
 
 from core.active_value import ActiveValue
 from core.signals import (
-    training_got_reward_signal,
     chat_signal,
     challenge_match_signal,
     ladder_match_signal,
     friend_match_signal,
     random_event_done_signal,
+    training_sponsor_start_signal,
+    training_broadcast_start_signal,
+    training_property_start_signal,
+    training_exp_start_signal,
+    training_shop_start_signal,
+    training_skill_start_signal
 )
-
-
-@receiver(training_got_reward_signal, dispatch_uid='signals.active_value.training_got_reward_handler')
-def training_got_reward_handler(server_id, char_id, training_id, **kwargs):
-    pass
-    # TODO
-    # config = ConfigTraining.get(training_id)
-    # function_name = "FUNCTION_TRAINING_TYPE_{0}".format(config.tp)
-    #
-    # ActiveValue(server_id, char_id).trig(function_name)
 
 
 @receiver(chat_signal, dispatch_uid='signals.active_value.chat_handler')
@@ -53,3 +48,33 @@ def friend_match_handler(server_id, char_id, target_id, win, **kwargs):
 @receiver(random_event_done_signal, dispatch_uid='signals.active_value.random_event_done_handler')
 def random_event_done_handler(server_id, char_id, event_id, **kwargs):
     ActiveValue(server_id, char_id).trig("FUNCTION_RANDOM_EVENT")
+
+
+@receiver(training_broadcast_start_signal, dispatch_uid='signals.active_value.training_broadcast_start_handler')
+def training_broadcast_start_handler(server_id, char_id, staff_id, **kwargs):
+    ActiveValue(server_id, char_id).trig("FUNCTION_TRAINING_TYPE_1")
+
+
+@receiver(training_exp_start_signal, dispatch_uid='signals.active_value.training_exp_start_handler')
+def training_exp_start_handler(server_id, char_id, staff_id, **kwargs):
+    ActiveValue(server_id, char_id).trig("FUNCTION_TRAINING_TYPE_4")
+
+
+@receiver(training_sponsor_start_signal, dispatch_uid='signals.active_value.training_sponsor_start_handler')
+def training_sponsor_start_handler(server_id, char_id, sponsor_id, **kwargs):
+    ActiveValue(server_id, char_id).trig("FUNCTION_TRAINING_TYPE_5")
+
+
+@receiver(training_shop_start_signal, dispatch_uid='signals.active_value.training_shop_start_handler')
+def training_shop_start_handler(server_id, char_id, staff_id, **kwargs):
+    ActiveValue(server_id, char_id).trig("FUNCTION_TRAINING_TYPE_6")
+
+
+@receiver(training_property_start_signal, dispatch_uid='signals.active_value.training_property_start_handler')
+def training_property_start_handler(server_id, char_id, staff_id, **kwargs):
+    ActiveValue(server_id, char_id).trig("FUNCTION_TRAINING_TYPE_2")
+
+
+@receiver(training_skill_start_signal, dispatch_uid='signals.active_value.training_skill_start_handler')
+def training_skill_start_handler(server_id, char_id, staff_id, skill_id, **kwargs):
+    ActiveValue(server_id, char_id).trig("FUNCTION_TRAINING_TYPE_3")

@@ -39,22 +39,25 @@ staff_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id
 # 更换出阵队员
 match_staffs_set_change_signal = Signal(providing_args=['server_id', 'char_id'])
 # 员工强化培训
-staff_property_training_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
+training_property_start_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
+training_property_done_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
 # 员工exp训练
-staff_exp_training_start_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
-# exp_training_speedup
-staff_exp_training_speedup_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
+training_exp_start_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
+training_exp_done_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
+training_exp_speedup_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
 # staff broadcast
-staff_broadcast_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
+training_broadcast_start_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
+
+training_shop_start_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
+training_sponsor_start_signal = Signal(providing_args=['server_id', 'char_id', 'sponsor_id'])
+
+training_skill_start_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id', 'skill_id'])
 # 招募了员工
 recruit_staff_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
-# staff in shop
-set_staff_in_shop_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
 
 # 充值
 purchase_done_signal = Signal(providing_args=['server_id', 'char_id', 'diamond'])
-# 训练获取奖励完毕
-training_got_reward_signal = Signal(providing_args=['server_id', 'char_id', 'training_id'])
+
 # 完成随机事件
 random_event_done_signal = Signal(providing_args=['server_id', 'char_id', 'event_id'])
 

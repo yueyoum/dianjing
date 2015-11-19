@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import uuid
+import arrow
+
 from django.db import models
+from django.db import connection
 
 
 class BaseAccountManager(models.Manager):
@@ -71,6 +74,13 @@ class AccountLoginLog(models.Model):
         ordering = ['-login_at', ]
         verbose_name = "登录日志"
         verbose_name_plural = "登录日志"
+
+    @classmethod
+    def cronjob(cls):
+        connection.close()
+
+        limit = arrow.utcnow().replace(days=-60).format("YYYY-MM-DD HH:mm:ssZ")
+        cls.objects.filter(login_at__lte=limit).delete()
 
 
 class AccountBan(models.Model):

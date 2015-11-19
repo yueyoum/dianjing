@@ -11,6 +11,7 @@ import random
 
 from config.base import ConfigBase
 
+
 class Staff(object):
     __slots__ = [
         'id', 'name', 'nation', 'race', 'quality', 'buy_type', 'buy_cost',
@@ -28,35 +29,34 @@ class Staff(object):
     ]
 
     def __init__(self):
-        self.id = None
-        self.name = None
-        self.nation = None
-        self.race = None
-        self.quality = None
-        self.buy_type = None
-        self.buy_cost = None
-        self.can_recruit = None
+        self.id = 0
+        self.name = ""
+        self.nation = 0
+        self.race = 0
+        self.quality = 0
+        self.buy_type = 0
+        self.buy_cost = 0
+        self.can_recruit = False
 
-        self.jingong = None
-        self.jingong_grow = None
-        self.qianzhi = None
-        self.qianzhi_grow = None
-        self.xintai = None
-        self.xintai_grow = None
-        self.baobing = None
-        self.baobing_grow = None
-        self.fangshou = None
-        self.fangshou_grow = None
-        self.yunying = None
-        self.yunying_grow = None
-        self.yishi = None
-        self.yishi_grow = None
-        self.caozuo = None
-        self.caozuo_grow = None
+        self.jingong = 0
+        self.jingong_grow = 0
+        self.qianzhi = 0
+        self.qianzhi_grow = 0
+        self.xintai = 0
+        self.xintai_grow = 0
+        self.baobing = 0
+        self.baobing_grow = 0
+        self.fangshou = 0
+        self.fangshou_grow = 0
+        self.yunying = 0
+        self.yunying_grow = 0
+        self.yishi = 0
+        self.yishi_grow = 0
+        self.caozuo = 0
+        self.caozuo_grow = 0
 
-        self.skill_ids = None
-        self.qianban_ids = None
-
+        self.skill_ids = 0
+        self.qianban_ids = 0
 
 
 class StaffHot(object):
@@ -67,10 +67,9 @@ class StaffHot(object):
         self.cost = 0
 
 
-
 class StaffRecruit(object):
     __slots__ = [
-        'id', 'name', 'lucky_times', 'cost_type', 'cost_value',
+        'id', 'lucky_times', 'cost_type', 'cost_value',
         'staff_settings'
     ]
 
@@ -79,13 +78,11 @@ class StaffRecruit(object):
     KEY_NORMAL = "normal_amount"
 
     def __init__(self):
-        self.id = None
-        self.name = None
-        self.lucky_times = None
-        self.cost_type = None
-        self.cost_value = None
-        self.staff_settings = None
-
+        self.id = 0
+        self.lucky_times = 0
+        self.cost_type = 0
+        self.cost_value = 0
+        self.staff_settings = {}
 
     def get_refreshed_staffs(self, first=False, lucky=False):
         """
@@ -112,6 +109,7 @@ class StaffRecruit(object):
 
 class StaffLevel(object):
     __slots__ = ['id', 'exp', 'next_level']
+
     def __init__(self):
         self.id = 0
         self.exp = {}
@@ -120,9 +118,11 @@ class StaffLevel(object):
 
 class StaffStatus(object):
     __slots__ = ['id', 'value']
+
     def __init__(self):
         self.id = 0
         self.value = 0
+
 
 class ConfigStaff(ConfigBase):
     EntityClass = Staff
@@ -141,7 +141,6 @@ class ConfigStaff(ConfigBase):
         """
         return super(ConfigStaff, cls).get(id)
 
-
     @classmethod
     def get_random_ids_by_condition(cls, amount, **condition):
         """
@@ -154,6 +153,7 @@ class ConfigStaff(ConfigBase):
     @classmethod
     def random_ids(cls, amount):
         return random.sample(cls.INSTANCES.keys(), amount)
+
 
 class ConfigStaffHot(ConfigBase):
     EntityClass = StaffHot
@@ -171,7 +171,6 @@ class ConfigStaffHot(ConfigBase):
         :rtype : StaffHot
         """
         return super(ConfigStaffHot, cls).get(id)
-
 
     @classmethod
     def random_three(cls):
@@ -200,7 +199,7 @@ class ConfigStaffRecruit(ConfigBase):
 
 class ConfigStaffLevel(ConfigBase):
     EntityClass = StaffLevel
-    
+
     INSTANCES = {}
     FILTER_CACHE = {}
 
@@ -213,11 +212,10 @@ class ConfigStaffLevel(ConfigBase):
 
         length = len(instances)
         for i in range(length):
-            if i+1 == length:
+            if i + 1 == length:
                 instances[i][1].next_level = None
             else:
-                instances[i][1].next_level = instances[i+1][0]
-
+                instances[i][1].next_level = instances[i + 1][0]
 
     @classmethod
     def get(cls, id):
@@ -226,6 +224,7 @@ class ConfigStaffLevel(ConfigBase):
         :rtype : StaffLevel
         """
         return super(ConfigStaffLevel, cls).get(id)
+
 
 class ConfigStaffStatus(ConfigBase):
     EntityClass = StaffStatus
