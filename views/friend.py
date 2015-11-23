@@ -31,6 +31,7 @@ def get_candidates(request):
     candidates = fm.get_candidates()
 
     response = FriendCandidatesResponse()
+    response.ret = 0
 
     if not candidates:
         return ProtobufResponse(response)
@@ -55,6 +56,7 @@ def get_candidates(request):
         notify_friend.club_gold = char_dict[c]['club']['gold']
         notify_friend.club_level = char_dict[c]['club']['level']
 
+    return ProtobufResponse(response)
 
 def get_info(request):
     server_id = request._game_session.server_id
