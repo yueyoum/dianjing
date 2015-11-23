@@ -66,6 +66,7 @@ urlpatterns = [
     url(r'^friend/remove/$', 'views.friend.remove'),
     url(r'^friend/accept/$', 'views.friend.accept'),
     url(r'^friend/match/$', 'views.friend.match'),
+    url(r'^friend/candidates/$', 'views.friend.get_candidates'),
 
     url(r'^mail/send/$', 'views.mail.send'),
     url(r'^mail/open/$', 'views.mail.read'),
