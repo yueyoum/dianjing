@@ -128,7 +128,7 @@ class StaffRecruit(object):
             if times == 0:
                 is_first = True
             else:
-                if times % config.lucky_times == 0:
+                if (times+1) % config.lucky_times == 0:
                     is_lucky = True
 
             with Resource(self.server_id, self.char_id).check(**check):
@@ -138,8 +138,9 @@ class StaffRecruit(object):
                     staffs.extend(ConfigStaff.get_random_ids_by_condition(amount, quality=quality))
 
                 # XXX
-                staffs = staffs[:7]
-                staffs.append(11)
+                if is_first:
+                    staffs = staffs[:7]
+                    staffs.append(11)
 
         MongoRecruit.db(self.server_id).update_one(
             {'_id': self.char_id},
