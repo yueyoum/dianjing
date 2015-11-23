@@ -54,6 +54,10 @@ class PropertySlotStatus(object):
         self.end_at = slot_data.get('end_at', 0)
         self.status = PropertySlotStatus.EMPTY
 
+        # 如果是加速完成的，就不清理end_at，
+        # 否则会重新计算end_at
+        self.is_speedup = False
+
         self.calculate()
 
     def __str__(self):
@@ -137,6 +141,8 @@ class PropertyTrainingList(object):
         self.slots[0].calculate()
         for i in range(1, PROPERTY_TRAINING_SLOTS_AMOUNT):
             self.slots[i].start_at = self.slots[i - 1].end_at
+            if not self.slots[i].is_speedup:
+                self.slots[i].end_at = 0
             self.slots[i].calculate()
 
     def get_slot(self, slot_id):
@@ -183,6 +189,7 @@ class PropertyTrainingList(object):
             raise PropertyTrainingList.SlotFinish()
 
         slot.end_at = arrow.utcnow().timestamp
+        slot.is_speedup = True
         self.calculate()
 
     def remove(self, slot_id):
