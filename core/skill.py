@@ -202,8 +202,9 @@ class SkillManager(object):
             )
 
             for k, v in wash_skills.iteritems():
-                if v['key']:
-                    Timerd.cancel(v['key'])
+                key = v.get('key', '')
+                if key:
+                    Timerd.cancel(key)
 
         self.send_notify()
 
