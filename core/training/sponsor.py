@@ -33,7 +33,7 @@ from protomsg.training_pb2 import (
 
 
 def get_remained_days(sponsor_id, start_at_timestamp):
-    config = ConfigSponsor.get(int(sponsor_id))
+    config = ConfigSponsor.get(sponsor_id)
 
     now = arrow.utcnow().to(settings.TIME_ZONE)
     start = arrow.get(start_at_timestamp).to(settings.TIME_ZONE)
@@ -69,6 +69,7 @@ class TrainingSponsor(object):
             expired = []
 
             for sponsor_id, start_at_timestamp in doc['sponsors'].iteritems():
+                sponsor_id = int(sponsor_id)
                 if not start_at_timestamp:
                     continue
 

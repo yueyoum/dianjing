@@ -282,26 +282,34 @@ class TrainingProperty(object):
 
         pl = self.get_training_list(staff_id)
 
-        try:
-            end_at = pl.add(training_id)
-        except PropertyTrainingList.ListFull:
-            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_PROPERTY_SLOT_FULL"))
-
-        if end_at:
-            data = {
-                'sid': self.server_id,
-                'cid': self.char_id,
-                'staff_id': staff_id
-            }
-            key = Timerd.register(end_at, TIMERD_CALLBACK_PATH, data)
+        if config.cost_type == 1:
+            needs = {'gold': -config.cost_value}
         else:
-            key = None
+            needs = {'diamond': -config.cost_value}
 
-        new_list = pl.get_document_list()
-        self.update_training_list(staff_id, new_list, key)
+        needs['message'] = u"Training Property: {0} for staff {1}".format(training_id, staff_id)
 
-        for item_id, item_amount in config.need_items:
-            bag.remove(item_id, item_amount)
+        with Resource(self.server_id, self.char_id).check(**needs):
+            try:
+                end_at = pl.add(training_id)
+            except PropertyTrainingList.ListFull:
+                raise GameException(ConfigErrorMessage.get_error_id("TRAINING_PROPERTY_SLOT_FULL"))
+
+            if end_at:
+                data = {
+                    'sid': self.server_id,
+                    'cid': self.char_id,
+                    'staff_id': staff_id
+                }
+                key = Timerd.register(end_at, TIMERD_CALLBACK_PATH, data)
+            else:
+                key = None
+
+            new_list = pl.get_document_list()
+            self.update_training_list(staff_id, new_list, key)
+
+            for item_id, item_amount in config.need_items:
+                bag.remove(item_id, item_amount)
 
         training_property_start_signal.send(
             sender=None,
