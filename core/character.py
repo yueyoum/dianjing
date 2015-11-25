@@ -159,9 +159,9 @@ def save_avatar(server_id, char_id, data):
     cow = Cow(settings.QINIU_ACCESS_KEY, settings.QINIU_SECRET_KEY)
     bucket = cow.get_bucket(settings.QINIU_BUCKET)
 
-    # 我们上传的图片全部定死是png的
+    # 我们上传的图片全部定死是jpg的
     try:
-        ret = bucket.put('x.png', data=data)
+        ret = bucket.put('x.jpg', data=data)
     except CowException:
         raise GameException(ConfigErrorMessage.get_error_id("UPLOAD_AVATAR_ERROR"))
 

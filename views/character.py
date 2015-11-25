@@ -15,12 +15,12 @@ from dianjing.exception import GameException
 from apps.character.models import Character as ModelCharacter
 
 from core.signals import char_created_signal
-from core.character import Character
+from core.character import Character, save_avatar
 
 from config import ConfigErrorMessage
 from config.settings import CHAR_NAME_MAX_LENGTH
 
-from protomsg.character_pb2 import CreateCharacterResponse
+from protomsg.character_pb2 import CreateCharacterResponse, CharacterUploadAvatarResponse
 from protomsg.common_pb2 import OPT_CREATE_CLUB
 
 
@@ -67,3 +67,13 @@ def create(request):
 
     return ProtobufResponse(response)
 
+
+def save_avatar_handler(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    save_avatar(server_id, char_id, request._proto.data)
+
+    response = CharacterUploadAvatarResponse()
+    response.ret = 0
+    return ProtobufResponse(response)

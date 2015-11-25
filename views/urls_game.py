@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^start/$', 'views.server.start_game'),
 
     url(r'^character/create/$', 'views.character.create'),
+    url(r'^character/avatar/upload/$', 'views.character.save_avatar_handler'),
 
     url(r'^club/create/$', 'views.club.create'),
     url(r'^club/policy/$', 'views.club.set_policy'),
