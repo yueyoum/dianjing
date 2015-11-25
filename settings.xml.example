@@ -27,4 +27,10 @@
         <user></user>
         <password></password>
     </mongodb>
+
+    <qiniu>
+        <accesskey></accesskey>
+        <secretkey></secretkey>
+        <bucket></bucket>
+    </qiniu>
 </config>

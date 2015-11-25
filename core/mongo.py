@@ -64,6 +64,8 @@ class MongoCharacter(BaseDocument):
         'name': null,
         'create_at': 0,
         'last_login': 0,
+        'avatar_key': '',
+        'avatar_ok': False,
 
         'club': {
             'name': null,

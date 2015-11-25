@@ -203,6 +203,11 @@ else:
 
 TIMERD_URL = doc.find('timerd').text
 
+QINIU_ACCESS_KEY = doc.find('qiniu/accesskey').text
+QINIU_SECRET_KEY = doc.find('qiniu/secretkey').text
+QINIU_BUCKET = doc.find('qiniu/bucket').text
+QINIU_DOMAIN = doc.find('qiniu/domain').text
+
 del doc
 del tree
 del et

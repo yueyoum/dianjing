@@ -18,7 +18,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='character.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=b'\n\x0f\x63haracter.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"s\n\tCharacter\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0e\n\x06\x61vatar\x18\x03 \x02(\t\x12\x0e\n\x06gender\x18\x04 \x02(\x05\x12\x0b\n\x03\x61ge\x18\x05 \x02(\x05\x12\x12\n\nprofession\x18\x06 \x02(\x05\x12\x0b\n\x03\x64\x65s\x18\x07 \x02(\t\"N\n\x0f\x43haracterNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12*\n\x04\x63har\x18\x02 \x02(\x0b\x32\x1c.Dianjing.protocol.Character\"7\n\x16\x43reateCharacterRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\"m\n\x17\x43reateCharacterResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x34\n\x04next\x18\x03 \x01(\x0e\x32\x1e.Dianjing.protocol.NextOperate:\x06OPT_OK'
+  serialized_pb=b'\n\x0f\x63haracter.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xab\x01\n\tCharacter\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0e\n\x06\x61vatar\x18\x03 \x02(\t\x12\x0e\n\x06gender\x18\x04 \x02(\x05\x12\x0b\n\x03\x61ge\x18\x05 \x02(\x05\x12\x12\n\nprofession\x18\x06 \x02(\x05\x12\x0b\n\x03\x64\x65s\x18\x07 \x02(\t\x12\x36\n\ravatar_status\x18\x08 \x02(\x0e\x32\x1f.Dianjing.protocol.UploadStatus\"N\n\x0f\x43haracterNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12*\n\x04\x63har\x18\x02 \x02(\x0b\x32\x1c.Dianjing.protocol.Character\"7\n\x16\x43reateCharacterRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\"m\n\x17\x43reateCharacterResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x34\n\x04next\x18\x03 \x01(\x0e\x32\x1e.Dianjing.protocol.NextOperate:\x06OPT_OK\"=\n\x1c\x43haracterUploadAvatarRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04\x64\x61ta\x18\x02 \x02(\x0c\"=\n\x1d\x43haracterUploadAvatarResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c'
   ,
   dependencies=[common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -82,6 +82,13 @@ _CHARACTER = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='avatar_status', full_name='Dianjing.protocol.Character.avatar_status', index=7,
+      number=8, type=14, cpp_type=8, label=2,
+      has_default_value=False, default_value=1,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -94,8 +101,8 @@ _CHARACTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=52,
-  serialized_end=167,
+  serialized_start=53,
+  serialized_end=224,
 )
 
 
@@ -132,8 +139,8 @@ _CHARACTERNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=169,
-  serialized_end=247,
+  serialized_start=226,
+  serialized_end=304,
 )
 
 
@@ -170,8 +177,8 @@ _CREATECHARACTERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=249,
-  serialized_end=304,
+  serialized_start=306,
+  serialized_end=361,
 )
 
 
@@ -215,16 +222,95 @@ _CREATECHARACTERRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=306,
-  serialized_end=415,
+  serialized_start=363,
+  serialized_end=472,
 )
 
+
+_CHARACTERUPLOADAVATARREQUEST = _descriptor.Descriptor(
+  name='CharacterUploadAvatarRequest',
+  full_name='Dianjing.protocol.CharacterUploadAvatarRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.CharacterUploadAvatarRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='data', full_name='Dianjing.protocol.CharacterUploadAvatarRequest.data', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=474,
+  serialized_end=535,
+)
+
+
+_CHARACTERUPLOADAVATARRESPONSE = _descriptor.Descriptor(
+  name='CharacterUploadAvatarResponse',
+  full_name='Dianjing.protocol.CharacterUploadAvatarResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.CharacterUploadAvatarResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.CharacterUploadAvatarResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=537,
+  serialized_end=598,
+)
+
+_CHARACTER.fields_by_name['avatar_status'].enum_type = common__pb2._UPLOADSTATUS
 _CHARACTERNOTIFY.fields_by_name['char'].message_type = _CHARACTER
 _CREATECHARACTERRESPONSE.fields_by_name['next'].enum_type = common__pb2._NEXTOPERATE
 DESCRIPTOR.message_types_by_name['Character'] = _CHARACTER
 DESCRIPTOR.message_types_by_name['CharacterNotify'] = _CHARACTERNOTIFY
 DESCRIPTOR.message_types_by_name['CreateCharacterRequest'] = _CREATECHARACTERREQUEST
 DESCRIPTOR.message_types_by_name['CreateCharacterResponse'] = _CREATECHARACTERRESPONSE
+DESCRIPTOR.message_types_by_name['CharacterUploadAvatarRequest'] = _CHARACTERUPLOADAVATARREQUEST
+DESCRIPTOR.message_types_by_name['CharacterUploadAvatarResponse'] = _CHARACTERUPLOADAVATARRESPONSE
 
 Character = _reflection.GeneratedProtocolMessageType('Character', (_message.Message,), dict(
   DESCRIPTOR = _CHARACTER,
@@ -253,6 +339,20 @@ CreateCharacterResponse = _reflection.GeneratedProtocolMessageType('CreateCharac
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.CreateCharacterResponse)
   ))
 _sym_db.RegisterMessage(CreateCharacterResponse)
+
+CharacterUploadAvatarRequest = _reflection.GeneratedProtocolMessageType('CharacterUploadAvatarRequest', (_message.Message,), dict(
+  DESCRIPTOR = _CHARACTERUPLOADAVATARREQUEST,
+  __module__ = 'character_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.CharacterUploadAvatarRequest)
+  ))
+_sym_db.RegisterMessage(CharacterUploadAvatarRequest)
+
+CharacterUploadAvatarResponse = _reflection.GeneratedProtocolMessageType('CharacterUploadAvatarResponse', (_message.Message,), dict(
+  DESCRIPTOR = _CHARACTERUPLOADAVATARRESPONSE,
+  __module__ = 'character_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.CharacterUploadAvatarResponse)
+  ))
+_sym_db.RegisterMessage(CharacterUploadAvatarResponse)
 
 
 # @@protoc_insertion_point(module_scope)

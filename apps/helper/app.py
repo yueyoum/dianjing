@@ -9,6 +9,7 @@ Description:
 
 import os
 from django.apps import AppConfig
+from django.conf import settings
 
 
 class ProjectConfig(AppConfig):
@@ -21,11 +22,12 @@ class ProjectConfig(AppConfig):
         from config import load_config
         load_config()
 
-        from utils.api import Timerd
-        Timerd.ping()
-
         import signals
         import formula
+
+        if not settings.TEST:
+            from utils.api import Timerd
+            Timerd.ping()
 
         if os.environ.get('UWSGI_RUNNING', '0') == '1':
             import cronjob

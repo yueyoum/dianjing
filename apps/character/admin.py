@@ -4,25 +4,31 @@ from django.contrib import admin
 from django import forms
 from django.contrib.admin.helpers import ActionForm
 from django.contrib import messages
+from django.conf import settings
 
 from apps.character.models import Character
 
 from core.mongo import MongoCharacter
+from core.character import Character as Char
 from core.package import Drop
 from core.resource import Resource
 from core.signals import purchase_done_signal
 
 
 class MyActionForm(ActionForm):
-    value = forms.CharField(required=True)
+    value = forms.CharField(required=False)
 
 
 @admin.register(Character)
 class CharacterAdmin(admin.ModelAdmin):
     list_display = (
         'id', 'account_id', 'server_id', 'name', 'create_at',
-        'club_name', 'last_login', 'login_times',
-        'Info'
+        'club_name', 'last_login', 'login_times', 'Avatar',
+        # 'Info'
+    )
+
+    readonly_fields = (
+        'account_id', 'server_id', 'name', 'club_name', 'login_times'
     )
 
     list_per_page = 50
@@ -34,35 +40,42 @@ class CharacterAdmin(admin.ModelAdmin):
                'add_training_skill_item', 'add_item',
                ]
 
-    def Info(self, obj):
-        doc = MongoCharacter.db(obj.server_id).find_one(
-            {'_id': obj.id},
-            {
-                'club.gold': 1,
-                'club.diamond': 1,
-                'club.level': 1
-            }
-        )
+    def Avatar(self, obj):
+        if not obj.avatar_key:
+            return ""
 
-        if not doc:
-            gold = diamond = level = 'None'
-        else:
-            gold = doc.get('club', {}).get('gold', 'None')
-            diamond = doc.get('club', {}).get('diamond', 'None')
-            level = doc.get('club', {}).get('level', 'None')
+        url = "http://{0}/{1}".format(settings.QINIU_DOMAIN, obj.avatar_key)
+        return '<img src="{0}" />'.format(url)
+    Avatar.allow_tags = True
 
-        return "软妹币  : {0}<br/>钻石   : {1}<br/>俱乐部等级: {2}".format(
-            gold, diamond, level
-        )
-
-    Info.allow_tags = True
+    # def Info(self, obj):
+    #     doc = MongoCharacter.db(obj.server_id).find_one(
+    #         {'_id': obj.id},
+    #         {
+    #             'club.gold': 1,
+    #             'club.diamond': 1,
+    #             'club.level': 1
+    #         }
+    #     )
+    #
+    #     if not doc:
+    #         gold = diamond = level = 'None'
+    #     else:
+    #         gold = doc.get('club', {}).get('gold', 'None')
+    #         diamond = doc.get('club', {}).get('diamond', 'None')
+    #         level = doc.get('club', {}).get('level', 'None')
+    #
+    #     return "软妹币  : {0}<br/>钻石   : {1}<br/>俱乐部等级: {2}".format(
+    #         gold, diamond, level
+    #     )
+    #
+    # Info.allow_tags = True
 
     def has_add_permission(self, request):
         return False
 
     def has_delete_permission(self, request, obj=None):
         return False
-
 
     def check_value(self, request):
         try:
@@ -79,7 +92,6 @@ class CharacterAdmin(admin.ModelAdmin):
         except:
             self.message_user(request, u"应该填入ID:数量", level=messages.ERROR)
             return False, False
-
 
     def add_gold(self, request, queryset):
         value = self.check_value(request)
@@ -133,7 +145,6 @@ class CharacterAdmin(admin.ModelAdmin):
 
     add_ladder_score.short_description = u"添加天梯赛积分"
 
-
     def add_purchase_diamond(self, request, queryset):
         value = self.check_value(request)
         if not value:
@@ -153,7 +164,6 @@ class CharacterAdmin(admin.ModelAdmin):
 
     add_purchase_diamond.short_description = u"添加充值钻石"
 
-
     def add_training_skill_item(self, request, queryset):
         value, amount = self.check_value_and_amount(request)
         if not value:
@@ -171,7 +181,7 @@ class CharacterAdmin(admin.ModelAdmin):
     add_training_skill_item.short_description = u"添加技能训练书"
 
     def add_item(self, request, queryset):
-        value, amount= self.check_value_and_amount(request)
+        value, amount = self.check_value_and_amount(request)
         if not value:
             return
 
@@ -185,3 +195,23 @@ class CharacterAdmin(admin.ModelAdmin):
             BagItem(q.server_id, q.id).add([(value, amount)])
 
     add_item.short_description = u"添加道具"
+
+    def avatar_set_ok(self, request, queryset):
+        for q in queryset:
+            if not q.avatar_key or q.avatar_ok:
+                continue
+
+            Character.objects.filter(id=q.id).update(avatar_ok=True)
+            Char(q.server_id, q.id).set_avatar(q.avatar_key, True)
+
+    avatar_set_ok.short_description = u"头像通过审核"
+
+    def avatar_set_not_ok(self, request, queryset):
+        for q in queryset:
+            if not q.avatar_key or not q.avatar_ok:
+                continue
+
+            Character.objects.filter(id=q.id).update(avatar_ok=False)
+            Char(q.server_id, q.id).set_avatar(q.avatar_key, False)
+
+    avatar_set_not_ok.short_description = u"头像未通过审核"
