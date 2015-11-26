@@ -8,6 +8,7 @@ pymongo==3.0.3
 python-dateutil==2.4.2
 redis==2.10.3
 requests==2.8.1
+sevencow==0.2.0
 six==1.9.0
 sqlparse==0.1.15
 uwsgidecorators==1.1.0

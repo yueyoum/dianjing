@@ -64,6 +64,8 @@ class MongoCharacter(BaseDocument):
         'name': null,
         'create_at': 0,
         'last_login': 0,
+        'avatar_key': '',
+        'avatar_ok': False,
 
         'club': {
             'name': null,
@@ -91,7 +93,7 @@ class MongoCharacter(BaseDocument):
     }
 
     COLLECTION = "character"
-    INDEXES = ['name', 'last_login', 'league_level', 'in_cup']
+    INDEXES = ['name', 'last_login', 'league_level', 'in_cup', 'club.level']
 
     @classmethod
     def document(cls):

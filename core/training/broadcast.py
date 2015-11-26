@@ -50,7 +50,7 @@ def current_got_gold(server_id, char_id, staff_id, passed_seconds, current_build
     config_building_level = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).get_level(current_building_level)
     gold_per_minute = formula.staff_training_broadcast_reward_gold_per_minute(
         staff.level,
-        0,
+        staff.zhimingdu,
         config_skill.value_base,
         config_skill.level_grow,
         skill_level,

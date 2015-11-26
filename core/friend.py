@@ -6,6 +6,7 @@ Date Created:   2015-07-29 16:22
 Description:
 
 """
+import random
 
 from dianjing.exception import GameException
 
@@ -18,6 +19,7 @@ from core.signals import friend_match_signal, friend_ok_signal
 from utils.message import MessagePipe
 
 from config import ConfigErrorMessage
+from config.settings import FRIEND_CANDIDATES_AMOUNT
 
 from protomsg import friend_pb2
 from protomsg.friend_pb2 import (
@@ -60,6 +62,59 @@ class FriendManager(object):
         char = Character(self.server_id, friend_id)
         club = Club(self.server_id, friend_id)
         return char, club
+
+    def get_candidates(self):
+        char_doc = MongoCharacter.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'club.level': 1}
+        )
+
+        level = char_doc['club']['level']
+
+        friend_doc = MongoFriend.db(self.server_id).find_one(
+            {'_id': self.char_id}
+        )
+
+        def query(level_range):
+            if level_range is not None:
+                min_level = level-level_range
+                if min_level < 1:
+                    min_level = 1
+
+                max_level = level+level_range
+
+                condition = {
+                    '$and': [
+                        {'club.level': {'$gte': min_level}},
+                        {'club.level': {'$lte': max_level}}
+                    ]
+                }
+            else:
+                condition = {}
+
+            other_doc = MongoCharacter.db(self.server_id).find(
+                condition,
+                {'_id': 1}
+            )
+
+            candidate_ids = []
+            for d in other_doc:
+                if d['_id'] != self.char_id and str(d['_id']) not in friend_doc['friends']:
+                    candidate_ids.append(d['_id'])
+
+            return candidate_ids
+
+        candidate_ids = query(10)
+        if len(candidate_ids) < FRIEND_CANDIDATES_AMOUNT:
+            candidate_ids = query(30)
+            if len(candidate_ids) < FRIEND_CANDIDATES_AMOUNT:
+                candidate_ids = query(None)
+
+        if len(candidate_ids) > FRIEND_CANDIDATES_AMOUNT:
+            candidate_ids = random.sample(candidate_ids, FRIEND_CANDIDATES_AMOUNT)
+
+        return candidate_ids
+
 
     def match(self, friend_id):
         friend_id = int(friend_id)

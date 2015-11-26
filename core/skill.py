@@ -59,7 +59,7 @@ class SkillManager(object):
     def get_staff_skill_level(self, staff_id, skill_id):
         skills = self.get_staff_skills(staff_id)
         if skills and skills.get(str(skill_id), None):
-            return skills[str(skill_id)]['level']
+            return int(skills[str(skill_id)]['level'])
         else:
             return 0
 
@@ -202,8 +202,9 @@ class SkillManager(object):
             )
 
             for k, v in wash_skills.iteritems():
-                if v['key']:
-                    Timerd.cancel(v['key'])
+                key = v.get('key', '')
+                if key:
+                    Timerd.cancel(key)
 
         self.send_notify()
 
