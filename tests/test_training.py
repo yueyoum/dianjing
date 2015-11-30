@@ -14,12 +14,10 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoTrainingExp, MongoStaff, MongoBuilding, MongoCharacter
 from core.training import TrainingExp, TrainingBroadcast, TrainingShop
-
 from core.building import BuildingTrainingCenter
-from core.staff import staff_training_exp_need_gold, staff_level_up_need_exp, StaffManger
+from core.staff import staff_training_exp_need_gold
 
-from config import ConfigErrorMessage, ConfigStaff, ConfigBuilding
-from core.package import Property
+from config import ConfigErrorMessage, ConfigBuilding
 
 
 def set_slot_test_data(staff_id, slot_id):
