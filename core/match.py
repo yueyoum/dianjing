@@ -13,7 +13,8 @@ from dianjing.exception import GameException
 from config import ConfigUnit, ConfigPolicy, ConfigErrorMessage, ConfigSkill
 
 from protomsg.match_pb2 import ClubMatch as MessageClubMatch
-from protomsg.match_pb2 import Match as MessageMatch
+from protomsg.match_pb2 import StaffMatch as MessageStaffMatch
+from protomsg.match_pb2 import OneMatch as MessageOneMatch
 from protomsg.match_pb2 import Round as MessageRound
 
 
@@ -59,8 +60,7 @@ class MatchUnit(object):
         return units[index]
 
 
-class Match(object):
-    # 一场比赛
+class OneMatch(object):
     def __init__(self, staff_one, staff_two, policy_one, policy_two):
         """
         :type staff_one: core.abstract.AbstractStaff
@@ -155,9 +155,7 @@ class Match(object):
         return msg
 
     def start(self):
-        msg = MessageMatch()
-        msg.staff_one_id = self.staff_one.id
-        msg.staff_two_id = self.staff_two.id
+        msg = MessageOneMatch()
 
         for i in range(1, 4):
             round_msg = self.round()
@@ -189,6 +187,44 @@ class Match(object):
                     self.winning = self.staff_two
 
         msg.staff_one_win = self.winning is self.staff_one
+        return msg
+
+
+class StaffMatch(object):
+    def __init__(self, staff_one, staff_two, policy_one, policy_two):
+        """
+        :type staff_one: core.abstract.AbstractStaff
+        :type staff_two: core.abstract.AbstractStaff
+        """
+
+        self.staff_one = staff_one
+        self.staff_two = staff_two
+        self.policy_one = policy_one
+        self.policy_two = policy_two
+
+    def start(self):
+        msg = MessageStaffMatch()
+        msg.staff_one_id = self.staff_one.id
+        msg.staff_two_id = self.staff_two.id
+
+        match_times = 5
+        staff_one_win_times = 0
+
+        for i in range(match_times):
+            one_match = OneMatch(self.staff_one, self.staff_two, self.policy_one, self.policy_two)
+            one_msg = one_match.start()
+
+            msg_match = msg.match.add()
+            msg_match.MergeFrom(one_msg)
+
+            if one_msg.staff_one_win:
+                staff_one_win_times += 1
+
+        if staff_one_win_times > match_times / 2:
+            msg.staff_one_win = True
+        else:
+            msg.staff_one_win = False
+
         return msg
 
 
@@ -229,7 +265,7 @@ class ClubMatch(object):
             staff_one = self.club_one.staffs[self.club_one.match_staffs[i]]
             staff_two = self.club_two.staffs[self.club_two.match_staffs[i]]
 
-            match = Match(staff_one, staff_two, self.club_one.policy, self.club_two.policy)
+            match = StaffMatch(staff_one, staff_two, self.club_one.policy, self.club_two.policy)
             match_msg = match.start()
 
             msg_match = msg.match.add()

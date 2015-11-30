@@ -7,12 +7,12 @@ Description:
 
 """
 
-
 from config import ConfigQianBan, ConfigStaff, ConfigSkill
 
 
 class QianBanEffect(object):
     __slots__ = ['effect_property', 'effect_match_skill', 'effect_business_skill']
+
     def __init__(self):
         # 属性效果
         self.effect_property = {}
@@ -25,12 +25,11 @@ class QianBanEffect(object):
         self.effect_property[key] = self.effect_property.get(key, 0) + value
 
     def add_skill(self, sid, value):
-        if ConfigSkill.get(sid).type_id == 1:
-            # 商业技能
-            self.effect_business_skill[sid] = self.effect_business_skill.get(sid, 0) + value
-        else:
+        if ConfigSkill.get(sid).type_id == 2:
+            # 战斗技能
             self.effect_match_skill[sid] = self.effect_match_skill.get(sid, 0) + value
-
+        else:
+            self.effect_business_skill[sid] = self.effect_business_skill.get(sid, 0) + value
 
     def __iadd__(self, other):
         """
@@ -49,9 +48,9 @@ class QianBanEffect(object):
         return self
 
 
-
 class QianBan(object):
     def __init__(self, qid, all_match_staff_ids, this_staff_skill_ids):
+        self._active = False
         self.id = qid
         self.config = ConfigQianBan.get(qid)
         self.effect = QianBanEffect()
@@ -76,41 +75,53 @@ class QianBan(object):
         self.add_to_effect()
 
     def add_to_effect(self):
+        self._active = True
+
         if self.config.addition_tp == 'skill':
             for k, v in self.config.addition_skill.iteritems():
                 self.effect.add_skill(k, v)
         else:
             self.effect.add_property(self.config.addition_tp, self.config.addition_property)
 
+    def __bool__(self):
+        return self._active
+
+    __nonzero__ = __bool__
+
 
 class QianBanContainer(object):
     def __init__(self, all_match_staff_ids):
         self.all_match_staff_ids = all_match_staff_ids
 
-
-    def get_effect(self, staff_id, staff_skill_ids):
+    def find_active_qianbans(self, staff_id, staff_skill_ids):
         """
 
-        :rtype : QianBanEffect
+        :rtype : list[QianBan]
         """
-        config_staff = ConfigStaff.get(staff_id)
-        qianban_ids = config_staff.qianban_ids
+        qianban_ids = ConfigStaff.get(staff_id).qianban_ids
 
-        effect = QianBanEffect()
+        active_qianbans = []
 
         for i in qianban_ids:
             q = QianBan(i, self.all_match_staff_ids, staff_skill_ids)
-            effect += q.effect
+            if q:
+                active_qianbans.append(q)
 
-        return effect
-
+        return active_qianbans
 
     def affect(self, staff):
         """
 
         :type staff: core.abstract.AbstractStaff
         """
-        effect = self.get_effect(staff.id, staff.skills.keys())
+        effect = QianBanEffect()
+
+        qianbans = self.find_active_qianbans(staff.id, staff.skills.keys())
+
+        staff.active_qianban_ids = [q.id for q in qianbans]
+
+        for qb in qianbans:
+            effect += qb.effect
 
         for k, v in effect.effect_property.iteritems():
             setattr(staff, k, getattr(staff, k) + v)

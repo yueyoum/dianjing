@@ -55,6 +55,7 @@ class LadderStore(object):
 
     def buy(self, item_id):
         from core.ladder import Ladder
+        ladder = Ladder(self.server_id, self.char_id)
 
         if item_id not in self.items:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_STORE_ITEM_NOT_EXIST"))
@@ -76,7 +77,6 @@ class LadderStore(object):
         if doc['score'] < config.score:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_SCORE_NOT_ENOUGH"))
 
-        ladder = Ladder(self.server_id, self.char_id)
 
         MongoLadder.db(self.server_id).update_one(
             {'_id': str(self.char_id)},

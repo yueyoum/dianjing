@@ -8,6 +8,8 @@ Description:
 """
 
 from itertools import chain
+
+from core.qianban import QianBanContainer
 from config import ConfigStaffLevel
 from protomsg.club_pb2 import Club as MessageClub
 from protomsg.staff_pb2 import Staff as MessageStaff
@@ -18,8 +20,10 @@ class AbstractStaff(object):
         'server_id', 'char_id', 'id', 'race', 'level', 'exp', 'status', 'quality',
         'jingong', 'qianzhi', 'xintai', 'baobing', 'fangshou', 'yunying',
         'yishi', 'caozuo', 'zhimingdu',
-        'skills'
+        'skills',
+        'active_qianban_ids',
     ]
+
     def __init__(self, *args, **kwargs):
         self.server_id = 0
         self.char_id = 0
@@ -42,6 +46,8 @@ class AbstractStaff(object):
         self.zhimingdu = 0
 
         self.skills = {}
+
+        self.active_qianban_ids = []
 
     def make_protomsg(self):
         msg = MessageStaff()
@@ -90,6 +96,22 @@ class AbstractClub(object):
 
         self.policy = 1
 
+    def all_match_staffs(self):
+        # 所有上阵员工
+        staffs = []
+        staffs.extend([i for i in self.match_staffs if i != 0])
+        staffs.extend([i for i in self.tibu_staffs if i != 0])
+
+        return staffs
+
+    def qianban_affect(self):
+        qc = QianBanContainer(self.all_match_staffs())
+        for i in chain(self.match_staffs, self.tibu_staffs):
+            if i == 0:
+                continue
+
+            qc.affect(self.staffs[i])
+
     def match_staffs_ready(self):
         return len(self.match_staffs) == 5 and all([i != 0 for i in self.match_staffs])
 
@@ -123,5 +145,6 @@ class AbstractClub(object):
             else:
                 msg_match_staff.id = i
                 msg_match_staff.level = self.staffs[i].level
+                msg_match_staff.qianban.extend(self.staffs[i].active_qianban_ids)
 
         return msg

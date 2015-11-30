@@ -63,6 +63,8 @@ class LadderNPCClub(AbstractClub):
             self.match_staffs.append(s['id'])
             self.staffs[s['id']] = LadderNPCStaff(s)
 
+        self.qianban_affect()
+
         self.order = order
         self.score = score
 

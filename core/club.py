@@ -7,13 +7,10 @@ Description:
 
 """
 
-import itertools
-
 from core.mongo import MongoCharacter, MongoStaff
 from core.abstract import AbstractClub
 from core.signals import match_staffs_set_done_signal, club_level_up_signal, match_staffs_set_change_signal
 from core.staff import StaffManger
-from core.qianban import QianBanContainer
 from core.resource import Resource
 
 from dianjing.exception import GameException
@@ -88,27 +85,10 @@ class Club(AbstractClub):
             return
 
         self.staffs = StaffManger(self.server_id, self.char_id).get_staff_by_ids(all_match_staff_ids)
-        qc = QianBanContainer(all_match_staff_ids)
-        for i in itertools.chain(self.match_staffs, self.tibu_staffs):
-            if i == 0:
-                continue
-
-            qc.affect(self.staffs[i])
-
-    def load_all_staffs(self):
-        all_staff_ids = StaffManger(self.server_id, self.char_id).get_all_staff_ids()
-        self.staffs = StaffManger(self.server_id, self.char_id).get_staff_by_ids(all_staff_ids)
+        self.qianban_affect()
 
     def is_staff_in_match(self, staff_id):
         return staff_id in self.match_staffs or staff_id in self.tibu_staffs
-
-    def all_match_staffs(self):
-        # 所有上阵员工
-        staffs = []
-        staffs.extend([i for i in self.match_staffs if i != 0])
-        staffs.extend([i for i in self.tibu_staffs if i != 0])
-
-        return staffs
 
     def set_policy(self, policy):
         if not ConfigPolicy.get(policy):

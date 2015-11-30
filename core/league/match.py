@@ -132,6 +132,8 @@ class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
             self.match_staffs.append(s['id'])
             self.staffs[s['id']] = LeagueNPCStaff(s)
 
+        self.qianban_affect()
+
     def do_send_mail(self, title, content, attachment):
         pass
 
