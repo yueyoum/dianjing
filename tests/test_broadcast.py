@@ -27,7 +27,7 @@ class TestTrainingBroadcast(object):
         self.staff_id = int(random.choice(staffs.keys()))
 
     def teardown(self):
-        pass
+        MongoTrainingBroadcast.db(1).drop()
 
     def test_staff_is_training(self):
         assert TrainingBroadcast(1, 1).staff_is_training(self.staff_id) == False
