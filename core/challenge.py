@@ -65,6 +65,8 @@ class ChallengeNPCClub(AbstractClub):
         for i in self.match_staffs:
             self.staffs[i] = ChallengeNPCStaff(i, config.level, config.strength)
 
+        self.qianban_affect()
+
 
 class Challenge(object):
     __slots__ = ['server_id', 'char_id', 'challenge_id']
