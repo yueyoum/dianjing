@@ -93,9 +93,12 @@ class ConfigChallengeMatch(ConfigBase):
         area_ids = ConfigChallengeType.INSTANCES.keys()
         for i in area_ids:
             this_challenge_ids = cls.filter(tp=i).keys()
-
-            ConfigChallengeType.AREA_START_CHALLENGE_ID[i] = min(this_challenge_ids)
-            ConfigChallengeType.AREA_END_CHALLENGE_ID[i] = max(this_challenge_ids)
+            if this_challenge_ids:
+                ConfigChallengeType.AREA_START_CHALLENGE_ID[i] = min(this_challenge_ids)
+                ConfigChallengeType.AREA_END_CHALLENGE_ID[i] = max(this_challenge_ids)
+            else:
+                ConfigChallengeType.AREA_START_CHALLENGE_ID[i] = 0
+                ConfigChallengeType.AREA_END_CHALLENGE_ID[i] = 0
 
     @classmethod
     def get(cls, id):
