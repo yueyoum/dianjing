@@ -11,14 +11,17 @@ from utils.http import ProtobufResponse
 
 from core.challenge import Challenge
 
-from protomsg.challenge_pb2 import ChallengeStartResponse
+from protomsg.challenge_pb2 import ChallengeStartResponse, ChallengeAreaSwitchResponse
+
 
 def start(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
+    area_id = request._proto.area_id
+
     c = Challenge(server_id, char_id)
-    msg, drop = c.start()
+    msg, drop = c.start(area_id)
 
     response = ChallengeStartResponse()
     response.ret = 0
@@ -27,4 +30,18 @@ def start(request):
     if drop:
         response.drop.MergeFrom(drop)
 
+    return ProtobufResponse(response)
+
+
+def switch_area(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    area_id = request._proto.area_id
+
+    c = Challenge(server_id, char_id)
+    c.switch_area(area_id)
+
+    response = ChallengeAreaSwitchResponse()
+    response.ret = 0
     return ProtobufResponse(response)

@@ -32,6 +32,7 @@ urlpatterns = [
     url(r'^staff/fire/$', 'views.staff.fire'),
 
     url(r'^challenge/start/$', 'views.challenge.start'),
+    url(r'^challenge/area/switch/$', 'views.challenge.switch_area'),
 
     url(r'^building/levelup/$', 'views.building.levelup'),
 
