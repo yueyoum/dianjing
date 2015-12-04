@@ -10,7 +10,7 @@ import random
 
 from dianjing.exception import GameException
 
-from core.mongo import MongoStaff, MongoCharacter, MongoBag
+from core.mongo import MongoStaff, MongoCharacter, MongoTrainingProperty
 from core.training import TrainingProperty
 from core.bag import BagItem
 from core.building import BuildingTrainingCenter
@@ -242,4 +242,15 @@ class TestTrainingProperty(object):
     def test_send_notify(self):
         TrainingProperty(1, 1).send_notify()
 
+    def test_list(self):
+        training_id = get_one_available_training(1)
+        set_start_needed(training_id)
+        TrainingProperty(1, 1).start(self.staff_id, training_id)
+        TrainingProperty(1, 1).callback(self.staff_id)
+
+        set_start_needed(training_id)
+        TrainingProperty(1, 1).start(self.staff_id, training_id)
+
+        doc = MongoTrainingProperty.db(1).find_one({'_id': 1}, {'staffs': 1})
+        print doc['staffs']
 
