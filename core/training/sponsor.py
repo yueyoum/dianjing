@@ -60,15 +60,11 @@ class TrainingSponsor(object):
     def cronjob(cls, server_id):
         # 每天发送奖励
         # 取消到期合约
-        for char_id in Character.get_recent_login_char_ids(server_id):
-            doc = MongoTrainingSponsor.db(server_id).find_one(
-                {'_id': char_id},
-                {'sponsors': 1}
-            )
-
+        for doc in MongoTrainingSponsor.db(server_id).find({'has_sponsors': True}, {'sponsors': 1}):
             expired = []
-
+            sponsor_num = 0
             for sponsor_id, start_at_timestamp in doc['sponsors'].iteritems():
+                sponsor_num += 1
                 sponsor_id = int(sponsor_id)
                 if not start_at_timestamp:
                     continue
@@ -82,7 +78,7 @@ class TrainingSponsor(object):
                     drop.gold = config.income
                     attachment = drop.to_json()
 
-                    m = MailManager(server_id, char_id)
+                    m = MailManager(server_id, doc['_id'])
                     m.add(config.mail_title, config.mail_content, attachment=attachment)
                 else:
                     # expired
@@ -91,12 +87,15 @@ class TrainingSponsor(object):
             if expired:
                 # 把过期的， start_at_timestamp 设置为0
                 updater = {'sponsors.{0}'.format(i): 0 for i in expired}
+                if expired.__len__() == sponsor_num:
+                    updater['has_sponsors'] = False
+
                 MongoTrainingSponsor.db(server_id).update_one(
-                    {'_id': char_id},
+                    {'_id': doc['_id']},
                     {'$set': updater}
                 )
 
-            TrainingSponsor(server_id, char_id).send_notify()
+            TrainingSponsor(server_id, doc['_id']).send_notify()
 
     def open(self, challenge_id):
         doc = MongoTrainingSponsor.db(self.server_id).find_one(
@@ -140,7 +139,8 @@ class TrainingSponsor(object):
         MongoTrainingSponsor.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
-                'sponsors.{0}'.format(sponsor_id): arrow.utcnow().timestamp
+                'sponsors.{0}'.format(sponsor_id): arrow.utcnow().timestamp,
+                'has_sponsors': True
             }}
         )
 

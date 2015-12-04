@@ -6,14 +6,17 @@ Date Created:   2015-12-03 16:06
 Description:
 
 """
-import random
+import arrow
 
 from dianjing.exception import GameException
 
 from core.mongo import MongoTrainingSponsor
 from core.training.sponsor import TrainingSponsor
 
-from config import ConfigSponsor, ConfigChallengeMatch, ConfigErrorMessage
+from config import ConfigSponsor, ConfigErrorMessage
+
+
+one_day_seconds = 24 * 60 * 60
 
 
 def get_one_available_sponsor(challenge_id):
@@ -94,8 +97,29 @@ class TestTrainingSponsor(object):
             {'_id': 1},
             {'sponsors': 1}
         )
- 
+
         assert str(sponsor_id) in doc['sponsors']
 
     def test_send_notify(self):
         TrainingSponsor(1, 1).send_notify()
+
+    def test_cronjob(self):
+        sponsor_id = self.open_sponsor()
+        conf = ConfigSponsor.get(sponsor_id)
+        for i in range(1, 20):
+            MongoTrainingSponsor.db(1).update_one(
+                {'_id': i},
+                {'$set':
+                    {
+                        'sponsors.{0}'.format(sponsor_id): arrow.utcnow().timestamp - conf.total_days * one_day_seconds,
+                        'has_sponsors': True
+                    }},
+                upsert=True
+            )
+
+        TrainingSponsor(1, 1).cronjob(1)
+
+        for doc in MongoTrainingSponsor.db(1).find():
+            assert doc['sponsors'][str(sponsor_id)] == 0
+            assert doc['has_sponsors'] == False
+
