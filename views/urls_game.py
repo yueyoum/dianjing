@@ -35,6 +35,7 @@ urlpatterns = [
     url(r'^challenge/area/switch/$', 'views.challenge.switch_area'),
 
     url(r'^building/levelup/$', 'views.building.levelup'),
+    url(r'^building/speedup/$', 'views.building.speedup'),
 
     url(r'^training/exp/start/$', 'views.training.exp_start'),
     url(r'^training/exp/cancel/$', 'views.training.exp_cancel'),

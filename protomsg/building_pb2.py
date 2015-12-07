@@ -18,7 +18,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='building.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=b'\n\x0e\x62uilding.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xbf\x01\n\x0e\x42uildingNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12=\n\tbuildings\x18\x02 \x03(\x0b\x32*.Dianjing.protocol.BuildingNotify.Building\x12&\n\x03\x61\x63t\x18\x03 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x1a\x35\n\x08\x42uilding\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0e\n\x06\x65nd_at\x18\x03 \x02(\x03\"5\n\x16\x42uildingLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"7\n\x17\x42uildingLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c'
+  serialized_pb=b'\n\x0e\x62uilding.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xbf\x01\n\x0e\x42uildingNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12=\n\tbuildings\x18\x02 \x03(\x0b\x32*.Dianjing.protocol.BuildingNotify.Building\x12&\n\x03\x61\x63t\x18\x03 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x1a\x35\n\x08\x42uilding\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0e\n\x06\x65nd_at\x18\x03 \x02(\x03\"5\n\x16\x42uildingLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"7\n\x17\x42uildingLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\":\n\x1b\x42uildingLevelSpeedUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"<\n\x1c\x62uildinglevelspeedupResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c'
   ,
   dependencies=[common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -190,12 +190,90 @@ _BUILDINGLEVELUPRESPONSE = _descriptor.Descriptor(
   serialized_end=355,
 )
 
+
+_BUILDINGLEVELSPEEDUPREQUEST = _descriptor.Descriptor(
+  name='BuildingLevelSpeedUpRequest',
+  full_name='Dianjing.protocol.BuildingLevelSpeedUpRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.BuildingLevelSpeedUpRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.BuildingLevelSpeedUpRequest.id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=357,
+  serialized_end=415,
+)
+
+
+_BUILDINGLEVELSPEEDUPRESPONSE = _descriptor.Descriptor(
+  name='buildinglevelspeedupResponse',
+  full_name='Dianjing.protocol.buildinglevelspeedupResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.buildinglevelspeedupResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.buildinglevelspeedupResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=417,
+  serialized_end=477,
+)
+
 _BUILDINGNOTIFY_BUILDING.containing_type = _BUILDINGNOTIFY
 _BUILDINGNOTIFY.fields_by_name['buildings'].message_type = _BUILDINGNOTIFY_BUILDING
 _BUILDINGNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 DESCRIPTOR.message_types_by_name['BuildingNotify'] = _BUILDINGNOTIFY
 DESCRIPTOR.message_types_by_name['BuildingLevelUpRequest'] = _BUILDINGLEVELUPREQUEST
 DESCRIPTOR.message_types_by_name['BuildingLevelUpResponse'] = _BUILDINGLEVELUPRESPONSE
+DESCRIPTOR.message_types_by_name['BuildingLevelSpeedUpRequest'] = _BUILDINGLEVELSPEEDUPREQUEST
+DESCRIPTOR.message_types_by_name['buildinglevelspeedupResponse'] = _BUILDINGLEVELSPEEDUPRESPONSE
 
 BuildingNotify = _reflection.GeneratedProtocolMessageType('BuildingNotify', (_message.Message,), dict(
 
@@ -225,6 +303,20 @@ BuildingLevelUpResponse = _reflection.GeneratedProtocolMessageType('BuildingLeve
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.BuildingLevelUpResponse)
   ))
 _sym_db.RegisterMessage(BuildingLevelUpResponse)
+
+BuildingLevelSpeedUpRequest = _reflection.GeneratedProtocolMessageType('BuildingLevelSpeedUpRequest', (_message.Message,), dict(
+  DESCRIPTOR = _BUILDINGLEVELSPEEDUPREQUEST,
+  __module__ = 'building_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.BuildingLevelSpeedUpRequest)
+  ))
+_sym_db.RegisterMessage(BuildingLevelSpeedUpRequest)
+
+buildinglevelspeedupResponse = _reflection.GeneratedProtocolMessageType('buildinglevelspeedupResponse', (_message.Message,), dict(
+  DESCRIPTOR = _BUILDINGLEVELSPEEDUPRESPONSE,
+  __module__ = 'building_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.buildinglevelspeedupResponse)
+  ))
+_sym_db.RegisterMessage(buildinglevelspeedupResponse)
 
 
 # @@protoc_insertion_point(module_scope)
