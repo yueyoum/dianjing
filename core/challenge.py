@@ -81,6 +81,7 @@ class Challenge(object):
             doc = MongoChallenge.document()
             # XXX 编辑器里面定死，不能胡乱填写
             # 1号大区，第一关默认开启
+            doc['_id'] = self.char_id
             doc['area_id'] = 1
             doc['areas'] = {'1': 1}
             MongoChallenge.db(self.server_id).insert_one(doc)
