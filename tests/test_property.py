@@ -7,6 +7,7 @@ Description:
 
 """
 import random
+import arrow
 
 from dianjing.exception import GameException
 
@@ -246,11 +247,17 @@ class TestTrainingProperty(object):
         training_id = get_one_available_training(1)
         set_start_needed(training_id)
         TrainingProperty(1, 1).start(self.staff_id, training_id)
-        TrainingProperty(1, 1).callback(self.staff_id)
+        # TrainingProperty(1, 1).callback(self.staff_id)
 
         set_start_needed(training_id)
         TrainingProperty(1, 1).start(self.staff_id, training_id)
 
         doc = MongoTrainingProperty.db(1).find_one({'_id': 1}, {'staffs': 1})
         print doc['staffs']
+
+        conf = ConfigTrainingProperty.get(training_id)
+        for slot in doc['staffs'][str(self.staff_id)]:
+            if slot['end_at']:
+                print slot['end_at'] - arrow.utcnow().timestamp, conf.minutes * 60
+
 
