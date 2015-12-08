@@ -32,6 +32,7 @@ from core.activity import ActivityCategory
 from core.activity.login_reward import ActivityLoginReward
 from core.activity.signin import SignIn
 from core.active_value import ActiveValue
+from core.training_match import TrainingMatch
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
@@ -93,3 +94,5 @@ def game_start_handler(server_id, char_id, **kwargs):
     av = ActiveValue(server_id, char_id)
     av.send_function_notify()
     av.send_value_notify()
+
+    TrainingMatch(server_id, char_id).send_notify()

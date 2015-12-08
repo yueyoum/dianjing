@@ -190,6 +190,12 @@ class TrainingMatch(object):
         drop = Drop.generate(config.additional_reward)
         Resource(self.server_id, self.char_id).save_drop(drop, message="Training Match {0} additional drop".format(index))
 
+        MongoTrainingMatch.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$push': {'rewards': index}}
+        )
+
+        self.send_notify()
         return drop.make_protomsg()
 
     def send_notify(self, ids=None):
