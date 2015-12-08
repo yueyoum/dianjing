@@ -7,6 +7,9 @@ Description:
 
 """
 
+import base64
+import dill
+
 from core.mongo import MongoCharacter, MongoStaff
 from core.abstract import AbstractClub
 from core.signals import match_staffs_set_done_signal, club_level_up_signal, match_staffs_set_change_signal
@@ -220,6 +223,21 @@ class Club(AbstractClub):
         )
 
         StaffManger(self.server_id, self.char_id).send_notify(staff_ids=self.match_staffs)
+
+    def dumps(self):
+        """
+
+        :rtype : str
+        """
+        return base64.b64encode(dill.dumps(self))
+
+    @classmethod
+    def loads(cls, data):
+        """
+
+        :rtype : Club
+        """
+        return dill.loads(base64.b64decode(data))
 
     def send_notify(self):
         msg = self.make_protomsg()

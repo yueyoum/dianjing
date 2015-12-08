@@ -32,6 +32,7 @@ from config.activity import ConfigActivityCategory
 from config.signin import ConfigSignIn
 from config.activity_login_reward import ConfigLoginReward
 from config.active_value import ConfigActiveFunction, ConfigActiveReward
+from config.training_match import ConfigTrainingMatchReward
 
 
 _has_configed = False
@@ -136,5 +137,7 @@ def load_config():
             ConfigActiveReward.initialize(data)
         elif item == 'task_target.json':
             ConfigTaskTargetType.initialize(data)
+        elif item == 'training_match_reward.json':
+            ConfigTrainingMatchReward.initialize(data)
 
     print "LOAD CONFIG FROM {0}".format(z_file)

@@ -107,4 +107,7 @@ urlpatterns = [
 
     url(r'^sell/item/$', 'views.bag.item_sell'),
     url(r'^sell/trainingskill/$', 'views.bag.training_skill_sell'),
+
+    url(r'^trainingmatch/start/$', 'views.training_match.start'),
+    url(r'^trainingmatch/reward/$', 'views.training_match.get_additional_reward'),
 ]

@@ -583,3 +583,20 @@ class MongoRecord(BaseDocument):
     }
 
     COLLECTION = 'record'
+
+
+# 训练赛
+class MongoTrainingMatch(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'relive_times': 0,
+        # 进度 id: flag. flag 1 表示新开启，2 表示通过 3 表示失败
+        # 不在这里面的表示没有开启
+        'status': {},
+        # 已领取额外奖励的
+        'rewards': [],
+        # 俱乐部信息，序列化后的Club
+        'clubs': []
+    }
+
+    COLLECTION = 'training_match'

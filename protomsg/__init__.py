@@ -179,6 +179,11 @@ MESSAGE_TO_ID = {
     "ItemSellResponse": 2401,
     "TrainingSkillSellRequest": 2402,
     "TrainingSkillSellResponse": 2403,
+    "TrainingMatchNotify": 2500,
+    "TrainingMatchStartRequest": 2501,
+    "TrainingMatchStartResponse": 2502,
+    "TrainingMatchGetAdditionalRewardRequest": 2503,
+    "TrainingMatchGetAdditionalRewardResponse": 2504,
 }
 
 ID_TO_MESSAGE = {
@@ -361,6 +366,11 @@ ID_TO_MESSAGE = {
     2401: "ItemSellResponse",
     2402: "TrainingSkillSellRequest",
     2403: "TrainingSkillSellResponse",
+    2500: "TrainingMatchNotify",
+    2501: "TrainingMatchStartRequest",
+    2502: "TrainingMatchStartResponse",
+    2503: "TrainingMatchGetAdditionalRewardRequest",
+    2504: "TrainingMatchGetAdditionalRewardResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -434,6 +444,8 @@ PATH_TO_REQUEST = {
     "/game/itemshop/buy/": ["shop", "ItemShopBuyRequest"],
     "/game/sell/item/": ["package", "ItemSellRequest"],
     "/game/sell/trainingskill/": ["package", "TrainingSkillSellRequest"],
+    "/game/trainingmatch/start/": ["training_match", "TrainingMatchStartRequest"],
+    "/game/trainingmatch/reward/": ["training_match", "TrainingMatchGetAdditionalRewardRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -507,4 +519,6 @@ PATH_TO_RESPONSE = {
     "/game/itemshop/buy/": ["shop", "ItemShopBuyResponse"],
     "/game/sell/item/": ["package", "ItemSellResponse"],
     "/game/sell/trainingskill/": ["package", "TrainingSkillSellResponse"],
+    "/game/trainingmatch/start/": ["training_match", "TrainingMatchStartResponse"],
+    "/game/trainingmatch/reward/": ["training_match", "TrainingMatchGetAdditionalRewardResponse"],
 }
