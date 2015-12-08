@@ -10,8 +10,8 @@ import random
 
 from dianjing.exception import GameException
 
-from core.db import MongoDB
-from core.staff import StaffManger, StaffRecruit
+from core.mongo import MongoCharacter, MongoRecruit, MongoStaff
+from core.staff import StaffManger, StaffRecruit, RECRUIT_ENUM_TO_CONFIG_ID
 from core.club import Club
 from config import ConfigErrorMessage, ConfigStaffRecruit, ConfigStaff, ConfigStaffLevel
 
@@ -19,171 +19,264 @@ from protomsg.staff_pb2 import RECRUIT_HOT, RECRUIT_DIAMOND, RECRUIT_GOLD, RECRU
 
 
 class TestStaffRecruit(object):
+    def __init__(self):
+        self.server_id = 1
+        self.char_id = 1
+
     def update(self, gold=0, diamond=0):
-        mongo = MongoDB.get(1)
-        mongo.character.update_one(
-            {'_id': 1},
+        MongoCharacter.db(self.server_id).update_one(
+            {'_id': self.char_id},
             {'$set': {
                 'club.gold': gold,
                 'club.diamond': diamond,
             }}
         )
 
-
-    def setUp(self):
+    def setup(self):
         self.update()
 
-    def tearDown(self):
+    def teardown(self):
         self.update()
-        MongoDB.get(1).recruit.delete_one({'_id': 1})
-        MongoDB.get(1).staff.delete_one({'_id': 1})
-
-
+        MongoRecruit.db(1).delete_one({'_id': self.char_id})
 
     def test_send_notify(self):
-        StaffRecruit(1, 1).send_notify()
+        StaffRecruit(self.server_id, self.char_id).send_notify()
 
     def test_refresh_hot(self):
-        StaffRecruit(1, 1).refresh(RECRUIT_HOT)
+        StaffRecruit(self.server_id, self.char_id).refresh(RECRUIT_HOT)
 
+    def test_refresh_normal(self):
+        config = ConfigStaffRecruit.get(RECRUIT_ENUM_TO_CONFIG_ID[RECRUIT_NORMAL])
+        for i in range(1, config.lucky_times+1):
+            self.update(**{'gold': config.cost_value})
+            StaffRecruit(self.server_id, self.char_id).refresh(RECRUIT_NORMAL)
+            staff_ids = StaffRecruit(self.server_id, self.char_id).get_self_refreshed_staffs()
+
+            quality_s = 0
+            quality_a = 0
+            quality_b = 0
+            quality_c = 0
+            for staff_id in staff_ids:
+                conf = ConfigStaff.get(int(staff_id))
+                if conf.quality == 'S':
+                    quality_s += 1
+                elif conf.quality == 'A':
+                    quality_a += 1
+                elif conf.quality == 'B':
+                    quality_b += 1
+                elif conf.quality == 'C':
+                    quality_c += 1
+
+            if i == 1:
+                assert quality_s == 1
+                assert quality_a == 1
+                assert quality_b == 2
+                assert quality_c == 4
+            elif i % config.lucky_times == 0:
+                assert quality_a == 1
+                assert quality_b == 2
+                assert quality_c == 5
+            else:
+                assert quality_b == 2
+                assert quality_c == 6
+
+    def test_refresh_gold(self):
+        config = ConfigStaffRecruit.get(RECRUIT_ENUM_TO_CONFIG_ID[RECRUIT_GOLD])
+        for i in range(1, config.lucky_times+1):
+            self.update(**{'diamond': config.cost_value})
+            StaffRecruit(self.server_id, self.char_id).refresh(RECRUIT_GOLD)
+            staff_ids = StaffRecruit(self.server_id, self.char_id).get_self_refreshed_staffs()
+
+            quality_s = 0
+            quality_a = 0
+            quality_b = 0
+            for staff_id in staff_ids:
+                conf = ConfigStaff.get(int(staff_id))
+                if conf.quality == 'S':
+                    quality_s += 1
+                elif conf.quality == 'A':
+                    quality_a += 1
+                elif conf.quality == 'B':
+                    quality_b += 1
+
+            if i == 1 or i % config.lucky_times == 0:
+                assert quality_s == 1
+                assert quality_a == 1
+                assert quality_b == 6
+
+            else:
+                assert quality_a == 2
+                assert quality_b == 6
 
     def test_refresh_diamond(self):
-        config = ConfigStaffRecruit.get(3)
+        config = ConfigStaffRecruit.get(RECRUIT_ENUM_TO_CONFIG_ID[RECRUIT_DIAMOND])
+        for i in range(1, config.lucky_times+1):
+            self.update(**{'diamond': config.cost_value})
+            StaffRecruit(self.server_id, self.char_id).refresh(RECRUIT_DIAMOND)
+            staff_ids = StaffRecruit(self.server_id, self.char_id).get_self_refreshed_staffs()
+
+            quality_ss = 0
+            quality_s = 0
+            quality_a = 0
+            for staff_id in staff_ids:
+                conf = ConfigStaff.get(int(staff_id))
+                if conf.quality == 'SS':
+                    quality_ss += 1
+                elif conf.quality == 'S':
+                    quality_s += 1
+                elif conf.quality == 'A':
+                    quality_a += 1
+
+            if i % config.lucky_times == 0:
+                assert quality_ss == 1
+                assert quality_s == 1
+                assert quality_a == 6
+
+            else:
+                assert quality_s == 2
+                assert quality_a == 6
+
+    def test_refresh_by_use_resource(self):
+        config = ConfigStaffRecruit.get(random.choice(ConfigStaffRecruit.INSTANCES.keys()))
         cost_type = 'gold' if config.cost_type == 1 else 'diamond'
-        cost_value = config.cost_value
-        self.update(**{cost_type:cost_value})
+        self.update(**{cost_type: config.cost_value})
 
-        staffs = StaffRecruit(1, 1).refresh(RECRUIT_DIAMOND)
+        tp = RECRUIT_NORMAL
+        if config.cost_type == 2:
+            tp = RECRUIT_GOLD
+        if config.cost_type == 3:
+            tp = RECRUIT_DIAMOND
+
+        staffs = StaffRecruit(self.server_id, self.char_id).refresh(tp)
         assert len(staffs) > 0
-        assert Club(1, 1).diamond == 0
-        assert Club(1, 1).gold == 0
 
-
-    def test_refresh_diamond_not_enough(self):
-        config = ConfigStaffRecruit.get(3)
+    def test_refresh_resource_not_enough(self):
+        config = ConfigStaffRecruit.get(random.choice(ConfigStaffRecruit.INSTANCES.keys()))
         error = "GOLD_NOT_ENOUGH" if config.cost_type == 1 else "DIAMOND_NOT_ENOUGH"
+        tp = RECRUIT_DIAMOND if config.cost_type == 2 else RECRUIT_NORMAL
 
         try:
-            StaffRecruit(1, 1).refresh(RECRUIT_DIAMOND)
+            StaffRecruit(self.server_id, self.char_id).refresh(tp)
         except GameException as e:
             assert e.error_id == ConfigErrorMessage.get_error_id(error)
         else:
             raise Exception("can not be here!")
 
-
-    def test_refresh_gold(self):
-        config = ConfigStaffRecruit.get(2)
-        cost_type = 'gold' if config.cost_type == 1 else 'diamond'
-        cost_value = config.cost_value
-        self.update(**{cost_type:cost_value})
-
-        staffs = StaffRecruit(1, 1).refresh(RECRUIT_GOLD)
-        assert len(staffs) > 0
-        assert Club(1, 1).diamond == 0
-        assert Club(1, 1).gold == 0
-
-
-    def test_refresh_normal(self):
-        config = ConfigStaffRecruit.get(1)
-        cost_type = 'gold' if config.cost_type == 1 else 'diamond'
-        cost_value = config.cost_value
-        self.update(**{cost_type:cost_value})
-
-        staffs = StaffRecruit(1, 1).refresh(RECRUIT_NORMAL)
-        assert len(staffs) > 0
-        assert Club(1, 1).diamond == 0
-        assert Club(1, 1).gold == 0
-
-
     def test_refresh_error_tp(self):
         tp = 9999
-
         try:
-            StaffRecruit(1, 1).refresh(tp)
+            StaffRecruit(self.server_id, self.char_id).refresh(tp)
         except GameException as e:
             assert e.error_id == ConfigErrorMessage.get_error_id("BAD_MESSAGE")
         else:
             raise Exception("can not be here!")
 
+    def test_recruit_staff_not_exist(self):
+        staff_ids = ConfigStaff.INSTANCES.keys()
+        test_id = 0
+        for i in range(0, 10000):
+            if i not in staff_ids:
+                test_id = i
+                break
+        try:
+            StaffRecruit(self.server_id, self.char_id).recruit(test_id)
+        except GameException as e:
+            assert e.error_id == ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST")
+        else:
+            raise Exception("error")
 
     def test_recruit_not_in_list(self):
+        config = ConfigStaffRecruit.get(RECRUIT_ENUM_TO_CONFIG_ID[RECRUIT_NORMAL])
+        cost_type = 'gold' if config.cost_type == 1 else 'diamond'
+        self.update(**{cost_type: config.cost_value})
+        StaffRecruit(self.server_id, self.char_id).refresh(RECRUIT_NORMAL)
 
-        sid = random.choice(ConfigStaff.INSTANCES.keys())
+        config_ids = ConfigStaff.INSTANCES.keys()
+        staff_ids = StaffRecruit(self.server_id, self.char_id).get_self_refreshed_staffs()
+        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1})
+        has_staffs = [int(staff_id) for staff_id in doc['staffs'].keys()]
 
+        staffs_set = set(staff_ids) | set(has_staffs)
+        test_id = 0
+        for staff_id in config_ids:
+            if staff_id not in staffs_set:
+                test_id = staff_id
+                break
         try:
-            StaffRecruit(1, 1).recruit(sid)
+            StaffRecruit(self.server_id, self.char_id).recruit(test_id)
         except GameException as e:
             assert e.error_id == ConfigErrorMessage.get_error_id("STAFF_RECRUIT_NOT_IN_LIST")
         else:
             raise Exception("can not be here!")
 
-
     def test_recruit_already_have(self):
-        config = ConfigStaffRecruit.get(1)
+        config = ConfigStaffRecruit.get(RECRUIT_ENUM_TO_CONFIG_ID[RECRUIT_NORMAL])
         cost_type = 'gold' if config.cost_type == 1 else 'diamond'
-        cost_value = config.cost_value
-        self.update(**{cost_type:cost_value})
+        self.update(**{cost_type: config.cost_value})
+        StaffRecruit(self.server_id, self.char_id).refresh(RECRUIT_NORMAL)
 
-        staffs = StaffRecruit(1, 1).refresh(RECRUIT_NORMAL)
-        sid = random.choice(staffs)
-
-        StaffManger(1, 1).add(sid)
-
+        staff_ids = StaffRecruit(self.server_id, self.char_id).get_self_refreshed_staffs()
+        doc = MongoStaff.db(self.server_id).find_one({'_id': 1}, {'staffs': 1})
+        test_id = 0
+        for staff_id in staff_ids:
+            if str(staff_id) not in doc['staffs'].keys():
+                StaffManger(self.server_id, self.char_id).add(staff_id)
+                test_id = staff_id
+                break
         try:
-            StaffRecruit(1, 1).recruit(sid)
+            StaffRecruit(self.server_id, self.char_id).recruit(test_id)
         except GameException as e:
             assert e.error_id == ConfigErrorMessage.get_error_id("STAFF_ALREADY_HAVE")
         else:
             raise Exception("can not be here!")
 
-
     def test_recruit(self):
-        config = ConfigStaffRecruit.get(1)
+        config = ConfigStaffRecruit.get(RECRUIT_ENUM_TO_CONFIG_ID[RECRUIT_NORMAL])
         cost_type = 'gold' if config.cost_type == 1 else 'diamond'
-        cost_value = config.cost_value
-        self.update(**{cost_type:cost_value})
+        self.update(**{cost_type: config.cost_value})
+        StaffRecruit(self.server_id, self.char_id).refresh(RECRUIT_NORMAL)
 
-        staffs = StaffRecruit(1, 1).refresh(RECRUIT_NORMAL)
-        sid = random.choice(staffs)
+        staff_ids = StaffRecruit(self.server_id, self.char_id).get_self_refreshed_staffs()
+        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1})
+        test_id = 0
+        for staff_id in staff_ids:
+            if str(staff_id) not in doc['staffs'].keys():
+                test_id = staff_id
+                break
 
-        assert StaffManger(1, 1).has_staff(sid) is False
-
-        s = ConfigStaff.get(sid)
-        cost_type = 'gold' if s.buy_type == 1 else 'diamond'
-        cost_value = s.buy_cost
-
-        self.update(**{cost_type: cost_value})
-
-        StaffRecruit(1, 1).recruit(sid)
-
-        assert StaffManger(1, 1).has_staff(sid) is True
-        assert Club(1, 1).diamond == 0
-        assert Club(1, 1).gold == 0
-
+        assert StaffManger(self.server_id, self.char_id).has_staff(test_id) is False
+        staff_cfg = ConfigStaff.get(test_id)
+        tp = 'gold' if staff_cfg.buy_type == 1 else 'diamond'
+        self.update(**{tp: staff_cfg.buy_cost})
+        StaffRecruit(self.server_id, self.char_id).recruit(test_id)
+        assert StaffManger(self.server_id, self.char_id).has_staff(test_id) is True
 
 
 class TestStaffManager(object):
-    def reset(self):
-        MongoDB.get(1).staff.update_one(
-            {'_id': 1},
-            {'$set': {'staffs': {}}}
-        )
+    def __init__(self):
+        self.server_id = 1
+        self.char_id = 1
 
-    def setUp(self):
-        self.reset()
+    def setup(self):
+        StaffManger(self.server_id, self.char_id)
 
-    def tearDown(self):
-        self.reset()
-
+    def teardown(self):
+        MongoStaff.db(self.server_id).delete_one({'_id': self.char_id})
 
     def test_send_notify(self):
-        StaffManger(1, 1).send_notify()
+        StaffManger(self.server_id, self.char_id).send_notify()
 
     def test_add(self):
-        staff_id = random.choice(ConfigStaff.INSTANCES.keys())
+        staff_ids = ConfigStaff.INSTANCES.keys()
+        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1})
 
-        StaffManger(1, 1).add(staff_id)
-        assert StaffManger(1, 1).has_staff(staff_id) is True
+        add_id = 0
+        for staff_id in staff_ids:
+            if str(staff_id) not in doc['staffs'].keys():
+                add_id = staff_id
+
+        StaffManger(self.server_id, self.char_id).add(add_id)
+        assert StaffManger(self.server_id, self.char_id).has_staff(add_id) is True
 
     def test_add_not_exist(self):
         def get_id():
@@ -194,48 +287,57 @@ class TestStaffManager(object):
 
         staff_id = get_id()
         try:
-            StaffManger(1, 1).add(staff_id)
+            StaffManger(self.server_id, self.char_id).add(staff_id)
         except GameException as e:
             assert e.error_id == ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST")
         else:
             raise Exception("can not be here!")
 
-
     def test_add_duplicate(self):
-        staff_id = random.choice(ConfigStaff.INSTANCES.keys())
+        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1})
+        staff_id = int(random.choice(doc['staffs'].keys()))
 
-        StaffManger(1, 1).add(staff_id)
-        assert StaffManger(1, 1).has_staff(staff_id) is True
-
+        assert StaffManger(self.server_id, self.char_id).has_staff(staff_id) is True
         try:
-            StaffManger(1, 1).add(staff_id)
+            StaffManger(self.server_id, self.char_id).add(staff_id)
         except GameException as e:
             assert e.error_id == ConfigErrorMessage.get_error_id("STAFF_ALREADY_HAVE")
         else:
             raise Exception("can not be here!")
 
-
     def test_remove(self):
-        staff_id = random.choice(ConfigStaff.INSTANCES.keys())
+        staff_ids = ConfigStaff.INSTANCES.keys()
+        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id})
+        staff_id = 0
+        for i in staff_ids:
+            if str(i) not in doc['staffs'].keys():
+                staff_id = i
+                break
 
-        StaffManger(1, 1).add(staff_id)
-        assert StaffManger(1, 1).has_staff(staff_id) is True
+        StaffManger(self.server_id, self.char_id).add(staff_id)
+        assert StaffManger(self.server_id, self.char_id).has_staff(staff_id) is True
 
-        StaffManger(1, 1).remove(staff_id)
-        assert StaffManger(1, 1).has_staff(staff_id) is False
-
+        StaffManger(self.server_id, self.char_id).remove(staff_id)
+        assert StaffManger(self.server_id, self.char_id).has_staff(staff_id) is False
 
     def test_remove_not_exist(self):
+        staff_ids = ConfigStaff.INSTANCES.keys()
+
+        staff_id = 0
+        for i in range(1, 10000):
+            if str(i) not in staff_ids:
+                staff_id = i
+                break
         try:
-            StaffManger(1, 1).remove(1)
+            StaffManger(self.server_id, self.char_id).remove(staff_id)
         except GameException as e:
             assert e.error_id == ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST")
         else:
             raise Exception("can not be here!")
 
-
     def test_level_up(self):
-        s = random.choice(ConfigStaff.INSTANCES.values())
+        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1})
+        s = ConfigStaff.get(int(random.choice(doc['staffs'].keys())))
 
         level = 5
         exp = 0
@@ -244,16 +346,12 @@ class TestStaffManager(object):
 
         exp += 1
 
-        StaffManger(1, 1).add(s.id)
+        assert StaffManger(self.server_id, self.char_id).get_staff(s.id).level == 1
+        assert StaffManger(self.server_id, self.char_id).get_staff(s.id).exp == 0
 
-        assert StaffManger(1, 1).get_staff(s.id).level == 1
-        assert StaffManger(1, 1).get_staff(s.id).exp == 0
-
-        StaffManger(1, 1).update(s.id, exp=exp)
-
-        assert StaffManger(1, 1).get_staff(s.id).level == level
-        assert StaffManger(1, 1).get_staff(s.id).exp == 1
-
+        StaffManger(self.server_id, self.char_id).update(s.id, exp=exp)
+        assert StaffManger(self.server_id, self.char_id).get_staff(s.id).level == level
+        assert StaffManger(self.server_id, self.char_id).get_staff(s.id).exp == 1
 
     def test_level_up_to_max_level(self):
         def get_max_level():
@@ -263,21 +361,18 @@ class TestStaffManager(object):
                     return lv
 
         max_level = get_max_level()
-
         s = random.choice(ConfigStaff.INSTANCES.values())
-
         exp = 0
         for i in range(1, max_level+1):
             exp += ConfigStaffLevel.get(i).exp[s.quality]
 
         exp += 10000
+        StaffManger(self.server_id, self.char_id).add(s.id)
 
-        StaffManger(1, 1).add(s.id)
+        assert StaffManger(self.server_id, self.char_id).get_staff(s.id).level == 1
+        assert StaffManger(self.server_id, self.char_id).get_staff(s.id).exp == 0
 
-        assert StaffManger(1, 1).get_staff(s.id).level == 1
-        assert StaffManger(1, 1).get_staff(s.id).exp == 0
+        StaffManger(self.server_id, self.char_id).update(s.id, exp=exp)
+        assert StaffManger(self.server_id, self.char_id).get_staff(s.id).level == max_level
+        assert StaffManger(self.server_id, self.char_id).get_staff(s.id).exp == ConfigStaffLevel.get(max_level).exp[s.quality]-1
 
-        StaffManger(1, 1).update(s.id, exp=exp)
-
-        assert StaffManger(1, 1).get_staff(s.id).level == max_level
-        assert StaffManger(1, 1).get_staff(s.id).exp == ConfigStaffLevel.get(max_level).exp[s.quality]-1
