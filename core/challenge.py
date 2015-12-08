@@ -86,6 +86,17 @@ class Challenge(object):
             doc['areas'] = {'1': 1}
             MongoChallenge.db(self.server_id).insert_one(doc)
 
+    def current_challenge_id(self):
+        doc = MongoChallenge.db(self.server_id).find_one({'_id': self.char_id})
+        challenge_ids = []
+        for aid, cid in doc['areas'].iteritems():
+            if cid == 0:
+                cid = ConfigChallengeType.end_challenge_id(int(aid))
+
+            challenge_ids.append(cid)
+
+        return max(challenge_ids)
+
     def set_next(self, area_id, challenge_id):
         if challenge_id == ConfigChallengeType.end_challenge_id(area_id):
             challenge_id = 0
