@@ -127,7 +127,7 @@ class TestStaffRecruit(object):
                 elif conf.quality == 'A':
                     quality_a += 1
 
-            if i % config.lucky_times == 0:
+            if i ==1 or i % config.lucky_times == 0:
                 assert quality_ss == 1
                 assert quality_s == 1
                 assert quality_a == 6

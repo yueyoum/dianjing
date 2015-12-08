@@ -9,6 +9,17 @@ Description:
 
 from core.statistics import FinanceStatistics
 
+
 class TestFinanceStatistics(object):
+    def __init__(self):
+        self.server = 1
+        self.char_id = 1
+
+    def setup(self):
+        pass
+
+    def teardown(self):
+        pass
+
     def test_send_notify(self):
-        FinanceStatistics(1, 1).send_notify()
+        FinanceStatistics(self.server, self.char_id).send_notify()

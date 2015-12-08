@@ -35,6 +35,9 @@ class SkillManager(object):
         self.char_id = char_id
 
     def staff_is_training(self, staff_id):
+        """
+            是否正在训练技能
+        """
         skills = self.get_staff_skills(staff_id)
         if not skills:
             return False
@@ -73,6 +76,10 @@ class SkillManager(object):
         return self.get_staff_skill_level(staff_id, ConfigSkill.SPONSOR_SKILL_ID)
 
     def check(self, staff_id, skill_id=None):
+        """
+            检查是否存在且拥有某技能
+            拥有,则返回技能属性
+        """
         from core.staff import StaffManger
 
         if not StaffManger(self.server_id, self.char_id).has_staff(staff_id):
@@ -97,6 +104,9 @@ class SkillManager(object):
         return None
 
     def upgrade(self, staff_id, skill_id):
+        """
+            升级技能
+        """
         this_skill = self.check(staff_id, skill_id)
         if this_skill.get('end_at', 0):
             raise GameException(ConfigErrorMessage.get_error_id("SKILL_ALREADY_IN_UPGRADE"))
@@ -131,6 +141,10 @@ class SkillManager(object):
         self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
 
     def upgrade_speedup(self, staff_id, skill_id):
+        """
+            立即完成技能升级
+            花费对应消耗品，立刻完成技能升级
+        """
         this_skill = self.check(staff_id, skill_id)
         end_at = this_skill.get('end_at', 0)
         if not end_at:
@@ -150,6 +164,10 @@ class SkillManager(object):
             Timerd.cancel(this_skill['key'])
 
     def lock_toggle(self, staff_id, skill_id):
+        """
+            技能加锁/解锁
+            加锁技能不会被洗练
+        """
         self.check(staff_id, skill_id)
         key = "staffs.{0}.skills.{1}.locked".format(staff_id, skill_id)
 
@@ -161,6 +179,10 @@ class SkillManager(object):
         self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
 
     def wash(self, staff_id):
+        """
+            技能洗练
+            随机置换未锁定技能槽技能并扣除洗练花费
+        """
         self.check(staff_id)
 
         skills = self.get_staff_skills(staff_id)
@@ -209,6 +231,9 @@ class SkillManager(object):
         self.send_notify()
 
     def send_notify(self, act=ACT_INIT, staff_id=None, skill_id=None):
+        """
+            发送用户技能信息
+        """
         # 这个必须在 StaffNotify 之后
         # 这里的 act 必须手动指定，因为添加新员工后，这里的skill notify 得是 ACT_INIT
         if not staff_id:
@@ -241,6 +266,9 @@ class SkillManager(object):
         MessagePipe(self.char_id).put(msg=notify)
 
     def update(self, staff_id, skill_id):
+        """
+            将升级技能更新到MongoStaff
+        """
         level = "staffs.{0}.skills.{1}.level".format(staff_id, skill_id)
         end_at = "staffs.{0}.skills.{1}.end_at".format(staff_id, skill_id)
         key = "staffs.{0}.skills.{1}.key".format(staff_id, skill_id)
