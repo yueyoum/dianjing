@@ -325,7 +325,7 @@ class TrainingProperty(object):
         slot = pl.get_slot(slot_id)
 
         if slot.status != PropertySlotStatus.WAITING:
-            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_PROPERTY_CANCEL_CANNOT_EMPTY"))
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_PROPERTY_CANCEL_NOT_WAITING"))
 
         pl.remove(slot_id)
         new_list = pl.get_document_list()
