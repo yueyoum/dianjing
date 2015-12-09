@@ -62,7 +62,7 @@ class TrainingMatch(object):
 
         condition = {
             '$and': [
-                {'club.level': {'$get': min_level}},
+                {'club.level': {'$gte': min_level}},
                 {'club.level': {'$lte': max_level}}
             ]
         }
@@ -87,9 +87,9 @@ class TrainingMatch(object):
             char_ids = random.sample(char_ids, 14)
             char_ids.sort(key=lambda item: item[1])
 
-            for i in char_ids:
-                c = Club(self.server_id, i)
-                if i == self.char_id:
+            for cid, club_level in char_ids:
+                c = Club(self.server_id, cid)
+                if cid == self.char_id:
                     c.name = random.choice(ConfigNPC.CLUB_NAMES)
                     c.manager_name = random.choice(ConfigNPC.MANAGER_NAMES)
 
@@ -102,6 +102,7 @@ class TrainingMatch(object):
 
         doc = MongoTrainingMatch.document()
         doc['_id'] = self.char_id
+        doc['status'] = {'1': 1}
         doc['clubs'] = [c.dumps() for c in clubs]
 
         MongoTrainingMatch.db(self.server_id).insert_one(doc)
@@ -210,6 +211,7 @@ class TrainingMatch(object):
         notify = TrainingMatchNotify()
         notify.act = act
         notify.remained_relive_times = RELIVE_TIMES - doc['relive_times']
+        notify.relive_cost = RELIVE_DIAMOND
 
         for i in ids:
             club = Club.loads(doc['clubs'][i - 1])
