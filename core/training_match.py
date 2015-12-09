@@ -68,7 +68,7 @@ class TrainingMatch(object):
         }
 
         # TODO, better method to find clubs
-        char_docs = MongoCharacter.db(self.server_id).find(condition, {'club.level': 1}).sort({'club.level': 1}).limit(
+        char_docs = MongoCharacter.db(self.server_id).find(condition, {'club.level': 1}).sort('club.level', 1).limit(
             100)
 
         if char_docs.count() < 14:
