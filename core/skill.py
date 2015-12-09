@@ -36,7 +36,7 @@ class SkillManager(object):
 
     def staff_is_training(self, staff_id):
         """
-            是否正在训练技能
+            返回员工是否正在技能训练
         """
         skills = self.get_staff_skills(staff_id)
         if not skills:
@@ -49,6 +49,10 @@ class SkillManager(object):
         return False
 
     def get_staff_skills(self, staff_id):
+        """
+            如果员工存在返回员工技能list
+            否则，返回None
+        """
         key = "staffs.{0}.skills".format(staff_id)
         doc = MongoStaff.db(self.server_id).find_one(
             {'_id': self.char_id},
@@ -60,6 +64,10 @@ class SkillManager(object):
         return doc['staffs'][str(staff_id)]['skills']
 
     def get_staff_skill_level(self, staff_id, skill_id):
+        """
+            如果员工拥有该技能， 返回该技能等级
+            否则，返回0
+        """
         skills = self.get_staff_skills(staff_id)
         if skills and skills.get(str(skill_id), None):
             return int(skills[str(skill_id)]['level'])
@@ -79,6 +87,7 @@ class SkillManager(object):
         """
             检查是否存在且拥有某技能
             拥有,则返回技能属性
+            否则，返回None
         """
         from core.staff import StaffManger
 
@@ -106,6 +115,9 @@ class SkillManager(object):
     def upgrade(self, staff_id, skill_id):
         """
             升级技能
+            正在升级技能不能重复升级
+            满级技能不能升级
+            消耗品不足不能升级
         """
         this_skill = self.check(staff_id, skill_id)
         if this_skill.get('end_at', 0):
@@ -180,8 +192,14 @@ class SkillManager(object):
 
     def wash(self, staff_id):
         """
-            技能洗练
-            随机置换未锁定技能槽技能并扣除洗练花费
+        技能洗练
+            传入一个员工ID(int)
+            获取未锁定技能wash_skills(locked != 1)
+            计算资源消耗并检测资源是否足够
+            获得员工可学习技能race_skill_ids(剔除掉已学习的技能--加锁技能槽技能)
+            添加技能到new_skill
+            写入MongoStaff
+            通知客户端员工技能
         """
         self.check(staff_id)
 
@@ -196,28 +214,27 @@ class SkillManager(object):
                 wash_skills[k] = v
 
         locked_skill_amount = len(new_skills)
-
-        race = ConfigStaff.get(staff_id).race
-        race_skills = ConfigSkill.filter(race=race)
-        race_skill_ids = race_skills.keys()
-
-        while len(new_skills) < 4:
-            if not race_skill_ids:
-                break
-
-            picked_skill = random.choice(race_skill_ids)
-            race_skill_ids.remove(picked_skill)
-
-            if str(picked_skill) not in new_skills:
-                new_skills[str(picked_skill)] = MongoStaff.document_staff_skill()
-
-        if len(new_skills) < 4:
-            raise RuntimeError("Not enough skills for race {0}".format(race))
-
         cost = ConfigSkillWashCost.get_cost(locked_skill_amount)
         cost['message'] = u"Skill Wash. locked amount {0}".format(locked_skill_amount)
 
         with Resource(self.server_id, self.char_id).check(**cost):
+            race = ConfigStaff.get(staff_id).race
+            race_skills = ConfigSkill.filter(race=race)
+            race_skill_ids = [i for i in (set(race_skills.keys()) - set(new_skills))]
+
+            while len(new_skills) < 4:
+                if not race_skill_ids:
+                    break
+
+                picked_skill = random.choice(race_skill_ids)
+                race_skill_ids.remove(picked_skill)
+
+                if str(picked_skill) not in new_skills:
+                    new_skills[str(picked_skill)] = MongoStaff.document_staff_skill()
+
+            if len(new_skills) < 4:
+                raise RuntimeError("Not enough skills for race {0}".format(race))
+
             MongoStaff.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {'$set': {"staffs.{0}.skills".format(staff_id): new_skills}}

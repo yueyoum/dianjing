@@ -27,9 +27,7 @@ class TestSkillManager(object):
             StaffManger(1, 1).add(self.staff_id)
 
     def teardown(self):
-        if StaffManger(1, 1).has_staff(self.staff_id):
-            if not SkillManager(1, 1).staff_is_training(self.staff_id):
-                StaffManger(1, 1).remove(self.staff_id)
+        pass
 
     def test_send_notify(self):
         SkillManager(1, 1).send_notify()
@@ -218,12 +216,15 @@ class TestSkillManager(object):
 
         SkillManager(1, 1).lock_toggle(self.staff_id, int(sid))
         cost = ConfigSkillWashCost.get_cost(1)
+
         MongoCharacter.db(1).update_one(
             {'_id': 1},
-            {'$set': {'club.diamond': cost}}
+            {'$set': {'club.diamond': abs(cost['diamond'])}}
         )
 
         SkillManager(1, 1).wash(self.staff_id)
 
-        skills = SkillManager(1, 1).get_staff_skills(self.staff_id)
-        assert sid in skills
+        new_skills = SkillManager(1, 1).get_staff_skills(self.staff_id)
+        print 'new_skills:', new_skills.keys()
+        print 'old_skills:', skills.keys()
+        assert sid in new_skills
