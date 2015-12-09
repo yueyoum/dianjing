@@ -21,8 +21,10 @@ from core.club import Club
 from config import ConfigStaff, ConfigErrorMessage, ConfigLadderScoreStore
 
 
-
 class TestLadder(object):
+    def setUp(self):
+        pass
+
     def teardown(self):
         MongoDB.get(1).ladder.drop()
 

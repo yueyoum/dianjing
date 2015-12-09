@@ -72,6 +72,12 @@ class TaskManager(object):
             cls(server_id, cid).refresh()
 
     def refresh(self):
+        """
+            refresh the daily task
+            first, pull out all the daily task from MongoTask
+            second, get daily task begin from ConfigTask
+            third, add to MongoTask
+        """
         doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'history': 0})
 
         doing_ids = doc['doing'].keys()
@@ -115,13 +121,20 @@ class TaskManager(object):
         self.send_notify()
 
     def add_task(self, task_id):
+        """
+            add task to MongoTask
+            and turn to check if reach the finish range
+        """
         config = ConfigTask.get(task_id)
         if not config:
             raise GameException(ConfigErrorMessage.get_error_id('TASK_NOT_EXIST'))
 
         doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id})
-        if str(task_id) in doc['doing'] or task_id in doc['finish'] or task_id in doc['history']:
-            return
+        if str(task_id) in doc['doing']:
+            raise GameException(ConfigErrorMessage.get_error_id('TASK_ALREADY_DOING'))
+
+        if task_id in doc['finish'] or task_id in doc['history']:
+            raise GameException(ConfigErrorMessage.get_error_id('TASK_CAN_NOT_REPRODUCE'))
 
         MongoTask.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -131,6 +144,10 @@ class TaskManager(object):
         self.check(task_ids=[task_id])
 
     def get_reward(self, task_id):
+        """
+            add task reward to user and remove from finish field
+            if it's main task, add to history
+        """
         config = ConfigTask.get(task_id)
         if not config:
             raise GameException(ConfigErrorMessage.get_error_id("TASK_NOT_EXIST"))
@@ -164,13 +181,17 @@ class TaskManager(object):
         return drop.make_protomsg()
 
     def trigger(self, trigger, num):
-        # 按照类型来触发
+        """
+            add task by trigger
+            if trigger num  meet the conditions and user not have this task,
+            add to MongoTask
+        """
         task_ids = ConfigTask.filter(trigger=trigger).keys()
         doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id})
 
         doing_ids = [int(i) for i in doc['doing'].keys()]
         doc_task_ids = set(doc['history']) | set(doc['finish']) | set(doing_ids)
-        # 没做过, 条件值满足, add
+
         for task_id in task_ids:
             config = ConfigTask.get(task_id)
 
@@ -215,6 +236,10 @@ class TaskManager(object):
         self.check(task_ids=task_ids)
 
     def check(self, task_ids=None, send_notify=True):
+        """
+            check task if finish
+            if finish, delete from doing  and add to finish
+        """
         docs = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'doing': 1})
         if not task_ids:
             task_ids = [int(i) for i in docs['doing']]

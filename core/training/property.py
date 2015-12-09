@@ -233,7 +233,7 @@ class TrainingProperty(object):
         for i in range(1, PROPERTY_TRAINING_SLOTS_AMOUNT + 1):
             slot = pl.get_slot(i)
 
-            if slot.status == PropertySlotStatus.FINISH or slot.status == PropertySlotStatus.TRAINING:
+            if slot.status != PropertySlotStatus.EMPTY:
                 return True
 
         return False
@@ -324,14 +324,8 @@ class TrainingProperty(object):
         pl = self.get_training_list(staff_id)
         slot = pl.get_slot(slot_id)
 
-        if slot.status == PropertySlotStatus.EMPTY:
+        if slot.status != PropertySlotStatus.WAITING:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_PROPERTY_CANCEL_CANNOT_EMPTY"))
-
-        if slot.status == PropertySlotStatus.TRAINING:
-            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_PROPERTY_CANCEL_CANNOT_TRAINING"))
-
-        if slot.status == PropertySlotStatus.FINISH:
-            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_PROPERTY_CANCEL_CANNOT_FINISH"))
 
         pl.remove(slot_id)
         new_list = pl.get_document_list()
@@ -342,20 +336,20 @@ class TrainingProperty(object):
         pl = self.get_training_list(staff_id)
         slot = pl.get_slot(slot_id)
 
+        try:
+            pl.finish(slot_id)
+        except PropertyTrainingList.SlotEmpty:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_PROPERTY_SPEEDUP_CANNOT_EMPTY"))
+        except PropertyTrainingList.SlotWaiting:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_PROPERTY_SPEEDUP_CANNOT_WAITING"))
+        except PropertyTrainingList.SlotFinish:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_PROPERTY_SPEEDUP_CANNOT_FINISH"))
+
         behind_seconds = slot.end_at - arrow.utcnow().timestamp
         need_diamond = formula.training_speedup_need_diamond(behind_seconds)
         message = u"Training Staff {0} Property Speedup".format(staff_id)
 
         with Resource(self.server_id, self.char_id).check(diamond=-need_diamond, message=message):
-            try:
-                pl.finish(slot_id)
-            except PropertyTrainingList.SlotEmpty:
-                raise GameException(ConfigErrorMessage.get_error_id("TRAINING_PROPERTY_SPEEDUP_CANNOT_EMPTY"))
-            except PropertyTrainingList.SlotWaiting:
-                raise GameException(ConfigErrorMessage.get_error_id("TRAINING_PROPERTY_SPEEDUP_CANNOT_WAITING"))
-            except PropertyTrainingList.SlotFinish:
-                raise GameException(ConfigErrorMessage.get_error_id("TRAINING_PROPERTY_SPEEDUP_CANNOT_FINISH"))
-
             # 加速后，取消旧定时器，开启新定时器
             doc = MongoTrainingProperty.db(self.server_id).find_one(
                 {'_id': self.char_id},

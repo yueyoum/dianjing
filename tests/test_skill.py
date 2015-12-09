@@ -21,14 +21,15 @@ from config import ConfigStaff, ConfigErrorMessage, ConfigSkill, ConfigSkillWash
 
 
 class TestSkillManager(object):
-    def setUp(self):
+    def setup(self):
         self.staff_id = random.choice(ConfigStaff.INSTANCES.keys())
         if not StaffManger(1, 1).has_staff(self.staff_id):
             StaffManger(1, 1).add(self.staff_id)
 
-    def tearDown(self):
+    def teardown(self):
         if StaffManger(1, 1).has_staff(self.staff_id):
-            StaffManger(1, 1).remove(self.staff_id)
+            if not SkillManager(1, 1).staff_is_training(self.staff_id):
+                StaffManger(1, 1).remove(self.staff_id)
 
     def test_send_notify(self):
         SkillManager(1, 1).send_notify()
@@ -48,10 +49,9 @@ class TestSkillManager(object):
 
         staff_id = 0
         for i in range(1000, 1111):
-            if i not in staff_ids:
+            if str(i) not in staff_ids:
                 staff_id = i
                 break
-
         try:
             SkillManager(1, 1).check(staff_id)
         except GameException as e:
@@ -217,6 +217,11 @@ class TestSkillManager(object):
         sid = random.choice(skills.keys())
 
         SkillManager(1, 1).lock_toggle(self.staff_id, int(sid))
+        cost = ConfigSkillWashCost.get_cost(1)
+        MongoCharacter.db(1).update_one(
+            {'_id': 1},
+            {'$set': {'club.diamond': cost}}
+        )
 
         SkillManager(1, 1).wash(self.staff_id)
 

@@ -75,6 +75,7 @@ RECRUIT_ENUM_TO_CONFIG_ID = {
     RECRUIT_DIAMOND: 3,
 }
 
+
 class StaffRecruit(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
@@ -96,6 +97,9 @@ class StaffRecruit(object):
         return doc['staffs']
 
     def get_hot_staffs(self):
+        """
+            获取当前服务器热门合约员工
+        """
         value = CommonRecruitHot.get(self.server_id)
         if not value:
             value = ConfigStaffHot.random_three()
@@ -104,6 +108,14 @@ class StaffRecruit(object):
         return value
 
     def refresh(self, tp):
+        """
+            RECRUIT_HOT: 热门合约
+            RECRUIT_NORMAL: 普通合约
+            RECRUIT_GOLD: 白金合约
+            RECRUIT_DIAMOND: 钻石合约
+
+            合约累计刷新到配置的lucky_times, 刷出配置的幸运员工
+        """
         if tp not in [RECRUIT_HOT, RECRUIT_NORMAL, RECRUIT_GOLD, RECRUIT_DIAMOND]:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
@@ -111,7 +123,7 @@ class StaffRecruit(object):
             staffs = self.get_hot_staffs()
         else:
             check = {'message': u'Recruit refresh. type {0}'.format(tp)}
-            config = ConfigStaffRecruit.get( RECRUIT_ENUM_TO_CONFIG_ID[tp] )
+            config = ConfigStaffRecruit.get(RECRUIT_ENUM_TO_CONFIG_ID[tp])
             if config.cost_type == 1:
                 check['gold'] = -config.cost_value
             else:
@@ -132,13 +144,14 @@ class StaffRecruit(object):
                     is_lucky = True
 
             with Resource(self.server_id, self.char_id).check(**check):
-                result = ConfigStaffRecruit.get( RECRUIT_ENUM_TO_CONFIG_ID[tp] ).get_refreshed_staffs(first=is_first, lucky=is_lucky)
+                result = config.get_refreshed_staffs(first=is_first, lucky=is_lucky)
                 staffs = []
+
                 for quality, amount in result:
                     staffs.extend(ConfigStaff.get_random_ids_by_condition(amount, quality=quality))
 
-                # XXX
-                if is_first:
+                # TODO: 更合理的方式
+                if is_first and tp == RECRUIT_NORMAL:
                     staffs = staffs[:7]
                     staffs.append(11)
 
@@ -277,6 +290,11 @@ class StaffManger(object):
         return True
 
     def add(self, staff_id, send_notify=True):
+        """
+            添加员工
+            受限于拥有员工数量
+            不可拥有相同员工
+        """
         from core.club import Club
 
         if not ConfigStaff.get(staff_id):
@@ -306,6 +324,10 @@ class StaffManger(object):
             SkillManager(self.server_id, self.char_id).send_notify(staff_id=staff_id)
 
     def remove(self, staff_id):
+        """
+            移除员工
+            移除前，必须保证员工处于空闲状态
+        """
         from core.club import Club
         from core.training import TrainingShop, TrainingBroadcast, TrainingExp, TrainingProperty
         from core.skill import SkillManager
@@ -341,6 +363,10 @@ class StaffManger(object):
         MessagePipe(self.char_id).put(msg=notify)
 
     def update(self, staff_id, **kwargs):
+        """
+            更新员工属性
+            记录员工属性加成， 等级经验
+        """
         exp = kwargs.get('exp', 0)
         jingong = kwargs.get('jingong', 0)
         qianzhi = kwargs.get('qianzhi', 0)

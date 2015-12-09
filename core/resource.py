@@ -16,6 +16,9 @@ from config import ConfigErrorMessage
 
 
 class Resource(object):
+    """
+        检查资源是否足够扣除
+    """
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
