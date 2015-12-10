@@ -10,6 +10,8 @@ Description:
 import random
 import calendar
 import arrow
+import dill
+import base64
 
 from pymongo.errors import DuplicateKeyError
 
@@ -19,6 +21,7 @@ from dianjing.exception import GameException
 from core.mongo import MongoCup, MongoCupClub, MongoCharacter
 from core.abstract import AbstractClub
 from core.club import Club
+from core.match import ClubMatch
 from core.signals import join_cup_signal
 
 from utils.functional import make_string_id
@@ -62,25 +65,64 @@ CUP_PROCESS_TABLE = {
 
 
 class CupNpcClub(AbstractClub):
+    """
+    NPC俱乐部基本属性
+    """
     __slots__ = []
+
     def __init__(self, club_data):
         super(CupNpcClub, self).__init__()
-        self.id = club_data['_id']
+        self.id = make_string_id()
         self.name = club_data['club_name']
         self.manager_name = club_data['manager_name']
         self.flag = club_data['club_flag']
+        self.staffs = club_data['staffs']
+        self.policy = 1
+
+    def dumps(self):
+        """
+        返回CupNpcClub dumps string
+        :rtype: str
+        """
+        return base64.b64encode(dill.dumps(self))
+
+    @classmethod
+    def loads(cls, data):
+        return dill.loads(base64.b64decode(data))
+
+
+class RealClub(Club):
+    def __init__(self, server_id, club_data):
+        super(RealClub, self).__init__(server_id, club_data['id'])
+        for staff in club_data['staffs']:
+            self.match_staffs.append(staff['id'])
+        self.policy = club_data['policy']
 
 
 class CupClub(object):
     def __new__(cls, server_id, club_data):
-        if club_data['club_name']:
-            return CupNpcClub(club_data)
+        """
+        杯赛俱乐部
+        """
+        if club_data['is_npc']:
+            return CupNpcClub.loads(club_data['data'])
 
-        return Club(server_id, int(club_data['_id']))
+        return Club.loads(club_data['data'])
 
 
 class CupLevel(object):
     def __init__(self, year, month, lv):
+        """
+        杯赛状态:
+            CUP_PROCESS_APPLY:      报名期
+            CUP_PROCESS_PREPARE:    预选赛
+            CUP_PROCESS_32:         32强
+            CUP_PROCESS_16:         16强
+            CUP_PROCESS_8:          8强
+            CUP_PROCESS_4:          4强
+            CUP_PROCESS_2:          半决赛
+            CUP_PROCESS_1:          决赛
+        """
         self.level = lv
         self.match_time = 0
 
@@ -144,6 +186,9 @@ class CupLevel(object):
 
     @classmethod
     def all_match_levels(cls):
+        """
+        获取所有杯赛各阶段战斗时间(now.year, now.month, level)
+        """
         now = arrow.utcnow().to(settings.TIME_ZONE)
         result = []
         for lv in CUP_LEVELS:
@@ -156,6 +201,9 @@ class CupLevel(object):
 
     @classmethod
     def all_passed_match_levels(cls):
+        """
+        获取当前杯赛已结束阶段
+        """
         now = arrow.utcnow().to(settings.TIME_ZONE)
         levels = cls.all_match_levels()
         return [lv for lv in levels if lv.start_time <= now]
@@ -168,13 +216,30 @@ class Cup(object):
 
     @staticmethod
     def new(server_id):
-        # 开始一场新的
+        """
+        开启新杯赛,旧杯赛数据将会删除
+            1,获取上赛季杯赛冠军俱乐部名字用于显示
+            2,将玩家in_cup状态置为False
+            3,drop MongoCupClub
+            4,清空MongoCup中levels内容,并将上赛季杯赛冠军写入last_champion,order+1
+        """
+        cup_doc = MongoCup.db(server_id).find_one({'_id': 1}, {'levels.1': 1})
+        club_name = ""
+        if cup_doc['level'].get('1', 0):
+            club_name = CupClub(server_id, cup_doc['level']['1']).name
+
+        MongoCharacter.db(server_id).update_many(
+            {'in_cup': True},
+            {'$set': {'in_cup': False}}
+        )
+
         MongoCupClub.db(server_id).drop()
         MongoCup.db(server_id).update_one(
             {'_id': 1},
             {
                 '$set': {
-                    'levels': {}
+                    'levels': {},
+                    'last_champion': club_name,
                 },
                 '$inc': {
                     'order': 1
@@ -185,40 +250,44 @@ class Cup(object):
 
     @staticmethod
     def prepare(server_id):
-        # 预选赛， 选出32强
-        # TODO real rule
-        chars = MongoCharacter.db(server_id).find({'in_cup': 1}, {'_id': 1})
+        """
+        预选赛阶段
+            如果报名人数不够32,由npc填充,并直接进入32强
+            暂不处理超过玩家超过32人情况
+        """
+        chars = MongoCharacter.db(server_id).find({'in_cup': True}, {'_id': 1})
         char_ids = [c['_id'] for c in chars]
-        if len(char_ids) >= 32:
-            char_ids = random.sample(char_ids, 16)
+        if len(char_ids) < 32:
+            need_npc_amount = 32 - len(char_ids)
+            npcs = ConfigNPC.random_npcs(need_npc_amount, 1)
+            total_ids = char_ids
 
-        need_npc_amount = 32 - len(char_ids)
-        npcs = ConfigNPC.random_npcs(need_npc_amount, 1)
+            docs = []
+            for n in npcs:
+                npc_club = CupNpcClub(n)
+                doc = MongoCupClub.document()
+                doc['is_npc'] = True
+                doc['_id'] = npc_club.id
+                doc['data'] = npc_club.dumps()
+                docs.append(doc)
+                total_ids.append(npc_club.id)
 
-        docs = []
-        for i in char_ids:
-            doc = MongoCupClub.document()
-            doc['_id'] = str(i)
-            doc['staffs'] = []
-            docs.append(doc)
+            MongoCupClub.db(server_id).insert_many(docs)
 
-        for n in npcs:
-            doc = MongoCupClub.document()
-            doc['_id'] = make_string_id()
-            doc['club_name'] = n['club_name']
-            doc['manager_name'] = n['manager_name']
-            doc['club_flag'] = n['club_flag']
-            doc['staffs'] = n['staffs']
-            docs.append(doc)
-
-        MongoCupClub.db(server_id).insert_many(docs)
-        MongoCup.db(server_id).update_one(
-            {'_id': 1},
-            {'$set': {'levels.{0}'.format(CUP_PROCESS_32): [d['_id'] for d in docs]}}
-        )
+            MongoCup.db(server_id).update_one(
+                {'_id': 1},
+                {'$set': {'levels.{0}'.format(CUP_PROCESS_32): total_ids}}
+            )
+        else:
+            pass
 
     @staticmethod
     def match(server_id):
+        """
+        杯赛比赛
+            获取当前应已结束赛程
+
+        """
         all_passed_match_levels = CupLevel.all_passed_match_levels()
 
         cup_doc = MongoCup.db(server_id).find_one({'_id': 1})
@@ -226,11 +295,17 @@ class Cup(object):
             lv = all_passed_match_levels[index].level
             if str(lv) not in cup_doc['levels']:
                 club_ids = cup_doc['levels'][str(all_passed_match_levels[index - 1].level)]
-                # TODO real match
 
                 next_level_club_ids = []
                 for c in range(0, len(club_ids) - 1, 2):
-                    next_level_club_ids.append(random.choice([club_ids[c], club_ids[c + 1]]))
+                    club_one = MongoCupClub.db(server_id).find_one({'_id': club_ids[c]})
+                    club_two = MongoCupClub.db(server_id).find_one({'_id': club_ids[c + 1]})
+
+                    msg = ClubMatch(CupClub(server_id, club_one), CupClub(server_id, club_two)).start()
+                    if msg.club_one_win:
+                        next_level_club_ids.append(club_ids[c])
+                    else:
+                        next_level_club_ids.append(club_ids[c + 1])
 
                 cup_doc['levels'][str(lv)] = next_level_club_ids
                 MongoCup.db(server_id).update_one(
@@ -242,14 +317,33 @@ class Cup(object):
     def current_level():
         return CupLevel.current_level()
 
+    @staticmethod
+    def club_data_dumps(server_id):
+        """
+        开赛前一小时获取玩家出战配置信息
+        """
+        all_passed_match_levels = CupLevel.all_passed_match_levels()
+        cup_doc = MongoCup.db(server_id).find_one({'_id': 1})
+        for index in range(1, len(all_passed_match_levels)):
+            lv = all_passed_match_levels[index].level
+            if str(lv) not in cup_doc['levels']:
+                club_ids = cup_doc['levels'][str(all_passed_match_levels[index - 1].level)]
+
+                for club_info in MongoCupClub.db(server_id).find({'_id': {'$in': club_ids}}):
+                    if not club_info['is_npc']:
+                        MongoCupClub.db(server_id).update_one(
+                            {'_id': club_info['_id']},
+                            {'$set': {'data': Club(server_id, int(club_info['_id'])).dumps()}}
+                        )
+
     def join_cup(self):
+        """
+        参加杯赛
+            只能在报名时间(CUP_PROCESS_PREPARE)加入
+            并设置玩家in_cup为True, 结束杯赛时要设为False
+        """
         if Cup.current_level().level != CUP_PROCESS_PREPARE:
             raise GameException(ConfigErrorMessage.get_error_id("CUP_OUT_OF_APPLY_TIME"))
-
-        MongoCharacter.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': {'in_cup': True}}
-        )
 
         join_cup_signal.send(
             sender=None,
@@ -258,6 +352,9 @@ class Cup(object):
         )
 
     def make_cup_protomsg(self):
+        """
+        发送杯赛信息
+        """
         doc = MongoCup.db(self.server_id).find_one({'_id': 1})
         if not doc:
             doc = MongoCup.document()
