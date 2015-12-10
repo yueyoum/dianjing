@@ -110,4 +110,6 @@ urlpatterns = [
 
     url(r'^trainingmatch/start/$', 'views.training_match.start'),
     url(r'^trainingmatch/reward/$', 'views.training_match.get_additional_reward'),
+
+    url(r'^elite/start/$', 'views.elite_match.start'),
 ]

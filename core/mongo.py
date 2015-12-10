@@ -601,3 +601,30 @@ class MongoTrainingMatch(BaseDocument):
     }
 
     COLLECTION = 'training_match'
+
+# 精英赛
+class MongoEliteMatch(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # areas
+        # {
+        #     area_id: {
+        #         match_id: times,
+        #         match_id: times,
+        #         ...
+        #     },
+        #     area_id: {
+        #         match_id: times,
+        #         match_id: times,
+        #     }
+        # }
+        'areas': {},
+        # 当前的可以打的次数， 会恢复
+        'cur_times': 0,
+        # 打过比赛的。用来跑定时任务
+        'has_matched': False
+    }
+
+    COLLECTION = 'elite_match'
+
+    INDEXES = ['cur_times', 'has_matched']

@@ -184,6 +184,10 @@ MESSAGE_TO_ID = {
     "TrainingMatchStartResponse": 2502,
     "TrainingMatchGetAdditionalRewardRequest": 2503,
     "TrainingMatchGetAdditionalRewardResponse": 2504,
+    "EliteNotify": 2600,
+    "EliteTimesNotify": 2601,
+    "EliteStartRequest": 2602,
+    "EliteStartResponse": 2603,
 }
 
 ID_TO_MESSAGE = {
@@ -371,6 +375,10 @@ ID_TO_MESSAGE = {
     2502: "TrainingMatchStartResponse",
     2503: "TrainingMatchGetAdditionalRewardRequest",
     2504: "TrainingMatchGetAdditionalRewardResponse",
+    2600: "EliteNotify",
+    2601: "EliteTimesNotify",
+    2602: "EliteStartRequest",
+    2603: "EliteStartResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -446,6 +454,7 @@ PATH_TO_REQUEST = {
     "/game/sell/trainingskill/": ["package", "TrainingSkillSellRequest"],
     "/game/trainingmatch/start/": ["training_match", "TrainingMatchStartRequest"],
     "/game/trainingmatch/reward/": ["training_match", "TrainingMatchGetAdditionalRewardRequest"],
+    "/game/elite/start/": ["elite_match", "EliteStartRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -521,4 +530,5 @@ PATH_TO_RESPONSE = {
     "/game/sell/trainingskill/": ["package", "TrainingSkillSellResponse"],
     "/game/trainingmatch/start/": ["training_match", "TrainingMatchStartResponse"],
     "/game/trainingmatch/reward/": ["training_match", "TrainingMatchGetAdditionalRewardResponse"],
+    "/game/elite/start/": ["elite_match", "EliteStartResponse"],
 }

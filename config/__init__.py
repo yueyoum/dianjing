@@ -33,6 +33,7 @@ from config.signin import ConfigSignIn
 from config.activity_login_reward import ConfigLoginReward
 from config.active_value import ConfigActiveFunction, ConfigActiveReward
 from config.training_match import ConfigTrainingMatchReward
+from config.elite_match import ConfigEliteArea, ConfigEliteMatch
 
 
 _has_configed = False
@@ -139,5 +140,10 @@ def load_config():
             ConfigTaskTargetType.initialize(data)
         elif item == 'training_match_reward.json':
             ConfigTrainingMatchReward.initialize(data)
+        elif item == 'elite_match.json':
+            ConfigEliteMatch.initialize(data)
+        elif item == 'elite_area.json':
+            ConfigEliteArea.initialize(data)
+
 
     print "LOAD CONFIG FROM {0}".format(z_file)
