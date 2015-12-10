@@ -95,7 +95,7 @@ WSGI_APPLICATION = 'dianjing.wsgi.application'
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
-LANGUAGE_CODE = 'zh-CN'
+LANGUAGE_CODE = 'zh-hans'
 
 
 USE_I18N = True

@@ -58,9 +58,7 @@ class ConfigEliteArea(ConfigBase):
     FILTER_CACHE = {}
 
     @classmethod
-    def initialize(cls, fixture):
-        # 一定要先 设置 ConfigEliteMatch
-        super(ConfigEliteArea, cls).initialize(fixture)
+    def post_fix(cls):
         for k, v in cls.INSTANCES.iteritems():
             for mid in v.match_ids:
                 ConfigEliteMatch.get(mid).area_id = k

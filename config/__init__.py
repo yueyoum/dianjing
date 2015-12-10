@@ -145,5 +145,6 @@ def load_config():
         elif item == 'elite_area.json':
             ConfigEliteArea.initialize(data)
 
+    ConfigEliteArea.post_fix()
 
     print "LOAD CONFIG FROM {0}".format(z_file)
