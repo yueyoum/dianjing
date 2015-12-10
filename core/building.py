@@ -13,6 +13,7 @@ from dianjing.exception import GameException
 from core.mongo import MongoBuilding
 from core.club import Club
 from core.resource import Resource
+from core.bag import BagItem
 from core.signals import building_level_up_done_signal, building_level_up_start_signal
 from config import ConfigBuilding, ConfigErrorMessage
 
@@ -22,6 +23,9 @@ from utils.message import MessagePipe
 from protomsg.building_pb2 import BuildingNotify
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
+import formula
+
+TIMERD_CALLBACK_PATH = '/api/timerd/building/'
 
 class BuildingManager(object):
     def __init__(self, server_id, char_id):
@@ -77,21 +81,28 @@ class BuildingManager(object):
         if end_at:
             raise GameException(ConfigErrorMessage.get_error_id("BUILDING_IN_UPGRADING"))
 
+        config_building_level = config.get_level(current_level)
+
         if config.level_up_condition_type == 1:
-            if Club(self.server_id, self.char_id).level < config.get_level(current_level).up_condition_value:
+            if Club(self.server_id, self.char_id).level < config_building_level.up_condition_value:
                 raise GameException(ConfigErrorMessage.get_error_id("CLUB_LEVEL_NOT_ENOUGH"))
         else:
-            if BuildingClubCenter(self.server_id, self.char_id).current_level() < config.get_level(
-                    current_level).up_condition_value:
+            if BuildingClubCenter(
+                    self.server_id,
+                    self.char_id).current_level() < config_building_level.up_condition_value:
                 raise GameException(ConfigErrorMessage.get_error_id("BUILDING_CLUB_CENTER_LEVEL_NOT_ENOUGH"))
 
+        bag = BagItem(self.server_id, self.char_id)
+        if not bag.has(config_building_level.up_need_items):
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_ENOUGH"))
+
         check = {
-            "gold": -config.get_level(current_level).up_need_gold,
+            "gold": -config_building_level.up_need_gold,
             "message": u"Building {0} level up to {1}".format(building_id, current_level + 1)
         }
 
         with Resource(self.server_id, self.char_id).check(**check):
-            end_at = arrow.utcnow().timestamp + config.get_level(current_level).up_need_minutes * 60
+            end_at = arrow.utcnow().timestamp + config_building_level.up_need_minutes * 60
             # register to timerd
             data = {
                 'sid': self.server_id,
@@ -99,7 +110,10 @@ class BuildingManager(object):
                 'building_id': building_id
             }
 
-            key = Timerd.register(end_at, '/api/timerd/building/', data)
+            key = Timerd.register(end_at, TIMERD_CALLBACK_PATH, data)
+
+            for item_id, item_amount in config_building_level.up_need_items:
+                bag.remove(item_id, item_amount)
 
             MongoBuilding.db(self.server_id).update_one(
                 {'_id': self.char_id},
@@ -117,6 +131,30 @@ class BuildingManager(object):
             char_id=self.char_id,
             building_id=building_id
         )
+
+    def speedup(self, building_id):
+        config = ConfigBuilding.get(building_id)
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("BUILDING_NOT_EXIST"))
+
+        doc = MongoBuilding.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'buildings.{0}'.format(building_id): 1}
+        )
+
+        end_at = doc['buildings'][str(building_id)]['end_at']
+        if end_at:
+            raise GameException(ConfigErrorMessage.get_error_id("BUILDING_IN_UPGRADING"))
+
+        behind_seconds = end_at - arrow.utcnow().timestamp
+        need_diamond = formula.training_speedup_need_diamond(behind_seconds)
+        message = u"Building {0} Speedup".format(building_id)
+
+        with Resource(self.server_id, self.char_id).check(diamond=-need_diamond, message=message):
+            key = doc['buildings'][str(building_id)]['key']
+            Timerd.cancel(key)
+
+            self.levelup_callback(building_id)
 
     def levelup_callback(self, building_id):
         # 定时任务回调

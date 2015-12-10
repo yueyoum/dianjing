@@ -81,8 +81,6 @@ class MongoCharacter(BaseDocument):
             'tibu_staffs': []
         },
 
-        # 挑战赛ID
-        'challenge_id': null,
         # 所属联赛小组
         'league_group': 0,
         'league_level': 1,
@@ -95,13 +93,18 @@ class MongoCharacter(BaseDocument):
     COLLECTION = "character"
     INDEXES = ['name', 'last_login', 'league_level', 'in_cup', 'club.level']
 
-    @classmethod
-    def document(cls):
-        from config import ConfigChallengeMatch
 
-        doc = super(MongoCharacter, cls).document()
-        doc['challenge_id'] = ConfigChallengeMatch.FIRST_ID
-        return doc
+# 挑战赛
+class MongoChallenge(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # 当前大区ID
+        'area_id': 1,
+        # 大区， {area_id: challenge_id}， 标注当前area要打的关卡，如果challenge_id为0,表示已经通关
+        'areas': {}
+    }
+
+    COLLECTION = 'challenge'
 
 
 # 公共数据
@@ -154,7 +157,6 @@ class MongoStaff(BaseDocument):
     def document_staff_skill(cls):
         return cls.STAFF_SKILL_DOCUMENT.copy()
 
-
     COLLECTION = "staff"
 
 
@@ -194,6 +196,7 @@ class MongoTrainingExp(BaseDocument):
         return cls.TRAINING_DOCUMENT.copy()
 
     COLLECTION = 'training_exp'
+
 
 # 属性训练
 class MongoTrainingProperty(BaseDocument):
@@ -238,6 +241,7 @@ class MongoTrainingBroadcast(BaseDocument):
         return cls.SLOT_DOCUMENT.copy()
 
     COLLECTION = 'training_broadcast'
+
 
 # 网店训练
 class MongoTrainingShop(BaseDocument):
@@ -529,10 +533,10 @@ class MongoNotification(BaseDocument):
 class MongoSponsor(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        'sponsor_to_id': 0,     # 赞助了谁
-        'income': 0,            # 总收益
-        'sponsors': {},         # id: income.  这里的income不清零
-        'logs': []              # [(template_id, args), ...]
+        'sponsor_to_id': 0,  # 赞助了谁
+        'income': 0,  # 总收益
+        'sponsors': {},  # id: income.  这里的income不清零
+        'logs': []  # [(template_id, args), ...]
     }
 
     COLLECTION = "sponsor"
@@ -553,7 +557,7 @@ class MongoActivity(BaseDocument):
 class MongoSignIn(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        'sign': {},     # sign_id: [dates, dates...]
+        'sign': {},  # sign_id: [dates, dates...]
     }
 
     COLLECTION = "sign_in"
@@ -563,12 +567,13 @@ class MongoSignIn(BaseDocument):
 class MongoActiveValue(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        'value': 0,             # 活跃度
-        'rewards': [],          # 已经领奖的ID列表
-        'funcs': {},            # 已经触发的。 function_name: times
+        'value': 0,  # 活跃度
+        'rewards': [],  # 已经领奖的ID列表
+        'funcs': {},  # 已经触发的。 function_name: times
     }
 
     COLLECTION = 'active_value'
+
 
 # 各种记录
 class MongoRecord(BaseDocument):
@@ -579,3 +584,47 @@ class MongoRecord(BaseDocument):
     }
 
     COLLECTION = 'record'
+
+
+# 训练赛
+class MongoTrainingMatch(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'relive_times': 0,
+        # 进度 id: flag. flag 1 表示新开启，2 表示通过 3 表示失败
+        # 不在这里面的表示没有开启
+        'status': {},
+        # 已领取额外奖励的
+        'rewards': [],
+        # 俱乐部信息，序列化后的Club
+        'clubs': []
+    }
+
+    COLLECTION = 'training_match'
+
+# 精英赛
+class MongoEliteMatch(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # areas
+        # {
+        #     area_id: {
+        #         match_id: times,
+        #         match_id: times,
+        #         ...
+        #     },
+        #     area_id: {
+        #         match_id: times,
+        #         match_id: times,
+        #     }
+        # }
+        'areas': {},
+        # 当前的可以打的次数， 会恢复
+        'cur_times': 0,
+        # 打过比赛的。用来跑定时任务
+        'has_matched': False
+    }
+
+    COLLECTION = 'elite_match'
+
+    INDEXES = ['cur_times', 'has_matched']

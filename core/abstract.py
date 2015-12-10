@@ -49,6 +49,16 @@ class AbstractStaff(object):
 
         self.active_qianban_ids = []
 
+    def strengthen(self, multiple):
+        self.jingong *= multiple
+        self.qianzhi *= multiple
+        self.xintai *= multiple
+        self.baobing *= multiple
+        self.fangshou *= multiple
+        self.yunying *= multiple
+        self.yishi *= multiple
+        self.caozuo *= multiple
+
     def make_protomsg(self):
         msg = MessageStaff()
 
@@ -114,6 +124,10 @@ class AbstractClub(object):
 
     def match_staffs_ready(self):
         return len(self.match_staffs) == 5 and all([i != 0 for i in self.match_staffs])
+
+    def change_staff_strengthen(self, multiple):
+        for s in self.staffs.values():
+            s.strengthen(multiple)
 
     def make_protomsg(self):
         msg = MessageClub()

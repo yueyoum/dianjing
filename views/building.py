@@ -11,7 +11,7 @@ from core.building import BuildingManager
 
 from utils.http import ProtobufResponse
 
-from protomsg.building_pb2 import BuildingLevelUpResponse
+from protomsg.building_pb2 import BuildingLevelUpResponse, BuildingLevelSpeedUpRequest
 
 
 def levelup(request):
@@ -24,5 +24,18 @@ def levelup(request):
     bm.level_up(building_id)
 
     response = BuildingLevelUpResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+def speedup(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    building_id = request._proto.id
+
+    bm = BuildingManager(server_id, char_id)
+    bm.speedup(building_id)
+
+    response = BuildingLevelSpeedUpRequest()
     response.ret = 0
     return ProtobufResponse(response)

@@ -32,8 +32,10 @@ urlpatterns = [
     url(r'^staff/fire/$', 'views.staff.fire'),
 
     url(r'^challenge/start/$', 'views.challenge.start'),
+    url(r'^challenge/area/switch/$', 'views.challenge.switch_area'),
 
     url(r'^building/levelup/$', 'views.building.levelup'),
+    url(r'^building/speedup/$', 'views.building.speedup'),
 
     url(r'^training/exp/start/$', 'views.training.exp_start'),
     url(r'^training/exp/cancel/$', 'views.training.exp_cancel'),
@@ -105,4 +107,9 @@ urlpatterns = [
 
     url(r'^sell/item/$', 'views.bag.item_sell'),
     url(r'^sell/trainingskill/$', 'views.bag.training_skill_sell'),
+
+    url(r'^trainingmatch/start/$', 'views.training_match.start'),
+    url(r'^trainingmatch/reward/$', 'views.training_match.get_additional_reward'),
+
+    url(r'^elite/start/$', 'views.elite_match.start'),
 ]

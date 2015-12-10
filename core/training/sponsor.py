@@ -62,15 +62,17 @@ class TrainingSponsor(object):
         # 取消到期合约
         for doc in MongoTrainingSponsor.db(server_id).find({'has_sponsors': True}, {'sponsors': 1}):
             expired = []
-            sponsor_num = 0
+            has_sponsors = False
+
             for sponsor_id, start_at_timestamp in doc['sponsors'].iteritems():
-                sponsor_num += 1
                 sponsor_id = int(sponsor_id)
                 if not start_at_timestamp:
                     continue
 
                 remained_days = get_remained_days(sponsor_id, start_at_timestamp)
                 if remained_days > 0:
+                    has_sponsors = True
+
                     # send mail
                     config = ConfigSponsor.get(sponsor_id)
 
@@ -87,8 +89,7 @@ class TrainingSponsor(object):
             if expired:
                 # 把过期的， start_at_timestamp 设置为0
                 updater = {'sponsors.{0}'.format(i): 0 for i in expired}
-                if expired.__len__() == sponsor_num:
-                    updater['has_sponsors'] = False
+                updater['has_sponsors'] = has_sponsors
 
                 MongoTrainingSponsor.db(server_id).update_one(
                     {'_id': doc['_id']},
