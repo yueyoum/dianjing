@@ -7,7 +7,6 @@ Description:
 
 """
 
-import random
 import calendar
 import arrow
 import dill
@@ -81,22 +80,18 @@ class CupNpcClub(AbstractClub):
 
     def dumps(self):
         """
-        返回CupNpcClub dumps string
+        序列化CupNpcClub实例
         :rtype: str
         """
         return base64.b64encode(dill.dumps(self))
 
     @classmethod
     def loads(cls, data):
+        """
+        反序列化CupNpcClub实例
+        :rtype: CupNpcClub
+        """
         return dill.loads(base64.b64decode(data))
-
-
-class RealClub(Club):
-    def __init__(self, server_id, club_data):
-        super(RealClub, self).__init__(server_id, club_data['id'])
-        for staff in club_data['staffs']:
-            self.match_staffs.append(staff['id'])
-        self.policy = club_data['policy']
 
 
 class CupClub(object):
@@ -125,6 +120,11 @@ class CupLevel(object):
 
             self.level:             杯赛阶段
             self.start_time:        阶段开始时间
+
+        某个阶段比赛的进行时间,
+            lv == CUP_PROCESS_PREPARE:
+                day = 4
+            即,将在每个月的4号进行预选赛
         """
         self.level = lv
         self.match_time = 0
@@ -153,6 +153,10 @@ class CupLevel(object):
 
     @classmethod
     def current_level(cls):
+        """
+        获取当前杯赛阶段
+            通过当前日期判断杯赛进行到哪个阶段
+        """
         now = arrow.utcnow().to(settings.TIME_ZONE)
         current_day = now.day
         last_day_of_this_month = calendar.monthrange(now.year, now.month)
@@ -213,6 +217,21 @@ class CupLevel(object):
 
 
 class Cup(object):
+    """
+    杯赛
+        每个月进行一次
+        1-3号开始报名
+        比赛仅显示结果
+
+        5号进行预选赛
+        10号进行32强
+        15号进行16强
+        20号进行8强
+        25号进行半决赛
+
+        每个月最后一天进行总决赛
+        决赛晚上十点公布比赛结果，全服发送公告，并将冠军名字及俱乐部图标在当时所有在线玩家屏幕发布
+    """
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
@@ -288,9 +307,13 @@ class Cup(object):
     def match(server_id):
         """
         杯赛比赛
-            1,获取当前进行到阶段
-            2,从头开始检测未进行比赛行阶段(32强由预选赛决出，故由1开始)
-            3,如果杯赛数据里面没有该阶段记录, ClubMatch, 将结果写入数据库
+            1, 获取当前进行到阶段
+            2, 从头开始检测未进行比赛行阶段(32强由预选赛决出，故由1开始)
+            3, 如果杯赛数据里面没有该阶段记录(lv)
+                3.1, 从上一阶段获取将要战斗俱乐部ID(all_passed_match_levels[index - 1].level)
+                3.2, 两两ClubMatch(),ClubMatch(CupClub(server_id, club_one), CupClub(server_id, club_two)).start()
+                3.3, 记录胜者,战斗日志
+                3.4, 将结果写入数据库, current_level_club_logs
         """
         all_passed_match_levels = CupLevel.all_passed_match_levels()
 
@@ -328,8 +351,10 @@ class Cup(object):
         """
         开赛前一小时获取玩家出战配置信息
             1, 获取即将进行阶段
-            2, 从上一阶段获取需要dump玩家
-            3, 获取数据并写入数据库MongoCupClub
+            2, 从头开始检测未进行比赛行阶段(32强由预选赛决出，故由1开始)
+            3, 如果杯赛数据里面没有该阶段记录(lv)
+                3.1, 从上一阶段获取需要dump玩家
+                3.2, 获取数据并写入数据库MongoCupClub
         """
         all_passed_match_levels = CupLevel.all_passed_match_levels()
         cup_doc = MongoCup.db(server_id).find_one({'_id': 1})
