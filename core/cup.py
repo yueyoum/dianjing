@@ -122,6 +122,9 @@ class CupLevel(object):
             CUP_PROCESS_4:          4强
             CUP_PROCESS_2:          半决赛
             CUP_PROCESS_1:          决赛
+
+            self.level:             杯赛阶段
+            self.start_time:        阶段开始时间
         """
         self.level = lv
         self.match_time = 0
@@ -187,7 +190,7 @@ class CupLevel(object):
     @classmethod
     def all_match_levels(cls):
         """
-        获取所有杯赛各阶段战斗实例
+        获取所有杯赛各阶段实例
         """
         now = arrow.utcnow().to(settings.TIME_ZONE)
         result = []
@@ -202,7 +205,7 @@ class CupLevel(object):
     @classmethod
     def all_passed_match_levels(cls):
         """
-        获取当前杯赛已结束阶段
+        获取当前杯赛已进行的阶段
         """
         now = arrow.utcnow().to(settings.TIME_ZONE)
         levels = cls.all_match_levels()
@@ -221,7 +224,7 @@ class Cup(object):
             1,获取上赛季杯赛冠军俱乐部名字用于显示
             2,将玩家in_cup状态置为False
             3,drop MongoCupClub
-            4,清空MongoCup中levels内容,并将上赛季杯赛冠军写入last_champion,order+1
+            4,清空MongoCup中levels内容,并将上赛季杯赛冠军写入last_champion, 赛季次数order+1
         """
         cup_doc = MongoCup.db(server_id).find_one({'_id': 1}, {'levels.1': 1})
         club_name = ""
@@ -273,7 +276,7 @@ class Cup(object):
                 total_ids.append(npc_club.id)
 
             MongoCupClub.db(server_id).insert_many(docs)
-
+            # TODO: 玩家与npc对战安排
             MongoCup.db(server_id).update_one(
                 {'_id': 1},
                 {'$set': {'levels.{0}'.format(CUP_PROCESS_32): total_ids}}
@@ -285,8 +288,9 @@ class Cup(object):
     def match(server_id):
         """
         杯赛比赛
-            获取当前应已结束赛程
-
+            1,获取当前进行到阶段
+            2,从头开始检测未进行比赛行阶段(32强由预选赛决出，故由1开始)
+            3,如果杯赛数据里面没有该阶段记录, ClubMatch, 将结果写入数据库
         """
         all_passed_match_levels = CupLevel.all_passed_match_levels()
 
@@ -302,12 +306,12 @@ class Cup(object):
                     club_two = MongoCupClub.db(server_id).find_one({'_id': club_ids[c + 1]})
 
                     msg = ClubMatch(CupClub(server_id, club_one), CupClub(server_id, club_two)).start()
+
                     if msg.club_one_win:
                         current_level_club_logs[club_one['_id']] = base64.b64encode(msg.SerializeToString())
                     else:
                         current_level_club_logs[club_two['_id']] = base64.b64encode(msg.SerializeToString())
 
-                # cup_doc['levels'][str(lv)] = next_level_club_ids
                 MongoCup.db(server_id).update_one(
                     {'_id': 1},
                     {'$set': {
@@ -323,6 +327,9 @@ class Cup(object):
     def club_data_dumps(server_id):
         """
         开赛前一小时获取玩家出战配置信息
+            1, 获取即将进行阶段
+            2, 从上一阶段获取需要dump玩家
+            3, 获取数据并写入数据库MongoCupClub
         """
         all_passed_match_levels = CupLevel.all_passed_match_levels()
         cup_doc = MongoCup.db(server_id).find_one({'_id': 1})
