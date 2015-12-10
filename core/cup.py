@@ -187,7 +187,7 @@ class CupLevel(object):
     @classmethod
     def all_match_levels(cls):
         """
-        获取所有杯赛各阶段战斗时间(now.year, now.month, level)
+        获取所有杯赛各阶段战斗实例
         """
         now = arrow.utcnow().to(settings.TIME_ZONE)
         result = []
@@ -297,20 +297,26 @@ class Cup(object):
                 club_ids = cup_doc['levels'][str(all_passed_match_levels[index - 1].level)]
 
                 next_level_club_ids = []
+                current_level_club_logs = {}
                 for c in range(0, len(club_ids) - 1, 2):
                     club_one = MongoCupClub.db(server_id).find_one({'_id': club_ids[c]})
                     club_two = MongoCupClub.db(server_id).find_one({'_id': club_ids[c + 1]})
 
                     msg = ClubMatch(CupClub(server_id, club_one), CupClub(server_id, club_two)).start()
                     if msg.club_one_win:
-                        next_level_club_ids.append(club_ids[c])
+                        next_level_club_ids.append(club_one['_id'])
+                        current_level_club_logs[club_one['_id']] = base64.b64encode(msg.SerializeToString())
                     else:
-                        next_level_club_ids.append(club_ids[c + 1])
+                        next_level_club_ids.append(club_two['_id'])
+                        current_level_club_logs[club_two['_id']] = base64.b64encode(msg.SerializeToString())
 
                 cup_doc['levels'][str(lv)] = next_level_club_ids
                 MongoCup.db(server_id).update_one(
                     {'_id': 1},
-                    {'$set': {'levels.{0}'.format(lv): next_level_club_ids}}
+                    {'$set': {
+                        'levels.{0}'.format(lv): next_level_club_ids,
+                        'levels.{0}'.format(all_passed_match_levels[index - 1].level): current_level_club_logs,
+                    }}
                 )
 
     @staticmethod
