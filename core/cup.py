@@ -296,7 +296,6 @@ class Cup(object):
             if str(lv) not in cup_doc['levels']:
                 club_ids = cup_doc['levels'][str(all_passed_match_levels[index - 1].level)]
 
-                next_level_club_ids = []
                 current_level_club_logs = {}
                 for c in range(0, len(club_ids) - 1, 2):
                     club_one = MongoCupClub.db(server_id).find_one({'_id': club_ids[c]})
@@ -304,18 +303,15 @@ class Cup(object):
 
                     msg = ClubMatch(CupClub(server_id, club_one), CupClub(server_id, club_two)).start()
                     if msg.club_one_win:
-                        next_level_club_ids.append(club_one['_id'])
                         current_level_club_logs[club_one['_id']] = base64.b64encode(msg.SerializeToString())
                     else:
-                        next_level_club_ids.append(club_two['_id'])
                         current_level_club_logs[club_two['_id']] = base64.b64encode(msg.SerializeToString())
 
-                cup_doc['levels'][str(lv)] = next_level_club_ids
+                # cup_doc['levels'][str(lv)] = next_level_club_ids
                 MongoCup.db(server_id).update_one(
                     {'_id': 1},
                     {'$set': {
-                        'levels.{0}'.format(lv): next_level_club_ids,
-                        'levels.{0}'.format(all_passed_match_levels[index - 1].level): current_level_club_logs,
+                        'levels.{0}'.format(lv): current_level_club_logs,
                     }}
                 )
 
