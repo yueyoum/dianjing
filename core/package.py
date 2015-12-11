@@ -21,6 +21,9 @@ from protomsg.package_pb2 import (
 
 # 这个对应编辑器中的 Package
 class PackageBase(object):
+    """
+
+    """
     ATTRS = STAFF_ATTRS
     FIELDS = ATTRS + [
         'staff_exp', 'gold', 'diamond', 'club_renown', 'ladder_score', 'league_score',

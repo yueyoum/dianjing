@@ -249,7 +249,7 @@ class SkillManager(object):
 
     def send_notify(self, act=ACT_INIT, staff_id=None, skill_id=None):
         """
-            发送用户技能信息
+            同步员工技能信息
         """
         # 这个必须在 StaffNotify 之后
         # 这里的 act 必须手动指定，因为添加新员工后，这里的skill notify 得是 ACT_INIT
@@ -284,7 +284,8 @@ class SkillManager(object):
 
     def update(self, staff_id, skill_id):
         """
-            将升级技能更新到MongoStaff
+            1, 将升级技能更新到MongoStaff
+            2, 同步技能信息到客户端
         """
         level = "staffs.{0}.skills.{1}.level".format(staff_id, skill_id)
         end_at = "staffs.{0}.skills.{1}.end_at".format(staff_id, skill_id)
@@ -301,4 +302,7 @@ class SkillManager(object):
         self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
 
     def timer_callback(self, staff_id, skill_id):
+        """
+        技能升级 timer 回调
+        """
         self.update(staff_id, skill_id)
