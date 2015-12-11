@@ -29,6 +29,16 @@ from config import ConfigErrorMessage, ConfigNPC
 from protomsg import cup_pb2
 from protomsg.cup_pb2 import Cup as MessageCup
 
+
+# 处理杯赛各阶段时间
+CUP_PROCESS_PREPARE_DAY = 4         # 预选赛时间, 即截止报名时间
+CUP_PROCESS_32_DAY = 5              # 32强决出时间, 每月5号
+CUP_PROCESS_16_DAY = 10             # 16强决出时间, 每月10号
+CUP_PROCESS_8_DAY = 15              # 8强决出时间, 每月15号
+CUP_PROCESS_4_DAY = 20              # 8强决出时间, 每月20号
+CUP_PROCESS_2_DAY = 25              # 半决赛时间, 每月25号
+CUP_PROCESS_1_HOUR = 22             # 总决赛时间, 每月最后一天22点
+
 # 服务器程序内部使用
 CUP_PROCESS_APPLY = 1000  # 报名
 CUP_PROCESS_PREPARE = 1001  # 预选赛
@@ -134,20 +144,20 @@ class CupLevel(object):
         if lv == CUP_PROCESS_APPLY:
             pass
         elif lv == CUP_PROCESS_PREPARE:
-            day = 4
+            day = CUP_PROCESS_PREPARE_DAY
         elif lv == CUP_PROCESS_32:
-            day = 5
+            day = CUP_PROCESS_32_DAY
         elif lv == CUP_PROCESS_16:
-            day = 10
+            day = CUP_PROCESS_16_DAY
         elif lv == CUP_PROCESS_8:
-            day = 15
+            day = CUP_PROCESS_8_DAY
         elif lv == CUP_PROCESS_4:
-            day = 20
+            day = CUP_PROCESS_4_DAY
         elif lv == CUP_PROCESS_2:
-            day = 25
+            day = CUP_PROCESS_2_DAY
         elif lv == CUP_PROCESS_1:
             day = calendar.monthrange(year, month)[1]
-            hour = 22
+            hour = CUP_PROCESS_1_HOUR
 
         self.start_time = arrow.Arrow(year, month, day, hour, 0, 0, tzinfo=settings.TIME_ZONE)
 
@@ -161,22 +171,22 @@ class CupLevel(object):
         current_day = now.day
         last_day_of_this_month = calendar.monthrange(now.year, now.month)
 
-        if current_day < 4:
+        if current_day < CUP_PROCESS_PREPARE_DAY:
             # 1 ~ 3
             level = CUP_PROCESS_APPLY
-        elif current_day < 5:
+        elif current_day < CUP_PROCESS_32_DAY:
             # 4
             level = CUP_PROCESS_PREPARE
-        elif current_day < 10:
+        elif current_day < CUP_PROCESS_16_DAY:
             # 5 ~ 9
             level = CUP_PROCESS_32
-        elif current_day < 15:
+        elif current_day < CUP_PROCESS_8_DAY:
             # 10 ~ 14
             level = CUP_PROCESS_16
-        elif current_day < 20:
+        elif current_day < CUP_PROCESS_4_DAY:
             # 15 ~ 20
             level = CUP_PROCESS_8
-        elif current_day < 25:
+        elif current_day < CUP_PROCESS_2_DAY:
             # 20 ~ 24
             level = CUP_PROCESS_4
         elif current_day < last_day_of_this_month:
@@ -184,7 +194,7 @@ class CupLevel(object):
             level = CUP_PROCESS_2
         else:
             # last_day_of_this_month
-            if now.hour <= 22:
+            if now.hour <= CUP_PROCESS_1_HOUR:
                 level = CUP_PROCESS_2
             else:
                 level = CUP_PROCESS_1

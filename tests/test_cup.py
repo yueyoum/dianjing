@@ -8,7 +8,7 @@ Description:
 """
 import random
 
-from core.mongo import MongoCupClub, MongoStaff
+from core.mongo import MongoCupClub, MongoStaff, MongoCharacter
 from core.character import Character
 from core.cup import Cup
 
@@ -26,15 +26,17 @@ class TestCup(object):
     def teardown(self):
         pass
 
-    def test_match(self):
-        Character.create(self.server_id, self.char_id+1, 'two', 'club_two', 1)
-        MongoCupClub.db(self.server_id).update_one(
-            {'_id': str(self.char_id+1)},
-            {'$set': {}}
-        )
+    def test_join_cup(self):
+        """
+        测试时注意修改报名时间
+        """
+        Cup(self.server_id, self.char_id).join_cup()
 
-        club_one = MongoCupClub.db(self.server_id).find_one({'_id': str(self.char_id)})
-        club_two = MongoCupClub.db(self.server_id).find_one({'_id': str(self.char_id+1)})
+        doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'in_cup': 1})
+        assert doc['in_cup']
+
+    def test_match(self):
+        pass
 
 
 
