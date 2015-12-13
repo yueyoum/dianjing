@@ -14,6 +14,7 @@ from core.mongo import MongoCharacter
 
 def make_data(doc):
     club = doc['club']
+    club['_id'] = doc['_id']
     club['match_staffs'] = ','.join([str(i) for i in club['match_staffs']])
     club['tibu_staffs'] = ','.join([str(i) for i in club['tibu_staffs']])
     return club
@@ -24,7 +25,7 @@ class MyForm(DuckForm):
     verbose_name = '俱乐部'
     pk_name = 'id'
 
-    id = forms.IntegerField()
+    _id = forms.IntegerField()
     name = forms.CharField()
     level = forms.IntegerField()
     renown = forms.IntegerField()
@@ -60,7 +61,7 @@ class MyForm(DuckForm):
 
     @classmethod
     def update_data(cls, data):
-        pk = data.pop('id')
+        pk = data.pop('_id')
 
         match_staffs = [int(i) for i in data['match_staffs'].split(',')]
         tibu_staffs = [int(i) for i in data['tibu_staffs'].split(',')]
