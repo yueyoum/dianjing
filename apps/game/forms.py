@@ -14,8 +14,8 @@ from core.mongo import MongoCharacter
 
 def make_data(doc):
     club = doc['club']
-    club['match_staffs'] = ','.join(club['match_staffs'])
-    club['tibu_staffs'] = ','.join(club['tibu_staffs'])
+    club['match_staffs'] = ','.join([str(i) for i in club['match_staffs']])
+    club['tibu_staffs'] = ','.join([str(i) for i in club['tibu_staffs']])
     return club
 
 class MyForm(DuckForm):
