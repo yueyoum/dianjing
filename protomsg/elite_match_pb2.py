@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='elite_match.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=b'\n\x11\x65lite_match.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\x1a\x0bmatch.proto\"\xa6\x01\n\tEliteArea\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x32\n\x06status\x18\x02 \x02(\x0e\x32\".Dianjing.protocol.EliteAreaStatus\x12\x31\n\x05match\x18\x03 \x03(\x0b\x32\".Dianjing.protocol.EliteArea.Match\x1a&\n\x05Match\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x11\n\tcur_times\x18\x02 \x02(\x05\"r\n\x0b\x45liteNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12*\n\x04\x61rea\x18\x03 \x03(\x0b\x32\x1c.Dianjing.protocol.EliteArea\"a\n\x10\x45liteTimesNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tmax_times\x18\x02 \x02(\x05\x12\x11\n\tcur_times\x18\x03 \x02(\x05\x12\x16\n\x0enext_timestamp\x18\x04 \x02(\x03\"5\n\x11\x45liteStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x61rea_id\x18\x02 \x02(\x05\"\x86\x01\n\x12\x45liteStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\x12%\n\x04\x64rop\x18\x04 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*V\n\x0f\x45liteAreaStatus\x12\x17\n\x13\x45LITE_AREA_NOT_OPEN\x10\x01\x12\x13\n\x0f\x45LITE_AREA_OPEN\x10\x02\x12\x15\n\x11\x45LITE_AREA_FINISH\x10\x03'
+  serialized_pb=b'\n\x11\x65lite_match.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\x1a\x0bmatch.proto\"\xa6\x01\n\tEliteArea\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x32\n\x06status\x18\x02 \x02(\x0e\x32\".Dianjing.protocol.EliteAreaStatus\x12\x31\n\x05match\x18\x03 \x03(\x0b\x32\".Dianjing.protocol.EliteArea.Match\x1a&\n\x05Match\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x11\n\tcur_times\x18\x02 \x02(\x05\"r\n\x0b\x45liteNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12*\n\x04\x61rea\x18\x03 \x03(\x0b\x32\x1c.Dianjing.protocol.EliteArea\"a\n\x10\x45liteTimesNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tmax_times\x18\x02 \x02(\x05\x12\x11\n\tcur_times\x18\x03 \x02(\x05\x12\x16\n\x0enext_timestamp\x18\x04 \x02(\x03\"6\n\x11\x45liteStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08match_id\x18\x02 \x02(\x05\"\x86\x01\n\x12\x45liteStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\x12%\n\x04\x64rop\x18\x04 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*V\n\x0f\x45liteAreaStatus\x12\x17\n\x13\x45LITE_AREA_NOT_OPEN\x10\x01\x12\x13\n\x0f\x45LITE_AREA_OPEN\x10\x02\x12\x15\n\x11\x45LITE_AREA_FINISH\x10\x03'
   ,
   dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,match__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -47,8 +47,8 @@ _ELITEAREASTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=658,
-  serialized_end=744,
+  serialized_start=659,
+  serialized_end=745,
 )
 _sym_db.RegisterEnumDescriptor(_ELITEAREASTATUS)
 
@@ -253,7 +253,7 @@ _ELITESTARTREQUEST = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='area_id', full_name='Dianjing.protocol.EliteStartRequest.area_id', index=1,
+      name='match_id', full_name='Dianjing.protocol.EliteStartRequest.match_id', index=1,
       number=2, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -272,7 +272,7 @@ _ELITESTARTREQUEST = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=466,
-  serialized_end=519,
+  serialized_end=520,
 )
 
 
@@ -323,8 +323,8 @@ _ELITESTARTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=522,
-  serialized_end=656,
+  serialized_start=523,
+  serialized_end=657,
 )
 
 _ELITEAREA_MATCH.containing_type = _ELITEAREA

@@ -116,10 +116,10 @@ class EliteMatch(object):
             doc['cur_times'] = ELITE_MAX_TIMES
             doc['areas'] = {
                 '1': {
-                    str(ConfigEliteArea.get(1)): 0
+                    str(ConfigEliteArea.get(1).first_match_id()): 0
                 }
             }
-            
+
             MongoEliteMatch.db(self.server_id).insert_one(doc)
 
         self.cur_times = doc['cur_times']
