@@ -11,6 +11,9 @@ from config import ConfigQianBan, ConfigStaff, ConfigSkill
 
 
 class QianBanEffect(object):
+    """
+    牵绊加成
+    """
     __slots__ = ['effect_property', 'effect_match_skill', 'effect_business_skill']
 
     def __init__(self):
@@ -22,9 +25,19 @@ class QianBanEffect(object):
         self.effect_business_skill = {}
 
     def add_property(self, key, value):
+        """
+        牵绊属性加成
+            加成属性key
+            加成值 value
+        """
         self.effect_property[key] = self.effect_property.get(key, 0) + value
 
     def add_skill(self, sid, value):
+        """
+        技能加成
+            技能id sid
+            加成值 value
+        """
         if ConfigSkill.get(sid).type_id == 2:
             # 战斗技能
             self.effect_match_skill[sid] = self.effect_match_skill.get(sid, 0) + value
@@ -33,6 +46,7 @@ class QianBanEffect(object):
 
     def __iadd__(self, other):
         """
+        重定义累加
 
         :type other: QianBanEffect
         """
@@ -49,7 +63,22 @@ class QianBanEffect(object):
 
 
 class QianBan(object):
+    """
+    牵绊系统
+        员工之间产生的搭配效果的 管理和计算
+    """
     def __init__(self, qid, all_match_staff_ids, this_staff_skill_ids):
+        """
+        初始化
+            self._active        牵绊效果是否有效
+            self.id             牵绊ID
+            self.config         牵绊配置
+            self.effect         牵绊加成实例
+
+            self.config.condition_tp    牵绊影响类型
+                1       影响出战员工      all_match_staff_ids
+                非1     影响拥有技能      all_match_staff_ids
+        """
         self._active = False
         self.id = qid
         self.config = ConfigQianBan.get(qid)
@@ -75,6 +104,11 @@ class QianBan(object):
         self.add_to_effect()
 
     def add_to_effect(self):
+        """
+        添加牵绊加成
+            设置牵绊有效
+            根据牵绊影响类型添加效果
+        """
         self._active = True
 
         if self.config.addition_tp == 'skill':
