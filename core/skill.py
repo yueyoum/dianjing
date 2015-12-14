@@ -3,7 +3,7 @@
 Author:         Wang Chao <yueyoum@gmail.com>
 Filename:       skill
 Date Created:   2015-07-24 10:34
-Description:
+Description:    相关文档见 电竞经理/俱乐部设施/培训中心
 
 """
 
@@ -30,6 +30,10 @@ TIMER_CALLBACK_PATH = "/api/timerd/skill/"
 
 
 class SkillManager(object):
+    """
+    技能管理系统
+        员工技能管理
+    """
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
@@ -37,6 +41,8 @@ class SkillManager(object):
     def staff_is_training(self, staff_id):
         """
             返回员工是否正在技能训练
+            是, 返回 True
+            不是, 返回 False
         """
         skills = self.get_staff_skills(staff_id)
         if not skills:
@@ -50,7 +56,7 @@ class SkillManager(object):
 
     def get_staff_skills(self, staff_id):
         """
-            如果员工存在返回员工技能list
+            如果 玩家 拥有 该员工, 返回员工技能list
             否则，返回None
         """
         key = "staffs.{0}.skills".format(staff_id)
@@ -75,19 +81,33 @@ class SkillManager(object):
             return 0
 
     def get_staff_shop_skill_level(self, staff_id):
+        """
+        返回员工 网店 技能等级
+        """
         return self.get_staff_skill_level(staff_id, ConfigSkill.SHOP_SKILL_ID)
 
     def get_staff_broadcast_skill_level(self, staff_id):
+        """
+        返回员工 直播 技能等级
+        """
         return self.get_staff_skill_level(staff_id, ConfigSkill.BROADCAST_SKILL_ID)
 
     def get_staff_sponsor_skill_level(self, staff_id):
+        """
+        返回员工 赞助 技能等级
+        """
         return self.get_staff_skill_level(staff_id, ConfigSkill.SPONSOR_SKILL_ID)
 
     def check(self, staff_id, skill_id=None):
         """
-            检查是否存在且拥有某技能
-            拥有,则返回技能属性
-            否则，返回None
+        检查员工是否存在, 且是否拥有某技能
+            拥有, 则返回技能属性
+            否则, 返回None
+
+            1 检测是否拥有该员工
+            2 检查技能是否存在
+            3 检查 该员工 是否拥有 该技能
+            4 返回结果(拥有 返回技能; 没有, 返回 None)
         """
         from core.staff import StaffManger
 
@@ -114,10 +134,13 @@ class SkillManager(object):
 
     def upgrade(self, staff_id, skill_id):
         """
-            升级技能
-            正在升级技能不能重复升级
-            满级技能不能升级
-            消耗品不足不能升级
+        升级技能
+            1 检测升级条件
+                1.1 正在升级技能不能重复升级
+                1.2 满级技能不能升级
+                1.3 消耗品不足不能升级
+            2 设置技能为升级状态
+            3 同步技能信息到客户端
         """
         this_skill = self.check(staff_id, skill_id)
         if this_skill.get('end_at', 0):
@@ -154,8 +177,12 @@ class SkillManager(object):
 
     def upgrade_speedup(self, staff_id, skill_id):
         """
-            立即完成技能升级
-            花费对应消耗品，立刻完成技能升级
+        技能升级加速,立即完成技能升级
+            1 检查技能升级是否已经完成
+            2 计算加速消耗
+            3 检查消耗是否足够
+            4 扣除消耗, 立刻完成技能升级
+            5 取消升级定时任务
         """
         this_skill = self.check(staff_id, skill_id)
         end_at = this_skill.get('end_at', 0)
