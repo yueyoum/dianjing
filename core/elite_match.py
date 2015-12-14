@@ -114,6 +114,12 @@ class EliteMatch(object):
             doc = MongoEliteMatch.document()
             doc['_id'] = self.char_id
             doc['cur_times'] = ELITE_MAX_TIMES
+            doc['areas'] = {
+                '1': {
+                    str(ConfigEliteArea.get(1)): 0
+                }
+            }
+            
             MongoEliteMatch.db(self.server_id).insert_one(doc)
 
         self.cur_times = doc['cur_times']
