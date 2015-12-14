@@ -84,9 +84,14 @@ RECRUIT_ENUM_TO_CONFIG_ID = {
 class StaffRecruit(object):
     """
     Staff招募
-        管理员工合约刷新
+        管理员工合约
     """
     def __init__(self, server_id, char_id):
+        """
+        初始化 StaffRecruit
+            如果 玩家 MongoRecruit, 不存在
+            创建， 并将 热门 员工添加到招募数据库
+        """
         self.server_id = server_id
         self.char_id = char_id
 
@@ -100,6 +105,7 @@ class StaffRecruit(object):
     def get_self_refreshed_staffs(self):
         """
         获取数据库招募员工
+        如果招募类型是 热门, 从热门列表中获取
         """
         doc = MongoRecruit.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1, 'tp': 1})
         tp = doc.get('tp', RECRUIT_HOT)
@@ -257,6 +263,9 @@ class StaffRecruit(object):
 
 
 class StaffManger(object):
+    """
+    员工管理
+    """
     __slots__ = ['server_id', 'char_id']
 
     def __init__(self, server_id, char_id):
