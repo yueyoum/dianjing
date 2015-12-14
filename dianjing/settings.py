@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'duckadmin',
     'apps.helper',
     'apps.server',
     'apps.account',
@@ -52,6 +53,7 @@ INSTALLED_APPS = (
     'apps.statistics',
     'apps.history_record',
     # 'background',
+    'apps.game',
 )
 
 MIDDLEWARE_CLASSES = (

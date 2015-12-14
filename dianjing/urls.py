@@ -1,6 +1,8 @@
 from django.conf.urls import include, url
 from django.contrib import admin
 
+import apps.config.views
+import apps.system.views
 
 urlpatterns = [
     # Examples:
@@ -12,6 +14,6 @@ urlpatterns = [
     url(r'^api/', include('views.urls_api')),
     # url(r'^data/', include('background.urls')),
 
-    url(r'^system/config/$', 'apps.config.views.get_config'),
-    url(r'^system/bulletin/$', 'apps.system.views.get_bulletins'),
+    url(r'^system/config/$', apps.config.views.get_config),
+    url(r'^system/bulletin/$', apps.system.views.get_bulletins),
 ]
