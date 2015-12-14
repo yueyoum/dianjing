@@ -162,7 +162,7 @@ class EliteMatch(object):
 
         self.cur_times -= 1
         # TODO lock
-        MongoEliteMatch.db(self.server_id).find_one(
+        MongoEliteMatch.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {'cur_times': self.cur_times}}
         )
