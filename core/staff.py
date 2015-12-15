@@ -338,6 +338,9 @@ class StaffManger(object):
 
         return True
 
+    def add_staff(self, staff, send_notify=True):
+        pass
+
     def add(self, staff_id, send_notify=True):
         """
         添加员工

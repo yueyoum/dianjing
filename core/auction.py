@@ -18,16 +18,23 @@ from core.resource import Resource
 from utils.api import Timerd
 from config import ConfigErrorMessage, ConfigStaffStatus
 
-from protomsg.auction_pb2 import StaffAuctionNotify, StaffAuctionUserNotify, StaffAuctionUserItemRemoveNotify
+from protomsg.auction_pb2 import (
+    StaffAuctionNotify,
+    StaffAuctionUserNotify,
+    StaffAuctionUserItemRemoveNotify,
+    hours_8,
+    hours_16,
+    hours_24,
+)
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 from utils.message import MessagePipe
 
 
 AUCTION_TYPE_TIME = {
-    str(1): 8,
-    str(2): 16,
-    str(3): 24,
+    str(hours_8): 8,
+    str(hours_16): 16,
+    str(hours_24): 24,
 }
 
 TIMERD_CALLBACK_AUCTION = "/api/timerd/"
@@ -96,15 +103,15 @@ class AuctionManager(object):
             1 是否拥有该员工
             2 出售时长时是否是规定类型
             3 最低价是否高于最高价
-            4 检查员工是否空闲
-            5 获取玩家员工属性
-            6 将原共从玩家员工列表中移除, 并加到出售列表
-            7 加入到服务器出售列表
+            4 员工是否空闲
+            5 获取员工属性
+            6 将员工从玩家员工列表中移除
+            7 写入到服务器出售列表
         """
         if not StaffManger(self.server_id, self.char_id).has_staff(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
-        if tp not in [1, 2, 3]:
+        if tp not in [hours_8, hours_16, hours_24]:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         if min_price > max_price:
@@ -183,7 +190,8 @@ class AuctionManager(object):
         MongoStaffAuction.db(self.server_id).delete_one({'_id': item_id})
         # 取消定时任务
         Timerd.cancel(doc['key'])
-        # 玩家staff同步
+        # 玩家staff同步 TODO: 更精确
+        StaffManger(self.server_id, self.char_id).add_staff(doc)
 
         notify = StaffAuctionUserItemRemoveNotify()
         notify.id.append(item_id)
@@ -193,6 +201,7 @@ class AuctionManager(object):
         """
         竞标
         """
+        sale = False
         doc = MongoStaffAuction.db(self.server_id).find_one({'_id': auction_item_id})
         if not doc:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
@@ -200,17 +209,23 @@ class AuctionManager(object):
         if price < doc['min_price']:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-        if price >= doc['max_price']:
-            pass
-
         if doc['bidding'] >= price:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
+        if price > doc['max_price']:
+            price = doc['max_price']
+            sale = True
+
         # 资源检测
-        MongoStaffAuction.db(self.server_id).update_one(
-            {'_id': doc['_id']},
-            {'$set': {'bidding': price, 'bidder': self.char_id}}
-        )
+        message = u"Bidding Auction {0} price {1}".format(auction_item_id, price)
+        with Resource(self.server_id, self.char_id).check(gild=-price, message=message):
+            if sale:
+                pass
+            else:
+                MongoStaffAuction.db(self.server_id).update_one(
+                    {'_id': doc['_id']},
+                    {'$set': {'bidding': price, 'bidder': self.char_id}}
+                )
 
         self.send_common_auction_notify()
 
@@ -237,15 +252,21 @@ class AuctionManager(object):
     #
     #     return msg
 
-    def send_common_auction_notify(self):
+    def send_common_auction_notify(self, item_ids):
         """
         通知用户员工转会窗口信息
-            1 获取所有转会信息
+            1 如果 item_ids 非空, 获取 item_ids 中转会信息
+                否则, 获取所有转会信息
             2 组装信息
         """
+        if not item_ids:
+            projection = {'_id': {'$in': {item_ids}}}
+        else:
+            projection = {}
+
         notify = StaffAuctionNotify()
         notify.act = ACT_INIT
-        for doc in MongoStaffAuction.db(self.server_id).find():
+        for doc in MongoStaffAuction.db(self.server_id).find(projection):
             notify_item = notify.items.add()
             item = AuctionItem(doc)
             notify_item.MergeFrom(item.make_proto_msg())
