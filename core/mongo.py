@@ -122,6 +122,7 @@ class MongoStaff(BaseDocument):
         '_id': null,
         # 员工， 定义见下面的 STAFF
         'staffs': {},
+        'on_sell': {},
     }
 
     STAFF_DOCUMENT = {
@@ -654,15 +655,21 @@ class MongoStaffAuction(BaseDocument):
         'caozuo': 0,        # 操作
         'zhimingdu': 0,     # 知名度
         # 拍卖设置
-        'start_time': 0,    # 开始时间
-        'end_at': 0,        # 结束时间
+        'start_at': 0,    # 开始时间
         'tp': 0,            # 拍卖时长
         'auction_inc': 0,   # 竞价增量
         'min_price': 0,     # 最低价
         'max_price': 0,     # 一口价
+        # 拍卖信息
+        'bidder': 0,        # 竞标者(竞标者id)
+        'bidding': 0,       # 竞标价格
+        # 定时任务key
+        'key': "",
     }
 
     COLLECTION = 'staff_auction'
 
     INDEXES = ['char_id']
+
+
 

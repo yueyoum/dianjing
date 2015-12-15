@@ -188,6 +188,17 @@ MESSAGE_TO_ID = {
     "EliteTimesNotify": 2601,
     "EliteStartRequest": 2602,
     "EliteStartResponse": 2603,
+    "StaffAuctionUserNotify": 2700,
+    "StaffAuctionNotify": 2701,
+    "StaffAuctionSearchRequest": 2702,
+    "StaffAuctionSearchResponse": 2703,
+    "StaffAuctionSellRequest": 2704,
+    "StaffAuctionSellResponse": 2705,
+    "StaffAuctionCancelRequest": 2706,
+    "StaffAuctionCancelResponse": 2707,
+    "StaffAuctionBidingRequest": 2708,
+    "StaffAuctionBiddingResponse": 2709,
+    "StaffAuctionUserItemRemoveNotify": 2710,
 }
 
 ID_TO_MESSAGE = {
@@ -379,6 +390,17 @@ ID_TO_MESSAGE = {
     2601: "EliteTimesNotify",
     2602: "EliteStartRequest",
     2603: "EliteStartResponse",
+    2700: "StaffAuctionUserNotify",
+    2701: "StaffAuctionNotify",
+    2702: "StaffAuctionSearchRequest",
+    2703: "StaffAuctionSearchResponse",
+    2704: "StaffAuctionSellRequest",
+    2705: "StaffAuctionSellResponse",
+    2706: "StaffAuctionCancelRequest",
+    2707: "StaffAuctionCancelResponse",
+    2708: "StaffAuctionBidingRequest",
+    2709: "StaffAuctionBiddingResponse",
+    2710: "StaffAuctionUserItemRemoveNotify",
 }
 
 PATH_TO_REQUEST = {
@@ -455,6 +477,10 @@ PATH_TO_REQUEST = {
     "/game/trainingmatch/start/": ["training_match", "TrainingMatchStartRequest"],
     "/game/trainingmatch/reward/": ["training_match", "TrainingMatchGetAdditionalRewardRequest"],
     "/game/elite/start/": ["elite_match", "EliteStartRequest"],
+    "/game/auction/search/": ["staff_auction", "StaffAuctionSearchRequest"],
+    "/game/auction/sell/": ["staff_auction", "StaffAuctionSellRequest"],
+    "/game/auction/cancel/": ["staff_auction", "StaffAuctionCancelRequest"],
+    "/game/auction/bidding/": ["staff_auction", "StaffAuctionBidingRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -531,4 +557,8 @@ PATH_TO_RESPONSE = {
     "/game/trainingmatch/start/": ["training_match", "TrainingMatchStartResponse"],
     "/game/trainingmatch/reward/": ["training_match", "TrainingMatchGetAdditionalRewardResponse"],
     "/game/elite/start/": ["elite_match", "EliteStartResponse"],
+    "/game/auction/search/": ["staff_auction", "StaffAuctionSearchResponse"],
+    "/game/auction/sell/": ["staff_auction", "StaffAuctionSellResponse"],
+    "/game/auction/cancel/": ["staff_auction", "StaffAuctionCancelResponse"],
+    "/game/auction/bidding/": ["staff_auction", "StaffAuctionBiddingResponse"],
 }

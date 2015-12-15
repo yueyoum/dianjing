@@ -374,14 +374,7 @@ class StaffManger(object):
             self.send_notify(staff_ids=[staff_id])
             SkillManager(self.server_id, self.char_id).send_notify(staff_id=staff_id)
 
-    def remove(self, staff_id):
-        """
-            移除员工
-            1, 是否拥有该员工
-            2, 该员工是否处于空闲状态, 非空闲状态， 返回错误信息
-            3, 移除员工
-            4, 通知客户端员工移除信息
-        """
+    def is_free(self, staff_id):
         from core.club import Club
         from core.training import TrainingShop, TrainingBroadcast, TrainingExp, TrainingProperty
         from core.skill import SkillManager
@@ -406,6 +399,16 @@ class StaffManger(object):
 
         if SkillManager(self.server_id, self.char_id).staff_is_training(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_FIRE_TRAINING_SKILL"))
+
+    def remove(self, staff_id):
+        """
+            移除员工
+            1, 是否拥有该员工
+            2, 该员工是否处于空闲状态, 非空闲状态， 返回错误信息
+            3, 移除员工
+            4, 通知客户端员工移除信息
+        """
+        self.is_free(staff_id)
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
