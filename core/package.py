@@ -22,7 +22,10 @@ from protomsg.package_pb2 import (
 # 这个对应编辑器中的 Package
 class PackageBase(object):
     """
-
+    物品包基类
+        基本字段包括:
+            员工属性        ATTRS
+            所有属性        FIELDS
     """
     ATTRS = STAFF_ATTRS
     FIELDS = ATTRS + [
@@ -31,25 +34,31 @@ class PackageBase(object):
     # fields also contains trainings, items
 
     def __init__(self):
-        self.jingong = 0  # 员工 - 进攻
-        self.qianzhi = 0  # 员工 - 牵制
-        self.xintai = 0  # 员工 - 心态
-        self.baobing = 0  # 员工 - 暴兵
-        self.fangshou = 0  # 员工 - 防守
-        self.yunying = 0  # 员工 - 运营
-        self.yishi = 0  # 员工 - 意识
-        self.caozuo = 0  # 员工 - 操作
-        self.zhimingdu = 0  # 员工 - 知名度
-        self.staff_exp = 0  # 员工 - 经验
-        self.gold = 0  # 角色 - 金币/软妹币
-        self.diamond = 0  # 角色 - 钻石
-        self.club_renown = 0  # 角色 - 俱乐部声望
-        self.ladder_score = 0  # 角色 - 天梯赛积分
-        self.league_score = 0  # 角色 - 联赛积分
-        self.trainings = []  # 角色 - 训练书
-        self.items = []  # 角色 - 道具
+        """
+        初始化属性数据
+        """
+        self.jingong = 0            # 员工 - 进攻
+        self.qianzhi = 0            # 员工 - 牵制
+        self.xintai = 0             # 员工 - 心态
+        self.baobing = 0            # 员工 - 暴兵
+        self.fangshou = 0           # 员工 - 防守
+        self.yunying = 0            # 员工 - 运营
+        self.yishi = 0              # 员工 - 意识
+        self.caozuo = 0             # 员工 - 操作
+        self.zhimingdu = 0          # 员工 - 知名度
+        self.staff_exp = 0          # 员工 - 经验
+        self.gold = 0               # 角色 - 金币/软妹币
+        self.diamond = 0            # 角色 - 钻石
+        self.club_renown = 0        # 角色 - 俱乐部声望
+        self.ladder_score = 0       # 角色 - 天梯赛积分
+        self.league_score = 0       # 角色 - 联赛积分
+        self.trainings = []         # 角色 - 训练书
+        self.items = []             # 角色 - 道具
 
     def __str__(self):
+        """
+
+        """
         data = {}
         for attr in self.FIELDS + ['trainings', 'items']:
             value = getattr(self, attr)

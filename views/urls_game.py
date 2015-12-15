@@ -34,6 +34,7 @@ import views.shop
 import views.bag
 import views.training_match
 import views.elite_match
+import views.auction
 
 urlpatterns = [
     url(r'^sync/$', views.common.sync),
@@ -138,4 +139,9 @@ urlpatterns = [
     url(r'^trainingmatch/reward/$', views.training_match.get_additional_reward),
 
     url(r'^elite/start/$', views.elite_match.start),
+
+    url(r'^auction/search/$', views.auction.search),
+    url(r'^auction/sell/$', views.auction.sell),
+    url(r'^auction/sell/$', views.auction.cancel),
+    url(r'^auction/sell/$', views.auction.bidding),
 ]

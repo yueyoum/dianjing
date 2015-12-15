@@ -131,6 +131,7 @@ class MongoStaff(BaseDocument):
         'skills': {},
         'winning_rate': {},
         # 此外这里还有属性
+
     }
 
     # 嵌入staff中
@@ -265,6 +266,7 @@ class MongoTrainingSponsor(BaseDocument):
 
     COLLECTION = 'training_sponsor'
     INDEXES = ['has_sponsors']
+
 
 # 招募刷新
 class MongoRecruit(BaseDocument):
@@ -602,6 +604,7 @@ class MongoTrainingMatch(BaseDocument):
 
     COLLECTION = 'training_match'
 
+
 # 精英赛
 class MongoEliteMatch(BaseDocument):
     DOCUMENT = {
@@ -628,3 +631,38 @@ class MongoEliteMatch(BaseDocument):
     COLLECTION = 'elite_match'
 
     INDEXES = ['cur_times', 'has_matched']
+
+
+# 员工拍卖
+class MongoStaffAuction(BaseDocument):
+    DOCUMENT = {
+        '_id': null,           # 物品ID
+        'char_id': 0,       # 出售者ID
+        # 员工属性
+        'staff_id': 0,      # 员工ID
+        'level': 0,         # 当前等级
+        'cur_exp': 0,       # 当前经验
+        'max_exp': 0,       # 当前等级最大经验
+        'status': 0,        # 状态， 对应 staff_status.json
+        'jingong': 0,       # 进攻
+        'qianzhi': 0,       # 牵制
+        'xintai': 0,        # 心态
+        'baobing': 0,       # 暴兵
+        'fangshou': 0,      # 防守
+        'yunying': 0,       # 运营
+        'yishi': 0,         # 意识
+        'caozuo': 0,        # 操作
+        'zhimingdu': 0,     # 知名度
+        # 拍卖设置
+        'start_time': 0,    # 开始时间
+        'end_at': 0,        # 结束时间
+        'tp': 0,            # 拍卖时长
+        'auction_inc': 0,   # 竞价增量
+        'min_price': 0,     # 最低价
+        'max_price': 0,     # 一口价
+    }
+
+    COLLECTION = 'staff_auction'
+
+    INDEXES = ['char_id']
+
