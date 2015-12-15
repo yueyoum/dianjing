@@ -27,6 +27,7 @@ class MyForm(DuckForm):
 
     _id = forms.IntegerField()
     name = forms.CharField()
+    flag = forms.IntegerField()
     level = forms.IntegerField()
     renown = forms.IntegerField()
     vip = forms.IntegerField()
