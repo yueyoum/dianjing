@@ -119,7 +119,7 @@ class AuctionManager(object):
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         # 检查是否已出售
-        doc = MongoStaffAuction.db(self.server_id).find({'_id': self.char_id}, {'staff_id'})
+        doc = MongoStaffAuction.db(self.server_id).find({'_id': self.char_id}, {'staff_id': 1})
         for d in doc:
             if staff_id == d['staff_id']:
                 raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
