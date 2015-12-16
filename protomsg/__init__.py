@@ -199,6 +199,9 @@ MESSAGE_TO_ID = {
     "StaffAuctionBidingRequest": 2708,
     "StaffAuctionBiddingResponse": 2709,
     "StaffAuctionUserItemRemoveNotify": 2710,
+    "StaffAuctionListRequest": 2711,
+    "StaffAuctionListResponse": 2712,
+    "StaffAuctionListNotify": 2713,
 }
 
 ID_TO_MESSAGE = {
@@ -401,6 +404,9 @@ ID_TO_MESSAGE = {
     2708: "StaffAuctionBidingRequest",
     2709: "StaffAuctionBiddingResponse",
     2710: "StaffAuctionUserItemRemoveNotify",
+    2711: "StaffAuctionListRequest",
+    2712: "StaffAuctionListResponse",
+    2713: "StaffAuctionListNotify",
 }
 
 PATH_TO_REQUEST = {
@@ -481,6 +487,7 @@ PATH_TO_REQUEST = {
     "/game/auction/sell/": ["auction", "StaffAuctionSellRequest"],
     "/game/auction/cancel/": ["auction", "StaffAuctionCancelRequest"],
     "/game/auction/bidding/": ["auction", "StaffAuctionBidingRequest"],
+    "/game/auction/list/": ["auction", "StaffAuctionListRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -561,4 +568,5 @@ PATH_TO_RESPONSE = {
     "/game/auction/sell/": ["auction", "StaffAuctionSellResponse"],
     "/game/auction/cancel/": ["auction", "StaffAuctionCancelResponse"],
     "/game/auction/bidding/": ["auction", "StaffAuctionBiddingResponse"],
+    "/game/auction/list/": ["auction", "StaffAuctionListResponse"],
 }

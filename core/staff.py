@@ -10,7 +10,7 @@ Description:
 from dianjing.exception import GameException
 
 from core.abstract import AbstractStaff
-from core.mongo import MongoStaff, MongoRecruit
+from core.mongo import MongoStaff, MongoRecruit, MongoStaffAuction
 from core.resource import Resource
 from core.common import CommonRecruitHot
 from core.skill import SkillManager
@@ -331,6 +331,11 @@ class StaffManger(object):
         doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, projection)
         if not doc:
             return False
+
+        auc_doc = MongoStaffAuction.db(self.server_id).find({'char_id': self.char_id}, {'staff_id': 1})
+        for staff in auc_doc:
+            if staff_ids == staff['staff_id']:
+                return False
 
         staffs = doc.get('staffs', {})
         if len(staff_ids) != len(staffs.keys()):

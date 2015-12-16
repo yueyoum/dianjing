@@ -142,6 +142,6 @@ urlpatterns = [
 
     url(r'^auction/search/$', views.auction.search),
     url(r'^auction/sell/$', views.auction.sell),
-    url(r'^auction/sell/$', views.auction.cancel),
-    url(r'^auction/sell/$', views.auction.bidding),
+    url(r'^auction/cancel/$', views.auction.cancel),
+    url(r'^auction/bidding/$', views.auction.bidding),
 ]

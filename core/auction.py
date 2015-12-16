@@ -15,6 +15,7 @@ from core.staff import StaffManger, Staff
 from core.mongo import MongoStaffAuction, MongoStaff
 from core.club import Club
 from core.resource import Resource
+from core.mail import MailManager
 
 from utils.api import Timerd
 from utils.functional import make_string_id
@@ -39,6 +40,12 @@ AUCTION_TYPE_TIME = {
     str(hours_16): 16,
     str(hours_24): 24,
 }
+
+AUCTION_FAIL_TITLE = "竞拍"
+AUCTION_FAIL_CONTENT = ""
+AUCTION_FAIL_ATTACHMENT = ""
+AUCTION_FROM_ID = 0
+AUCTION_FAIL_FUNCTION = 0
 
 TIMERD_CALLBACK_AUCTION = "/api/timerd/auction/"
 
@@ -132,7 +139,7 @@ class AuctionManager(object):
         insert_doc['char_id'] = self.char_id
         insert_doc['club_name'] = Club(self.server_id, self.char_id).name
         # 员工属性
-        insert_doc['staff_id'] = staff.get('staff_id', 0)
+        insert_doc['staff_id'] = staff_id
         insert_doc['level'] = staff.get('level', 1)
         insert_doc['exp'] = staff.get('exp', 0)
         insert_doc['status'] = staff.get('status', ConfigStaffStatus.DEFAULT_STATUS)
@@ -194,6 +201,7 @@ class AuctionManager(object):
         Timerd.cancel(doc['key'])
         # 玩家staff同步
         StaffManger(self.server_id, self.char_id).add_staff(doc)
+        # TODO: send mail
 
         notify = StaffAuctionUserItemRemoveNotify()
         notify.id.append(item_id)
@@ -220,6 +228,9 @@ class AuctionManager(object):
         if not doc:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
+        if StaffManger(self.server_id, self.char_id).has_staff(doc['staff_id']):
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
         if price < doc['min_price']:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
@@ -235,12 +246,23 @@ class AuctionManager(object):
         with Resource(self.server_id, self.char_id).check(gild=-price, message=message):
             if sale:
                 # TODO: 一口价处理
-                pass
+                StaffManger(self.server_id, self.char_id).add_staff(doc)
+
             else:
                 MongoStaffAuction.db(self.server_id).update_one(
                     {'_id': doc['_id']},
                     {'$set': {'bidding': price, 'bidder': self.char_id}}
                 )
+            # 通知竞拍失败者 最新竞拍信息
+            AuctionManager(self.server_id, doc['bidder']).send_common_auction_notify(auction_item_id)
+            # 发送邮件 退还金币
+            # MailManager(self.server_id, doc['bidder']).add(
+            #     AUCTION_FAIL_TITLE,
+            #     AUCTION_FAIL_CONTENT,
+            #     AUCTION_FAIL_ATTACHMENT,
+            #     AUCTION_FROM_ID,
+            #     AUCTION_FAIL_FUNCTION,
+            # )
 
         self.send_common_auction_notify()
 
@@ -274,7 +296,7 @@ class AuctionManager(object):
                 否则, 获取所有转会信息
             2 组装信息
         """
-        if not item_ids:
+        if item_ids:
             projection = {'_id': {'$in': {item_ids}}}
         else:
             projection = {}
