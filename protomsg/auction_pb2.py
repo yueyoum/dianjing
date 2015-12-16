@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='auction.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\rauction.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\x0bstaff.proto\"\xae\x01\n\x0b\x41uctionItem\x12\x0f\n\x07item_id\x18\x01 \x02(\t\x12\x11\n\tclub_name\x18\x02 \x02(\t\x12\x10\n\x08staff_id\x18\x03 \x02(\x05\x12\x12\n\nstart_time\x18\x05 \x02(\x03\x12\x0e\n\x06\x65nd_at\x18\x06 \x02(\x03\x12\x11\n\tmin_price\x18\x07 \x02(\x05\x12\x11\n\tmax_price\x18\x08 \x02(\x05\x12\x0f\n\x07\x62idding\x18\t \x02(\x05\x12\x0e\n\x06my_bid\x18\n \x02(\x05\",\n\x0fSearchCondition\x12\n\n\x02tp\x18\x01 \x02(\x05\x12\r\n\x05value\x18\x02 \x02(\x05\"\x80\x01\n\x16StaffAuctionUserNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12-\n\x05items\x18\x03 \x03(\x0b\x32\x1e.Dianjing.protocol.AuctionItem\"|\n\x12StaffAuctionNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12-\n\x05items\x18\x03 \x03(\x0b\x32\x1e.Dianjing.protocol.AuctionItem\"c\n\x19StaffAuctionSearchRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x35\n\tcondition\x18\x02 \x03(\x0b\x32\".Dianjing.protocol.SearchCondition\":\n\x1aStaffAuctionSearchResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"n\n\x17StaffAuctionSellRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\n\n\x02tp\x18\x03 \x02(\x05\x12\x11\n\tmin_price\x18\x04 \x02(\x05\x12\x11\n\tmax_price\x18\x05 \x02(\x05\"8\n\x18StaffAuctionSellResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"=\n\x19StaffAuctionCancelRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07item_id\x18\x02 \x02(\t\":\n\x1aStaffAuctionCancelResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"L\n\x19StaffAuctionBidingRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07item_id\x18\x02 \x02(\t\x12\r\n\x05price\x18\x03 \x02(\x05\";\n\x1bStaffAuctionBiddingResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"D\n StaffAuctionUserItemRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07item_id\x18\x02 \x02(\t\"*\n\x17StaffAuctionListRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"8\n\x18StaffAuctionListResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"Z\n\x16StaffAuctionListNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x07item_id\x18\x02 \x03(\x0b\x32\x1e.Dianjing.protocol.AuctionItem*=\n\x12\x41uctionItemTaxType\x12\x0b\n\x07hours_8\x10\x01\x12\x0c\n\x08hours_16\x10\x02\x12\x0c\n\x08hours_24\x10\x03')
+  serialized_pb=_b('\n\rauction.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\x0bstaff.proto\"\x9e\x01\n\x0b\x41uctionItem\x12\x0f\n\x07item_id\x18\x01 \x02(\t\x12\x11\n\tclub_name\x18\x02 \x02(\t\x12\x10\n\x08staff_id\x18\x03 \x02(\x05\x12\x12\n\nstart_time\x18\x05 \x02(\x03\x12\x0e\n\x06\x65nd_at\x18\x06 \x02(\x03\x12\x11\n\tmin_price\x18\x07 \x02(\x05\x12\x11\n\tmax_price\x18\x08 \x02(\x05\x12\x0f\n\x07\x62idding\x18\t \x02(\x05\",\n\x0fSearchCondition\x12\n\n\x02tp\x18\x01 \x02(\x05\x12\r\n\x05value\x18\x02 \x02(\x05\"\x80\x01\n\x16StaffAuctionUserNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12-\n\x05items\x18\x03 \x03(\x0b\x32\x1e.Dianjing.protocol.AuctionItem\"|\n\x12StaffAuctionNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12-\n\x05items\x18\x03 \x03(\x0b\x32\x1e.Dianjing.protocol.AuctionItem\"c\n\x19StaffAuctionSearchRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x35\n\tcondition\x18\x02 \x03(\x0b\x32\".Dianjing.protocol.SearchCondition\":\n\x1aStaffAuctionSearchResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"n\n\x17StaffAuctionSellRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\n\n\x02tp\x18\x03 \x02(\x05\x12\x11\n\tmin_price\x18\x04 \x02(\x05\x12\x11\n\tmax_price\x18\x05 \x02(\x05\"8\n\x18StaffAuctionSellResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"=\n\x19StaffAuctionCancelRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07item_id\x18\x02 \x02(\t\":\n\x1aStaffAuctionCancelResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"L\n\x19StaffAuctionBidingRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07item_id\x18\x02 \x02(\t\x12\r\n\x05price\x18\x03 \x02(\x05\";\n\x1bStaffAuctionBiddingResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"D\n StaffAuctionUserItemRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07item_id\x18\x02 \x02(\t\"*\n\x17StaffAuctionListRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"8\n\x18StaffAuctionListResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"Q\n\x10\x41uctionStaffItem\x12-\n\x05items\x18\x01 \x02(\x0b\x32\x1e.Dianjing.protocol.AuctionItem\x12\x0e\n\x06my_bid\x18\x02 \x02(\x05\"a\n\x16StaffAuctionListNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x36\n\titem_info\x18\x02 \x03(\x0b\x32#.Dianjing.protocol.AuctionStaffItem*=\n\x12\x41uctionItemTaxType\x12\x0b\n\x07hours_8\x10\x01\x12\x0c\n\x08hours_16\x10\x02\x12\x0c\n\x08hours_24\x10\x03')
   ,
   dependencies=[common__pb2.DESCRIPTOR,staff__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -48,8 +48,8 @@ _AUCTIONITEMTAXTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1400,
-  serialized_end=1461,
+  serialized_start=1474,
+  serialized_end=1535,
 )
 _sym_db.RegisterEnumDescriptor(_AUCTIONITEMTAXTYPE)
 
@@ -123,13 +123,6 @@ _AUCTIONITEM = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
-    _descriptor.FieldDescriptor(
-      name='my_bid', full_name='Dianjing.protocol.AuctionItem.my_bid', index=8,
-      number=10, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
   ],
   extensions=[
   ],
@@ -143,7 +136,7 @@ _AUCTIONITEM = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=64,
-  serialized_end=238,
+  serialized_end=222,
 )
 
 
@@ -180,8 +173,8 @@ _SEARCHCONDITION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=240,
-  serialized_end=284,
+  serialized_start=224,
+  serialized_end=268,
 )
 
 
@@ -225,8 +218,8 @@ _STAFFAUCTIONUSERNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=287,
-  serialized_end=415,
+  serialized_start=271,
+  serialized_end=399,
 )
 
 
@@ -270,8 +263,8 @@ _STAFFAUCTIONNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=417,
-  serialized_end=541,
+  serialized_start=401,
+  serialized_end=525,
 )
 
 
@@ -308,8 +301,8 @@ _STAFFAUCTIONSEARCHREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=543,
-  serialized_end=642,
+  serialized_start=527,
+  serialized_end=626,
 )
 
 
@@ -346,8 +339,8 @@ _STAFFAUCTIONSEARCHRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=644,
-  serialized_end=702,
+  serialized_start=628,
+  serialized_end=686,
 )
 
 
@@ -405,8 +398,8 @@ _STAFFAUCTIONSELLREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=704,
-  serialized_end=814,
+  serialized_start=688,
+  serialized_end=798,
 )
 
 
@@ -443,8 +436,8 @@ _STAFFAUCTIONSELLRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=816,
-  serialized_end=872,
+  serialized_start=800,
+  serialized_end=856,
 )
 
 
@@ -481,8 +474,8 @@ _STAFFAUCTIONCANCELREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=874,
-  serialized_end=935,
+  serialized_start=858,
+  serialized_end=919,
 )
 
 
@@ -519,8 +512,8 @@ _STAFFAUCTIONCANCELRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=937,
-  serialized_end=995,
+  serialized_start=921,
+  serialized_end=979,
 )
 
 
@@ -564,8 +557,8 @@ _STAFFAUCTIONBIDINGREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=997,
-  serialized_end=1073,
+  serialized_start=981,
+  serialized_end=1057,
 )
 
 
@@ -602,8 +595,8 @@ _STAFFAUCTIONBIDDINGRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1075,
-  serialized_end=1134,
+  serialized_start=1059,
+  serialized_end=1118,
 )
 
 
@@ -640,8 +633,8 @@ _STAFFAUCTIONUSERITEMREMOVENOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1136,
-  serialized_end=1204,
+  serialized_start=1120,
+  serialized_end=1188,
 )
 
 
@@ -671,8 +664,8 @@ _STAFFAUCTIONLISTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1206,
-  serialized_end=1248,
+  serialized_start=1190,
+  serialized_end=1232,
 )
 
 
@@ -709,8 +702,46 @@ _STAFFAUCTIONLISTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1250,
-  serialized_end=1306,
+  serialized_start=1234,
+  serialized_end=1290,
+)
+
+
+_AUCTIONSTAFFITEM = _descriptor.Descriptor(
+  name='AuctionStaffItem',
+  full_name='Dianjing.protocol.AuctionStaffItem',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='items', full_name='Dianjing.protocol.AuctionStaffItem.items', index=0,
+      number=1, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='my_bid', full_name='Dianjing.protocol.AuctionStaffItem.my_bid', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1292,
+  serialized_end=1373,
 )
 
 
@@ -729,7 +760,7 @@ _STAFFAUCTIONLISTNOTIFY = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='item_id', full_name='Dianjing.protocol.StaffAuctionListNotify.item_id', index=1,
+      name='item_info', full_name='Dianjing.protocol.StaffAuctionListNotify.item_info', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -747,8 +778,8 @@ _STAFFAUCTIONLISTNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1308,
-  serialized_end=1398,
+  serialized_start=1375,
+  serialized_end=1472,
 )
 
 _STAFFAUCTIONUSERNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
@@ -756,7 +787,8 @@ _STAFFAUCTIONUSERNOTIFY.fields_by_name['items'].message_type = _AUCTIONITEM
 _STAFFAUCTIONNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _STAFFAUCTIONNOTIFY.fields_by_name['items'].message_type = _AUCTIONITEM
 _STAFFAUCTIONSEARCHREQUEST.fields_by_name['condition'].message_type = _SEARCHCONDITION
-_STAFFAUCTIONLISTNOTIFY.fields_by_name['item_id'].message_type = _AUCTIONITEM
+_AUCTIONSTAFFITEM.fields_by_name['items'].message_type = _AUCTIONITEM
+_STAFFAUCTIONLISTNOTIFY.fields_by_name['item_info'].message_type = _AUCTIONSTAFFITEM
 DESCRIPTOR.message_types_by_name['AuctionItem'] = _AUCTIONITEM
 DESCRIPTOR.message_types_by_name['SearchCondition'] = _SEARCHCONDITION
 DESCRIPTOR.message_types_by_name['StaffAuctionUserNotify'] = _STAFFAUCTIONUSERNOTIFY
@@ -772,6 +804,7 @@ DESCRIPTOR.message_types_by_name['StaffAuctionBiddingResponse'] = _STAFFAUCTIONB
 DESCRIPTOR.message_types_by_name['StaffAuctionUserItemRemoveNotify'] = _STAFFAUCTIONUSERITEMREMOVENOTIFY
 DESCRIPTOR.message_types_by_name['StaffAuctionListRequest'] = _STAFFAUCTIONLISTREQUEST
 DESCRIPTOR.message_types_by_name['StaffAuctionListResponse'] = _STAFFAUCTIONLISTRESPONSE
+DESCRIPTOR.message_types_by_name['AuctionStaffItem'] = _AUCTIONSTAFFITEM
 DESCRIPTOR.message_types_by_name['StaffAuctionListNotify'] = _STAFFAUCTIONLISTNOTIFY
 DESCRIPTOR.enum_types_by_name['AuctionItemTaxType'] = _AUCTIONITEMTAXTYPE
 
@@ -879,6 +912,13 @@ StaffAuctionListResponse = _reflection.GeneratedProtocolMessageType('StaffAuctio
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffAuctionListResponse)
   ))
 _sym_db.RegisterMessage(StaffAuctionListResponse)
+
+AuctionStaffItem = _reflection.GeneratedProtocolMessageType('AuctionStaffItem', (_message.Message,), dict(
+  DESCRIPTOR = _AUCTIONSTAFFITEM,
+  __module__ = 'auction_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.AuctionStaffItem)
+  ))
+_sym_db.RegisterMessage(AuctionStaffItem)
 
 StaffAuctionListNotify = _reflection.GeneratedProtocolMessageType('StaffAuctionListNotify', (_message.Message,), dict(
   DESCRIPTOR = _STAFFAUCTIONLISTNOTIFY,

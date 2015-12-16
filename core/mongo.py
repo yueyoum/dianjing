@@ -672,4 +672,15 @@ class MongoStaffAuction(BaseDocument):
     INDEXES = ['char_id']
 
 
+# 用户竞价列表
+class MongoBidding(BaseDocument):
+    DOCUMENT = {
+        '_id': 0,
+        'bidding': {}
+    }
 
+    BIDDING_DOCUMENT = {
+        'Item_id': 0,
+    }
+
+    COLLECTION = 'bidding'

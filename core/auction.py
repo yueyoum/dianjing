@@ -12,7 +12,7 @@ import uuid
 from dianjing.exception import GameException
 
 from core.staff import StaffManger, Staff
-from core.mongo import MongoStaffAuction, MongoStaff
+from core.mongo import MongoStaffAuction, MongoStaff, MongoBidding
 from core.club import Club
 from core.resource import Resource
 from core.mail import MailManager
@@ -52,7 +52,7 @@ TIMERD_CALLBACK_AUCTION = "/api/timerd/auction/"
 
 class AuctionItem(object):
 
-    def __init__(self, data):
+    def __init__(self, data, server_id):
         # TODO: uuid
         self.id = data.get('_id', "")
         self.char_id = data.get('char_id', 0)
@@ -207,7 +207,7 @@ class AuctionManager(object):
         notify.id.append(item_id)
         MessagePipe(self.char_id).put(msg=notify)
 
-    def bidding(self, auction_item_id, price):
+    def bidding(self, item_id, price):
         """
         竞标
             1 商品是否还存在
@@ -220,16 +220,21 @@ class AuctionManager(object):
                 2 普通竞标处理
             7 竞标失败者处理
 
-            :type auction_item_id : str
+            :type item_id : str
             :type price : int
         """
         sale = False
-        doc = MongoStaffAuction.db(self.server_id).find_one({'_id': auction_item_id})
+        doc = MongoStaffAuction.db(self.server_id).find_one({'_id': item_id})
         if not doc:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         if StaffManger(self.server_id, self.char_id).has_staff(doc['staff_id']):
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
+        # 如果竞标过该物品
+        bidding_doc = MongoBidding.db(self.server_id).find_one({'_id': self.char_id}, {'bidding.{0}'.format(item_id)})
+        history_bid = bidding_doc.get('bidding', {}).get(item_id, 0)
+        price += history_bid
 
         if price < doc['min_price']:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
@@ -241,20 +246,19 @@ class AuctionManager(object):
             price = doc['max_price']
             sale = True
 
+        need_gold = price - history_bid
         # 资源检测
-        message = u"Bidding Auction {0} price {1}".format(auction_item_id, price)
-        with Resource(self.server_id, self.char_id).check(gild=-price, message=message):
+        message = u"Bidding Auction {0} price {1}".format(item_id, need_gold)
+        with Resource(self.server_id, self.char_id).check(gild=-need_gold, message=message):
             if sale:
-                # TODO: 一口价处理
                 StaffManger(self.server_id, self.char_id).add_staff(doc)
-
+                # TODO: 拍卖者通知处理
             else:
                 MongoStaffAuction.db(self.server_id).update_one(
                     {'_id': doc['_id']},
                     {'$set': {'bidding': price, 'bidder': self.char_id}}
                 )
             # 通知竞拍失败者 最新竞拍信息
-            AuctionManager(self.server_id, doc['bidder']).send_common_auction_notify(auction_item_id)
             # 发送邮件 退还金币
             # MailManager(self.server_id, doc['bidder']).add(
             #     AUCTION_FAIL_TITLE,
