@@ -177,7 +177,7 @@ class AuctionManager(object):
         MongoStaffAuction.db(self.server_id).insert_one(insert_doc)
 
         # 同步数据
-        self.send_user_auction_notify([doc['_id']])
+        self.send_user_auction_notify([insert_doc['_id']])
 
     def cancel(self, item_id):
         """
