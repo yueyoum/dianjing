@@ -675,12 +675,16 @@ class MongoStaffAuction(BaseDocument):
 # 用户竞价列表
 class MongoBidding(BaseDocument):
     DOCUMENT = {
-        '_id': 0,
-        'bidding': {}
+        '_id': 0,           # 拍卖品ID
+        'bidders': [],      # 竞拍者ID
+        # 对应竞价者出价 类似于: str(index): bidding
     }
 
     BIDDING_DOCUMENT = {
         'Item_id': 0,
     }
 
-    COLLECTION = 'bidding'
+    COLLECTION = 'bidding_list'
+
+    INDEXES = ['bidders']
+

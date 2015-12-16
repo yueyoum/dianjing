@@ -15,6 +15,7 @@ from protomsg.auction_pb2 import (
     StaffAuctionSellResponse,
     StaffAuctionCancelResponse,
     StaffAuctionBiddingResponse,
+    StaffAuctionListResponse,
 )
 
 
@@ -78,3 +79,4 @@ def bidding(request):
     response.ret = 0
 
     return ProtobufResponse(response)
+

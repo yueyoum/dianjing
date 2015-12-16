@@ -94,6 +94,7 @@ def game_start_handler(server_id, char_id, **kwargs):
     SignIn(server_id, char_id).send_notify()
 
     AuctionManager(server_id, char_id).send_user_auction_notify()
+    AuctionManager(server_id, char_id).send_bidding_notify()
 
     av = ActiveValue(server_id, char_id)
     av.send_function_notify()
