@@ -119,9 +119,10 @@ class AuctionManager(object):
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         # 检查是否已出售
-        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'on_sell': 1})
-        if str(staff_id) in doc['on_sell'].keys():
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+        doc = MongoStaffAuction.db(self.server_id).find({'_id': self.char_id}, {'staff_id'})
+        for d in doc:
+            if staff_id == d['staff_id']:
+                raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         # 员工是否空闲
         staff_manager = StaffManger(self.server_id, self.char_id)
@@ -166,7 +167,8 @@ class AuctionManager(object):
                 'cid': self.char_id,
                 'item_id': insert_doc['_id']
             }
-        key = Timerd.register(insert_doc['end_at'], TIMERD_CALLBACK_AUCTION, data)
+        end_at = insert_doc['start_at'] + AUCTION_TYPE_TIME[str(tp)] * 60 * 60
+        key = Timerd.register(end_at, TIMERD_CALLBACK_AUCTION, data)
         insert_doc['key'] = key
 
         # TODO:从玩家升上移除, 还需添加对应操作
@@ -241,8 +243,6 @@ class AuctionManager(object):
                     {'_id': doc['_id']},
                     {'$set': {'bidding': price, 'bidder': self.char_id}}
                 )
-                # TODO：竞标失败方处理
-                doc['bidder']
 
         self.send_common_auction_notify()
 
