@@ -7,6 +7,7 @@ Description:    拍卖系统  电竞经理/员工系统/拍卖行
 
 """
 import arrow
+import uuid
 
 from dianjing.exception import GameException
 
@@ -133,7 +134,7 @@ class AuctionManager(object):
         staff = doc_staff.get('staff.{0}'.format(staff_id), {})
 
         insert_doc = MongoStaffAuction.document()
-        insert_doc['_id'] = arrow.utcnow().timestamp
+        insert_doc['_id'] = str(arrow.utcnow().timestamp)
         insert_doc['char_id'] = self.char_id
         insert_doc['club_name'] = Club(self.server_id, self.char_id).name
         # 员工属性
