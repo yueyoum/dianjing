@@ -477,10 +477,10 @@ PATH_TO_REQUEST = {
     "/game/trainingmatch/start/": ["training_match", "TrainingMatchStartRequest"],
     "/game/trainingmatch/reward/": ["training_match", "TrainingMatchGetAdditionalRewardRequest"],
     "/game/elite/start/": ["elite_match", "EliteStartRequest"],
-    "/game/auction/search/": ["staff_auction", "StaffAuctionSearchRequest"],
-    "/game/auction/sell/": ["staff_auction", "StaffAuctionSellRequest"],
-    "/game/auction/cancel/": ["staff_auction", "StaffAuctionCancelRequest"],
-    "/game/auction/bidding/": ["staff_auction", "StaffAuctionBidingRequest"],
+    "/game/auction/search/": ["auction", "StaffAuctionSearchRequest"],
+    "/game/auction/sell/": ["auction", "StaffAuctionSellRequest"],
+    "/game/auction/cancel/": ["auction", "StaffAuctionCancelRequest"],
+    "/game/auction/bidding/": ["auction", "StaffAuctionBidingRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -557,8 +557,8 @@ PATH_TO_RESPONSE = {
     "/game/trainingmatch/start/": ["training_match", "TrainingMatchStartResponse"],
     "/game/trainingmatch/reward/": ["training_match", "TrainingMatchGetAdditionalRewardResponse"],
     "/game/elite/start/": ["elite_match", "EliteStartResponse"],
-    "/game/auction/search/": ["staff_auction", "StaffAuctionSearchResponse"],
-    "/game/auction/sell/": ["staff_auction", "StaffAuctionSellResponse"],
-    "/game/auction/cancel/": ["staff_auction", "StaffAuctionCancelResponse"],
-    "/game/auction/bidding/": ["staff_auction", "StaffAuctionBiddingResponse"],
+    "/game/auction/search/": ["auction", "StaffAuctionSearchResponse"],
+    "/game/auction/sell/": ["auction", "StaffAuctionSellResponse"],
+    "/game/auction/cancel/": ["auction", "StaffAuctionCancelResponse"],
+    "/game/auction/bidding/": ["auction", "StaffAuctionBiddingResponse"],
 }

@@ -12,6 +12,7 @@ from django.http import HttpResponse
 from core.building import BuildingManager
 from core.training import TrainingExp, TrainingProperty, TrainingBroadcast
 from core.skill import SkillManager
+from core.auction import AuctionManager
 
 
 def building_levelup_callback(request):
@@ -78,4 +79,17 @@ def skill_upgrade_callback(request):
 
     SkillManager(server_id, char_id).timer_callback(staff_id, skill_id)
     return HttpResponse()
+
+
+def auction_staff_callback(request):
+    data = request.POST['data']
+    data = json.loads(data)
+
+    server_id = data['sid']
+    char_id = data['cid']
+    item_id = data['item_id']
+
+    AuctionManager(server_id, char_id).callback(item_id)
+    return HttpResponse()
+
 

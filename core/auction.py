@@ -37,7 +37,7 @@ AUCTION_TYPE_TIME = {
     str(hours_24): 24,
 }
 
-TIMERD_CALLBACK_AUCTION = "/api/timerd/"
+TIMERD_CALLBACK_AUCTION = "/api/timerd/auction/"
 
 
 class AuctionItem(object):
@@ -107,6 +107,7 @@ class AuctionManager(object):
             5 获取员工属性
             6 将员工从玩家员工列表中移除
             7 写入到服务器出售列表
+            8 同步数据到客户端
         """
         if not StaffManger(self.server_id, self.char_id).has_staff(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
@@ -168,8 +169,9 @@ class AuctionManager(object):
         key = Timerd.register(insert_doc['end_at'], TIMERD_CALLBACK_AUCTION, data)
         insert_doc['key'] = key
 
-        # 写入数据库
+        # TODO:从玩家升上移除, 还需添加对应操作
         staff_manager.remove(staff_id)
+        # 写入数据库
         MongoStaffAuction.db(self.server_id).insert_one(insert_doc)
 
         # 同步数据
@@ -178,6 +180,9 @@ class AuctionManager(object):
     def cancel(self, item_id):
         """
         取消拍卖
+            1 是否有这个商品
+            2 是否是商品拥有者
+            3 删除商品, 并发还给玩家
         """
         doc = MongoStaffAuction.db(self.server_id).find_one({'_id': item_id})
         if not doc:
@@ -190,7 +195,7 @@ class AuctionManager(object):
         MongoStaffAuction.db(self.server_id).delete_one({'_id': item_id})
         # 取消定时任务
         Timerd.cancel(doc['key'])
-        # 玩家staff同步 TODO: 更精确
+        # 玩家staff同步 TODO: 发还玩家
         StaffManger(self.server_id, self.char_id).add_staff(doc)
 
         notify = StaffAuctionUserItemRemoveNotify()
@@ -200,6 +205,15 @@ class AuctionManager(object):
     def bidding(self, auction_item_id, price):
         """
         竞标
+            1 商品是否还存在
+            2 竞标价是否低于最低价
+            3 竞标价是否高于当前竞标价
+            4 竞标价是否高于一口价
+            5 玩家是否有足够资源
+            6 竞拍成功处理
+                1 一口价处理
+                2 普通竞标处理
+            7 竞标失败者处理
         """
         sale = False
         doc = MongoStaffAuction.db(self.server_id).find_one({'_id': auction_item_id})
@@ -220,39 +234,40 @@ class AuctionManager(object):
         message = u"Bidding Auction {0} price {1}".format(auction_item_id, price)
         with Resource(self.server_id, self.char_id).check(gild=-price, message=message):
             if sale:
+                # TODO: 一口价处理
                 pass
             else:
                 MongoStaffAuction.db(self.server_id).update_one(
                     {'_id': doc['_id']},
                     {'$set': {'bidding': price, 'bidder': self.char_id}}
                 )
+                # TODO：竞标失败方处理
+                doc['bidder']
 
         self.send_common_auction_notify()
 
     # 定时回调, 拍卖时间结束, 处理拍卖物品
-    def callback(self, key):
-        pass
+    def callback(self, item_id):
+        """
+        拍卖时间结束处理
+            1 是否有竞标, bidding > 0
+            2 有, 则竞标者获胜, 添加到玩家身上
+            3 无, 发还给玩家
+        """
+        doc = MongoStaffAuction.db(self.server_id).find_one({'_id': item_id})
+        if doc:
+            if doc['bidding'] > 0:
+                StaffManger(self.server_id, doc['bidder']).add_staff(doc)
+                # TODO: 发送拍卖成功邮件
+            else:
+                StaffManger(self.server_id, self.char_id).add_staff(doc)
+                # TODO: 发送拍卖失败邮件
 
     # 拍卖完成处理
     def finish(self, item_id):
         pass
 
-    # def make_protomsg(self, data):
-    #     from protomsg.auction_pb2 import AuctionItem
-    #     msg = AuctionItem()
-    #     msg.item_id = data.get('_id', "")
-    #     msg.club_name = data.get('club_name', "")
-    #     msg.staff_id = data.get('staff_id', "")
-    #
-    #     msg.start_time = data.get('start_at', "")
-    #     msg.end_at = data.get('_id', "")
-    #     msg.min_price = data.get('_id', "")
-    #     msg.max_price = data.get('_id', "")
-    #     msg.bidding = data.get('_id', "")
-    #
-    #     return msg
-
-    def send_common_auction_notify(self, item_ids):
+    def send_common_auction_notify(self, item_ids=None):
         """
         通知用户员工转会窗口信息
             1 如果 item_ids 非空, 获取 item_ids 中转会信息

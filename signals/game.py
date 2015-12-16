@@ -34,6 +34,7 @@ from core.activity.signin import SignIn
 from core.active_value import ActiveValue
 from core.training_match import TrainingMatch
 from core.elite_match import EliteMatch
+from core.auction import AuctionManager
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
@@ -91,6 +92,8 @@ def game_start_handler(server_id, char_id, **kwargs):
     ActivityCategory(server_id, char_id).send_notify()
     ActivityLoginReward(server_id, char_id).send_notify()
     SignIn(server_id, char_id).send_notify()
+
+    AuctionManager(server_id, char_id).send_auction_staff_info()
 
     av = ActiveValue(server_id, char_id)
     av.send_function_notify()
