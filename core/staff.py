@@ -339,7 +339,32 @@ class StaffManger(object):
         return True
 
     def add_staff(self, staff, send_notify=True):
-        pass
+        doc = MongoStaff.document_staff()
+        # 员工属性
+        doc['staff_id'] = staff.get('staff_id', 0)
+        doc['level'] = staff.get('level', 1)
+        doc['exp'] = staff.get('exp', 0)
+        doc['status'] = staff.get('status', ConfigStaffStatus.DEFAULT_STATUS)
+        doc['jingong'] = staff.get('jingong', 0)
+        doc['qianzhi'] = staff.get('qianzhi', 0)
+        doc['xintai'] = staff.get('xintai', 0)
+        doc['fangshou'] = staff.get('fangshou', 0)
+        doc['yunying'] = staff.get('yunying', 0)
+        doc['yishi'] = staff.get('yishi', 0)
+        doc['caozuo'] = staff.get('caozuo', 0)
+        doc['zhimingdu'] = staff.get('zhimingdu', 0)
+
+        skills = staff.get('skills', {})
+        doc['skills'] = {int(k): v['level'] for k, v in skills.iteritems()}
+
+        MongoStaff.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {'staffs.{0}'.format(doc['staff_id']): doc}},
+        )
+
+        if send_notify:
+            self.send_notify(staff_ids=[doc['staff_id']])
+            SkillManager(self.server_id, self.char_id).send_notify(staff_id=doc['staff_id'])
 
     def add(self, staff_id, send_notify=True):
         """

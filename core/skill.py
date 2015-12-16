@@ -49,7 +49,7 @@ class SkillManager(object):
             return False
 
         for v in skills.values():
-            if v['end_at']:
+            if v.get('end_at', 0):
                 return True
 
         return False

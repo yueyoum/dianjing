@@ -28,10 +28,10 @@ def sell(request):
     max_price = request._proto.max_price
 
     auction = AuctionManager(server_id, char_id)
-    ret = auction.sell(staff_id, tp, min_price, max_price)
+    auction.sell(staff_id, tp, min_price, max_price)
 
-    response = StaffAuctionSellResponse
-    response.ret = ret
+    response = StaffAuctionSellResponse()
+    response.ret = 0
 
     return ProtobufResponse(response)
 
@@ -43,7 +43,8 @@ def search(request):
     auction = AuctionManager(server_id, char_id)
     auction.search()
 
-    response = StaffAuctionSearchResponse
+    response = StaffAuctionSearchResponse()
+    response.ret = 0
 
     return ProtobufResponse(response)
 
@@ -57,7 +58,7 @@ def cancel(request):
     auction = AuctionManager(server_id, char_id)
     auction.cancel(item_id)
 
-    response = StaffAuctionCancelResponse
+    response = StaffAuctionCancelResponse()
     response.ret = 0
 
     return ProtobufResponse(response)
@@ -73,7 +74,7 @@ def bidding(request):
     auction = AuctionManager(server_id, char_id)
     auction.bidding(item_id, price)
 
-    response = StaffAuctionBiddingResponse
+    response = StaffAuctionBiddingResponse()
     response.ret = 0
 
     return ProtobufResponse(response)

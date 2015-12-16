@@ -17,6 +17,8 @@ from core.club import Club
 from core.resource import Resource
 
 from utils.api import Timerd
+from utils.functional import make_string_id
+
 from config import ConfigErrorMessage, ConfigStaffStatus
 
 from protomsg.auction_pb2 import (
@@ -45,7 +47,7 @@ class AuctionItem(object):
 
     def __init__(self, data):
         # TODO: uuid
-        self.id = arrow.utcnow().timestamp
+        self.id = data.get('_id', "")
         self.char_id = data.get('char_id', 0)
         self.club_name = data.get('club_name', 0)
         # 员工属性
@@ -119,22 +121,14 @@ class AuctionManager(object):
         if min_price > max_price:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-        # 检查是否已出售
-        doc = MongoStaffAuction.db(self.server_id).find({'_id': self.char_id}, {'staff_id': 1})
-        for d in doc:
-            if staff_id == d['staff_id']:
-                raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
-
-        # 员工是否空闲
-        staff_manager = StaffManger(self.server_id, self.char_id)
-        staff_manager.is_free(staff_id)
-
         # 获取员工数值
         doc_staff = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staff.{0}'.format(staff_id): 1})
         staff = doc_staff.get('staff.{0}'.format(staff_id), {})
+        # 移除员工
+        StaffManger(self.server_id, self.char_id).remove(staff_id)
 
         insert_doc = MongoStaffAuction.document()
-        insert_doc['_id'] = str(arrow.utcnow().timestamp)
+        insert_doc['_id'] = make_string_id()
         insert_doc['char_id'] = self.char_id
         insert_doc['club_name'] = Club(self.server_id, self.char_id).name
         # 员工属性
@@ -172,8 +166,6 @@ class AuctionManager(object):
         key = Timerd.register(end_at, TIMERD_CALLBACK_AUCTION, data)
         insert_doc['key'] = key
 
-        # TODO:从玩家升上移除, 还需添加对应操作
-        staff_manager.remove(staff_id)
         # 写入数据库
         MongoStaffAuction.db(self.server_id).insert_one(insert_doc)
 
@@ -186,6 +178,8 @@ class AuctionManager(object):
             1 是否有这个商品
             2 是否是商品拥有者
             3 删除商品, 并发还给玩家
+
+            :type item_id : str
         """
         doc = MongoStaffAuction.db(self.server_id).find_one({'_id': item_id})
         if not doc:
@@ -198,7 +192,7 @@ class AuctionManager(object):
         MongoStaffAuction.db(self.server_id).delete_one({'_id': item_id})
         # 取消定时任务
         Timerd.cancel(doc['key'])
-        # 玩家staff同步 TODO: 发还玩家
+        # 玩家staff同步
         StaffManger(self.server_id, self.char_id).add_staff(doc)
 
         notify = StaffAuctionUserItemRemoveNotify()
@@ -217,6 +211,9 @@ class AuctionManager(object):
                 1 一口价处理
                 2 普通竞标处理
             7 竞标失败者处理
+
+            :type auction_item_id : str
+            :type price : int
         """
         sale = False
         doc = MongoStaffAuction.db(self.server_id).find_one({'_id': auction_item_id})
@@ -254,6 +251,8 @@ class AuctionManager(object):
             1 是否有竞标, bidding > 0
             2 有, 则竞标者获胜, 添加到玩家身上
             3 无, 发还给玩家
+
+            :type item_id : str
         """
         doc = MongoStaffAuction.db(self.server_id).find_one({'_id': item_id})
         if doc:
@@ -314,8 +313,11 @@ class AuctionManager(object):
 
         MessagePipe(self.char_id).put(msg=notify)
 
-    def send_auction_staff_info(self):
-        pass
+    def send_auction_staff_info_notify(self, staff_ids):
+        if staff_ids:
+            doc = MongoStaffAuction.db(self.server_id).find({'staff_id': {'$in': staff_ids}})
+            pass
+
 
 
 
