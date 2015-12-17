@@ -18,6 +18,22 @@ from protomsg.auction_pb2 import (
 )
 
 
+def search(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    auction = AuctionManager(server_id, char_id)
+    items = auction.search()
+
+    response = StaffAuctionSearchResponse()
+    response.ret = 0
+    for item in items:
+        response_item = response.items.add()
+        response_item.MergeFrom(item.make_proto_msg())
+
+    return ProtobufResponse(response)
+
+
 def sell(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
@@ -31,19 +47,6 @@ def sell(request):
     auction.sell(staff_id, tp, min_price, max_price)
 
     response = StaffAuctionSellResponse()
-    response.ret = 0
-
-    return ProtobufResponse(response)
-
-
-def search(request):
-    server_id = request._game_session.server_id
-    char_id = request._game_session.char_id
-
-    auction = AuctionManager(server_id, char_id)
-    auction.search()
-
-    response = StaffAuctionSearchResponse()
     response.ret = 0
 
     return ProtobufResponse(response)
@@ -78,4 +81,3 @@ def bidding(request):
     response.ret = 0
 
     return ProtobufResponse(response)
-

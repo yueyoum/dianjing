@@ -12,37 +12,42 @@ import math
 from dianjing.exception import GameException
 
 from core.staff import StaffManger
-from core.mongo import MongoStaffAuction, MongoStaff, MongoBidding
+from core.mongo import MongoAuctionStaff, MongoBidding
 from core.club import Club
 from core.resource import Resource
 from core.mail import MailManager
 from core.package import Drop
+from core.training import TrainingBroadcast, TrainingExp, TrainingProperty, TrainingShop
 
 from utils.api import Timerd
 from utils.functional import make_string_id
 
-from config import ConfigErrorMessage, ConfigStaffStatus, ConfigStaff
+from config import ConfigErrorMessage, ConfigStaff
 
 from protomsg.auction_pb2 import (
-    StaffAuctionNotify,
-    StaffAuctionUserNotify,
-    StaffAuctionUserItemRemoveNotify,
-    StaffAuctionListNotify,
-    AuctionStaffItem,
-    StaffAuctionRemoveNotify,
-    hours_8,
-    hours_16,
-    hours_24,
+    AUCTION_HOURS_16,
+    AUCTION_HOURS_24,
+    AUCTION_HOURS_8,
+    StaffAuctionBidingListNotify,
+    StaffAuctionBidingRemoveNotify,
+    StaffAuctionSellListNotify,
+    StaffAuctionSellRemoveNotify,
+    AuctionItem as MsgAuctionItem,
 )
-from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
+from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 from utils.message import MessagePipe
 
+AUCTION_TYPE_HOURS = {
+    AUCTION_HOURS_8: 8,
+    AUCTION_HOURS_16: 16,
+    AUCTION_HOURS_24: 24,
+}
 
-AUCTION_TYPE_TIME = {
-    str(hours_8): 8,
-    str(hours_16): 16,
-    str(hours_24): 24,
+AUCTION_TYPE_TAX = {
+    AUCTION_HOURS_8: 0.75,
+    AUCTION_HOURS_16: 0.73,
+    AUCTION_HOURS_24: 0.7
 }
 
 AUCTION_BIDDING_FAIL_TITLE = "竞标失败"
@@ -63,56 +68,157 @@ AUCTION_CANCEL_CONTENT = "您拍卖的{0}已经流拍了。拍品已经放入您
 TIMERD_CALLBACK_AUCTION = "/api/timerd/auction/"
 
 
-def get_tax_rate_by_tp(tp):
-    if tp == hours_8:
-        return 0.75
-    elif tp == hours_16:
-        return 0.73
-    else:
-        return 0.7
-
-
 class AuctionItem(object):
+    def __init__(self):
+        self.id = ""
+        self.server_id = 0
+        self.char_id = 0
+        self.club_name = ""
 
-    def __init__(self, data):
-        # TODO: uuid
-        self.id = data.get('_id', "")
-        self.char_id = data.get('char_id', 0)
-        self.club_name = data.get('club_name', 0)
-        # 员工属性
-        self.staff_id = data.get('staff_id', 0)
-        self.level = data.get('level', 1)
-        self.exp = data.get('exp', 0)
-        self.status = data.get('status', ConfigStaffStatus.DEFAULT_STATUS)
-        self.jingong = data.get('jingong', 0)
-        self.qianzhi = data.get('qianzhi', 0)
-        self.xintai = data.get('xintai', 0)
-        self.fangshou = data.get('fangshou', 0)
-        self.yunying = data.get('yunying', 0)
-        self.yishi = data.get('yishi', 0)
-        self.caozuo = data.get('caozuo', 0)
-        self.zhimingdu = data.get('zhimingdu', 0)
+        self.staff_id = 0
+        self.exp = 0
+        self.level = 0
+        self.status = 0
+        self.skills = {}
 
-        skills = data.get('skills', {})
-        self.skills = {int(k): v['level'] for k, v in skills.iteritems()}
-        # 拍卖设置
-        self.start_time = arrow.utcnow().timestamp
-        self.tp = data.get('tp', 0)
-        self.end_at = self.start_time + AUCTION_TYPE_TIME[str(self.tp)] * 60 * 60
-        self.min_price = data.get('min_price', 0)
-        self.max_price = data.get('max_price', 0)
-        # 拍卖情况
-        self.bidder = data.get('bidder', 0)
-        self.bidding = data.get('bidding', 0)
+        self.quality = 0
+        self.jingong = 0
+        self.qianzhi = 0
+        self.xintai = 0
+        self.baobing = 0
+        self.fangshou = 0
+        self.yunying = 0
+        self.yishi = 0
+        self.caozuo = 0
+        self.zhimingdu = 0
+
+        self.start_at = 0
+        self.tp = 0
+        self.min_price = 0
+        self.max_price = 0
+
+        self.bidder = 0
+        self.bidding = 0
+        self.key = ""
+
+    @classmethod
+    def create_from_staff_object(cls, staff, tp, min_price, max_price):
+        """
+
+        :type staff: core.staff.Staff
+        """
+        obj = cls()
+
+        obj.id = make_string_id()
+        obj.server_id = staff.server_id
+        obj.char_id = staff.char_id
+        obj.club_name = Club(staff.server_id, staff.char_id, load_staff=False).name
+
+        obj.staff_id = staff.id
+        obj.exp = staff.exp
+        obj.level = staff.level
+        obj.status = staff.status
+        obj.skills = staff.skills
+
+        obj.quality = staff.quality
+        obj.jingong = staff.jingong
+        obj.qianzhi = staff.qianzhi
+        obj.xintai = staff.xintai
+        obj.baobing = staff.baobing
+        obj.fangshou = staff.fangshou
+        obj.yunying = staff.yunying
+        obj.yishi = staff.yishi
+        obj.caozuo = staff.caozuo
+        obj.zhimingdu = staff.zhimingdu
+
+        obj.start_at = arrow.utcnow().timestamp
+        obj.tp = tp
+        obj.min_price = min_price
+        obj.max_price = max_price
+
+        return obj
+
+    @classmethod
+    def load_from_data(cls, server_id, data):
+        obj = cls()
+        obj.id = data['_id']
+        obj.server_id = server_id
+        obj.char_id = data['char_id']
+        obj.club_name = data['club_name']
+
+        obj.staff_id = data['staff_id']
+        obj.exp = data['exp']
+        obj.level = data['level']
+        obj.status = data['status']
+        obj.skills = data['skills']
+
+        obj.quality = data['quality']
+        obj.jingong = data['jingong']
+        obj.qianzhi = data['qianzhi']
+        obj.xintai = data['xintai']
+        obj.baobing = data['baobing']
+        obj.fangshou = data['fangshou']
+        obj.yunying = data['yunying']
+        obj.yishi = data['yishi']
+        obj.caozuo = data['caozuo']
+        obj.zhimingdu = data['zhimingdu']
+
+        obj.start_at = data['start_at']
+        obj.tp = data['tp']
+        obj.min_price = data['min_price']
+        obj.max_price = data['max_price']
+
+        obj.bidder = data['bidder']
+        obj.bidding = data['bidding']
+        obj.key = data['key']
+
+        return obj
+
+    @property
+    def end_at(self):
+        return self.start_at + AUCTION_TYPE_HOURS[self.tp] * 3600
+
+    def to_document(self):
+        doc = MongoAuctionStaff.document()
+        doc['_id'] = self.id
+        doc['char_id'] = self.char_id
+        doc['club_name'] = self.club_name
+        doc['staff_id'] = self.staff_id
+        doc['exp'] = self.exp
+        doc['level'] = self.level
+        doc['status'] = self.status
+        doc['skills'] = self.skills
+        doc['quality'] = self.quality
+        doc['jingong'] = self.jingong
+        doc['qianzhi'] = self.qianzhi
+        doc['xintai'] = self.xintai
+        doc['baobing'] = self.baobing
+        doc['fangshou'] = self.fangshou
+        doc['yunying'] = self.yunying
+        doc['yishi'] = self.yishi
+        doc['caozuo'] = self.caozuo
+        doc['yishi'] = self.yishi
+        doc['caozuo'] = self.caozuo
+        doc['zhimingdu'] = self.zhimingdu
+
+        doc['start_at'] = self.start_at
+        doc['tp'] = self.tp
+        doc['min_price'] = self.min_price
+        doc['max_price'] = self.max_price
+
+        doc['bidder'] = self.bidder
+        doc['bidding'] = self.bidding
+        doc['key'] = self.key
+
+        return doc
 
     def make_proto_msg(self):
-        from protomsg.auction_pb2 import AuctionItem
-        msg = AuctionItem()
+        msg = MsgAuctionItem()
         msg.item_id = self.id
         msg.club_name = self.club_name
         msg.staff_id = self.staff_id
 
-        msg.start_time = self.start_time
+        msg.start_time = self.start_at
         msg.end_at = self.end_at
         msg.min_price = self.min_price
         msg.max_price = self.max_price
@@ -120,18 +226,110 @@ class AuctionItem(object):
 
         return msg
 
+    def finish(self):
+        if self.bidder:
+            self._success()
+        else:
+            self._fail()
+
+    def _success(self):
+        """
+        竞拍成功结束(卖出去)
+
+            处理竞拍正常结束情况 -- 一口价 或 竞拍时间结束(有竞拍者)
+
+            将 物品 发送给获胜者, 并通知其将物品从竞价列表移除
+
+            通知其余竞拍者将竞拍物品从竞标列表中移除, 返还竞拍金币
+
+            删除物品
+
+            将扣除税率后的金币发送给拍卖者
+
+            char_id  获胜者ID
+
+        """
+        staff_name = ConfigStaff.get(self.staff_id).name
+
+        StaffManger(self.server_id, self.bidder).add_staff(self.staff_id, self.exp, self.level, self.status,
+                                                           self.skills)
+        # 通知客户端从竞价列表中移除物品
+        AuctionManager(self.server_id, self.bidder).send_bidding_remove_notify(self.id)
+        # 通知竞标获胜者获胜邮件
+        MailManager(self.server_id, self.char_id).add(
+            AUCTION_BIDDING_SUCCESS_TITLE,
+            AUCTION_BIDDING_SUCCESS_CONTENT.format(staff_name),
+            "",
+        )
+
+        MongoAuctionStaff.db(self.server_id).delete_one({'_id': self.id})
+        # 返还竞拍失败者金币, 并从竞价列表移除
+        docs = MongoBidding.db(self.server_id).find({'items': self.id})
+        for doc in docs:
+            char_id = doc['_id']
+            if char_id == self.bidder:
+                continue
+
+            gold = doc['item_{0}'.format(self.id)]
+            drop = Drop()
+            drop.gold = gold
+            attachment = drop.to_json()
+
+            MailManager(self.server_id, char_id).add(
+                AUCTION_BIDDING_FAIL_TITLE,
+                AUCTION_BIDDING_FAIL_CONTENT.format(staff_name),
+                attachment
+            )
+
+            AuctionManager(self.server_id, char_id).send_bidding_remove_notify(self.id)
+
+        # 删除竞价者列表该物品数据
+        MongoBidding.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {
+                '$pull': {'items': self.id},
+                '$unset': {'item_{0}'.format(self.id): 1}
+            }
+        )
+
+        # 发送邮件给拍卖者
+        seller_drop = Drop()
+        seller_drop.gold = math.floor(int(self.bidding * AUCTION_TYPE_TAX[self.tp]))
+        attachment_seller = seller_drop.to_json()
+
+        MailManager(self.server_id, self.char_id).add(
+            AUCTION_SUCCESS_TITLE,
+            AUCTION_SUCCESS_CONTENT.format(staff_name, seller_drop.gold),
+            attachment_seller,
+        )
+
+    def _fail(self):
+        """
+        流拍
+            流拍物品将发还拍卖者
+        """
+        StaffManger(self.server_id, self.char_id).add_staff(self.staff_id, self.exp, self.level, self.status,
+                                                            self.skills)
+        staff_name = ConfigStaff.get(self.staff_id).name
+        MailManager(self.server_id, self.char_id).add(
+            AUCTION_FAIL_TITLE,
+            AUCTION_FAIL_CONTENT.format(staff_name),
+        )
+
 
 class AuctionManager(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
 
-    def search(self):
-        """
-        查询物品
+        if not MongoBidding.exist(self.server_id, self.char_id):
+            doc = MongoBidding.document()
+            doc['_id'] = self.char_id
+            MongoBidding.db(self.server_id).insert_one(doc)
 
-        """
-        self.send_common_auction_notify()
+    def search(self):
+        docs = MongoAuctionStaff.db(self.server_id).find()
+        return [AuctionItem.load_from_data(self.server_id, doc) for doc in docs]
 
     def sell(self, staff_id, tp, min_price, max_price):
         """
@@ -148,65 +346,37 @@ class AuctionManager(object):
             7 加入到服务器拍卖列表
             8 同步玩家出售列表
         """
-        if not StaffManger(self.server_id, self.char_id).has_staff(staff_id):
+        staff = StaffManger(self.server_id, self.char_id).get_staff(staff_id)
+        if not staff:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
-        if tp not in [hours_8, hours_16, hours_24]:
+        if TrainingShop(self.server_id, self.char_id).staff_is_training(staff_id) or \
+                TrainingProperty(self.server_id, self.char_id).staff_is_training(staff_id) or \
+                TrainingExp(self.server_id, self.char_id).staff_is_training(staff_id) or \
+                TrainingBroadcast(self.server_id, self.char_id).staff_is_training(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("AUCTION_STAFF_IS_BUSY"))
+
+        if tp not in AUCTION_TYPE_HOURS:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         if min_price > max_price:
             raise GameException(ConfigErrorMessage.get_error_id("AUCTION_MIN_LARGE_THAN_MAX"))
 
-        # 获取员工数值
-        doc_staff = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staff.{0}'.format(staff_id): 1})
-        staff = doc_staff.get('staff.{0}'.format(staff_id), {})
-        # 移除员工
-        StaffManger(self.server_id, self.char_id).remove(staff_id)
-
-        insert_doc = MongoStaffAuction.document()
-        insert_doc['_id'] = make_string_id()
-        insert_doc['char_id'] = self.char_id
-        insert_doc['club_name'] = Club(self.server_id, self.char_id).name
-        # 员工属性
-        insert_doc['staff_id'] = staff_id
-        insert_doc['level'] = staff.get('level', 1)
-        insert_doc['exp'] = staff.get('exp', 0)
-        insert_doc['status'] = staff.get('status', ConfigStaffStatus.DEFAULT_STATUS)
-        insert_doc['jingong'] = staff.get('jingong', 0)
-        insert_doc['qianzhi'] = staff.get('qianzhi', 0)
-        insert_doc['xintai'] = staff.get('xintai', 0)
-        insert_doc['fangshou'] = staff.get('fangshou', 0)
-        insert_doc['yunying'] = staff.get('yunying', 0)
-        insert_doc['yishi'] = staff.get('yishi', 0)
-        insert_doc['caozuo'] = staff.get('caozuo', 0)
-        insert_doc['zhimingdu'] = staff.get('zhimingdu', 0)
-
-        skills = staff.get('skills', {})
-        insert_doc['skills'] = {int(k): v['level'] for k, v in skills.iteritems()}
-        # 拍卖设置
-        insert_doc['start_at'] = arrow.utcnow().timestamp
-        insert_doc['tp'] = tp
-        insert_doc['min_price'] = min_price
-        insert_doc['max_price'] = max_price
-        # 拍卖情况
-        insert_doc['bidder'] = 0
-        insert_doc['bidding'] = 0
-
-        # 设置定时器
+        item = AuctionItem.create_from_staff_object(staff, tp, min_price, max_price)
         data = {
-                'sid': self.server_id,
-                'cid': self.char_id,
-                'item_id': insert_doc['_id']
-            }
-        end_at = insert_doc['start_at'] + AUCTION_TYPE_TIME[str(tp)] * 60 * 60
-        key = Timerd.register(end_at, TIMERD_CALLBACK_AUCTION, data)
-        insert_doc['key'] = key
+            'sid': self.server_id,
+            'cid': self.char_id,
+            'item_id': item.id,
+        }
+
+        end_at = item.end_at
+        item.key = Timerd.register(end_at, TIMERD_CALLBACK_AUCTION, data)
 
         # 写入数据库
-        MongoStaffAuction.db(self.server_id).insert_one(insert_doc)
+        MongoAuctionStaff.db(self.server_id).insert_one(item.to_document())
 
         # 同步拍卖数据
-        self.send_user_auction_notify([insert_doc['_id']])
+        self.send_sell_list_notify([item.id])
 
     def cancel(self, item_id):
         """
@@ -222,30 +392,31 @@ class AuctionManager(object):
 
             :type item_id : str
         """
-        doc = MongoStaffAuction.db(self.server_id).find_one({'_id': item_id})
+        doc = MongoAuctionStaff.db(self.server_id).find_one({'_id': item_id})
         if not doc:
             raise GameException(ConfigErrorMessage.get_error_id("AUCTION_ITEM_NOT_EXIST"))
 
-        if doc['char_id'] != self.char_id:
+        item = AuctionItem.load_from_data(self.server_id, doc)
+
+        if item.char_id != self.char_id:
             raise GameException(ConfigErrorMessage.get_error_id("AUCTION_NOT_THE_OWNER"))
 
-        if doc['bidding']:
+        if item.bidder:
             raise GameException(ConfigErrorMessage.get_error_id("AUCTION_BIDDING_NOW"))
 
         # 删除拍卖物品数据
-        MongoStaffAuction.db(self.server_id).delete_one({'_id': item_id})
+        MongoAuctionStaff.db(self.server_id).delete_one({'_id': item_id})
         # 取消定时任务
-        Timerd.cancel(doc['key'])
+        Timerd.cancel(item.key)
         # 邮件通知, 返还staff
-        StaffManger(self.server_id, self.char_id).add_staff(doc)
+        StaffManger(self.server_id, self.char_id).add_staff(item.id, item.exp, item.level, item.status, item.skills)
         staff_name = ConfigStaff.get(doc['staff_id']).name
         MailManager(self.server_id, self.char_id).add(
             AUCTION_CANCEL_TITLE,
             AUCTION_CANCEL_CONTENT.format(staff_name),
-            "",
         )
         # 通知客户端从出售列表移除
-        self.send_auction_remove_notify__(item_id)
+        self.send_sell_remove_notify(item_id)
 
     def bidding(self, item_id, price):
         """
@@ -283,192 +454,76 @@ class AuctionManager(object):
             :type price : int
         """
         sale = False
-        doc = MongoStaffAuction.db(self.server_id).find_one({'_id': item_id})
+        doc = MongoAuctionStaff.db(self.server_id).find_one({'_id': item_id})
         if not doc:
             raise GameException(ConfigErrorMessage.get_error_id("AUCTION_ITEM_NOT_EXIST"))
 
-        if StaffManger(self.server_id, self.char_id).has_staff(doc['staff_id']):
-            raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
+        item = AuctionItem.load_from_data(self.server_id, doc)
 
-        bidding_doc = MongoBidding.db(self.server_id).find_one({'_id': item_id})
-        if bidding_doc and self.char_id in bidding_doc.get('bidders', []):
-            history_bid = bidding_doc.get('{0}-{1}'.format(item_id, self.char_id), 0)
-        else:
-            history_bid = 0
+        if StaffManger(self.server_id, self.char_id).has_staff(item.staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("AUCTION_STAFF_ALREADY_HAVE"))
 
-        price += history_bid
-        if price < doc['min_price']:
+        if price < item.min_price:
             raise GameException(ConfigErrorMessage.get_error_id("AUCTION_BIDDING_TOO_LOW"))
 
-        if doc['bidding'] >= price:
+        if item.bidding >= price:
             raise GameException(ConfigErrorMessage.get_error_id("AUCTION_BIDDING_LOW_THAN_CURRENT"))
 
-        if price >= doc['max_price']:
-            price = doc['max_price']
+        if price >= item.max_price:
+            price = item.max_price
             sale = True
 
-        need_gold = price - history_bid
+        bidding_doc = MongoBidding.db(self.server_id).find_one({'_id': self.char_id})
+        key = 'item_{0}'.format(item_id)
+        history_bid = bidding_doc.get(key, 0)
 
-        message = u"Bidding Auction {0} price {1}".format(item_id, need_gold)
-        with Resource(self.server_id, self.char_id).check(gild=-need_gold, message=message):
+        need_gold = price - history_bid
+        if need_gold <= 0:
+            raise GameException(ConfigErrorMessage.get_error_id("AUCTION_BIDDING_MUST_GREATER_THAN_HISTORY"))
+
+        message = u"Auction Bidding {0} price {1}".format(item_id, need_gold)
+        with Resource(self.server_id, self.char_id).check(gold=-need_gold, message=message):
             if sale:
                 # 竞标结束
-                self.success(self.server_id, self.char_id, item_id, doc, price)
+                item.finish()
                 # 取消定时任务
-                Timerd.cancel(doc['key'])
+                Timerd.cancel(item.key)
             else:
                 # 更新物品竞拍信息
-                MongoStaffAuction.db(self.server_id).update_one(
+                MongoAuctionStaff.db(self.server_id).update_one(
                     {'_id': doc['_id']},
                     {'$set': {'bidding': price, 'bidder': self.char_id}}
                 )
                 # 更新竞拍者列表信息
                 MongoBidding.db(self.server_id).update_one(
                     {'_id': item_id},
-                    {'$pull': {'bidding': self.char_id},
-                     '$set': {'{0}-{1}'.format(item_id, self.char_id): price}
-                     },
-                    upsert=True,
+                    {
+                        {'$addToSet': {'items': item_id}},
+                        {'$set': {key: price}}
+                    }
                 )
 
                 # 通知竞拍失败者 最新竞拍信息
-                bidder_doc = MongoBidding.db(self.server_id).find_one({'_id': item_id}, {'bidders': 1})
-                for char_id in bidder_doc.get('bidder', []):
-                    AuctionManager(self.server_id, char_id).send_bidding_notify([item_id])
+                bidder_docs = MongoBidding.db(self.server_id).find({'items': item.id})
+                for bidder in bidder_docs:
+                    if bidder['_id'] == self.char_id:
+                        continue
+
+                    AuctionManager(self.server_id, bidder['_id']).send_bidding_list_notify([item.id])
 
     # 定时回调, 拍卖时间结束, 处理拍卖物品
     def callback(self, item_id):
         """
         竞拍定时回调
-
-            竞拍时间结束, 如果有竞拍者 调用 success 接口; 否则, 调用fail
-
-            1 是否有竞标, bidding > 0
-            2 有, 则竞标者获胜, 添加到玩家身上
-            3 无, 发还给玩家
-
-            :type item_id : str
         """
-        doc = MongoStaffAuction.db(self.server_id).find_one({'_id': item_id})
-        if doc:
-            if doc['bidding'] > 0:
-                self.success(self.server_id, doc['bidder'], item_id, doc, doc['bidding'])
-            else:
-                self.fail(doc)
+        doc = MongoAuctionStaff.db(self.server_id).find_one({'_id': item_id})
+        if not doc:
+            return
 
-    # 拍卖完成处理
-    def success(self, server_id, char_id, item_id, doc, price):
-        """
-        竞拍成功结束(卖出去)
+        item = AuctionItem.load_from_data(self.server_id, doc)
+        item.finish()
 
-            处理竞拍正常结束情况 -- 一口价 或 竞拍时间结束(有竞拍者)
-
-            将 物品 发送给获胜者, 并通知其将物品从竞价列表移除
-
-            通知其余竞拍者将竞拍物品从竞标列表中移除, 返还竞拍金币
-
-            删除物品
-
-            将扣除税率后的金币发送给拍卖者
-
-            char_id  获胜者ID
-
-        """
-        staff_name = ConfigStaff.get(doc['staff_id']).name
-
-        StaffManger(server_id, char_id).add_staff(doc)
-        # 通知客户端从移除竞价列表中移除物品
-        AuctionManager(server_id, char_id).send_bidding_remove_notify(item_id)
-        # 通知竞标获胜者获胜邮件
-        MailManager(server_id, char_id).add(
-            AUCTION_BIDDING_SUCCESS_TITLE,
-            AUCTION_BIDDING_SUCCESS_CONTENT.format(staff_name),
-            "",
-        )
-
-        MongoStaffAuction.db(server_id).delete_one({'_id': item_id})
-        # 返还竞拍失败还者金币, 并从竞价列表移除
-        bidder_doc = MongoBidding.db(server_id).find_one({'_id': item_id}, {'bidders': 1})
-        if bidder_doc:
-            for bidder_id in bidder_doc.get('bidder', []):
-                if bidder_id != char_id:
-                    # 通过邮箱返还金币
-                    drop = Drop()
-                    drop.gold = bidder_doc.get('{0}-{1}'.format(item_id, char_id), 0)
-                    attachment = drop.to_json()
-
-                    MailManager(server_id, bidder_id).add(
-                        AUCTION_BIDDING_FAIL_TITLE,
-                        AUCTION_BIDDING_FAIL_CONTENT.format(staff_name),
-                        attachment,
-                    )
-                    # 通知客户端从移除竞价列表中移除物品
-                    AuctionManager(server_id, bidder_id).send_bidding_notify(item_id)
-
-        # 删除竞价者列表该物品数据
-        MongoBidding.db(server_id).delete_one({'_id': item_id})
-        # 发送邮件给拍卖者
-        seller_drop = Drop()
-        seller_drop.gold = math.floor(int(price * get_tax_rate_by_tp(doc['tp'])))
-        attachment_seller = seller_drop.to_json()
-
-        MailManager(server_id, doc['char_id']).add(
-            AUCTION_SUCCESS_TITLE,
-            AUCTION_SUCCESS_CONTENT.format(staff_name, seller_drop.gold),
-            attachment_seller,
-        )
-
-    def fail(self, doc):
-        """
-        流拍
-            流拍物品将发还拍卖者
-        """
-        StaffManger(self.server_id, self.char_id).add_staff(doc)
-        staff_name = ConfigStaff.get(doc['staff_id']).name
-        MailManager(self.server_id, self.char_id).add(
-            AUCTION_FAIL_TITLE,
-            AUCTION_FAIL_CONTENT.format(staff_name),
-            "",
-        )
-
-    def send_auction_remove_notify__(self, item_id):
-        """
-        从拍卖列表中移除物品
-        """
-        notify = StaffAuctionUserItemRemoveNotify()
-        notify.id.append(item_id)
-        MessagePipe(self.char_id).put(msg=notify)
-
-    def send_bidding_remove_notify(self, item_id):
-        """
-        从竞标列表中移除物品
-        """
-        notify = StaffAuctionRemoveNotify()
-        notify.item_id = item_id
-        MessagePipe(self.char_id).put(msg=notify)
-
-    def send_common_auction_notify(self, item_ids=None):
-        """
-        通知用户员工转会窗口信息
-            1 如果 item_ids 非空, 获取 item_ids 中转会信息
-                否则, 获取所有转会信息
-            2 组装信息
-        """
-        if item_ids:
-            projection = {'_id': {'$in': {item_ids}}}
-        else:
-            projection = {}
-
-        notify = StaffAuctionNotify()
-        notify.act = ACT_INIT
-        for doc in MongoStaffAuction.db(self.server_id).find(projection):
-            notify_item = notify.items.add()
-            item = AuctionItem(doc)
-            notify_item.MergeFrom(item.make_proto_msg())
-
-        MessagePipe(self.char_id).put(msg=notify)
-
-    def send_user_auction_notify(self, item_ids=None):
+    def send_sell_list_notify(self, item_ids=None):
         """
         通知用户拍卖
             1 如果 item_ids 为空, 初始化, 通知所有信息;
@@ -477,49 +532,61 @@ class AuctionManager(object):
         """
         if not item_ids:
             act = ACT_INIT
-            projection = {'char_id': self.char_id}
+            condition = {'char_id': self.char_id}
         else:
             act = ACT_UPDATE
-            projection = {'_id': {'$in': item_ids}}
+            condition = {'_id': {'$in': item_ids}}
 
-        doc = MongoStaffAuction.db(self.server_id).find(projection)
+        docs = MongoAuctionStaff.db(self.server_id).find(condition)
 
-        notify = StaffAuctionUserNotify()
+        notify = StaffAuctionSellListNotify()
         notify.act = act
-        for staff in doc:
+        for doc in docs:
             notify_item = notify.items.add()
-            item = AuctionItem(staff)
+            item = AuctionItem.load_from_data(self.server_id, doc)
             notify_item.MergeFrom(item.make_proto_msg())
 
         MessagePipe(self.char_id).put(msg=notify)
 
-    def send_bidding_notify(self, item_ids=None):
+    def send_sell_remove_notify(self, item_id):
+        """
+        从拍卖列表中移除物品
+        """
+        notify = StaffAuctionSellRemoveNotify()
+        notify.item_id = item_id
+        MessagePipe(self.char_id).put(msg=notify)
+
+    def send_bidding_list_notify(self, item_ids=None):
         """
         通知玩家竞拍信息
         """
+        doc = MongoBidding.db(self.server_id).find_one({'_id': self.char_id})
+
         if item_ids:
             act = ACT_UPDATE
-            projection = {'_id': {'$in': item_ids}}
         else:
             act = ACT_INIT
-            projection = {'bidders': self.char_id}
+            item_ids = doc['items']
 
-        bid_doc = MongoBidding.db(self.server_id).find(projection)
-        if bid_doc:
-            item_ids = [doc['_id'] for doc in bid_doc]
+        item_docs = MongoAuctionStaff.db(self.server_id).find({'_id': {'$in': item_ids}})
+        items = {d['_id']: d for d in item_docs}
 
-            auction_doc = MongoStaffAuction.db(self.server_id).find({'_id': {'$in': item_ids}})
-            notify = StaffAuctionListNotify()
-            notify.act = act
-            for auction_item in auction_doc:
-                notify_item = notify.items.add()
-                item = AuctionItem(auction_item)
+        notify = StaffAuctionBidingListNotify()
+        notify.act = act
 
-                msg = AuctionStaffItem()
-                msg.items = item.make_proto_msg()
-                msg.my_bid = bid_doc[item.id]
+        for _id in item_ids:
+            item_obj = AuctionItem.load_from_data(self.server_id, items[_id])
 
-                notify_item.MergeFrom(msg)
+            notify_item = notify.items.add()
+            notify_item.item.MergeFrom(item_obj.make_proto_msg())
+            notify_item.item.my_bid = doc['item_{0}'.format(_id)]
 
             MessagePipe(self.char_id).put(msg=notify)
 
+    def send_bidding_remove_notify(self, item_id):
+        """
+        从竞标列表中移除物品
+        """
+        notify = StaffAuctionBidingRemoveNotify()
+        notify.item_id = item_id
+        MessagePipe(self.char_id).put(msg=notify)

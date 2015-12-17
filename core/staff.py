@@ -10,7 +10,7 @@ Description:
 from dianjing.exception import GameException
 
 from core.abstract import AbstractStaff
-from core.mongo import MongoStaff, MongoRecruit, MongoStaffAuction
+from core.mongo import MongoStaff, MongoRecruit, MongoAuctionStaff
 from core.resource import Resource
 from core.common import CommonRecruitHot
 from core.skill import SkillManager
@@ -332,7 +332,7 @@ class StaffManger(object):
         if not doc:
             return False
 
-        auc_doc = MongoStaffAuction.db(self.server_id).find({'char_id': self.char_id}, {'staff_id': 1})
+        auc_doc = MongoAuctionStaff.db(self.server_id).find({'char_id': self.char_id}, {'staff_id': 1})
         for staff in auc_doc:
             if staff_ids == staff['staff_id']:
                 return False
@@ -343,24 +343,18 @@ class StaffManger(object):
 
         return True
 
-    def add_staff(self, staff, send_notify=True):
+    def add_staff(self, _id, exp, level, status, skills, send_notify=True):
         doc = MongoStaff.document_staff()
         # 员工属性
-        doc['staff_id'] = staff.get('staff_id', 0)
-        doc['level'] = staff.get('level', 1)
-        doc['exp'] = staff.get('exp', 0)
-        doc['status'] = staff.get('status', ConfigStaffStatus.DEFAULT_STATUS)
-        doc['jingong'] = staff.get('jingong', 0)
-        doc['qianzhi'] = staff.get('qianzhi', 0)
-        doc['xintai'] = staff.get('xintai', 0)
-        doc['fangshou'] = staff.get('fangshou', 0)
-        doc['yunying'] = staff.get('yunying', 0)
-        doc['yishi'] = staff.get('yishi', 0)
-        doc['caozuo'] = staff.get('caozuo', 0)
-        doc['zhimingdu'] = staff.get('zhimingdu', 0)
+        doc['exp'] = exp
+        doc['level'] = level
+        doc['status'] = status
+        doc['skills'] = {}
+        for k, v in skills.iteritems():
+            s = MongoStaff.document_staff_skill()
+            s['level'] = v
 
-        skills = staff.get('skills', {})
-        doc['skills'] = {int(k): v['level'] for k, v in skills.iteritems()}
+            doc['skills'][str(k)] = v
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -368,8 +362,8 @@ class StaffManger(object):
         )
 
         if send_notify:
-            self.send_notify(staff_ids=[doc['staff_id']])
-            SkillManager(self.server_id, self.char_id).send_notify(staff_id=doc['staff_id'])
+            self.send_notify(staff_ids=[_id])
+            SkillManager(self.server_id, self.char_id).send_notify(staff_id=_id)
 
     def add(self, staff_id, send_notify=True):
         """

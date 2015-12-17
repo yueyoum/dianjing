@@ -188,8 +188,8 @@ MESSAGE_TO_ID = {
     "EliteTimesNotify": 2601,
     "EliteStartRequest": 2602,
     "EliteStartResponse": 2603,
-    "StaffAuctionUserNotify": 2700,
-    "StaffAuctionNotify": 2701,
+    "StaffAuctionSellListNotify": 2700,
+    "StaffAuctionSellRemoveNotify": 2701,
     "StaffAuctionSearchRequest": 2702,
     "StaffAuctionSearchResponse": 2703,
     "StaffAuctionSellRequest": 2704,
@@ -198,9 +198,8 @@ MESSAGE_TO_ID = {
     "StaffAuctionCancelResponse": 2707,
     "StaffAuctionBidingRequest": 2708,
     "StaffAuctionBiddingResponse": 2709,
-    "StaffAuctionUserItemRemoveNotify": 2710,
-    "StaffAuctionListNotify": 2711,
-    "StaffAuctionRemoveNotify": 2712,
+    "StaffAuctionBidingListNotify": 2710,
+    "StaffAuctionBidingRemoveNotify": 2711,
 }
 
 ID_TO_MESSAGE = {
@@ -392,8 +391,8 @@ ID_TO_MESSAGE = {
     2601: "EliteTimesNotify",
     2602: "EliteStartRequest",
     2603: "EliteStartResponse",
-    2700: "StaffAuctionUserNotify",
-    2701: "StaffAuctionNotify",
+    2700: "StaffAuctionSellListNotify",
+    2701: "StaffAuctionSellRemoveNotify",
     2702: "StaffAuctionSearchRequest",
     2703: "StaffAuctionSearchResponse",
     2704: "StaffAuctionSellRequest",
@@ -402,9 +401,8 @@ ID_TO_MESSAGE = {
     2707: "StaffAuctionCancelResponse",
     2708: "StaffAuctionBidingRequest",
     2709: "StaffAuctionBiddingResponse",
-    2710: "StaffAuctionUserItemRemoveNotify",
-    2711: "StaffAuctionListNotify",
-    2712: "StaffAuctionRemoveNotify",
+    2710: "StaffAuctionBidingListNotify",
+    2711: "StaffAuctionBidingRemoveNotify",
 }
 
 PATH_TO_REQUEST = {

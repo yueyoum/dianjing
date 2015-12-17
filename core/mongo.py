@@ -635,16 +635,21 @@ class MongoEliteMatch(BaseDocument):
 
 
 # 员工拍卖
-class MongoStaffAuction(BaseDocument):
+class MongoAuctionStaff(BaseDocument):
     DOCUMENT = {
-        '_id': null,           # 物品ID
+        '_id': null,        # 物品ID
         'char_id': 0,       # 出售者ID
-        # 员工属性
+        'club_name': "",
+
+        # 员工属性 要存入购买者的 staffs 数据库中
         'staff_id': 0,      # 员工ID
+        'exp': 0,           # 当前经验
         'level': 0,         # 当前等级
-        'cur_exp': 0,       # 当前经验
-        'max_exp': 0,       # 当前等级最大经验
         'status': 0,        # 状态， 对应 staff_status.json
+        'skills': {},       # 技能
+
+        # 下面这些额外信息用于搜索
+        'quality': '',
         'jingong': 0,       # 进攻
         'qianzhi': 0,       # 牵制
         'xintai': 0,        # 心态
@@ -654,37 +659,32 @@ class MongoStaffAuction(BaseDocument):
         'yishi': 0,         # 意识
         'caozuo': 0,        # 操作
         'zhimingdu': 0,     # 知名度
+
         # 拍卖设置
-        'start_at': 0,    # 开始时间
-        'tp': 0,            # 拍卖时长
-        'auction_inc': 0,   # 竞价增量
+        'start_at': 0,      # 开始时间
+        'tp': 0,            # 拍卖类型
         'min_price': 0,     # 最低价
         'max_price': 0,     # 一口价
+
         # 拍卖信息
-        'bidder': 0,        # 竞标者(竞标者id)
-        'bidding': 0,       # 竞标价格
+        'bidder': 0,        # 最新的竞标者(竞标者id)
+        'bidding': 0,       # 最新的竞标价格
         # 定时任务key
         'key': "",
     }
 
-    COLLECTION = 'staff_auction'
-
+    COLLECTION = 'auction_staff'
     INDEXES = ['char_id']
 
 
 # 用户竞价列表
 class MongoBidding(BaseDocument):
     DOCUMENT = {
-        '_id': 0,           # 拍卖品ID
-        'bidders': [],      # 竞拍者ID
-        # 对应竞价者出价 类似于: str(index): bidding
+        '_id': 0,           # 角色ID
+        'items': [],        # 物品ID
+        # 物品出价 类似于: item_1: bidding
     }
 
-    BIDDING_DOCUMENT = {
-        'Item_id': 0,
-    }
-
-    COLLECTION = 'bidding_list'
-
-    INDEXES = ['bidders']
+    COLLECTION = 'auction_bidding'
+    INDEXES = ['items']
 
