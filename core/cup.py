@@ -304,6 +304,13 @@ class Cup(object):
                 docs.append(doc)
                 total_ids.append(npc_club.id)
 
+            for char_id in char_ids:
+                doc = MongoCupClub.document()
+                doc['is_npc'] = False
+                doc['_id'] = char_id
+                doc['data'] = ''
+                docs.append(doc)
+
             MongoCupClub.db(server_id).insert_many(docs)
             # TODO: 玩家与npc对战安排
             MongoCup.db(server_id).update_one(

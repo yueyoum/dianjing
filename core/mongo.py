@@ -500,11 +500,8 @@ class MongoCupClub(BaseDocument):
         # club id
         '_id': null,
         # 开始前一小时把玩家的阵容拷贝过来
-        'staffs': "",
-        # 下面几项只有NPC才有
-        'club_name': "",
-        'manager_name': "",
-        'club_flag': 1,
+        'is_npc': False,
+        'data': '',
     }
 
     COLLECTION = "cup_club"
