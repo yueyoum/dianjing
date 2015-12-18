@@ -228,6 +228,7 @@ class EliteMatch(object):
         updater = {'has_matched': True}
 
         drop = Drop()
+        next_match_id = 0
         if msg.club_one_win:
             drop = Drop.generate(config_match.reward)
             message = u"Elite Match {0}".format(mid)
@@ -240,7 +241,7 @@ class EliteMatch(object):
             next_match_id = config_area.next_match_id(mid)
             if next_match_id:
                 updater['areas.{0}.{1}'.format(aid, next_match_id)] = 0
-
+            
             else:
                 next_area_id = ConfigEliteArea.next_area_id(aid)
                 if next_area_id:
@@ -250,7 +251,11 @@ class EliteMatch(object):
             {'_id': self.char_id},
             {'$set': updater}
         )
+
         self.send_notify(area_id=aid, match_id=mid)
+        if next_match_id:
+            print 'send'
+            self.send_notify(area_id=aid, match_id=next_match_id)
 
         return msg, drop.make_protomsg()
 
@@ -294,7 +299,8 @@ class EliteMatch(object):
                 notify_area_match = notify_area.match.add()
                 notify_area_match.id = mid
                 notify_area_match.cur_times = cur_times
-
+                print aid, mid, cur_times, notify_area.status
+                print notify
         MessagePipe(self.char_id).put(msg=notify)
 
     def send_times_notify(self):
