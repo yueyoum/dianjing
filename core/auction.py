@@ -118,7 +118,7 @@ class AuctionItem(object):
         obj.exp = staff.exp
         obj.level = staff.level
         obj.status = staff.status
-        obj.skills = staff.skills
+        obj.skills = {str(k): v for k, v in staff.skills.iteritems()}
 
         obj.quality = staff.quality
         obj.jingong = staff.jingong
