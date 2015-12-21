@@ -125,9 +125,30 @@ class EliteMatch(object):
         self.cur_times = doc['cur_times']
 
     @classmethod
-    def cronjob_clean_match_times(cls):
+    def cronjob_add_times(cls, server_id):
+        # TODO
+        MongoEliteMatch.db(server_id).update_many(
+            {'cur_times': {'$lt': ELITE_MAX_TIMES}},
+            {'$inc': {'cur_times': 1}}
+        )
+
+    @classmethod
+    def cronjob_clean_match_times(cls, server_id):
         # 清理每关打过的次数
-        pass
+        # TODO
+        for doc in MongoEliteMatch.db(server_id).find():
+            updater = {}
+            for aid, matchs in doc['areas'].iteritems():
+                for mid, times in matchs.iteritems():
+                    if times <= 0:
+                        continue
+
+                    updater['areas.{0}.{1}'.format(aid, mid)] = 0
+
+            MongoEliteMatch.db(server_id).update_one(
+                {'_id': doc['_id']},
+                {'$set': updater}
+            )
 
     def open_area(self, aid, send_notify=True):
         config = ConfigEliteArea.get(aid)

@@ -174,7 +174,7 @@ class StaffRecruit(object):
                 staffs = []
 
                 for quality, amount in result:
-                    staffs.extend(ConfigStaff.get_random_ids_by_condition(amount, quality=quality))
+                    staffs.extend(ConfigStaff.get_random_ids_by_condition(amount, quality=quality, can_recruit=True))
 
                 # TODO: 更合理的方式
                 if is_first and tp == RECRUIT_NORMAL:
