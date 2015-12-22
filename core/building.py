@@ -27,6 +27,17 @@ import formula
 
 TIMERD_CALLBACK_PATH = '/api/timerd/building/'
 
+RECRUIT_COST_CUT = 1        # 招募花费减少
+BUSINESS_INCOME_ADD = 2     # 商务收益增加
+BROADCAST_NUM_INC = 3       # 直播位置累计增加
+SHOP_NUM_ADD = 4            # 网店数量累计增加
+SPONSOR_NUM_INC = 5         # 合约数量累计增加
+CHALLENGE_EXP_ADD = 6       # 联赛经验增加
+FUNCTION_OPEN = 7           # 功能开放
+TRAINING_SLOT_ADD = 8       # 训练位置累计增加
+TRAINING_EXP_ADD = 9        # 训练效果加成
+
+
 class BuildingManager(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
@@ -51,6 +62,11 @@ class BuildingManager(object):
                     {'_id': self.char_id},
                     {'$set': updater}
                 )
+
+    def current_effect(self, building_id):
+        cur_lv = self.current_level(building_id)
+        conf_building = ConfigBuilding.get(building_id).get_level(cur_lv)
+        return conf_building.effect
 
     def current_level(self, building_id):
         doc = MongoBuilding.db(self.server_id).find_one(
@@ -213,6 +229,9 @@ class BaseBuilding(object):
 
     def level_up(self):
         return self.bm.level_up(self.BUILDING_ID)
+
+    def current_effect(self):
+        return self.bm.current_effect(self.BUILDING_ID)
 
 
 # 俱乐部总部
