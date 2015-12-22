@@ -32,7 +32,7 @@ def staff_level_up_need_exp(staff_id, current_level):
     return ConfigStaffLevel.get(current_level).exp[ConfigStaff.get(staff_id).quality]
 
 
-def staff_training_exp_need_gold(staff_id, staff_level):
+def staff_training_exp_need_gold(staff_level):
     return staff_level * 1000
 
 
@@ -51,27 +51,23 @@ class Staff(AbstractStaff):
         self.char_id = char_id
 
         self.id = _id
-        self.level = data.get('level', 1)
-        self.exp = data.get('exp', 0)
-        self.status = data.get('status', ConfigStaffStatus.DEFAULT_STATUS)  # 状态 1:恶劣 2:低迷 3:一般 4:良好 5:优秀 6:GOD
+        self.level = data['level']
+        self.exp = data['exp']
+        self.status = data['status']
 
-        config_staff = ConfigStaff.get(self.id)
-        self.race = config_staff.race
-        self.quality = config_staff.quality
+        config = ConfigStaff.get(self.id)
+        self.race = config.race
+        self.quality = config.quality
+        self.skills = {int(k): v['level'] for k, v in data['skills'].iteritems()}
 
-        self.jingong = config_staff.jingong + config_staff.jingong_grow * (self.level - 1) + data.get('jingong', 0)
-        self.qianzhi = config_staff.qianzhi + config_staff.caozuo_grow * (self.level - 1) + data.get('qianzhi', 0)
-        self.xintai = config_staff.xintai + config_staff.xintai_grow * (self.level - 1) + data.get('xintai', 0)
-        self.baobing = config_staff.baobing + config_staff.baobing_grow * (self.level - 1) + data.get('baobing', 0)
-        self.fangshou = config_staff.fangshou + config_staff.fangshou_grow * (self.level - 1) + data.get('fangshou', 0)
-        self.yunying = config_staff.yunying + config_staff.yunying_grow * (self.level - 1) + data.get('yunying', 0)
-        self.yishi = config_staff.yishi + config_staff.yunying_grow * (self.level - 1) + data.get('yishi', 0)
-        self.caozuo = config_staff.caozuo + config_staff.caozuo_grow * (self.level - 1) + data.get('caozuo', 0)
+        self.luoji = config.luoji + config.luoji * (self.level - 1) + data.get('luoji', 0)
+        self.minjie = config.luoji + config.luoji * (self.level - 1) + data.get('luoji', 0)
+        self.lilun = config.luoji + config.luoji * (self.level - 1) + data.get('luoji', 0)
+        self.wuxing = config.luoji + config.luoji * (self.level - 1) + data.get('luoji', 0)
+        self.meili = config.luoji + config.luoji * (self.level - 1) + data.get('luoji', 0)
+
         # 知名度没有默认值，只会在游戏过程中增加
         self.zhimingdu = data.get('zhimingdu', 0)
-
-        skills = data.get('skills', {})
-        self.skills = {int(k): v['level'] for k, v in skills.iteritems()}
 
 
 RECRUIT_ENUM_TO_CONFIG_ID = {
@@ -86,6 +82,7 @@ class StaffRecruit(object):
     Staff招募
         管理员工合约
     """
+
     def __init__(self, server_id, char_id):
         """
         初始化 StaffRecruit
@@ -166,7 +163,7 @@ class StaffRecruit(object):
             if times == 0:
                 is_first = True
             else:
-                if (times+1) % config.lucky_times == 0:
+                if (times + 1) % config.lucky_times == 0:
                     is_lucky = True
 
             with Resource(self.server_id, self.char_id).check(**check):
@@ -460,14 +457,13 @@ class StaffManger(object):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
         exp = kwargs.get('exp', 0)
-        jingong = kwargs.get('jingong', 0)
-        qianzhi = kwargs.get('qianzhi', 0)
-        xintai = kwargs.get('xintai', 0)
-        baobing = kwargs.get('baobing', 0)
-        fangshou = kwargs.get('fangshou', 0)
-        yunying = kwargs.get('yunying', 0)
-        yishi = kwargs.get('yishi', 0)
-        caozuo = kwargs.get('caozuo', 0)
+
+        luoji = kwargs.get('luoji', 0)
+        minjie = kwargs.get('minjie', 0)
+        lilun = kwargs.get('lilun', 0)
+        wuxing = kwargs.get('wuxing', 0)
+        meili = kwargs.get('meili', 0)
+
         zhimingdu = kwargs.get('zhimingdu', 0)
 
         # update
@@ -500,14 +496,12 @@ class StaffManger(object):
                 },
 
                 '$inc': {
-                    'staffs.{0}.jingong'.format(staff_id): jingong,
-                    'staffs.{0}.qianzhi'.format(staff_id): qianzhi,
-                    'staffs.{0}.xintai'.format(staff_id): xintai,
-                    'staffs.{0}.baobing'.format(staff_id): baobing,
-                    'staffs.{0}.fangshou'.format(staff_id): fangshou,
-                    'staffs.{0}.yunying'.format(staff_id): yunying,
-                    'staffs.{0}.yishi'.format(staff_id): yishi,
-                    'staffs.{0}.caozuo'.format(staff_id): caozuo,
+                    'staffs.{0}.luoji'.format(staff_id): luoji,
+                    'staffs.{0}.minjie'.format(staff_id): minjie,
+                    'staffs.{0}.lilun'.format(staff_id): lilun,
+                    'staffs.{0}.wuxing'.format(staff_id): wuxing,
+                    'staffs.{0}.meili'.format(staff_id): meili,
+
                     'staffs.{0}.zhimingdu'.format(staff_id): zhimingdu,
                 },
             }

@@ -49,7 +49,8 @@ class Ladder(object):
             order = doc['order']
 
             config = ConfigLadderRankReward.get_reward_object(order)
-            drop = Drop.generate(config.package)
+            drop = Drop()
+            drop.gold = config.reward_gold
 
             m = MailManager(server_id, cid)
             m.add(
@@ -57,6 +58,8 @@ class Ladder(object):
                 content=config.mail_content.format(order),
                 attachment=drop.to_json(),
             )
+
+            Ladder(server_id, cid).add_score(config.reward_score)
 
     @classmethod
     def get_top_clubs(cls, server_id, amount=8):

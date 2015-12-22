@@ -10,7 +10,6 @@ Description:
 import json
 import random
 
-from core.base import STAFF_ATTRS
 from config import ConfigPackage
 
 from protomsg.package_pb2 import (
@@ -18,49 +17,49 @@ from protomsg.package_pb2 import (
     Property as MsgProperty,
 )
 
+STAFF_BASE_ATTRS = [
+    'luoji',
+    'minjie',
+    'lilun',
+    'wuxing',
+    'meili',
+]
+
 
 # 这个对应编辑器中的 Package
 class PackageBase(object):
     """
     物品包基类
         基本字段包括:
-            员工属性        ATTRS
+            员工属性        STAFF_BASE_ATTRS
             所有属性        FIELDS
     """
-    ATTRS = STAFF_ATTRS
-    FIELDS = ATTRS + [
-        'staff_exp', 'gold', 'diamond', 'club_renown', 'ladder_score', 'league_score',
+    FIELDS = STAFF_BASE_ATTRS + [
+        'gold', 'diamond', 'staff_exp', 'club_renown',
     ]
-    # fields also contains trainings, items
+
+    FULL_FIELDS = FIELDS + ['trainings', 'items']
 
     def __init__(self):
-        """
-        初始化属性数据
-        """
-        self.jingong = 0            # 员工 - 进攻
-        self.qianzhi = 0            # 员工 - 牵制
-        self.xintai = 0             # 员工 - 心态
-        self.baobing = 0            # 员工 - 暴兵
-        self.fangshou = 0           # 员工 - 防守
-        self.yunying = 0            # 员工 - 运营
-        self.yishi = 0              # 员工 - 意识
-        self.caozuo = 0             # 员工 - 操作
-        self.zhimingdu = 0          # 员工 - 知名度
-        self.staff_exp = 0          # 员工 - 经验
-        self.gold = 0               # 角色 - 金币/软妹币
-        self.diamond = 0            # 角色 - 钻石
-        self.club_renown = 0        # 角色 - 俱乐部声望
-        self.ladder_score = 0       # 角色 - 天梯赛积分
-        self.league_score = 0       # 角色 - 联赛积分
-        self.trainings = []         # 角色 - 训练书
-        self.items = []             # 角色 - 道具
+        self.luoji = 0  # 员工 - 进攻
+        self.minjie = 0  # 员工 - 牵制
+        self.lilun = 0  # 员工 - 心态
+        self.wuxing = 0  # 员工 - 暴兵
+        self.meili = 0  # 员工 - 防守
+
+        self.zhimingdu = 0  # 员工 - 知名度
+
+        self.gold = 0  # 角色 - 金币/软妹币
+        self.diamond = 0  # 角色 - 钻石
+        self.staff_exp = 0  # 员工 - 经验
+        self.club_renown = 0  # 角色 - 俱乐部声望
+
+        self.trainings = []  # 角色 - 训练书
+        self.items = []  # 角色 - 道具
 
     def __str__(self):
-        """
-
-        """
         data = {}
-        for attr in self.FIELDS + ['trainings', 'items']:
+        for attr in self.FULL_FIELDS:
             value = getattr(self, attr)
             if value:
                 data[attr] = value
@@ -90,13 +89,10 @@ class PackageBase(object):
         p.trainings = config.trainings
         p.items = config.items
 
-        # 员工经验， 软妹币，钻石，荣耀，天梯赛积分，联赛积分
-        set_value('staff_exp', config.staff_exp)
         set_value('gold', config.gold)
         set_value('diamond', config.diamond)
+        set_value('staff_exp', config.staff_exp)
         set_value('club_renown', config.club_renown)
-        set_value('ladder_score', config.ladder_score)
-        set_value('league_score', config.league_score)
 
         if config.attr_mode == 1:
             # 不加成属性
@@ -105,12 +101,12 @@ class PackageBase(object):
         if config.attr_mode == 2:
             # 完全随机
             for i in range(config.attr_random_amount):
-                attr = random.choice(cls.ATTRS)
+                attr = random.choice(STAFF_BASE_ATTRS)
                 set_value(attr, config.attr_random_value)
 
             return p
 
-        selected_attrs = [attr for attr in cls.ATTRS if getattr(config, attr)]
+        selected_attrs = [attr for attr in STAFF_BASE_ATTRS if getattr(config, attr)]
 
         if config.attr_mode == 4:
             # 设定的属性
@@ -139,7 +135,7 @@ class PackageBase(object):
 
 # 对应只会给角色加的物品。 关卡掉落，奖励，邮件附件 这些
 class Drop(PackageBase):
-    FIELDS = ['gold', 'diamond', 'club_renown', 'ladder_score', 'league_score']
+    FIELDS = ['gold', 'diamond', 'club_renown']
     # 还有 trainings, items
 
     def make_protomsg(self):
@@ -199,7 +195,7 @@ class Drop(PackageBase):
 
 
 class Property(PackageBase):
-    FIELDS = STAFF_ATTRS + ['staff_exp']
+    FIELDS = STAFF_BASE_ATTRS + ['staff_exp']
 
     def make_protomsg(self):
         msg = MsgProperty()
@@ -223,7 +219,7 @@ class Property(PackageBase):
                 continue
 
             # package 中员工经验是 staff_exp
-            # 但是 StaffManager 的 update 接受的 exp
+            # 但是 StaffManager 的 update 接受的名字是 exp
             # 所以这里把名字改一下
             if attr == 'staff_exp':
                 attr = 'exp'

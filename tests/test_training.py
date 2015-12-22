@@ -37,7 +37,7 @@ def get_valid_slot():
 def set_enough_gold_and_diamond(staff_id):
     MongoCharacter.db(1).update_one(
         {'_id': 1},
-        {'$set': {'club.gold': staff_training_exp_need_gold(staff_id, 1),
+        {'$set': {'club.gold': staff_training_exp_need_gold(1),
                   'club.diamond': 8000}}
     )
 

@@ -19,6 +19,7 @@ class Resource(object):
     """
         资源检测
     """
+
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
@@ -29,14 +30,12 @@ class Resource(object):
             1 import 相关模块
             2 如果有俱乐部资源 提取 club_data, update
                 2.1 如果有 diamond 或 gold 添加, 写入财务报表 FinanceStatistics
-            3 如果有天梯积分 Ladder.add()
             4 如果有训练包 BagTrainingSkill.add()
             5 如果有物品 BagItem.add()
 
         :type drop: core.package.Drop
         """
         from core.club import Club
-        from core.ladder import Ladder
         from core.bag import BagItem, BagTrainingSkill
 
         if drop.club_renown or drop.gold or drop.diamond:
@@ -53,11 +52,6 @@ class Resource(object):
                 FinanceStatistics(self.server_id, self.char_id).add_log(
                     gold=drop.gold, diamond=drop.diamond, message=message
                 )
-
-        if drop.ladder_score:
-            Ladder(self.server_id, self.char_id).add_score(drop.ladder_score)
-
-        # TODO drop.league_score ?
 
         if drop.trainings:
             BagTrainingSkill(self.server_id, self.char_id).add(drop.trainings)

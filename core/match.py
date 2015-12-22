@@ -99,9 +99,12 @@ class OneMatch(object):
             :type unit_id: int
             """
 
-            base_attribute = staff.jingong + staff.baobing + staff.caozuo + \
-                             staff.qianzhi + staff.fangshou + staff.yunying
-            base_attribute = base_attribute * staff.xintai / 1000 * 1
+            # TODO new property
+            base_attribute = random.randint(20, 100)
+
+            # base_attribute = staff.jingong + staff.baobing + staff.caozuo + \
+            #                  staff.qianzhi + staff.fangshou + staff.yunying
+            # base_attribute = base_attribute * staff.xintai / 1000 * 1
 
             skill_id = ConfigUnit.get(unit_id).skill
             config_skill = ConfigSkill.get(skill_id)
@@ -113,7 +116,7 @@ class OneMatch(object):
             skill_addition *= 1
 
             skill_strength = (config_skill.value_base + staff.skills.get(skill_id, 0) * config_skill.level_grow) / 10
-            skill_strength = skill_addition * skill_strength * staff.yishi / 1000 * 1
+            # skill_strength = skill_addition * skill_strength * staff.yishi / 1000 * 1
 
             return base_attribute + skill_strength
 

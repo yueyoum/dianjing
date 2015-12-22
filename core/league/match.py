@@ -41,18 +41,16 @@ class LeagueNPCStaff(AbstractStaff):
 
         self.level = 1
         self.race = config.race
-
-        self.jingong = staff_attribute['jingong']
-        self.qianzhi = staff_attribute['qianzhi']
-        self.xintai = staff_attribute['xintai']
-        self.baobing = staff_attribute['baobing']
-        self.fangshou = staff_attribute['fangshou']
-        self.yunying = staff_attribute['yunying']
-        self.yishi = staff_attribute['yishi']
-        self.caozuo = staff_attribute['caozuo']
-
         skill_level = staff_attribute.get('skill_level', 1)
         self.skills = {i: skill_level for i in config.skill_ids}
+
+        self.luoji = staff_attribute['luoji']
+        self.minjie = staff_attribute['minjie']
+        self.lilun = staff_attribute['lilun']
+        self.wuxing = staff_attribute['wuxing']
+        self.meili = staff_attribute['meili']
+
+        self.calculate_secondary_property()
 
 
 class LeagueBaseClubMixin(object):

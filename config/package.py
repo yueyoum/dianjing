@@ -11,11 +11,18 @@ from config.base import ConfigBase
 
 class Package(object):
     __slots__ = ['id', 'attr_mode', 'attr_random_amount', 'attr_random_value',
-                 'jingong', 'qianzhi', 'xintai', 'baobing',
-                 'fangshou', 'yunying', 'yishi', 'caozuo', 'zhimingdu',
+
+                 'luoji',
+                 'minjie',
+                 'lilun',
+                 'wuxing',
+                 'meili',
+
+                 'zhimingdu',
+
                  'gold', 'diamond',
                  'staff_exp', 'club_renown',
-                 'ladder_score', 'league_score',
+
                  'trainings',
                  'items',
                  ]
@@ -26,14 +33,12 @@ class Package(object):
         self.attr_random_amount = 0
         self.attr_random_value = 0
         
-        self.jingong = 0
-        self.qianzhi = 0
-        self.xintai = 0
-        self.baobing = 0
-        self.fangshou = 0
-        self.yunying = 0
-        self.yishi = 0
-        self.caozuo = 0
+        self.luoji = 0
+        self.minjie = 0
+        self.lilun = 0
+        self.wuxing = 0
+        self.meili = 0
+
         self.zhimingdu = 0
         
         self.gold = 0
@@ -41,9 +46,6 @@ class Package(object):
         
         self.staff_exp = 0
         self.club_renown = 0
-
-        self.ladder_score = 0
-        self.league_score = 0
 
         self.trainings = []
         self.items = []

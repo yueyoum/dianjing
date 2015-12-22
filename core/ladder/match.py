@@ -33,18 +33,16 @@ class LadderNPCStaff(AbstractStaff):
         # TODO
         self.level = 1
         self.race = config.race
-
-        self.jingong = data['jingong']
-        self.qianzhi = data['qianzhi']
-        self.xintai = data['xintai']
-        self.baobing = data['baobing']
-        self.fangshou = data['fangshou']
-        self.yunying = data['yunying']
-        self.yishi = data['yishi']
-        self.caozuo = data['caozuo']
-
         skill_level = data.get('skill_level', 1)
         self.skills = {i: skill_level for i in config.skill_ids}
+
+        self.luoji = data['luoji']
+        self.minjie = data['minjie']
+        self.lilun = data['lilun']
+        self.wuxing = data['wuxing']
+        self.meili = data['meili']
+
+        self.calculate_secondary_property()
 
 
 class LadderNPCClub(AbstractClub):
@@ -153,13 +151,13 @@ class LadderMatch(object):
 
         # 发送通知
         if isinstance(self.club_two_object, Club):
-            d = Drop.generate(ConfigLadderRankReward.get_reward_object(final_club_two_order).package)
+            config = ConfigLadderRankReward.get_reward_object(final_club_two_order)
             n = Notification(self.server_id, int(self.club_two_object.id))
             n.add_ladder_notification(
                 win=not self.club_one_win,
                 from_name=self.club_one_object.name,
                 current_order=final_club_two_order,
-                ladder_score=d.ladder_score,
+                ladder_score=config.reward_score,
             )
 
         ladder_match_signal.send(

@@ -45,18 +45,15 @@ class EliteNPCStaff(AbstractStaff):
 
         config = ConfigStaff.get(_id)
         self.race = config.race
+        self.skills = {i: 1 for i in config.skill_ids}
 
-        self.jingong = config.jingong + config.jingong_grow * (level - 1)
-        self.qianzhi = config.qianzhi + config.qianzhi_grow * (level - 1)
-        self.xintai = config.xintai + config.xintai_grow * (level - 1)
-        self.baobing = config.baobing + config.baobing_grow * (level - 1)
-        self.fangshou = config.fangshou + config.fangshou_grow * (level - 1)
-        self.yunying = config.yunying + config.yunying_grow * (level - 1)
-        self.yishi = config.yishi + config.yishi_grow * (level - 1)
-        self.caozuo = config.caozuo + config.caozuo_grow * (level - 1)
+        self.luoji = config.luoji + config.luoji_grow * (level - 1)
+        self.minjie = config.minjie + config.minjie_grow * (level - 1)
+        self.lilun = config.lilun + config.lilun_grow * (level - 1)
+        self.wuxing = config.wuxing + config.wuxing_grow * (level - 1)
+        self.meili = config.meili + config.meili_grow * (level - 1)
 
-        skills = config.skill_ids
-        self.skills = {i: 1 for i in skills}
+        self.calculate_secondary_property()
 
 
 class EliteNPCClub(AbstractClub):

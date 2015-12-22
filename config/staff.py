@@ -16,16 +16,14 @@ class Staff(object):
     __slots__ = [
         'id', 'name', 'nation', 'race', 'quality', 'buy_type', 'buy_cost',
         'can_recruit',
-        'jingong', 'jingong_grow',
-        'qianzhi', 'qianzhi_grow',
-        'xintai', 'xintai_grow',
-        'baobing', 'baobing_grow',
-        'fangshou', 'fangshou_grow',
-        'yunying', 'yunying_grow',
-        'yishi', 'yishi_grow',
-        'caozuo', 'caozuo_grow',
         'skill_ids',
         'qianban_ids',
+
+        'luoji', 'luoji_grow',
+        'minjie', 'minjie_grow',
+        'lilun', 'lilun_grow',
+        'wuxing', 'wuxing_grow',
+        'meili', 'meili_grow',
     ]
 
     def __init__(self):
@@ -38,25 +36,19 @@ class Staff(object):
         self.buy_cost = 0
         self.can_recruit = False
 
-        self.jingong = 0
-        self.jingong_grow = 0
-        self.qianzhi = 0
-        self.qianzhi_grow = 0
-        self.xintai = 0
-        self.xintai_grow = 0
-        self.baobing = 0
-        self.baobing_grow = 0
-        self.fangshou = 0
-        self.fangshou_grow = 0
-        self.yunying = 0
-        self.yunying_grow = 0
-        self.yishi = 0
-        self.yishi_grow = 0
-        self.caozuo = 0
-        self.caozuo_grow = 0
-
         self.skill_ids = 0
         self.qianban_ids = 0
+
+        self.luoji = 0
+        self.luoji_grow = 0
+        self.minjie = 0
+        self.minjie_grow = 0
+        self.lilun = 0
+        self.lilun_grow = 0
+        self.wuxing = 0
+        self.wuxing_grow = 0
+        self.meili = 0
+        self.meili_grow = 0
 
 
 class StaffHot(object):
@@ -131,15 +123,12 @@ class ConfigStaff(ConfigBase):
     FILTER_CACHE = {}
 
     @classmethod
-    def get(cls, id):
+    def get(cls, _id):
         """
 
-        :param id: staff id
-        :type id: int
-        :return: Staff object
         :rtype: Staff
         """
-        return super(ConfigStaff, cls).get(id)
+        return super(ConfigStaff, cls).get(_id)
 
     @classmethod
     def get_random_ids_by_condition(cls, amount, **condition):
@@ -162,15 +151,12 @@ class ConfigStaffHot(ConfigBase):
     FILTER_CACHE = {}
 
     @classmethod
-    def get(cls, id):
+    def get(cls, _id):
         """
 
-        :param id: staff hot id
-        :type  id: int
-        :return: StaffHot object
         :rtype : StaffHot
         """
-        return super(ConfigStaffHot, cls).get(id)
+        return super(ConfigStaffHot, cls).get(_id)
 
     @classmethod
     def random_three(cls):
@@ -189,12 +175,12 @@ class ConfigStaffRecruit(ConfigBase):
     FILTER_CACHE = {}
 
     @classmethod
-    def get(cls, id):
+    def get(cls, _id):
         """
 
         :rtype: StaffRecruit
         """
-        return super(ConfigStaffRecruit, cls).get(id)
+        return super(ConfigStaffRecruit, cls).get(_id)
 
 
 class ConfigStaffLevel(ConfigBase):
@@ -218,12 +204,12 @@ class ConfigStaffLevel(ConfigBase):
                 instances[i][1].next_level = instances[i + 1][0]
 
     @classmethod
-    def get(cls, id):
+    def get(cls, _id):
         """
 
         :rtype : StaffLevel
         """
-        return super(ConfigStaffLevel, cls).get(id)
+        return super(ConfigStaffLevel, cls).get(_id)
 
 
 class ConfigStaffStatus(ConfigBase):
