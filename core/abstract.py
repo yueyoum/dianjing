@@ -142,6 +142,8 @@ class AbstractClub(object):
         self.diamond = 0
 
         self.staffs = {}  # Staff
+        """:type: dict[int, AbstractStaff]"""
+
         self.match_staffs = []  # int
         self.tibu_staffs = []  # int
 
@@ -197,17 +199,9 @@ class AbstractClub(object):
             if i == 0:
                 msg_match_staff.id = 0
                 msg_match_staff.level = 0
-                msg_match_staff.caozuo = 0
-                msg_match_staff.jingying = 0
-                msg_match_staff.baobing = 0
-                msg_match_staff.zhanshu = 0
             else:
                 msg_match_staff.id = i
                 msg_match_staff.level = self.staffs[i].level
                 msg_match_staff.qianban.extend(self.staffs[i].active_qianban_ids)
-                msg_match_staff.caozuo = self.staffs[i].caozuo
-                msg_match_staff.jingying = self.staffs[i].jingying
-                msg_match_staff.baobing = self.staffs[i].baobing
-                msg_match_staff.zhanshu = self.staffs[i].zhanshu
 
         return msg
