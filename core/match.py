@@ -106,19 +106,20 @@ class OneMatch(object):
             #                  staff.qianzhi + staff.fangshou + staff.yunying
             # base_attribute = base_attribute * staff.xintai / 1000 * 1
 
-            skill_id = ConfigUnit.get(unit_id).skill
-            config_skill = ConfigSkill.get(skill_id)
-
-            skill_addition = 0
-            for name, percent in config_skill.addition_ids:
-                skill_addition += getattr(staff, name) * percent / 100.0
-
-            skill_addition *= 1
-
-            skill_strength = (config_skill.value_base + staff.skills.get(skill_id, 0) * config_skill.level_grow) / 10
-            # skill_strength = skill_addition * skill_strength * staff.yishi / 1000 * 1
-
-            return base_attribute + skill_strength
+            # skill_id = ConfigUnit.get(unit_id).skill
+            # config_skill = ConfigSkill.get(skill_id)
+            #
+            # skill_addition = 0
+            # for name, percent in config_skill.addition_ids:
+            #     skill_addition += getattr(staff, name) * percent / 100.0
+            #
+            # skill_addition *= 1
+            #
+            # skill_strength = (config_skill.value_base + staff.skills.get(skill_id, 0) * config_skill.level_grow) / 10
+            # # skill_strength = skill_addition * skill_strength * staff.yishi / 1000 * 1
+            #
+            # return base_attribute + skill_strength
+            return base_attribute
 
         a = calculate(self.staff_one, unit_one)
         b = calculate(self.staff_two, unit_two)
@@ -241,6 +242,7 @@ class ClubMatch(object):
         """
         self.club_one = club_one
         self.club_two = club_two
+        self.seed = random.randint(1, 10000)
 
         if not self.club_one.match_staffs_ready() or not self.club_two.match_staffs_ready():
             raise GameException(ConfigErrorMessage.get_error_id("MATCH_STAFF_NOT_READY"))
@@ -263,29 +265,30 @@ class ClubMatch(object):
         msg = MessageClubMatch()
         msg.club_one.MergeFrom(self.club_one.make_protomsg())
         msg.club_two.MergeFrom(self.club_two.make_protomsg())
+        msg.seed = self.seed
 
-        for i in range(5):
-            staff_one = self.club_one.staffs[self.club_one.match_staffs[i]]
-            staff_two = self.club_two.staffs[self.club_two.match_staffs[i]]
-
-            match = StaffMatch(staff_one, staff_two, self.club_one.policy, self.club_two.policy)
-            match_msg = match.start()
-
-            msg_match = msg.match.add()
-            msg_match.MergeFrom(match_msg)
-
-            if match_msg.staff_one_win:
-                self.club_one_winning_times += 1
-            else:
-                self.club_two_winning_times += 1
-
-            self.club_one_fight_info[staff_one.id] = FightInfo(staff_two.id, match_msg.staff_one_win)
-            self.club_two_fight_info[staff_two.id] = FightInfo(staff_one.id, not match_msg.staff_one_win)
-
-        if self.club_one_winning_times >= 3:
-            msg.club_one_win = True
-        else:
-            msg.club_one_win = False
+        # for i in range(5):
+        #     staff_one = self.club_one.staffs[self.club_one.match_staffs[i]]
+        #     staff_two = self.club_two.staffs[self.club_two.match_staffs[i]]
+        #
+        #     match = StaffMatch(staff_one, staff_two, self.club_one.policy, self.club_two.policy)
+        #     match_msg = match.start()
+        #
+        #     msg_match = msg.match.add()
+        #     msg_match.MergeFrom(match_msg)
+        #
+        #     if match_msg.staff_one_win:
+        #         self.club_one_winning_times += 1
+        #     else:
+        #         self.club_two_winning_times += 1
+        #
+        #     self.club_one_fight_info[staff_one.id] = FightInfo(staff_two.id, match_msg.staff_one_win)
+        #     self.club_two_fight_info[staff_two.id] = FightInfo(staff_one.id, not match_msg.staff_one_win)
+        #
+        # if self.club_one_winning_times >= 3:
+        #     msg.club_one_win = True
+        # else:
+        #     msg.club_one_win = False
 
         return msg
 
