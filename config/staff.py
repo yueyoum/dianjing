@@ -19,11 +19,11 @@ class Staff(object):
         'skill_ids',
         'qianban_ids',
 
-        'luoji', 'luoji_grow',
-        'minjie', 'minjie_grow',
-        'lilun', 'lilun_grow',
-        'wuxing', 'wuxing_grow',
-        'meili', 'meili_grow',
+        'luoji',
+        'minjie',
+        'lilun',
+        'wuxing',
+        'meili',
     ]
 
     def __init__(self):
@@ -40,15 +40,10 @@ class Staff(object):
         self.qianban_ids = 0
 
         self.luoji = 0
-        self.luoji_grow = 0
         self.minjie = 0
-        self.minjie_grow = 0
         self.lilun = 0
-        self.lilun_grow = 0
         self.wuxing = 0
-        self.wuxing_grow = 0
         self.meili = 0
-        self.meili_grow = 0
 
 
 class StaffHot(object):

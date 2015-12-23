@@ -37,11 +37,11 @@ class ChallengeNPCStaff(AbstractStaff):
         self.race = config.race
         self.skills = {i: 1 for i in config.skill_ids}
 
-        self.luoji = (config.luoji + config.luoji_grow * (level - 1)) * strength
-        self.minjie = (config.minjie + config.minjie_grow * (level - 1)) * strength
-        self.lilun = (config.lilun + config.lilun_grow * (level - 1)) * strength
-        self.wuxing = (config.wuxing + config.wuxing_grow * (level - 1)) * strength
-        self.meili = (config.meili + config.meili_grow * (level - 1)) * strength
+        self.luoji = config.luoji * strength
+        self.minjie = config.minjie * strength
+        self.lilun = config.lilun * strength
+        self.wuxing = config.wuxing * strength
+        self.meili = config.meili * strength
 
         self.calculate_secondary_property()
 
@@ -151,24 +151,24 @@ class Challenge(object):
 
         msg = match.start()
 
-        if msg.club_one_win:
-            self.set_next(area_id, challenge_id)
+        # if msg.club_one_win:
+        #     self.set_next(area_id, challenge_id)
+        #
+        #     drop = Drop.generate(ConfigChallengeMatch.get(challenge_id).package)
+        #     message = u"Drop from challenge {0}".format(challenge_id)
+        #     Resource(self.server_id, self.char_id).save_drop(drop, message=message)
+        # else:
+        #     drop = Drop()
+        #
+        # challenge_match_signal.send(
+        #     sender=None,
+        #     server_id=self.server_id,
+        #     char_id=self.char_id,
+        #     challenge_id=challenge_id,
+        #     win=msg.club_one_win,
+        # )
 
-            drop = Drop.generate(ConfigChallengeMatch.get(challenge_id).package)
-            message = u"Drop from challenge {0}".format(challenge_id)
-            Resource(self.server_id, self.char_id).save_drop(drop, message=message)
-        else:
-            drop = Drop()
-
-        challenge_match_signal.send(
-            sender=None,
-            server_id=self.server_id,
-            char_id=self.char_id,
-            challenge_id=challenge_id,
-            win=msg.club_one_win,
-        )
-
-        return msg, drop.make_protomsg()
+        return msg, Drop().make_protomsg()
 
     def send_notify(self):
         doc = MongoChallenge.db(self.server_id).find_one({'_id': self.char_id})

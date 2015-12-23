@@ -7,12 +7,23 @@ Description:
 
 """
 
+import math
 from itertools import chain
 
 from core.qianban import QianBanContainer
 from config import ConfigStaffLevel
 from protomsg.club_pb2 import Club as MessageClub
 from protomsg.staff_pb2 import Staff as MessageStaff
+
+SECONDARY_PROPERTY_TABLE = {
+    'caozuo': [('minjie', 1)],
+    'baobing': [('luoji', 1)],
+    'jingying': [('lilun', 0.5)],
+    'zhanshu': [('wuxing', 0.5)],
+
+    'biaoyan': [('meili', 1)],
+    'yingxiao': [('wuxing', 0.5), ('lilun', 0.5)]
+}
 
 
 class AbstractStaff(object):
@@ -33,9 +44,7 @@ class AbstractStaff(object):
         'zhanshu',
 
         'biaoyan',
-        'youmo',
         'yingxiao',
-        'shichang',
 
         'zhimingdu',
     ]
@@ -66,22 +75,17 @@ class AbstractStaff(object):
         self.zhanshu = 0
 
         self.biaoyan = 0
-        self.youmo = 0
         self.yingxiao = 0
-        self.shichang = 0
 
         self.zhimingdu = 0
 
     def calculate_secondary_property(self):
-        # TODO
-        self.caozuo = 100
-        self.jingying = 100
-        self.baobing = 100
-        self.zhanshu = 100
-        self.biaoyan = 100
-        self.youmo = 100
-        self.yingxiao = 100
-        self.shichang = 100
+        for sp, info in SECONDARY_PROPERTY_TABLE.iteritems():
+            value = 0
+            for fp, param in info:
+                value += getattr(self, fp) * param * (6 * math.pow(1.15, self.level) + 1 * self.level)
+
+            setattr(self, sp, value)
 
     def strengthen(self, multiple):
         self.luoji += multiple
@@ -113,9 +117,7 @@ class AbstractStaff(object):
         msg.zhanshu = int(self.zhanshu)
 
         msg.biaoyan = int(self.biaoyan)
-        msg.youmo = int(self.youmo)
         msg.yingxiao = int(self.yingxiao)
-        msg.shichang = int(self.shichang)
 
         msg.zhimingdu = int(self.zhimingdu)
 

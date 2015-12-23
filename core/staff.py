@@ -9,7 +9,7 @@ Description:
 
 from dianjing.exception import GameException
 
-from core.abstract import AbstractStaff
+from core.abstract import AbstractStaff, SECONDARY_PROPERTY_TABLE
 from core.mongo import MongoStaff, MongoRecruit, MongoAuctionStaff
 from core.resource import Resource
 from core.common import CommonRecruitHot
@@ -60,14 +60,20 @@ class Staff(AbstractStaff):
         self.quality = config.quality
         self.skills = {int(k): v['level'] for k, v in data['skills'].iteritems()}
 
-        self.luoji = config.luoji + config.luoji * (self.level - 1) + data.get('luoji', 0)
-        self.minjie = config.luoji + config.luoji * (self.level - 1) + data.get('luoji', 0)
-        self.lilun = config.luoji + config.luoji * (self.level - 1) + data.get('luoji', 0)
-        self.wuxing = config.luoji + config.luoji * (self.level - 1) + data.get('luoji', 0)
-        self.meili = config.luoji + config.luoji * (self.level - 1) + data.get('luoji', 0)
+        self.luoji = config.luoji
+        self.minjie = config.minjie
+        self.lilun = config.lilun
+        self.wuxing = config.wuxing
+        self.meili = config.meili
 
         # 知名度没有默认值，只会在游戏过程中增加
         self.zhimingdu = data.get('zhimingdu', 0)
+
+        self.calculate_secondary_property()
+
+        for sp in SECONDARY_PROPERTY_TABLE.keys():
+            value = getattr(self, sp) + data.get(sp, 0)
+            setattr(self, sp, value)
 
 
 RECRUIT_ENUM_TO_CONFIG_ID = {
