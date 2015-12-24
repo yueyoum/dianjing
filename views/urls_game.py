@@ -75,6 +75,7 @@ urlpatterns = [
     url(r'^training/property/getreward/$', views.training.property_get_reward),
 
     url(r'^training/broadcast/start/$', views.training.broadcast_start),
+    url(r'^training/broadcast/detail/$', views.training.broadcast_detail),
     url(r'^training/broadcast/cancel/$', views.training.broadcast_cancel),
     url(r'^training/broadcast/speedup/$', views.training.broadcast_speedup),
     url(r'^training/broadcast/getreward/$', views.training.broadcast_get_reward),
