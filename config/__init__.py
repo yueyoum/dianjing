@@ -11,7 +11,6 @@ import os
 import json
 import zipfile
 
-
 from config.errormsg import ConfigErrorMessage
 from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigStaffLevel, ConfigStaffStatus
 from config.challenge import ConfigChallengeType, ConfigChallengeMatch
@@ -34,9 +33,10 @@ from config.activity_login_reward import ConfigLoginReward
 from config.active_value import ConfigActiveFunction, ConfigActiveReward
 from config.training_match import ConfigTrainingMatchReward
 from config.elite_match import ConfigEliteArea, ConfigEliteMatch
-
+from config.business_broadcast_reward import ConfigBusinessBroadCastReward
 
 _has_configed = False
+
 
 def load_config():
     from django.conf import settings
@@ -56,7 +56,6 @@ def load_config():
             z_file = c.config.path
         else:
             z_file = os.path.join(settings.BASE_DIR, 'config', 'config.zip')
-
 
     z = zipfile.ZipFile(z_file)
     for item in z.namelist():
@@ -144,6 +143,8 @@ def load_config():
             ConfigEliteMatch.initialize(data)
         elif item == 'elite_area.json':
             ConfigEliteArea.initialize(data)
+        elif item == 'business_broadcast_reward.json':
+            ConfigBusinessBroadCastReward.initialize(data)
 
     ConfigEliteArea.post_fix()
 

@@ -236,6 +236,9 @@ class MongoTrainingBroadcast(BaseDocument):
         'gold': -1,
         # 只要 gold > -1，肯定就是训练时间满了，不管是加速还是正常结束
         'key': '',
+        # 随机种子，给这个slot计算获得物品用的
+        # 因为每次计算并不保存，所以为了领奖时最终结果和先前计算的一样，需要相同的随机种子
+        'seed': 0,
     }
 
     @classmethod

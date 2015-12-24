@@ -18,7 +18,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='match.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=b'\n\x0bmatch.proto\x12\x11\x44ianjing.protocol\x1a\nclub.proto\"\xe4\x01\n\nStaffMatch\x12;\n\tstaff_one\x18\x01 \x02(\x0b\x32(.Dianjing.protocol.StaffMatch.MatchStaff\x12;\n\tstaff_two\x18\x02 \x02(\x0b\x32(.Dianjing.protocol.StaffMatch.MatchStaff\x1a\\\n\nMatchStaff\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0e\n\x06\x63\x61ozuo\x18\x02 \x02(\x05\x12\x10\n\x08jingying\x18\x03 \x02(\x05\x12\x0f\n\x07\x62\x61obing\x18\x04 \x02(\x05\x12\x0f\n\x07zhanshu\x18\x05 \x02(\x05\"\x9d\x01\n\tClubMatch\x12)\n\x08\x63lub_one\x18\x01 \x02(\x0b\x32\x17.Dianjing.protocol.Club\x12)\n\x08\x63lub_two\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\x12,\n\x05match\x18\x03 \x03(\x0b\x32\x1d.Dianjing.protocol.StaffMatch\x12\x0c\n\x04seed\x18\x04 \x01(\x05'
+  serialized_pb=b'\n\x0bmatch.proto\x12\x11\x44ianjing.protocol\x1a\nclub.proto\"\xd5\x01\n\nStaffMatch\x12\x36\n\tstaff_one\x18\x01 \x02(\x0b\x32#.Dianjing.protocol.StaffMatch.Staff\x12\x36\n\tstaff_two\x18\x02 \x02(\x0b\x32#.Dianjing.protocol.StaffMatch.Staff\x1aW\n\x05Staff\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0e\n\x06\x63\x61ozuo\x18\x02 \x02(\x05\x12\x10\n\x08jingying\x18\x03 \x02(\x05\x12\x0f\n\x07\x62\x61obing\x18\x04 \x02(\x05\x12\x0f\n\x07zhanshu\x18\x05 \x02(\x05\"\x9d\x01\n\tClubMatch\x12)\n\x08\x63lub_one\x18\x01 \x02(\x0b\x32\x17.Dianjing.protocol.Club\x12)\n\x08\x63lub_two\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\x12,\n\x05match\x18\x03 \x03(\x0b\x32\x1d.Dianjing.protocol.StaffMatch\x12\x0c\n\x04seed\x18\x04 \x01(\x05'
   ,
   dependencies=[club__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -26,43 +26,43 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
-_STAFFMATCH_MATCHSTAFF = _descriptor.Descriptor(
-  name='MatchStaff',
-  full_name='Dianjing.protocol.StaffMatch.MatchStaff',
+_STAFFMATCH_STAFF = _descriptor.Descriptor(
+  name='Staff',
+  full_name='Dianjing.protocol.StaffMatch.Staff',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='id', full_name='Dianjing.protocol.StaffMatch.MatchStaff.id', index=0,
+      name='id', full_name='Dianjing.protocol.StaffMatch.Staff.id', index=0,
       number=1, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='caozuo', full_name='Dianjing.protocol.StaffMatch.MatchStaff.caozuo', index=1,
+      name='caozuo', full_name='Dianjing.protocol.StaffMatch.Staff.caozuo', index=1,
       number=2, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='jingying', full_name='Dianjing.protocol.StaffMatch.MatchStaff.jingying', index=2,
+      name='jingying', full_name='Dianjing.protocol.StaffMatch.Staff.jingying', index=2,
       number=3, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='baobing', full_name='Dianjing.protocol.StaffMatch.MatchStaff.baobing', index=3,
+      name='baobing', full_name='Dianjing.protocol.StaffMatch.Staff.baobing', index=3,
       number=4, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='zhanshu', full_name='Dianjing.protocol.StaffMatch.MatchStaff.zhanshu', index=4,
+      name='zhanshu', full_name='Dianjing.protocol.StaffMatch.Staff.zhanshu', index=4,
       number=5, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -80,8 +80,8 @@ _STAFFMATCH_MATCHSTAFF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=183,
-  serialized_end=275,
+  serialized_start=173,
+  serialized_end=260,
 )
 
 _STAFFMATCH = _descriptor.Descriptor(
@@ -108,7 +108,7 @@ _STAFFMATCH = _descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[_STAFFMATCH_MATCHSTAFF, ],
+  nested_types=[_STAFFMATCH_STAFF, ],
   enum_types=[
   ],
   options=None,
@@ -118,7 +118,7 @@ _STAFFMATCH = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=47,
-  serialized_end=275,
+  serialized_end=260,
 )
 
 
@@ -169,13 +169,13 @@ _CLUBMATCH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=278,
-  serialized_end=435,
+  serialized_start=263,
+  serialized_end=420,
 )
 
-_STAFFMATCH_MATCHSTAFF.containing_type = _STAFFMATCH
-_STAFFMATCH.fields_by_name['staff_one'].message_type = _STAFFMATCH_MATCHSTAFF
-_STAFFMATCH.fields_by_name['staff_two'].message_type = _STAFFMATCH_MATCHSTAFF
+_STAFFMATCH_STAFF.containing_type = _STAFFMATCH
+_STAFFMATCH.fields_by_name['staff_one'].message_type = _STAFFMATCH_STAFF
+_STAFFMATCH.fields_by_name['staff_two'].message_type = _STAFFMATCH_STAFF
 _CLUBMATCH.fields_by_name['club_one'].message_type = club__pb2._CLUB
 _CLUBMATCH.fields_by_name['club_two'].message_type = club__pb2._CLUB
 _CLUBMATCH.fields_by_name['match'].message_type = _STAFFMATCH
@@ -184,10 +184,10 @@ DESCRIPTOR.message_types_by_name['ClubMatch'] = _CLUBMATCH
 
 StaffMatch = _reflection.GeneratedProtocolMessageType('StaffMatch', (_message.Message,), dict(
 
-  MatchStaff = _reflection.GeneratedProtocolMessageType('MatchStaff', (_message.Message,), dict(
-    DESCRIPTOR = _STAFFMATCH_MATCHSTAFF,
+  Staff = _reflection.GeneratedProtocolMessageType('Staff', (_message.Message,), dict(
+    DESCRIPTOR = _STAFFMATCH_STAFF,
     __module__ = 'match_pb2'
-    # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffMatch.MatchStaff)
+    # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffMatch.Staff)
     ))
   ,
   DESCRIPTOR = _STAFFMATCH,
@@ -195,7 +195,7 @@ StaffMatch = _reflection.GeneratedProtocolMessageType('StaffMatch', (_message.Me
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffMatch)
   ))
 _sym_db.RegisterMessage(StaffMatch)
-_sym_db.RegisterMessage(StaffMatch.MatchStaff)
+_sym_db.RegisterMessage(StaffMatch.Staff)
 
 ClubMatch = _reflection.GeneratedProtocolMessageType('ClubMatch', (_message.Message,), dict(
   DESCRIPTOR = _CLUBMATCH,

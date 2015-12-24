@@ -7,6 +7,7 @@ Description:    直播训练
 
 """
 
+import random
 import arrow
 
 from dianjing.exception import GameException
@@ -22,7 +23,7 @@ from core.signals import training_broadcast_start_signal
 from utils.api import Timerd
 from utils.message import MessagePipe
 
-from config import ConfigErrorMessage, ConfigBuilding, ConfigSkill
+from config import ConfigErrorMessage, ConfigBuilding, ConfigSkill, ConfigBusinessBroadCastReward
 
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 from protomsg.training_pb2 import (
@@ -80,6 +81,7 @@ class BroadcastSlotStatus(object):
         self.end_at = 0
         self.gold = -1
         self.key = ''
+        self.seed = 0
 
     @property
     def finished(self):
@@ -93,6 +95,24 @@ class BroadcastSlotStatus(object):
         passed_seconds = arrow.utcnow().timestamp - self.start_at
         return current_got_gold(self.server_id, self.char_id, self.staff_id, passed_seconds,
                                 self.current_building_level)
+
+    @property
+    def current_rewards(self):
+        # TODO real prob
+
+        random.seed(self.seed)
+
+        if self.finished:
+            passed_seconds = BROADCAST_TOTAL_SECONDS
+        else:
+            passed_seconds = arrow.utcnow().timestamp - self.start_at
+
+        probs = []
+        for i in range(passed_seconds / ConfigBusinessBroadCastReward.REWARD_INTERVAL_SECONDS):
+            probs.append(100)
+
+        return ConfigBusinessBroadCastReward.get_rewards(probs)
+
 
     def _check_slot_id(self):
         max_building_level = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).max_levels
@@ -141,6 +161,7 @@ class BroadcastSlotStatus(object):
         self.start_at = data['start_at']
         self.gold = data['gold']
         self.key = data['key']
+        self.seed = data['seed']
 
         if self.finished:
             self.status = BroadcastSlotStatus.FINISH
@@ -252,6 +273,7 @@ class TrainingBroadcast(object):
         slot_doc['start_at'] = arrow.utcnow().timestamp
         slot_doc['gold'] = -1
         slot_doc['key'] = key
+        slot_doc['seed'] = random.randint(1, 10000)
 
         MongoTrainingBroadcast.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -270,12 +292,17 @@ class TrainingBroadcast(object):
         )
 
     def cancel(self, slot_id):
+        """
+
+        :rtype : core.package.Drop
+        """
         slot = self.get_slot(slot_id)
         if slot.status != BroadcastSlotStatus.TRAINING:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_BROADCAST_NOT_TRAINING"))
 
         drop = Drop()
         drop.gold = slot.current_gold
+        drop.items = slot.current_rewards
         message = u"Broadcast Training Cancel For Staff {0}".format(slot.staff_id)
         Resource(self.server_id, self.char_id).save_drop(drop, message)
 
@@ -289,7 +316,7 @@ class TrainingBroadcast(object):
         )
 
         self.send_notify(slot_ids=[slot_id])
-        return drop.make_protomsg()
+        return drop
 
     def speedup(self, slot_id):
         slot = self.get_slot(slot_id)
@@ -334,13 +361,31 @@ class TrainingBroadcast(object):
 
         self.send_notify(slot_ids=[slot_id])
 
+    def get_drop(self, slot_id):
+        """
+
+        :rtype : core.package.Drop
+        """
+        slot = self.get_slot(slot_id)
+        if slot.status != BroadcastSlotStatus.FINISH or slot.status != BroadcastSlotStatus.TRAINING:
+            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_BROADCAST_NOT_TRAINING"))
+        
+        drop = Drop()
+        drop.items = slot.current_rewards
+        return drop
+
     def get_reward(self, slot_id):
+        """
+
+        :rtype : core.package.Drop
+        """
         slot = self.get_slot(slot_id)
         if slot.status != BroadcastSlotStatus.FINISH:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_BROADCAST_NOT_FINISH"))
 
         drop = Drop()
         drop.gold = slot.current_gold
+        drop.items = slot.current_rewards
         message = u"Broadcast Training Get Reward For Staff {0}".format(slot.staff_id)
         Resource(self.server_id, self.char_id).save_drop(drop, message)
 
@@ -352,7 +397,7 @@ class TrainingBroadcast(object):
         )
 
         self.send_notify(slot_ids=[slot_id])
-        return drop.make_protomsg()
+        return drop
 
     def send_notify(self, slot_ids=None):
         building_max_level = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).max_levels

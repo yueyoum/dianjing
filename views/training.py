@@ -26,6 +26,7 @@ from protomsg.training_pb2 import (
     TrainingBroadcastCancelResponse,
     TrainingBroadcastSpeedupResponse,
     TrainingBroadcastGetRewardResponse,
+    TrainingBroadcastDetailResponse,
 
     TrainingShopStartResponse,
 
@@ -168,6 +169,21 @@ def broadcast_start(request):
     return ProtobufResponse(response)
 
 
+def broadcast_detail(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    slot_id = request._proto.slot_id
+
+    tb = TrainingBroadcast(server_id, char_id)
+    drop = tb.get_drop(slot_id)
+
+    response = TrainingBroadcastDetailResponse()
+    response.ret = 0
+    response.drop.MergeFrom(drop.make_protomsg())
+    return ProtobufResponse(response)
+
+
 def broadcast_cancel(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
@@ -179,7 +195,7 @@ def broadcast_cancel(request):
 
     response = TrainingBroadcastCancelResponse()
     response.ret = 0
-    response.drop.MergeFrom(drop)
+    response.drop.MergeFrom(drop.make_protomsg())
     return ProtobufResponse(response)
 
 
@@ -208,8 +224,9 @@ def broadcast_get_reward(request):
 
     response = TrainingBroadcastGetRewardResponse()
     response.ret = 0
-    response.drop.MergeFrom(drop)
+    response.drop.MergeFrom(drop.make_protomsg())
     return ProtobufResponse(response)
+
 
 def shop_start(request):
     server_id = request._game_session.server_id
@@ -224,6 +241,7 @@ def shop_start(request):
     response = TrainingShopStartResponse()
     response.ret = 0
     return ProtobufResponse(response)
+
 
 def sponsor_start(request):
     server_id = request._game_session.server_id
