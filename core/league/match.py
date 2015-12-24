@@ -278,13 +278,13 @@ class LeagueMatch(object):
 
         match = ClubMatch(self.club_one_object, self.club_two_object)
         msg = match.start()
-        self.club_one_win = msg.club_one_win
-        self.points = match.points
-
-        self.club_one_object.save_winning_rate(match.get_club_one_fight_info())
-        self.club_two_object.save_winning_rate(match.get_club_two_fight_info())
-
-        self.after_match()
+        # self.club_one_win = msg.club_one_win
+        # self.points = match.points
+        #
+        # self.club_one_object.save_winning_rate(match.get_club_one_fight_info())
+        # self.club_two_object.save_winning_rate(match.get_club_two_fight_info())
+        #
+        # self.after_match()
         return msg
 
     def after_match(self):

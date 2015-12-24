@@ -127,12 +127,12 @@ class ConfigNPC(ConfigBase):
                 # NPC staff 不用设置知名度属性，因为它对战斗无用
                 staffs.append({
                     'id': staff_ids[i],
-                    'caozuo': random.randint(*v.caozuo),
-                    'baobing': random.randint(*v.baobing),
-                    'jingying': random.randint(*v.jingying),
-                    'zhanshu': random.randint(*v.zhanshu),
+                    'caozuo': random.randint(v.caozuo[0], v.caozuo[1]),
+                    'baobing': random.randint(v.baobing[0], v.baobing[1]),
+                    'jingying': random.randint(v.jingying[0], v.jingying[1]),
+                    'zhanshu': random.randint(v.zhanshu[0], v.zhanshu[1]),
 
-                    'skill_level': random.randint(*v.skill_level)
+                    'skill_level': random.randint(v.skill_level[0], v.skill_level[1])
                 })
 
             npc['staffs'] = staffs

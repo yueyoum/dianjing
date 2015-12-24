@@ -85,7 +85,7 @@ class AbstractStaff(object):
             for fp, param in info:
                 value += getattr(self, fp) * param * (6 * math.pow(1.15, self.level) + 1 * self.level)
 
-            setattr(self, sp, value)
+            setattr(self, sp, int(value))
 
     def strengthen(self, multiple):
         self.luoji += multiple
