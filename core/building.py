@@ -159,8 +159,8 @@ class BuildingManager(object):
         )
 
         end_at = doc['buildings'][str(building_id)]['end_at']
-        if end_at:
-            raise GameException(ConfigErrorMessage.get_error_id("BUILDING_IN_UPGRADING"))
+        if not end_at:
+            raise GameException(ConfigErrorMessage.get_error_id("BUILDING_CANNOT_SPEEDUP"))
 
         behind_seconds = end_at - arrow.utcnow().timestamp
         need_diamond = formula.training_speedup_need_diamond(behind_seconds)

@@ -93,8 +93,8 @@ def game_start_handler(server_id, char_id, **kwargs):
     ActivityLoginReward(server_id, char_id).send_notify()
     SignIn(server_id, char_id).send_notify()
 
-    AuctionManager(server_id, char_id).send_user_auction_notify()
-    AuctionManager(server_id, char_id).send_bidding_notify()
+    AuctionManager(server_id, char_id).send_bidding_list_notify()
+    AuctionManager(server_id, char_id).send_sell_list_notify()
 
     av = ActiveValue(server_id, char_id)
     av.send_function_notify()
