@@ -12,11 +12,13 @@ from config.base import ConfigBase
 class Package(object):
     __slots__ = ['id', 'attr_mode', 'attr_random_amount', 'attr_random_value',
 
-                 'luoji',
-                 'minjie',
-                 'lilun',
-                 'wuxing',
-                 'meili',
+                 'caozuo',
+                 'baobing',
+                 'jingying',
+                 'zhanshu',
+
+                 'biaoyan',
+                 'yingxiao',
 
                  'zhimingdu',
 
@@ -33,11 +35,13 @@ class Package(object):
         self.attr_random_amount = 0
         self.attr_random_value = 0
         
-        self.luoji = 0
-        self.minjie = 0
-        self.lilun = 0
-        self.wuxing = 0
-        self.meili = 0
+        self.caozuo = 0
+        self.baobing = 0
+        self.jingying = 0
+        self.zhanshu = 0
+
+        self.biaoyan = 0
+        self.yingxiao = 0
 
         self.zhimingdu = 0
         

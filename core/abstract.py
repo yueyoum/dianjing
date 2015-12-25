@@ -15,6 +15,24 @@ from config import ConfigStaffLevel
 from protomsg.club_pb2 import Club as MessageClub
 from protomsg.staff_pb2 import Staff as MessageStaff
 
+STAFF_BASE_ATTRS = [
+    'luoji',
+    'minjie',
+    'lilun',
+    'wuxing',
+    'meili',
+]
+
+STAFF_SECONDARY_ATTRS = [
+    'caozuo',
+    'baobing',
+    'jingying',
+    'zhanshu',
+
+    'biaoyan',
+    'yingxiao'
+]
+
 SECONDARY_PROPERTY_TABLE = {
     'caozuo': [('minjie', 1)],
     'baobing': [('luoji', 1)],

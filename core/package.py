@@ -10,20 +10,13 @@ Description:
 import json
 import random
 
+from core.abstract import STAFF_SECONDARY_ATTRS
 from config import ConfigPackage
 
 from protomsg.package_pb2 import (
     Drop as MsgDrop,
     Property as MsgProperty,
 )
-
-STAFF_BASE_ATTRS = [
-    'luoji',
-    'minjie',
-    'lilun',
-    'wuxing',
-    'meili',
-]
 
 
 # 这个对应编辑器中的 Package
@@ -34,18 +27,20 @@ class PackageBase(object):
             员工属性        STAFF_BASE_ATTRS
             所有属性        FIELDS
     """
-    FIELDS = STAFF_BASE_ATTRS + [
+    FIELDS = STAFF_SECONDARY_ATTRS + [
         'gold', 'diamond', 'staff_exp', 'club_renown',
     ]
 
     FULL_FIELDS = FIELDS + ['trainings', 'items']
 
     def __init__(self):
-        self.luoji = 0  # 员工 - 进攻
-        self.minjie = 0  # 员工 - 牵制
-        self.lilun = 0  # 员工 - 心态
-        self.wuxing = 0  # 员工 - 暴兵
-        self.meili = 0  # 员工 - 防守
+        self.caozuo = 0  # 员工 - 操作
+        self.baobing = 0  # 员工 - 暴兵
+        self.jingying = 0  # 员工 - 经营
+        self.zhanshu = 0  # 员工 - 战术
+
+        self.biaoyan = 0  # 员工 - 表演
+        self.yingxiao = 0  # 员工 - 营销
 
         self.zhimingdu = 0  # 员工 - 知名度
 
@@ -101,12 +96,12 @@ class PackageBase(object):
         if config.attr_mode == 2:
             # 完全随机
             for i in range(config.attr_random_amount):
-                attr = random.choice(STAFF_BASE_ATTRS)
+                attr = random.choice(STAFF_SECONDARY_ATTRS)
                 set_value(attr, config.attr_random_value)
 
             return p
 
-        selected_attrs = [attr for attr in STAFF_BASE_ATTRS if getattr(config, attr)]
+        selected_attrs = [attr for attr in STAFF_SECONDARY_ATTRS if getattr(config, attr)]
 
         if config.attr_mode == 4:
             # 设定的属性
@@ -195,7 +190,7 @@ class Drop(PackageBase):
 
 
 class Property(PackageBase):
-    FIELDS = STAFF_BASE_ATTRS + ['staff_exp']
+    FIELDS = STAFF_SECONDARY_ATTRS + ['staff_exp']
 
     def make_protomsg(self):
         msg = MsgProperty()

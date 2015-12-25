@@ -113,7 +113,6 @@ class BroadcastSlotStatus(object):
 
         return ConfigBusinessBroadCastReward.get_rewards(probs)
 
-
     def _check_slot_id(self):
         max_building_level = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).max_levels
         max_slots_amount = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).get_level(max_building_level).value2
@@ -367,9 +366,9 @@ class TrainingBroadcast(object):
         :rtype : core.package.Drop
         """
         slot = self.get_slot(slot_id)
-        if slot.status != BroadcastSlotStatus.FINISH or slot.status != BroadcastSlotStatus.TRAINING:
+        if slot.status not in (BroadcastSlotStatus.FINISH, BroadcastSlotStatus.TRAINING):
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_BROADCAST_NOT_TRAINING"))
-        
+
         drop = Drop()
         drop.items = slot.current_rewards
         return drop
