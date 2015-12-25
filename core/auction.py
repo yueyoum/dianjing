@@ -331,6 +331,7 @@ class AuctionManager(object):
             MongoBidding.db(self.server_id).insert_one(doc)
 
     def search(self):
+        # TODO: condition query
         docs = MongoAuctionStaff.db(self.server_id).find()
         return [AuctionItem.load_from_data(self.server_id, doc) for doc in docs]
 

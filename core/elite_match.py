@@ -81,6 +81,9 @@ class EliteNPCClub(AbstractClub):
 
 
 def get_next_restore_timestamp():
+    """
+
+    """
     now = arrow.utcnow()
     next_hour = now.replace(hours=1)
 
@@ -99,6 +102,11 @@ def get_next_restore_timestamp():
 
 
 class EliteMatch(object):
+    """
+    精英赛系统
+        精英赛相关功能处理
+    """
+
     __slots__ = ['server_id', 'char_id', 'cur_times']
 
     def __init__(self, server_id, char_id):
@@ -134,7 +142,9 @@ class EliteMatch(object):
 
     @classmethod
     def cronjob_clean_match_times(cls, server_id):
-        # 清理每关打过的次数
+        """
+        清理每关打过的次数
+        """
         # TODO
         for doc in MongoEliteMatch.db(server_id).find():
             updater = {}
@@ -151,6 +161,13 @@ class EliteMatch(object):
             )
 
     def open_area(self, aid, send_notify=True):
+        """
+        开放精英赛大区
+            1 获取大区配置: 无, 终止
+            2 检测玩家大区是否已经开放: 已开, 终止
+            3 将开放大区写入玩家数据库
+            4 同步到客户端
+        """
         config = ConfigEliteArea.get(aid)
         if not config:
             return
@@ -178,6 +195,13 @@ class EliteMatch(object):
             self.send_notify(area_id=aid)
 
     def cost_cur_times(self):
+        """
+        消耗关卡次数 -- 开始关卡时检测
+            1 是否有关卡次数, 无: 返回错误码; 有, continue
+            2 关卡次数减一
+            3 写入数据库
+            4 同步到客户端
+        """
         if self.cur_times <= 0:
             raise GameException(ConfigErrorMessage.get_error_id("ELITE_TOTAL_NO_TIMES"))
 
@@ -191,6 +215,16 @@ class EliteMatch(object):
         self.send_times_notify()
 
     def start(self, mid):
+        """
+        开始关卡
+            1 获取关卡配置
+            2 获取关卡大区ID
+            3 获取大取配置
+            4 获取club实例
+            5 检测关卡是否已经开启
+            6 检测挑战次数是否已经使用完
+            7
+        """
         config_match = ConfigEliteMatch.get(mid)
         if not config_match:
             raise GameException(ConfigErrorMessage.get_error_id("ELITE_MATCH_NOT_EXIST"))
@@ -254,7 +288,6 @@ class EliteMatch(object):
 
         self.send_notify(area_id=aid, match_id=mid)
         if next_match_id:
-            print 'send'
             self.send_notify(area_id=aid, match_id=next_match_id)
 
         return msg, drop.make_protomsg()
@@ -299,11 +332,13 @@ class EliteMatch(object):
                 notify_area_match = notify_area.match.add()
                 notify_area_match.id = mid
                 notify_area_match.cur_times = cur_times
-                print aid, mid, cur_times, notify_area.status
-                print notify
+
         MessagePipe(self.char_id).put(msg=notify)
 
     def send_times_notify(self):
+        """
+
+        """
         notify = EliteTimesNotify()
         notify.max_times = ELITE_MAX_TIMES
         notify.cur_times = self.cur_times
