@@ -63,7 +63,10 @@ class Shop(object):
             self.goods = data.get('goods', 0)
 
         self.config = ConfigBusinessShop.get(self.id)
-        self.sells_per_second = self.sells_per_hour / 3600.0
+
+    @property
+    def sells_per_second(self):
+        return self.sells_per_hour / 3600.0
 
     def set_staff(self, staff_id):
         if self.staff_id:
@@ -106,7 +109,7 @@ class Shop(object):
             if goods_amount > need_amount:
                 goods_amount = need_amount
 
-            self.goods = remained_amount + goods_amount
+            self.goods += goods_amount
 
         else:
             self.start_at = arrow.utcnow().timestamp
@@ -150,7 +153,6 @@ class Shop(object):
 
         self.staff_id = 0
         self.sells_per_hour = 0
-        self.sells_per_second = 0
         self.start_at = 0
         self.end_at = 0
         self.key = ''
