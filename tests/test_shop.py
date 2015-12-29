@@ -13,7 +13,7 @@ from dianjing.exception import GameException
 from core.mongo import MongoStaff, MongoTrainingShop, MongoCharacter
 from core.training import TrainingShop, TrainingBroadcast, TrainingExp
 
-from config import ConfigShop, ConfigClubLevel, ConfigErrorMessage
+from config import ConfigBusinessShop, ConfigClubLevel, ConfigErrorMessage
 
 
 class TestTrainingShop(object):
@@ -43,14 +43,14 @@ class TestTrainingShop(object):
             {'_id': 1},
             {'shops': 1}
         )
-        confs = ConfigShop.INSTANCES
+        confs = ConfigBusinessShop.INSTANCES
 
         for k, v in confs.iteritems():
             if v.unlock_type == 2:
                 assert str(k) in doc['shops'].keys()
 
     def test_trig_open_by_vip_level(self):
-        confs = ConfigShop.INSTANCES
+        confs = ConfigBusinessShop.INSTANCES
         level = 0
         for k, v in confs.iteritems():
             if v.unlock_type == 3:
@@ -69,7 +69,7 @@ class TestTrainingShop(object):
 
     def test_open(self):
         TrainingShop(1, 1)
-        keys = ConfigShop.INSTANCES.keys()
+        keys = ConfigBusinessShop.INSTANCES.keys()
         doc = MongoTrainingShop.db(1).find_one(
             {'_id': 1},
             {'shops': 1}
@@ -103,7 +103,7 @@ class TestTrainingShop(object):
             raise Exception('Error')
 
     def test_start_shop_not_open(self):
-        conf = ConfigShop.INSTANCES.keys()
+        conf = ConfigBusinessShop.INSTANCES.keys()
 
         test_id = 0
         doc = MongoTrainingShop.db(1).find_one({'_id': 1}, {'shops': 1})

@@ -10,13 +10,14 @@ Description:
 from config.base import ConfigBase
 
 class Item(object):
-    __slots__ = ['id', 'buy_type', 'buy_cost', 'sell_gold']
+    __slots__ = ['id', 'tp', 'buy_type', 'buy_cost', 'sell_gold', 'value']
     def __init__(self):
         self.id = 0
+        self.tp = 0
         self.buy_type = 0
         self.buy_cost = 0
         self.sell_gold = 0
-        
+        self.value = 0
 
 class ConfigItem(ConfigBase):
     EntityClass = Item

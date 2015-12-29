@@ -11,7 +11,8 @@ from config.base import ConfigBase
 
 class Shop(object):
     __slots__ = [
-        'id', 'unlock_type', 'unlock_value', 'income',
+        'id', 'unlock_type', 'unlock_value', 'goods', 'goods_max_amount',
+        'sells_per_hour',
         'mail_title', 'mail_content',
     ]
 
@@ -19,7 +20,9 @@ class Shop(object):
         self.id = 0
         self.unlock_type = 0
         self.unlock_value = 0
-        self.income = 0
+        self.goods = 0
+        self.goods_max_amount = 0
+        self.sells_per_hour = 0
         self.mail_title = ''
         self.mail_content = ''
 
@@ -39,7 +42,7 @@ class Sponsor(object):
         self.mail_content = ''
 
 
-class ConfigShop(ConfigBase):
+class ConfigBusinessShop(ConfigBase):
     EntityClass = Shop
     INSTANCES = {}
     FILTER_CACHE = {}
@@ -50,10 +53,10 @@ class ConfigShop(ConfigBase):
 
         :rtype : Shop
         """
-        return super(ConfigShop, cls).get(_id)
+        return super(ConfigBusinessShop, cls).get(_id)
 
 
-class ConfigSponsor(ConfigBase):
+class ConfigBusinessSponsor(ConfigBase):
     EntityClass = Sponsor
     INSTANCES = {}
     FILTER_CACHE = {}
@@ -64,4 +67,4 @@ class ConfigSponsor(ConfigBase):
 
         :rtype : Sponsor
         """
-        return super(ConfigSponsor, cls).get(_id)
+        return super(ConfigBusinessSponsor, cls).get(_id)

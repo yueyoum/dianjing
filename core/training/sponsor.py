@@ -20,7 +20,7 @@ from core.signals import training_sponsor_start_signal
 
 from utils.message import MessagePipe
 
-from config import ConfigErrorMessage, ConfigSponsor
+from config import ConfigErrorMessage, ConfigBusinessSponsor
 
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 from protomsg.training_pb2 import (
@@ -33,7 +33,7 @@ from protomsg.training_pb2 import (
 
 
 def get_remained_days(sponsor_id, start_at_timestamp):
-    config = ConfigSponsor.get(sponsor_id)
+    config = ConfigBusinessSponsor.get(sponsor_id)
 
     now = arrow.utcnow().to(settings.TIME_ZONE)
     start = arrow.get(start_at_timestamp).to(settings.TIME_ZONE)
@@ -74,7 +74,7 @@ class TrainingSponsor(object):
                     has_sponsors = True
 
                     # send mail
-                    config = ConfigSponsor.get(sponsor_id)
+                    config = ConfigBusinessSponsor.get(sponsor_id)
 
                     drop = Drop()
                     drop.gold = config.income
@@ -104,11 +104,11 @@ class TrainingSponsor(object):
             {'sponsors': 1}
         )
 
-        for sponsor_id in ConfigSponsor.INSTANCES.keys():
+        for sponsor_id in ConfigBusinessSponsor.INSTANCES.keys():
             if str(sponsor_id) in doc['sponsors']:
                 continue
 
-            if ConfigSponsor.get(sponsor_id).condition == challenge_id:
+            if ConfigBusinessSponsor.get(sponsor_id).condition == challenge_id:
                 break
         else:
             return
@@ -123,7 +123,7 @@ class TrainingSponsor(object):
         self.send_notify(sponsor_ids=[sponsor_id])
 
     def start(self, sponsor_id):
-        if not ConfigSponsor.get(sponsor_id):
+        if not ConfigBusinessSponsor.get(sponsor_id):
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_SPONSOR_NOT_EXIST"))
 
         doc = MongoTrainingSponsor.db(self.server_id).find_one(
@@ -161,7 +161,7 @@ class TrainingSponsor(object):
         else:
             act = ACT_INIT
             projection = {'sponsors': 1}
-            sponsor_ids = ConfigSponsor.INSTANCES.keys()
+            sponsor_ids = ConfigBusinessSponsor.INSTANCES.keys()
 
         doc = MongoTrainingSponsor.db(self.server_id).find_one(
             {'_id': self.char_id},

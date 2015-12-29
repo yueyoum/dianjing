@@ -256,6 +256,16 @@ class MongoTrainingShop(BaseDocument):
         'shops': {},
     }
 
+    SHOP_DOCUMENT = {
+        'staff_id': 0,
+        'sells_per_hour': 0,
+        'start_at': 0,
+        'end_at': 0,
+        'key': '',
+
+        'goods': 0,
+    }
+
     COLLECTION = 'training_shop'
 
 

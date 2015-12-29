@@ -13,14 +13,14 @@ from dianjing.exception import GameException
 from core.mongo import MongoTrainingSponsor
 from core.training.sponsor import TrainingSponsor
 
-from config import ConfigSponsor, ConfigErrorMessage
+from config import ConfigBusinessSponsor, ConfigErrorMessage
 
 
 one_day_seconds = 24 * 60 * 60
 
 
 def get_one_available_sponsor(challenge_id):
-    for k, v in ConfigSponsor.INSTANCES.iteritems():
+    for k, v in ConfigBusinessSponsor.INSTANCES.iteritems():
         if v.condition <= challenge_id:
             return k
 
@@ -38,18 +38,18 @@ class TestTrainingSponsor(object):
             {'sponsors': 1}
         )
 
-        for i in ConfigSponsor.INSTANCES.keys():
+        for i in ConfigBusinessSponsor.INSTANCES.keys():
             if str(i) not in doc['sponsors']:
                 return i
 
     def open_sponsor(self):
         sponsor_id = self.get_one_not_open_sponsor()
-        TrainingSponsor(1, 1).open(ConfigSponsor.get(sponsor_id).condition)
+        TrainingSponsor(1, 1).open(ConfigBusinessSponsor.get(sponsor_id).condition)
         return sponsor_id
 
     def test_open(self):
         sponsor_id = self.get_one_not_open_sponsor()
-        TrainingSponsor(1, 1).open(ConfigSponsor.get(sponsor_id).condition)
+        TrainingSponsor(1, 1).open(ConfigBusinessSponsor.get(sponsor_id).condition)
         doc = MongoTrainingSponsor.db(1).find_one(
             {'_id': 1},
             {'sponsors': 1}
@@ -60,7 +60,7 @@ class TestTrainingSponsor(object):
     def test_start_staff_not_exist(self):
         sponsor_id = 0
         for i in range(100000):
-            if i not in ConfigSponsor.INSTANCES.keys():
+            if i not in ConfigBusinessSponsor.INSTANCES.keys():
                 sponsor_id = i
                 break
         try:
@@ -105,7 +105,7 @@ class TestTrainingSponsor(object):
 
     def test_cronjob(self):
         sponsor_id = self.open_sponsor()
-        conf = ConfigSponsor.get(sponsor_id)
+        conf = ConfigBusinessSponsor.get(sponsor_id)
         for i in range(1, 20):
             MongoTrainingSponsor.db(1).update_one(
                 {'_id': i},

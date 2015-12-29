@@ -29,6 +29,8 @@ from protomsg.training_pb2 import (
     TrainingBroadcastDetailResponse,
 
     TrainingShopStartResponse,
+    TrainingShopSellResponse,
+    TrainingShopCancelResponse,
 
     TrainingSponsorStartResponse,
 )
@@ -240,6 +242,35 @@ def shop_start(request):
 
     response = TrainingShopStartResponse()
     response.ret = 0
+    return ProtobufResponse(response)
+
+
+def shop_sell(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    shop_id = request._proto.slot_id
+
+    ts = TrainingShop(server_id, char_id)
+    ts.sell(shop_id)
+
+    response = TrainingShopSellResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+
+def shop_cancel(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    shop_id = request._proto.slot_id
+
+    ts = TrainingShop(server_id, char_id)
+    drop = ts.cancel(shop_id)
+
+    response = TrainingShopCancelResponse()
+    response.ret = 0
+    response.drop.MergeFrom(drop.make_protomsg())
     return ProtobufResponse(response)
 
 

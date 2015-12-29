@@ -10,7 +10,7 @@ import json
 from django.http import HttpResponse
 
 from core.building import BuildingManager
-from core.training import TrainingExp, TrainingProperty, TrainingBroadcast
+from core.training import TrainingExp, TrainingProperty, TrainingBroadcast, TrainingShop
 from core.skill import SkillManager
 from core.auction import AuctionManager
 
@@ -68,6 +68,19 @@ def training_broadcast_callback(request):
     return HttpResponse()
 
 
+def training_shop_callback(request):
+    data = request.POST['data']
+    data = json.loads(data)
+
+    server_id = data['sid']
+    char_id = data['cid']
+    shop_id = data['shop_id']
+
+    ts = TrainingShop(server_id, char_id)
+    ts.callback(shop_id)
+    return HttpResponse()
+
+
 def skill_upgrade_callback(request):
     data = request.POST['data']
     data = json.loads(data)
@@ -91,5 +104,3 @@ def auction_staff_callback(request):
 
     AuctionManager(server_id, char_id).callback(item_id)
     return HttpResponse()
-
-

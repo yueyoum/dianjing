@@ -81,6 +81,9 @@ urlpatterns = [
     url(r'^training/broadcast/getreward/$', views.training.broadcast_get_reward),
 
     url(r'^training/shop/start/$', views.training.shop_start),
+    url(r'^training/shop/sell/$', views.training.shop_sell),
+    url(r'^training/shop/cancel/$', views.training.shop_cancel),
+
     url(r'^training/sponsor/start/$', views.training.sponsor_start),
 
     #
