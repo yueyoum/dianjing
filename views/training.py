@@ -234,7 +234,7 @@ def shop_start(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
-    shop_id = request._proto.slot_id
+    shop_id = request._proto.shop_id
     staff_id = request._proto.staff_id
 
     ts = TrainingShop(server_id, char_id)
@@ -249,7 +249,7 @@ def shop_sell(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
-    shop_id = request._proto.slot_id
+    shop_id = request._proto.shop_id
 
     ts = TrainingShop(server_id, char_id)
     ts.sell(shop_id)
@@ -263,7 +263,7 @@ def shop_cancel(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
-    shop_id = request._proto.slot_id
+    shop_id = request._proto.shop_id
 
     ts = TrainingShop(server_id, char_id)
     drop = ts.cancel(shop_id)

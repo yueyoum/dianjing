@@ -251,7 +251,6 @@ class EliteMatch(object):
 
         self.send_notify(area_id=aid, match_id=mid)
         if next_match_id:
-            print 'send'
             self.send_notify(area_id=aid, match_id=next_match_id)
 
         return msg, drop.make_protomsg()
@@ -296,8 +295,6 @@ class EliteMatch(object):
                 notify_area_match = notify_area.match.add()
                 notify_area_match.id = mid
                 notify_area_match.cur_times = cur_times
-                print aid, mid, cur_times, notify_area.status
-                print notify
         MessagePipe(self.char_id).put(msg=notify)
 
     def send_times_notify(self):

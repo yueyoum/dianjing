@@ -173,7 +173,9 @@ class Shop(object):
     def save(self):
         MongoTrainingShop.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'shops.{0}'.format(self.id): self.to_document()},
+            {'$set': {
+                'shops.{0}'.format(self.id): self.to_document()
+            }},
             upsert=True
         )
 
@@ -378,16 +380,18 @@ class TrainingShop(object):
                 notify_shop.sells_per_hour = 0
                 notify_shop.start_at = 0
                 notify_shop.end_at = 0
+                notify_shop.goods_amount = 0
             else:
                 shop_obj = Shop(self.server_id, self.char_id, i, this_shop)
-                if shop_obj.staff_id:
-                    notify_shop.status = TRAINING_SLOT_EMPTY
-                else:
+                if shop_obj.start_at:
                     notify_shop.status = TRAINING_SLOT_TRAINING
+                else:
+                    notify_shop.status = TRAINING_SLOT_EMPTY
 
                 notify_shop.staff_id = shop_obj.staff_id
                 notify_shop.sells_per_hour = shop_obj.sells_per_hour
                 notify_shop.start_at = shop_obj.start_at
                 notify_shop.end_at = shop_obj.end_at
+                notify_shop.goods_amount = shop_obj.goods
 
         MessagePipe(self.char_id).put(msg=notify)
