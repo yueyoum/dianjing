@@ -11,13 +11,12 @@ from config.base import ConfigBase
 
 
 class League(object):
-    __slots__ = ['id', 'day_reward', 'day_reward_lose', 'week_reward']
+    __slots__ = ['id', 'daily_reward', 'up_need_score']
 
     def __init__(self):
         self.id = 0
-        self.day_reward = 0
-        self.day_reward_lose = 0
-        self.week_reward = 0
+        self.daily_reward = 0
+        self.up_need_score = 0
 
 
 class ConfigLeague(ConfigBase):

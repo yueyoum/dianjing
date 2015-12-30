@@ -407,90 +407,6 @@ class MongoLadder(BaseDocument):
     INDEXES = ['order']
 
 
-# 联赛
-class MongoLeagueGroup(BaseDocument):
-    # 一个小组
-    # 联赛分组完后，就有很多个group
-
-    DOCUMENT = {
-        '_id': null,
-        'level': null,
-        # clubs 记录了这个小组中的14个club 信息
-        # 见下面的 CLUB_DOCUMENT
-        'clubs': {},
-        # events 是记录的这个小组里的一场一场的比赛，一共14场
-        # 要打哪一场是根据 LeagueGame.find_order() 来决定的，
-        # 这里面记录是的 event_id
-        'events': [],
-    }
-
-    # club 嵌入 group 中 (为了方便查询)
-    # 进行比赛查询过程是这样的：
-    # 从 group 中根据 order 取到 event_id
-    # 从 MongoLeagueEvent 中 根据 event_id 获取到 7 个pair
-    # 再遍历这7个pair，并一次取到 club_one_id 和 club_two_id
-    # 因为club是嵌套在group中的，所以可以直接获取 club信息
-    # 最后开打，保存
-    CLUB_DOCUMENT = {
-        # 真实玩家为 str(club id), npc为uuid
-        'club_id': 0,
-        'match_times': 0,
-        'win_times': 0,
-        'score': 0,
-
-        # 如果是npc 就会设置下面的几项
-        'club_name': "",
-        'manager_name': "",
-        'club_flag': 1,
-        'staffs': [],
-        # staff_winning_rate格式{staff_id: {'win': num, 'total': num}}
-        'staff_winning_rate': {}
-    }
-
-    STAFF_WINNING_RATE_DOCUMENT = {
-        'win': 0,
-        'total': 0
-    }
-
-    COLLECTION = "league_group"
-
-    @classmethod
-    def document_embedded_club(cls):
-        return cls.CLUB_DOCUMENT.copy()
-
-
-class MongoLeagueEvent(BaseDocument):
-    # 每个group中对应14场 event
-    # 每场会进行 7组比赛， pairs 的数量是7
-    # 所以一个group总共会打 14 * 7 = 98组比赛
-    DOCUMENT = {
-        '_id': null,
-        'start_at': 0,
-        'finished': False,
-        'pairs': {}
-    }
-
-    PAIR_DOCUMENT = {
-        'club_one': null,
-        'club_two': null,
-        'club_one_win': False,
-        # 战斗日志，用来回放
-        'log': "",
-        # 比分
-        'points': [0, 0]
-    }
-
-    COLLECTION = "league_event"
-
-    @classmethod
-    def document_embedded_pair(cls):
-        """
-
-        :rtype : dict
-        """
-        return cls.PAIR_DOCUMENT.copy()
-
-
 # 杯赛
 class MongoCup(BaseDocument):
     DOCUMENT = {
@@ -701,3 +617,29 @@ class MongoBidding(BaseDocument):
     COLLECTION = 'auction_bidding'
     INDEXES = ['items']
 
+
+# 用户联赛mongo
+class MongoLeague(BaseDocument):
+    """
+    联赛表
+    """
+    DOCUMENT = {
+        '_id': 0,
+        'score': 0,
+        'level': 1,
+        'daily_reward': "",
+        'times': 0,
+        'win_rate': 0,
+        'in_rise': False,
+        'match_club': {},  # club_id: MATCH_CLUB_DOCUMENT
+    }
+
+    MATCH_CLUB_DOCUMENT = {
+        'flag': 0,
+        'name': "",
+        'win_rate': 0,
+        'score': 0,
+    }
+
+    COLLECTION = 'league'
+    INDEXES = ['score']

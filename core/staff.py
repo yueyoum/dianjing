@@ -524,7 +524,7 @@ class StaffManger(object):
 
         self.send_notify(staff_ids=[staff_id])
 
-    def update_winning_rate(self, updater):
+    def update_winning_rate(self, updater, one=True):
         pass
 
     def get_winning_rate(self):

@@ -40,7 +40,6 @@ class LadderStore(object):
             {'$set': {'buy_times': {}}}
         )
 
-
     @staticmethod
     def refresh(server_id, force=False):
         with LadderStoreLock(server_id).lock():
@@ -76,7 +75,6 @@ class LadderStore(object):
 
         if doc['score'] < config.score:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_SCORE_NOT_ENOUGH"))
-
 
         MongoLadder.db(self.server_id).update_one(
             {'_id': str(self.char_id)},

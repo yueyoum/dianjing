@@ -87,8 +87,10 @@ urlpatterns = [
     url(r'^training/sponsor/start/$', views.training.sponsor_start),
 
     #
-    url(r'^league/statistics/$', views.league.get_statistics),
-    url(r'^league/log/$', views.league.get_log),
+    url(r'^league/challenge/$', views.league.challenge),
+    url(r'^league/report/$', views.league.report),
+    url(r'^league/refresh/$', views.league.refresh),
+    url(r'^league/reward/$', views.league.get_reward),
 
     url(r'^skill/locktoggle/$', views.skill.lock_toggle),
     url(r'^skill/wash/$', views.skill.wash),

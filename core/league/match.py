@@ -10,7 +10,7 @@ Description:
 import random
 
 from core.abstract import AbstractClub, AbstractStaff
-from core.mongo import MongoLeagueGroup, MongoStaff, MongoCharacter
+from core.mongo import MongoStaff, MongoCharacter
 from core.club import Club
 from core.mail import MailManager
 from core.match import ClubMatch
