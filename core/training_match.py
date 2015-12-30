@@ -179,8 +179,6 @@ class TrainingMatch(object):
 
             self.send_notify(ids=updated_ids)
 
-        return None
-
     def get_additional_reward(self, index):
         config = ConfigTrainingMatchReward.get(index)
         if not config:

@@ -43,7 +43,6 @@ def match(request):
 
     response = LadderMatchResponse()
     response.ret = 0
-    response.key = key
     response.match.MergeFrom(msg)
 
     return ProtobufResponse(response)

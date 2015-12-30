@@ -96,14 +96,15 @@ class LadderMatch(object):
 
     def start(self):
         return ClubMatch(self.club_one_object, self.club_two_object).start()
-        # msg = match.start()
 
-    def end_match(self):
-        pass
-        # self.club_one_win = msg.club_one_win
-        #
-        # self.after_match()
-        # return msg
+    def end_match(self, club_one_win):
+        if club_one_win == self.club_one_object.id:
+            self.club_one_win = True
+        else:
+            self.club_one_win = False
+
+        self.after_match()
+        return self.club_one_add_score
 
     def after_match(self):
         # 记录天梯战报

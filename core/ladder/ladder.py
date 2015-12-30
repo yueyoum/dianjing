@@ -8,8 +8,9 @@ Description:
 """
 
 import random
-
 import pymongo
+import arrow
+
 from dianjing.exception import GameException
 from core.mongo import MongoLadder
 from core.character import Character
@@ -17,6 +18,7 @@ from core.package import Drop
 from core.mail import MailManager
 from core.lock import Lock, LadderLock, LadderNPCLock, LockTimeOut
 from core.ladder.match import LadderClub, LadderMatch
+from core.staff import StaffManger
 
 from utils.functional import make_string_id
 from utils.message import MessagePipe
@@ -161,8 +163,6 @@ class Ladder(object):
         if target['order'] != doc['refreshed'][target_id]:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_TARGET_ORDER_CHANGED"))
 
-        # msg = None
-        # drop = Drop()
         self_lock_key = 'ladder_match_{0}'.format(self.char_id)
         target_lock_key = 'ladder_match_{0}'.format(target_id)
 
@@ -173,21 +173,40 @@ class Ladder(object):
                         club_one = MongoLadder.db(self.server_id).find_one({'_id': str(self.char_id)})
                         club_two = MongoLadder.db(self.server_id).find_one({'_id': str(target_id)})
 
-                        key = 'ladder' + ',' + str(self.char_id) + ',' + str(target_id)
-                        match = LadderMatch(self.server_id, club_one, club_two)
-                        return key, match.start()
-                        # drop.ladder_score = match.club_one_add_score
+                        key = str(arrow.utcnow().timestamp) + ',' + str(self.char_id) + ',' + str(target_id)
+                        msg = LadderMatch(self.server_id, club_one, club_two).start()
+                        msg.key = key
+                        return msg
 
                 except LockTimeOut:
                     raise GameException(ConfigErrorMessage.get_error_id("LADDER_TARGET_IN_MATCH"))
         except LockTimeOut:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_SELF_IN_MATCH"))
-        #
-        # self.make_refresh()
-        # return msg, drop.make_protomsg()
 
     def match_report(self, video, key, win_club, result):
-        pass
+        # TODO: video save
+        self.make_refresh()
+
+        timestamp, club_one_id, club_two_id = str(key).split(',')
+        if club_one_id != str(self.char_id):
+            return
+
+        MailManager(self.server_id, self.char_id).add(
+            title="Ladder Match Video",
+            content=video,
+        )
+
+        StaffManger(self.server_id, self.char_id).update_winning_rate(result)
+
+        club_one = MongoLadder.db(self.server_id).find_one({'_id': str(club_one_id)})
+        club_two = MongoLadder.db(self.server_id).find_one({'_id': str(club_two_id)})
+
+        match = LadderMatch(self.server_id, club_one, club_two)
+        match.end_match(win_club)
+
+        drop = Drop()
+        drop.ladder_score = match.club_one_add_score
+        return drop.make_protomsg()
 
     def add_score(self, score, send_notify=True):
         lock_key = "ladder_add_score_{0}".format(self.char_id)

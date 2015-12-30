@@ -11,7 +11,11 @@ from utils.http import ProtobufResponse
 
 from core.training_match import TrainingMatch
 
-from protomsg.training_match_pb2 import TrainingMatchReportResponse, TrainingMatchStartResponse
+from protomsg.training_match_pb2 import (
+    TrainingMatchReportResponse,
+    TrainingMatchStartResponse,
+    TrainingMatchGetAdditionalRewardResponse,
+)
 
 
 def start(request):
@@ -57,4 +61,9 @@ def additional(request):
     index = request._proto.index
     drop = TrainingMatch(server_id, char_id).get_additional_reward(index)
 
-    return drop
+    response = TrainingMatchGetAdditionalRewardResponse
+
+    response.ret = 0
+    response.drop = drop
+
+    return ProtobufResponse(response)
