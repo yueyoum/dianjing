@@ -524,6 +524,12 @@ class StaffManger(object):
 
         self.send_notify(staff_ids=[staff_id])
 
+    def update_winning_rate(self, updater):
+        pass
+
+    def get_winning_rate(self):
+        pass
+
     def send_notify(self, staff_ids=None):
         """
         员工信息同步接口

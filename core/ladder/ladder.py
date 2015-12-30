@@ -161,29 +161,33 @@ class Ladder(object):
         if target['order'] != doc['refreshed'][target_id]:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_TARGET_ORDER_CHANGED"))
 
-        msg = None
-        drop = Drop()
+        # msg = None
+        # drop = Drop()
         self_lock_key = 'ladder_match_{0}'.format(self.char_id)
         target_lock_key = 'ladder_match_{0}'.format(target_id)
 
         try:
-            with Lock(self.server_id).lock(timeout=2, key=self_lock_key):
+            with Lock(self.server_id).lock(timeout=60, key=self_lock_key):
                 try:
-                    with Lock(self.server_id).lock(timeout=2, key=target_lock_key):
+                    with Lock(self.server_id).lock(timeout=60, key=target_lock_key):
                         club_one = MongoLadder.db(self.server_id).find_one({'_id': str(self.char_id)})
                         club_two = MongoLadder.db(self.server_id).find_one({'_id': str(target_id)})
 
+                        key = 'ladder' + ',' + str(self.char_id) + ',' + str(target_id)
                         match = LadderMatch(self.server_id, club_one, club_two)
-                        msg = match.start()
-                        drop.ladder_score = match.club_one_add_score
+                        return key, match.start()
+                        # drop.ladder_score = match.club_one_add_score
 
                 except LockTimeOut:
                     raise GameException(ConfigErrorMessage.get_error_id("LADDER_TARGET_IN_MATCH"))
         except LockTimeOut:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_SELF_IN_MATCH"))
+        #
+        # self.make_refresh()
+        # return msg, drop.make_protomsg()
 
-        self.make_refresh()
-        return msg, drop.make_protomsg()
+    def match_report(self, video, key, win_club, result):
+        pass
 
     def add_score(self, score, send_notify=True):
         lock_key = "ladder_add_score_{0}".format(self.char_id)

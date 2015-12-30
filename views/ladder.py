@@ -17,6 +17,7 @@ from protomsg.ladder_pb2 import (
     LadderLeaderBoardResponse,
     LadderStoreBuyResponse,
     LadderStoreRefreshResponse,
+    LadderMatchReportResponse,
 )
 
 
@@ -38,12 +39,32 @@ def match(request):
     target_id = request._proto.id
 
     ladder = Ladder(server_id, char_id)
-    msg, drop = ladder.match(target_id)
+    key, msg = ladder.match(target_id)
 
     response = LadderMatchResponse()
     response.ret = 0
+    response.key = key
     response.match.MergeFrom(msg)
-    response.drop.MergeFrom(drop)
+
+    return ProtobufResponse(response)
+
+
+def match_report(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    video = request._proto.video
+    key = request._proto.key
+    win_club = request._proto.win_club
+    result = request._proto.result
+
+    ladder = Ladder(server_id, char_id)
+    drop = ladder.match_report(video, key, win_club, result)
+
+    response = LadderMatchReportResponse()
+    response.ret = 0
+    response.drop = drop
+
     return ProtobufResponse(response)
 
 

@@ -122,6 +122,7 @@ urlpatterns = [
     url(r'^ladder/leaderboard/$', views.ladder.get_leader_board),
     url(r'^ladder/store/buy/$', views.ladder.store_buy),
     url(r'^ladder/store/refresh/$', views.ladder.store_refresh),
+    url(r'^ladder/store/report/$', views.ladder.match_report),
 
     url(r'^cup/join/$', views.cup.join),
     url(r'^cup/infomation/$', views.cup.information),
@@ -140,7 +141,8 @@ urlpatterns = [
     url(r'^sell/trainingskill/$', views.bag.training_skill_sell),
 
     url(r'^trainingmatch/start/$', views.training_match.start),
-    url(r'^trainingmatch/reward/$', views.training_match.get_additional_reward),
+    url(r'^trainingmatch/report/$', views.training_match.match_report),
+    url(r'^trainingmatch/additional/$', views.training_match.additional),
 
     url(r'^elite/start/$', views.elite_match.start),
 
