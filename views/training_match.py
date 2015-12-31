@@ -25,11 +25,10 @@ def start(request):
     index = request._proto.club_index
 
     tm = TrainingMatch(server_id, char_id)
-    key, msg = tm.start(index)
+    msg = tm.start(index)
 
     response = TrainingMatchStartResponse()
     response.ret = 0
-    response.key = key
     response.match.MergeFrom(msg)
 
     return ProtobufResponse(response)

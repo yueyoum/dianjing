@@ -628,7 +628,7 @@ class MongoLeague(BaseDocument):
         'score': 0,
         'level': 1,
         'daily_reward': "",
-        'times': 0,
+        'challenge_times': 0,
         'win_rate': 0,
         'in_rise': False,
         'refresh_time': 0,
@@ -636,11 +636,15 @@ class MongoLeague(BaseDocument):
     }
 
     MATCH_CLUB_DOCUMENT = {
+        'status': 0,
+        'npc_club': False,
+        ################
         'flag': 0,
         'name': "",
         'win_rate': 0,
         'score': 0,
-        'status': 0,
+        'manager_name': "",
+        'staffs': []
     }
 
     COLLECTION = 'league'

@@ -167,7 +167,7 @@ class Challenge(object):
         #     challenge_id=challenge_id,
         #     win=msg.club_one_win,
         # )
-
+        msg.key = ""
         return msg, Drop().make_protomsg()
 
     def send_notify(self):

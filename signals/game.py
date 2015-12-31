@@ -19,7 +19,7 @@ from core.training import TrainingExp, TrainingProperty, TrainingBroadcast, Trai
 from core.bag import BagTrainingSkill, BagItem
 from core.challenge import Challenge
 from core.building import BuildingManager
-from core.league import League
+from core.league.league import LeagueManger
 from core.friend import FriendManager
 from core.mail import MailManager
 from core.task import TaskManager, RandomEvent
@@ -73,7 +73,7 @@ def game_start_handler(server_id, char_id, **kwargs):
 
     Challenge(server_id, char_id).send_notify()
     BuildingManager(server_id, char_id).send_notify()
-    League(server_id, char_id).send_notify()
+    LeagueManger(server_id, char_id).send_notify()
     FriendManager(server_id, char_id).send_notify()
     MailManager(server_id, char_id).send_notify()
     TaskManager(server_id, char_id).send_notify()

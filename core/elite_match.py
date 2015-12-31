@@ -221,6 +221,7 @@ class EliteMatch(object):
         npc_club = EliteNPCClub(mid)
         match = ClubMatch(club, npc_club)
         msg = match.start()
+        msg.key = ""
 
         updater = {'has_matched': True}
 

@@ -141,7 +141,9 @@ class TrainingMatch(object):
         opposite_club = Club.loads(club_data)
 
         match = ClubMatch(club, opposite_club)
-        return key, match.start()
+        msg = match.start()
+        msg.key = key
+        return msg
 
     def check_key(self, key):
         # TODO: check timestamp
