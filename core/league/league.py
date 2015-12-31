@@ -29,6 +29,7 @@ from protomsg.league_pb2 import (
     SUCCESS,
     UNABLE,
 )
+from protomsg.staff_pb2 import Staff as ClubDetail
 
 from utils.message import MessagePipe
 
@@ -225,7 +226,18 @@ class LeagueManger(object):
             self.notify_match_club()
 
     def get_club_detail(self, club_id):
-        pass
+        staffs = Club(self.server_id, int(club_id)).match_staffs
+
+        msg = ClubDetail()
+        msg.id = 0
+        msg.id = 0
+        msg.id = 0
+        msg.id = 0
+        msg.id = 0
+        msg.id = 0
+        msg.id = 0
+
+        return None
 
     def notify_user_info(self):
         doc = MongoLeague.db(self.server_id).find_one({'_id': self.char_id}, {'level': 1, 'win_rate': 1})
@@ -245,12 +257,13 @@ class LeagueManger(object):
         else:
             act = ACT_UPDATE
             projection = {'match_club.{0}'.format(club_id): 1 for club_id in club_ids}
+            projection = dict({'1': 'test'}, **projection)
 
         doc = MongoLeague.db(self.server_id).find_one({'_id': self.char_id}, projection)
 
         notify = LeagueClubNotify()
         notify.act = act
-        notify.end_time = arrow.utcnow()
+        notify.end_time = doc['refresh_time']
 
         for club in doc['match_clb']:
             notify_club = notify.match.add()
