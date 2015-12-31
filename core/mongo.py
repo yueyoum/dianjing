@@ -631,6 +631,7 @@ class MongoLeague(BaseDocument):
         'times': 0,
         'win_rate': 0,
         'in_rise': False,
+        'refresh_time': 0,
         'match_club': {},  # club_id: MATCH_CLUB_DOCUMENT
     }
 
@@ -639,6 +640,7 @@ class MongoLeague(BaseDocument):
         'name': "",
         'win_rate': 0,
         'score': 0,
+        'status': 0,
     }
 
     COLLECTION = 'league'

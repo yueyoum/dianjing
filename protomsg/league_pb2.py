@@ -3,6 +3,7 @@
 
 import sys
 _b=sys.version_info[0]<3 and (lambda x:x) or (lambda x:x.encode('latin1'))
+from google.protobuf.internal import enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
@@ -15,20 +16,55 @@ _sym_db = _symbol_database.Default()
 
 import common_pb2 as common__pb2
 import match_pb2 as match__pb2
-import club_pb2 as club__pb2
 import training_match_pb2 as training__match__pb2
 import package_pb2 as package__pb2
+import staff_pb2 as staff__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='league.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0cleague.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\x0bmatch.proto\x1a\nclub.proto\x1a\x14training_match.proto\x1a\rpackage.proto\"B\n\x10LeagueUserNotify\x12\r\n\x05score\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x10\n\x08win_rate\x18\x03 \x02(\x05\":\n\x16LeagueChallengeRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63lub_id\x18\x02 \x02(\t\"d\n\x17LeagueChallengeResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x02(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"Y\n\nLeagueCLub\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0c\n\x04\x66lag\x18\x02 \x02(\x05\x12\r\n\x05score\x18\x03 \x02(\x05\x12\x10\n\x08win_rate\x18\x04 \x02(\x05\x12\x0e\n\x06status\x18\x05 \x01(\x05\"y\n\x10LeagueCLubNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12,\n\x05\x63lubs\x18\x02 \x03(\x0b\x32\x1d.Dianjing.protocol.LeagueCLub\x12&\n\x03\x61\x63t\x18\x03 \x02(\x0e\x32\x19.Dianjing.protocol.Action\"\x7f\n\x18LeagueMatchReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x10\n\x08win_club\x18\x03 \x02(\t\x12\x33\n\x06result\x18\x04 \x02(\x0b\x32#.Dianjing.protocol.StaffMatchResult\"9\n\x19LeagueMatchReportResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\",\n\x19LeagueMatchRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\":\n\x1aLeagueMatchRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\")\n\x16LeagueGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"M\n\x17LeagueGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12%\n\x04\x64rop\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Drop')
+  serialized_pb=_b('\n\x0cleague.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\x0bmatch.proto\x1a\x14training_match.proto\x1a\rpackage.proto\x1a\x0bstaff.proto\"\x80\x01\n\x10LeagueUserNotify\x12\r\n\x05score\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\r\n\x05level\x18\x03 \x02(\x05\x12\x10\n\x08win_rate\x18\x04 \x02(\x05\x12\x17\n\x0f\x63hallenge_times\x18\x05 \x02(\x05\x12\x12\n\nhas_reward\x18\x06 \x01(\x08\":\n\x16LeagueChallengeRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63lub_id\x18\x02 \x02(\t\"d\n\x17LeagueChallengeResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x02(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"\x83\x01\n\nLeagueClub\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0c\n\x04\x66lag\x18\x02 \x02(\x05\x12\r\n\x05score\x18\x03 \x02(\x05\x12\x10\n\x08win_rate\x18\x04 \x02(\x05\x12\x38\n\x06status\x18\x05 \x01(\x0e\x32(.Dianjing.protocol.LeagueChallengeStatus\"\x8b\x01\n\x10LeagueClubNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12,\n\x05\x63lubs\x18\x02 \x03(\x0b\x32\x1d.Dianjing.protocol.LeagueClub\x12\x10\n\x08\x65nd_time\x18\x03 \x02(\x03\x12&\n\x03\x61\x63t\x18\x04 \x02(\x0e\x32\x19.Dianjing.protocol.Action\"\x7f\n\x18LeagueMatchReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x10\n\x08win_club\x18\x03 \x02(\t\x12\x33\n\x06result\x18\x04 \x02(\x0b\x32#.Dianjing.protocol.StaffMatchResult\"9\n\x19LeagueMatchReportResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\",\n\x19LeagueMatchRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\":\n\x1aLeagueMatchRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\")\n\x16LeagueGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"^\n\x17LeagueGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x02(\x0b\x32\x17.Dianjing.protocol.Drop\"E\n\x1eLeagueGetClubDetailInfoRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x12\n\nclub_index\x18\x02 \x02(\t\"h\n\x1fLeagueGetClubDetailInfoResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\'\n\x05staff\x18\x03 \x03(\x0b\x32\x18.Dianjing.protocol.Staff*D\n\x15LeagueChallengeStatus\x12\x08\n\x04\x41\x42LE\x10\x00\x12\x08\n\x04\x46\x41IL\x10\x01\x12\x0b\n\x07SUCCESS\x10\x02\x12\n\n\x06UNABLE\x10\x03')
   ,
-  dependencies=[common__pb2.DESCRIPTOR,match__pb2.DESCRIPTOR,club__pb2.DESCRIPTOR,training__match__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
+  dependencies=[common__pb2.DESCRIPTOR,match__pb2.DESCRIPTOR,training__match__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,staff__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
+_LEAGUECHALLENGESTATUS = _descriptor.EnumDescriptor(
+  name='LeagueChallengeStatus',
+  full_name='Dianjing.protocol.LeagueChallengeStatus',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='ABLE', index=0, number=0,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='FAIL', index=1, number=1,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='SUCCESS', index=2, number=2,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='UNABLE', index=3, number=3,
+      options=None,
+      type=None),
+  ],
+  containing_type=None,
+  options=None,
+  serialized_start=1291,
+  serialized_end=1359,
+)
+_sym_db.RegisterEnumDescriptor(_LEAGUECHALLENGESTATUS)
+
+LeagueChallengeStatus = enum_type_wrapper.EnumTypeWrapper(_LEAGUECHALLENGESTATUS)
+ABLE = 0
+FAIL = 1
+SUCCESS = 2
+UNABLE = 3
 
 
 
@@ -47,16 +83,37 @@ _LEAGUEUSERNOTIFY = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='level', full_name='Dianjing.protocol.LeagueUserNotify.level', index=1,
-      number=2, type=5, cpp_type=1, label=2,
+      name='session', full_name='Dianjing.protocol.LeagueUserNotify.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='level', full_name='Dianjing.protocol.LeagueUserNotify.level', index=2,
+      number=3, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='win_rate', full_name='Dianjing.protocol.LeagueUserNotify.win_rate', index=2,
-      number=3, type=5, cpp_type=1, label=2,
+      name='win_rate', full_name='Dianjing.protocol.LeagueUserNotify.win_rate', index=3,
+      number=4, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='challenge_times', full_name='Dianjing.protocol.LeagueUserNotify.challenge_times', index=4,
+      number=5, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='has_reward', full_name='Dianjing.protocol.LeagueUserNotify.has_reward', index=5,
+      number=6, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -72,8 +129,8 @@ _LEAGUEUSERNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=111,
-  serialized_end=177,
+  serialized_start=113,
+  serialized_end=241,
 )
 
 
@@ -110,8 +167,8 @@ _LEAGUECHALLENGEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=179,
-  serialized_end=237,
+  serialized_start=243,
+  serialized_end=301,
 )
 
 
@@ -155,49 +212,49 @@ _LEAGUECHALLENGERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=239,
-  serialized_end=339,
+  serialized_start=303,
+  serialized_end=403,
 )
 
 
 _LEAGUECLUB = _descriptor.Descriptor(
-  name='LeagueCLub',
-  full_name='Dianjing.protocol.LeagueCLub',
+  name='LeagueClub',
+  full_name='Dianjing.protocol.LeagueClub',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='name', full_name='Dianjing.protocol.LeagueCLub.name', index=0,
+      name='name', full_name='Dianjing.protocol.LeagueClub.name', index=0,
       number=1, type=9, cpp_type=9, label=2,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='flag', full_name='Dianjing.protocol.LeagueCLub.flag', index=1,
+      name='flag', full_name='Dianjing.protocol.LeagueClub.flag', index=1,
       number=2, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='score', full_name='Dianjing.protocol.LeagueCLub.score', index=2,
+      name='score', full_name='Dianjing.protocol.LeagueClub.score', index=2,
       number=3, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='win_rate', full_name='Dianjing.protocol.LeagueCLub.win_rate', index=3,
+      name='win_rate', full_name='Dianjing.protocol.LeagueClub.win_rate', index=3,
       number=4, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='status', full_name='Dianjing.protocol.LeagueCLub.status', index=4,
-      number=5, type=5, cpp_type=1, label=1,
+      name='status', full_name='Dianjing.protocol.LeagueClub.status', index=4,
+      number=5, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -214,35 +271,42 @@ _LEAGUECLUB = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=341,
-  serialized_end=430,
+  serialized_start=406,
+  serialized_end=537,
 )
 
 
 _LEAGUECLUBNOTIFY = _descriptor.Descriptor(
-  name='LeagueCLubNotify',
-  full_name='Dianjing.protocol.LeagueCLubNotify',
+  name='LeagueClubNotify',
+  full_name='Dianjing.protocol.LeagueClubNotify',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.LeagueCLubNotify.session', index=0,
+      name='session', full_name='Dianjing.protocol.LeagueClubNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='clubs', full_name='Dianjing.protocol.LeagueCLubNotify.clubs', index=1,
+      name='clubs', full_name='Dianjing.protocol.LeagueClubNotify.clubs', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='act', full_name='Dianjing.protocol.LeagueCLubNotify.act', index=2,
-      number=3, type=14, cpp_type=8, label=2,
+      name='end_time', full_name='Dianjing.protocol.LeagueClubNotify.end_time', index=2,
+      number=3, type=3, cpp_type=2, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='act', full_name='Dianjing.protocol.LeagueClubNotify.act', index=3,
+      number=4, type=14, cpp_type=8, label=2,
       has_default_value=False, default_value=1,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -259,8 +323,8 @@ _LEAGUECLUBNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=432,
-  serialized_end=553,
+  serialized_start=540,
+  serialized_end=679,
 )
 
 
@@ -311,8 +375,8 @@ _LEAGUEMATCHREPORTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=555,
-  serialized_end=682,
+  serialized_start=681,
+  serialized_end=808,
 )
 
 
@@ -349,8 +413,8 @@ _LEAGUEMATCHREPORTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=684,
-  serialized_end=741,
+  serialized_start=810,
+  serialized_end=867,
 )
 
 
@@ -380,8 +444,8 @@ _LEAGUEMATCHREFRESHREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=743,
-  serialized_end=787,
+  serialized_start=869,
+  serialized_end=913,
 )
 
 
@@ -418,8 +482,8 @@ _LEAGUEMATCHREFRESHRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=789,
-  serialized_end=847,
+  serialized_start=915,
+  serialized_end=973,
 )
 
 
@@ -449,8 +513,8 @@ _LEAGUEGETREWARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=849,
-  serialized_end=890,
+  serialized_start=975,
+  serialized_end=1016,
 )
 
 
@@ -469,8 +533,15 @@ _LEAGUEGETREWARDRESPONSE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='drop', full_name='Dianjing.protocol.LeagueGetRewardResponse.drop', index=1,
-      number=2, type=11, cpp_type=10, label=2,
+      name='session', full_name='Dianjing.protocol.LeagueGetRewardResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='drop', full_name='Dianjing.protocol.LeagueGetRewardResponse.drop', index=2,
+      number=3, type=11, cpp_type=10, label=2,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -487,26 +558,114 @@ _LEAGUEGETREWARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=892,
-  serialized_end=969,
+  serialized_start=1018,
+  serialized_end=1112,
+)
+
+
+_LEAGUEGETCLUBDETAILINFOREQUEST = _descriptor.Descriptor(
+  name='LeagueGetClubDetailInfoRequest',
+  full_name='Dianjing.protocol.LeagueGetClubDetailInfoRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.LeagueGetClubDetailInfoRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='club_index', full_name='Dianjing.protocol.LeagueGetClubDetailInfoRequest.club_index', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1114,
+  serialized_end=1183,
+)
+
+
+_LEAGUEGETCLUBDETAILINFORESPONSE = _descriptor.Descriptor(
+  name='LeagueGetClubDetailInfoResponse',
+  full_name='Dianjing.protocol.LeagueGetClubDetailInfoResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.LeagueGetClubDetailInfoResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.LeagueGetClubDetailInfoResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='staff', full_name='Dianjing.protocol.LeagueGetClubDetailInfoResponse.staff', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1185,
+  serialized_end=1289,
 )
 
 _LEAGUECHALLENGERESPONSE.fields_by_name['match'].message_type = match__pb2._CLUBMATCH
+_LEAGUECLUB.fields_by_name['status'].enum_type = _LEAGUECHALLENGESTATUS
 _LEAGUECLUBNOTIFY.fields_by_name['clubs'].message_type = _LEAGUECLUB
 _LEAGUECLUBNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _LEAGUEMATCHREPORTREQUEST.fields_by_name['result'].message_type = training__match__pb2._STAFFMATCHRESULT
 _LEAGUEGETREWARDRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
+_LEAGUEGETCLUBDETAILINFORESPONSE.fields_by_name['staff'].message_type = staff__pb2._STAFF
 DESCRIPTOR.message_types_by_name['LeagueUserNotify'] = _LEAGUEUSERNOTIFY
 DESCRIPTOR.message_types_by_name['LeagueChallengeRequest'] = _LEAGUECHALLENGEREQUEST
 DESCRIPTOR.message_types_by_name['LeagueChallengeResponse'] = _LEAGUECHALLENGERESPONSE
-DESCRIPTOR.message_types_by_name['LeagueCLub'] = _LEAGUECLUB
-DESCRIPTOR.message_types_by_name['LeagueCLubNotify'] = _LEAGUECLUBNOTIFY
+DESCRIPTOR.message_types_by_name['LeagueClub'] = _LEAGUECLUB
+DESCRIPTOR.message_types_by_name['LeagueClubNotify'] = _LEAGUECLUBNOTIFY
 DESCRIPTOR.message_types_by_name['LeagueMatchReportRequest'] = _LEAGUEMATCHREPORTREQUEST
 DESCRIPTOR.message_types_by_name['LeagueMatchReportResponse'] = _LEAGUEMATCHREPORTRESPONSE
 DESCRIPTOR.message_types_by_name['LeagueMatchRefreshRequest'] = _LEAGUEMATCHREFRESHREQUEST
 DESCRIPTOR.message_types_by_name['LeagueMatchRefreshResponse'] = _LEAGUEMATCHREFRESHRESPONSE
 DESCRIPTOR.message_types_by_name['LeagueGetRewardRequest'] = _LEAGUEGETREWARDREQUEST
 DESCRIPTOR.message_types_by_name['LeagueGetRewardResponse'] = _LEAGUEGETREWARDRESPONSE
+DESCRIPTOR.message_types_by_name['LeagueGetClubDetailInfoRequest'] = _LEAGUEGETCLUBDETAILINFOREQUEST
+DESCRIPTOR.message_types_by_name['LeagueGetClubDetailInfoResponse'] = _LEAGUEGETCLUBDETAILINFORESPONSE
+DESCRIPTOR.enum_types_by_name['LeagueChallengeStatus'] = _LEAGUECHALLENGESTATUS
 
 LeagueUserNotify = _reflection.GeneratedProtocolMessageType('LeagueUserNotify', (_message.Message,), dict(
   DESCRIPTOR = _LEAGUEUSERNOTIFY,
@@ -529,19 +688,19 @@ LeagueChallengeResponse = _reflection.GeneratedProtocolMessageType('LeagueChalle
   ))
 _sym_db.RegisterMessage(LeagueChallengeResponse)
 
-LeagueCLub = _reflection.GeneratedProtocolMessageType('LeagueCLub', (_message.Message,), dict(
+LeagueClub = _reflection.GeneratedProtocolMessageType('LeagueClub', (_message.Message,), dict(
   DESCRIPTOR = _LEAGUECLUB,
   __module__ = 'league_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.LeagueCLub)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.LeagueClub)
   ))
-_sym_db.RegisterMessage(LeagueCLub)
+_sym_db.RegisterMessage(LeagueClub)
 
-LeagueCLubNotify = _reflection.GeneratedProtocolMessageType('LeagueCLubNotify', (_message.Message,), dict(
+LeagueClubNotify = _reflection.GeneratedProtocolMessageType('LeagueClubNotify', (_message.Message,), dict(
   DESCRIPTOR = _LEAGUECLUBNOTIFY,
   __module__ = 'league_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.LeagueCLubNotify)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.LeagueClubNotify)
   ))
-_sym_db.RegisterMessage(LeagueCLubNotify)
+_sym_db.RegisterMessage(LeagueClubNotify)
 
 LeagueMatchReportRequest = _reflection.GeneratedProtocolMessageType('LeagueMatchReportRequest', (_message.Message,), dict(
   DESCRIPTOR = _LEAGUEMATCHREPORTREQUEST,
@@ -584,6 +743,20 @@ LeagueGetRewardResponse = _reflection.GeneratedProtocolMessageType('LeagueGetRew
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.LeagueGetRewardResponse)
   ))
 _sym_db.RegisterMessage(LeagueGetRewardResponse)
+
+LeagueGetClubDetailInfoRequest = _reflection.GeneratedProtocolMessageType('LeagueGetClubDetailInfoRequest', (_message.Message,), dict(
+  DESCRIPTOR = _LEAGUEGETCLUBDETAILINFOREQUEST,
+  __module__ = 'league_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.LeagueGetClubDetailInfoRequest)
+  ))
+_sym_db.RegisterMessage(LeagueGetClubDetailInfoRequest)
+
+LeagueGetClubDetailInfoResponse = _reflection.GeneratedProtocolMessageType('LeagueGetClubDetailInfoResponse', (_message.Message,), dict(
+  DESCRIPTOR = _LEAGUEGETCLUBDETAILINFORESPONSE,
+  __module__ = 'league_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.LeagueGetClubDetailInfoResponse)
+  ))
+_sym_db.RegisterMessage(LeagueGetClubDetailInfoResponse)
 
 
 # @@protoc_insertion_point(module_scope)

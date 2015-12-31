@@ -21,7 +21,14 @@ from config.league import ConfigLeague
 from config.errormsg import ConfigErrorMessage
 
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
-from protomsg.league_pb2 import LeagueUserNotify, LeagueCLubNotify
+from protomsg.league_pb2 import (
+    LeagueUserNotify,
+    LeagueClubNotify,
+    ABLE,
+    FAIL,
+    SUCCESS,
+    UNABLE,
+)
 
 from utils.message import MessagePipe
 
@@ -103,13 +110,16 @@ class LeagueManger(object):
 
             updater[str(doc['_id'])] = club
 
-        if updater:
-            MongoLeague.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {'$set': {'match_club': updater}}
-            )
+        refresh_time = arrow.utcnow().timestamp + 6 * 3600
+        MongoLeague.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'refresh_time': refresh_time,
+                'match_club': updater
+            }}
+        )
 
-            self.notify_match_club()
+        self.notify_match_club()
 
     def report(self, key, win_club, result):
         timestamp, club_one, club_two = str(key).split(',')
@@ -214,26 +224,33 @@ class LeagueManger(object):
 
             self.notify_match_club()
 
+    def get_club_detail(self, club_id):
+        pass
+
     def notify_user_info(self):
         doc = MongoLeague.db(self.server_id).find_one({'_id': self.char_id}, {'level': 1, 'win_rate': 1})
 
         notify = LeagueUserNotify()
+        notify.score = doc['score']
         notify.level = doc['level']
         notify.win_rate = doc['win_rate']
+        notify.challenge_times = doc['challenge_times']
+        notify.win_rate = doc['has_reward']
         MessagePipe(self.char_id).put(msg=notify)
 
     def notify_match_club(self, act=ACT_INIT, club_ids=None):
         # notify user match club info
         if not club_ids:
-            projection = {'match_club': 1}
+            projection = {'match_club': 1, 'refresh_time': 1}
         else:
             act = ACT_UPDATE
             projection = {'match_club.{0}'.format(club_id): 1 for club_id in club_ids}
 
         doc = MongoLeague.db(self.server_id).find_one({'_id': self.char_id}, projection)
 
-        notify = LeagueCLubNotify()
+        notify = LeagueClubNotify()
         notify.act = act
+        notify.end_time = arrow.utcnow()
 
         for club in doc['match_clb']:
             notify_club = notify.match.add()
@@ -241,6 +258,7 @@ class LeagueManger(object):
             notify_club.name = club['name']
             notify_club.score = club['score']
             notify_club.win_rate = club['win_rate']
+            notify_club.status = ABLE
 
         MessagePipe(self.char_id).put(msg=notify)
 

@@ -76,3 +76,19 @@ def get_reward(request):
 
     return ProtobufResponse(response)
 
+
+def get_detail(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    club_id = request._prot.club_id
+
+    l = LeagueManger(server_id, char_id)
+    msg = l.get_club_detail(club_id)
+
+    response = LeagueChallengeResponse()
+    response.ret = 0
+    response.staff.MergeFrom(msg)
+
+    return ProtobufResponse(response)
+

@@ -91,6 +91,7 @@ urlpatterns = [
     url(r'^league/report/$', views.league.report),
     url(r'^league/refresh/$', views.league.refresh),
     url(r'^league/reward/$', views.league.get_reward),
+    url(r'^league/detail/$', views.league.get_detail),
 
     url(r'^skill/locktoggle/$', views.skill.lock_toggle),
     url(r'^skill/wash/$', views.skill.wash),
