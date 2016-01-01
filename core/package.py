@@ -31,7 +31,7 @@ class PackageBase(object):
         'gold', 'diamond', 'staff_exp', 'club_renown',
     ]
 
-    FULL_FIELDS = FIELDS + ['trainings', 'items']
+    FULL_FIELDS = FIELDS + ['trainings', 'items', 'staffs']
 
     def __init__(self):
         self.caozuo = 0  # 员工 - 操作
@@ -51,6 +51,7 @@ class PackageBase(object):
 
         self.trainings = []  # 角色 - 训练书
         self.items = []  # 角色 - 道具
+        self.staffs = []
 
     def __str__(self):
         data = {}
@@ -83,6 +84,7 @@ class PackageBase(object):
         # 技能训练书
         p.trainings = config.trainings
         p.items = config.items
+        p.staffs = config.staffs
 
         set_value('gold', config.gold)
         set_value('diamond', config.diamond)
@@ -131,7 +133,7 @@ class PackageBase(object):
 # 对应只会给角色加的物品。 关卡掉落，奖励，邮件附件 这些
 class Drop(PackageBase):
     FIELDS = ['gold', 'diamond', 'club_renown']
-    # 还有 trainings, items
+    # 还有 trainings, items, staffs
 
     def make_protomsg(self):
         msg = MsgDrop()
@@ -155,6 +157,9 @@ class Drop(PackageBase):
             msg_item.id = _id
             msg_item.amount = _amount
 
+        if self.staffs:
+            msg.staffs.extend(self.staffs)
+
         return msg
 
     def to_json(self):
@@ -171,6 +176,9 @@ class Drop(PackageBase):
 
         if self.items:
             data['items'] = self.items
+
+        if self.staffs:
+            data['staffs'] = self.staffs
 
         return json.dumps(data)
 

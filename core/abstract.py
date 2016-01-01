@@ -46,7 +46,7 @@ SECONDARY_PROPERTY_TABLE = {
 
 class AbstractStaff(object):
     __slots__ = [
-        'server_id', 'char_id', 'id', 'race', 'level', 'exp', 'status', 'quality',
+        'server_id', 'char_id', 'id', 'race', 'level', 'exp', 'status', 'quality', 'star',
         'skills',
         'active_qianban_ids',
 
@@ -77,6 +77,7 @@ class AbstractStaff(object):
         self.exp = 0
         self.status = 0
         self.quality = 0
+        self.star = 0
 
         self.skills = {}
         self.active_qianban_ids = []
@@ -122,6 +123,7 @@ class AbstractStaff(object):
         msg.cur_exp = self.exp
         msg.max_exp = ConfigStaffLevel.get(self.level).exp[self.quality]
         msg.status = self.status
+        msg.star = self.star
 
         msg.luoji = int(self.luoji)
         msg.minjie = int(self.minjie)

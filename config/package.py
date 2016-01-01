@@ -27,6 +27,7 @@ class Package(object):
 
                  'trainings',
                  'items',
+                 'staffs',
                  ]
     
     def __init__(self):
@@ -53,6 +54,7 @@ class Package(object):
 
         self.trainings = []
         self.items = []
+        self.staffs = []
 
 
 class ConfigPackage(ConfigBase):

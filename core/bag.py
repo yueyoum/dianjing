@@ -17,7 +17,7 @@ from core.resource import Resource
 
 from utils.message import MessagePipe
 
-from config import ConfigTrainingSkillItem, ConfigItem, ConfigErrorMessage
+from config import ConfigTrainingSkillItem, ConfigItem, ConfigErrorMessage, ConfigStaff
 
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 from protomsg.bag_pb2 import (
@@ -96,8 +96,10 @@ class BagBase(object):
 
         if self.MONGODB_FIELD_NAME == BagItem.MONGODB_FIELD_NAME:
             s = item_got_signal
-        else:
+        elif self.MONGODB_FIELD_NAME == BagTrainingSkill.MONGODB_FIELD_NAME:
             s = training_skill_item_got_signal
+        else:
+            return
 
         s.send(
             sender=None,
@@ -209,3 +211,23 @@ class BagItem(BagBase):
 
     MSG_NOTIFY = ItemNotify
     MSG_REMOVE_NOTIFY = ItemRemoveNotify
+
+class BagStaffCard(BagBase):
+    MONGODB_FIELD_NAME = 'staff_cards'
+    ERROR_NAME_NOT_EXIST = 'STAFF_CARD_NOT_EXIST'
+    ERROR_NAME_NOT_ENOUGH = 'STAFF_CARD_NOT_ENOUGH'
+
+    CONFIG = ConfigStaff
+
+    MSG_NOTIFY = XXX
+    MSG_REMOVE_NOTIFY = XXX
+
+    @staticmethod
+    def make_id(staff_id, star):
+        return (staff_id << 8) + star
+
+    @staticmethod
+    def parse_id(_id):
+        staff_id = _id >> 8
+        star = _id - (staff_id << 8)
+        return staff_id, star

@@ -128,6 +128,7 @@ class MongoStaff(BaseDocument):
     STAFF_DOCUMENT = {
         'exp': 0,
         'level': 1,
+        'star': 0,
         'status': null,
         'skills': {},
         'winning_rate': {},
@@ -170,6 +171,8 @@ class MongoBag(BaseDocument):
         'training_skills': {},
         # 道具 id: amount
         'items': {},
+        # 员工卡 <staff id with star>: amount
+        'staff_cards': {}
     }
 
     COLLECTION = 'bag'
