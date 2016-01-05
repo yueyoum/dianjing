@@ -26,6 +26,7 @@ from utils.message import MessagePipe
 from protomsg.staff_pb2 import StaffRecruitNotify, StaffNotify, StaffRemoveNotify
 from protomsg.staff_pb2 import RECRUIT_DIAMOND, RECRUIT_GOLD, RECRUIT_HOT, RECRUIT_NORMAL
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
+from protomsg.training_match_pb2 import StaffMatchResult
 
 
 def staff_level_up_need_exp(staff_id, current_level):
@@ -524,11 +525,35 @@ class StaffManger(object):
 
         self.send_notify(staff_ids=[staff_id])
 
-    def update_winning_rate(self, updater, one=True):
-        pass
+    def update_winning_rate(self, results, one=True):
+        """
+        更新玩家 Staff 种族胜率
+        """
+        updater = {}
+        for result in results:
+            if one:
+                # 挑战者
+                updater['staffs.{0}.total'.format(result.staff_one)] = 1
+                if result.staff_one_win:
+                    updater['staffs.{0}.win'.format(result.staff_one)] = 1
+            else:
+                # 被挑战者
+                updater['staffs.{0}.total'.format(result.staff_two)] = 1
+                if not result.staff_one_win:
+                    updater['staffs.{0}.win'.format(result.staff_two)] = 1
 
-    def get_winning_rate(self):
-        pass
+        MongoStaff.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$inc': updater}
+        )
+
+    def get_winning_rate(self, staff_ids):
+        """
+        获取 Staff 胜率
+        """
+        projection = {'staffs.{0}.winning_rate'.format(staff_id): 1 for staff_id in staff_ids}
+        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, projection)
+        return doc['staffs']
 
     def send_notify(self, staff_ids=None):
         """
