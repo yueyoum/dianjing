@@ -26,7 +26,6 @@ from utils.message import MessagePipe
 from protomsg.staff_pb2 import StaffRecruitNotify, StaffNotify, StaffRemoveNotify
 from protomsg.staff_pb2 import RECRUIT_DIAMOND, RECRUIT_GOLD, RECRUIT_HOT, RECRUIT_NORMAL
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
-from protomsg.training_match_pb2 import StaffMatchResult
 
 
 def staff_level_up_need_exp(staff_id, current_level):
@@ -533,14 +532,16 @@ class StaffManger(object):
         for result in results:
             if one:
                 # 挑战者
-                updater['staffs.{0}.total'.format(result.staff_one)] = 1
+                race_two = ConfigStaff.get(result.staff_two).race
+                updater['staffs.{0}.winning_rate.{1}.total'.format(result.staff_one, race_two)] = 1
                 if result.staff_one_win:
-                    updater['staffs.{0}.win'.format(result.staff_one)] = 1
+                    updater['staffs.{0}.winning_rate.{1}.win'.format(result.staff_one, race_two)] = 1
             else:
                 # 被挑战者
-                updater['staffs.{0}.total'.format(result.staff_two)] = 1
+                race_one = ConfigStaff.get(result.staff_one).race
+                updater['staffs.{0}.winning_rate.{1}.total'.format(result.staff_two, race_one)] = 1
                 if not result.staff_one_win:
-                    updater['staffs.{0}.win'.format(result.staff_two)] = 1
+                    updater['staffs.{0}.winning_rate.{1}.win'.format(result.staff_two, race_one)] = 1
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},

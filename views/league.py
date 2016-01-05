@@ -15,6 +15,7 @@ from protomsg.league_pb2 import (
     LeagueMatchReportResponse,
     LeagueMatchRefreshResponse,
     LeagueGetRewardResponse,
+    LeagueGetClubDetailInfoResponse,
 )
 
 
@@ -87,32 +88,24 @@ def get_detail(request):
     l = LeagueManger(server_id, char_id)
     staffs = l.get_club_detail(club_id)
 
-    response = LeagueChallengeResponse()
+    response = LeagueGetClubDetailInfoResponse()
     response.ret = 0
 
-    for staff in staffs:
-        s = response.staff.add()
+    for k, v in staffs.iteritems():
+        print k, v
+        s = response.detail.add()
+        s.staff_id = k
 
-        s.id = staff['id']
-        s.level = staff['level']
-        s.cur_exp = staff['cur_exp']
-        s.max_exp = staff['max_exp']
-        s.status = staff['status']
-
-        s.luoji = staff['luoji']
-        s.minjie = staff['minjie']
-        s.lilun = staff['lilun']
-        s.wuxing = staff['wuxing']
-        s.meili = staff['meili']
-
-        s.caozuo = staff['caozuo']
-        s.jingying = staff['jingying']
-        s.baobing = staff['baobing']
-        s.zhanshu = staff['zhanshu']
-
-        s.biaoyan = staff['biaoyan']
-        s.yingxiao = staff['yingxiao']
-        s.zhimingdu = staff['zhimingdu']
+        if v['wining_rate']:
+            for race, value in v['winning_rate'].iteritems():
+                rate = s.rate.add()
+                rate.race = race
+                rate.rate = value['win'] * 100 / value['total']
+        else:
+            for i in range(1, 4):
+                rate = s.rate.add()
+                rate.race = i
+                rate.rate = 0
 
     return ProtobufResponse(response)
 

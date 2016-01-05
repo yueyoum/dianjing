@@ -62,7 +62,7 @@ def get_league_refresh_time(server_id):
 class LeagueNpcStaff(AbstractStaff):
     __slots__ = []
 
-    def     __init__(self, data):
+    def __init__(self, data):
         super(LeagueNpcStaff, self).__init__()
 
         self.id = data['id']
@@ -198,7 +198,7 @@ class LeagueManger(object):
         # 检查是否在晋级赛状态
         doc_self = MongoLeague.db(self.server_id).find_one({'_id': self.char_id})
         if doc_self['in_rise']:
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+            raise GameException(ConfigErrorMessage.get_error_id("IN_RISE_IN_RANK"))
         # 刷新
         self.refresh(diamond_refresh, doc_self['level'], doc_self['score'])
         # 同步到客户端
@@ -254,7 +254,6 @@ class LeagueManger(object):
                     updater[str(doc['_id'])] = club
 
         # 玩家club不足， npc填补
-        print need_num, need_npc
         if need_npc > 0:
             npc_clubs = ConfigNPC.random_npcs(need_npc, league_level=level)
             for npc_club in npc_clubs:
@@ -271,7 +270,11 @@ class LeagueManger(object):
 
                 for s in npc_club['staffs']:
                     staff = s
-                    staff['race_win_rate'] = {'total': random.randint(30, 75), 'win': random.randint(20, 30)}
+                    staff['race_win_rate'] = {
+                        '1': {'total': random.randint(30, 75), 'win': random.randint(20, 30)},
+                        '2': {'total': random.randint(30, 75), 'win': random.randint(20, 30)},
+                        '3': {'total': random.randint(30, 75), 'win': random.randint(20, 30)}
+                    }
                     staffs[str(s['id'])] = staff
 
                 club['staffs'] = staffs
@@ -348,11 +351,6 @@ class LeagueManger(object):
                         npc_updater['match_club.{0}.staffs.{1}.race_win_rate.win'.format(club_two_id, r.staff_two)] = 1
 
                 # 更新到数据库
-                print '----------------------------'
-                print npc_updater
-                print '----------------------------'
-                for d in npc_updater:
-                    print d
                 MongoLeague.db(self.server_id).update_one(
                     {'_id': self.char_id},
                     {'$inc': npc_updater}
@@ -464,7 +462,7 @@ class LeagueManger(object):
 
         if doc['daily_reward'] == str(arrow.now().date()):
             # 已领取
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+            raise GameException(ConfigErrorMessage.get_error_id("DAILY_REWARD_HAVE_GOT"))
         # 获取奖励配置
         conf = ConfigLeague.get(doc['level'])
         drop = Drop.generate(conf.daily_reward)
@@ -498,7 +496,7 @@ class LeagueManger(object):
 
         # 非可挑战状态，不能再次挑战
         if doc['match_club'][club_id]['status'] != ABLE:
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+            raise GameException(ConfigErrorMessage.get_error_id("CLUB_HAVE_MATCH_CHALLENGE"))
 
         # 实例化俱乐部
         club_self = Club(self.server_id, self.char_id)
@@ -513,17 +511,12 @@ class LeagueManger(object):
         return msg
 
     def get_club_detail(self, club_id):
-        # TODO: 真实的数据
-        staffs = []
-        doc = MongoLeague.db(self.server_id).find_one({'_id': self.char_id}, {'match_club.{0}'.format(club_id): 1})
+        doc = MongoLeague.db(self.server_id).find_one({'_id': self.char_id}, {'match_club.{0}.staffs'.format(club_id): 1})
         if doc['match_club'].get(club_id, {}).get('npc_club', False):
-            for staff in doc['match_club'][club_id]['staffs']:
-                staffs.append(LeagueNpcStaff(staff).make_protomsg())
+            return doc['match_club'].get(club_id, {}).get('staffs', {})
         else:
             staff_ids = Club(self.server_id, int(club_id)).match_staffs
-            for staff_id in staff_ids:
-                staffs.append(StaffManger(self.server_id, self.char_id).get_staff(staff_id).make_protomsg())
-        return staffs
+            return StaffManger(self.server_id, int(club_id)).get_winning_rate(staff_ids)
 
     def send_notify(self):
         self.notify_user_info()
