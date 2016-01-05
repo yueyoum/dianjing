@@ -625,11 +625,14 @@ class MongoLeague(BaseDocument):
     """
     DOCUMENT = {
         '_id': 0,
-        'score': 0,
+        'score': 1,
         'level': 1,
         'daily_reward': "",
         'challenge_times': 0,
-        'win_rate': 0,
+        'win_rate': {
+            'total': 0,
+            'win': 0,
+        },
         'in_rise': False,
         'refresh_time': 0,
         'match_club': {},  # club_id: MATCH_CLUB_DOCUMENT
@@ -641,11 +644,14 @@ class MongoLeague(BaseDocument):
         ################
         'flag': 0,
         'name': "",
-        'win_rate': 0,
+        'win_rate': {
+            'total': 0,
+            'win': 0,
+        },
         'score': 0,
         'manager_name': "",
-        'staffs': []
+        'staffs': {}
     }
 
     COLLECTION = 'league'
-    INDEXES = ['score']
+    INDEXES = ['level']
