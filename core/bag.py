@@ -10,7 +10,6 @@ from contextlib import contextmanager
 
 from dianjing.exception import GameException
 
-from core.mongo import MongoBag
 from core.signals import item_got_signal, training_skill_item_got_signal
 from core.package import Drop
 from core.resource import Resource
@@ -27,6 +26,7 @@ from protomsg.bag_pb2 import (
     ItemRemoveNotify,
 )
 
+MongoBag = None
 
 class BagBase(object):
     MONGODB_FIELD_NAME = None
@@ -211,23 +211,3 @@ class BagItem(BagBase):
 
     MSG_NOTIFY = ItemNotify
     MSG_REMOVE_NOTIFY = ItemRemoveNotify
-
-class BagStaffCard(BagBase):
-    MONGODB_FIELD_NAME = 'staff_cards'
-    ERROR_NAME_NOT_EXIST = 'STAFF_CARD_NOT_EXIST'
-    ERROR_NAME_NOT_ENOUGH = 'STAFF_CARD_NOT_ENOUGH'
-
-    CONFIG = ConfigStaff
-
-    MSG_NOTIFY = XXX
-    MSG_REMOVE_NOTIFY = XXX
-
-    @staticmethod
-    def make_id(staff_id, star):
-        return (staff_id << 8) + star
-
-    @staticmethod
-    def parse_id(_id):
-        staff_id = _id >> 8
-        star = _id - (staff_id << 8)
-        return staff_id, star

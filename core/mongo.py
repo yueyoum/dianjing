@@ -164,18 +164,15 @@ class MongoStaff(BaseDocument):
 
 
 # 背包
-class MongoBag(BaseDocument):
+class MongoItem(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        # 技能训练书 id: amount
-        'training_skills': {},
-        # 道具 id: amount
-        'items': {},
-        # 员工卡 <staff id with star>: amount
-        'staff_cards': {}
+        # id: meta_data
+        # id 是物品的唯一ID， meta data 就是其数据
+        # 不同类型的物品，记录的数据不一样
     }
 
-    COLLECTION = 'bag'
+    COLLECTION = 'item'
 
 
 # 经验训练
