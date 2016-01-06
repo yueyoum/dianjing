@@ -80,13 +80,13 @@ class ItemId(object):
         type_id, rest = item_id.split(':', 1)
         obj.type_id = int(type_id)
 
-        if type_id == ITEM_EQUIPMENT:
+        if obj.type_id == ITEM_EQUIPMENT:
             oid, unique_id = rest.split(':')
             obj.oid = int(oid)
             obj.unique_id = unique_id
             return obj
 
-        if type_id == ITEM_STAFF_CARD:
+        if obj.type_id == ITEM_STAFF_CARD:
             oid, star = rest.split(':')
             obj.oid = int(oid)
             obj.star = int(star)
@@ -154,7 +154,7 @@ class SimpleItem(BaseItem):
         MongoItem.db(server_id).update_one({'_id': char_id}, {'$inc': {item_id: amount}})
         metadata = cls.get_metadata(server_id, char_id, item_id)
 
-        obj = cls(item_id, metadata)
+        obj = cls(item_id, metadata, **kwargs)
 
         notify = ItemNotify()
         notify.act = ACT_UPDATE
@@ -350,7 +350,7 @@ class ItemManager(object):
         if not ConfigStaff.get(oid):
             raise RuntimeError("no staff card {0}".format(oid))
 
-        StaffCard.add(self.server_id, self.char_id, ITEM_STAFF_CARD, oid, amount=amount)
+        StaffCard.add(self.server_id, self.char_id, ITEM_STAFF_CARD, oid, amount=amount, star=0)
 
     def remove(self, item_id, amount):
         id_object = ItemId.parse(item_id)
