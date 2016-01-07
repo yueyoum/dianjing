@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='item.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\nitem.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xcd\x01\n\tAttribute\x12\x0c\n\x04star\x18\x01 \x02(\x05\x12\r\n\x05luoji\x18\x02 \x01(\x05\x12\x0e\n\x06minjie\x18\x03 \x01(\x05\x12\r\n\x05lilun\x18\x04 \x01(\x05\x12\x0e\n\x06wuxing\x18\x05 \x01(\x05\x12\r\n\x05meili\x18\x06 \x01(\x05\x12\x0e\n\x06\x63\x61ozuo\x18\x07 \x01(\x05\x12\x10\n\x08jingying\x18\x08 \x01(\x05\x12\x0f\n\x07\x62\x61obing\x18\t \x01(\x05\x12\x0f\n\x07zhanshu\x18\n \x01(\x05\x12\x0f\n\x07\x62iaoyan\x18\x0b \x01(\x05\x12\x10\n\x08yingxiao\x18\x0c \x01(\x05\"\x84\x01\n\x04Item\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0b\n\x03oid\x18\x02 \x02(\x05\x12\x0e\n\x06\x61mount\x18\x03 \x02(\x05\x12\'\n\x02tp\x18\x04 \x02(\x0e\x32\x1b.Dianjing.protocol.ItemType\x12*\n\x04\x61ttr\x18\x05 \x01(\x0b\x32\x1c.Dianjing.protocol.Attribute\"m\n\nItemNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12&\n\x05items\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Item\"0\n\x10ItemRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t*\xa3\x01\n\x08ItemType\x12\x1c\n\x18ITEM_TRAINING_EXPENDABLE\x10\x01\x12\x13\n\x0fITEM_SHOP_GOODS\x10\x02\x12\x1d\n\x19ITEM_BUILDING_CERTIFICATE\x10\x03\x12\x1c\n\x18ITEM_SKILL_TRAINING_BOOK\x10\x04\x12\x12\n\x0eITEM_EQUIPMENT\x10\x0b\x12\x13\n\x0fITEM_STAFF_CARD\x10\x15')
+  serialized_pb=_b('\n\nitem.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xcd\x01\n\tAttribute\x12\x0c\n\x04star\x18\x01 \x02(\x05\x12\r\n\x05luoji\x18\x02 \x01(\x05\x12\x0e\n\x06minjie\x18\x03 \x01(\x05\x12\r\n\x05lilun\x18\x04 \x01(\x05\x12\x0e\n\x06wuxing\x18\x05 \x01(\x05\x12\r\n\x05meili\x18\x06 \x01(\x05\x12\x0e\n\x06\x63\x61ozuo\x18\x07 \x01(\x05\x12\x10\n\x08jingying\x18\x08 \x01(\x05\x12\x0f\n\x07\x62\x61obing\x18\t \x01(\x05\x12\x0f\n\x07zhanshu\x18\n \x01(\x05\x12\x0f\n\x07\x62iaoyan\x18\x0b \x01(\x05\x12\x10\n\x08yingxiao\x18\x0c \x01(\x05\"\x84\x01\n\x04Item\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0b\n\x03oid\x18\x02 \x02(\x05\x12\x0e\n\x06\x61mount\x18\x03 \x02(\x05\x12\'\n\x02tp\x18\x04 \x02(\x0e\x32\x1b.Dianjing.protocol.ItemType\x12*\n\x04\x61ttr\x18\x05 \x01(\x0b\x32\x1c.Dianjing.protocol.Attribute\"m\n\nItemNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12&\n\x05items\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Item\"0\n\x10ItemRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t\">\n\x0fItemSellRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\x12\x0e\n\x06\x61mount\x18\x03 \x02(\x05\"0\n\x10ItemSellResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*\xb1\x01\n\x08ItemType\x12\x1c\n\x18ITEM_TRAINING_EXPENDABLE\x10\x01\x12\x13\n\x0fITEM_SHOP_GOODS\x10\x02\x12\x1d\n\x19ITEM_BUILDING_CERTIFICATE\x10\x03\x12\x1c\n\x18ITEM_SKILL_TRAINING_BOOK\x10\x04\x12\x12\n\x0eITEM_EQUIPMENT\x10\x0b\x12\x13\n\x0fITEM_STAFF_CARD\x10\x15\x12\x0c\n\x08ITEM_BOX\x10\x63')
   ,
   dependencies=[common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -56,11 +56,15 @@ _ITEMTYPE = _descriptor.EnumDescriptor(
       name='ITEM_STAFF_CARD', index=5, number=21,
       options=None,
       type=None),
+    _descriptor.EnumValueDescriptor(
+      name='ITEM_BOX', index=6, number=99,
+      options=None,
+      type=None),
   ],
   containing_type=None,
   options=None,
-  serialized_start=552,
-  serialized_end=715,
+  serialized_start=666,
+  serialized_end=843,
 )
 _sym_db.RegisterEnumDescriptor(_ITEMTYPE)
 
@@ -71,6 +75,7 @@ ITEM_BUILDING_CERTIFICATE = 3
 ITEM_SKILL_TRAINING_BOOK = 4
 ITEM_EQUIPMENT = 11
 ITEM_STAFF_CARD = 21
+ITEM_BOX = 99
 
 
 
@@ -323,6 +328,89 @@ _ITEMREMOVENOTIFY = _descriptor.Descriptor(
   serialized_end=549,
 )
 
+
+_ITEMSELLREQUEST = _descriptor.Descriptor(
+  name='ItemSellRequest',
+  full_name='Dianjing.protocol.ItemSellRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ItemSellRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.ItemSellRequest.id', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='amount', full_name='Dianjing.protocol.ItemSellRequest.amount', index=2,
+      number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=551,
+  serialized_end=613,
+)
+
+
+_ITEMSELLRESPONSE = _descriptor.Descriptor(
+  name='ItemSellResponse',
+  full_name='Dianjing.protocol.ItemSellResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.ItemSellResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ItemSellResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=615,
+  serialized_end=663,
+)
+
 _ITEM.fields_by_name['tp'].enum_type = _ITEMTYPE
 _ITEM.fields_by_name['attr'].message_type = _ATTRIBUTE
 _ITEMNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
@@ -331,6 +419,8 @@ DESCRIPTOR.message_types_by_name['Attribute'] = _ATTRIBUTE
 DESCRIPTOR.message_types_by_name['Item'] = _ITEM
 DESCRIPTOR.message_types_by_name['ItemNotify'] = _ITEMNOTIFY
 DESCRIPTOR.message_types_by_name['ItemRemoveNotify'] = _ITEMREMOVENOTIFY
+DESCRIPTOR.message_types_by_name['ItemSellRequest'] = _ITEMSELLREQUEST
+DESCRIPTOR.message_types_by_name['ItemSellResponse'] = _ITEMSELLRESPONSE
 DESCRIPTOR.enum_types_by_name['ItemType'] = _ITEMTYPE
 
 Attribute = _reflection.GeneratedProtocolMessageType('Attribute', (_message.Message,), dict(
@@ -360,6 +450,20 @@ ItemRemoveNotify = _reflection.GeneratedProtocolMessageType('ItemRemoveNotify', 
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.ItemRemoveNotify)
   ))
 _sym_db.RegisterMessage(ItemRemoveNotify)
+
+ItemSellRequest = _reflection.GeneratedProtocolMessageType('ItemSellRequest', (_message.Message,), dict(
+  DESCRIPTOR = _ITEMSELLREQUEST,
+  __module__ = 'item_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ItemSellRequest)
+  ))
+_sym_db.RegisterMessage(ItemSellRequest)
+
+ItemSellResponse = _reflection.GeneratedProtocolMessageType('ItemSellResponse', (_message.Message,), dict(
+  DESCRIPTOR = _ITEMSELLRESPONSE,
+  __module__ = 'item_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ItemSellResponse)
+  ))
+_sym_db.RegisterMessage(ItemSellResponse)
 
 
 # @@protoc_insertion_point(module_scope)

@@ -15,7 +15,7 @@ from django.conf import settings
 from dianjing.exception import GameException
 from core.mongo import MongoLadder
 from core.common import CommonLadderStore
-from core.bag import BagItem, BagTrainingSkill
+from core.item import ItemManager
 from core.lock import LadderStoreLock
 from utils.message import MessagePipe
 from config import (
@@ -88,11 +88,7 @@ class LadderStore(object):
             }
         )
 
-        if config.item:
-            BagItem(self.server_id, self.char_id).add([(config.item, config.item_amount)])
-        if config.training_skill:
-            BagTrainingSkill(self.server_id, self.char_id).add([(config.training_skill, config.training_skill_amount)])
-
+        ItemManager(self.server_id, self.char_id).add_item(config.item, config.item_amount)
         ladder.send_notify()
 
     def send_notify(self):

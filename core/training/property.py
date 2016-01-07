@@ -13,7 +13,7 @@ from core.mongo import MongoTrainingProperty
 from core.staff import StaffManger
 from core.package import Property
 from core.resource import Resource
-from core.bag import BagItem
+from core.item import ItemManager
 from core.building import BuildingTrainingCenter
 from core.signals import training_property_start_signal, training_property_done_signal
 
@@ -276,8 +276,8 @@ class TrainingProperty(object):
         if building_level < config.need_building_level:
             raise GameException(ConfigErrorMessage.get_error_id("BUILDING_TRAINING_CENTER_LEVEL_NOT_ENOUGH"))
 
-        bag = BagItem(self.server_id, self.char_id)
-        if not bag.has(config.need_items):
+        im = ItemManager(self.server_id, self.char_id)
+        if not im.check_simple_item_is_enough(config.need_items):
             raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_ENOUGH"))
 
         pl = self.get_training_list(staff_id)
@@ -309,7 +309,7 @@ class TrainingProperty(object):
             self.update_training_list(staff_id, new_list, key)
 
             for item_id, item_amount in config.need_items:
-                bag.remove(item_id, item_amount)
+                im.remove_simple_item(item_id, item_amount)
 
         training_property_start_signal.send(
             sender=None,

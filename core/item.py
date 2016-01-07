@@ -6,6 +6,7 @@ Date Created:   2016-01-06 09-55
 Description:
 
 """
+from contextlib import contextmanager
 
 from dianjing.exception import GameException
 
@@ -26,17 +27,12 @@ from protomsg.item_pb2 import (
     ITEM_EQUIPMENT,
     ITEM_STAFF_CARD,
 
+    ITEM_BOX,
+
     ItemNotify,
     ItemRemoveNotify,
     Item as MsgItem,
 )
-
-SIMPLE_TYPE = {
-    ITEM_TRAINING_EXPENDABLE,
-    ITEM_SHOP_GOODS,
-    ITEM_BUILDING_CERTIFICATE,
-    ITEM_SKILL_TRAINING_BOOK
-}
 
 
 class ItemId(object):
@@ -96,7 +92,10 @@ class ItemId(object):
         return obj
 
 
+# 物品基类
 class BaseItem(object):
+    VALID_TYPE = []
+
     def __init__(self, item_id, metadata, **kwargs):
         self.item_id = item_id
         self.metadata = metadata
@@ -104,10 +103,6 @@ class BaseItem(object):
 
     def make_protomsg(self):
         raise NotImplementedError()
-
-    @classmethod
-    def make_id_object(cls, type_id, oid, **kwargs):
-        return ItemId.make(type_id, oid, **kwargs)
 
     @classmethod
     def get_metadata(cls, server_id, char_id, item_id):
@@ -129,8 +124,22 @@ class BaseItem(object):
     def remove(cls, server_id, char_id, item_id, **kwargs):
         raise NotImplementedError()
 
+    @classmethod
+    def check_type_id(cls, type_id):
+        # 检查 物品类 方法传入的type_id 是否属于这个物品类
+        assert type_id in cls.VALID_TYPE
 
+
+# 简单物品 没有额外属性的，只记录个数量
 class SimpleItem(BaseItem):
+    VALID_TYPE = [
+        ITEM_TRAINING_EXPENDABLE,
+        ITEM_SHOP_GOODS,
+        ITEM_BUILDING_CERTIFICATE,
+        ITEM_SKILL_TRAINING_BOOK,
+        ITEM_BOX,
+    ]
+
     def make_protomsg(self):
         id_object = ItemId.parse(self.item_id)
 
@@ -144,11 +153,11 @@ class SimpleItem(BaseItem):
 
     @classmethod
     def add(cls, server_id, char_id, type_id, oid, **kwargs):
-        assert type_id != ITEM_EQUIPMENT
+        cls.check_type_id(type_id)
 
         amount = kwargs.get('amount', 1)
 
-        id_object = cls.make_id_object(type_id, oid, **kwargs)
+        id_object = ItemId.make(oid, **kwargs)
         item_id = id_object.to_string()
 
         MongoItem.db(server_id).update_one({'_id': char_id}, {'$inc': {item_id: amount}})
@@ -197,7 +206,10 @@ class SimpleItem(BaseItem):
             notify_item.MergeFrom(obj.make_protomsg())
 
 
+# 员工卡
 class StaffCard(SimpleItem):
+    VALID_TYPE = [ITEM_STAFF_CARD]
+
     def make_protomsg(self):
         id_object = ItemId.parse(self.item_id)
 
@@ -211,7 +223,10 @@ class StaffCard(SimpleItem):
         return msg
 
 
+# 装备
 class Equipment(BaseItem):
+    VALID_TYPE = [ITEM_EQUIPMENT]
+
     def __init__(self, item_id, metadata):
         super(Equipment, self).__init__(item_id, metadata)
 
@@ -263,7 +278,7 @@ class Equipment(BaseItem):
 
     @classmethod
     def add(cls, server_id, char_id, type_id, oid, **kwargs):
-        assert type_id == ITEM_EQUIPMENT
+        cls.check_type_id(type_id)
 
         amount = kwargs.get('amount', 1)
 
@@ -271,10 +286,10 @@ class Equipment(BaseItem):
         notify.act = ACT_UPDATE
 
         for i in range(amount):
-            # TODO real rule for generate an equipment
-            id_object = cls.make_id_object(type_id, oid, **kwargs)
+            id_object = ItemId.make(oid, **kwargs)
             item_id = id_object.to_string()
 
+            # TODO real rule for generate an equipment
             metadata = {
                 'star': 0,
                 'luoji': 2
@@ -352,7 +367,7 @@ class ItemManager(object):
 
         StaffCard.add(self.server_id, self.char_id, ITEM_STAFF_CARD, oid, amount=amount, star=0)
 
-    def remove(self, item_id, amount):
+    def remove_by_item_id(self, item_id, amount):
         id_object = ItemId.parse(item_id)
         if id_object.type_id == ITEM_EQUIPMENT:
             Equipment.remove(self.server_id, self.char_id, item_id)
@@ -360,6 +375,51 @@ class ItemManager(object):
             StaffCard.remove(self.server_id, self.char_id, item_id, amount=amount)
         else:
             SimpleItem.remove(self.server_id, self.char_id, item_id, amount=amount)
+
+    def get_simple_item_amount_by_oid(self, oid):
+        config = ConfigItem.get(oid)
+        assert config.tp != ITEM_EQUIPMENT
+
+        item_id = ItemId.make(config.tp, oid).to_string()
+        metadata = SimpleItem.get_metadata(self.server_id, self.char_id, item_id)
+        return metadata if metadata else 0
+
+    def check_simple_item_is_enough(self, data):
+        for oid, amount in data:
+            stock = self.get_simple_item_amount_by_oid(oid)
+            if stock < amount:
+                return False
+
+        return True
+
+    def get_staff_card_amount_by_oid_and_star(self, oid, star):
+        item_id = ItemId.make(ITEM_STAFF_CARD, oid, star=star).to_string()
+        metadata = StaffCard.get_metadata(self.server_id, self.char_id, item_id)
+        return metadata if metadata else 0
+
+    def remove_simple_item(self, oid, amount):
+        config = ConfigItem.get(oid)
+        assert config.tp != ITEM_EQUIPMENT
+
+        item_id = ItemId.make(config.tp, oid).to_string()
+        self.remove_by_item_id(item_id, amount)
+
+    def remove_staff_card(self, oid, star, amount):
+        item_id = ItemId.make(ITEM_STAFF_CARD, oid, star=star).to_string()
+        self.remove_by_item_id(item_id, amount)
+
+    @contextmanager
+    def remove_simple_item_context(self, oid, amount):
+        stock = self.get_simple_item_amount_by_oid(oid)
+        if stock < amount:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_ENOUGH"))
+
+        yield
+
+        self.remove_simple_item(oid, amount)
+
+    def open(self, item_id):
+        pass
 
     def merge(self):
         pass

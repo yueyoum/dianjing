@@ -31,7 +31,6 @@ import views.sponsor
 import views.activity
 import views.active_value
 import views.shop
-import views.bag
 import views.training_match
 import views.elite_match
 import views.auction
@@ -135,9 +134,6 @@ urlpatterns = [
     url(r'^activevalue/getreward/$', views.active_value.get_reward),
 
     url(r'^itemshop/buy/$', views.shop.item_shop_buy),
-
-    url(r'^sell/item/$', views.bag.item_sell),
-    url(r'^sell/trainingskill/$', views.bag.training_skill_sell),
 
     url(r'^trainingmatch/start/$', views.training_match.start),
     url(r'^trainingmatch/reward/$', views.training_match.get_additional_reward),

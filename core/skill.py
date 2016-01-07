@@ -13,7 +13,7 @@ import arrow
 from dianjing.exception import GameException
 
 from core.mongo import MongoStaff
-from core.bag import BagTrainingSkill
+from core.item import ItemManager
 from core.resource import Resource
 
 from utils.message import MessagePipe
@@ -153,7 +153,7 @@ class SkillManager(object):
 
         need_id, need_amount = config.get_upgrade_needs(level)
 
-        with BagTrainingSkill(self.server_id, self.char_id).remove_context(need_id, need_amount):
+        with ItemManager(self.server_id, self.char_id).remove_simple_item_context(need_id, need_amount):
             end_at = arrow.utcnow().timestamp + ConfigTrainingSkillItem.get(need_id).minutes * 60
 
             data = {

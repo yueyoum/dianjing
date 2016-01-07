@@ -30,13 +30,12 @@ class Resource(object):
             1 import 相关模块
             2 如果有俱乐部资源 提取 club_data, update
                 2.1 如果有 diamond 或 gold 添加, 写入财务报表 FinanceStatistics
-            4 如果有训练包 BagTrainingSkill.add()
-            5 如果有物品 BagItem.add()
+            3 如果有物品 ItemManager.add...()
 
         :type drop: core.package.Drop
         """
         from core.club import Club
-        from core.bag import BagItem, BagTrainingSkill
+        from core.item import ItemManager
 
         if drop.club_renown or drop.gold or drop.diamond:
             club_data = {
@@ -50,13 +49,19 @@ class Resource(object):
 
             if drop.gold or drop.diamond:
                 FinanceStatistics(self.server_id, self.char_id).add_log(
-                    gold=drop.gold, diamond=drop.diamond, message=message
+                        gold=drop.gold, diamond=drop.diamond, message=message
                 )
 
-        if drop.trainings:
-            BagTrainingSkill(self.server_id, self.char_id).add(drop.trainings)
-        if drop.items:
-            BagItem(self.server_id, self.char_id).add(drop.items)
+        im = ItemManager(self.server_id, self.char_id)
+        for _id, _amount in drop.items:
+            im.add_item(_id, _amount)
+
+        for i in drop.staffs:
+            # TODO
+            pass
+
+        for _id, _amount in drop.staff_cards:
+            im.add_staff_card(_id, _amount)
 
     @contextmanager
     def check(self, **kwargs):
@@ -77,9 +82,9 @@ class Resource(object):
 
         if data['gold'] or data['diamond']:
             FinanceStatistics(self.server_id, self.char_id).add_log(
-                gold=data['gold'],
-                diamond=data['diamond'],
-                message=message
+                    gold=data['gold'],
+                    diamond=data['diamond'],
+                    message=message
             )
 
     @staticmethod
