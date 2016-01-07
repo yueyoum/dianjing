@@ -24,11 +24,7 @@ from config import ConfigEliteArea, ConfigEliteMatch, ConfigErrorMessage, Config
 
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 from protomsg.elite_match_pb2 import (
-    ELITE_AREA_FINISH,
-    ELITE_AREA_NOT_OPEN,
-    ELITE_AREA_OPEN,
-    EliteNotify,
-    EliteTimesNotify
+    EliteNotify
 )
 
 ELITE_MAX_TIMES = 20
@@ -47,11 +43,11 @@ class EliteNPCStaff(AbstractStaff):
         self.race = config.race
         self.skills = {i: 1 for i in config.skill_ids}
 
-        self.luoji = config.luoji + config.luoji_grow * (level - 1)
-        self.minjie = config.minjie + config.minjie_grow * (level - 1)
-        self.lilun = config.lilun + config.lilun_grow * (level - 1)
-        self.wuxing = config.wuxing + config.wuxing_grow * (level - 1)
-        self.meili = config.meili + config.meili_grow * (level - 1)
+        self.luoji = config.luoji
+        self.minjie = config.minjie
+        self.lilun = config.lilun
+        self.wuxing = config.wuxing
+        self.meili = config.meili
 
         self.calculate_secondary_property()
 

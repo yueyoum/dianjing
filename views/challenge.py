@@ -11,7 +11,12 @@ from utils.http import ProtobufResponse
 
 from core.challenge import Challenge
 
-from protomsg.challenge_pb2 import ChallengeStartResponse, ChallengeAreaSwitchResponse
+from protomsg.challenge_pb2 import (
+    ChallengeStartResponse,
+    ChallengeBuyEnergyResponse,
+    ChallengeMatchReportResponse,
+    ChallengeGetStarRewardResponse,
+)
 
 
 def start(request):
@@ -19,29 +24,58 @@ def start(request):
     char_id = request._game_session.char_id
 
     area_id = request._proto.area_id
+    challenge_id = request._proto.challenge_id
 
     c = Challenge(server_id, char_id)
-    msg, drop = c.start(area_id)
+    msg = c.start(int(area_id), int(challenge_id))
 
     response = ChallengeStartResponse()
     response.ret = 0
     response.match.MergeFrom(msg)
 
+    return ProtobufResponse(response)
+
+
+def report(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    key = request._proto.key
+    win_club = request._proto.win_club
+    result = request._proto.result
+
+    drop = Challenge(server_id, char_id).report(key, win_club, result)
+    response = ChallengeMatchReportResponse()
+    response.ret = 0
     if drop:
         response.drop.MergeFrom(drop)
 
     return ProtobufResponse(response)
 
 
-def switch_area(request):
+def reward(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
     area_id = request._proto.area_id
+    index = request._proto.index
 
-    c = Challenge(server_id, char_id)
-    c.switch_area(area_id)
-
-    response = ChallengeAreaSwitchResponse()
+    drop = Challenge(server_id, char_id).get_star_reward(area_id, index)
+    response = ChallengeGetStarRewardResponse()
     response.ret = 0
+    if drop:
+        response.drop.MergeFrom(drop)
+
+    return ProtobufResponse(response)
+
+
+def buy(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    Challenge(server_id, char_id).buy_energy()
+
+    response = ChallengeBuyEnergyResponse()
+    response.ret = 0
+
     return ProtobufResponse(response)

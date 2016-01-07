@@ -3,7 +3,6 @@
 
 import sys
 _b=sys.version_info[0]<3 and (lambda x:x) or (lambda x:x.encode('latin1'))
-from google.protobuf.internal import enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
@@ -17,130 +16,20 @@ _sym_db = _symbol_database.Default()
 import common_pb2 as common__pb2
 import package_pb2 as package__pb2
 import match_pb2 as match__pb2
+import challenge_pb2 as challenge__pb2
+import training_match_pb2 as training__match__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='elite_match.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x11\x65lite_match.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\x1a\x0bmatch.proto\"\xa6\x01\n\tEliteArea\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x32\n\x06status\x18\x02 \x02(\x0e\x32\".Dianjing.protocol.EliteAreaStatus\x12\x31\n\x05match\x18\x03 \x03(\x0b\x32\".Dianjing.protocol.EliteArea.Match\x1a&\n\x05Match\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x11\n\tcur_times\x18\x02 \x02(\x05\"r\n\x0b\x45liteNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12*\n\x04\x61rea\x18\x03 \x03(\x0b\x32\x1c.Dianjing.protocol.EliteArea\"a\n\x10\x45liteTimesNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tmax_times\x18\x02 \x02(\x05\x12\x11\n\tcur_times\x18\x03 \x02(\x05\x12\x16\n\x0enext_timestamp\x18\x04 \x02(\x03\"6\n\x11\x45liteStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08match_id\x18\x02 \x02(\x05\"\x86\x01\n\x12\x45liteStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\x12%\n\x04\x64rop\x18\x04 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*V\n\x0f\x45liteAreaStatus\x12\x17\n\x13\x45LITE_AREA_NOT_OPEN\x10\x01\x12\x13\n\x0f\x45LITE_AREA_OPEN\x10\x02\x12\x15\n\x11\x45LITE_AREA_FINISH\x10\x03')
+  serialized_pb=_b('\n\x11\x65lite_match.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\x1a\x0bmatch.proto\x1a\x0f\x63hallenge.proto\x1a\x14training_match.proto\"m\n\x0b\x45liteNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12%\n\x04\x61rea\x18\x02 \x03(\x0b\x32\x17.Dianjing.protocol.Area\x12&\n\x03\x61\x63t\x18\x03 \x02(\x0e\x32\x19.Dianjing.protocol.Action\"K\n\x11\x45liteStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x61rea_id\x18\x02 \x02(\x05\x12\x14\n\x0c\x63hallenge_id\x18\x03 \x02(\x05\"_\n\x12\x45liteStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"L\n\x19\x45liteGetStarRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x61rea_id\x18\x02 \x02(\x05\x12\r\n\x05index\x18\x03 \x02(\x05\"a\n\x1a\x45liteGetStarRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"~\n\x17\x45liteMatchReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x10\n\x08win_club\x18\x03 \x02(\t\x12\x33\n\x06result\x18\x04 \x03(\x0b\x32#.Dianjing.protocol.StaffMatchResult\"_\n\x18\x45liteMatchReportResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop')
   ,
-  dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,match__pb2.DESCRIPTOR,])
+  dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,match__pb2.DESCRIPTOR,challenge__pb2.DESCRIPTOR,training__match__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-_ELITEAREASTATUS = _descriptor.EnumDescriptor(
-  name='EliteAreaStatus',
-  full_name='Dianjing.protocol.EliteAreaStatus',
-  filename=None,
-  file=DESCRIPTOR,
-  values=[
-    _descriptor.EnumValueDescriptor(
-      name='ELITE_AREA_NOT_OPEN', index=0, number=1,
-      options=None,
-      type=None),
-    _descriptor.EnumValueDescriptor(
-      name='ELITE_AREA_OPEN', index=1, number=2,
-      options=None,
-      type=None),
-    _descriptor.EnumValueDescriptor(
-      name='ELITE_AREA_FINISH', index=2, number=3,
-      options=None,
-      type=None),
-  ],
-  containing_type=None,
-  options=None,
-  serialized_start=659,
-  serialized_end=745,
-)
-_sym_db.RegisterEnumDescriptor(_ELITEAREASTATUS)
 
-EliteAreaStatus = enum_type_wrapper.EnumTypeWrapper(_ELITEAREASTATUS)
-ELITE_AREA_NOT_OPEN = 1
-ELITE_AREA_OPEN = 2
-ELITE_AREA_FINISH = 3
-
-
-
-_ELITEAREA_MATCH = _descriptor.Descriptor(
-  name='Match',
-  full_name='Dianjing.protocol.EliteArea.Match',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='id', full_name='Dianjing.protocol.EliteArea.Match.id', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='cur_times', full_name='Dianjing.protocol.EliteArea.Match.cur_times', index=1,
-      number=2, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=211,
-  serialized_end=249,
-)
-
-_ELITEAREA = _descriptor.Descriptor(
-  name='EliteArea',
-  full_name='Dianjing.protocol.EliteArea',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='id', full_name='Dianjing.protocol.EliteArea.id', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='status', full_name='Dianjing.protocol.EliteArea.status', index=1,
-      number=2, type=14, cpp_type=8, label=2,
-      has_default_value=False, default_value=1,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='match', full_name='Dianjing.protocol.EliteArea.match', index=2,
-      number=3, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[_ELITEAREA_MATCH, ],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=83,
-  serialized_end=249,
-)
 
 
 _ELITENOTIFY = _descriptor.Descriptor(
@@ -158,68 +47,16 @@ _ELITENOTIFY = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='act', full_name='Dianjing.protocol.EliteNotify.act', index=1,
-      number=2, type=14, cpp_type=8, label=2,
-      has_default_value=False, default_value=1,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='area', full_name='Dianjing.protocol.EliteNotify.area', index=2,
-      number=3, type=11, cpp_type=10, label=3,
+      name='area', full_name='Dianjing.protocol.EliteNotify.area', index=1,
+      number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=251,
-  serialized_end=365,
-)
-
-
-_ELITETIMESNOTIFY = _descriptor.Descriptor(
-  name='EliteTimesNotify',
-  full_name='Dianjing.protocol.EliteTimesNotify',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.EliteTimesNotify.session', index=0,
-      number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b(""),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='max_times', full_name='Dianjing.protocol.EliteTimesNotify.max_times', index=1,
-      number=2, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='cur_times', full_name='Dianjing.protocol.EliteTimesNotify.cur_times', index=2,
-      number=3, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='next_timestamp', full_name='Dianjing.protocol.EliteTimesNotify.next_timestamp', index=3,
-      number=4, type=3, cpp_type=2, label=2,
-      has_default_value=False, default_value=0,
+      name='act', full_name='Dianjing.protocol.EliteNotify.act', index=2,
+      number=3, type=14, cpp_type=8, label=2,
+      has_default_value=False, default_value=1,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -235,8 +72,8 @@ _ELITETIMESNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=367,
-  serialized_end=464,
+  serialized_start=121,
+  serialized_end=230,
 )
 
 
@@ -255,8 +92,15 @@ _ELITESTARTREQUEST = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='match_id', full_name='Dianjing.protocol.EliteStartRequest.match_id', index=1,
+      name='area_id', full_name='Dianjing.protocol.EliteStartRequest.area_id', index=1,
       number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='challenge_id', full_name='Dianjing.protocol.EliteStartRequest.challenge_id', index=2,
+      number=3, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -273,8 +117,8 @@ _ELITESTARTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=466,
-  serialized_end=520,
+  serialized_start=232,
+  serialized_end=307,
 )
 
 
@@ -306,9 +150,92 @@ _ELITESTARTRESPONSE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=309,
+  serialized_end=404,
+)
+
+
+_ELITEGETSTARREWARDREQUEST = _descriptor.Descriptor(
+  name='EliteGetStarRewardRequest',
+  full_name='Dianjing.protocol.EliteGetStarRewardRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
     _descriptor.FieldDescriptor(
-      name='drop', full_name='Dianjing.protocol.EliteStartResponse.drop', index=3,
-      number=4, type=11, cpp_type=10, label=1,
+      name='session', full_name='Dianjing.protocol.EliteGetStarRewardRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='area_id', full_name='Dianjing.protocol.EliteGetStarRewardRequest.area_id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='index', full_name='Dianjing.protocol.EliteGetStarRewardRequest.index', index=2,
+      number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=406,
+  serialized_end=482,
+)
+
+
+_ELITEGETSTARREWARDRESPONSE = _descriptor.Descriptor(
+  name='EliteGetStarRewardResponse',
+  full_name='Dianjing.protocol.EliteGetStarRewardResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.EliteGetStarRewardResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.EliteGetStarRewardResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='drop', full_name='Dianjing.protocol.EliteGetStarRewardResponse.drop', index=2,
+      number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -325,38 +252,120 @@ _ELITESTARTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=523,
-  serialized_end=657,
+  serialized_start=484,
+  serialized_end=581,
 )
 
-_ELITEAREA_MATCH.containing_type = _ELITEAREA
-_ELITEAREA.fields_by_name['status'].enum_type = _ELITEAREASTATUS
-_ELITEAREA.fields_by_name['match'].message_type = _ELITEAREA_MATCH
+
+_ELITEMATCHREPORTREQUEST = _descriptor.Descriptor(
+  name='EliteMatchReportRequest',
+  full_name='Dianjing.protocol.EliteMatchReportRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.EliteMatchReportRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='key', full_name='Dianjing.protocol.EliteMatchReportRequest.key', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='win_club', full_name='Dianjing.protocol.EliteMatchReportRequest.win_club', index=2,
+      number=3, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='result', full_name='Dianjing.protocol.EliteMatchReportRequest.result', index=3,
+      number=4, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=583,
+  serialized_end=709,
+)
+
+
+_ELITEMATCHREPORTRESPONSE = _descriptor.Descriptor(
+  name='EliteMatchReportResponse',
+  full_name='Dianjing.protocol.EliteMatchReportResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.EliteMatchReportResponse.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.EliteMatchReportResponse.ret', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='drop', full_name='Dianjing.protocol.EliteMatchReportResponse.drop', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=711,
+  serialized_end=806,
+)
+
+_ELITENOTIFY.fields_by_name['area'].message_type = challenge__pb2._AREA
 _ELITENOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
-_ELITENOTIFY.fields_by_name['area'].message_type = _ELITEAREA
 _ELITESTARTRESPONSE.fields_by_name['match'].message_type = match__pb2._CLUBMATCH
-_ELITESTARTRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
-DESCRIPTOR.message_types_by_name['EliteArea'] = _ELITEAREA
+_ELITEGETSTARREWARDRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
+_ELITEMATCHREPORTREQUEST.fields_by_name['result'].message_type = training__match__pb2._STAFFMATCHRESULT
+_ELITEMATCHREPORTRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 DESCRIPTOR.message_types_by_name['EliteNotify'] = _ELITENOTIFY
-DESCRIPTOR.message_types_by_name['EliteTimesNotify'] = _ELITETIMESNOTIFY
 DESCRIPTOR.message_types_by_name['EliteStartRequest'] = _ELITESTARTREQUEST
 DESCRIPTOR.message_types_by_name['EliteStartResponse'] = _ELITESTARTRESPONSE
-DESCRIPTOR.enum_types_by_name['EliteAreaStatus'] = _ELITEAREASTATUS
-
-EliteArea = _reflection.GeneratedProtocolMessageType('EliteArea', (_message.Message,), dict(
-
-  Match = _reflection.GeneratedProtocolMessageType('Match', (_message.Message,), dict(
-    DESCRIPTOR = _ELITEAREA_MATCH,
-    __module__ = 'elite_match_pb2'
-    # @@protoc_insertion_point(class_scope:Dianjing.protocol.EliteArea.Match)
-    ))
-  ,
-  DESCRIPTOR = _ELITEAREA,
-  __module__ = 'elite_match_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.EliteArea)
-  ))
-_sym_db.RegisterMessage(EliteArea)
-_sym_db.RegisterMessage(EliteArea.Match)
+DESCRIPTOR.message_types_by_name['EliteGetStarRewardRequest'] = _ELITEGETSTARREWARDREQUEST
+DESCRIPTOR.message_types_by_name['EliteGetStarRewardResponse'] = _ELITEGETSTARREWARDRESPONSE
+DESCRIPTOR.message_types_by_name['EliteMatchReportRequest'] = _ELITEMATCHREPORTREQUEST
+DESCRIPTOR.message_types_by_name['EliteMatchReportResponse'] = _ELITEMATCHREPORTRESPONSE
 
 EliteNotify = _reflection.GeneratedProtocolMessageType('EliteNotify', (_message.Message,), dict(
   DESCRIPTOR = _ELITENOTIFY,
@@ -364,13 +373,6 @@ EliteNotify = _reflection.GeneratedProtocolMessageType('EliteNotify', (_message.
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.EliteNotify)
   ))
 _sym_db.RegisterMessage(EliteNotify)
-
-EliteTimesNotify = _reflection.GeneratedProtocolMessageType('EliteTimesNotify', (_message.Message,), dict(
-  DESCRIPTOR = _ELITETIMESNOTIFY,
-  __module__ = 'elite_match_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.EliteTimesNotify)
-  ))
-_sym_db.RegisterMessage(EliteTimesNotify)
 
 EliteStartRequest = _reflection.GeneratedProtocolMessageType('EliteStartRequest', (_message.Message,), dict(
   DESCRIPTOR = _ELITESTARTREQUEST,
@@ -385,6 +387,34 @@ EliteStartResponse = _reflection.GeneratedProtocolMessageType('EliteStartRespons
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.EliteStartResponse)
   ))
 _sym_db.RegisterMessage(EliteStartResponse)
+
+EliteGetStarRewardRequest = _reflection.GeneratedProtocolMessageType('EliteGetStarRewardRequest', (_message.Message,), dict(
+  DESCRIPTOR = _ELITEGETSTARREWARDREQUEST,
+  __module__ = 'elite_match_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.EliteGetStarRewardRequest)
+  ))
+_sym_db.RegisterMessage(EliteGetStarRewardRequest)
+
+EliteGetStarRewardResponse = _reflection.GeneratedProtocolMessageType('EliteGetStarRewardResponse', (_message.Message,), dict(
+  DESCRIPTOR = _ELITEGETSTARREWARDRESPONSE,
+  __module__ = 'elite_match_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.EliteGetStarRewardResponse)
+  ))
+_sym_db.RegisterMessage(EliteGetStarRewardResponse)
+
+EliteMatchReportRequest = _reflection.GeneratedProtocolMessageType('EliteMatchReportRequest', (_message.Message,), dict(
+  DESCRIPTOR = _ELITEMATCHREPORTREQUEST,
+  __module__ = 'elite_match_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.EliteMatchReportRequest)
+  ))
+_sym_db.RegisterMessage(EliteMatchReportRequest)
+
+EliteMatchReportResponse = _reflection.GeneratedProtocolMessageType('EliteMatchReportResponse', (_message.Message,), dict(
+  DESCRIPTOR = _ELITEMATCHREPORTRESPONSE,
+  __module__ = 'elite_match_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.EliteMatchReportResponse)
+  ))
+_sym_db.RegisterMessage(EliteMatchReportResponse)
 
 
 # @@protoc_insertion_point(module_scope)

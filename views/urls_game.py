@@ -59,7 +59,9 @@ urlpatterns = [
     url(r'^staff/fire/$', views.staff.fire),
 
     url(r'^challenge/start/$', views.challenge.start),
-    url(r'^challenge/area/switch/$', views.challenge.switch_area),
+    url(r'^challenge/reward/$', views.challenge.reward),
+    url(r'^challenge/report/$', views.challenge.report),
+    url(r'^challenge/buy/$', views.challenge.buy),
 
     url(r'^building/levelup/$', views.building.levelup),
     url(r'^building/speedup/$', views.building.speedup),
@@ -148,6 +150,8 @@ urlpatterns = [
     url(r'^trainingmatch/additional/$', views.training_match.additional),
 
     url(r'^elite/start/$', views.elite_match.start),
+    url(r'^elite/reward/$', views.elite_match.reward),
+    url(r'^elite/report/$', views.elite_match.report),
 
     url(r'^auction/search/$', views.auction.search),
     url(r'^auction/sell/$', views.auction.sell),

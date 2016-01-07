@@ -88,6 +88,11 @@ class MongoCharacter(BaseDocument):
         'in_cup': 0,
         # 购买的员工格子数
         'buy_slots': 0,
+        # 体力
+        'energy': {
+            'key': "",
+            'power': 0,
+        },
     }
 
     COLLECTION = "character"
@@ -98,10 +103,22 @@ class MongoCharacter(BaseDocument):
 class MongoChallenge(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        # 当前大区ID
-        'area_id': 1,
-        # 大区， {area_id: challenge_id}， 标注当前area要打的关卡，如果challenge_id为0,表示已经通关
-        'areas': {}
+        # 大区， {area_id: {'challenge_id': {'star': 0}},
+        'areas': {
+            '1': {
+                'challenges': {
+                    '1': {
+                        'stars': 0,     # 历史最佳记录 0为未通过
+                        'times': 0,     # 当天挑战次数， 每天刷新
+                    }
+                },
+                'packages': {
+                    '1': False,
+                    '2': False,
+                    '3': False,
+                }
+            }
+        }
     }
 
     COLLECTION = 'challenge'

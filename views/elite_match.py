@@ -29,3 +29,11 @@ def start(request):
     response.drop.MergeFrom(drop)
 
     return ProtobufResponse(response)
+
+
+def reward(request):
+    pass
+
+
+def report(request):
+    pass

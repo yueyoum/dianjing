@@ -12,19 +12,20 @@ from config.base import ConfigBase
 
 class ChallengeType(object):
     __slots__ = [
-        'id', 'level', 'condition_challenge_id'
+        'id', 'level', 'condition_challenge_id', 'star_reward'
     ]
 
     def __init__(self):
         self.id = 0
         self.level = 0
         self.condition_challenge_id = 0
+        self.star_reward = []
 
 
 class ChallengeMatch(object):
     __slots__ = [
         'id', 'need_club_level', 'tp', 'policy', 'level', 'strength', 'staffs', 'package',
-        'club_name', 'club_flag'
+        'club_name', 'club_flag', 'max_times',
     ]
 
     def __init__(self):
@@ -38,6 +39,7 @@ class ChallengeMatch(object):
         self.package = 0
         self.club_name = 0
         self.club_flag = 0
+        self.max_times = 0
 
 
 class ConfigChallengeType(ConfigBase):
@@ -80,6 +82,7 @@ class ConfigChallengeType(ConfigBase):
     @classmethod
     def opened_area_ids(cls, challenge_id):
         return cls.AREA_OPENED_BY_CHALLENGE_ID.get(challenge_id, [])
+
 
 class ConfigChallengeMatch(ConfigBase):
     EntityClass = ChallengeMatch

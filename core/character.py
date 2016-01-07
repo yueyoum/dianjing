@@ -27,6 +27,10 @@ from config.settings import (
 from config import ConfigErrorMessage
 
 
+NORMAL_MAX_ENERGY = 200
+VIP_MAX_ENERGY = 240
+
+
 class Character(object):
     __slots__ = ['server_id', 'char_id']
 
@@ -48,6 +52,7 @@ class Character(object):
         doc['club']['flag'] = club_flag
         doc['club']['gold'] = CHAR_INIT_GOLD
         doc['club']['diamond'] = CHAR_INIT_DIAMOND
+        doc['energy']['power'] = NORMAL_MAX_ENERGY
 
         MongoCharacter.db(server_id).insert_one(doc)
 
