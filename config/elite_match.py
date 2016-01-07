@@ -11,12 +11,13 @@ from config.base import ConfigBase
 
 
 class EliteArea(object):
-    __slots__ = ['id', 'match_ids', 'need_club_level']
+    __slots__ = ['id', 'match_ids', 'need_club_level', 'star_reward']
 
     def __init__(self):
         self.id = 0
         self.match_ids = []
         self.need_club_level = 0
+        self.star_reward = []
 
     def first_match_id(self):
         return self.match_ids[0]

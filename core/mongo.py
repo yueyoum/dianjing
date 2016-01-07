@@ -556,28 +556,25 @@ class MongoTrainingMatch(BaseDocument):
 class MongoEliteMatch(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        # areas
-        # {
-        #     area_id: {
-        #         match_id: times,
-        #         match_id: times,
-        #         ...
-        #     },
-        #     area_id: {
-        #         match_id: times,
-        #         match_id: times,
-        #     }
-        # }
-        'areas': {},
-        # 当前的可以打的次数， 会恢复
-        'cur_times': 0,
-        # 打过比赛的。用来跑定时任务
-        'has_matched': False
+        # 大区， {area_id: {'challenge_id': {'star': 0}},
+        'areas': {
+            '1': {
+                'challenges': {
+                    '1': {
+                        'stars': 0,     # 历史最佳记录 0为未通过
+                        'times': 0,     # 当天挑战次数， 每天刷新
+                    }
+                },
+                'packages': {
+                    '1': False,
+                    '2': False,
+                    '3': False,
+                }
+            }
+        }
     }
 
     COLLECTION = 'elite_match'
-
-    INDEXES = ['cur_times', 'has_matched']
 
 
 # 员工拍卖

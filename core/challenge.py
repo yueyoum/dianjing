@@ -100,14 +100,6 @@ class Challenge(object):
             doc['_id'] = self.char_id
             MongoChallenge.db(self.server_id).insert_one(doc)
 
-        char_doc = MongoCharacter.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {'energy': 1}
-        )
-
-        self.energy_key = char_doc['energy']['key']
-        self.energy_power = char_doc['energy']['power']
-
     @classmethod
     def refresh_times(cls, server_id):
         for char_id in Character.get_recent_login_char_ids(server_id):
@@ -117,7 +109,7 @@ class Challenge(object):
             for area_id, area_info in doc['areas'].iteritems():
                 for ch_id, ch_info in area_info['challenges']:
                     key = 'areas.{0}.challenges.{1}.times'.format(area_id, ch_id)
-                    updater[key] = ConfigChallengeMatch.get(int(char_id)).max_times
+                    updater[key] = ConfigChallengeMatch.get(int(ch_id)).max_times
 
             MongoChallenge.db(server_id).update_one(
                 {'_id': char_id},

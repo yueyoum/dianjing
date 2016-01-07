@@ -71,7 +71,9 @@ def game_start_handler(server_id, char_id, **kwargs):
     BagTrainingSkill(server_id, char_id).send_notify()
     BagItem(server_id, char_id).send_notify()
 
-    Challenge(server_id, char_id).send_notify()
+    Challenge(server_id, char_id).energy_notify()
+    Challenge(server_id, char_id).challenge_notify()
+
     BuildingManager(server_id, char_id).send_notify()
     LeagueManger(server_id, char_id).send_notify()
     FriendManager(server_id, char_id).send_notify()
