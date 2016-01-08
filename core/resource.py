@@ -56,10 +56,6 @@ class Resource(object):
         for _id, _amount in drop.items:
             im.add_item(_id, _amount)
 
-        for i in drop.staffs:
-            # TODO
-            pass
-
         for _id, _amount in drop.staff_cards:
             im.add_staff_card(_id, 0, _amount)
 

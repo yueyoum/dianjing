@@ -476,8 +476,24 @@ class ItemManager(object):
 
         Resource(self.server_id, self.char_id).save_drop(drop, message=message)
 
-    def open(self, item_id):
-        pass
+    def use(self, item_id, amount):
+        id_object = ItemId.parse(item_id)
+        if id_object.type_id != ITEM_BOX:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_USE"))
+
+        if amount != 1:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_BOX_ONLY_USE_ONE"))
+
+        self.remove_by_item_id(item_id, amount)
+        self.open_box(id_object.oid)
+
+    def open_box(self, oid):
+        config = ConfigItem.get(oid)
+        drop = Drop.generate(config.value)
+
+        message = "Open box {0}".format(oid)
+        Resource(self.server_id, self.char_id).save_drop(drop, message=message)
+
 
     def merge(self):
         pass
