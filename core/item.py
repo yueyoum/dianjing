@@ -267,17 +267,17 @@ class Equipment(BaseItem):
 
         msg.amount = 1
         msg.attr.star = self.star
-        msg.attr.luoji = self.luoji
-        msg.attr.minjie = self.minjie
-        msg.attr.lilun = self.lilin
-        msg.attr.wuxing = self.wuxing
-        msg.attr.meili = self.meili
-        msg.attr.caozuo = self.caozuo
-        msg.attr.jingying = self.jingying
-        msg.attr.baobing = self.baobing
-        msg.attr.zhanshu = self.zhanshu
-        msg.attr.biaoyan = self.biaoyan
-        msg.attr.yingxiao = self.yingxiao
+        msg.attr.luoji = int(self.luoji)
+        msg.attr.minjie = int(self.minjie)
+        msg.attr.lilun = int(self.lilin)
+        msg.attr.wuxing = int(self.wuxing)
+        msg.attr.meili = int(self.meili)
+        msg.attr.caozuo = int(self.caozuo)
+        msg.attr.jingying = int(self.jingying)
+        msg.attr.baobing = int(self.baobing)
+        msg.attr.zhanshu = int(self.zhanshu)
+        msg.attr.biaoyan = int(self.biaoyan)
+        msg.attr.yingxiao = int(self.yingxiao)
 
         return msg
 
@@ -296,22 +296,22 @@ class Equipment(BaseItem):
         # 随机一个二级属性
         attr = random.choice(STAFF_SECONDARY_ATTRS)
         value = random.randint(20, 50) * config.quality
-        attrs[attr] += value
+        attrs[attr] += round(value, 2)
 
         # 所有二级属性
         for attr in STAFF_SECONDARY_ATTRS:
             value = random.randint(4, 10) * config.quality
-            attrs[attr] += value
+            attrs[attr] += round(value, 2)
 
         # 随机一个一级属性
         attr = random.choice(STAFF_BASE_ATTRS)
         value = random.uniform(0.5, 0.8) * config.quality
-        attrs[attr] += value
+        attrs[attr] += round(value, 2)
 
         # 所有一级属性
         for attr in STAFF_BASE_ATTRS:
             value = random.uniform(0.12, 0.2) * config.quality
-            attrs[attr] += value
+            attrs[attr] += round(value, 2)
 
         return item_id, attrs
 
