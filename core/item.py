@@ -6,11 +6,15 @@ Date Created:   2016-01-06 09-55
 Description:
 
 """
+
+import random
+from itertools import chain
 from contextlib import contextmanager
 
 from dianjing.exception import GameException
 
 from core.mongo import MongoItem
+from core.abstract import STAFF_BASE_ATTRS, STAFF_SECONDARY_ATTRS
 from core.package import Drop
 from core.resource import Resource
 
@@ -63,7 +67,12 @@ class ItemId(object):
         obj = cls()
         obj.type_id = type_id
         obj.oid = oid
-        obj.unique_id = make_string_id()
+
+        if type_id == ITEM_EQUIPMENT:
+            obj.unique_id = make_string_id()
+        else:
+            obj.unique_id = str(oid)
+
         obj.star = kwargs.get('star', 0)
 
         return obj
@@ -132,7 +141,7 @@ class BaseItem(object):
         assert type_id in cls.VALID_TYPE
 
 
-# 简单物品 没有额外属性的，只记录个数量
+# 简单物品 没有额外属性的，只记录数量
 class SimpleItem(BaseItem):
     VALID_TYPE = [
         ITEM_TRAINING_EXPENDABLE,
@@ -159,7 +168,7 @@ class SimpleItem(BaseItem):
 
         amount = kwargs.get('amount', 1)
 
-        id_object = ItemId.make(oid, **kwargs)
+        id_object = ItemId.make(type_id, oid, **kwargs)
         item_id = id_object.to_string()
 
         MongoItem.db(server_id).update_one({'_id': char_id}, {'$inc': {item_id: amount}})
@@ -232,27 +241,21 @@ class Equipment(BaseItem):
     def __init__(self, item_id, metadata):
         super(Equipment, self).__init__(item_id, metadata)
 
+        self.luoji = 0
+        self.minjie = 0
+        self.lilin = 0
+        self.wuxing = 0
+        self.meili = 0
+        self.caozuo = 0
+        self.jingying = 0
+        self.baobing = 0
+        self.zhanshu = 0
+        self.biaoyan = 0
+        self.yingxiao = 0
+
         self.star = metadata['star']
-        id_object = ItemId.parse(item_id)
-
-        config = ConfigItem.get(id_object.oid)
-        self.luoji = config.luoji
-        self.minjie = config.minjie
-        self.lilin = config.lilun
-        self.wuxing = config.wuxing
-        self.meili = config.meili
-
-        # TODO secondary property
-        self.caozuo = 99
-        self.jingying = 99
-        self.baobing = 99
-        self.zhanshu = 99
-
-        self.biaoyan = 99
-        self.yingxiao = 99
-
-        # TODO random property
-        # metadata['luoji']
+        for attr in chain(STAFF_BASE_ATTRS, STAFF_SECONDARY_ATTRS):
+            setattr(self, attr, metadata[attr])
 
     def make_protomsg(self):
         id_object = ItemId.parse(self.item_id)
@@ -279,6 +282,40 @@ class Equipment(BaseItem):
         return msg
 
     @classmethod
+    def generate(cls, oid):
+        config = ConfigItem.get(oid)
+
+        attrs = {}
+        for attr in STAFF_BASE_ATTRS:
+            attrs[attr] = getattr(config, attr)
+        for attr in STAFF_SECONDARY_ATTRS:
+            attrs[attr] = 0
+
+        item_id = ItemId.make(ITEM_EQUIPMENT, oid).to_string()
+
+        # 随机一个二级属性
+        attr = random.choice(STAFF_SECONDARY_ATTRS)
+        value = random.randint(20, 50) * config.quality
+        attrs[attr] += value
+
+        # 所有二级属性
+        for attr in STAFF_SECONDARY_ATTRS:
+            value = random.randint(4, 10) * config.quality
+            attrs[attr] += value
+
+        # 随机一个一级属性
+        attr = random.choice(STAFF_BASE_ATTRS)
+        value = random.uniform(0.5, 0.8) * config.quality
+        attrs[attr] += value
+
+        # 所有一级属性
+        for attr in STAFF_BASE_ATTRS:
+            value = random.uniform(0.12, 0.2) * config.quality
+            attrs[attr] += value
+
+        return item_id, attrs
+
+    @classmethod
     def add(cls, server_id, char_id, type_id, oid, **kwargs):
         cls.check_type_id(type_id)
 
@@ -288,14 +325,8 @@ class Equipment(BaseItem):
         notify.act = ACT_UPDATE
 
         for i in range(amount):
-            id_object = ItemId.make(oid, **kwargs)
-            item_id = id_object.to_string()
-
-            # TODO real rule for generate an equipment
-            metadata = {
-                'star': 0,
-                'luoji': 2
-            }
+            item_id, metadata = cls.generate(oid)
+            metadata['star'] = kwargs.get('star', 0)
 
             MongoItem.db(server_id).update_one(
                     {'_id': char_id},
