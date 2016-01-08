@@ -144,7 +144,6 @@ class BaseItem(object):
 
         return {i: doc.get(i, None) for i in item_ids}
 
-
     @classmethod
     def add(cls, server_id, char_id, type_id, oid, **kwargs):
         raise NotImplementedError()
@@ -196,7 +195,7 @@ class SimpleItem(BaseItem):
         MongoItem.db(server_id).update_one({'_id': char_id}, {'$inc': {item_id: amount}})
         metadata = cls.get_metadata(server_id, char_id, item_id)
 
-        obj = cls(item_id, metadata, **kwargs)
+        obj = cls(item_id, metadata)
 
         notify = ItemNotify()
         notify.act = ACT_UPDATE
@@ -207,8 +206,7 @@ class SimpleItem(BaseItem):
         return obj
 
     @classmethod
-    def remove(cls, server_id, char_id, item_id, **kwargs):
-        amount = kwargs.get('amount', 1)
+    def remove(cls, server_id, char_id, item_id, amount=1):
         metadata = cls.get_metadata(server_id, char_id, item_id)
         if not metadata:
             raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_EXIST"))
@@ -232,10 +230,8 @@ class SimpleItem(BaseItem):
                     {'$set': {item_id: new_amount}}
             )
 
-            id_object = ItemId.parse(item_id)
-
             metadata = cls.get_metadata(server_id, char_id, item_id)
-            obj = cls(item_id, metadata, star=id_object.star)
+            obj = cls(item_id, metadata)
             notify = ItemNotify()
             notify.act = ACT_UPDATE
             notify_item = notify.items.add()
@@ -381,20 +377,20 @@ class Equipment(BaseItem):
 
 
 def get_item_object(item_id, metadata):
-        """
-        :param item_id: the unique item id
-        :param metadata: the data stored in db
-        :rtype: BaseItem
-        """
-        id_object = ItemId.parse(item_id)
+    """
+    :param item_id: the unique item id
+    :param metadata: the data stored in db
+    :rtype: BaseItem
+    """
+    id_object = ItemId.parse(item_id)
 
-        if id_object.type_id == ITEM_EQUIPMENT:
-            return Equipment(item_id, metadata)
+    if id_object.type_id == ITEM_EQUIPMENT:
+        return Equipment(item_id, metadata)
 
-        if id_object.type_id == ITEM_STAFF_CARD:
-            return StaffCard(item_id, metadata)
+    if id_object.type_id == ITEM_STAFF_CARD:
+        return StaffCard(item_id, metadata)
 
-        return SimpleItem(item_id, metadata)
+    return SimpleItem(item_id, metadata)
 
 
 class ItemManager(object):
@@ -524,7 +520,6 @@ class ItemManager(object):
 
         return drop
 
-
     def merge(self, item_ids):
         item_id_one = item_ids[0]
         id_object_one = ItemId.parse(item_id_one)
@@ -549,7 +544,7 @@ class ItemManager(object):
             raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_STAFF_CARD_MAX_STAR"))
 
         self.remove_by_item_id(item_id, 2)
-        return self.add_staff_card(id_object.oid, id_object.star+1)
+        return self.add_staff_card(id_object.oid, id_object.star + 1)
 
     def send_notify(self):
         doc = MongoItem.db(self.server_id).find_one({'_id': self.char_id}, {'_id': 0})
