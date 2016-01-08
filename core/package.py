@@ -18,7 +18,7 @@ from protomsg.package_pb2 import (
     Property as MsgProperty,
 )
 
-from protomsg.item_pb2 import (
+from protomsg.item_define_pb2 import (
     ITEM_STAFF_CARD
 )
 
