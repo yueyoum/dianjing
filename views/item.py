@@ -36,8 +36,9 @@ def use(request):
     amount = request._proto.amount
 
     im = ItemManager(server_id, char_id)
-    im.use(item_id, amount)
+    drop = im.use(item_id, amount)
 
     response = ItemUseResponse()
     response.ret = 0
+    response.drop.MergeFrom(drop.make_protomsg())
     return ProtobufResponse(response)

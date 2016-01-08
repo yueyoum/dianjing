@@ -215,6 +215,7 @@ class SimpleItem(BaseItem):
             notify.act = ACT_UPDATE
             notify_item = notify.items.add()
             notify_item.MergeFrom(obj.make_protomsg())
+            MessagePipe(char_id).put(msg=notify)
 
 
 # 员工卡
@@ -485,7 +486,7 @@ class ItemManager(object):
             raise GameException(ConfigErrorMessage.get_error_id("ITEM_BOX_ONLY_USE_ONE"))
 
         self.remove_by_item_id(item_id, amount)
-        self.open_box(id_object.oid)
+        return self.open_box(id_object.oid)
 
     def open_box(self, oid):
         config = ConfigItem.get(oid)
@@ -493,6 +494,8 @@ class ItemManager(object):
 
         message = "Open box {0}".format(oid)
         Resource(self.server_id, self.char_id).save_drop(drop, message=message)
+
+        return drop
 
 
     def merge(self):
