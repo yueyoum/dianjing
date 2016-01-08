@@ -61,7 +61,7 @@ class Resource(object):
             pass
 
         for _id, _amount in drop.staff_cards:
-            im.add_staff_card(_id, _amount)
+            im.add_staff_card(_id, 0, _amount)
 
     @contextmanager
     def check(self, **kwargs):

@@ -394,15 +394,16 @@ class ItemManager(object):
         else:
             SimpleItem.add(self.server_id, self.char_id, type_id, oid, amount=amount)
 
-    def add_staff_card(self, oid, amount):
+    def add_staff_card(self, oid, star, amount):
         if not ConfigStaff.get(oid):
             raise RuntimeError("no staff card {0}".format(oid))
 
-        StaffCard.add(self.server_id, self.char_id, ITEM_STAFF_CARD, oid, amount=amount, star=0)
+        StaffCard.add(self.server_id, self.char_id, ITEM_STAFF_CARD, oid, amount=amount, star=star)
 
     def remove_by_item_id(self, item_id, amount):
         id_object = ItemId.parse(item_id)
         if id_object.type_id == ITEM_EQUIPMENT:
+            assert amount == 1
             Equipment.remove(self.server_id, self.char_id, item_id)
         elif id_object.type_id == ITEM_STAFF_CARD:
             StaffCard.remove(self.server_id, self.char_id, item_id, amount=amount)

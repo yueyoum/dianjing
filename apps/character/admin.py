@@ -151,7 +151,7 @@ class CharacterAdmin(admin.ModelAdmin):
 
         from core.item import ItemManager
         for q in queryset:
-            ItemManager(q.server_id, q.id).add_staff_card(value, amount)
+            ItemManager(q.server_id, q.id).add_staff_card(value, 0, amount)
 
     add_staff_card.short_description = u"添加员工卡"
 
