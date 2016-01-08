@@ -65,6 +65,8 @@ class AbstractStaff(object):
         'yingxiao',
 
         'zhimingdu',
+
+        'equipments',
     ]
 
     def __init__(self, *args, **kwargs):
@@ -97,6 +99,9 @@ class AbstractStaff(object):
         self.yingxiao = 0
 
         self.zhimingdu = 0
+
+        self.equipments = []
+        """:type: list[core.item.Equipment]"""
 
     def calculate_secondary_property(self):
         for sp, info in SECONDARY_PROPERTY_TABLE.iteritems():
@@ -140,6 +145,10 @@ class AbstractStaff(object):
         msg.yingxiao = int(self.yingxiao)
 
         msg.zhimingdu = int(self.zhimingdu)
+
+        for equip in self.equipments:
+            msg_item = msg.items.add()
+            msg_item.MergeFrom(equip.make_protomsg())
 
         return msg
 

@@ -132,6 +132,8 @@ class MongoStaff(BaseDocument):
         'status': null,
         'skills': {},
         'winning_rate': {},
+        # equips 直接从 item 中移动过来
+        'equips': {},
         # 此外这里还有属性
 
     }

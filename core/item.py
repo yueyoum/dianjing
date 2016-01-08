@@ -360,18 +360,7 @@ class Equipment(BaseItem):
         MessagePipe(char_id).put(msg=notify)
 
 
-class ItemManager(object):
-    def __init__(self, server_id, char_id):
-        self.server_id = server_id
-        self.char_id = char_id
-
-        if not MongoItem.exist(self.server_id, self.char_id):
-            doc = MongoItem.document()
-            doc['_id'] = self.char_id
-            MongoItem.db(self.server_id).insert_one(doc)
-
-    @staticmethod
-    def get_item(item_id, metadata):
+def get_item_object(item_id, metadata):
         """
         :param item_id: the unique item id
         :param metadata: the data stored in db
@@ -386,6 +375,17 @@ class ItemManager(object):
             return StaffCard(item_id, metadata, star=id_object.star)
 
         return SimpleItem(item_id, metadata)
+
+
+class ItemManager(object):
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+
+        if not MongoItem.exist(self.server_id, self.char_id):
+            doc = MongoItem.document()
+            doc['_id'] = self.char_id
+            MongoItem.db(self.server_id).insert_one(doc)
 
     def add_item(self, oid, amount):
         config = ConfigItem.get(oid)
@@ -404,7 +404,7 @@ class ItemManager(object):
 
         StaffCard.add(self.server_id, self.char_id, ITEM_STAFF_CARD, oid, amount=amount, star=star)
 
-    def remove_by_item_id(self, item_id, amount):
+    def remove_by_item_id(self, item_id, amount=1):
         id_object = ItemId.parse(item_id)
         if id_object.type_id == ITEM_EQUIPMENT:
             assert amount == 1
@@ -511,7 +511,7 @@ class ItemManager(object):
         notify.act = ACT_INIT
 
         for item_id, metadata in doc.iteritems():
-            item = self.get_item(item_id, metadata)
+            item = get_item_object(item_id, metadata)
 
             notify_item = notify.items.add()
             notify_item.MergeFrom(item.make_protomsg())

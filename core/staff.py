@@ -9,16 +9,18 @@ Description:
 
 from dianjing.exception import GameException
 
-from core.abstract import AbstractStaff, SECONDARY_PROPERTY_TABLE
+from core.abstract import AbstractStaff, STAFF_SECONDARY_ATTRS
 from core.mongo import MongoStaff, MongoRecruit, MongoAuctionStaff
 from core.resource import Resource
 from core.common import CommonRecruitHot
 from core.skill import SkillManager
+from core.item import get_item_object, ItemManager, ItemId, ITEM_EQUIPMENT, Equipment
 from core.signals import recruit_staff_signal, staff_level_up_signal
 
 from config import (
     ConfigStaff, ConfigStaffHot, ConfigStaffRecruit,
-    ConfigStaffLevel, ConfigErrorMessage, ConfigStaffStatus
+    ConfigStaffLevel, ConfigErrorMessage, ConfigStaffStatus,
+    ConfigItem,
 )
 
 from utils.message import MessagePipe
@@ -69,9 +71,27 @@ class Staff(AbstractStaff):
         # 知名度没有默认值，只会在游戏过程中增加
         self.zhimingdu = data.get('zhimingdu', 0)
 
+        # 装备加成
+        equipments = data.get('equips', {})
+        for item_id, metadata in equipments.iteritems():
+            item = get_item_object(item_id, metadata)
+            """:type: core.item.Equipment"""
+
+            self.equipments.append(item)
+
+            self.luoji += item.luoji
+            self.minjie += item.minjie
+            self.lilun += item.lilin
+            self.wuxing += item.wuxing
+            self.meili += item.meili
+
         self.calculate_secondary_property()
 
-        for sp in SECONDARY_PROPERTY_TABLE.keys():
+        for item in self.equipments:
+            for sp in STAFF_SECONDARY_ATTRS:
+                setattr(self, sp, getattr(item, sp))
+
+        for sp in STAFF_SECONDARY_ATTRS:
             value = getattr(self, sp) + data.get(sp, 0)
             setattr(self, sp, value)
 
@@ -159,8 +179,8 @@ class StaffRecruit(object):
                 check['diamond'] = -config.cost_value
 
             doc = MongoRecruit.db(self.server_id).find_one(
-                {'_id': self.char_id},
-                {'times.{0}'.format(tp): 1}
+                    {'_id': self.char_id},
+                    {'times.{0}'.format(tp): 1}
             )
 
             times = doc['times'].get(str(tp), 0)
@@ -185,11 +205,11 @@ class StaffRecruit(object):
                     staffs.append(11)
 
         MongoRecruit.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {
-                '$set': {'tp': tp, 'staffs': staffs},
-                '$inc': {'times.{0}'.format(tp): 1}
-            }
+                {'_id': self.char_id},
+                {
+                    '$set': {'tp': tp, 'staffs': staffs},
+                    '$inc': {'times.{0}'.format(tp): 1}
+                }
         )
 
         self.send_notify(staffs=staffs, tp=tp)
@@ -230,10 +250,10 @@ class StaffRecruit(object):
             StaffManger(self.server_id, self.char_id).add(staff_id)
 
         recruit_staff_signal.send(
-            sender=None,
-            server_id=self.server_id,
-            char_id=self.char_id,
-            staff_id=staff_id
+                sender=None,
+                server_id=self.server_id,
+                char_id=self.char_id,
+                staff_id=staff_id
         )
 
         self.send_notify()
@@ -309,8 +329,8 @@ class StaffManger(object):
         """
         projection = {'staffs.{0}'.format(i): 1 for i in ids}
         doc = MongoStaff.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            projection
+                {'_id': self.char_id},
+                projection
         )
 
         staffs = {}
@@ -360,8 +380,8 @@ class StaffManger(object):
             doc['skills'][str(k)] = v
 
         MongoStaff.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': {'staffs.{0}'.format(doc['staff_id']): doc}},
+                {'_id': self.char_id},
+                {'$set': {'staffs.{0}'.format(doc['staff_id']): doc}},
         )
 
         if send_notify:
@@ -396,8 +416,8 @@ class StaffManger(object):
         doc['skills'] = skills
 
         MongoStaff.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': {'staffs.{0}'.format(staff_id): doc}},
+                {'_id': self.char_id},
+                {'$set': {'staffs.{0}'.format(staff_id): doc}},
         )
 
         if send_notify:
@@ -441,8 +461,8 @@ class StaffManger(object):
         self.is_free(staff_id)
 
         MongoStaff.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$unset': {'staffs.{0}'.format(staff_id): 1}}
+                {'_id': self.char_id},
+                {'$unset': {'staffs.{0}'.format(staff_id): 1}}
         )
 
         notify = StaffRemoveNotify()
@@ -494,33 +514,80 @@ class StaffManger(object):
                 level_updated = True
 
         MongoStaff.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {
-                '$set': {
-                    'staffs.{0}.exp'.format(staff_id): current_exp,
-                    'staffs.{0}.level'.format(staff_id): current_level
-                },
+                {'_id': self.char_id},
+                {
+                    '$set': {
+                        'staffs.{0}.exp'.format(staff_id): current_exp,
+                        'staffs.{0}.level'.format(staff_id): current_level
+                    },
 
-                '$inc': {
-                    'staffs.{0}.luoji'.format(staff_id): luoji,
-                    'staffs.{0}.minjie'.format(staff_id): minjie,
-                    'staffs.{0}.lilun'.format(staff_id): lilun,
-                    'staffs.{0}.wuxing'.format(staff_id): wuxing,
-                    'staffs.{0}.meili'.format(staff_id): meili,
+                    '$inc': {
+                        'staffs.{0}.luoji'.format(staff_id): luoji,
+                        'staffs.{0}.minjie'.format(staff_id): minjie,
+                        'staffs.{0}.lilun'.format(staff_id): lilun,
+                        'staffs.{0}.wuxing'.format(staff_id): wuxing,
+                        'staffs.{0}.meili'.format(staff_id): meili,
 
-                    'staffs.{0}.zhimingdu'.format(staff_id): zhimingdu,
-                },
-            }
+                        'staffs.{0}.zhimingdu'.format(staff_id): zhimingdu,
+                    },
+                }
         )
 
         if level_updated:
             staff_level_up_signal.send(
-                sender=None,
-                server_id=self.server_id,
-                char_id=self.char_id,
-                staff_id=staff_id,
-                new_level=current_level
+                    sender=None,
+                    server_id=self.server_id,
+                    char_id=self.char_id,
+                    staff_id=staff_id,
+                    new_level=current_level
             )
+
+        self.send_notify(staff_ids=[staff_id])
+
+    def equipment_on(self, staff_id, item_id):
+        if not self.has_staff(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
+
+        id_object = ItemId.parse(item_id)
+
+        config = ConfigItem.get(id_object.oid)
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        if config.tp != ITEM_EQUIPMENT:
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_EQUIP_ON_TYPE_ERROR"))
+
+        metadata = Equipment.get_metadata(self.server_id, self.char_id, item_id)
+        if not metadata:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_EXIST"))
+
+        im = ItemManager(self.server_id, self.char_id)
+        im.remove_by_item_id(item_id)
+
+        doc = MongoStaff.db(self.server_id).find_one(
+                {'_id': self.char_id},
+                {'staffs.{0}.equips'.format(staff_id): 1}
+        )
+
+        updater = {
+            '$set': {
+                'staffs.{0}.equips.{1}'.format(staff_id, item_id): metadata
+            }
+        }
+
+        for item_id in doc.get('equips', {}):
+            id_object = ItemId.parse(item_id)
+            if ConfigItem.get(id_object.oid).sub_tp == config.sub_tp:
+                # 同类型的替换
+                updater['$unset'] = {
+                    'staffs.{0}.equips.{1}'.format(staff_id, item_id): 1
+                }
+                break
+
+        MongoStaff.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                updater
+        )
 
         self.send_notify(staff_ids=[staff_id])
 
