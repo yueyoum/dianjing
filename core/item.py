@@ -110,10 +110,9 @@ class ItemId(object):
 class BaseItem(object):
     VALID_TYPE = []
 
-    def __init__(self, item_id, metadata, **kwargs):
+    def __init__(self, item_id, metadata):
         self.item_id = item_id
         self.metadata = metadata
-        self.kwargs = kwargs
 
         self.id_object = ItemId.parse(item_id)
 
@@ -233,8 +232,10 @@ class SimpleItem(BaseItem):
                     {'$set': {item_id: new_amount}}
             )
 
+            id_object = ItemId.parse(item_id)
+
             metadata = cls.get_metadata(server_id, char_id, item_id)
-            obj = cls(item_id, metadata)
+            obj = cls(item_id, metadata, star=id_object.star)
             notify = ItemNotify()
             notify.act = ACT_UPDATE
             notify_item = notify.items.add()
@@ -247,15 +248,13 @@ class StaffCard(SimpleItem):
     VALID_TYPE = [ITEM_STAFF_CARD]
 
     def make_protomsg(self):
-        id_object = ItemId.parse(self.item_id)
-
         msg = MsgItem()
         msg.id = self.item_id
-        msg.oid = id_object.oid
-        msg.tp = id_object.type_id
+        msg.oid = self.id_object.oid
+        msg.tp = self.id_object.type_id
 
         msg.amount = self.metadata
-        msg.attr.star = self.kwargs['star']
+        msg.attr.star = self.id_object.star
         return msg
 
 
@@ -393,7 +392,7 @@ def get_item_object(item_id, metadata):
             return Equipment(item_id, metadata)
 
         if id_object.type_id == ITEM_STAFF_CARD:
-            return StaffCard(item_id, metadata, star=id_object.star)
+            return StaffCard(item_id, metadata)
 
         return SimpleItem(item_id, metadata)
 
@@ -535,7 +534,7 @@ class ItemManager(object):
         if id_object_one.type_id == ITEM_STAFF_CARD:
             # 两个相同oid, star 的卡合成更高级star的卡
 
-            if len(item_ids) != 2 or item_ids[0] != item_ids[1]:
+            if item_ids[0] != item_ids[1]:
                 raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
 
             item = self.merge_staff_card(item_ids[0])
