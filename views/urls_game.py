@@ -61,6 +61,7 @@ urlpatterns = [
 
     url(r'^item/sell/$', views.item.sell),
     url(r'^item/use/$', views.item.use),
+    url(r'^item/merge/$', views.item.merge),
 
     url(r'^challenge/start/$', views.challenge.start),
     url(r'^challenge/area/switch/$', views.challenge.switch_area),

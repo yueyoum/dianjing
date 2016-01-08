@@ -11,7 +11,7 @@ from utils.http import ProtobufResponse
 
 from core.item import ItemManager
 
-from protomsg.item_pb2 import ItemSellResponse, ItemUseResponse
+from protomsg.item_pb2 import ItemSellResponse, ItemUseResponse, ItemMergeResponse
 
 
 def sell(request):
@@ -39,6 +39,20 @@ def use(request):
     drop = im.use(item_id, amount)
 
     response = ItemUseResponse()
+    response.ret = 0
+    response.drop.MergeFrom(drop.make_protomsg())
+    return ProtobufResponse(response)
+
+def merge(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    item_ids = [i for i in request._proto.item_ids]
+
+    im = ItemManager(server_id, char_id)
+    drop = im.merge(item_ids)
+
+    response = ItemMergeResponse()
     response.ret = 0
     response.drop.MergeFrom(drop.make_protomsg())
     return ProtobufResponse(response)

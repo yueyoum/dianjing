@@ -115,6 +115,8 @@ class BaseItem(object):
         self.metadata = metadata
         self.kwargs = kwargs
 
+        self.id_object = ItemId.parse(item_id)
+
     def make_protomsg(self):
         raise NotImplementedError()
 
@@ -129,6 +131,20 @@ class BaseItem(object):
             return None
 
         return doc.get(item_id, None)
+
+    @classmethod
+    def batch_get_metadata(cls, server_id, char_id, item_ids):
+        projection = {i: 1 for i in item_ids}
+        doc = MongoItem.db(server_id).find_one(
+                {'_id': char_id},
+                projection
+        )
+
+        if not doc:
+            return {}
+
+        return {i: doc.get(i, None) for i in item_ids}
+
 
     @classmethod
     def add(cls, server_id, char_id, type_id, oid, **kwargs):
@@ -167,6 +183,10 @@ class SimpleItem(BaseItem):
 
     @classmethod
     def add(cls, server_id, char_id, type_id, oid, **kwargs):
+        """
+
+        :rtype: SimpleItem
+        """
         cls.check_type_id(type_id)
 
         amount = kwargs.get('amount', 1)
@@ -185,6 +205,7 @@ class SimpleItem(BaseItem):
         notify_item.MergeFrom(obj.make_protomsg())
 
         MessagePipe(char_id).put(msg=notify)
+        return obj
 
     @classmethod
     def remove(cls, server_id, char_id, item_id, **kwargs):
@@ -387,7 +408,7 @@ class ItemManager(object):
             doc['_id'] = self.char_id
             MongoItem.db(self.server_id).insert_one(doc)
 
-    def add_item(self, oid, amount):
+    def add_item(self, oid, amount=1):
         config = ConfigItem.get(oid)
         if not config:
             raise RuntimeError("no item {0}".format(oid))
@@ -398,11 +419,15 @@ class ItemManager(object):
         else:
             SimpleItem.add(self.server_id, self.char_id, type_id, oid, amount=amount)
 
-    def add_staff_card(self, oid, star, amount):
+    def add_staff_card(self, oid, star, amount=1):
+        """
+
+        :rtype: SimpleItem
+        """
         if not ConfigStaff.get(oid):
             raise RuntimeError("no staff card {0}".format(oid))
 
-        StaffCard.add(self.server_id, self.char_id, ITEM_STAFF_CARD, oid, amount=amount, star=star)
+        return StaffCard.add(self.server_id, self.char_id, ITEM_STAFF_CARD, oid, amount=amount, star=star)
 
     def remove_by_item_id(self, item_id, amount=1):
         id_object = ItemId.parse(item_id)
@@ -501,8 +526,31 @@ class ItemManager(object):
         return drop
 
 
-    def merge(self):
-        pass
+    def merge(self, item_ids):
+        item_id_one = item_ids[0]
+        id_object_one = ItemId.parse(item_id_one)
+
+        drop = Drop()
+
+        if id_object_one.type_id == ITEM_STAFF_CARD:
+            # 两个相同oid, star 的卡合成更高级star的卡
+
+            if len(item_ids) != 2 or item_ids[0] != item_ids[1]:
+                raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+            item = self.merge_staff_card(item_ids[0])
+            drop.items.append((item.id_object.oid, 1))
+
+        return drop
+
+    def merge_staff_card(self, item_id):
+        id_object = ItemId.parse(item_id)
+
+        if id_object.star >= 20:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_STAFF_CARD_MAX_STAR"))
+
+        self.remove_by_item_id(item_id, 2)
+        return self.add_staff_card(id_object.oid, id_object.star+1)
 
     def send_notify(self):
         doc = MongoItem.db(self.server_id).find_one({'_id': self.char_id}, {'_id': 0})
