@@ -31,7 +31,6 @@ class Package(object):
                  'club_renown',
 
                  'items',
-                 'staffs',
                  'staff_cards',
                  ]
     
@@ -62,7 +61,6 @@ class Package(object):
         self.club_renown = []
 
         self.items = []
-        self.staffs = []
         self.staff_cards = []
 
 

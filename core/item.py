@@ -11,6 +11,8 @@ from contextlib import contextmanager
 from dianjing.exception import GameException
 
 from core.mongo import MongoItem
+from core.package import Drop
+from core.resource import Resource
 
 from utils.functional import make_string_id
 from utils.message import MessagePipe
@@ -417,6 +419,30 @@ class ItemManager(object):
         yield
 
         self.remove_simple_item(oid, amount)
+
+    def sell(self, item_id, amount):
+        id_object = ItemId.parse(item_id)
+
+        if id_object.type_id == ITEM_STAFF_CARD:
+            gold = 10
+        else:
+            config = ConfigItem.get(id_object.oid)
+            gold = config.sell_gold
+            if not gold:
+                raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_SELL"))
+
+        self.remove_by_item_id(item_id, amount)
+
+        gold *= amount
+        drop = Drop()
+        drop.gold = gold
+
+        if id_object.type_id == ITEM_STAFF_CARD:
+            message = "Sell staff card {0}".format(id_object.oid)
+        else:
+            message = "Sell item {0}".format(id_object.oid)
+
+        Resource(self.server_id, self.char_id).save_drop(drop, message=message)
 
     def open(self, item_id):
         pass

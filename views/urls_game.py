@@ -15,6 +15,7 @@ import views.server
 import views.character
 import views.club
 import views.staff
+import views.item
 import views.challenge
 import views.building
 import views.training
@@ -56,6 +57,8 @@ urlpatterns = [
     url(r'^staff/recruit/refresh/$', views.staff.recruit_refresh),
     url(r'^staff/recruit/$', views.staff.recruit_staff),
     url(r'^staff/fire/$', views.staff.fire),
+
+    url(r'^item/sell/$', views.item.sell),
 
     url(r'^challenge/start/$', views.challenge.start),
     url(r'^challenge/area/switch/$', views.challenge.switch_area),

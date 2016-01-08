@@ -44,7 +44,7 @@ class PackageBase(object):
         'gold', 'diamond', 'staff_exp', 'club_renown',
     ]
 
-    FULL_FIELDS = FIELDS + ['items', 'staffs', 'staff_cards']
+    __slots__ = FIELDS + ['items', 'staff_cards']
 
     def __init__(self):
         self.caozuo = 0  # 员工 - 操作
@@ -63,12 +63,11 @@ class PackageBase(object):
         self.club_renown = 0  # 角色 - 俱乐部声望
 
         self.items = []  # 角色 - 物品
-        self.staffs = []
         self.staff_cards = []
 
     def __str__(self):
         data = {}
-        for attr in self.FULL_FIELDS:
+        for attr in self.__slots__:
             value = getattr(self, attr)
             if value:
                 data[attr] = value
@@ -94,7 +93,7 @@ class PackageBase(object):
 class Drop(PackageBase):
     FIELDS = ['gold', 'diamond', 'club_renown']
 
-    # 还有 items, staffs, staff_cards
+    # 还有 items, staff_cards
 
     @classmethod
     def generate(cls, pid):
@@ -112,14 +111,11 @@ class Drop(PackageBase):
 
         if config.item_mode == 1:
             p.items = config.items
-            p.staffs = config.staffs
             p.staff_cards = config.staff_cards
         else:
             all_stuffs = []
             for i in config.items:
                 all_stuffs.append(('item', i))
-            for i in config.staffs:
-                all_stuffs.append(('staff', i))
             for i in config.staff_cards:
                 all_stuffs.append(('staff_cards', i))
 
@@ -128,8 +124,6 @@ class Drop(PackageBase):
                 _type, _data = random.choice(all_stuffs)
                 if _type == 'item':
                     p.items.append(_data)
-                elif _type == 'staff':
-                    p.staffs.append(_data)
                 elif _type == 'staff_cards':
                     p.staff_cards.append(_data)
 
@@ -153,9 +147,6 @@ class Drop(PackageBase):
             msg_item.amount = _amount
             msg_item.tp = ConfigItem.get(_id).tp
 
-        if self.staffs:
-            msg.staffs.extend(self.staffs)
-
         for _id, _amount in self.staff_cards:
             msg_item = msg.items.add()
             msg_item.id = _id
@@ -175,9 +166,6 @@ class Drop(PackageBase):
 
         if self.items:
             data['items'] = self.items
-
-        if self.staffs:
-            data['staffs'] = self.staffs
 
         if self.staff_cards:
             data['staff_cards'] = self.staff_cards

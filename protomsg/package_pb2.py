@@ -13,14 +13,16 @@ from google.protobuf import descriptor_pb2
 _sym_db = _symbol_database.Default()
 
 
+import item_pb2 as item__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='package.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\rpackage.proto\x12\x11\x44ianjing.protocol\".\n\x08Resource\x12\x13\n\x0bresource_id\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\x05\"\x87\x01\n\x04\x44rop\x12.\n\tresources\x18\x01 \x03(\x0b\x32\x1b.Dianjing.protocol.Resource\x12+\n\x05items\x18\x03 \x03(\x0b\x32\x1c.Dianjing.protocol.Drop.Item\x1a\"\n\x04Item\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0e\n\x06\x61mount\x18\x02 \x02(\x05\":\n\x08Property\x12.\n\tresources\x18\x01 \x03(\x0b\x32\x1b.Dianjing.protocol.Resource')
-)
+  serialized_pb=_b('\n\rpackage.proto\x12\x11\x44ianjing.protocol\x1a\nitem.proto\".\n\x08Resource\x12\x13\n\x0bresource_id\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\x05\"\xb0\x01\n\x04\x44rop\x12.\n\tresources\x18\x01 \x03(\x0b\x32\x1b.Dianjing.protocol.Resource\x12+\n\x05items\x18\x02 \x03(\x0b\x32\x1c.Dianjing.protocol.Drop.Item\x1aK\n\x04Item\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0e\n\x06\x61mount\x18\x02 \x02(\x05\x12\'\n\x02tp\x18\x03 \x02(\x0e\x32\x1b.Dianjing.protocol.ItemType\":\n\x08Property\x12.\n\tresources\x18\x01 \x03(\x0b\x32\x1b.Dianjing.protocol.Resource')
+  ,
+  dependencies=[item__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
@@ -59,8 +61,8 @@ _RESOURCE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=36,
-  serialized_end=82,
+  serialized_start=48,
+  serialized_end=94,
 )
 
 
@@ -85,6 +87,13 @@ _DROP_ITEM = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='tp', full_name='Dianjing.protocol.Drop.Item.tp', index=2,
+      number=3, type=14, cpp_type=8, label=2,
+      has_default_value=False, default_value=1,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -97,8 +106,8 @@ _DROP_ITEM = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=186,
-  serialized_end=220,
+  serialized_start=198,
+  serialized_end=273,
 )
 
 _DROP = _descriptor.Descriptor(
@@ -117,7 +126,7 @@ _DROP = _descriptor.Descriptor(
       options=None),
     _descriptor.FieldDescriptor(
       name='items', full_name='Dianjing.protocol.Drop.items', index=1,
-      number=3, type=11, cpp_type=10, label=3,
+      number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -134,8 +143,8 @@ _DROP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=85,
-  serialized_end=220,
+  serialized_start=97,
+  serialized_end=273,
 )
 
 
@@ -165,10 +174,11 @@ _PROPERTY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=222,
-  serialized_end=280,
+  serialized_start=275,
+  serialized_end=333,
 )
 
+_DROP_ITEM.fields_by_name['tp'].enum_type = item__pb2._ITEMTYPE
 _DROP_ITEM.containing_type = _DROP
 _DROP.fields_by_name['resources'].message_type = _RESOURCE
 _DROP.fields_by_name['items'].message_type = _DROP_ITEM
