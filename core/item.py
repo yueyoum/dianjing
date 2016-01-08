@@ -24,7 +24,7 @@ from utils.message import MessagePipe
 from config import ConfigItem, ConfigStaff, ConfigErrorMessage
 
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
-from protomsg.item_pb2 import (
+from protomsg.item_define_pb2 import (
     ITEM_TRAINING_EXPENDABLE,
     ITEM_SHOP_GOODS,
     ITEM_BUILDING_CERTIFICATE,
@@ -35,9 +35,12 @@ from protomsg.item_pb2 import (
 
     ITEM_BOX,
 
+    Item as MsgItem,
+
+)
+from protomsg.item_pb2 import (
     ItemNotify,
     ItemRemoveNotify,
-    Item as MsgItem,
 )
 
 
