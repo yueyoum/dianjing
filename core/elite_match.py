@@ -112,7 +112,7 @@ class EliteMatch(object):
             doc['_id'] = self.char_id
             MongoEliteMatch.db(self.server_id).insert_one(doc)
 
-        self.cur_times = doc['cur_times']
+        # self.cur_times = doc['cur_times']
 
     @classmethod
     def cronjob_clean_match_times(cls, server_id):
@@ -122,8 +122,7 @@ class EliteMatch(object):
             updater = {}
             for area_id, area_info in doc['areas'].iteritems():
                 for ch_id, ch_info in area_info['challenges']:
-                    key = 'areas.{0}.challenges.{1}.times'.format(area_id, ch_id)
-                    updater[key] = ConfigEliteMatch.get(int(ch_id)).max_times
+                    updater['areas.{0}.challenges.{1}.times'.format(area_id, ch_id)] = 0
 
             MongoEliteMatch.db(server_id).update_one(
                 {'_id': char_id},
@@ -145,7 +144,15 @@ class EliteMatch(object):
 
         updater = {
             'areas.{0}'.format(aid): {
-                str(config.first_match_id()): 0
+                'challenges': {
+                    'stars': 0,
+                    'times': 0,
+                },
+                'packages': {
+                    '1': True,
+                    '2': True,
+                    '3': True,
+                }
             }
         }
 
@@ -154,21 +161,8 @@ class EliteMatch(object):
             {'$set': updater}
         )
 
-        # if send_notify:
-        #     self.send_notify(area_id=aid)
-
-    # def cost_cur_times(self):
-    #     if self.cur_times <= 0:
-    #         raise GameException(ConfigErrorMessage.get_error_id("ELITE_TOTAL_NO_TIMES"))
-    #
-    #     self.cur_times -= 1
-    #     # TODO lock
-    #     MongoEliteMatch.db(self.server_id).update_one(
-    #         {'_id': self.char_id},
-    #         {'$set': {'cur_times': self.cur_times}}
-    #     )
-    #
-    #     self.send_times_notify()
+        if send_notify:
+            self.elite_notify(area_id=aid)
 
     def start(self, area_id, challenge_id):
         # 判断大区是否存在
@@ -226,7 +220,9 @@ class EliteMatch(object):
         )
 
         # 检查重能
-        Challenge(self.server_id, self.char_id).check_energize()
+        ch = Challenge(self.server_id, self.char_id)
+        ch.check_energize()
+        ch.energy_notify()
 
         # 更新挑战次数
         updater = {'areas.{0}.{1}.times'.format(area_id, challenge_id): 1}
@@ -254,24 +250,17 @@ class EliteMatch(object):
 
             setter = {}
             # 判断是否需要更新星级
-            if stars > doc['areas'][area_id].get(challenge_id, {}).get('stars', 0):
-                setter['areas.{0}.{1}.stars'.format(area_id, challenge_id)] = stars
+            if stars > doc['areas'][area_id]['challenges'].get(challenge_id, {}).get('stars', 0):
+                setter['areas.{0}.challenges.{1}.stars'.format(area_id, challenge_id)] = stars
 
             next_challenge_id = int(challenge_id) + 1
-            next_area_id = int(area_id) + 1
 
             # 如果下一关存在
             if ConfigEliteMatch.get(next_challenge_id):
                 # 如果是下一大区的， 开启新大区
-                if ConfigEliteArea.get(int(area_id) + 1) <= next_challenge_id:
-                    setter['areas.{0}.{1}'.format(next_area_id, next_challenge_id)] = {'stars': 0,
-                                                                                       'times': 0,
-                                                                                       'packages': []}
-                # 如果是当前大区的， 开启
-                else:
-                    setter['areas.{0}.{1}'.format(area_id, next_challenge_id)] = {'stars': 0,
-                                                                                  'times': 0,
-                                                                                  'packages': []}
+                if ConfigEliteArea.get(int(area_id)) < next_challenge_id:
+                    setter['areas.{0}.challenges.{1}'.format(area_id, next_challenge_id)] = {'stars': 0,
+                                                                                             'times': 0}
             # 更新数据
             if setter:
                 MongoEliteMatch.db(self.server_id).update_one(
@@ -280,12 +269,13 @@ class EliteMatch(object):
                 )
 
             # 同步到客户端
-            self.challenge_notify(act=ACT_UPDATE)
+            self.elite_notify(area_id=area_id)
 
-            # 通关奖励
-            drop = Drop.generate(ConfigEliteMatch.get(int(challenge_id)).reward)
-            Resource(self.server_id, self.char_id).save_drop(drop)
-            return drop.make_protomsg()
+            # # 通关奖励
+            # drop = Drop.generate(ConfigEliteMatch.get(int(challenge_id)).reward)
+            # Resource(self.server_id, self.char_id).save_drop(drop)
+            # return drop.make_protomsg()
+            return None
 
         # # send signal
         # challenge_match_signal.send(
@@ -301,50 +291,14 @@ class EliteMatch(object):
     def star_reward(self, area_id, index):
         pass
 
-    # def send_notify(self, area_id=None, match_id=None):
-    #     if area_id:
-    #         act = ACT_UPDATE
-    #         area_ids = [area_id]
-    #     else:
-    #         act = ACT_INIT
-    #         area_ids = ConfigEliteArea.INSTANCES.keys()
-    #
-    #     def get_match_ids(_aid):
-    #         if area_id:
-    #             if match_id:
-    #                 return [match_id]
-    #             return ConfigEliteArea.get(area_id).match_ids
-    #
-    #         return ConfigEliteArea.get(_aid).match_ids
-    #
-    #     doc = MongoEliteMatch.db(self.server_id).find_one({'_id': self.char_id})
-    #
-    #     notify = EliteNotify()
-    #     notify.act = act
-    #     for aid in area_ids:
-    #         notify_area = notify.area.add()
-    #         notify_area.id = aid
-    #
-    #         matchs = doc['areas'].get(str(aid), {})
-    #         if not matchs:
-    #             notify_area.status = ELITE_AREA_NOT_OPEN
-    #             continue
-    #
-    #         if set([int(i) for i in matchs]) == set(ConfigEliteArea.get(aid).match_ids):
-    #             notify_area.status = ELITE_AREA_FINISH
-    #         else:
-    #             notify_area.status = ELITE_AREA_OPEN
-    #
-    #         for mid in get_match_ids(aid):
-    #             cur_times = matchs.get(str(mid), -1)
-    #
-    #             notify_area_match = notify_area.match.add()
-    #             notify_area_match.id = mid
-    #             notify_area_match.cur_times = cur_times
-    #     MessagePipe(self.char_id).put(msg=notify)
+    def elite_notify(self, act=ACT_INIT, area_id=None):
+        if area_id:
+            projection = {'areas.{0}': 1}
+            act = ACT_UPDATE
+        else:
+            projection = {'areas': 1}
 
-    def challenge_notify(self, act=ACT_INIT):
-        doc = MongoEliteMatch.db(self.server_id).find_one({'_id': self.char_id})
+        doc = MongoEliteMatch.db(self.server_id).find_one({'_id': self.char_id}, projection)
 
         notify = EliteNotify()
         notify.act = act

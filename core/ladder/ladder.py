@@ -191,10 +191,10 @@ class Ladder(object):
         if club_one_id != str(self.char_id):
             return
 
-        MailManager(self.server_id, self.char_id).add(
-            title="Ladder Match Video",
-            content=video,
-        )
+        # MailManager(self.server_id, self.char_id).add(
+        #     title="Ladder Match Video",
+        #     content=video,
+        # )
 
         StaffManger(self.server_id, self.char_id).update_winning_rate(result)
 
@@ -204,9 +204,10 @@ class Ladder(object):
         match = LadderMatch(self.server_id, club_one, club_two)
         match.end_match(win_club)
 
-        drop = Drop()
-        drop.ladder_score = match.club_one_add_score
-        return drop.make_protomsg()
+        # drop = Drop()
+        # drop.ladder_score = match.club_one_add_score
+        # return drop.make_protomsg()
+        return None
 
     def add_score(self, score, send_notify=True):
         lock_key = "ladder_add_score_{0}".format(self.char_id)

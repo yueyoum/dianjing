@@ -557,20 +557,20 @@ class MongoEliteMatch(BaseDocument):
     DOCUMENT = {
         '_id': null,
         # 大区， {area_id: {'challenge_id': {'star': 0}},
-        'areas': {
+        'areas': {}
+    }
+
+    AREA_DOCUMENT = {
+        'challenges': {
             '1': {
-                'challenges': {
-                    '1': {
-                        'stars': 0,     # 历史最佳记录 0为未通过
-                        'times': 0,     # 当天挑战次数， 每天刷新
-                    }
-                },
-                'packages': {
-                    '1': False,
-                    '2': False,
-                    '3': False,
-                }
+                'stars': 0,     # 历史最佳记录 0为未通过
+                'times': 0,     # 当天挑战次数， 每天刷新
             }
+        },
+        'packages': {
+            '1': False,
+            '2': False,
+            '3': False,
         }
     }
 

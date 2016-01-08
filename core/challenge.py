@@ -108,8 +108,7 @@ class Challenge(object):
             updater = {}
             for area_id, area_info in doc['areas'].iteritems():
                 for ch_id, ch_info in area_info['challenges']:
-                    key = 'areas.{0}.challenges.{1}.times'.format(area_id, ch_id)
-                    updater[key] = ConfigChallengeMatch.get(int(ch_id)).max_times
+                    updater['areas.{0}.challenges.{1}.times'.format(area_id, ch_id)] = 0
 
             MongoChallenge.db(server_id).update_one(
                 {'_id': char_id},
@@ -160,7 +159,7 @@ class Challenge(object):
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_AREA_NOT_OPEN"))
 
         # 判断是否已开方关卡
-        challenge = doc['areas']['challenges'].get(str(challenge_id), {})
+        challenge = doc['areas'][str(area_id)]['challenges'].get(str(challenge_id), {})
         if not challenge:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NOT_OPEN"))
 
@@ -197,11 +196,12 @@ class Challenge(object):
             {'_id': self.char_id},
             {'$inc': {'energy.power': -CHALLENGE_MATCH_COST}}
         )
+
         # 检查重能
         self.check_energize()
 
         # 更新挑战次数
-        updater = {'areas.{0}.{1}.times'.format(area_id, challenge_id): 1}
+        updater = {'areas.{0}.challenges.{1}.times'.format(area_id, challenge_id): 1}
         MongoChallenge.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$inc': updater}
@@ -226,24 +226,32 @@ class Challenge(object):
 
             setter = {}
             # 判断是否需要更新星级
-            if stars > doc['areas'][area_id].get(challenge_id, {}).get('stars', 0):
-                setter['areas.{0}.{1}.stars'.format(area_id, challenge_id)] = stars
+            if stars > doc['areas'][area_id]['challenges'].get(challenge_id, {}).get('stars', 0):
+                setter['areas.{0}.challenges.{1}.stars'.format(area_id, challenge_id)] = stars
 
             next_challenge_id = int(challenge_id) + 1
             next_area_id = int(area_id) + 1
+
+            elite_open = True
             # 如果下一关存在
             if ConfigChallengeMatch.get(next_challenge_id):
-
                 # 如果是下一大区的， 开启新大区
-                if ConfigChallengeType.get(int(area_id) + 1).condition_challenge_id <= next_challenge_id:
-                    setter['areas.{0}.{1}'.format(next_area_id, next_challenge_id)] = {'stars': 0,
-                                                                                       'times': 0,
-                                                                                       'packages': []}
-                # 如果是当前大区的， 开启
+                if ConfigChallengeType.get(int(area_id)).condition_challenge_id < next_challenge_id:
+                    setter['areas.{0}.challenges.{1}'.format(next_area_id, next_challenge_id)] = {'stars': 0,
+                                                                                                  'times': 0}
+                    self.challenge_notify(area_id=next_area_id)
+                # 如果是当前大区的
                 else:
-                    setter['areas.{0}.{1}'.format(area_id, next_challenge_id)] = {'stars': 0,
-                                                                                  'times': 0,
-                                                                                  'packages': []}
+                    # 如果还没开启
+                    if str(next_challenge_id) not in doc['areas'][str(area_id)]['challenges']:
+                        setter['areas.{0}.challenges.{1}'.format(area_id, next_challenge_id)] = {'stars': 0,
+                                                                                                 'times': 0}
+                    elite_open = False
+
+            if elite_open:
+                from core.elite_match import EliteMatch
+                EliteMatch(self.server_id, self.char_id).open_area(int(area_id))
+
             # 更新数据
             if setter:
                 MongoChallenge.db(self.server_id).update_one(
@@ -252,12 +260,13 @@ class Challenge(object):
                 )
 
             # 同步到客户端
-            self.challenge_notify(act=ACT_UPDATE)
+            self.challenge_notify(area_id=area_id)
 
-            # 通关奖励
-            drop = Drop.generate(ConfigChallengeMatch.get(int(challenge_id)).package)
-            Resource(self.server_id, self.char_id).save_drop(drop)
-            return drop.make_protomsg()
+            # # 通关奖励
+            # drop = Drop.generate(ConfigChallengeMatch.get(int(challenge_id)).package)
+            # Resource(self.server_id, self.char_id).save_drop(drop)
+            # return drop.make_protomsg()
+            return None
 
         # send signal
         challenge_match_signal.send(
@@ -324,8 +333,14 @@ class Challenge(object):
         notify.refresh_time = 0
         MessagePipe(self.char_id).put(msg=notify)
 
-    def challenge_notify(self, act=ACT_INIT):
-        doc = MongoChallenge.db(self.server_id).find_one({'_id': self.char_id})
+    def challenge_notify(self, act=ACT_INIT, area_id=None):
+        if area_id:
+            act = ACT_UPDATE
+            projection = {'areas.{0}'.format(area_id): 1}
+        else:
+            projection = {'areas': 1}
+
+        doc = MongoChallenge.db(self.server_id).find_one({'_id': self.char_id}, projection)
 
         notify = ChallengeNotify()
         notify.act = act
