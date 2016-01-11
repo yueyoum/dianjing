@@ -7,4 +7,4 @@ Description:
 
 """
 
-from core.league.league import LeagueGame, League
+# from core.league.league import LeagueGame, League

@@ -591,6 +591,38 @@ class StaffManger(object):
 
         self.send_notify(staff_ids=[staff_id])
 
+    def update_winning_rate(self, results, one=True):
+        """
+        更新玩家 Staff 种族胜率
+        """
+        updater = {}
+        for result in results:
+            if one:
+                # 挑战者
+                race_two = ConfigStaff.get(result.staff_two).race
+                updater['staffs.{0}.winning_rate.{1}.total'.format(result.staff_one, race_two)] = 1
+                if result.staff_one_win:
+                    updater['staffs.{0}.winning_rate.{1}.win'.format(result.staff_one, race_two)] = 1
+            else:
+                # 被挑战者
+                race_one = ConfigStaff.get(result.staff_one).race
+                updater['staffs.{0}.winning_rate.{1}.total'.format(result.staff_two, race_one)] = 1
+                if not result.staff_one_win:
+                    updater['staffs.{0}.winning_rate.{1}.win'.format(result.staff_two, race_one)] = 1
+
+        MongoStaff.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$inc': updater}
+        )
+
+    def get_winning_rate(self, staff_ids):
+        """
+        获取 Staff 胜率
+        """
+        projection = {'staffs.{0}.winning_rate'.format(staff_id): 1 for staff_id in staff_ids}
+        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, projection)
+        return doc['staffs']
+
     def send_notify(self, staff_ids=None):
         """
         员工信息同步接口

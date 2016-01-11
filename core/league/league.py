@@ -6,364 +6,573 @@ Date Created:   2015-11-10 15:52
 Description:
 
 """
-
 import arrow
-import base64
-from django.conf import settings
+import random
 
 from dianjing.exception import GameException
 
-from core.mongo import MongoCharacter, MongoLeagueGroup, MongoLeagueEvent
 from core.character import Character
+from core.resource import Resource
+from core.mongo import MongoLeague, MongoCharacter
+from core.package import Drop
+from core.match import ClubMatch
 from core.club import Club
-from core.league.group import LeagueGroup
-from core.league.match import LeagueMatch, LeagueClub
-from core.notification import Notification
+from core.staff import StaffManger
+from core.abstract import AbstractStaff, AbstractClub
 
-from utils.message import MessagePipe, MessageFactory
+from config.league import ConfigLeague
+from config.errormsg import ConfigErrorMessage
+from config.npc import ConfigNPC
+from config.staff import ConfigStaff
 
-from config.settings import LEAGUE_START_TIME_ONE, LEAGUE_START_TIME_TWO
-from config import ConfigErrorMessage, ConfigLeague
+from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
+from protomsg.league_pb2 import (
+    LeagueUserNotify,
+    LeagueClubNotify,
+    ABLE,
+    FAIL,
+    SUCCESS,
+)
+from protomsg.staff_pb2 import Staff as MessageStaff
 
-from protomsg.league_pb2 import LeagueNotify
+from utils.message import MessagePipe
+from utils.functional import make_string_id
 
 
-def time_string_to_datetime(day_text, time_text):
-    text = "%s %s" % (day_text, time_text)
-    return arrow.get(text, "YYYY-MM-DD HH:mm:ssZ").to(settings.TIME_ZONE)
+MAX_CHALLENGE_TIMES = 7
+MAX_MATCH_CLUB = 6
+
+REFRESH_DIAMOND_COST = 200
+REFRESH_TYPE_NORMAL = 1
+REFRESH_TYPE_DIAMOND = 2
+REFRESH_TIME = 6 * 60 * 60
+
+RISE_IN_RANK_FAIL_PUNISH = 300
+
+CHALLENGE_WIN_GET_SCORE = 3
+CHALLENGE_LOST_GET_SCORE = 0
+DEFENCE_WIN_GET_SCORE = 0
+DEFENCE_LOST_GET_SCORE = -3
 
 
-class LeagueGame(object):
-    # 每周的联赛
+def get_league_refresh_time(server_id):
+    return server_id
 
-    @staticmethod
-    def find_order():
-        # 确定当前应该打第几场
-        now = arrow.utcnow().to(settings.TIME_ZONE)
-        now_day_text = now.format("YYYY-MM-DD")
 
-        weekday = now.weekday()
-        passed_days = weekday - 0
-        passed_order = passed_days * 2
+class LeagueNpcStaff(AbstractStaff):
+    __slots__ = []
 
-        # 因为启动定时任务后要从这里判断改打哪一场，所以这里延时1分钟，否则可能会判断到下一场
-        time_one = time_string_to_datetime(now_day_text, LEAGUE_START_TIME_ONE).replace(minutes=1)
-        if now <= time_one:
-            return passed_order + 1
+    def __init__(self, data):
+        super(LeagueNpcStaff, self).__init__()
 
-        time_two = time_string_to_datetime(now_day_text, LEAGUE_START_TIME_TWO).replace(minutes=1)
-        if now <= time_two:
-            return passed_order + 2
+        self.id = data['id']
+        config = ConfigStaff.get(self.id)
 
-        return passed_order + 3
+        self.level = 1
+        self.race = config.race
+        skill_level = data.get('skill_level', 1)
+        self.skills = {i: skill_level for i in config.skill_ids}
 
-    @staticmethod
-    def find_match_time(order):
-        # 根据场次返回开始时间
-        now = arrow.utcnow().to(settings.TIME_ZONE)
+        self.luoji = config.luoji
+        self.minjie = config.minjie
+        self.lilun = config.lilun
+        self.wuxing = config.wuxing
+        self.meili = config.meili
 
-        # 一天打两次
-        days, rest = divmod(order, 2)
+        self.calculate_secondary_property()
 
-        # 调整天数
-        # 0 是周一
-        change_days = 0 - now.weekday() + days
+    def make_protomsg(self):
+        msg = MessageStaff()
 
-        if rest == 0:
-            # order 为 2,4,6,8,10,12,14的情况
-            # 应该要打当天第二场
-            # 此时 days 分别为 1,2,3...7
-            # 但因为是当天第二场，所以
-            change_days -= 1
-            time_text = LEAGUE_START_TIME_TWO
+        msg.id = self.id
+        msg.level = self.level
+        msg.cur_exp = 0
+        msg.max_exp = 1000
+        msg.status = 3
+
+        msg.luoji = 1
+        msg.minjie = 1
+        msg.lilun = 1
+        msg.wuxing = 1
+        msg.meili = 1
+
+        msg.caozuo = int(self.caozuo)
+        msg.jingying = int(self.jingying)
+        msg.baobing = int(self.baobing)
+        msg.zhanshu = int(self.zhanshu)
+
+        msg.biaoyan = 1
+        msg.yingxiao = 1
+
+        msg.zhimingdu = 1
+
+        return msg
+
+
+class LeagueNpcClub(AbstractClub):
+    def __init__(self, club_id, data):
+        super(LeagueNpcClub, self).__init__()
+        self.id = club_id
+        self.name = data['name']
+        self.manager_name = data['manager_name']
+        self.flag = data['flag']
+
+        self.policy = 1
+
+        for k, v in data['staffs'].iteritems():
+            self.match_staffs.append(v['id'])
+            self.staffs[v['id']] = LeagueNpcStaff(v)
+
+        self.qianban_affect()
+
+        self.score = data['score']
+
+
+class LeagueClub(object):
+    def __new__(cls, server_id, club_id, data):
+        if data['npc_club']:
+            return LeagueNpcClub(club_id, data)
         else:
-            # order 为 1,3,5,7,9,11,13的情况
-            # 此时 days, rest 分别为 (0,1), (1,1), (2,1)...
-            # 也就是当天/第二天第一场
-            time_text = LEAGUE_START_TIME_ONE
-
-        date_text = "{0} {1}".format(
-            now.replace(days=change_days).format("YYYY-MM-DD"),
-            time_text
-        )
-
-        return arrow.get(date_text).replace(tzinfo=settings.TIME_ZONE)
-
-    @staticmethod
-    def clean(server_id):
-        MongoCharacter.db(server_id).update_many(
-            {},
-            {'$unset': {'league_group': 1}}
-        )
-
-        MongoLeagueGroup.db(server_id).drop()
-        MongoLeagueEvent.db(server_id).drop()
-
-    @staticmethod
-    def new(server_id):
-        # 分组，确定一周的联赛
-        LeagueGame.clean(server_id)
-
-        for i in range(ConfigLeague.MIN_LEVEL, ConfigLeague.MAX_LEVEL + 1):
-            char_ids = Character.get_recent_login_char_ids(server_id, recent_days=14,
-                                                           other_conditions=[{'league_level': i}])
-            g = LeagueGroup(server_id, i)
-
-            for cid in char_ids:
-                if not Club(server_id, cid, load_staff=False).match_staffs_ready():
-                    continue
-
-                try:
-                    g.add(cid)
-                except LeagueGroup.AddFinish:
-                    g.finish()
-
-                    # new group
-                    g = LeagueGroup(server_id, i)
-
-            g.finish()
-
-    @staticmethod
-    def join_already_started_league(server_id, char_id, send_notify=True):
-        # 新用户都要做这个事情，把其放入联赛
-        # 当这些帐号进入下一周后， 就会自动匹配
-        if not Club(server_id, char_id, load_staff=False).match_staffs_ready():
-            return
-
-        league = League(server_id, char_id)
-        if league.group_id and MongoLeagueGroup.exist(server_id, league.group_id):
-            return
-
-        g = LeagueGroup(server_id, league.league_level)
-        g.add(char_id)
-        g.finish()
-
-        order = LeagueGame.find_order()
-        for i in range(1, order):
-            LeagueGame.start_match(server_id, group_ids=[g.id], order=i)
-
-        if send_notify:
-            League(server_id, char_id).send_notify()
-
-    @staticmethod
-    def start_match(server_id, group_ids=None, order=None):
-        # 开始一场比赛
-        if not order:
-            order = LeagueGame.find_order()
-
-        if order > 14:
-            # 这种一般是在测试中才会出现的，比如周日第二场已经过去，
-            # 这时候就会判断到该打第15场，显然是不对的
-            return
-
-        if group_ids:
-            league_groups = MongoLeagueGroup.db(server_id).find({'_id': {'$in': group_ids}})
-        else:
-            league_groups = MongoLeagueGroup.db(server_id).find()
-
-        for g in league_groups:
-            group_id = g['_id']
-            league_level = g['level']
-            event_id = g['events'][order - 1]
-            clubs = g['clubs']
-            """:type: dict[str, dict]"""
-
-            matchs = []
-            """:type: list[LeagueMatch]"""
-
-            club_objects = {k: LeagueClub(server_id, group_id, league_level, v) for k, v in clubs.iteritems()}
-            """:type: dict[str, core.league.match.LeagueNPCClub | core.league.match.LeagueRealClub]"""
-
-            league_event = MongoLeagueEvent.db(server_id).find_one({'_id': event_id})
-            pairs = league_event['pairs']
-
-            for k, v in pairs.iteritems():
-                club_one_id = v['club_one']
-                club_two_id = v['club_two']
-
-                match = LeagueMatch(server_id, club_objects[club_one_id], club_objects[club_two_id])
-                msg = match.start()
-
-                pairs[k]['club_one_win'] = msg.club_one_win
-                pairs[k]['log'] = base64.b64encode(msg.SerializeToString())
-                pairs[k]['points'] = match.points
-
-                matchs.append(match)
-
-            group_clubs_updater = {}
-            for k, v in club_objects.iteritems():
-                group_clubs_updater["clubs.{0}.match_times".format(k)] = v.match_times
-                group_clubs_updater["clubs.{0}.win_times".format(k)] = v.win_times
-                group_clubs_updater["clubs.{0}.score".format(k)] = v.score
-
-            event_pairs_updater = {"finished": True}
-            for k, v in pairs.iteritems():
-                event_pairs_updater["pairs.{0}.club_one_win".format(k)] = v['club_one_win']
-                event_pairs_updater["pairs.{0}.log".format(k)] = v['log']
-                event_pairs_updater["pairs.{0}.points".format(k)] = v['points']
-
-            # 更新小组中 clubs 的信息
-            MongoLeagueGroup.db(server_id).update_one(
-                {'_id': group_id},
-                {'$set': group_clubs_updater}
-            )
-
-            # 更新这场比赛(event) 中的pairs信息
-            MongoLeagueEvent.db(server_id).update_one(
-                {'_id': event_id},
-                {'$set': event_pairs_updater}
-            )
-
-            club_orders = [(k, v.score) for k, v in club_objects.iteritems()]
-            club_orders.sort(key=lambda item: item[1], reverse=True)
-            club_orders = [k for k, v in club_orders]
-
-            # 发送通知
-            for m in matchs:
-                if isinstance(m.club_one_object, Club):
-                    n = Notification(server_id, int(m.club_one_object.id))
-                    n.add_league_notification(
-                        win=m.club_one_win,
-                        target=m.club_two_object.name,
-                        score_got=m.club_one_object.score_change,
-                        gold_got=m.club_one_object.got_gold,
-                        score_rank=club_orders.index(str(m.club_one_object.id)) + 1
-                    )
-
-                if isinstance(m.club_two_object, Club):
-                    n = Notification(server_id, int(m.club_two_object.id))
-                    n.add_league_notification(
-                        win=not m.club_one_win,
-                        target=m.club_one_object.name,
-                        score_got=m.club_two_object.score_change,
-                        gold_got=m.club_two_object.got_gold,
-                        score_rank=club_orders.index(str(m.club_two_object.id)) + 1
-                    )
-
-            # 进阶
-            if order == 14:
-                # 最后一场
-                for club in club_objects.values():
-                    club.send_week_mail()
-
-                club_objects[club_orders[0]].league_level_up()
-                club_objects[club_orders[1]].league_level_up()
-
-            notify = League.make_notify(server_id, group_id)
-            notify_data = MessageFactory.pack(notify)
-            for club in club_objects.values():
-                if isinstance(club, Club):
-                    MessagePipe(club.char_id).put(data=notify_data)
+            return Club(server_id, int(club_id))
 
 
-class League(object):
-    __slots__ = ['server_id', 'char_id', 'group_id', 'league_level']
-
+class LeagueManger(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
 
-        doc = MongoCharacter.db(server_id).find_one({'_id': self.char_id}, {'league_group': 1, 'league_level': 1})
-        self.group_id = doc.get('league_group', "")
-        self.league_level = doc.get('league_level', 1)
+        if not MongoLeague.exist(self.server_id, self.char_id):
+            doc = MongoLeague.DOCUMENT
+            doc['_id'] = self.char_id
+            doc['challenge_times'] = MAX_CHALLENGE_TIMES
 
-    def get_statistics(self, club_id):
-        if ':' in club_id:
-            # npc
-            group_id, club_id = club_id.split(':')
+            MongoLeague.db(self.server_id).insert_one(doc)
+            # first create, add match club
+            self.normal_refresh()
+
+        doc_self = MongoLeague.db(self.server_id).find_one({'_id': self.char_id})
+        self.level = doc_self['level']
+        self.score = doc_self['score']
+        self.challenge_times = doc_self['challenge_times']
+        self.total = doc_self['win_rate']['total']
+        self.win = doc_self['win_rate']['win']
+        self.in_rise = doc_self['in_rise']
+        self.match_club = doc_self['match_club']
+        self.daily_reward = doc_self['daily_reward']
+
+    @classmethod
+    def timer_refresh(cls, server_id):
+        """
+        刷新 -- 定时刷新
+        """
+        char_ids = Character.get_recent_login_char_ids(server_id)
+        for char_id in char_ids:
+            LeagueManger(server_id, char_id).normal_refresh()
+
+    @classmethod
+    def refresh_challenge_times(cls, server_id):
+        """
+        刷新 -- 挑战次数
+        """
+        char_ids = Character.get_recent_login_char_ids(server_id)
+        for char_id in char_ids:
+            MongoLeague.db(server_id).update_one(
+                {'_id': char_id},
+                {'$set': {'challenge_times': MAX_CHALLENGE_TIMES}}
+            )
+
+    def diamond_refresh(self):
+        """
+        钻石刷新 -- 匹配俱乐部
+        """
+        need_diamond = REFRESH_DIAMOND_COST
+        message = u"Refresh {0} League Match CLub".format(self.char_id)
+        # 扣除钻石
+        with Resource(self.server_id, self.char_id).check(diamond=-need_diamond, message=message):
+            self.normal_refresh(True)
+
+    def normal_refresh(self, diamond_refresh=False,):
+        """
+        普通刷新 -- 匹配俱乐部
+        """
+        # 检查是否在晋级赛状态
+        doc_self = MongoLeague.db(self.server_id).find_one({'_id': self.char_id})
+        if doc_self['in_rise']:
+            raise GameException(ConfigErrorMessage.get_error_id("IN_RISE_IN_RANK"))
+        # 刷新
+        self.refresh(diamond_refresh, doc_self['level'], doc_self['score'])
+        # 同步到客户端
+        self.notify_match_club()
+
+    def rise_in_rank_match_refresh(self, level):
+        """
+        晋级刷新 -- 匹配俱乐部
+        """
+        self.refresh(level=level, score=1)
+        MongoLeague.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {'in_rise': True}}
+        )
+        self.notify_match_club()
+
+    def refresh(self, diamond_refresh=False, level=1, score=1):
+        """
+        刷新 -- 匹配俱乐部
+        """
+        # 查找club
+        updater = {}
+        # 根据玩家等级， 积分 分配对手
+        docs = MongoLeague.db(self.server_id).find(
+            {'level': level, 'score': {'$gte': score}}
+        ).sort('score', 1).limit(MAX_MATCH_CLUB * 10)
+        doc_list = []
+        for doc in docs:
+            doc_list.append(doc)
+
+        if doc_list.__len__() >= MAX_MATCH_CLUB:
+            need_num = MAX_MATCH_CLUB
         else:
-            group_id = self.group_id
-            club_id = club_id
+            need_num = doc_list.__len__()
 
-        league_group = MongoLeagueGroup.db(self.server_id).find_one(
-            {'_id': group_id},
-            {'level': 1, 'clubs.{0}'.format(club_id): 1}
+        need_npc = MAX_MATCH_CLUB
+        # 先从玩家club中抽取
+        if doc_list:
+            clubs = random.sample(doc_list, need_num)
+            for doc in clubs:
+                if doc['_id'] != self.char_id:
+                    club = {}
+                    need_npc -= 1
+                    club['flag'] = 0
+                    club['name'] = ""
+                    club['manager_name'] = ""
+                    club['npc_club'] = False
+                    club['staffs'] = {}
+                    club['win_rate'] = {'total': 0, 'win': 0}
+                    club['score'] = 0
+                    club['status'] = ABLE
+
+                    updater[str(doc['_id'])] = club
+
+        # 玩家club不足， npc填补
+        if need_npc > 0:
+            npc_clubs = ConfigNPC.random_npcs(need_npc, league_level=level)
+            for npc_club in npc_clubs:
+                club = {}
+                staffs = {}
+
+                club['flag'] = npc_club['club_flag']
+                club['name'] = npc_club['club_name']
+                club['manager_name'] = npc_club['manager_name']
+                club['npc_club'] = True
+                club['win_rate'] = {'total': random.randint(30, 75), 'win': random.randint(20, 30)}
+                club['score'] = random.randint(score, 999)
+                club['status'] = ABLE
+
+                for s in npc_club['staffs']:
+                    staff = s
+                    staff['race_win_rate'] = {
+                        '1': {'total': random.randint(30, 75), 'win': random.randint(20, 30)},
+                        '2': {'total': random.randint(30, 75), 'win': random.randint(20, 30)},
+                        '3': {'total': random.randint(30, 75), 'win': random.randint(20, 30)}
+                    }
+                    staffs[str(s['id'])] = staff
+
+                club['staffs'] = staffs
+                updater[make_string_id()] = club
+
+        # 钻石刷新，不刷新刷新时间
+        if not diamond_refresh:
+            refresh_time = arrow.utcnow().timestamp + REFRESH_TIME
+        else:
+            refresh_time = get_league_refresh_time(self.server_id)
+
+        # 写入数据库
+        MongoLeague.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'refresh_time': refresh_time,
+                'match_club': updater}}
         )
 
-        if not league_group or club_id not in league_group['clubs']:
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
-
-        club_info = league_group['clubs'][club_id]
-        lc = LeagueClub(self.server_id, self.group_id, league_group['level'], club_info)
-
-        return lc.get_match_staffs_winning_rate()
-
-    def get_log(self, league_pair_id):
-        event_id, pair_id = league_pair_id.split(':')
-
-        league_event = MongoLeagueEvent.db(self.server_id).find_one(
-            {'_id': event_id},
-            {'pairs.{0}.log'.format(pair_id): 1}
-        )
-
-        if not league_event or pair_id not in league_event['pairs']:
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
-
-        log = league_event['pairs'][pair_id]['log']
-        if not log:
-            raise GameException(ConfigErrorMessage.get_error_id("LEAGUE_NO_LOG"))
-
-        return base64.b64decode(log)
-
-    @staticmethod
-    def make_notify(server_id, group_id):
-        league_group = MongoLeagueGroup.db(server_id).find_one({'_id': group_id})
-        league_events = MongoLeagueEvent.db(server_id).find({'_id': {'$in': league_group['events']}})
-
-        events = {e['_id']: e for e in league_events}
-
-        notify = LeagueNotify()
-        notify.league.level = league_group['level']
-        notify.league.current_order = LeagueGame.find_order()
-
-        rank_info = []
-        clubs_id_table = {}
-
-        # clubs
-        for k, v in league_group['clubs'].iteritems():
-            notify_club = notify.league.clubs.add()
-            lc = LeagueClub(server_id, group_id, league_group['level'], v)
-            notify_club.MergeFrom(lc.make_protomsg())
-
-            if not v['match_times']:
-                winning_rate = 0
-            else:
-                winning_rate = int(v['win_times'] * 1.0 / v['match_times'] * 100)
-
-            rank_info.append((str(lc.id), v['match_times'], v['score'], winning_rate))
-            clubs_id_table[k] = str(lc.id)
-
-        rank_info.sort(key=lambda item: -item[3])
-
-        # ranks
-        for club_id, match_times, score, winning_rate in rank_info:
-            notify_rank = notify.league.ranks.add()
-            notify_rank.club_id = club_id
-            notify_rank.battle_times = match_times
-            notify_rank.score = score
-            notify_rank.winning_rate = winning_rate
-
-        # events
-        for event_id in league_group['events']:
-            e = events[event_id]
-
-            notify_event = notify.league.events.add()
-            notify_event.battle_at = e['start_at']
-            notify_event.finished = e['finished']
-
-            for k, v in e['pairs'].iteritems():
-                notify_event_pair = notify_event.pairs.add()
-                notify_event_pair.pair_id = "{0}:{1}".format(event_id, k)
-                notify_event_pair.club_one_id = clubs_id_table[v['club_one']]
-                notify_event_pair.club_two_id = clubs_id_table[v['club_two']]
-                notify_event_pair.club_one_win = v['club_one_win']
-                notify_event_pair.points.extend(v['points'])
-
-        return notify
-
-    def send_notify(self):
-        if not self.group_id:
+    def report(self, key, win_club, result):
+        """
+        战斗结果汇报
+            客户端返回战斗结果， 服务端处理结果数据
+        """
+        timestamp, club_one_id, club_two_id, npc_club = str(key).split(',')
+        # 如果不是自己的战斗, 直接返回
+        if club_one_id != str(self.char_id):
             return
 
-        notify = League.make_notify(self.server_id, self.group_id)
+        # 员工胜率处理胜率处理
+        StaffManger(self.server_id, self.char_id).update_winning_rate(result)
+
+        # 获取玩家是否为晋级赛
+        doc = MongoLeague.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'in_rise': 1}
+        )
+
+        # 是否时晋级赛
+        if not doc['in_rise']:
+            # 积分赛处理
+            self.normal_result(win_club == str(self.char_id), True, club_two_id)
+        else:
+            # 晋级赛处理
+            self.rise_rank_result(win_club == str(self.char_id), club_two_id)
+
+        # 对手处理
+        if npc_club == 'False':
+            # 对手为玩家处理
+            # 员工胜率处理
+            StaffManger(self.server_id, int(club_two_id)).update_winning_rate(result, False)
+            # 被挑战者处理
+            LeagueManger(self.server_id, int(club_two_id)).normal_result(not win_club == str(self.char_id), False)
+        else:
+            # 对手为npc处理
+            doc = MongoLeague.db(self.server_id).find_one(
+                {'_id': self.char_id},
+                {'match_club.{0}'.format(club_two_id): 1}
+            )
+
+            # 有可能已被刷新掉
+            if doc.get('match_club', {}).get(club_two_id, {}):
+                npc_updater = {}
+
+                # npc 胜率
+                if not win_club == str(self.char_id):
+                    npc_updater['match_club.{0}.win_rate.win'.format(club_two_id)] = 1
+                npc_updater['match_club.{0}.win_rate.total'.format(club_two_id)] = 1
+
+                # npc staff 胜率
+                for r in result:
+                    npc_updater['match_club.{0}.staffs.{1}.race_win_rate.total'.format(club_two_id, r.staff_two)] = 1
+                    if not r.staff_one_win:
+                        npc_updater['match_club.{0}.staffs.{1}.race_win_rate.win'.format(club_two_id, r.staff_two)] = 1
+
+                # 更新到数据库
+                MongoLeague.db(self.server_id).update_one(
+                    {'_id': self.char_id},
+                    {'$inc': npc_updater}
+                )
+
+    def normal_result(self, win=False, challenger=False, club_two_id=""):
+        """
+        积分赛结果处理
+        """
+        score = self.score
+        # 获得积分、挑战状态、胜率
+        if win:
+            if challenger:
+                score += CHALLENGE_WIN_GET_SCORE
+            else:
+                score += DEFENCE_WIN_GET_SCORE
+            win_time_add = 1
+            status = SUCCESS
+        else:
+            if challenger:
+                score += DEFENCE_LOST_GET_SCORE
+            else:
+                score += CHALLENGE_LOST_GET_SCORE
+            win_time_add = 0
+            status = ABLE
+
+        # 扣分
+        if score < 0:
+            # 等级高于一级, 掉级
+            if self.level > 1:
+                score += ConfigLeague.get(self.level - 1).up_need_score
+            # 等级为一,无法掉级,分数置为一
+            else:
+                score = 1
+
+        # 加分， 判断是否进入晋级赛
+        up_need_score = ConfigLeague.get(self.level).up_need_score
+        if score >= up_need_score:
+            score = up_need_score
+            self.rise_in_rank_match_refresh(self.level + 1)
+
+        # 设置被挑战者 挑战状态， 自身积分
+        setter = {'score': score}
+        if club_two_id:
+            doc = MongoLeague.db(self.server_id).find_one(
+                {'_id': self.char_id},
+                {'match_club.{0}'.format(club_two_id): 1}
+            )
+            # 有可能已被刷新掉
+            if doc.get('match_club', {}).get(club_two_id, {}):
+                setter['match_club.{0}.status'.format(club_two_id)] = status
+
+        # 更新数据库
+        MongoLeague.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {
+                '$set': setter,
+                '$inc': {'challenge_times': -1,
+                         'win_rate.total': 1,
+                         'win_rate.win': win_time_add,
+                         }
+            }
+        )
+        # 同步用户信息
+        self.notify_user_info()
+
+    def rise_rank_result(self, win=False, club_id=""):
+        """
+        晋级赛结果处理
+        """
+        if win:
+            result = FAIL
+        else:
+            result = SUCCESS
+
+        MongoLeague.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {'match_club.{0}.status'.format(club_id): result}}
+        )
+
+        doc = MongoLeague.db(self.server_id).find_one({'_id': self.char_id}, {'match_club'})
+        fail_times = 0
+        success_times = 0
+        for club in doc['match_club'].iteritems():
+            if club['status'] == SUCCESS:
+                success_times += 1
+            elif club['status'] == FAIL:
+                fail_times += 1
+
+        # 晋级成功
+        if success_times >= 3:
+            MongoLeague.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {'level': self.level + 1, 'score': 1, 'in_rise': False}}
+            )
+            self.normal_refresh()
+
+        # 晋级失败
+        elif fail_times > 3:
+            MongoLeague.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$inc': {'score': -RISE_IN_RANK_FAIL_PUNISH, 'in_rise': False}}
+            )
+            self.normal_refresh()
+
+    def get_daily_reward(self):
+        # 获取日常奖励
+        doc = MongoLeague.db(self.server_id).find_one({'_id': self.char_id}, {'match_club': 0})
+
+        if doc['daily_reward'] == str(arrow.now().date()):
+            # 已领取
+            raise GameException(ConfigErrorMessage.get_error_id("DAILY_REWARD_HAVE_GOT"))
+        # 获取奖励配置
+        conf = ConfigLeague.get(doc['level'])
+        drop = Drop.generate(conf.daily_reward)
+        # 发放奖励
+        Resource(self.server_id, self.char_id).save_drop(drop, message="Add League Daily Reward")
+        MongoLeague.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {"daily_reward": str(arrow.now().date())}}
+        )
+        # 同步玩家信息
+        self.notify_user_info()
+        return drop.make_protomsg()
+
+    def challenge(self, club_id):
+        """
+        挑战俱乐部
+        """
+        # 获取被挑战者信息
+        doc = MongoLeague.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'match_club.{0}'.format(club_id): 1, 'challenge_times': 1}
+        )
+
+        # 检查是否有该挑战, 有可能刷新掉了
+        if club_id not in doc['match_club']:
+            raise GameException(ConfigErrorMessage.get_error_id("NO_THIS_CHALLENGE"))
+
+        # 检查玩家是否有挑战次数
+        if doc['challenge_times'] < 1 and not doc['in_rise']:
+            raise GameException(ConfigErrorMessage.get_error_id("NO_CHALLENGE_TIMES"))
+
+        # 非可挑战状态，不能再次挑战
+        if doc['match_club'][club_id]['status'] != ABLE:
+            raise GameException(ConfigErrorMessage.get_error_id("CLUB_HAVE_MATCH_CHALLENGE"))
+
+        # 实例化俱乐部
+        club_self = Club(self.server_id, self.char_id)
+        club_tmp = doc['match_club'][club_id]
+        club_two = LeagueClub(self.server_id, club_id, club_tmp)
+
+        # 挑战信息
+        key = str(arrow.utcnow().timestamp) + ',' + str(self.char_id) + ',' + club_id + ',' + str(club_tmp['npc_club'])
+        msg = ClubMatch(club_self, club_two).start()
+        msg.key = key
+
+        return msg
+
+    def get_club_detail(self, club_id):
+        doc = MongoLeague.db(self.server_id).find_one({'_id': self.char_id}, {'match_club.{0}.staffs'.format(club_id): 1})
+        if doc['match_club'].get(club_id, {}).get('npc_club', False):
+            return doc['match_club'].get(club_id, {}).get('staffs', {})
+        else:
+            staff_ids = Club(self.server_id, int(club_id)).match_staffs
+            return StaffManger(self.server_id, int(club_id)).get_winning_rate(staff_ids)
+
+    def send_notify(self):
+        self.notify_user_info()
+        self.notify_match_club()
+
+    def notify_user_info(self):
+        doc = MongoLeague.db(self.server_id).find_one({'_id': self.char_id}, {'match_club': 0})
+
+        notify = LeagueUserNotify()
+        notify.score = doc['score']
+        notify.level = doc['level']
+        notify.challenge_times = doc['challenge_times']
+        notify.has_reward = not doc['daily_reward'] == str(arrow.utcnow().date())
+
+        if doc['win_rate']['total']:
+            notify.win_rate = doc['win_rate']['win'] * 100 / doc['win_rate']['total']
+        else:
+            notify.win_rate = 0
+
+        MessagePipe(self.char_id).put(msg=notify)
+
+    def notify_match_club(self, act=ACT_INIT, club_ids=None):
+        # notify user match club info
+        if not club_ids:
+            projection = {'match_club': 1, 'refresh_time': 1}
+        else:
+            act = ACT_UPDATE
+            projection = {'match_club.{0}'.format(club_id): 1 for club_id in club_ids}
+            projection = dict({'1': 'test'}, **projection)
+
+        doc = MongoLeague.db(self.server_id).find_one({'_id': self.char_id}, projection)
+
+        notify = LeagueClubNotify()
+        notify.act = act
+        notify.end_time = doc['refresh_time']
+
+        for k, v in doc['match_club'].iteritems():
+            notify_club = notify.clubs.add()
+            if v['npc_club']:
+                notify_club.flag = v['flag']
+                notify_club.name = v['name']
+                notify_club.score = v['score']
+                notify_club.win_rate = v['win_rate']['win'] * 100 / v['win_rate']['total']
+            else:
+                club_doc = MongoCharacter.db(self.server_id).find_one({'_id': int(k)}, {'club': 1})
+                notify_club.flag = club_doc['club']['flag']
+                notify_club.name = club_doc['club']['name']
+
+                league_doc = MongoLeague.db(self.server_id).find_one({'_id': int(k)})
+                notify_club.score = league_doc['score']
+                if league_doc['win_rate']['total']:
+                    notify_club.win_rate = league_doc['win_rate']['win'] * 100 / league_doc['win_rate']['total']
+                else:
+                    notify_club.win_rate = 0
+
+            notify_club.club_id = k
+            notify_club.status = v['status']
+
         MessagePipe(self.char_id).put(msg=notify)

@@ -64,7 +64,9 @@ urlpatterns = [
     url(r'^item/merge/$', views.item.merge),
 
     url(r'^challenge/start/$', views.challenge.start),
-    url(r'^challenge/area/switch/$', views.challenge.switch_area),
+    url(r'^challenge/reward/$', views.challenge.reward),
+    url(r'^challenge/report/$', views.challenge.report),
+    url(r'^challenge/buy/$', views.challenge.buy),
 
     url(r'^building/levelup/$', views.building.levelup),
     url(r'^building/speedup/$', views.building.speedup),
@@ -92,8 +94,11 @@ urlpatterns = [
     url(r'^training/sponsor/start/$', views.training.sponsor_start),
 
     #
-    url(r'^league/statistics/$', views.league.get_statistics),
-    url(r'^league/log/$', views.league.get_log),
+    url(r'^league/challenge/$', views.league.challenge),
+    url(r'^league/report/$', views.league.report),
+    url(r'^league/refresh/$', views.league.refresh),
+    url(r'^league/reward/$', views.league.get_reward),
+    url(r'^league/detail/$', views.league.get_detail),
 
     url(r'^skill/locktoggle/$', views.skill.lock_toggle),
     url(r'^skill/wash/$', views.skill.wash),
@@ -127,6 +132,7 @@ urlpatterns = [
     url(r'^ladder/leaderboard/$', views.ladder.get_leader_board),
     url(r'^ladder/store/buy/$', views.ladder.store_buy),
     url(r'^ladder/store/refresh/$', views.ladder.store_refresh),
+    url(r'^ladder/store/report/$', views.ladder.match_report),
 
     url(r'^cup/join/$', views.cup.join),
     url(r'^cup/infomation/$', views.cup.information),
@@ -142,9 +148,12 @@ urlpatterns = [
     url(r'^itemshop/buy/$', views.shop.item_shop_buy),
 
     url(r'^trainingmatch/start/$', views.training_match.start),
-    url(r'^trainingmatch/reward/$', views.training_match.get_additional_reward),
+    url(r'^trainingmatch/report/$', views.training_match.match_report),
+    url(r'^trainingmatch/additional/$', views.training_match.additional),
 
     url(r'^elite/start/$', views.elite_match.start),
+    url(r'^elite/reward/$', views.elite_match.reward),
+    url(r'^elite/report/$', views.elite_match.report),
 
     url(r'^auction/search/$', views.auction.search),
     url(r'^auction/sell/$', views.auction.sell),

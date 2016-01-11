@@ -27,6 +27,10 @@ from config.settings import (
 from config import ConfigErrorMessage
 
 
+NORMAL_MAX_ENERGY = 200
+VIP_MAX_ENERGY = 240
+
+
 class Character(object):
     __slots__ = ['server_id', 'char_id']
 
@@ -48,6 +52,7 @@ class Character(object):
         doc['club']['flag'] = club_flag
         doc['club']['gold'] = CHAR_INIT_GOLD
         doc['club']['diamond'] = CHAR_INIT_DIAMOND
+        doc['energy']['power'] = NORMAL_MAX_ENERGY
 
         MongoCharacter.db(server_id).insert_one(doc)
 
@@ -88,7 +93,7 @@ class Character(object):
     def set_login(self):
         from django.db.models import F
         from apps.character.models import Character as ModelCharacter
-        from core.league import LeagueGame
+        # from core.league.league import LeagueManger
 
         now = arrow.utcnow()
         ModelCharacter.objects.filter(id=self.char_id).update(
@@ -102,7 +107,7 @@ class Character(object):
 
         # 联赛只匹配最近一段时间登录的帐号，如果一个帐号很久没登录，那么他将不在联赛里
         # 当他再次登录的时候，这里要检测一下
-        LeagueGame.join_already_started_league(self.server_id, self.char_id, send_notify=False)
+        # LeagueGame.join_already_started_league(self.server_id, self.char_id, send_notify=False)
 
     def set_avatar(self, url, ok):
         MongoCharacter.db(self.server_id).update_one(

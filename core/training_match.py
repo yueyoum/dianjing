@@ -3,11 +3,12 @@
 Author:         Wang Chao <yueyoum@gmail.com>
 Filename:       training_match
 Date Created:   2015-12-08 16:16
-Description:
+Description:    训练赛
 
 """
 
 import random
+import arrow
 
 from dianjing.exception import GameException
 
@@ -17,6 +18,7 @@ from core.club import Club
 from core.package import Drop
 from core.resource import Resource
 from core.match import ClubMatch
+from core.staff import StaffManger
 
 from utils.message import MessagePipe
 
@@ -125,48 +127,59 @@ class TrainingMatch(object):
             if doc['relive_times'] >= RELIVE_TIMES:
                 raise GameException(ConfigErrorMessage.get_error_id("TRAINING_MATCH_RELIVE_NO_TIMES"))
 
-            message = u"Training Match relive for {0}".format(index)
-            with Resource(self.server_id, self.char_id).check(diamond=-RELIVE_DIAMOND, message=message):
-                MongoTrainingMatch.db(self.server_id).update_one(
-                    {'_id': self.char_id},
-                    {'$inc': {'relive_times': 1}}
-                )
+        message = u"Training Match relive for {0}".format(index)
+        with Resource(self.server_id, self.char_id).check(diamond=-RELIVE_DIAMOND, message=message):
+            MongoTrainingMatch.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$inc': {'relive_times': 1}}
+            )
+
+        key = str(arrow.utcnow().timestamp) + ',' + str(index) + ',' + str(self.char_id)
 
         club = Club(self.server_id, self.char_id)
-
         club_data = doc['clubs'][index - 1]
         opposite_club = Club.loads(club_data)
 
         match = ClubMatch(club, opposite_club)
         msg = match.start()
+        msg.key = key
+        return msg
 
-        drop = Drop()
+    def check_key(self, key):
+        # TODO: check timestamp
+        timestamp, index, char_id = str(key).split(',')
+        if int(char_id) == self.char_id and timestamp:
+            return int(index)
+        return 0
 
-        updated_ids = [index]
-        if msg.club_one_win:
-            drop = Drop.generate(ConfigTrainingMatchReward.get(index).reward)
-            Resource(self.server_id, self.char_id).save_drop(drop, message="Training Match {0} drop".format(index))
+    def match_report(self, is_win, key, result):
+        StaffManger(self.server_id, self.char_id).update_winning_rate(result)
 
-            updater = {
-                'status.{0}'.format(index): 2
-            }
+        if is_win:
+            ret = self.check_key(key)
+            updated_ids = [ret]
+            if ret:
+                drop = Drop.generate(ConfigTrainingMatchReward.get(ret).reward)
+                Resource(self.server_id, self.char_id).save_drop(drop, message="Training Match {0} drop".format(ret))
 
-            if index < 14:
-                updated_ids.append(index + 1)
-                updater['status.{0}'.format(index + 1)] = 1
-        else:
-            updater = {
-                'status.{0}'.format(index): 3
-            }
+                updater = {
+                    'status.{0}'.format(ret): 2
+                }
 
-        MongoTrainingMatch.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': updater}
-        )
+                if ret < 14:
+                    updated_ids.append(ret+1)
+                    updater['status.{0}'.format(ret+1)] = 1
+            else:
+                updater = {
+                    'status.{0}'.format(ret): 3
+                }
 
-        self.send_notify(ids=updated_ids)
+            MongoTrainingMatch.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': updater}
+            )
 
-        return msg, drop.make_protomsg()
+            self.send_notify(ids=updated_ids)
 
     def get_additional_reward(self, index):
         config = ConfigTrainingMatchReward.get(index)

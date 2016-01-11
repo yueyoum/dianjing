@@ -126,6 +126,7 @@ class FriendManager(object):
 
         match = ClubMatch(club_one, club_two)
         msg = match.start()
+        msg.key = ""
 
         friend_match_signal.send(
             sender=None,

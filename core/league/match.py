@@ -10,7 +10,7 @@ Description:
 import random
 
 from core.abstract import AbstractClub, AbstractStaff
-from core.mongo import MongoLeagueGroup, MongoStaff, MongoCharacter
+from core.mongo import MongoStaff, MongoCharacter
 from core.club import Club
 from core.mail import MailManager
 from core.match import ClubMatch
@@ -132,29 +132,29 @@ class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
     def do_send_mail(self, title, content, attachment):
         pass
 
-    def get_match_staffs_winning_rate(self):
-        group_id, club_id = self.id.split(':')
-        data = MongoLeagueGroup.db(self.server_id).find_one(
-            {'_id': group_id},
-            {'clubs.{0}.staff_winning_rate'.format(club_id): 1}
-        )
-        club = data['clubs'][club_id]
-
-        rate = {}
-        for s in self.match_staffs:
-            race_rate = {
-                '1': 0,
-                '2': 0,
-                '3': 0,
-            }
-
-            staff_winning_info = club.get('staff_winning_rate', {}).get(str(s), {})
-            for race, info in staff_winning_info.iteritems():
-                race_rate[str(race)] = info.get('win', 0) * 100 / info['total']
-
-            # rate格式 { staff_id:{'1':x, '2':x, '3':x}, ...}
-            rate[s] = race_rate
-        return rate
+    # def get_match_staffs_winning_rate(self):
+    #     group_id, club_id = self.id.split(':')
+    #     # data = MongoLeagueGroup.db(self.server_id).find_one(
+    #     #     {'_id': group_id},
+    #     #     {'clubs.{0}.staff_winning_rate'.format(club_id): 1}
+    #     # )
+    #     # club = data['clubs'][club_id]
+    #
+    #     rate = {}
+    #     for s in self.match_staffs:
+    #         race_rate = {
+    #             '1': 0,
+    #             '2': 0,
+    #             '3': 0,
+    #         }
+    #
+    #         staff_winning_info = club.get('staff_winning_rate', {}).get(str(s), {})
+    #         for race, info in staff_winning_info.iteritems():
+    #             race_rate[str(race)] = info.get('win', 0) * 100 / info['total']
+    #
+    #         # rate格式 { staff_id:{'1':x, '2':x, '3':x}, ...}
+    #         rate[s] = race_rate
+    #     return rate
 
     def save_winning_rate(self, fight_info):
         """
@@ -170,10 +170,10 @@ class LeagueNPCClub(LeagueBaseClubMixin, AbstractClub):
             if info.win:
                 updater['clubs.{0}.staff_winning_rate.{1}.{2}.win'.format(club_id, staff_id, config_rival.race)] = 1
 
-        MongoLeagueGroup.db(self.server_id).update_one(
-            {'_id': group_id},
-            {'$inc': updater}
-        )
+        # MongoLeagueGroup.db(self.server_id).update_one(
+        #     {'_id': group_id},
+        #     {'$inc': updater}
+        # )
 
 
 class LeagueRealClub(LeagueBaseClubMixin, Club):

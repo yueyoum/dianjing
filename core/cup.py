@@ -339,7 +339,7 @@ class Cup(object):
                     club_two = MongoCupClub.db(server_id).find_one({'_id': club_ids[c + 1]})
 
                     msg = ClubMatch(CupClub(server_id, club_one), CupClub(server_id, club_two)).start()
-
+                    msg.key = ""
                     if msg.club_one_win:
                         current_level_club_ids.append(club_one['_id'])
                     else:

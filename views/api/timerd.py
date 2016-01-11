@@ -13,6 +13,7 @@ from core.building import BuildingManager
 from core.training import TrainingExp, TrainingProperty, TrainingBroadcast, TrainingShop
 from core.skill import SkillManager
 from core.auction import AuctionManager
+from core.challenge import Challenge
 
 
 def building_levelup_callback(request):
@@ -103,4 +104,15 @@ def auction_staff_callback(request):
     item_id = data['item_id']
 
     AuctionManager(server_id, char_id).callback(item_id)
+    return HttpResponse()
+
+
+def challenge_energize_callback(request):
+    data = request.POST['data']
+    data = json.loads(data)
+
+    server_id = data['sid']
+    char_id = data['cid']
+
+    Challenge(server_id, char_id).energize_callback()
     return HttpResponse()

@@ -88,6 +88,11 @@ class MongoCharacter(BaseDocument):
         'in_cup': 0,
         # 购买的员工格子数
         'buy_slots': 0,
+        # 体力
+        'energy': {
+            'key': "",
+            'power': 0,
+        },
     }
 
     COLLECTION = "character"
@@ -98,10 +103,22 @@ class MongoCharacter(BaseDocument):
 class MongoChallenge(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        # 当前大区ID
-        'area_id': 1,
-        # 大区， {area_id: challenge_id}， 标注当前area要打的关卡，如果challenge_id为0,表示已经通关
-        'areas': {}
+        # 大区， {area_id: {'challenge_id': {'star': 0}},
+        'areas': {
+            '1': {
+                'challenges': {
+                    '1': {
+                        'stars': 0,     # 历史最佳记录 0为未通过
+                        'times': 0,     # 当天挑战次数， 每天刷新
+                    }
+                },
+                'packages': {
+                    '1': False,
+                    '2': False,
+                    '3': False,
+                }
+            }
+        }
     }
 
     COLLECTION = 'challenge'
@@ -409,90 +426,6 @@ class MongoLadder(BaseDocument):
     INDEXES = ['order']
 
 
-# 联赛
-class MongoLeagueGroup(BaseDocument):
-    # 一个小组
-    # 联赛分组完后，就有很多个group
-
-    DOCUMENT = {
-        '_id': null,
-        'level': null,
-        # clubs 记录了这个小组中的14个club 信息
-        # 见下面的 CLUB_DOCUMENT
-        'clubs': {},
-        # events 是记录的这个小组里的一场一场的比赛，一共14场
-        # 要打哪一场是根据 LeagueGame.find_order() 来决定的，
-        # 这里面记录是的 event_id
-        'events': [],
-    }
-
-    # club 嵌入 group 中 (为了方便查询)
-    # 进行比赛查询过程是这样的：
-    # 从 group 中根据 order 取到 event_id
-    # 从 MongoLeagueEvent 中 根据 event_id 获取到 7 个pair
-    # 再遍历这7个pair，并一次取到 club_one_id 和 club_two_id
-    # 因为club是嵌套在group中的，所以可以直接获取 club信息
-    # 最后开打，保存
-    CLUB_DOCUMENT = {
-        # 真实玩家为 str(club id), npc为uuid
-        'club_id': 0,
-        'match_times': 0,
-        'win_times': 0,
-        'score': 0,
-
-        # 如果是npc 就会设置下面的几项
-        'club_name': "",
-        'manager_name': "",
-        'club_flag': 1,
-        'staffs': [],
-        # staff_winning_rate格式{staff_id: {'win': num, 'total': num}}
-        'staff_winning_rate': {}
-    }
-
-    STAFF_WINNING_RATE_DOCUMENT = {
-        'win': 0,
-        'total': 0
-    }
-
-    COLLECTION = "league_group"
-
-    @classmethod
-    def document_embedded_club(cls):
-        return cls.CLUB_DOCUMENT.copy()
-
-
-class MongoLeagueEvent(BaseDocument):
-    # 每个group中对应14场 event
-    # 每场会进行 7组比赛， pairs 的数量是7
-    # 所以一个group总共会打 14 * 7 = 98组比赛
-    DOCUMENT = {
-        '_id': null,
-        'start_at': 0,
-        'finished': False,
-        'pairs': {}
-    }
-
-    PAIR_DOCUMENT = {
-        'club_one': null,
-        'club_two': null,
-        'club_one_win': False,
-        # 战斗日志，用来回放
-        'log': "",
-        # 比分
-        'points': [0, 0]
-    }
-
-    COLLECTION = "league_event"
-
-    @classmethod
-    def document_embedded_pair(cls):
-        """
-
-        :rtype : dict
-        """
-        return cls.PAIR_DOCUMENT.copy()
-
-
 # 杯赛
 class MongoCup(BaseDocument):
     DOCUMENT = {
@@ -625,28 +558,25 @@ class MongoTrainingMatch(BaseDocument):
 class MongoEliteMatch(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        # areas
-        # {
-        #     area_id: {
-        #         match_id: times,
-        #         match_id: times,
-        #         ...
-        #     },
-        #     area_id: {
-        #         match_id: times,
-        #         match_id: times,
-        #     }
-        # }
-        'areas': {},
-        # 当前的可以打的次数， 会恢复
-        'cur_times': 0,
-        # 打过比赛的。用来跑定时任务
-        'has_matched': False
+        # 大区， {area_id: {'challenge_id': {'star': 0}},
+        'areas': {
+            '1': {
+                'challenges': {
+                    '1': {
+                        'stars': 0,     # 历史最佳记录 0为未通过
+                        'times': 0,     # 当天挑战次数， 每天刷新
+                    }
+                },
+                'packages': {
+                    '1': False,
+                    '2': False,
+                    '3': False,
+                }
+            }
+        }
     }
 
     COLLECTION = 'elite_match'
-
-    INDEXES = ['cur_times', 'has_matched']
 
 
 # 员工拍卖
@@ -703,3 +633,41 @@ class MongoBidding(BaseDocument):
     COLLECTION = 'auction_bidding'
     INDEXES = ['items']
 
+
+# 用户联赛mongo
+class MongoLeague(BaseDocument):
+    """
+    联赛表
+    """
+    DOCUMENT = {
+        '_id': 0,
+        'score': 1,
+        'level': 1,
+        'daily_reward': "",
+        'challenge_times': 0,
+        'win_rate': {
+            'total': 0,
+            'win': 0,
+        },
+        'in_rise': False,
+        'refresh_time': 0,
+        'match_club': {},  # club_id: MATCH_CLUB_DOCUMENT
+    }
+
+    MATCH_CLUB_DOCUMENT = {
+        'status': 0,
+        'npc_club': False,
+        ################
+        'flag': 0,
+        'name': "",
+        'win_rate': {
+            'total': 0,
+            'win': 0,
+        },
+        'score': 0,
+        'manager_name': "",
+        'staffs': {}
+    }
+
+    COLLECTION = 'league'
+    INDEXES = ['level']
