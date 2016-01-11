@@ -15,6 +15,7 @@ import views.server
 import views.character
 import views.club
 import views.staff
+import views.item
 import views.challenge
 import views.building
 import views.training
@@ -31,7 +32,6 @@ import views.sponsor
 import views.activity
 import views.active_value
 import views.shop
-import views.bag
 import views.training_match
 import views.elite_match
 import views.auction
@@ -57,6 +57,11 @@ urlpatterns = [
     url(r'^staff/recruit/refresh/$', views.staff.recruit_refresh),
     url(r'^staff/recruit/$', views.staff.recruit_staff),
     url(r'^staff/fire/$', views.staff.fire),
+    url(r'^staff/equipon/$', views.staff.equip_on),
+
+    url(r'^item/sell/$', views.item.sell),
+    url(r'^item/use/$', views.item.use),
+    url(r'^item/merge/$', views.item.merge),
 
     url(r'^challenge/start/$', views.challenge.start),
     url(r'^challenge/reward/$', views.challenge.reward),
@@ -141,9 +146,6 @@ urlpatterns = [
     url(r'^activevalue/getreward/$', views.active_value.get_reward),
 
     url(r'^itemshop/buy/$', views.shop.item_shop_buy),
-
-    url(r'^sell/item/$', views.bag.item_sell),
-    url(r'^sell/trainingskill/$', views.bag.training_skill_sell),
 
     url(r'^trainingmatch/start/$', views.training_match.start),
     url(r'^trainingmatch/report/$', views.training_match.match_report),

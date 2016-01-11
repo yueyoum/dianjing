@@ -24,20 +24,18 @@ class CharacterAdmin(admin.ModelAdmin):
     list_display = (
         'id', 'account_id', 'server_id', 'name', 'create_at',
         'club_name', 'last_login', 'login_times', 'Avatar',
-        # 'Info'
     )
 
     readonly_fields = (
         'account_id', 'server_id', 'name', 'club_name', 'login_times'
     )
 
-    list_per_page = 50
 
     search_fields = ['name', 'club_name', ]
 
     action_form = MyActionForm
     actions = ['add_gold', 'add_diamond', 'add_club_level', 'add_ladder_score', 'add_purchase_diamond',
-               'add_training_skill_item', 'add_item',
+               'add_staff_card', 'add_item',
                ]
 
     def Avatar(self, obj):
@@ -48,28 +46,6 @@ class CharacterAdmin(admin.ModelAdmin):
         return '<img src="{0}" />'.format(url)
     Avatar.allow_tags = True
 
-    # def Info(self, obj):
-    #     doc = MongoCharacter.db(obj.server_id).find_one(
-    #         {'_id': obj.id},
-    #         {
-    #             'club.gold': 1,
-    #             'club.diamond': 1,
-    #             'club.level': 1
-    #         }
-    #     )
-    #
-    #     if not doc:
-    #         gold = diamond = level = 'None'
-    #     else:
-    #         gold = doc.get('club', {}).get('gold', 'None')
-    #         diamond = doc.get('club', {}).get('diamond', 'None')
-    #         level = doc.get('club', {}).get('level', 'None')
-    #
-    #     return "软妹币  : {0}<br/>钻石   : {1}<br/>俱乐部等级: {2}".format(
-    #         gold, diamond, level
-    #     )
-    #
-    # Info.allow_tags = True
 
     def has_add_permission(self, request):
         return False
@@ -164,21 +140,20 @@ class CharacterAdmin(admin.ModelAdmin):
 
     add_purchase_diamond.short_description = u"添加充值钻石"
 
-    def add_training_skill_item(self, request, queryset):
+    def add_staff_card(self, request, queryset):
         value, amount = self.check_value_and_amount(request)
         if not value:
             return
 
-        from config import ConfigTrainingSkillItem
-        if not ConfigTrainingSkillItem.get(value):
+        from config import ConfigStaff
+        if not ConfigStaff.get(value):
             return
 
-        # TODO
-        from core.bag import BagTrainingSkill
+        from core.item import ItemManager
         for q in queryset:
-            BagTrainingSkill(q.server_id, q.id).add([(value, amount)])
+            ItemManager(q.server_id, q.id).add_staff_card(value, 0, amount)
 
-    add_training_skill_item.short_description = u"添加技能训练书"
+    add_staff_card.short_description = u"添加员工卡"
 
     def add_item(self, request, queryset):
         value, amount = self.check_value_and_amount(request)
@@ -189,12 +164,11 @@ class CharacterAdmin(admin.ModelAdmin):
         if not ConfigItem.get(value):
             return
 
-        # TODO
-        from core.bag import BagItem
+        from core.item import ItemManager
         for q in queryset:
-            BagItem(q.server_id, q.id).add([(value, amount)])
+            ItemManager(q.server_id, q.id).add_item(value, amount)
 
-    add_item.short_description = u"添加道具"
+    add_item.short_description = u"添加物品"
 
     def avatar_set_ok(self, request, queryset):
         for q in queryset:

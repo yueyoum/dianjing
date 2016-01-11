@@ -11,12 +11,25 @@ import json
 import random
 
 from core.abstract import STAFF_SECONDARY_ATTRS
-from config import ConfigPackage
+from config import ConfigPackage, ConfigItem
 
 from protomsg.package_pb2 import (
     Drop as MsgDrop,
     Property as MsgProperty,
 )
+
+from protomsg.item_define_pb2 import (
+    ITEM_STAFF_CARD
+)
+
+
+def set_package_value(obj, attr_name, values):
+    if not values:
+        return
+
+    low, high = values
+    new_value = getattr(obj, attr_name) + random.randint(low, high)
+    setattr(obj, attr_name, new_value)
 
 
 # 这个对应编辑器中的 Package
@@ -31,7 +44,7 @@ class PackageBase(object):
         'gold', 'diamond', 'staff_exp', 'club_renown',
     ]
 
-    FULL_FIELDS = FIELDS + ['trainings', 'items']
+    __slots__ = FIELDS + ['items', 'staff_cards']
 
     def __init__(self):
         self.caozuo = 0  # 员工 - 操作
@@ -43,18 +56,18 @@ class PackageBase(object):
         self.yingxiao = 0  # 员工 - 营销
 
         self.zhimingdu = 0  # 员工 - 知名度
+        self.staff_exp = 0
 
         self.gold = 0  # 角色 - 金币/软妹币
         self.diamond = 0  # 角色 - 钻石
-        self.staff_exp = 0  # 员工 - 经验
         self.club_renown = 0  # 角色 - 俱乐部声望
 
-        self.trainings = []  # 角色 - 训练书
-        self.items = []  # 角色 - 道具
+        self.items = []  # 角色 - 物品
+        self.staff_cards = []
 
     def __str__(self):
         data = {}
-        for attr in self.FULL_FIELDS:
+        for attr in self.__slots__:
             value = getattr(self, attr)
             if value:
                 data[attr] = value
@@ -63,59 +76,7 @@ class PackageBase(object):
 
     @classmethod
     def generate(cls, pid):
-        """
-
-        :rtype : PackageBase
-        """
-
-        def set_value(attr_name, values):
-            if not values:
-                return
-
-            low, high = values
-            new_value = getattr(p, attr_name) + random.randint(low, high)
-            setattr(p, attr_name, new_value)
-
-        config = ConfigPackage.get(pid)
-
-        p = cls()
-
-        # 技能训练书
-        p.trainings = config.trainings
-        p.items = config.items
-
-        set_value('gold', config.gold)
-        set_value('diamond', config.diamond)
-        set_value('staff_exp', config.staff_exp)
-        set_value('club_renown', config.club_renown)
-
-        if config.attr_mode == 1:
-            # 不加成属性
-            return p
-
-        if config.attr_mode == 2:
-            # 完全随机
-            for i in range(config.attr_random_amount):
-                attr = random.choice(STAFF_SECONDARY_ATTRS)
-                set_value(attr, config.attr_random_value)
-
-            return p
-
-        selected_attrs = [attr for attr in STAFF_SECONDARY_ATTRS if getattr(config, attr)]
-
-        if config.attr_mode == 4:
-            # 设定的属性
-            for attr in selected_attrs:
-                set_value(attr, getattr(config, attr))
-
-            return p
-
-        # 从设定的属性中随机
-        for i in range(config.attr_random_amount):
-            attr = random.choice(selected_attrs)
-            set_value(attr, getattr(config, attr))
-
-        return p
+        raise NotImplementedError()
 
     def make_protomsg(self):
         raise NotImplementedError()
@@ -131,7 +92,42 @@ class PackageBase(object):
 # 对应只会给角色加的物品。 关卡掉落，奖励，邮件附件 这些
 class Drop(PackageBase):
     FIELDS = ['gold', 'diamond', 'club_renown']
-    # 还有 trainings, items
+
+    # 还有 items, staff_cards
+
+    @classmethod
+    def generate(cls, pid):
+        """
+
+        :rtype: Drop
+        """
+        config = ConfigPackage.get(pid)
+        assert config.tp == 2
+
+        p = cls()
+        set_package_value(p, 'gold', config.gold)
+        set_package_value(p, 'diamond', config.diamond)
+        set_package_value(p, 'club_renown', config.club_renown)
+
+        if config.item_mode == 1:
+            p.items = config.items
+            p.staff_cards = config.staff_cards
+        else:
+            all_stuffs = []
+            for i in config.items:
+                all_stuffs.append(('item', i))
+            for i in config.staff_cards:
+                all_stuffs.append(('staff_cards', i))
+
+            for i in range(config.item_random_amount):
+                # TODO more check
+                _type, _data = random.choice(all_stuffs)
+                if _type == 'item':
+                    p.items.append(_data)
+                elif _type == 'staff_cards':
+                    p.staff_cards.append(_data)
+
+        return p
 
     def make_protomsg(self):
         msg = MsgDrop()
@@ -145,15 +141,17 @@ class Drop(PackageBase):
             msg_item.resource_id = attr
             msg_item.value = value
 
-        for _id, _amount in self.trainings:
-            msg_training = msg.trainings.add()
-            msg_training.id = _id
-            msg_training.amount = _amount
-
         for _id, _amount in self.items:
             msg_item = msg.items.add()
             msg_item.id = _id
             msg_item.amount = _amount
+            msg_item.tp = ConfigItem.get(_id).tp
+
+        for _id, _amount in self.staff_cards:
+            msg_item = msg.items.add()
+            msg_item.id = _id
+            msg_item.amount = _amount
+            msg_item.tp = ITEM_STAFF_CARD
 
         return msg
 
@@ -166,11 +164,11 @@ class Drop(PackageBase):
 
             data[attr] = value
 
-        if self.trainings:
-            data['trainings'] = self.trainings
-
         if self.items:
             data['items'] = self.items
+
+        if self.staff_cards:
+            data['staff_cards'] = self.staff_cards
 
         return json.dumps(data)
 
@@ -191,6 +189,49 @@ class Drop(PackageBase):
 
 class Property(PackageBase):
     FIELDS = STAFF_SECONDARY_ATTRS + ['staff_exp']
+
+    @classmethod
+    def generate(cls, pid):
+        """
+
+        :rtype : Property
+        """
+        config = ConfigPackage.get(pid)
+        assert config.tp == 1
+
+        p = cls()
+
+        active_attrs = {}
+        for attr in cls.FIELDS:
+            value = getattr(config, attr)
+            if value:
+                active_attrs[attr] = value
+
+        active_attrs = active_attrs.items()
+
+        if config.attr_mode == 1:
+            # 设定的属性
+            for k, v in active_attrs:
+                set_package_value(p, k, v)
+
+            return p
+
+        if config.attr_mode == 2:
+            # 从设定的属性中随机
+            for i in range(config.attr_random_amount):
+                k, v = random.choice(active_attrs)
+                set_package_value(p, k, v)
+
+            return p
+
+        if config.attr_mode == 3:
+            # 完全随机
+            for i in range(config.attr_random_amount):
+                attr = random.choice(STAFF_SECONDARY_ATTRS)
+                value = random.choice(config.attr_random_value)
+                setattr(p, attr, value)
+
+            return p
 
     def make_protomsg(self):
         msg = MsgProperty()
@@ -223,8 +264,8 @@ class Property(PackageBase):
         return data
 
     def to_json(self):
-        raise NotImplementedError()
+        raise Exception("Property no need dump to json")
 
     @classmethod
     def loads_from_json(cls, data):
-        raise NotImplementedError()
+        raise Exception("Property no need load from json")

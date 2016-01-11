@@ -20,16 +20,13 @@ class LadderRankReward(object):
 
 
 class LadderScoreStore(object):
-    __slots__ = ['id', 'times_limit', 'score', 'item', 'item_amount', 'training_skill', 'training_skill_amount']
+    __slots__ = ['id', 'times_limit', 'score', 'item', 'item_amount']
     def __init__(self):
         self.id = 0
         self.times_limit = 0
         self.score = 0
         self.item = 0
         self.item_amount = 0
-        self.training_skill = 0
-        self.training_skill_amount = 0
-
 
 class ConfigLadderRankReward(ConfigBase):
     EntityClass = LadderRankReward

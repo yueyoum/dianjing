@@ -14,7 +14,7 @@ from dianjing.exception import GameException
 from core.mongo import MongoTrainingShop
 from core.staff import StaffManger
 from core.package import Drop
-from core.bag import BagItem
+from core.item import ItemManager
 from core.resource import Resource
 from core.mail import MailManager
 from core.signals import training_shop_start_signal
@@ -83,8 +83,8 @@ class Shop(object):
         return False
 
     def add_goods(self):
-        bi = BagItem(self.server_id, self.char_id)
-        goods_amount = bi.current_amount(self.config.goods)
+        im = ItemManager(self.server_id, self.char_id)
+        goods_amount = im.get_simple_item_amount_by_oid(self.config.goods)
 
         if not goods_amount:
             raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_EXIST"))
@@ -94,7 +94,7 @@ class Shop(object):
             if goods_amount > need_amount:
                 goods_amount = need_amount
 
-            bi.remove(self.config.goods, goods_amount)
+            im.remove_simple_item(self.config.goods, goods_amount)
             self.goods += goods_amount
 
             return False
@@ -118,7 +118,7 @@ class Shop(object):
 
             self.goods = goods_amount
 
-        with bi.remove_context(self.config.goods, goods_amount):
+        with im.remove_simple_item_context(self.config.goods, goods_amount):
             self._start()
 
         return True

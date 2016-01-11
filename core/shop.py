@@ -9,7 +9,7 @@ Description:
 
 from dianjing.exception import GameException
 
-from core.bag import BagItem
+from core.item import ItemManager
 from core.resource import Resource
 from config import ConfigItem, ConfigErrorMessage
 
@@ -35,4 +35,4 @@ class ItemShop(object):
         check['message'] = u"Buy Item {0}, amount {1}".format(item_id, amount)
 
         with Resource(self.server_id, self.char_id).check(**check):
-            BagItem(self.server_id, self.char_id).add([(item_id, amount)])
+            ItemManager(self.server_id, self.char_id).add_item(item_id, amount)

@@ -145,9 +145,12 @@ class MongoStaff(BaseDocument):
     STAFF_DOCUMENT = {
         'exp': 0,
         'level': 1,
+        'star': 0,
         'status': null,
         'skills': {},
         'winning_rate': {},
+        # equips 直接从 item 中移动过来
+        'equips': {},
         # 此外这里还有属性
 
     }
@@ -180,16 +183,15 @@ class MongoStaff(BaseDocument):
 
 
 # 背包
-class MongoBag(BaseDocument):
+class MongoItem(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        # 技能训练书 id: amount
-        'training_skills': {},
-        # 道具 id: amount
-        'items': {},
+        # id: meta_data
+        # id 是物品的唯一ID， meta data 就是其数据
+        # 不同类型的物品，记录的数据不一样
     }
 
-    COLLECTION = 'bag'
+    COLLECTION = 'item'
 
 
 # 经验训练

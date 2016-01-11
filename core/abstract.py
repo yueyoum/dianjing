@@ -46,7 +46,7 @@ SECONDARY_PROPERTY_TABLE = {
 
 class AbstractStaff(object):
     __slots__ = [
-        'server_id', 'char_id', 'id', 'race', 'level', 'exp', 'status', 'quality',
+        'server_id', 'char_id', 'id', 'race', 'level', 'exp', 'status', 'quality', 'star',
         'skills',
         'active_qianban_ids',
 
@@ -65,6 +65,8 @@ class AbstractStaff(object):
         'yingxiao',
 
         'zhimingdu',
+
+        'equipments',
     ]
 
     def __init__(self, *args, **kwargs):
@@ -77,6 +79,7 @@ class AbstractStaff(object):
         self.exp = 0
         self.status = 0
         self.quality = 0
+        self.star = 0
 
         self.skills = {}
         self.active_qianban_ids = []
@@ -96,6 +99,9 @@ class AbstractStaff(object):
         self.yingxiao = 0
 
         self.zhimingdu = 0
+
+        self.equipments = []
+        """:type: list[core.item.Equipment]"""
 
     def calculate_secondary_property(self):
         for sp, info in SECONDARY_PROPERTY_TABLE.iteritems():
@@ -122,6 +128,7 @@ class AbstractStaff(object):
         msg.cur_exp = self.exp
         msg.max_exp = ConfigStaffLevel.get(self.level).exp[self.quality]
         msg.status = self.status
+        msg.star = self.star
 
         msg.luoji = int(self.luoji)
         msg.minjie = int(self.minjie)
@@ -138,6 +145,10 @@ class AbstractStaff(object):
         msg.yingxiao = int(self.yingxiao)
 
         msg.zhimingdu = int(self.zhimingdu)
+
+        for equip in self.equipments:
+            msg_item = msg.items.add()
+            msg_item.MergeFrom(equip.make_protomsg())
 
         return msg
 
