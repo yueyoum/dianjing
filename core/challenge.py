@@ -101,7 +101,7 @@ class Challenge(object):
             MongoChallenge.db(self.server_id).insert_one(doc)
 
     @classmethod
-    def refresh_times(cls, server_id):
+    def cronjob_refresh_times(cls, server_id):
         for char_id in Character.get_recent_login_char_ids(server_id):
             doc = MongoChallenge.db(server_id).find_one({'_id': char_id})
 
@@ -116,6 +116,9 @@ class Challenge(object):
             )
 
     def check_energize(self):
+        """
+        检测是否需要注册充能定时任务
+        """
         doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'energy': 1, 'club.vip': 1})
         if doc['club']['vip'] > 1:
             end_at = arrow.utcnow().timestamp + VIP_ENERGIZE_TIME
@@ -130,15 +133,25 @@ class Challenge(object):
         Timerd.register(end_at, TIMERD_CALLBACK_PATH, data)
 
     def energize_callback(self):
+        """
+        定时充能回调
+        """
         self.add_energy(1)
 
     def add_energy(self, num):
+        """
+        增加能量
+        """
         MongoCharacter.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$inc': {'energy.power': num}}
         )
 
     def start(self, area_id, challenge_id):
+        """
+        开始挑战关卡
+            1 检测, 大区、关卡、是否开启，俱乐部等级是否满足，该关卡是否仍有挑战次数
+        """
         # 判断大区是否存在
         if not ConfigChallengeType.get(area_id):
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_AREA_NOT_EXIST"))
@@ -346,14 +359,14 @@ class Challenge(object):
         notify.act = act
         for k, v in doc['areas'].iteritems():
             notify_area = notify.area.add()
-            notify_area.id = k
+            notify_area.id = int(k)
             notify_area.package_one = v['packages']['1']
             notify_area.package_two = v['packages']['2']
             notify_area.package_three = v['packages']['3']
 
             for challenge_id, info in v['challenges'].iteritems():
                 notify_challenge = notify_area.challenge.add()
-                notify_challenge.id = challenge_id
+                notify_challenge.id = int(challenge_id)
                 notify_challenge.times = info['times']
                 notify_challenge.stars = info['stars']
 

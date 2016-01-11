@@ -105,5 +105,4 @@ def game_start_handler(server_id, char_id, **kwargs):
     TrainingMatch(server_id, char_id).send_notify()
 
     em = EliteMatch(server_id, char_id)
-    em.send_notify()
-    em.send_times_notify()
+    em.elite_notify()

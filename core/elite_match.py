@@ -112,8 +112,6 @@ class EliteMatch(object):
             doc['_id'] = self.char_id
             MongoEliteMatch.db(self.server_id).insert_one(doc)
 
-        # self.cur_times = doc['cur_times']
-
     @classmethod
     def cronjob_clean_match_times(cls, server_id):
         for char_id in Character.get_recent_login_char_ids(server_id):
@@ -304,14 +302,14 @@ class EliteMatch(object):
         notify.act = act
         for k, v in doc['areas'].iteritems():
             notify_area = notify.area.add()
-            notify_area.id = k
+            notify_area.id = int(k)
             notify_area.package_one = v['packages']['1']
             notify_area.package_two = v['packages']['2']
             notify_area.package_three = v['packages']['3']
 
             for challenge_id, info in v['challenges'].iteritems():
                 notify_challenge = notify_area.challenge.add()
-                notify_challenge.id = challenge_id
+                notify_challenge.id = int(challenge_id)
                 notify_challenge.times = info['times']
                 notify_challenge.stars = info['stars']
 
