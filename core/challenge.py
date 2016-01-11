@@ -150,7 +150,9 @@ class Challenge(object):
     def start(self, area_id, challenge_id):
         """
         开始挑战关卡
-            1 检测, 大区、关卡、是否开启，俱乐部等级是否满足，该关卡是否仍有挑战次数
+            1 检测, 大区、关卡、是否开启，俱乐部等级是否满足，该关卡是否仍有挑战次数、体力是否足够
+            2 ClubMatch
+            3 返回对战双方信息
         """
         # 判断大区是否存在
         if not ConfigChallengeType.get(area_id):
