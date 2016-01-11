@@ -202,12 +202,11 @@ class Ladder(object):
         club_two = MongoLadder.db(self.server_id).find_one({'_id': str(club_two_id)})
 
         match = LadderMatch(self.server_id, club_one, club_two)
-        match.end_match(win_club)
+        match.end_match(int(win_club))
 
-        # drop = Drop()
-        # drop.ladder_score = match.club_one_add_score
-        # return drop.make_protomsg()
-        return None
+        drop = Drop()
+        drop.ladder_score = match.club_one_add_score
+        return drop.make_protomsg()
 
     def add_score(self, score, send_notify=True):
         lock_key = "ladder_add_score_{0}".format(self.char_id)
