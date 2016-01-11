@@ -254,6 +254,8 @@ class Challenge(object):
                 if ConfigChallengeType.get(int(area_id)).condition_challenge_id < next_challenge_id:
                     setter['areas.{0}.challenges.{1}'.format(next_area_id, next_challenge_id)] = {'stars': 0,
                                                                                                   'times': 0}
+                    setter['areas.{0}.packages'.format(next_area_id)] = {'1': True, '2': True, '3': True}
+
                     self.challenge_notify(area_id=next_area_id)
                 # 如果是当前大区的
                 else:
@@ -278,10 +280,9 @@ class Challenge(object):
             self.challenge_notify(area_id=area_id)
 
             # # 通关奖励
-            # drop = Drop.generate(ConfigChallengeMatch.get(int(challenge_id)).package)
-            # Resource(self.server_id, self.char_id).save_drop(drop)
-            # return drop.make_protomsg()
-            return None
+            drop = Drop.generate(ConfigChallengeMatch.get(int(challenge_id)).package)
+            Resource(self.server_id, self.char_id).save_drop(drop)
+            return drop.make_protomsg()
 
         # send signal
         challenge_match_signal.send(
@@ -359,7 +360,10 @@ class Challenge(object):
 
         notify = ChallengeNotify()
         notify.act = act
+        print area_id, doc
         for k, v in doc['areas'].iteritems():
+            print '***' * 15
+            print k, v
             notify_area = notify.area.add()
             notify_area.id = int(k)
             notify_area.package_one = v['packages']['1']

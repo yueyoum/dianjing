@@ -269,11 +269,10 @@ class EliteMatch(object):
             # 同步到客户端
             self.elite_notify(area_id=area_id)
 
-            # # 通关奖励
-            # drop = Drop.generate(ConfigEliteMatch.get(int(challenge_id)).reward)
-            # Resource(self.server_id, self.char_id).save_drop(drop)
-            # return drop.make_protomsg()
-            return None
+            # 通关奖励
+            drop = Drop.generate(ConfigEliteMatch.get(int(challenge_id)).reward)
+            Resource(self.server_id, self.char_id).save_drop(drop)
+            return drop.make_protomsg()
 
         # # send signal
         # challenge_match_signal.send(

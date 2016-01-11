@@ -422,22 +422,27 @@ class LeagueManger(object):
         晋级赛结果处理
         """
         if win:
-            result = FAIL
-        else:
             result = SUCCESS
+            win_time_add = 1
+        else:
+            result = FAIL
+            win_time_add = 0
 
         MongoLeague.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': {'match_club.{0}.status'.format(club_id): result}}
+            {'$set': {'match_club.{0}.status'.format(club_id): result},
+             '$inc': {'win_rate.total': 1,
+                      'win_rate.win': win_time_add}
+             }
         )
 
-        doc = MongoLeague.db(self.server_id).find_one({'_id': self.char_id}, {'match_club'})
+        doc = MongoLeague.db(self.server_id).find_one({'_id': self.char_id}, {'match_club': 1})
         fail_times = 0
         success_times = 0
-        for club in doc['match_club'].iteritems():
-            if club['status'] == SUCCESS:
+        for club_id, club_info in doc['match_club'].iteritems():
+            if club_info['status'] == SUCCESS:
                 success_times += 1
-            elif club['status'] == FAIL:
+            elif club_info['status'] == FAIL:
                 fail_times += 1
 
         # 晋级成功
@@ -452,7 +457,9 @@ class LeagueManger(object):
         elif fail_times > 3:
             MongoLeague.db(self.server_id).update_one(
                 {'_id': self.char_id},
-                {'$inc': {'score': -RISE_IN_RANK_FAIL_PUNISH, 'in_rise': False}}
+                {'$inc': {'score': -RISE_IN_RANK_FAIL_PUNISH},
+                 '$set': {'in_rise': False}
+                 }
             )
             self.normal_refresh()
 
