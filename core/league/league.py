@@ -180,6 +180,7 @@ class LeagueManger(object):
                 {'_id': char_id},
                 {'$set': {'challenge_times': MAX_CHALLENGE_TIMES}}
             )
+            LeagueManger(server_id, char_id).notify_user_info()
 
     def diamond_refresh(self):
         """
