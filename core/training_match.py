@@ -134,29 +134,24 @@ class TrainingMatch(object):
                 {'$inc': {'relive_times': 1}}
             )
 
-        key = str(arrow.utcnow().timestamp) + ',' + str(index) + ',' + str(self.char_id)
-
         club = Club(self.server_id, self.char_id)
         club_data = doc['clubs'][index - 1]
         opposite_club = Club.loads(club_data)
 
         match = ClubMatch(club, opposite_club)
+        key = str(arrow.utcnow().timestamp) + ',' + str(index) + ',' + str(self.char_id) + ',' + str(opposite_club.char_id)
         msg = match.start()
         msg.key = key
         return msg
 
-    def check_key(self, key):
-        # TODO: check timestamp
-        timestamp, index, char_id = str(key).split(',')
-        if int(char_id) == self.char_id and timestamp:
-            return int(index)
-        return 0
-
     def match_report(self, is_win, key, result):
+        timestamp, index, club_one, club_two = str(key).split(',')
+
         StaffManger(self.server_id, self.char_id).update_winning_rate(result)
+        StaffManger(self.server_id, int(club_two)).update_winning_rate(result, False)
 
         if is_win:
-            ret = self.check_key(key)
+            ret = int(index)
             updated_ids = [ret]
             if ret:
                 drop = Drop.generate(ConfigTrainingMatchReward.get(ret).reward)

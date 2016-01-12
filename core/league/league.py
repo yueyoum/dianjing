@@ -227,7 +227,8 @@ class LeagueManger(object):
         ).sort('score', 1).limit(MAX_MATCH_CLUB * 10)
         doc_list = []
         for doc in docs:
-            doc_list.append(doc)
+            if not doc['in_rise']:
+                doc_list.append(doc)
 
         if doc_list.__len__() >= MAX_MATCH_CLUB:
             need_num = MAX_MATCH_CLUB
@@ -327,7 +328,7 @@ class LeagueManger(object):
             # 员工胜率处理
             StaffManger(self.server_id, int(club_two_id)).update_winning_rate(result, False)
             # 被挑战者处理
-            LeagueManger(self.server_id, int(club_two_id)).normal_result(not win_club == str(self.char_id), False)
+            LeagueManger(self.server_id, int(club_two_id)).normal_result(not win_club == str(self.char_id))
         else:
             # 对手为npc处理
             doc = MongoLeague.db(self.server_id).find_one(
