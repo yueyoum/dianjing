@@ -498,7 +498,7 @@ class LeagueManger(object):
             raise GameException(ConfigErrorMessage.get_error_id("NO_THIS_CHALLENGE"))
 
         # 检查玩家是否有挑战次数
-        if doc['challenge_times'] < 1 or not doc['in_rise']:
+        if doc['challenge_times'] < 1 and not doc['in_rise']:
             raise GameException(ConfigErrorMessage.get_error_id("NO_CHALLENGE_TIMES"))
 
         # 非可挑战状态，不能再次挑战

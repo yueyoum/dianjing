@@ -390,10 +390,9 @@ class Challenge(object):
 
         notify = ChallengeNotify()
         notify.act = act
-        print area_id, doc
+
         for k, v in doc['areas'].iteritems():
-            print '***' * 15
-            print k, v
+
             notify_area = notify.area.add()
             notify_area.id = int(k)
             notify_area.package_one = v['packages']['1']
