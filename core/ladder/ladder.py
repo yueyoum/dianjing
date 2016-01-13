@@ -200,7 +200,7 @@ class Ladder(object):
         club_two = MongoLadder.db(self.server_id).find_one({'_id': str(club_two_id)})
 
         StaffManger(self.server_id, self.char_id).update_winning_rate(result)
-        if not club_two['name']:
+        if not club_two['club_name']:
             StaffManger(self.server_id, int(club_two['_id'])).update_winning_rate(result, False)
 
         match = LadderMatch(self.server_id, club_one, club_two)
