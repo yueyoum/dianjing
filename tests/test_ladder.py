@@ -11,7 +11,6 @@ import random
 
 from dianjing.exception import GameException
 
-from core.db import MongoDB
 from core.mongo import MongoLadder
 from core.common import CommonLadderStore
 from core.ladder import Ladder, LadderStore
@@ -21,42 +20,36 @@ from core.club import Club
 from config import ConfigStaff, ConfigErrorMessage, ConfigLadderScoreStore
 
 
+def match_report():
+    pass
+
+
 class TestLadder(object):
     def setUp(self):
-        pass
+        self.server_id = 1
+        self.char_id = 1
+        Ladder(self.server_id, self.char_id)
 
     def teardown(self):
-        MongoDB.get(1).ladder.drop()
-
-        MongoDB.get(1).staff.delete_one({'_id': 1})
-        MongoDB.get(1).character.update_one(
-            {'_id': 1},
-            {'$set': {
-                'club.match_staffs': [],
-                'club.tibu_staffs': []
-            }}
-        )
+        MongoLadder.db(self.server_id).drop()
 
     def test_send_notify(self):
-        Ladder(1, 1).send_notify()
+        Ladder(self.server_id, self.char_id).send_notify()
 
     def test_refresh(self):
-        Ladder(1, 1).make_refresh()
+        Ladder(self.server_id, self.char_id).make_refresh()
+        doc = MongoLadder.db(self.server_id).find_one({'_id': str(self.char_id)})
+        if doc['order'] > 6:
+            for k, v in doc['refreshed'].iteritems():
+                assert doc['order'] > v
+        else:
+            for k, v in doc['refreshed'].iteritems():
+                assert v <= 6
 
     def test_match(self):
-        staff_ids = ConfigStaff.INSTANCES.keys()
-        staff_ids = random.sample(staff_ids, 10)
+        ladder = Ladder(self.server_id, self.char_id)
 
-        sm = StaffManger(1, 1)
-        for i in staff_ids:
-            sm.add(i)
-
-        Club(1, 1).set_match_staffs(staff_ids)
-
-
-        ladder = Ladder(1, 1)
-
-        doc = MongoDB.get(1).ladder.find_one({'_id': '1'})
+        doc = MongoLadder.db(self.server_id).find_one({'_id': str(self.char_id)})
         refreshed = doc['refreshed'].keys()
 
         target_id = random.choice(refreshed)
@@ -64,7 +57,19 @@ class TestLadder(object):
         ladder.match(target_id)
 
     def test_get_top_clubs(self):
-        Ladder.get_top_clubs(1)
+        Ladder.get_top_clubs(self.server_id)
+
+    def report_match(self):
+        ladder = Ladder(self.server_id, self.char_id)
+
+        doc = MongoLadder.db(self.server_id).find_one({'_id': str(self.char_id)})
+        refreshed = doc['refreshed'].keys()
+
+        target_id = random.choice(refreshed)
+
+        msg = ladder.match(target_id)
+        video = ""
+        ladder.match_report(video, msg.key, str(self.char_id), "")
 
 
 class TestLadderStore(object):

@@ -156,7 +156,7 @@ class Challenge(object):
         """
         定时充能回调
         """
-        self.add_energy(1)
+        self.add_energy(ENERGIZE_NUM)
         self.check_energize()
 
     def add_energy(self, num, times=0):

@@ -304,7 +304,40 @@ class EliteMatch(object):
         return None
 
     def star_reward(self, area_id, index):
-        pass
+        """
+        领取星级奖励
+        """
+        # 获取数据
+        doc = MongoEliteMatch.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'areas.{0}.packages.{1}'.format(area_id, index+1): 1},
+            {'areas.{0}.challenges'.format(area_id): 1},
+        )
+
+        # 判断是否有星级奖励（实际上是检测是否已开通大区）
+        star_reward = doc['areas'].get(str(area_id), {}).get('packages', {})
+        if not star_reward:
+            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_REWARD_NOT_EXIST"))
+
+        # 已领取
+        if not star_reward[str(index+1)]:
+            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_REWARD_HAVE_GET"))
+
+        star_count = 0
+        # 计算总星数
+        for ch_id, ch_info in doc['areas'][str(area_id)]['challenges'].iteritems():
+            star_count += ch_info['stars']
+
+        conf = ConfigEliteArea.get(area_id)
+        # 星数不足
+        if conf.star_reward[index]['star'] > star_count:
+            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_REWARD_STARS_NOT_ENOUGH"))
+
+        # 发放奖励
+        drop = Drop.generate(conf.star_reward[index]['reward'])
+        Resource(self.server_id, self.char_id).save_drop(drop)
+
+        return drop.make_protomsg()
 
     def elite_notify(self, act=ACT_INIT, area_id=None):
         if area_id:
