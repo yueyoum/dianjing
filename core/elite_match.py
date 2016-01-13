@@ -114,6 +114,9 @@ class EliteMatch(object):
 
     @classmethod
     def cronjob_clean_match_times(cls, server_id):
+        """
+        定时清除挑战次数
+        """
         for char_id in Character.get_recent_login_char_ids(server_id):
             doc = MongoEliteMatch.db(server_id).find_one({'_id': char_id})
 
@@ -127,24 +130,34 @@ class EliteMatch(object):
                 {'$set': updater}
             )
 
-    def open_area(self, aid, send_notify=True):
+    def open_area(self, aid):
+        """
+        开放精英赛大区
+            这个函数由挑战赛大区通关后调用， 用来开启当前关卡精英赛
+        """
+        # 获取大区配置
         config = ConfigEliteArea.get(aid)
         if not config:
-            return
+            raise GameException(ConfigErrorMessage.get_error_id("ELITE_CONFIG_NOT_EXIST"))
 
+        # 获取玩家数据
         doc = MongoEliteMatch.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'areas.{0}'.format(aid): 1}
         )
 
+        # 如果已经开启， 直接返回
         if str(aid) in doc['areas']:
             return
 
+        # 未开启， 开启， 添加到 玩家数据库
         updater = {
             'areas.{0}'.format(aid): {
                 'challenges': {
-                    'stars': 0,
-                    'times': 0,
+                    str(config.first_match_id()): {
+                        'stars': 0,
+                        'times': 0,
+                    }
                 },
                 'packages': {
                     '1': True,
@@ -159,13 +172,15 @@ class EliteMatch(object):
             {'$set': updater}
         )
 
-        if send_notify:
-            self.elite_notify(area_id=aid)
+        self.elite_notify(area_id=aid)
 
     def start(self, area_id, challenge_id):
+        """
+        开始精英赛关卡
+        """
         # 判断大区是否存在
         if not ConfigEliteArea.get(area_id):
-            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_AREA_NOT_EXIST"))
+            raise GameException(ConfigErrorMessage.get_error_id("ELITE_CONFIG_NOT_EXIST"))
 
         # 获取玩家数据
         doc = MongoEliteMatch.db(self.server_id).find_one(
@@ -175,16 +190,16 @@ class EliteMatch(object):
 
         # 判断大区是否已开启
         if not doc['areas'].get(str(area_id), {}):
-            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_AREA_NOT_OPEN"))
+            raise GameException(ConfigErrorMessage.get_error_id("ELITE_AREA_NOT_OPEN"))
 
         # 判断是否已开方关卡
-        elite = doc['areas']['challenges'].get(str(challenge_id), {})
+        elite = doc['areas'][str(area_id)]['challenges'].get(str(challenge_id), {})
         if not elite:
-            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NOT_OPEN"))
+            raise GameException(ConfigErrorMessage.get_error_id("ELITE_MATCH_NOT_OPEN"))
 
         # 挑战次数检查
         if elite.get('times', 0) >= ConfigEliteMatch.get(challenge_id):
-            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_WITHOUT_TIMES"))
+            raise GameException(ConfigErrorMessage.get_error_id("ELITE_TOTAL_NO_TIMES"))
 
         # 体力检查
         doc_char = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'energy': 1})
@@ -201,6 +216,9 @@ class EliteMatch(object):
         return msg
 
     def report(self, key, win_club, result):
+        """
+        精英赛结果汇报
+        """
         # 解析key
         club_one, area_id, challenge_id = str(key).split(',')
 
@@ -255,8 +273,8 @@ class EliteMatch(object):
 
             # 如果下一关存在
             if ConfigEliteMatch.get(next_challenge_id):
-                # 如果是下一大区的， 开启新大区
-                if ConfigEliteArea.get(int(area_id)) < next_challenge_id:
+                # 如果当前大关的， 开启
+                if ConfigEliteArea.get(int(area_id)).last_match_id() >= next_challenge_id:
                     setter['areas.{0}.challenges.{1}'.format(area_id, next_challenge_id)] = {'stars': 0,
                                                                                              'times': 0}
             # 更新数据

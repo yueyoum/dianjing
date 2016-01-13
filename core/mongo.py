@@ -90,8 +90,9 @@ class MongoCharacter(BaseDocument):
         'buy_slots': 0,
         # 体力
         'energy': {
-            'key': "",
-            'power': 0,
+            'key': "",              # 充能回调key
+            'power': 0,             # 体力
+            'times': 0,             # 当天花费钻石充能次数
         },
     }
 

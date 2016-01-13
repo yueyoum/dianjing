@@ -115,14 +115,34 @@ class Challenge(object):
                 {'$set': updater}
             )
 
+            # 同时重置玩家钻石充能次数
+            MongoCharacter.db(server_id).update_one(
+                {'_id': char_id},
+                {'$set': {'energy.times': 0}}
+            )
+
     def check_energize(self):
         """
         检测是否需要注册充能定时任务
         """
         doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'energy': 1, 'club.vip': 1})
+
+        # 如果正在充能， 直接返回
+        if doc['energy']['key']:
+            return
+
+        # 充能耗时
         if doc['club']['vip'] > 1:
+            # 是否需要充能
+            if doc['energy']['power'] > VIP_MAX_ENERGY:
+                return
+
             end_at = arrow.utcnow().timestamp + VIP_ENERGIZE_TIME
         else:
+            # 是否需要充能
+            if doc['energy']['power'] > NORMAL_MAX_ENERGY:
+                return
+
             end_at = arrow.utcnow().timestamp + NORMAL_ENERGIZE_TIME
 
         data = {
@@ -137,14 +157,15 @@ class Challenge(object):
         定时充能回调
         """
         self.add_energy(1)
+        self.check_energize()
 
-    def add_energy(self, num):
+    def add_energy(self, num, times=0):
         """
         增加能量
         """
         MongoCharacter.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$inc': {'energy.power': num}}
+            {'$inc': {'energy.power': num, 'energy.times': times}}
         )
 
     def start(self, area_id, challenge_id):
@@ -265,6 +286,7 @@ class Challenge(object):
                                                                                                  'times': 0}
                     elite_open = False
 
+            # 是否开启精英赛
             if elite_open:
                 from core.elite_match import EliteMatch
                 EliteMatch(self.server_id, self.char_id).open_area(int(area_id))
@@ -309,11 +331,11 @@ class Challenge(object):
         # 判断是否有星级奖励（实际上是检测是否已开通大区）
         star_reward = doc['areas'].get(str(area_id), {}).get('packages', {})
         if not star_reward:
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_REWARD_NOT_EXIST"))
 
         # 已领取
         if not star_reward[str(index+1)]:
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_REWARD_HAVE_GET"))
 
         star_count = 0
         # 计算总星数
@@ -323,7 +345,7 @@ class Challenge(object):
         conf = ConfigChallengeType.get(area_id)
         # 星数不足
         if conf.star_reward[index]['star'] > star_count:
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_REWARD_STARS_NOT_ENOUGH"))
 
         # 发放奖励
         drop = Drop.generate(conf.star_reward[index]['reward'])
@@ -332,9 +354,17 @@ class Challenge(object):
         return drop.make_protomsg()
 
     def buy_energy(self):
-        # TODO: check buy times, do the buy times refresh
+        """
+        购买 体力
+        """
+        # 是否还有购买次数
+        doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'energy': 1})
+        if doc['energy']['times'] > 4:
+            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NO_BUY_ENERGY_TIMES"))
+
+        # 扣除花费， 添加体力和购买次数
         with Resource(self.server_id, self.char_id).check(diamond=50, message="Buy energy power cost 50"):
-            self.add_energy(20)
+            self.add_energy(20, 1)
 
     def energy_notify(self):
         doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'energy.power': 1, 'club.vip': 1})

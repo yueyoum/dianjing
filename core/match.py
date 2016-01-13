@@ -272,16 +272,16 @@ class ClubMatch(object):
 
             msg_match = msg.match.add()
             msg_match.staff_one.id = staff_one.id
-            msg_match.staff_one.caozuo = staff_one.caozuo
-            msg_match.staff_one.jingying = staff_one.jingying
-            msg_match.staff_one.baobing = staff_one.baobing
-            msg_match.staff_one.zhanshu = staff_one.zhanshu
+            msg_match.staff_one.caozuo = int(staff_one.caozuo)
+            msg_match.staff_one.jingying = int(staff_one.jingying)
+            msg_match.staff_one.baobing = int(staff_one.baobing)
+            msg_match.staff_one.zhanshu = int(staff_one.zhanshu)
             
             msg_match.staff_two.id = staff_two.id
-            msg_match.staff_two.caozuo = staff_two.caozuo
-            msg_match.staff_two.jingying = staff_two.jingying
-            msg_match.staff_two.baobing = staff_two.baobing
-            msg_match.staff_two.zhanshu = staff_two.zhanshu
+            msg_match.staff_two.caozuo = int(staff_two.caozuo)
+            msg_match.staff_two.jingying = int(staff_two.jingying)
+            msg_match.staff_two.baobing = int(staff_two.baobing)
+            msg_match.staff_two.zhanshu = int(staff_two.zhanshu)
 
         return msg
 
