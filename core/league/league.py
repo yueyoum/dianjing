@@ -38,7 +38,6 @@ from protomsg.league_pb2 import (
     FAIL,
     SUCCESS,
 )
-from protomsg.staff_pb2 import Staff as MessageStaff
 
 from utils.message import MessagePipe
 from utils.functional import make_string_id
@@ -85,33 +84,6 @@ class LeagueNpcStaff(AbstractStaff):
         self.meili = config.meili
 
         self.calculate_secondary_property()
-
-    def make_protomsg(self):
-        msg = MessageStaff()
-
-        msg.id = self.id
-        msg.level = self.level
-        msg.cur_exp = 0
-        msg.max_exp = 1000
-        msg.status = 3
-
-        msg.luoji = 1
-        msg.minjie = 1
-        msg.lilun = 1
-        msg.wuxing = 1
-        msg.meili = 1
-
-        msg.caozuo = int(self.caozuo)
-        msg.jingying = int(self.jingying)
-        msg.baobing = int(self.baobing)
-        msg.zhanshu = int(self.zhanshu)
-
-        msg.biaoyan = 1
-        msg.yingxiao = 1
-
-        msg.zhimingdu = 1
-
-        return msg
 
 
 class LeagueNpcClub(AbstractClub):
@@ -380,15 +352,20 @@ class LeagueManger(object):
         # 获得积分、挑战状态、胜率
         if win:
             if challenger:
+                # 挑战成功
                 score += CHALLENGE_WIN_GET_SCORE
             else:
+
+                # 守擂成功
                 score += DEFENCE_WIN_GET_SCORE
             win_time_add = 1
             status = SUCCESS
         else:
             if challenger:
+                # 挑战失败
                 score += DEFENCE_LOST_GET_SCORE
             else:
+                # 守擂失败
                 score += CHALLENGE_LOST_GET_SCORE
             win_time_add = 0
             status = ABLE
@@ -480,14 +457,21 @@ class LeagueManger(object):
             self.normal_refresh()
 
     def get_daily_reward(self):
-        # 获取日常奖励
+        """
+        每日奖励领取
+        """
+        # 获取日常奖励等级
         doc = MongoLeague.db(self.server_id).find_one({'_id': self.char_id}, {'match_club': 0})
 
         if doc['daily_reward'] == str(arrow.now().date()):
             # 已领取
             raise GameException(ConfigErrorMessage.get_error_id("DAILY_REWARD_HAVE_GOT"))
+
         # 获取奖励配置
         conf = ConfigLeague.get(doc['level'])
+        if not conf:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
         drop = Drop.generate(conf.daily_reward)
         # 发放奖励
         Resource(self.server_id, self.char_id).save_drop(drop, message="Add League Daily Reward")
@@ -534,6 +518,9 @@ class LeagueManger(object):
         return msg
 
     def get_club_detail(self, club_id):
+        """
+        获取玩家 出战员工 详细信息
+        """
         doc = MongoLeague.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'match_club.{0}.staffs'.format(club_id): 1}
@@ -577,7 +564,7 @@ class LeagueManger(object):
 
         notify = LeagueClubNotify()
         notify.act = act
-        notify.end_time = long(get_next_refresh_timestamp())
+        notify.end_time = get_next_refresh_timestamp()
 
         for k, v in doc['match_club'].iteritems():
             notify_club = notify.clubs.add()
