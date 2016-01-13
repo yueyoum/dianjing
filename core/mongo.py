@@ -145,7 +145,7 @@ class MongoStaff(BaseDocument):
 
     STAFF_DOCUMENT = {
         'exp': 0,
-        'level': 1 * 30,
+        'level': 1,
         'star': 0,
         'status': null,
         'skills': {},
@@ -158,7 +158,7 @@ class MongoStaff(BaseDocument):
 
     # 嵌入staff中
     STAFF_SKILL_DOCUMENT = {
-        'level': 1 * 20,
+        'level': 1,
         'locked': 0,
         # 升级结束时间戳
         'end_at': 0,
@@ -571,9 +571,9 @@ class MongoEliteMatch(BaseDocument):
             }
         },
         'packages': {
-            '1': False,
-            '2': False,
-            '3': False,
+            '1': True,
+            '2': True,
+            '3': True,
         }
     }
 
