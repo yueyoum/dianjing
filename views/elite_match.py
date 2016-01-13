@@ -63,6 +63,6 @@ def report(request):
     response = EliteMatchReportResponse()
     response.ret = 0
     if drop:
-        response.drop.MergeFrom(response)
+        response.drop.MergeFrom(drop)
 
     return ProtobufResponse(response)

@@ -198,7 +198,7 @@ class EliteMatch(object):
             raise GameException(ConfigErrorMessage.get_error_id("ELITE_MATCH_NOT_OPEN"))
 
         # 挑战次数检查
-        if elite.get('times', 0) >= ConfigEliteMatch.get(challenge_id):
+        if elite.get('times', 0) >= ConfigEliteMatch.get(challenge_id).max_times:
             raise GameException(ConfigErrorMessage.get_error_id("ELITE_TOTAL_NO_TIMES"))
 
         # 体力检查
@@ -241,7 +241,7 @@ class EliteMatch(object):
         ch.energy_notify()
 
         # 更新挑战次数
-        updater = {'areas.{0}.{1}.times'.format(area_id, challenge_id): 1}
+        updater = {'areas.{0}.challenges.{1}.times'.format(area_id, challenge_id): 1}
         MongoEliteMatch.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$inc': updater}
@@ -341,7 +341,7 @@ class EliteMatch(object):
 
     def elite_notify(self, act=ACT_INIT, area_id=None):
         if area_id:
-            projection = {'areas.{0}': 1}
+            projection = {'areas.{0}'.format(area_id): 1}
             act = ACT_UPDATE
         else:
             projection = {'areas': 1}
@@ -350,17 +350,24 @@ class EliteMatch(object):
 
         notify = EliteNotify()
         notify.act = act
-        for k, v in doc['areas'].iteritems():
-            notify_area = notify.area.add()
-            notify_area.id = int(k)
-            notify_area.package_one = v['packages']['1']
-            notify_area.package_two = v['packages']['2']
-            notify_area.package_three = v['packages']['3']
+        if doc['areas']:
+            for k, v in doc['areas'].iteritems():
+                notify_area = notify.area.add()
+                notify_area.id = int(k)
+                notify_area.package_one = v['packages']['1']
+                notify_area.package_two = v['packages']['2']
+                notify_area.package_three = v['packages']['3']
 
-            for challenge_id, info in v['challenges'].iteritems():
-                notify_challenge = notify_area.challenge.add()
-                notify_challenge.id = int(challenge_id)
-                notify_challenge.times = info['times']
-                notify_challenge.stars = info['stars']
+                for challenge_id, info in v['challenges'].iteritems():
+                    notify_challenge = notify_area.challenge.add()
+                    notify_challenge.id = int(challenge_id)
+                    notify_challenge.times = info['times']
+                    notify_challenge.stars = info['stars']
+        else:
+            notify_area = notify.area.add()
+            notify_area.id = 1
+            notify_area.package_one = True
+            notify_area.package_two = True
+            notify_area.package_three = True
 
         MessagePipe(self.char_id).put(msg=notify)

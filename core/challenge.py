@@ -181,7 +181,8 @@ class Challenge(object):
 
         # 俱乐部等级检查
         club_one = Club(self.server_id, self.char_id)
-        if club_one.current_level() < ConfigChallengeMatch.get(challenge_id).need_club_level:
+        config = ConfigChallengeMatch.get(challenge_id)
+        if club_one.current_level() < config.need_club_level:
             raise GameException(ConfigErrorMessage.get_error_id("CLUB_LEVEL_NOT_ENOUGH"))
 
         # 获取玩家数据
@@ -200,7 +201,8 @@ class Challenge(object):
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NOT_OPEN"))
 
         # 挑战次数检查
-        if challenge.get('times', 0) >= ConfigChallengeMatch.get(challenge_id):
+        print ConfigChallengeMatch.get(challenge_id)
+        if challenge.get('times', 0) >= config.max_times:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_WITHOUT_TIMES"))
 
         # 体力检查
