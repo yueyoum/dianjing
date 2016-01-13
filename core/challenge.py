@@ -208,11 +208,6 @@ class Challenge(object):
         if not challenge:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NOT_OPEN"))
 
-        # 挑战次数检查
-        print ConfigChallengeMatch.get(challenge_id)
-        if challenge.get('times', 0) >= config.max_times:
-            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_WITHOUT_TIMES"))
-
         # 体力检查
         doc_char = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'energy': 1})
         if doc_char['energy']['power'] < CHALLENGE_MATCH_COST:
@@ -414,6 +409,5 @@ class Challenge(object):
                 notify_challenge.id = int(challenge_id)
                 notify_challenge.times = info['times']
                 notify_challenge.stars = info['stars']
-        print '*' * 20
-        print notify
+
         MessagePipe(self.char_id).put(msg=notify)
