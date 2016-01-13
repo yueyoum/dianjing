@@ -11,7 +11,12 @@ from utils.http import ProtobufResponse
 
 from core.elite_match import EliteMatch
 
-from protomsg.elite_match_pb2 import EliteStartResponse, EliteGetStarRewardResponse, EliteMatchReportResponse
+from protomsg.elite_match_pb2 import (
+    EliteStartResponse,
+    EliteGetStarRewardResponse,
+    EliteMatchReportResponse,
+    EliteChallengeTimesRefreshResponse,
+)
 
 
 def start(request):
@@ -64,5 +69,20 @@ def report(request):
     response.ret = 0
     if drop:
         response.drop.MergeFrom(drop)
+
+    return ProtobufResponse(response)
+
+
+def refresh(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    area_id = request._proto.area_id
+    challenge_id = request._proto.challenge_id
+
+    EliteMatch(server_id, char_id).refresh_challenge_times(area_id, challenge_id)
+
+    response = EliteChallengeTimesRefreshResponse()
+    response.ret = 0
 
     return ProtobufResponse(response)

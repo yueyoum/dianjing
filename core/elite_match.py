@@ -130,6 +130,14 @@ class EliteMatch(object):
                 {'$set': updater}
             )
 
+    def refresh_challenge_times(self, area_id, challenge_id):
+        MongoEliteMatch.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {'areas.{0}.challenges.{1}.times'.format(area_id, challenge_id): 0}}
+        )
+
+        self.elite_notify(area_id=area_id)
+
     def open_area(self, aid):
         """
         开放精英赛大区
@@ -369,5 +377,6 @@ class EliteMatch(object):
             notify_area.package_one = True
             notify_area.package_two = True
             notify_area.package_three = True
-
+        print '*' * 20
+        print notify
         MessagePipe(self.char_id).put(msg=notify)

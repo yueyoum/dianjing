@@ -121,6 +121,14 @@ class Challenge(object):
                 {'$set': {'energy.times': 0}}
             )
 
+    def refresh_challenge_times(self, area_id, challenge_id):
+        MongoChallenge.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {'areas.{0}.challenges.{1}.times'.format(area_id, challenge_id): 0}}
+        )
+
+        self.challenge_notify(area_id=area_id)
+
     def check_energize(self):
         """
         检测是否需要注册充能定时任务
@@ -406,5 +414,6 @@ class Challenge(object):
                 notify_challenge.id = int(challenge_id)
                 notify_challenge.times = info['times']
                 notify_challenge.stars = info['stars']
-
+        print '*' * 20
+        print notify
         MessagePipe(self.char_id).put(msg=notify)
