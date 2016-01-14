@@ -235,7 +235,7 @@ class EliteMatch(object):
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         # 更新员工胜率
-        StaffManger(self.server_id, self.char_id).update_winning_rate(result, win_club == club_one)
+        StaffManger(self.server_id, self.char_id).update_winning_rate(result)
 
         # 扣除能量
         MongoCharacter.db(self.server_id).update_one(

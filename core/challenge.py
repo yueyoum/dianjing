@@ -230,7 +230,7 @@ class Challenge(object):
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         # 更新员工胜率
-        StaffManger(self.server_id, self.char_id).update_winning_rate(result, win_club == club_one)
+        StaffManger(self.server_id, self.char_id).update_winning_rate(resultF)
 
         # 扣除能量
         MongoCharacter.db(self.server_id).update_one(
@@ -382,6 +382,7 @@ class Challenge(object):
             notify.max_energy = NORMAL_MAX_ENERGY
 
         notify.refresh_time = 0
+
         MessagePipe(self.char_id).put(msg=notify)
 
     def challenge_notify(self, act=ACT_INIT, area_id=None):
