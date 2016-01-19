@@ -21,18 +21,17 @@ from core.resource import Resource
 from utils.functional import make_string_id
 from utils.message import MessagePipe
 
-from config import ConfigItem, ConfigStaff, ConfigErrorMessage
+from config import ConfigItem, ConfigStaff, ConfigErrorMessage, ConfigEquipment
 
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 from protomsg.item_define_pb2 import (
-    ITEM_TRAINING_EXPENDABLE,
-    ITEM_SHOP_GOODS,
+    ITEM_DRINKS,
+    ITEM_BADGE,
     ITEM_BUILDING_CERTIFICATE,
-    ITEM_SKILL_TRAINING_BOOK,
-
-    ITEM_EQUIPMENT,
+    ITEM_SHOP_GOODS,
+    ITEM_TALENT_STONE,
     ITEM_STAFF_CARD,
-
+    ITEM_EQUIPMENT,
     ITEM_BOX,
 
     Item as MsgItem,
@@ -43,9 +42,49 @@ from protomsg.item_pb2 import (
     ItemRemoveNotify,
 )
 
+DRINKS_BY_QUALITY = {}
+for _id, _drinks in ConfigItem.filter(tp=ITEM_DRINKS).iteritems():
+    if _drinks.quality in DRINKS_BY_QUALITY:
+        DRINKS_BY_QUALITY[_drinks.quality].append(_id)
+    else:
+        DRINKS_BY_QUALITY[_drinks.quality] = [_id]
+
+BADGE_BY_TYPE_QUALITY = {}
+BADGE_BY_QUALITY = {}
+for _id, _badge in ConfigItem.filter(tp=ITEM_BADGE).iteritems():
+    if _badge.group_id in BADGE_BY_TYPE_QUALITY:
+        if _badge.quality in BADGE_BY_TYPE_QUALITY[_badge.group_id]:
+            BADGE_BY_TYPE_QUALITY[_badge.group_id][_badge.quality].append(_id)
+        else:
+            BADGE_BY_TYPE_QUALITY[_badge.group_id][_badge.quality] = [_id]
+    else:
+        BADGE_BY_TYPE_QUALITY[_badge.group_id] = {_badge.quality: [_id]}
+
+    if _badge.quality in BADGE_BY_QUALITY:
+        BADGE_BY_QUALITY[_badge.quality].append(_id)
+    else:
+        BADGE_BY_QUALITY[_badge.quality] = [_id]
+
+STONE_BY_SKILL_QUALITY = {}
+STONE_BY_QUALITY = {}
+for _id, _stone in ConfigItem.filter(tp=ITEM_TALENT_STONE).iteritems():
+    if _stone.group_id in STONE_BY_SKILL_QUALITY:
+        if _stone.quality in STONE_BY_SKILL_QUALITY[_stone.group_id]:
+            STONE_BY_SKILL_QUALITY[_stone.group_id][_stone.quality].append(_id)
+        else:
+            STONE_BY_SKILL_QUALITY[_stone.group_id][_stone.quality] = [_id]
+    else:
+        STONE_BY_SKILL_QUALITY[_stone.group_id] = {_stone.quality: [_id]}
+
+    if _stone.quality in STONE_BY_QUALITY:
+        STONE_BY_QUALITY[_stone.quality].append(_id)
+    else:
+        STONE_BY_QUALITY[_stone.quality] = [_id]
+
 
 class ItemId(object):
     def __init__(self):
+        self.id = 0
         self.type_id = 0
         self.oid = 0
         self.unique_id = ""  # only for equipment
@@ -77,6 +116,7 @@ class ItemId(object):
             obj.unique_id = str(oid)
 
         obj.star = kwargs.get('star', 0)
+        obj.id = obj.to_string()
 
         return obj
 
@@ -87,6 +127,7 @@ class ItemId(object):
         :rtype: ItemId
         """
         obj = cls()
+        obj.id = item_id
         type_id, rest = item_id.split(':', 1)
         obj.type_id = int(type_id)
 
@@ -161,10 +202,11 @@ class BaseItem(object):
 # 简单物品 没有额外属性的，只记录数量
 class SimpleItem(BaseItem):
     VALID_TYPE = [
-        ITEM_TRAINING_EXPENDABLE,
-        ITEM_SHOP_GOODS,
+        ITEM_DRINKS,
+        ITEM_BADGE,
         ITEM_BUILDING_CERTIFICATE,
-        ITEM_SKILL_TRAINING_BOOK,
+        ITEM_SHOP_GOODS,
+        ITEM_TALENT_STONE,
         ITEM_BOX,
     ]
 
@@ -275,7 +317,7 @@ class Equipment(BaseItem):
 
         self.star = metadata['star']
         for attr in chain(STAFF_BASE_ATTRS, STAFF_SECONDARY_ATTRS):
-            setattr(self, attr, metadata[attr])
+            setattr(self, attr, metadata.get(attr, 0))
 
     def make_protomsg(self):
         id_object = ItemId.parse(self.item_id)
@@ -302,36 +344,43 @@ class Equipment(BaseItem):
         return msg
 
     @classmethod
-    def generate(cls, oid):
-        config = ConfigItem.get(oid)
+    def _do_generate(cls, attrs, template, multiple=1.0):
+        segment = random.choice(template)
+        for name, value_range in segment:
+            if name == 'primary':
+                attr_names = STAFF_BASE_ATTRS
+            elif name == 'secondary':
+                attr_names = STAFF_SECONDARY_ATTRS
+            else:
+                attr_names = [name]
 
-        attrs = {}
-        for attr in STAFF_BASE_ATTRS:
-            attrs[attr] = getattr(config, attr)
-        for attr in STAFF_SECONDARY_ATTRS:
-            attrs[attr] = 0
+            value = int(random.randint(value_range[0], value_range[1]) * multiple)
+            for an in attr_names:
+                if an in attrs:
+                    attrs[name] += value
+                else:
+                    attrs[name] = value
+
+    @classmethod
+    def generate(cls, oid, star):
+        config = ConfigEquipment.get(oid)
 
         item_id = ItemId.make(ITEM_EQUIPMENT, oid).to_string()
+        attrs = {}
 
-        # 随机一个二级属性
-        attr = random.choice(STAFF_SECONDARY_ATTRS)
-        value = random.randint(20, 50) * config.quality
-        attrs[attr] += round(value, 2)
+        if config.template_0:
+            cls._do_generate(attrs, config.template_0)
 
-        # 所有二级属性
-        for attr in STAFF_SECONDARY_ATTRS:
-            value = random.randint(4, 10) * config.quality
-            attrs[attr] += round(value, 2)
-
-        # 随机一个一级属性
-        attr = random.choice(STAFF_BASE_ATTRS)
-        value = random.uniform(0.5, 0.8) * config.quality
-        attrs[attr] += round(value, 2)
-
-        # 所有一级属性
-        for attr in STAFF_BASE_ATTRS:
-            value = random.uniform(0.12, 0.2) * config.quality
-            attrs[attr] += round(value, 2)
+        if star == 0:
+            cls._do_generate(attrs, config.template_1)
+        elif star == 1:
+            cls._do_generate(attrs, config.template_1, multiple=1.5)
+        elif star == 2:
+            cls._do_generate(attrs, config.template_1, multiple=1.5)
+            cls._do_generate(attrs, config.template_2)
+        else:
+            cls._do_generate(attrs, config.template_1, multiple=1.5)
+            cls._do_generate(attrs, config.template_2, multiple=1.5)
 
         return item_id, attrs
 
@@ -339,14 +388,15 @@ class Equipment(BaseItem):
     def add(cls, server_id, char_id, type_id, oid, **kwargs):
         cls.check_type_id(type_id)
 
+        star = kwargs.get('star', 0)
         amount = kwargs.get('amount', 1)
 
         notify = ItemNotify()
         notify.act = ACT_UPDATE
 
         for i in range(amount):
-            item_id, metadata = cls.generate(oid)
-            metadata['star'] = kwargs.get('star', 0)
+            item_id, metadata = cls.generate(oid, star)
+            metadata['star'] = star
 
             MongoItem.db(server_id).update_one(
                     {'_id': char_id},
@@ -402,6 +452,26 @@ class ItemManager(object):
             doc = MongoItem.document()
             doc['_id'] = self.char_id
             MongoItem.db(self.server_id).insert_one(doc)
+
+    def check_exists(self, items):
+        # [(id, amount), (id, amount)]
+        doc = MongoItem.db(self.server_id).find_one({'_id': 1})
+        for _id, _amount in items:
+            metadata = doc.get(_id, None)
+            if metadata is None:
+                raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_EXIST"))
+
+            if isinstance(metadata, dict):
+                # equipment, ignore _amount
+                doc.pop(_id)
+            else:
+                new_amount = metadata - _amount
+                if new_amount < 0:
+                    raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_ENOUGH"))
+                elif new_amount > 0:
+                    doc[_id] = new_amount
+                else:
+                    doc.pop(_id)
 
     def add_item(self, oid, amount=1):
         config = ConfigItem.get(oid)
@@ -521,30 +591,254 @@ class ItemManager(object):
         return drop
 
     def merge(self, item_ids):
-        item_id_one = item_ids[0]
-        id_object_one = ItemId.parse(item_id_one)
+        # 一次最多合成三个物品
+        if len(item_ids) < 1 or len(item_ids) > 3:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
 
-        drop = Drop()
+        # check exists
+        items = [(i, 1) for i in item_ids]
+        self.check_exists(items)
 
-        if id_object_one.type_id == ITEM_STAFF_CARD:
-            # 两个相同oid, star 的卡合成更高级star的卡
+        id_object_one = ItemId.parse(item_ids[0])
 
-            if item_ids[0] != item_ids[1]:
+        if len(item_ids) == 1:
+            if id_object_one.type_id == ITEM_EQUIPMENT:
+                # 装备分解为同品质徽章
+                self.merge_equipment_1(id_object_one)
+            else:
                 raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+        else:
+            id_object_two = ItemId.parse(item_ids[1])
 
-            item = self.merge_staff_card(item_ids[0])
-            drop.items.append((item.id_object.oid, 1))
+            if len(item_ids) == 2:
+                if id_object_one.type_id == ITEM_EQUIPMENT:
+                    if id_object_two.type_id == ITEM_EQUIPMENT:
+                        # 两个装备 = 同装备star+1
+                        self.merge_equipment_2(id_object_one, id_object_two)
+                    else:
+                        raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
 
-        return drop
+                elif id_object_one.type_id == ITEM_STAFF_CARD:
+                    if id_object_two.type_id == ITEM_STAFF_CARD:
+                        # 角色卡合成
+                        self.merge_staff_card_2(id_object_one, id_object_two)
+                    else:
+                        raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
 
-    def merge_staff_card(self, item_id):
-        id_object = ItemId.parse(item_id)
+                elif id_object_one.type_id == ITEM_DRINKS:
+                    if id_object_two.type_id == ITEM_BADGE:
+                        # 饮品 + 徽章 = 同品质徽章
+                        self.merge_badge_and_drinks_2(id_object_two, id_object_one)
+                    else:
+                        raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
 
-        if id_object.star >= 20:
-            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_STAFF_CARD_MAX_STAR"))
+                elif id_object_one.type_id == ITEM_BADGE:
+                    if id_object_two.type_id == ITEM_DRINKS:
+                        # 饮品 + 徽章 = 同品质徽章
+                        self.merge_badge_and_drinks_2(id_object_one, id_object_two)
+                    elif id_object_two.type_id == ITEM_BADGE:
+                        # 两个相同徽章 = 品质+1同类徽章
+                        self.merge_badge_2(id_object_one, id_object_two)
+                    elif id_object_two.type_id == ITEM_TALENT_STONE:
+                        # 石头 + 徽章 = 品质+1随机石头
+                        self.merge_badge_and_stone_2(id_object_one, id_object_two)
+                    else:
+                        raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
 
-        self.remove_by_item_id(item_id, 2)
-        return self.add_staff_card(id_object.oid, id_object.star + 1)
+                elif id_object_one.type_id == ITEM_TALENT_STONE:
+                    if id_object_two.type_id == ITEM_BADGE:
+                        self.merge_badge_and_stone_2(id_object_two, id_object_one)
+                    else:
+                        raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+                else:
+                    raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+            else:
+                id_object_three = ItemId.parse(item_ids[2])
+
+                if id_object_one.type_id == ITEM_DRINKS:
+                    if id_object_two.type_id == ITEM_DRINKS and id_object_three.type_id == ITEM_DRINKS:
+                        # 三个同品质饮品 = 高一级随机饮品
+                        self.merge_drinks_3(id_object_one, id_object_two, id_object_three)
+                    else:
+                        raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+                elif id_object_one.type_id == ITEM_BADGE:
+                    if id_object_two.type_id == ITEM_BADGE:
+                        if id_object_three.type_id == ITEM_BADGE:
+                            # 三个同品质徽章 = 高一级随机徽章
+                            self.merge_badge_3(id_object_one, id_object_two, id_object_three)
+                        else:
+                            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+                    elif id_object_two.type_id == ITEM_TALENT_STONE:
+                        if id_object_three.type_id == ITEM_TALENT_STONE:
+                            # 两个同种同品质石头 + 同品质徽章 = 高一级品质同种徽章
+                            self.merge_stone_stone_badge_3(id_object_two, id_object_three, id_object_one)
+                        else:
+                            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+                    else:
+                        raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+                elif id_object_one.type_id == ITEM_TALENT_STONE:
+                    if id_object_two.type_id == ITEM_TALENT_STONE:
+                        if id_object_three.type_id == ITEM_TALENT_STONE:
+                            self.merge_stone_3(id_object_one, id_object_two, id_object_three)
+                        elif id_object_three.type_id == ITEM_BADGE:
+                            self.merge_stone_stone_badge_3(id_object_one, id_object_two, id_object_three)
+                        else:
+                            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+                    elif id_object_two.type_id == ITEM_BADGE:
+                        if id_object_three.type_id == ITEM_TALENT_STONE:
+                            self.merge_stone_stone_badge_3(id_object_one, id_object_three, id_object_two)
+                        else:
+                            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+                    else:
+                        raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+                else:
+                    raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+    def merge_staff_card_2(self, id_object_one, id_object_two):
+        if id_object_one.id != id_object_two.id:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+        # TODO max star
+        if id_object_one.star >= 20:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+        self.remove_by_item_id(id_object_one.id, 2)
+        self.add_staff_card(id_object_one.oid, id_object_one.star + 1)
+
+    def merge_equipment_1(self, id_object):
+        quality = ConfigItem.get(id_object.oid).quality
+        oid = random.choice(BADGE_BY_QUALITY[quality])
+        self.remove_by_item_id(id_object.id)
+        self.add_item(oid)
+
+    def merge_equipment_2(self, id_object_one, id_object_two):
+        pass
+
+    def merge_badge_2(self, id_object_one, id_object_two):
+        if id_object_one.oid != id_object_two.oid:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+        config = ConfigItem.get(id_object_one.oid)
+        quality = config.quality
+
+        if quality + 1 not in BADGE_BY_TYPE_QUALITY[config.group_id]:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+        oid = random.choice(BADGE_BY_TYPE_QUALITY[config.group_id][quality + 1])
+        self.remove_by_item_id(id_object_one.id)
+        self.remove_by_item_id(id_object_two.id)
+        self.add_item(oid)
+
+    def merge_badge_and_drinks_2(self, badge_id_object, drinks_id_object):
+        quality = ConfigItem.get(badge_id_object.oid).quality
+
+        badges = BADGE_BY_QUALITY[quality][:]
+        badges.remove(badge_id_object.oid)
+
+        if not badges:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+        oid = random.choice(badges)
+        self.remove_by_item_id(badge_id_object.id)
+        self.remove_by_item_id(drinks_id_object.id)
+        self.add_item(oid)
+
+    def merge_badge_and_stone_2(self, badge_id_object, stone_id_object):
+        badge_quality = ConfigItem.get(badge_id_object.oid).quality
+        stone_quality = ConfigItem.get(stone_id_object.oid).quality
+
+        if badge_quality != stone_quality:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+        stones = STONE_BY_QUALITY[stone_quality][:]
+        stones.remove(stone_id_object.oid)
+
+        if not stones:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+        oid = random.choice(stones)
+        self.remove_by_item_id(badge_id_object.id)
+        self.remove_by_item_id(stone_id_object.id)
+        self.add_item(oid)
+
+    def merge_drinks_3(self, id_object_one, id_object_two, id_object_three):
+        quality_one = ConfigItem.get(id_object_one.oid).quality
+        quality_two = ConfigItem.get(id_object_two.oid).quality
+        quality_three = ConfigItem.get(id_object_three.oid).quality
+
+        if not (quality_one == quality_two == quality_three):
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+        if quality_one + 1 not in DRINKS_BY_QUALITY:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+        oid = random.choice(DRINKS_BY_QUALITY[quality_one + 1])
+
+        self.remove_by_item_id(id_object_one.id)
+        self.remove_by_item_id(id_object_two.id)
+        self.remove_by_item_id(id_object_three.id)
+        self.add_item(oid)
+
+    def merge_badge_3(self, id_object_one, id_object_two, id_object_three):
+        quality_one = ConfigItem.get(id_object_one.oid).quality
+        quality_two = ConfigItem.get(id_object_two.oid).quality
+        quality_three = ConfigItem.get(id_object_three.oid).quality
+
+        if not (quality_one == quality_two == quality_three):
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+        if quality_one + 1 not in BADGE_BY_QUALITY:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+        oid = random.choice(BADGE_BY_QUALITY[quality_one + 1])
+        self.remove_by_item_id(id_object_one.id)
+        self.remove_by_item_id(id_object_two.id)
+        self.remove_by_item_id(id_object_three.id)
+        self.add_item(oid)
+
+    def merge_stone_3(self, id_object_one, id_object_two, id_object_three):
+        quality_one = ConfigItem.get(id_object_one.oid).quality
+        quality_two = ConfigItem.get(id_object_two.oid).quality
+        quality_three = ConfigItem.get(id_object_three.oid).quality
+
+        if not (quality_one == quality_two == quality_three):
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+        if quality_one + 1 not in STONE_BY_QUALITY:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+        oid = random.choice(STONE_BY_QUALITY[quality_one + 1])
+        self.remove_by_item_id(id_object_one.id)
+        self.remove_by_item_id(id_object_two.id)
+        self.remove_by_item_id(id_object_three.id)
+
+        self.add_item(oid)
+
+    def merge_stone_stone_badge_3(self, stone_one_id_object, stone_two_id_object, badge_id_object):
+        stone_one_config = ConfigItem.get(stone_one_id_object.oid)
+        stone_two_config = ConfigItem.get(stone_two_id_object.oid)
+
+        if stone_one_config.group_id != stone_two_config.group_id:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+        if stone_one_config.quality != stone_two_config.quality:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+        badge_config = ConfigItem.get(badge_id_object.oid)
+        if stone_one_config.quality != badge_config.quality:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+        if stone_one_config.quality + 1 not in STONE_BY_SKILL_QUALITY[stone_one_config.group_id]:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_MERGE_BAD_REQUEST"))
+
+        oid = random.choice(STONE_BY_SKILL_QUALITY[stone_one_config.group_id][stone_one_config.quality + 1])
+
+        self.remove_by_item_id(stone_one_id_object.id)
+        self.remove_by_item_id(stone_two_id_object.id)
+        self.remove_by_item_id(badge_id_object.id)
+        self.add_item(oid)
 
     def send_notify(self):
         doc = MongoItem.db(self.server_id).find_one({'_id': self.char_id}, {'_id': 0})

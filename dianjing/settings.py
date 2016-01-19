@@ -172,16 +172,23 @@ MYSQL_USER = doc.find('mysql/user').text
 MYSQL_PASSWORD = doc.find('mysql/password').text
 
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME':  MYSQL_DATABASE,
+#         'USER': MYSQL_USER,
+#         'PASSWORD': MYSQL_PASSWORD,
+#         'HOST': MYSQL_HOST,
+#         'PORT': MYSQL_PORT,
+#         'CONN_MAX_AGE': 0,
+#     },
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME':  MYSQL_DATABASE,
-        'USER': MYSQL_USER,
-        'PASSWORD': MYSQL_PASSWORD,
-        'HOST': MYSQL_HOST,
-        'PORT': MYSQL_PORT,
-        'CONN_MAX_AGE': 0,
-    },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite'),
+    }
 }
 
 

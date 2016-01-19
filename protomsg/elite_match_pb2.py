@@ -24,7 +24,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='elite_match.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x11\x65lite_match.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\x1a\x0bmatch.proto\x1a\x0f\x63hallenge.proto\x1a\x14training_match.proto\"m\n\x0b\x45liteNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12%\n\x04\x61rea\x18\x02 \x03(\x0b\x32\x17.Dianjing.protocol.Area\x12&\n\x03\x61\x63t\x18\x03 \x02(\x0e\x32\x19.Dianjing.protocol.Action\"K\n\x11\x45liteStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x61rea_id\x18\x02 \x02(\x05\x12\x14\n\x0c\x63hallenge_id\x18\x03 \x02(\x05\"_\n\x12\x45liteStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"L\n\x19\x45liteGetStarRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x61rea_id\x18\x02 \x02(\x05\x12\r\n\x05index\x18\x03 \x02(\x05\"a\n\x1a\x45liteGetStarRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"~\n\x17\x45liteMatchReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x10\n\x08win_club\x18\x03 \x02(\t\x12\x33\n\x06result\x18\x04 \x03(\x0b\x32#.Dianjing.protocol.StaffMatchResult\"_\n\x18\x45liteMatchReportResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop')
+  serialized_pb=_b('\n\x11\x65lite_match.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\x1a\x0bmatch.proto\x1a\x0f\x63hallenge.proto\x1a\x14training_match.proto\"m\n\x0b\x45liteNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12%\n\x04\x61rea\x18\x02 \x03(\x0b\x32\x17.Dianjing.protocol.Area\x12&\n\x03\x61\x63t\x18\x03 \x02(\x0e\x32\x19.Dianjing.protocol.Action\"K\n\x11\x45liteStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x61rea_id\x18\x02 \x02(\x05\x12\x14\n\x0c\x63hallenge_id\x18\x03 \x02(\x05\"_\n\x12\x45liteStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"L\n\x19\x45liteGetStarRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x61rea_id\x18\x02 \x02(\x05\x12\r\n\x05index\x18\x03 \x02(\x05\"a\n\x1a\x45liteGetStarRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"~\n\x17\x45liteMatchReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x10\n\x08win_club\x18\x03 \x02(\t\x12\x33\n\x06result\x18\x04 \x03(\x0b\x32#.Dianjing.protocol.StaffMatchResult\"_\n\x18\x45liteMatchReportResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"[\n!EliteChallengeTimesRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x61rea_id\x18\x02 \x02(\x05\x12\x14\n\x0c\x63hallenge_id\x18\x03 \x02(\x05\"B\n\"EliteChallengeTimesRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
   ,
   dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,match__pb2.DESCRIPTOR,challenge__pb2.DESCRIPTOR,training__match__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -353,6 +353,89 @@ _ELITEMATCHREPORTRESPONSE = _descriptor.Descriptor(
   serialized_end=806,
 )
 
+
+_ELITECHALLENGETIMESREFRESHREQUEST = _descriptor.Descriptor(
+  name='EliteChallengeTimesRefreshRequest',
+  full_name='Dianjing.protocol.EliteChallengeTimesRefreshRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.EliteChallengeTimesRefreshRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='area_id', full_name='Dianjing.protocol.EliteChallengeTimesRefreshRequest.area_id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='challenge_id', full_name='Dianjing.protocol.EliteChallengeTimesRefreshRequest.challenge_id', index=2,
+      number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=808,
+  serialized_end=899,
+)
+
+
+_ELITECHALLENGETIMESREFRESHRESPONSE = _descriptor.Descriptor(
+  name='EliteChallengeTimesRefreshResponse',
+  full_name='Dianjing.protocol.EliteChallengeTimesRefreshResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.EliteChallengeTimesRefreshResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.EliteChallengeTimesRefreshResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=901,
+  serialized_end=967,
+)
+
 _ELITENOTIFY.fields_by_name['area'].message_type = challenge__pb2._AREA
 _ELITENOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _ELITESTARTRESPONSE.fields_by_name['match'].message_type = match__pb2._CLUBMATCH
@@ -366,6 +449,8 @@ DESCRIPTOR.message_types_by_name['EliteGetStarRewardRequest'] = _ELITEGETSTARREW
 DESCRIPTOR.message_types_by_name['EliteGetStarRewardResponse'] = _ELITEGETSTARREWARDRESPONSE
 DESCRIPTOR.message_types_by_name['EliteMatchReportRequest'] = _ELITEMATCHREPORTREQUEST
 DESCRIPTOR.message_types_by_name['EliteMatchReportResponse'] = _ELITEMATCHREPORTRESPONSE
+DESCRIPTOR.message_types_by_name['EliteChallengeTimesRefreshRequest'] = _ELITECHALLENGETIMESREFRESHREQUEST
+DESCRIPTOR.message_types_by_name['EliteChallengeTimesRefreshResponse'] = _ELITECHALLENGETIMESREFRESHRESPONSE
 
 EliteNotify = _reflection.GeneratedProtocolMessageType('EliteNotify', (_message.Message,), dict(
   DESCRIPTOR = _ELITENOTIFY,
@@ -415,6 +500,20 @@ EliteMatchReportResponse = _reflection.GeneratedProtocolMessageType('EliteMatchR
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.EliteMatchReportResponse)
   ))
 _sym_db.RegisterMessage(EliteMatchReportResponse)
+
+EliteChallengeTimesRefreshRequest = _reflection.GeneratedProtocolMessageType('EliteChallengeTimesRefreshRequest', (_message.Message,), dict(
+  DESCRIPTOR = _ELITECHALLENGETIMESREFRESHREQUEST,
+  __module__ = 'elite_match_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.EliteChallengeTimesRefreshRequest)
+  ))
+_sym_db.RegisterMessage(EliteChallengeTimesRefreshRequest)
+
+EliteChallengeTimesRefreshResponse = _reflection.GeneratedProtocolMessageType('EliteChallengeTimesRefreshResponse', (_message.Message,), dict(
+  DESCRIPTOR = _ELITECHALLENGETIMESREFRESHRESPONSE,
+  __module__ = 'elite_match_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.EliteChallengeTimesRefreshResponse)
+  ))
+_sym_db.RegisterMessage(EliteChallengeTimesRefreshResponse)
 
 
 # @@protoc_insertion_point(module_scope)

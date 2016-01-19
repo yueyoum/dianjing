@@ -22,7 +22,7 @@ from utils.api import Timerd
 from protomsg.skill_pb2 import SkillNotify
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
-from config import ConfigStaff, ConfigSkill, ConfigErrorMessage, ConfigTrainingSkillItem, ConfigSkillWashCost
+from config import ConfigStaff, ConfigSkill, ConfigErrorMessage, ConfigSkillWashCost
 
 import formula
 
@@ -151,27 +151,33 @@ class SkillManager(object):
         if level >= config.max_level:
             raise GameException(ConfigErrorMessage.get_error_id("SKILL_ALREADY_MAX_LEVEL"))
 
-        need_id, need_amount = config.get_upgrade_needs(level)
+        level_info = config.levels[str(level)]
+        minutes = level_info['minutes']
+        needs = level_info['upgrade_items']
 
-        with ItemManager(self.server_id, self.char_id).remove_simple_item_context(need_id, need_amount):
-            end_at = arrow.utcnow().timestamp + ConfigTrainingSkillItem.get(need_id).minutes * 60
+        im = ItemManager(self.server_id, self.char_id)
+        im.check_exists(needs)
 
-            data = {
-                'sid': self.server_id,
-                'cid': self.char_id,
-                'staff_id': staff_id,
-                'skill_id': skill_id,
-            }
+        end_at = arrow.utcnow().timestamp + minutes * 60
+        data = {
+            'sid': self.server_id,
+            'cid': self.char_id,
+            'staff_id': staff_id,
+            'skill_id': skill_id,
+        }
 
-            key = Timerd.register(end_at, TIMER_CALLBACK_PATH, data)
+        key = Timerd.register(end_at, TIMER_CALLBACK_PATH, data)
 
-            MongoStaff.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {'$set': {
-                    "staffs.{0}.skills.{1}.end_at".format(staff_id, skill_id): end_at,
-                    "staffs.{0}.skills.{1}.key".format(staff_id, skill_id): key,
-                }}
-            )
+        MongoStaff.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                "staffs.{0}.skills.{1}.end_at".format(staff_id, skill_id): end_at,
+                "staffs.{0}.skills.{1}.key".format(staff_id, skill_id): key,
+            }}
+        )
+
+        for _id, _amount in needs:
+            im.remove_simple_item(_id, _amount)
 
         self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
 

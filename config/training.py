@@ -27,17 +27,6 @@ class TrainingProperty(object):
         self.need_building_level = 0
 
 
-class TrainingSkillItem(object):
-    __slots__ = [
-        'id', 'minutes', 'sell_gold',
-    ]
-
-    def __init__(self):
-        self.id = 0
-        self.minutes = 0
-        self.sell_gold = 0
-
-
 class ConfigTrainingProperty(ConfigBase):
     EntityClass = TrainingProperty
     INSTANCES = {}
@@ -50,17 +39,3 @@ class ConfigTrainingProperty(ConfigBase):
         :rtype : TrainingProperty
         """
         return super(ConfigTrainingProperty, cls).get(_id)
-
-
-class ConfigTrainingSkillItem(ConfigBase):
-    EntityClass = TrainingSkillItem
-    INSTANCES = {}
-    FILTER_CACHE = {}
-    
-    @classmethod
-    def get(cls, _id):
-        """
-
-        :rtype : TrainingSkillItem
-        """
-        return super(ConfigTrainingSkillItem, cls).get(_id)

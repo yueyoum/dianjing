@@ -17,9 +17,9 @@ from config.challenge import ConfigChallengeType, ConfigChallengeMatch
 from config.unit import ConfigUnit, ConfigPolicy
 from config.building import ConfigBuilding
 from config.package import ConfigPackage
-from config.training import ConfigTrainingSkillItem, ConfigTrainingProperty
+from config.training import ConfigTrainingProperty
 from config.business import ConfigBusinessSponsor, ConfigBusinessShop
-from config.item import ConfigItem
+from config.item import ConfigItem, ConfigEquipment
 from config.npc import ConfigNPC
 from config.skill import ConfigSkill, ConfigSkillWashCost
 from config.task import ConfigTask, ConfigRandomEvent, ConfigTaskTargetType
@@ -67,6 +67,10 @@ def load_config():
 
         if item == 'errormsg.json':
             ConfigErrorMessage.initialize(data)
+        elif item == 'item.json':
+            ConfigItem.initialize(data)
+        elif item == 'equipment.json':
+            ConfigEquipment.initialize(data)
         elif item == 'staff.json':
             ConfigStaff.initialize(data)
         elif item == 'staff_hot.json':
@@ -89,10 +93,6 @@ def load_config():
             ConfigPackage.initialize(data)
         elif item == 'training_property.json':
             ConfigTrainingProperty.initialize(data)
-        elif item == 'training_skill_item.json':
-            ConfigTrainingSkillItem.initialize(data)
-        elif item == 'item.json':
-            ConfigItem.initialize(data)
         elif item == 'business_shop.json':
             ConfigBusinessShop.initialize(data)
         elif item == 'business_sponsor.json':
