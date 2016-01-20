@@ -158,24 +158,25 @@ class Challenge(object):
                 'cid': self.char_id,
             }
 
-        self.energy_notify()
         Timerd.register(end_at, TIMERD_CALLBACK_PATH, data)
 
     def energize_callback(self):
         """
         定时充能回调
         """
-        self.add_energy(ENERGIZE_NUM)
-        self.check_energize()
+        self.change_energy(ENERGIZE_NUM)
 
-    def add_energy(self, num, times=0):
+    def change_energy(self, num, times=0):
         """
-        增加能量
+        改变能量
         """
         MongoCharacter.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$inc': {'energy.power': num, 'energy.times': times}}
         )
+        # 同步能量数据
+        self.energy_notify()
+        self.check_energize()
 
     def start(self, area_id, challenge_id):
         """
@@ -234,13 +235,7 @@ class Challenge(object):
         StaffManger(self.server_id, self.char_id).update_winning_rate(result)
 
         # 扣除能量
-        MongoCharacter.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$inc': {'energy.power': -CHALLENGE_MATCH_COST}}
-        )
-
-        # 检查重能
-        self.check_energize()
+        self.change_energy(-CHALLENGE_MATCH_COST)
 
         # 更新挑战次数
         updater = {'areas.{0}.challenges.{1}.times'.format(area_id, challenge_id): 1}
@@ -370,19 +365,25 @@ class Challenge(object):
 
         # 扣除花费， 添加体力和购买次数
         with Resource(self.server_id, self.char_id).check(diamond=50, message="Buy energy power cost 50"):
-            self.add_energy(20, 1)
+            self.change_energy(20, 1)
 
     def energy_notify(self):
         doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'energy.power': 1, 'club.vip': 1})
 
         notify = ChallengeEnergyNotify()
-        notify.cur_energy = doc['energy']['power']
+        notify.cur_energy = doc.get('energy', {}).get('power', 0)
         if doc['club']['vip'] > 0:
             notify.max_energy = VIP_MAX_ENERGY
         else:
             notify.max_energy = NORMAL_MAX_ENERGY
 
-        notify.refresh_time = 0
+        time_now = arrow.utcnow()
+        if time_now.time().minute <= 30:
+            minute = 30
+        else:
+            minute = 60
+
+        notify.refresh_time = (minute - time_now.time().minute) * 60 + 60 - time_now.time().second
 
         MessagePipe(self.char_id).put(msg=notify)
 

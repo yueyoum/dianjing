@@ -237,15 +237,9 @@ class EliteMatch(object):
         # 更新员工胜率
         StaffManger(self.server_id, self.char_id).update_winning_rate(result)
 
-        # 扣除能量
-        MongoCharacter.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$inc': {'energy.power': -ELITE_MATCH_COST}}
-        )
-
-        # 检查重能
         ch = Challenge(self.server_id, self.char_id)
-        ch.check_energize()
+        # 扣除能量
+        ch.change_energy(-ELITE_MATCH_COST)
 
         # 更新挑战次数
         updater = {'areas.{0}.challenges.{1}.times'.format(area_id, challenge_id): 1}
