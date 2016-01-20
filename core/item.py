@@ -403,30 +403,35 @@ class Equipment(BaseItem):
         :param type_id: item type id. MUST be ITEM_EQUIPMENT
         :param oid: equipment original id. in the editor
         :param kwargs: maybe has star=<int>
-        :rtype: Equipment
+        :rtype: list[Equipment]
         """
         cls.check_type_id(type_id)
 
         star = kwargs.get('star', 0)
-        assert 'amount' not in kwargs
+        amount = kwargs.get('amount', 1)
 
-        notify = ItemNotify()
-        notify.act = ACT_UPDATE
+        objs = []
 
-        item_id, metadata = cls.generate(oid, star)
-        metadata['star'] = star
+        for i in range(amount):
+            notify = ItemNotify()
+            notify.act = ACT_UPDATE
 
-        MongoItem.db(server_id).update_one(
-                {'_id': char_id},
-                {'$set': {item_id: metadata}}
-        )
+            item_id, metadata = cls.generate(oid, star)
+            metadata['star'] = star
 
-        obj = cls(item_id, metadata)
+            MongoItem.db(server_id).update_one(
+                    {'_id': char_id},
+                    {'$set': {item_id: metadata}}
+            )
 
-        notify_item = notify.items.add()
-        notify_item.MergeFrom(obj.make_protomsg())
-        MessagePipe(char_id).put(msg=notify)
-        return obj
+            obj = cls(item_id, metadata)
+
+            notify_item = notify.items.add()
+            notify_item.MergeFrom(obj.make_protomsg())
+            MessagePipe(char_id).put(msg=notify)
+
+            objs.append(obj)
+        return objs
 
     @classmethod
     def remove(cls, server_id, char_id, item_id, **kwargs):
@@ -495,7 +500,9 @@ class ItemManager(object):
         """
         :param oid: item oid
         :param kwargs: maybe has amount=<int> or star=<int>
-        :rtype: BaseItem
+        :rtype: list[BaseItem] | BaseItem
+        一次add多个装备，返回的肯定是 多个 BaseItem
+        但一次add多个其他简单物品，返回的只是一个 BaseItem
         """
         config = ConfigItem.get(oid)
         assert config is not None
@@ -503,7 +510,8 @@ class ItemManager(object):
         type_id = config.tp
         if type_id == ITEM_EQUIPMENT:
             return Equipment.add(self.server_id, self.char_id, type_id, oid, **kwargs)
-        return SimpleItem.add(self.server_id, self.char_id, type_id, oid, **kwargs)
+        obj = SimpleItem.add(self.server_id, self.char_id, type_id, oid, **kwargs)
+        return [obj]
 
     def add_staff_card(self, oid, star, amount=1):
         """
@@ -736,7 +744,8 @@ class ItemManager(object):
 
         self.remove_by_item_id(id_object_one.id)
         self.remove_by_item_id(id_object_two.id)
-        return self.add_item(id_object_one.oid, star=id_object_one.star + 1)
+        obj = self.add_item(id_object_one.oid, star=id_object_one.star + 1)
+        return obj[0]
 
     def merge_badge_2(self, id_object_one, id_object_two):
         if id_object_one.oid != id_object_two.oid:
