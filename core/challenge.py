@@ -24,7 +24,7 @@ from core.resource import Resource
 from core.signals import challenge_match_signal
 
 from utils.message import MessagePipe
-from utils.api import Timerd
+# from utils.api import Timerd
 
 from config import ConfigChallengeType, ConfigChallengeMatch, ConfigStaff, ConfigErrorMessage
 
@@ -121,50 +121,47 @@ class Challenge(object):
                 {'$set': {'energy.times': 0}}
             )
 
-    def refresh_challenge_times(self, area_id, challenge_id):
-        MongoChallenge.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {'$set': {'areas.{0}.challenges.{1}.times'.format(area_id, challenge_id): 0}}
-        )
+    @classmethod
+    def cronjob_energize(cls, server_id):
+        for char_id in Character.get_recent_login_char_ids(server_id):
+            Challenge(server_id, int(char_id)).change_energy(ENERGIZE_NUM)
 
-        self.challenge_notify(area_id=area_id)
+    # def check_energize(self):
+    #     """
+    #     检测是否需要注册充能定时任务
+    #     """
+    #     doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'energy': 1, 'club.vip': 1})
+    #
+    #     # 如果正在充能， 直接返回
+    #     if doc['energy']['key']:
+    #         return
+    #
+    #     # 充能耗时
+    #     if doc['club']['vip'] > 1:
+    #         # 是否需要充能
+    #         if doc['energy']['power'] > VIP_MAX_ENERGY:
+    #             return
+    #
+    #         end_at = arrow.utcnow().timestamp + VIP_ENERGIZE_TIME
+    #     else:
+    #         # 是否需要充能
+    #         if doc['energy']['power'] > NORMAL_MAX_ENERGY:
+    #             return
+    #
+    #         end_at = arrow.utcnow().timestamp + NORMAL_ENERGIZE_TIME
+    #
+    #     data = {
+    #             'sid': self.server_id,
+    #             'cid': self.char_id,
+    #         }
 
-    def check_energize(self):
-        """
-        检测是否需要注册充能定时任务
-        """
-        doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'energy': 1, 'club.vip': 1})
+        # Timerd.register(end_at, TIMERD_CALLBACK_PATH, data)
 
-        # 如果正在充能， 直接返回
-        if doc['energy']['key']:
-            return
-
-        # 充能耗时
-        if doc['club']['vip'] > 1:
-            # 是否需要充能
-            if doc['energy']['power'] > VIP_MAX_ENERGY:
-                return
-
-            end_at = arrow.utcnow().timestamp + VIP_ENERGIZE_TIME
-        else:
-            # 是否需要充能
-            if doc['energy']['power'] > NORMAL_MAX_ENERGY:
-                return
-
-            end_at = arrow.utcnow().timestamp + NORMAL_ENERGIZE_TIME
-
-        data = {
-                'sid': self.server_id,
-                'cid': self.char_id,
-            }
-
-        Timerd.register(end_at, TIMERD_CALLBACK_PATH, data)
-
-    def energize_callback(self):
-        """
-        定时充能回调
-        """
-        self.change_energy(ENERGIZE_NUM)
+    # def energize_callback(self):
+    #     """
+    #     定时充能回调
+    #     """
+    #     self.change_energy(ENERGIZE_NUM)
 
     def change_energy(self, num, times=0):
         """
@@ -176,7 +173,7 @@ class Challenge(object):
         )
         # 同步能量数据
         self.energy_notify()
-        self.check_energize()
+        # self.check_energize()
 
     def start(self, area_id, challenge_id):
         """
@@ -322,11 +319,16 @@ class Challenge(object):
         """
         领取星级奖励
         """
+        # 奖励不存在
+        if index >= 3:
+            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_REWARD_NOT_EXIST"))
+
         # 获取数据
         doc = MongoChallenge.db(self.server_id).find_one(
             {'_id': self.char_id},
-            {'areas.{0}.packages.{1}'.format(area_id, index+1): 1},
-            {'areas.{0}.challenges'.format(area_id): 1},
+            {
+                'areas.{0}'.format(area_id): 1
+             },
         )
 
         # 判断是否有星级奖励（实际上是检测是否已开通大区）
@@ -350,7 +352,12 @@ class Challenge(object):
 
         # 发放奖励
         drop = Drop.generate(conf.star_reward[index]['reward'])
+
         Resource(self.server_id, self.char_id).save_drop(drop)
+        MongoChallenge.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {'areas.{0}.packages.{1}'.format(area_id, index+1): False}}
+        )
 
         return drop.make_protomsg()
 
@@ -383,7 +390,12 @@ class Challenge(object):
         else:
             minute = 60
 
-        notify.refresh_time = (minute - time_now.time().minute) * 60 + 60 - time_now.time().second
+        if notify.cur_energy < notify.max_energy:
+            refresh_time = (minute - time_now.time().minute) * 60 + 60 - time_now.time().second
+        else:
+            refresh_time = 0
+
+        notify.refresh_time = refresh_time
 
         MessagePipe(self.char_id).put(msg=notify)
 
