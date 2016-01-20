@@ -14,7 +14,7 @@ from core.mongo import MongoStaff, MongoRecruit, MongoAuctionStaff
 from core.resource import Resource
 from core.common import CommonRecruitHot
 from core.skill import SkillManager
-from core.item import get_item_object, ItemManager, ItemId, ITEM_EQUIPMENT, Equipment
+from core.item import get_item_object, ItemManager, ItemId, ITEM_EQUIPMENT, ITEM_STAFF_CARD, BaseItem
 from core.signals import recruit_staff_signal, staff_level_up_signal
 
 from config import (
@@ -56,6 +56,7 @@ class Staff(AbstractStaff):
         self.level = data['level']
         self.exp = data['exp']
         self.status = data['status']
+        self.star = data.get('star', 0)
 
         config = ConfigStaff.get(self.id)
         self.race = config.race
@@ -560,7 +561,7 @@ class StaffManger(object):
         if config.tp != ITEM_EQUIPMENT:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_EQUIP_ON_TYPE_ERROR"))
 
-        metadata = Equipment.get_metadata(self.server_id, self.char_id, item_id)
+        metadata = BaseItem.get_metadata(self.server_id, self.char_id, item_id)
         if not metadata:
             raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_EXIST"))
 
@@ -593,6 +594,39 @@ class StaffManger(object):
         )
 
         self.send_notify(staff_ids=[staff_id])
+
+    def strengthen(self, staff_id, item_id):
+        staff = self.get_staff(staff_id)
+        if not staff:
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
+
+        id_object = ItemId.parse(item_id)
+
+        config = ConfigItem.get(id_object.oid)
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        if config.tp != ITEM_STAFF_CARD:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        if staff.star != id_object.star:
+            # TODO error code
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        im = ItemManager(self.server_id, self.char_id)
+        im.remove_by_item_id(item_id)
+
+        # TODO max star
+
+        MongoStaff.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$inc': {
+                    'staffs.{0}.star': 1
+                }}
+        )
+
+        self.send_notify(staff_ids=[staff_id])
+
 
     def update_winning_rate(self, results, one=True):
         """

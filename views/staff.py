@@ -15,6 +15,7 @@ from protomsg.staff_pb2 import (
     StaffRecruitResponse,
     StaffFireResponse,
     StaffEquipOnResponse,
+    StaffStrengthenResponse,
 )
 
 
@@ -70,5 +71,19 @@ def equip_on(request):
     sm.equipment_on(staff_id, item_id)
 
     response = StaffEquipOnResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+def strengthen(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    staff_id = request._proto.staff_id
+    item_id = request._proto.item_id
+
+    sm = StaffManger(server_id, char_id)
+    sm.strengthen(staff_id, item_id)
+
+    response = StaffStrengthenResponse()
     response.ret = 0
     return ProtobufResponse(response)

@@ -58,6 +58,7 @@ urlpatterns = [
     url(r'^staff/recruit/$', views.staff.recruit_staff),
     url(r'^staff/fire/$', views.staff.fire),
     url(r'^staff/equipon/$', views.staff.equip_on),
+    url(r'^staff/strengthen/$', views.staff.strengthen),
 
     url(r'^item/sell/$', views.item.sell),
     url(r'^item/use/$', views.item.use),
