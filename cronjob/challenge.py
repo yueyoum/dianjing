@@ -31,3 +31,20 @@ def clean_match_times(*args):
         logger.write("Done")
     finally:
         logger.close()
+
+
+@uwsgidecorators.cron(30, -1, -1, -1, -1, target='spooler')
+def energy_energize(*args):
+    logger = Logger("character energize")
+    logger.write("Start")
+
+    try:
+        for s in Server.opened_server_ids():
+            Challenge.cronjob_energize(s)
+            logger.write("Server {0} finish".format(s))
+    except:
+        logger.error(traceback.format_exc())
+    else:
+        logger.write("Done")
+    finally:
+        logger.close()
