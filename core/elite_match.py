@@ -246,7 +246,6 @@ class EliteMatch(object):
         # 检查重能
         ch = Challenge(self.server_id, self.char_id)
         ch.check_energize()
-        ch.energy_notify()
 
         # 更新挑战次数
         updater = {'areas.{0}.challenges.{1}.times'.format(area_id, challenge_id): 1}

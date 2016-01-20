@@ -158,6 +158,7 @@ class Challenge(object):
                 'cid': self.char_id,
             }
 
+        self.energy_notify()
         Timerd.register(end_at, TIMERD_CALLBACK_PATH, data)
 
     def energize_callback(self):
