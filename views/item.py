@@ -50,10 +50,9 @@ def merge(request):
     item_ids = [i for i in request._proto.item_ids if i]
 
     im = ItemManager(server_id, char_id)
-    im.merge(item_ids)
-    from core.package import Drop
+    item = im.merge(item_ids)
 
     response = ItemMergeResponse()
     response.ret = 0
-    response.drop.MergeFrom(Drop().make_protomsg())
+    response.item.MergeFrom(item.make_protomsg())
     return ProtobufResponse(response)
