@@ -16,7 +16,6 @@ from protomsg.challenge_pb2 import (
     ChallengeBuyEnergyResponse,
     ChallengeMatchReportResponse,
     ChallengeGetStarRewardResponse,
-    ChallengeRefreshTimesResponse,
 )
 
 
@@ -77,21 +76,6 @@ def buy(request):
     Challenge(server_id, char_id).buy_energy()
 
     response = ChallengeBuyEnergyResponse()
-    response.ret = 0
-
-    return ProtobufResponse(response)
-
-
-def refresh(request):
-    server_id = request._game_session.server_id
-    char_id = request._game_session.char_id
-
-    area_id = request._proto.area_id
-    challenge_id = request._proto.challenge_id
-
-    Challenge(server_id, char_id).refresh_challenge_times(area_id, challenge_id)
-
-    response = ChallengeRefreshTimesResponse()
     response.ret = 0
 
     return ProtobufResponse(response)
