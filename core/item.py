@@ -473,7 +473,7 @@ class ItemManager(object):
 
     def check_exists(self, items):
         # [(id, amount), (id, amount)]
-        doc = MongoItem.db(self.server_id).find_one({'_id': 1})
+        doc = MongoItem.db(self.server_id).find_one({'_id': self.char_id})
         for item_id, amount in items:
             metadata = doc.get(item_id, None)
             if metadata is None:
