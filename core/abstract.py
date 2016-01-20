@@ -120,6 +120,14 @@ class AbstractStaff(object):
 
         self.calculate_secondary_property()
 
+    @property
+    def power(self):
+        p = 0
+        for attr in STAFF_SECONDARY_ATTRS:
+            p += getattr(self, attr)
+
+        return int(p)
+
     def make_protomsg(self):
         msg = MessageStaff()
 
@@ -129,6 +137,7 @@ class AbstractStaff(object):
         msg.max_exp = ConfigStaffLevel.get(self.level).exp[self.quality]
         msg.status = self.status
         msg.star = self.star
+        msg.power = self.power
 
         msg.luoji = int(self.luoji)
         msg.minjie = int(self.minjie)

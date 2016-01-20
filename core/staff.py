@@ -231,7 +231,7 @@ class StaffRecruit(object):
 
         if StaffManger(self.server_id, self.char_id).has_staff(staff_id):
             # raise GameException(ConfigErrorMessage.get_error_id('STAFF_ALREADY_HAVE'))
-            ItemManager(self.server_id, self.char_id).add_staff_card(staff_id, 1)
+            ItemManager(self.server_id, self.char_id).add_staff_card(staff_id, 0)
             return
 
         recruit_list = self.get_self_refreshed_staffs()
@@ -282,7 +282,8 @@ class StaffRecruit(object):
         for s in staffs:
             r = notify.recruits.add()
             r.staff_id = s
-            r.has_recruit = s in already_recruited_staffs
+            # r.has_recruit = s in already_recruited_staffs
+            r.has_recruit = False
 
         MessagePipe(self.char_id).put(msg=notify)
 
