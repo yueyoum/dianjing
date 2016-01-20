@@ -81,7 +81,7 @@ class Staff(AbstractStaff):
 
             self.luoji += item.luoji
             self.minjie += item.minjie
-            self.lilun += item.lilin
+            self.lilun += item.lilun
             self.wuxing += item.wuxing
             self.meili += item.meili
 
@@ -230,7 +230,8 @@ class StaffRecruit(object):
             raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
 
         if StaffManger(self.server_id, self.char_id).has_staff(staff_id):
-            raise GameException(ConfigErrorMessage.get_error_id('STAFF_ALREADY_HAVE'))
+            # raise GameException(ConfigErrorMessage.get_error_id('STAFF_ALREADY_HAVE'))
+            ItemManager(self.server_id, self.char_id).add_staff_card(staff_id, 1)
 
         recruit_list = self.get_self_refreshed_staffs()
         if not recruit_list:
@@ -577,7 +578,7 @@ class StaffManger(object):
 
         for item_id in doc.get('equips', {}):
             id_object = ItemId.parse(item_id)
-            if ConfigItem.get(id_object.oid).sub_tp == config.sub_tp:
+            if ConfigItem.get(id_object.oid).group_id == config.group_id:
                 # 同类型的替换
                 updater['$unset'] = {
                     'staffs.{0}.equips.{1}'.format(staff_id, item_id): 1

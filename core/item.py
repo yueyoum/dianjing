@@ -307,7 +307,7 @@ class StaffCard(SimpleItem):
 
 # 装备
 class Equipment(BaseItem):
-    __slots__ = ['luoji', 'minjie', 'lilnn', 'wuxing', 'meili',
+    __slots__ = ['luoji', 'minjie', 'lilun', 'wuxing', 'meili',
                  'caozuo', 'jingying', 'baobing', 'zhanshu',
                  'biaoyan', 'yingxiao',
                  ]
@@ -319,7 +319,7 @@ class Equipment(BaseItem):
 
         self.luoji = 0
         self.minjie = 0
-        self.lilnn = 0
+        self.lilun = 0
         self.wuxing = 0
         self.meili = 0
         self.caozuo = 0
@@ -342,7 +342,7 @@ class Equipment(BaseItem):
         msg.attr.star = self.id_object.star
         msg.attr.luoji = int(self.luoji)
         msg.attr.minjie = int(self.minjie)
-        msg.attr.lilun = int(self.lilnn)
+        msg.attr.lilun = int(self.lilun)
         msg.attr.wuxing = int(self.wuxing)
         msg.attr.meili = int(self.meili)
         msg.attr.caozuo = int(self.caozuo)
