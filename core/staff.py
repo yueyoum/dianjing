@@ -232,6 +232,7 @@ class StaffRecruit(object):
         if StaffManger(self.server_id, self.char_id).has_staff(staff_id):
             # raise GameException(ConfigErrorMessage.get_error_id('STAFF_ALREADY_HAVE'))
             ItemManager(self.server_id, self.char_id).add_staff_card(staff_id, 1)
+            return
 
         recruit_list = self.get_self_refreshed_staffs()
         if not recruit_list:
