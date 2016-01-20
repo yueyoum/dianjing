@@ -90,7 +90,7 @@ _DROP_ITEM = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='tp', full_name='Dianjing.protocol.Drop.Item.tp', index=2,
       number=3, type=14, cpp_type=8, label=2,
-      has_default_value=False, default_value=1,
+      has_default_value=False, default_value=100,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),

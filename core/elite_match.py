@@ -377,6 +377,5 @@ class EliteMatch(object):
             notify_area.package_one = True
             notify_area.package_two = True
             notify_area.package_three = True
-        print '*' * 20
-        print notify
+
         MessagePipe(self.char_id).put(msg=notify)

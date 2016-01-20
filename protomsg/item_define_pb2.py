@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='item_define.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x11item_define.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xcd\x01\n\tAttribute\x12\x0c\n\x04star\x18\x01 \x02(\x05\x12\r\n\x05luoji\x18\x02 \x01(\x05\x12\x0e\n\x06minjie\x18\x03 \x01(\x05\x12\r\n\x05lilun\x18\x04 \x01(\x05\x12\x0e\n\x06wuxing\x18\x05 \x01(\x05\x12\r\n\x05meili\x18\x06 \x01(\x05\x12\x0e\n\x06\x63\x61ozuo\x18\x07 \x01(\x05\x12\x10\n\x08jingying\x18\x08 \x01(\x05\x12\x0f\n\x07\x62\x61obing\x18\t \x01(\x05\x12\x0f\n\x07zhanshu\x18\n \x01(\x05\x12\x0f\n\x07\x62iaoyan\x18\x0b \x01(\x05\x12\x10\n\x08yingxiao\x18\x0c \x01(\x05\"\x84\x01\n\x04Item\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0b\n\x03oid\x18\x02 \x02(\x05\x12\x0e\n\x06\x61mount\x18\x03 \x02(\x05\x12\'\n\x02tp\x18\x04 \x02(\x0e\x32\x1b.Dianjing.protocol.ItemType\x12*\n\x04\x61ttr\x18\x05 \x01(\x0b\x32\x1c.Dianjing.protocol.Attribute*\xb1\x01\n\x08ItemType\x12\x1c\n\x18ITEM_TRAINING_EXPENDABLE\x10\x01\x12\x13\n\x0fITEM_SHOP_GOODS\x10\x02\x12\x1d\n\x19ITEM_BUILDING_CERTIFICATE\x10\x03\x12\x1c\n\x18ITEM_SKILL_TRAINING_BOOK\x10\x04\x12\x12\n\x0eITEM_EQUIPMENT\x10\x0b\x12\x13\n\x0fITEM_STAFF_CARD\x10\x15\x12\x0c\n\x08ITEM_BOX\x10\x63')
+  serialized_pb=_b('\n\x11item_define.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xcd\x01\n\tAttribute\x12\x0c\n\x04star\x18\x01 \x02(\x05\x12\r\n\x05luoji\x18\x02 \x01(\x05\x12\x0e\n\x06minjie\x18\x03 \x01(\x05\x12\r\n\x05lilun\x18\x04 \x01(\x05\x12\x0e\n\x06wuxing\x18\x05 \x01(\x05\x12\r\n\x05meili\x18\x06 \x01(\x05\x12\x0e\n\x06\x63\x61ozuo\x18\x07 \x01(\x05\x12\x10\n\x08jingying\x18\x08 \x01(\x05\x12\x0f\n\x07\x62\x61obing\x18\t \x01(\x05\x12\x0f\n\x07zhanshu\x18\n \x01(\x05\x12\x0f\n\x07\x62iaoyan\x18\x0b \x01(\x05\x12\x10\n\x08yingxiao\x18\x0c \x01(\x05\"\x84\x01\n\x04Item\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0b\n\x03oid\x18\x02 \x02(\x05\x12\x0e\n\x06\x61mount\x18\x03 \x02(\x05\x12\'\n\x02tp\x18\x04 \x02(\x0e\x32\x1b.Dianjing.protocol.ItemType\x12*\n\x04\x61ttr\x18\x05 \x01(\x0b\x32\x1c.Dianjing.protocol.Attribute*\xb4\x01\n\x08ItemType\x12\x0f\n\x0bITEM_DRINKS\x10\x64\x12\x0f\n\nITEM_BADGE\x10\xc8\x01\x12\x1e\n\x19ITEM_BUILDING_CERTIFICATE\x10\xac\x02\x12\x14\n\x0fITEM_SHOP_GOODS\x10\x90\x03\x12\x16\n\x11ITEM_TALENT_STONE\x10\xf4\x03\x12\x14\n\x0fITEM_STAFF_CARD\x10\x84\x07\x12\x13\n\x0eITEM_EQUIPMENT\x10\xe8\x07\x12\r\n\x08ITEM_BOX\x10\xa8\x46')
   ,
   dependencies=[common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -33,49 +33,54 @@ _ITEMTYPE = _descriptor.EnumDescriptor(
   file=DESCRIPTOR,
   values=[
     _descriptor.EnumValueDescriptor(
-      name='ITEM_TRAINING_EXPENDABLE', index=0, number=1,
+      name='ITEM_DRINKS', index=0, number=100,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='ITEM_SHOP_GOODS', index=1, number=2,
+      name='ITEM_BADGE', index=1, number=200,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='ITEM_BUILDING_CERTIFICATE', index=2, number=3,
+      name='ITEM_BUILDING_CERTIFICATE', index=2, number=300,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='ITEM_SKILL_TRAINING_BOOK', index=3, number=4,
+      name='ITEM_SHOP_GOODS', index=3, number=400,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='ITEM_EQUIPMENT', index=4, number=11,
+      name='ITEM_TALENT_STONE', index=4, number=500,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='ITEM_STAFF_CARD', index=5, number=21,
+      name='ITEM_STAFF_CARD', index=5, number=900,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='ITEM_BOX', index=6, number=99,
+      name='ITEM_EQUIPMENT', index=6, number=1000,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='ITEM_BOX', index=7, number=9000,
       options=None,
       type=None),
   ],
   containing_type=None,
   options=None,
   serialized_start=398,
-  serialized_end=575,
+  serialized_end=578,
 )
 _sym_db.RegisterEnumDescriptor(_ITEMTYPE)
 
 ItemType = enum_type_wrapper.EnumTypeWrapper(_ITEMTYPE)
-ITEM_TRAINING_EXPENDABLE = 1
-ITEM_SHOP_GOODS = 2
-ITEM_BUILDING_CERTIFICATE = 3
-ITEM_SKILL_TRAINING_BOOK = 4
-ITEM_EQUIPMENT = 11
-ITEM_STAFF_CARD = 21
-ITEM_BOX = 99
+ITEM_DRINKS = 100
+ITEM_BADGE = 200
+ITEM_BUILDING_CERTIFICATE = 300
+ITEM_SHOP_GOODS = 400
+ITEM_TALENT_STONE = 500
+ITEM_STAFF_CARD = 900
+ITEM_EQUIPMENT = 1000
+ITEM_BOX = 9000
 
 
 
@@ -218,7 +223,7 @@ _ITEM = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='tp', full_name='Dianjing.protocol.Item.tp', index=3,
       number=4, type=14, cpp_type=8, label=2,
-      has_default_value=False, default_value=1,
+      has_default_value=False, default_value=100,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
