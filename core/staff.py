@@ -595,29 +595,26 @@ class StaffManger(object):
 
         self.send_notify(staff_ids=[staff_id])
 
-    def strengthen(self, staff_id, item_id):
+    def strengthen(self, staff_id):
         staff = self.get_staff(staff_id)
         if not staff:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
-        id_object = ItemId.parse(item_id)
-
-        config = ConfigItem.get(id_object.oid)
-        if not config:
-            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
-
-        if config.tp != ITEM_STAFF_CARD:
-            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
-
-        if staff.star != id_object.star:
-            # TODO error code
-            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
-
         im = ItemManager(self.server_id, self.char_id)
-        im.remove_by_item_id(item_id)
+        items = im.get_all_items()
+
+        find_item_id = ""
+        for item in items:
+            if item.id_object.type_id == ITEM_STAFF_CARD and item.id_object.star == staff.star:
+                find_item_id = item.id_object.id
+                break
+
+        if not find_item_id:
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_STRENGTH_NO_CARD"))
+
+        im.remove_by_item_id(find_item_id)
 
         # TODO max star
-
         MongoStaff.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {'$inc': {
@@ -626,7 +623,6 @@ class StaffManger(object):
         )
 
         self.send_notify(staff_ids=[staff_id])
-
 
     def update_winning_rate(self, results, one=True):
         """
@@ -648,8 +644,8 @@ class StaffManger(object):
                     updater['staffs.{0}.winning_rate.{1}.win'.format(result.staff_two, race_one)] = 1
 
         MongoStaff.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$inc': updater}
+                {'_id': self.char_id},
+                {'$inc': updater}
         )
 
     def get_winning_rate(self, staff_ids):

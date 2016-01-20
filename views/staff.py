@@ -79,10 +79,9 @@ def strengthen(request):
     char_id = request._game_session.char_id
 
     staff_id = request._proto.staff_id
-    item_id = request._proto.item_id
 
     sm = StaffManger(server_id, char_id)
-    sm.strengthen(staff_id, item_id)
+    sm.strengthen(staff_id)
 
     response = StaffStrengthenResponse()
     response.ret = 0

@@ -496,6 +496,20 @@ class ItemManager(object):
                 else:
                     doc.pop(item_id)
 
+    def get_all_items(self):
+        """
+
+        :rtype: list[BaseItem]
+        """
+
+        items = []
+        doc = MongoItem.db(self.server_id).find_one({'_id': self.char_id}, {'_id': 0})
+        for item_id, metadata in doc.iteritems():
+            item = get_item_object(item_id, metadata)
+            items.append(item)
+
+        return items
+
     def add_item(self, oid, **kwargs):
         """
         :param oid: item oid
@@ -872,14 +886,12 @@ class ItemManager(object):
         return self.add_item(oid)
 
     def send_notify(self):
-        doc = MongoItem.db(self.server_id).find_one({'_id': self.char_id}, {'_id': 0})
+        items = self.get_all_items()
 
         notify = ItemNotify()
         notify.act = ACT_INIT
 
-        for item_id, metadata in doc.iteritems():
-            item = get_item_object(item_id, metadata)
-
+        for item in items:
             notify_item = notify.items.add()
             notify_item.MergeFrom(item.make_protomsg())
 
