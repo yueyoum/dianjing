@@ -184,7 +184,7 @@ class LeagueManger(object):
         # 检查是否在晋级赛状态
         doc_self = MongoLeague.db(self.server_id).find_one({'_id': self.char_id})
         if doc_self['in_rise']:
-            raise GameException(ConfigErrorMessage.get_error_id("IN_RISE_IN_RANK"))
+            raise GameException(ConfigErrorMessage.get_error_id("LEAGUE_IN_RISE_IN_RANK"))
         # 刷新
         self.refresh(diamond_refresh, doc_self['level'], doc_self['score'])
         # 同步到客户端
@@ -465,7 +465,7 @@ class LeagueManger(object):
 
         if doc['daily_reward'] == str(arrow.now().date()):
             # 已领取
-            raise GameException(ConfigErrorMessage.get_error_id("DAILY_REWARD_HAVE_GOT"))
+            raise GameException(ConfigErrorMessage.get_error_id("LEAGUE_DAILY_REWARD_HAVE_GOT"))
 
         # 获取奖励配置
         conf = ConfigLeague.get(doc['level'])
@@ -495,15 +495,15 @@ class LeagueManger(object):
 
         # 检查是否有该挑战, 有可能刷新掉了
         if club_id not in doc['match_club']:
-            raise GameException(ConfigErrorMessage.get_error_id("NO_THIS_CHALLENGE"))
+            raise GameException(ConfigErrorMessage.get_error_id("LEAGUE_NO_THIS_CHALLENGE"))
 
         # 检查玩家是否有挑战次数
         if doc['challenge_times'] < 1 and not doc['in_rise']:
-            raise GameException(ConfigErrorMessage.get_error_id("NO_CHALLENGE_TIMES"))
+            raise GameException(ConfigErrorMessage.get_error_id("LEAGUE_NO_CHALLENGE_TIMES"))
 
         # 非可挑战状态，不能再次挑战
         if doc['match_club'][club_id]['status'] != ABLE:
-            raise GameException(ConfigErrorMessage.get_error_id("CLUB_HAVE_MATCH_CHALLENGE"))
+            raise GameException(ConfigErrorMessage.get_error_id("LEAGUE_CLUB_HAVE_MATCH_CHALLENGE"))
 
         # 实例化俱乐部
         club_self = Club(self.server_id, self.char_id)
