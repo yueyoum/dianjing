@@ -540,8 +540,7 @@ class ItemManager(object):
         type_id = config.tp
         if type_id == ITEM_EQUIPMENT:
             return Equipment.add(self.server_id, self.char_id, type_id, oid, **kwargs)
-        obj = SimpleItem.add(self.server_id, self.char_id, type_id, oid, **kwargs)
-        return [obj]
+        return SimpleItem.add(self.server_id, self.char_id, type_id, oid, **kwargs)
 
     def add_staff_card(self, oid, star, amount=1):
         """
