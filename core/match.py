@@ -276,12 +276,14 @@ class ClubMatch(object):
             msg_match.staff_one.jingying = staff_one.jingying
             msg_match.staff_one.baobing = staff_one.baobing
             msg_match.staff_one.zhanshu = staff_one.zhanshu
+            msg_match.staff_one.skills.extend(staff_one.skills.keys())
             
             msg_match.staff_two.id = staff_two.id
             msg_match.staff_two.caozuo = staff_two.caozuo
             msg_match.staff_two.jingying = staff_two.jingying
             msg_match.staff_two.baobing = staff_two.baobing
             msg_match.staff_two.zhanshu = staff_two.zhanshu
+            msg_match.staff_two.skills.extend(staff_two.skills.keys())
 
         return msg
 
