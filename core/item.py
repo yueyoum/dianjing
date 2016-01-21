@@ -9,7 +9,6 @@ Description:
 
 import random
 from itertools import chain
-from contextlib import contextmanager
 
 from dianjing.exception import GameException
 
@@ -564,39 +563,53 @@ class ItemManager(object):
         else:
             SimpleItem.remove(self.server_id, self.char_id, item_id, amount=amount)
 
-    def get_simple_item_amount_by_oid(self, oid):
+    def remove_items_by_oid(self, data):
+        # data = [(oid, amount), (oid, amount)]
+        doc = MongoItem.db(self.server_id).find_one({'_id': self.char_id}, {'_id': 0})
+        for oid, amount in data:
+            tp = ConfigItem.get(oid).tp
+            prefix = ItemId.get_prefix(tp, oid)
+
+            if tp == ITEM_EQUIPMENT:
+                for i in range(amount):
+                    for k, _ in doc:
+                        if k.startswith(prefix):
+                            self.remove_by_item_id(k)
+                            doc.pop(k)
+                            break
+            else:
+                for k, _ in doc:
+                    if k == prefix:
+                        self.remove_by_item_id(k, amount)
+                        doc[k] -= amount
+                        if doc[k] <= 0:
+                            doc.pop(k)
+                        break
+
+    def get_amount_by_oid(self, oid):
         config = ConfigItem.get(oid)
-        assert config.tp != ITEM_EQUIPMENT
+
+        doc = MongoItem.db(self.server_id).find_one({'_id': self.char_id}, {'_id': 0})
+        if config.tp == ITEM_EQUIPMENT:
+            prefix = ItemId.get_prefix(ITEM_EQUIPMENT, oid)
+            amount = 0
+            for k, _ in doc.iteritems():
+                if k.startswith(prefix):
+                    amount += 1
+
+            return amount
+
+        if config.tp == ITEM_STAFF_CARD:
+            prefix = ItemId.get_prefix(ITEM_STAFF_CARD, oid)
+            amount = 0
+            for k, v in doc.iteritems():
+                if k.startswith(prefix):
+                    amount += v
+
+            return amount
 
         item_id = ItemId.make(config.tp, oid).id
-        metadata = SimpleItem.get_metadata(self.server_id, self.char_id, item_id)
-        return metadata if metadata else 0
-
-    def get_staff_card_amount_by_oid_and_star(self, oid, star):
-        item_id = ItemId.make(ITEM_STAFF_CARD, oid, star=star).id
-        metadata = StaffCard.get_metadata(self.server_id, self.char_id, item_id)
-        return metadata if metadata else 0
-
-    def remove_simple_item(self, oid, amount):
-        config = ConfigItem.get(oid)
-        assert config.tp != ITEM_EQUIPMENT
-
-        item_id = ItemId.make(config.tp, oid).id
-        self.remove_by_item_id(item_id, amount)
-
-    def remove_staff_card(self, oid, star, amount):
-        item_id = ItemId.make(ITEM_STAFF_CARD, oid, star=star).id
-        self.remove_by_item_id(item_id, amount)
-
-    @contextmanager
-    def remove_simple_item_context(self, oid, amount):
-        stock = self.get_simple_item_amount_by_oid(oid)
-        if stock < amount:
-            raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_ENOUGH"))
-
-        yield
-
-        self.remove_simple_item(oid, amount)
+        return doc.get(item_id, 0)
 
     def sell(self, item_id, amount):
         id_object = ItemId.parse(item_id)

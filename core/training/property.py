@@ -307,8 +307,7 @@ class TrainingProperty(object):
             new_list = pl.get_document_list()
             self.update_training_list(staff_id, new_list, key)
 
-            for item_id, item_amount in config.need_items:
-                im.remove_simple_item(item_id, item_amount)
+            im.remove_items_by_oid(config.need_items)
 
         training_property_start_signal.send(
             sender=None,

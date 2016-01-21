@@ -111,8 +111,7 @@ class BuildingManager(object):
 
             key = Timerd.register(end_at, TIMERD_CALLBACK_PATH, data)
 
-            for item_id, item_amount in config_building_level.up_need_items:
-                im.remove_simple_item(item_id, item_amount)
+            im.remove_items_by_oid(config_building_level.up_need_items)
 
             MongoBuilding.db(self.server_id).update_one(
                 {'_id': self.char_id},

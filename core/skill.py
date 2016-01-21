@@ -173,9 +173,7 @@ class SkillManager(object):
             }}
         )
 
-        for _id, _amount in needs:
-            im.remove_simple_item(_id, _amount)
-
+        im.remove_items_by_oid(needs)
         self.send_notify(staff_id)
 
     def upgrade_speedup(self, staff_id, skill_id):
