@@ -560,14 +560,6 @@ class ItemManager(object):
         metadata = SimpleItem.get_metadata(self.server_id, self.char_id, item_id)
         return metadata if metadata else 0
 
-    def check_simple_item_is_enough(self, data):
-        for oid, amount in data:
-            stock = self.get_simple_item_amount_by_oid(oid)
-            if stock < amount:
-                return False
-
-        return True
-
     def get_staff_card_amount_by_oid_and_star(self, oid, star):
         item_id = ItemId.make(ITEM_STAFF_CARD, oid, star=star).id
         metadata = StaffCard.get_metadata(self.server_id, self.char_id, item_id)

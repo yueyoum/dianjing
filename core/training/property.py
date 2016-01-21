@@ -277,8 +277,7 @@ class TrainingProperty(object):
             raise GameException(ConfigErrorMessage.get_error_id("BUILDING_TRAINING_CENTER_LEVEL_NOT_ENOUGH"))
 
         im = ItemManager(self.server_id, self.char_id)
-        if not im.check_simple_item_is_enough(config.need_items):
-            raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_ENOUGH"))
+        im.check_exists(config.need_items, is_oid=True)
 
         pl = self.get_training_list(staff_id)
 

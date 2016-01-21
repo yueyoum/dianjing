@@ -93,8 +93,7 @@ class BuildingManager(object):
                 raise GameException(ConfigErrorMessage.get_error_id("BUILDING_CLUB_CENTER_LEVEL_NOT_ENOUGH"))
 
         im = ItemManager(self.server_id, self.char_id)
-        if not im.check_simple_item_is_enough(config_building_level.up_need_items):
-            raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_ENOUGH"))
+        im.check_exists(config_building_level.up_need_items, is_oid=True)
 
         check = {
             "gold": -config_building_level.up_need_gold,
