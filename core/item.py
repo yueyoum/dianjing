@@ -572,13 +572,13 @@ class ItemManager(object):
 
             if tp == ITEM_EQUIPMENT:
                 for i in range(amount):
-                    for k, _ in doc:
+                    for k, _ in doc.iteritems():
                         if k.startswith(prefix):
                             self.remove_by_item_id(k)
                             doc.pop(k)
                             break
             else:
-                for k, _ in doc:
+                for k, _ in doc.iteritems():
                     if k == prefix:
                         self.remove_by_item_id(k, amount)
                         doc[k] -= amount

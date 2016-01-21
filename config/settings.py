@@ -9,7 +9,7 @@ Description:
 
 CHAR_INIT_GOLD = 100000
 CHAR_INIT_DIAMOND = 0
-CHAR_INIT_STAFFS = [2, 3, 4, 5, 6]
+CHAR_INIT_STAFFS = [2, 3, 4, 5, 134]
 
 # 俱乐部买员工格子花费钻石
 BUY_STAFF_SLOT_COST = 50
