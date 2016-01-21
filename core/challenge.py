@@ -126,6 +126,23 @@ class Challenge(object):
         for char_id in Character.get_recent_login_char_ids(server_id):
             Challenge(server_id, int(char_id)).change_energy(ENERGIZE_NUM)
 
+    def current_challenge_id(self):
+        doc = MongoChallenge.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'areas': 1}
+        )
+
+        tmp_area_id = 0
+        for area_id in doc['areas'].keys():
+            if tmp_area_id < int(area_id):
+                tmp = int(area_id)
+
+        tmp_ch_id = 0
+        for ch_id in doc['areas'].get(str(tmp_area_id), {}).keys():
+            if tmp_ch_id < int(ch_id):
+                tmp_ch_id = int(ch_id)
+
+        return tmp_ch_id
     # def check_energize(self):
     #     """
     #     检测是否需要注册充能定时任务
@@ -241,6 +258,15 @@ class Challenge(object):
             {'$inc': updater}
         )
 
+        # send signal
+        challenge_match_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            challenge_id=int(challenge_id),
+            win=(win_club == club_one),
+        )
+
         # 通关处理
         if win_club == club_one:
             counter = 0
@@ -303,15 +329,6 @@ class Challenge(object):
             drop = Drop.generate(ConfigChallengeMatch.get(int(challenge_id)).package)
             Resource(self.server_id, self.char_id).save_drop(drop)
             return drop.make_protomsg()
-
-        # send signal
-        challenge_match_signal.send(
-            sender=None,
-            server_id=self.server_id,
-            char_id=self.char_id,
-            challenge_id=int(challenge_id),
-            win=(win_club == club_one),
-        )
 
         return None
 
