@@ -122,6 +122,13 @@ class ItemId(object):
         return obj
 
     @classmethod
+    def get_prefix(cls, type_id, oid):
+        # 生成 item_id 的prefix, 用来在db中进行比较
+        # 比如查找 id为1的装备， item_id是 equip_type:1:xxxxxxx,
+        # 只要比较prefix是不是 equip_type:1就行了
+        return "{0}:{1}".format(type_id, oid)
+
+    @classmethod
     def parse(cls, item_id):
         """
         :param item_id: the unique item_id
@@ -481,25 +488,30 @@ class ItemManager(object):
         doc = MongoItem.db(self.server_id).find_one({'_id': self.char_id})
         for _id, amount in items:
             if is_oid:
-                item_id = ItemId.make(ConfigItem.get(_id).tp, _id).id
+                item_id = ItemId.get_prefix(ConfigItem.get(_id).tp, _id)
             else:
                 item_id = str(_id)
 
-            metadata = doc.get(item_id, None)
-            if metadata is None:
-                raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_EXIST"))
+            for k, metadata in doc.iteritems():
+                if not k.startswith(item_id):
+                    continue
 
-            if isinstance(metadata, dict):
-                # equipment, ignore _amount
-                doc.pop(item_id)
-            else:
-                new_amount = metadata - amount
-                if new_amount < 0:
-                    raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_ENOUGH"))
-                elif new_amount > 0:
-                    doc[item_id] = new_amount
+                # found
+                if isinstance(metadata, dict):
+                    # equipment, ignore _amount
+                    doc.pop(k)
                 else:
-                    doc.pop(item_id)
+                    new_amount = metadata - amount
+                    if new_amount < 0:
+                        raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_ENOUGH"))
+                    elif new_amount > 0:
+                        doc[k] = new_amount
+                    else:
+                        doc.pop(k)
+
+                break
+            else:
+                raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_EXIST"))
 
     def get_all_items(self):
         """
