@@ -127,12 +127,12 @@ class TrainingMatch(object):
             if doc['relive_times'] >= RELIVE_TIMES:
                 raise GameException(ConfigErrorMessage.get_error_id("TRAINING_MATCH_RELIVE_NO_TIMES"))
 
-        message = u"Training Match relive for {0}".format(index)
-        with Resource(self.server_id, self.char_id).check(diamond=-RELIVE_DIAMOND, message=message):
-            MongoTrainingMatch.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {'$inc': {'relive_times': 1}}
-            )
+            message = u"Training Match relive for {0}".format(index)
+            with Resource(self.server_id, self.char_id).check(diamond=-RELIVE_DIAMOND, message=message):
+                MongoTrainingMatch.db(self.server_id).update_one(
+                    {'_id': self.char_id},
+                    {'$inc': {'relive_times': 1}}
+                )
 
         club = Club(self.server_id, self.char_id)
         club_data = doc['clubs'][index - 1]
@@ -150,31 +150,33 @@ class TrainingMatch(object):
         StaffManger(self.server_id, self.char_id).update_winning_rate(result)
         StaffManger(self.server_id, int(club_two)).update_winning_rate(result, False)
 
+        tmp_drop = None
+        updater = {}
+        updated_ids = []
+
         if is_win:
             ret = int(index)
             updated_ids = [ret]
-            if ret:
-                drop = Drop.generate(ConfigTrainingMatchReward.get(ret).reward)
-                Resource(self.server_id, self.char_id).save_drop(drop, message="Training Match {0} drop".format(ret))
+            tmp_drop = Drop.generate(ConfigTrainingMatchReward.get(ret).reward)
+            Resource(self.server_id, self.char_id).save_drop(tmp_drop, message="Training Match {0} drop".format(ret))
 
-                updater = {
-                    'status.{0}'.format(ret): 2
-                }
+            updater['status.{0}'.format(ret)] = 2
 
-                if ret < 14:
-                    updated_ids.append(ret+1)
-                    updater['status.{0}'.format(ret+1)] = 1
-            else:
-                updater = {
-                    'status.{0}'.format(ret): 3
-                }
+            if ret < 14:
+                updated_ids.append(ret+1)
+                updater['status.{0}'.format(ret+1)] = 1
+        else:
+            updater['status.{0}'.format(index)] = 3
 
-            MongoTrainingMatch.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {'$set': updater}
-            )
+        MongoTrainingMatch.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': updater}
+        )
 
-            self.send_notify(ids=updated_ids)
+        self.send_notify(ids=updated_ids)
+
+        if tmp_drop:
+            return tmp_drop.make_protomsg()
 
     def get_additional_reward(self, index):
         config = ConfigTrainingMatchReward.get(index)
