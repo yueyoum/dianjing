@@ -93,7 +93,8 @@ class Staff(AbstractStaff):
 
         for item in self.equipments:
             for sp in STAFF_SECONDARY_ATTRS:
-                setattr(self, sp, getattr(item, sp))
+                value = getattr(self, sp) + getattr(item, sp)
+                setattr(self, sp, value)
 
         for sp in STAFF_SECONDARY_ATTRS:
             value = getattr(self, sp) + data.get(sp, 0)

@@ -481,7 +481,7 @@ class ItemManager(object):
         doc = MongoItem.db(self.server_id).find_one({'_id': self.char_id})
         for _id, amount in items:
             if is_oid:
-                item_id = ItemId.make(ConfigItem.get(_id).tp, _id)
+                item_id = ItemId.make(ConfigItem.get(_id).tp, _id).id
             else:
                 item_id = str(_id)
 
