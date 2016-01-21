@@ -476,10 +476,15 @@ class ItemManager(object):
             doc['_id'] = self.char_id
             MongoItem.db(self.server_id).insert_one(doc)
 
-    def check_exists(self, items):
+    def check_exists(self, items, is_oid=False):
         # [(id, amount), (id, amount)]
         doc = MongoItem.db(self.server_id).find_one({'_id': self.char_id})
-        for item_id, amount in items:
+        for _id, amount in items:
+            if is_oid:
+                item_id = ItemId.make(ConfigItem.get(_id).tp, _id)
+            else:
+                item_id = str(_id)
+
             metadata = doc.get(item_id, None)
             if metadata is None:
                 raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_EXIST"))

@@ -153,7 +153,7 @@ class SkillManager(object):
         needs = level_info['upgrade_items']
 
         im = ItemManager(self.server_id, self.char_id)
-        im.check_exists(needs)
+        im.check_exists(needs, is_oid=True)
 
         end_at = arrow.utcnow().timestamp + minutes * 60
         data = {
