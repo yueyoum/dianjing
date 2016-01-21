@@ -14,7 +14,6 @@ from core.signals import game_start_signal
 from core.character import Character
 from core.club import Club
 from core.staff import StaffRecruit, StaffManger
-from core.skill import SkillManager
 from core.training import TrainingExp, TrainingProperty, TrainingBroadcast, TrainingShop, TrainingSponsor
 from core.item import ItemManager
 from core.challenge import Challenge
@@ -60,7 +59,6 @@ def game_start_handler(server_id, char_id, **kwargs):
     club.send_staff_slots_notify()
 
     StaffRecruit(server_id, char_id).send_notify()
-    SkillManager(server_id, char_id).send_notify()
 
     TrainingExp(server_id, char_id).send_notify()
     TrainingProperty(server_id, char_id).send_notify()

@@ -47,7 +47,7 @@ SECONDARY_PROPERTY_TABLE = {
 class AbstractStaff(object):
     __slots__ = [
         'server_id', 'char_id', 'id', 'race', 'level', 'exp', 'status', 'quality', 'star',
-        'skills',
+        'skills', 'skills_detail',
         'active_qianban_ids',
 
         'luoji',
@@ -82,6 +82,7 @@ class AbstractStaff(object):
         self.star = 0
 
         self.skills = {}
+        self.skills_detail = {}
         self.active_qianban_ids = []
 
         self.luoji = 0
@@ -158,6 +159,13 @@ class AbstractStaff(object):
         for equip in self.equipments:
             msg_item = msg.items.add()
             msg_item.MergeFrom(equip.make_protomsg())
+
+        for k, v in self.skills.iteritems():
+            msg_skill = msg.skills.add()
+            msg_skill.id = k
+            msg_skill.level = v
+            msg_skill.locked = self.skills_detail.get(k, {}).get('locked', 0)
+            msg_skill.upgrade_end_at = self.skills_detail.get(k, {}).get('upgrade_end_at', 0)
 
         return msg
 

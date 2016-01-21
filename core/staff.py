@@ -13,7 +13,6 @@ from core.abstract import AbstractStaff, STAFF_SECONDARY_ATTRS
 from core.mongo import MongoStaff, MongoRecruit, MongoAuctionStaff
 from core.resource import Resource
 from core.common import CommonRecruitHot
-from core.skill import SkillManager
 from core.item import get_item_object, ItemManager, ItemId, ITEM_EQUIPMENT, ITEM_STAFF_CARD, BaseItem
 from core.signals import recruit_staff_signal, staff_level_up_signal
 
@@ -61,7 +60,11 @@ class Staff(AbstractStaff):
         config = ConfigStaff.get(self.id)
         self.race = config.race
         self.quality = config.quality
-        self.skills = {int(k): v['level'] for k, v in data['skills'].iteritems()}
+
+        for k, v in data['skills'].iteritems():
+            k = int(k)
+            self.skills[k] = v.pop('level')
+            self.skills_detail[k] = v
 
         self.luoji = config.luoji
         self.minjie = config.minjie
@@ -390,7 +393,6 @@ class StaffManger(object):
 
         if send_notify:
             self.send_notify(staff_ids=[_id])
-            SkillManager(self.server_id, self.char_id).send_notify(staff_id=_id)
 
     def add(self, staff_id, send_notify=True):
         """
@@ -426,7 +428,6 @@ class StaffManger(object):
 
         if send_notify:
             self.send_notify(staff_ids=[staff_id])
-            SkillManager(self.server_id, self.char_id).send_notify(staff_id=staff_id)
 
     def is_free(self, staff_id):
         from core.club import Club
@@ -618,7 +619,7 @@ class StaffManger(object):
         MongoStaff.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {'$inc': {
-                    'staffs.{0}.star': 1
+                    'staffs.{0}.star'.format(staff_id): 1
                 }}
         )
 

@@ -15,12 +15,9 @@ from dianjing.exception import GameException
 from core.mongo import MongoStaff
 from core.item import ItemManager
 from core.resource import Resource
+from core.staff import StaffManger
 
-from utils.message import MessagePipe
 from utils.api import Timerd
-
-from protomsg.skill_pb2 import SkillNotify
-from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
 from config import ConfigStaff, ConfigSkill, ConfigErrorMessage, ConfigSkillWashCost
 
@@ -179,7 +176,7 @@ class SkillManager(object):
         for _id, _amount in needs:
             im.remove_simple_item(_id, _amount)
 
-        self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
+        self.send_notify(staff_id)
 
     def upgrade_speedup(self, staff_id, skill_id):
         """
@@ -221,7 +218,7 @@ class SkillManager(object):
             {'$bit': {key: {'xor': 1}}}
         )
 
-        self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
+        self.send_notify(staff_id)
 
     def wash(self, staff_id):
         """
@@ -278,42 +275,16 @@ class SkillManager(object):
                 if key:
                     Timerd.cancel(key)
 
-        self.send_notify()
+        self.send_notify(staff_id)
 
-    def send_notify(self, act=ACT_INIT, staff_id=None, skill_id=None):
+    def send_notify(self, staff_id):
         """
             同步员工技能信息
         """
         # 这个必须在 StaffNotify 之后
         # 这里的 act 必须手动指定，因为添加新员工后，这里的skill notify 得是 ACT_INIT
-        if not staff_id:
-            projection = {'staffs': 1}
-        else:
-            if not skill_id:
-                projection = {'staffs.{0}.skills'.format(staff_id): 1}
-            else:
-                projection = {'staffs.{0}.skills.{1}'.format(staff_id, skill_id): 1}
+        StaffManger(self.server_id, self.char_id).send_notify(staff_ids=[staff_id])
 
-        doc = MongoStaff.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            projection
-        )
-
-        notify = SkillNotify()
-        notify.act = act
-
-        for k, v in doc['staffs'].iteritems():
-            notify_staff = notify.staff_skills.add()
-            notify_staff.staff_id = int(k)
-
-            for sid, sinfo in v['skills'].iteritems():
-                notify_staff_skill = notify_staff.skills.add()
-                notify_staff_skill.id = int(sid)
-                notify_staff_skill.level = sinfo['level']
-                notify_staff_skill.locked = sinfo['locked'] == 1
-                notify_staff_skill.upgrade_end_at = sinfo.get('end_at', 0)
-
-        MessagePipe(self.char_id).put(msg=notify)
 
     def update(self, staff_id, skill_id):
         """
@@ -332,7 +303,7 @@ class SkillManager(object):
             }
         )
 
-        self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
+        self.send_notify(staff_id)
 
     def timer_callback(self, staff_id, skill_id):
         """
