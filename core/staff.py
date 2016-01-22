@@ -268,6 +268,11 @@ class StaffRecruit(object):
             with Resource(self.server_id, self.char_id).check(**check):
                 StaffManger(self.server_id, self.char_id).add(staff_id)
 
+        MongoRecruit.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$push': {'recruited': staff_id}}
+        )
+
         self.send_notify()
         recruit_staff_signal.send(
                 sender=None,
