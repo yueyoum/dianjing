@@ -39,8 +39,8 @@ def get_target_current_value(server_id, char_id, target_id, param, task_data):
 
     module, class_name, func_name = config.compare_source.rsplit('.', 2)
     module = __import__(module, fromlist=[class_name], level=0)
-    Cls = getattr(module, class_name)
-    obj = Cls(server_id, char_id)
+    cls = getattr(module, class_name)
+    obj = cls(server_id, char_id)
 
     func = getattr(obj, func_name)
     if config.has_param:

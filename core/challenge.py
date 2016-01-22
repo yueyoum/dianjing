@@ -135,12 +135,13 @@ class Challenge(object):
         tmp_area_id = 0
         for area_id in doc['areas'].keys():
             if tmp_area_id < int(area_id):
-                tmp = int(area_id)
+                tmp_area_id = int(area_id)
 
         tmp_ch_id = 0
-        for ch_id in doc['areas'].get(str(tmp_area_id), {}).keys():
+        for ch_id in doc['areas'].get(str(tmp_area_id), {}).get('challenges', {}).keys():
             if tmp_ch_id < int(ch_id):
-                tmp_ch_id = int(ch_id)
+                if doc['areas'][str(tmp_area_id)]['challenges'][str(ch_id)]['stars'] > 0:
+                    tmp_ch_id = int(ch_id)
 
         return tmp_ch_id
     # def check_energize(self):
