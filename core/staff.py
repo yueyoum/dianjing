@@ -263,9 +263,9 @@ class StaffRecruit(object):
                 staff_id=staff_id
         )
 
-        self.send_notify()
+        self.send_notify(set_recruit_flag=True)
 
-    def send_notify(self, staffs=None, tp=None):
+    def send_notify(self, staffs=None, tp=None, set_recruit_flag=False):
         """
         同步招募数据
             如果 staffs == None 同步数据库数据
@@ -280,15 +280,17 @@ class StaffRecruit(object):
             else:
                 tp = MongoRecruit.db(self.server_id).find_one({'_id': self.char_id}, {'tp': 1})['tp']
 
-        already_recruited_staffs = StaffManger(self.server_id, self.char_id).get_all_staff_ids()
+        if set_recruit_flag:
+            already_recruited_staffs = StaffManger(self.server_id, self.char_id).get_all_staff_ids()
+        else:
+            already_recruited_staffs = []
 
         notify = StaffRecruitNotify()
         notify.tp = tp
         for s in staffs:
             r = notify.recruits.add()
             r.staff_id = s
-            # r.has_recruit = s in already_recruited_staffs
-            r.has_recruit = False
+            r.has_recruit = s in already_recruited_staffs
 
         MessagePipe(self.char_id).put(msg=notify)
 
