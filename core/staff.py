@@ -233,28 +233,26 @@ class StaffRecruit(object):
         """
         if not ConfigStaff.get(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
-
         if StaffManger(self.server_id, self.char_id).has_staff(staff_id):
             # raise GameException(ConfigErrorMessage.get_error_id('STAFF_ALREADY_HAVE'))
             ItemManager(self.server_id, self.char_id).add_staff_card(staff_id, 0)
-            return
-
-        recruit_list = self.get_self_refreshed_staffs()
-        if not recruit_list:
-            recruit_list = self.get_hot_staffs()
-
-        if staff_id not in recruit_list:
-            raise GameException(ConfigErrorMessage.get_error_id("STAFF_RECRUIT_NOT_IN_LIST"))
-
-        check = {"message": u"Recruit staff {0}".format(staff_id)}
-        config = ConfigStaff.get(staff_id)
-        if config.buy_type == 1:
-            check['gold'] = -config.buy_cost
         else:
-            check['diamond'] = -config.buy_cost
+            recruit_list = self.get_self_refreshed_staffs()
+            if not recruit_list:
+                recruit_list = self.get_hot_staffs()
 
-        with Resource(self.server_id, self.char_id).check(**check):
-            StaffManger(self.server_id, self.char_id).add(staff_id)
+            if staff_id not in recruit_list:
+                raise GameException(ConfigErrorMessage.get_error_id("STAFF_RECRUIT_NOT_IN_LIST"))
+
+            check = {"message": u"Recruit staff {0}".format(staff_id)}
+            config = ConfigStaff.get(staff_id)
+            if config.buy_type == 1:
+                check['gold'] = -config.buy_cost
+            else:
+                check['diamond'] = -config.buy_cost
+
+            with Resource(self.server_id, self.char_id).check(**check):
+                StaffManger(self.server_id, self.char_id).add(staff_id)
 
         recruit_staff_signal.send(
                 sender=None,
