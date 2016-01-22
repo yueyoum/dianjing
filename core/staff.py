@@ -212,7 +212,11 @@ class StaffRecruit(object):
         MongoRecruit.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {
-                    '$set': {'tp': tp, 'staffs': staffs},
+                    '$set': {
+                        'tp': tp,
+                        'staffs': staffs,
+                        'recruited': [],
+                    },
                     '$inc': {'times.{0}'.format(tp): 1}
                 }
         )
@@ -233,6 +237,15 @@ class StaffRecruit(object):
         """
         if not ConfigStaff.get(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
+
+        doc = MongoRecruit.db(self.server_id).find_one(
+                {'_id': self.char_id},
+                {'recruited': 1}
+        )
+        recruited = doc.get('recruited', [])
+
+        if staff_id in recruited:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
         if StaffManger(self.server_id, self.char_id).has_staff(staff_id):
             # raise GameException(ConfigErrorMessage.get_error_id('STAFF_ALREADY_HAVE'))
@@ -255,8 +268,7 @@ class StaffRecruit(object):
             with Resource(self.server_id, self.char_id).check(**check):
                 StaffManger(self.server_id, self.char_id).add(staff_id)
 
-            self.send_notify(set_recruit_flag_for=staff_id)
-
+        self.send_notify()
         recruit_staff_signal.send(
                 sender=None,
                 server_id=self.server_id,
@@ -264,7 +276,7 @@ class StaffRecruit(object):
                 staff_id=staff_id
         )
 
-    def send_notify(self, staffs=None, tp=None, set_recruit_flag_for=None):
+    def send_notify(self, staffs=None, tp=None):
         """
         同步招募数据
             如果 staffs == None 同步数据库数据
@@ -279,12 +291,18 @@ class StaffRecruit(object):
             else:
                 tp = MongoRecruit.db(self.server_id).find_one({'_id': self.char_id}, {'tp': 1})['tp']
 
+        doc = MongoRecruit.db(self.server_id).find_one(
+                {'_id': self.char_id},
+                {'recruited': 1}
+        )
+        recruited = doc.get('recruited', [])
+
         notify = StaffRecruitNotify()
         notify.tp = tp
         for s in staffs:
             r = notify.recruits.add()
             r.staff_id = s
-            r.has_recruit = s == set_recruit_flag_for
+            r.has_recruit = s in recruited
 
         MessagePipe(self.char_id).put(msg=notify)
 

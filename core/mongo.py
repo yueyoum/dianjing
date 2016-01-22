@@ -309,7 +309,9 @@ class MongoRecruit(BaseDocument):
         # staffs 记录刷新出来的员工
         'staffs': [],
         # times 记录刷新次数 tp: times
-        'times': {}
+        'times': {},
+        # 记录本次刷新中的 已经招募过的
+        'recruited': [],
     }
 
     COLLECTION = "recruit"
