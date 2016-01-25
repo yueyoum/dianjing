@@ -13,7 +13,7 @@ from django.conf import settings
 from dianjing.exception import GameException
 
 from core.mongo import MongoTrainingSponsor
-from core.character import Character
+# from core.character import Character
 from core.mail import MailManager
 from core.package import Drop
 from core.signals import training_sponsor_start_signal

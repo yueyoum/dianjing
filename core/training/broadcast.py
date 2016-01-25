@@ -55,7 +55,7 @@ def current_got_gold(server_id, char_id, staff_id, passed_seconds, current_build
         config_skill.value_base,
         config_skill.level_grow,
         skill_level,
-        config_building_level.value1
+        config_building_level.effect.get("2", 1)
     )
 
     gold = passed_seconds / 60 * gold_per_minute
@@ -114,14 +114,14 @@ class BroadcastSlotStatus(object):
         return ConfigBusinessBroadCastReward.get_rewards(probs)
 
     def _check_slot_id(self):
-        max_building_level = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).max_levels
-        max_slots_amount = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).get_level(max_building_level).value2
+        config = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID)
+        max_building_level = config.max_levels
+        max_slots_amount = config.get_level(max_building_level).effect.get("3", 0)
         if self.slot_id > max_slots_amount:
             self.status = BroadcastSlotStatus.NOT_EXIST
             return False
 
-        current_slots_amount = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).get_level(
-            self.current_building_level).value2
+        current_slots_amount = config.get_level(self.current_building_level).effect.get("3", 0)
         if self.slot_id > current_slots_amount:
             self.status = BroadcastSlotStatus.NOT_OPEN
             return False
@@ -195,8 +195,9 @@ class TrainingBroadcast(object):
         current_level = BuildingBusinessCenter(self.server_id, self.char_id).current_level()
         old_level = current_level - 1
 
-        current_slot_amount = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).get_level(current_level).value2
-        old_slot_amount = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).get_level(old_level).value2
+        config = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID)
+        current_slot_amount = config.get_level(current_level).effect.get("3", 0)
+        old_slot_amount = config.get_level(old_level).effect.get("3", 0)
 
         if current_slot_amount <= old_slot_amount:
             return
@@ -399,8 +400,9 @@ class TrainingBroadcast(object):
         return drop
 
     def send_notify(self, slot_ids=None):
-        building_max_level = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).max_levels
-        max_slot_amount = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID).get_level(building_max_level).value2
+        config = ConfigBuilding.get(BuildingBusinessCenter.BUILDING_ID)
+        building_max_level = config.max_levels
+        max_slot_amount = config.get_level(building_max_level).effect.get("3", 0)
 
         current_building_level = BuildingBusinessCenter(self.server_id, self.char_id).current_level()
 

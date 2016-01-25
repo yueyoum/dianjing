@@ -137,7 +137,8 @@ class PropertyTrainingList(object):
         self.slots[0].calculate()
         for i in range(1, PROPERTY_TRAINING_SLOTS_AMOUNT):
             self.slots[i].start_at = self.slots[i - 1].end_at
-            if self.slots[i].status == PropertySlotStatus.TRAINING or self.slots[i].status == PropertySlotStatus.WAITING:
+            if self.slots[i].status == PropertySlotStatus.TRAINING or \
+                    self.slots[i].status == PropertySlotStatus.WAITING:
                 self.slots[i].end_at = 0
             self.slots[i].calculate()
 
