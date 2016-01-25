@@ -8,6 +8,7 @@ Description:
 """
 
 import os
+import sys
 import json
 import zipfile
 
@@ -148,4 +149,4 @@ def load_config():
 
     ConfigEliteArea.post_fix()
 
-    print "LOAD CONFIG FROM {0}".format(z_file)
+    sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))

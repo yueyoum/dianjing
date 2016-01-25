@@ -10,10 +10,9 @@ Description:
 import sys
 
 from django.core.management.base import BaseCommand
-from dianjing.settings import BASE_DIR
+from django.conf import settings
 
-str_example = """
-upstream uwsgi_dianjing {
+str_example = """upstream uwsgi_dianjing {
     server 127.0.0.1:8001;
 }
 
@@ -23,11 +22,11 @@ server {
     error_log   off;
 
     location /static/ {
-        alias %s;
+        alias %s/static/;
     }
 
     location /upload/ {
-        alias %s;
+        alias %s/static/;
     }
 
     location / {
@@ -37,9 +36,6 @@ server {
 }
 """
 
-
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        output_file = sys.stdout
-        output_file.write(str_example % (str(BASE_DIR) + r'/static/', str(BASE_DIR) + r'/upload/'))
-        print output_file
+        sys.stdout.write(str_example % (settings.BASE_DIR, settings.BASE_DIR))
