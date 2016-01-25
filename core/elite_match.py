@@ -197,7 +197,6 @@ class EliteMatch(object):
         # 判断大区是否存在
         if not ConfigEliteArea.get(area_id):
             raise GameException(ConfigErrorMessage.get_error_id("ELITE_CONFIG_NOT_EXIST"))
-        """
 
         # 获取玩家数据
         doc = MongoEliteMatch.db(self.server_id).find_one(
@@ -208,16 +207,6 @@ class EliteMatch(object):
         # 判断大区是否已开启
         if not doc['areas'].get(str(area_id), {}):
             raise GameException(ConfigErrorMessage.get_error_id("ELITE_AREA_NOT_OPEN"))
-        """
-        开始关卡
-            1 获取关卡配置
-            2 获取关卡大区ID
-            3 获取大取配置
-            4 获取club实例
-            5 检测关卡是否已经开启
-            6 检测挑战次数是否已经使用完
-            7
-        """
 
         # 判断是否已开方关卡
         elite = doc['areas'][str(area_id)]['challenges'].get(str(challenge_id), {})

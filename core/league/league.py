@@ -213,7 +213,7 @@ class LeagueManger(object):
         ).sort('score', 1).limit(MAX_MATCH_CLUB * 10)
         doc_list = []
         for doc in docs:
-            if not doc['in_rise'] and doc['_d'] != self.char_id:
+            if not doc['in_rise'] and doc['_id'] != self.char_id:
                 doc_list.append(doc)
 
         if doc_list.__len__() >= MAX_MATCH_CLUB:
