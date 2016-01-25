@@ -27,8 +27,24 @@ import formula
 
 TIMERD_CALLBACK_PATH = '/api/timerd/building/'
 
+RECRUIT_COST_CUT = 1        # 招募花费减少
+BUSINESS_INCOME_ADD = 2     # 商务收益增加
+BROADCAST_NUM_INC = 3       # 直播位置累计增加
+SHOP_NUM_ADD = 4            # 网店数量累计增加
+SPONSOR_NUM_INC = 5         # 合约数量累计增加
+CHALLENGE_EXP_ADD = 6       # 联赛经验增加
+FUNCTION_OPEN = 7           # 功能开放
+TRAINING_SLOT_ADD = 8       # 训练位置累计增加
+TRAINING_EXP_ADD = 9        # 训练效果加成
+
+
 class BuildingManager(object):
     def __init__(self, server_id, char_id):
+        """
+        Building Object Init
+            如果 mongo 不存在 building collection， 创建
+            如果已经存在了， 检查时是否有 新建筑 或 未添加的建筑， 将其添加到 collection
+        """
         self.server_id = server_id
         self.char_id = char_id
 
@@ -52,7 +68,20 @@ class BuildingManager(object):
                     {'$set': updater}
                 )
 
+    def current_effect(self, building_id):
+        """
+        建筑效果
+            传入建筑ID, 获取玩家该建筑当前拥有的 建筑效果
+        """
+        cur_lv = self.current_level(building_id)
+        conf_building = ConfigBuilding.get(building_id).get_level(cur_lv)
+        return conf_building.effect
+
     def current_level(self, building_id):
+        """
+        建筑等级
+            传入建筑ID  获取建筑等级
+        """
         doc = MongoBuilding.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'buildings.{0}.level'.format(building_id): 1}
@@ -61,6 +90,24 @@ class BuildingManager(object):
         return doc['buildings'].get(str(building_id), {}).get('level', 1)
 
     def level_up(self, building_id):
+        """
+        建筑升级
+            通过建筑ID获取建筑配置, 检查建筑升级条件
+            1 获取建筑配置
+            2检测
+                建筑配置是否存在
+                是否为可升级建筑
+                获取玩家建筑数据
+                建筑是否已经是最高级
+                建筑是否在升级中
+                所依赖条件是否满足
+                升级所需资源是否足够
+            3 升级
+                扣除资源
+                升级建筑
+                注册回调函数
+                同步建筑信息给玩家
+        """
         config = ConfigBuilding.get(building_id)
         if not config:
             raise GameException(ConfigErrorMessage.get_error_id("BUILDING_NOT_EXIST"))
@@ -131,14 +178,32 @@ class BuildingManager(object):
         )
 
     def speedup(self, building_id):
-        config = ConfigBuilding.get(building_id)
-        if not config:
-            raise GameException(ConfigErrorMessage.get_error_id("BUILDING_NOT_EXIST"))
+        """
+        建筑升级加速(立即完成建筑升级)
+            1 获取玩家该建筑数据， 数据不存在, 返回错误码
+            2 检测
+                是否已完成升级
+                是否是升级状态
+
+            3 计算加速花费, 并检测资源是否足够
+
+            4 完成升级
+                取消定时任务
+                调用回调接口完成升级
+                扣除资源
+
+        """
+        # config = ConfigBuilding.get(building_id)
+        # if not config:
+        #     raise GameException(ConfigErrorMessage.get_error_id("BUILDING_NOT_EXIST"))
 
         doc = MongoBuilding.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'buildings.{0}'.format(building_id): 1}
         )
+
+        if not doc:
+            raise GameException(ConfigErrorMessage.get_error_id("BUILDING_NOT_EXIST"))
 
         end_at = doc['buildings'][str(building_id)]['end_at']
         if not end_at:
@@ -155,7 +220,11 @@ class BuildingManager(object):
             self.levelup_callback(building_id)
 
     def levelup_callback(self, building_id):
-        # 定时任务回调
+        """
+        升级完成接口
+            完成建筑升级
+            同步信息给玩家
+        """
         MongoBuilding.db(self.server_id).update_one(
             {'_id': self.char_id},
             {
@@ -211,6 +280,9 @@ class BaseBuilding(object):
 
     def level_up(self):
         return self.bm.level_up(self.BUILDING_ID)
+
+    def current_effect(self):
+        return self.bm.current_effect(self.BUILDING_ID)
 
 
 # 俱乐部总部

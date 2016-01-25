@@ -13,7 +13,7 @@ from config.base import ConfigBase
 class BuildingLevel(object):
     __slots__ = ['level', 'up_condition_value', 'up_need_gold',
                  'up_need_minutes', 'up_need_items',
-                 'value1', 'value2']
+                 'effect', ]
 
     def __init__(self):
         self.level = 0
@@ -21,8 +21,7 @@ class BuildingLevel(object):
         self.up_need_gold = 0
         self.up_need_minutes = 0
         self.up_need_items = []
-        self.value1 = 0
-        self.value2 = 0
+        self.effect = {}
 
     @classmethod
     def new(cls, **kwargs):

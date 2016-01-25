@@ -18,6 +18,7 @@ from core.resource import Resource
 from core.mail import MailManager
 from core.package import Drop
 from core.training import TrainingBroadcast, TrainingExp, TrainingProperty, TrainingShop
+from core.lock import Lock, LockTimeOut
 
 from utils.api import Timerd
 from utils.functional import make_string_id
@@ -67,6 +68,8 @@ AUCTION_CANCEL_CONTENT = "您拍卖的{0}已经流拍了。拍品已经放入您
 
 TIMERD_CALLBACK_AUCTION = "/api/timerd/auction/"
 
+AUCTION_LOCK_KEY = "lock_auction_{0}"
+AUCTION_LOCK_TIME = 2
 
 class AuctionItem(object):
     def __init__(self):
@@ -328,6 +331,7 @@ class AuctionManager(object):
             MongoBidding.db(self.server_id).insert_one(doc)
 
     def search(self):
+        # TODO: condition query
         docs = MongoAuctionStaff.db(self.server_id).find()
         return [AuctionItem.load_from_data(self.server_id, doc) for doc in docs]
 
@@ -392,31 +396,35 @@ class AuctionManager(object):
 
             :type item_id : str
         """
-        doc = MongoAuctionStaff.db(self.server_id).find_one({'_id': item_id})
-        if not doc:
-            raise GameException(ConfigErrorMessage.get_error_id("AUCTION_ITEM_NOT_EXIST"))
+        try:
+            with Lock(self.server_id).lock(AUCTION_LOCK_TIME, AUCTION_LOCK_KEY.format(item_id)):
+                doc = MongoAuctionStaff.db(self.server_id).find_one({'_id': item_id})
+                if not doc:
+                    raise GameException(ConfigErrorMessage.get_error_id("AUCTION_ITEM_NOT_EXIST"))
 
-        item = AuctionItem.load_from_data(self.server_id, doc)
+                item = AuctionItem.load_from_data(self.server_id, doc)
 
-        if item.char_id != self.char_id:
-            raise GameException(ConfigErrorMessage.get_error_id("AUCTION_NOT_THE_OWNER"))
+                if item.char_id != self.char_id:
+                    raise GameException(ConfigErrorMessage.get_error_id("AUCTION_NOT_THE_OWNER"))
 
-        if item.bidder:
-            raise GameException(ConfigErrorMessage.get_error_id("AUCTION_BIDDING_NOW"))
+                if item.bidder:
+                    raise GameException(ConfigErrorMessage.get_error_id("AUCTION_BIDDING_NOW"))
 
-        # 删除拍卖物品数据
-        MongoAuctionStaff.db(self.server_id).delete_one({'_id': item_id})
-        # 取消定时任务
-        Timerd.cancel(item.key)
-        # 邮件通知, 返还staff
-        StaffManger(self.server_id, self.char_id).add_staff(item.id, item.exp, item.level, item.status, item.skills)
-        staff_name = ConfigStaff.get(doc['staff_id']).name
-        MailManager(self.server_id, self.char_id).add(
-            AUCTION_CANCEL_TITLE,
-            AUCTION_CANCEL_CONTENT.format(staff_name),
-        )
-        # 通知客户端从出售列表移除
-        self.send_sell_remove_notify(item_id)
+                # 删除拍卖物品数据
+                MongoAuctionStaff.db(self.server_id).delete_one({'_id': item_id})
+                # 取消定时任务
+                Timerd.cancel(item.key)
+                # 邮件通知, 返还staff
+                StaffManger(self.server_id, self.char_id).add_staff(item.id, item.exp, item.level, item.status, item.skills)
+                staff_name = ConfigStaff.get(doc['staff_id']).name
+                MailManager(self.server_id, self.char_id).add(
+                    AUCTION_CANCEL_TITLE,
+                    AUCTION_CANCEL_CONTENT.format(staff_name),
+                )
+                # 通知客户端从出售列表移除
+                self.send_sell_remove_notify(item_id)
+        except LockTimeOut:
+            GameException(ConfigErrorMessage.get_error_id("AUCTION_ITEM_OPERATING"))
 
     def bidding(self, item_id, price):
         """
@@ -453,75 +461,83 @@ class AuctionManager(object):
             :type item_id : str
             :type price : int
         """
-        sale = False
-        doc = MongoAuctionStaff.db(self.server_id).find_one({'_id': item_id})
-        if not doc:
-            raise GameException(ConfigErrorMessage.get_error_id("AUCTION_ITEM_NOT_EXIST"))
+        lock_key = item_id
+        try:
+            with Lock(self.server_id).lock(2, lock_key):
+                sale = False
+                doc = MongoAuctionStaff.db(self.server_id).find_one({'_id': item_id})
+                if not doc:
+                    raise GameException(ConfigErrorMessage.get_error_id("AUCTION_ITEM_NOT_EXIST"))
 
-        item = AuctionItem.load_from_data(self.server_id, doc)
+                item = AuctionItem.load_from_data(self.server_id, doc)
 
-        if StaffManger(self.server_id, self.char_id).has_staff(item.staff_id):
-            raise GameException(ConfigErrorMessage.get_error_id("AUCTION_STAFF_ALREADY_HAVE"))
+                if StaffManger(self.server_id, self.char_id).has_staff(item.staff_id):
+                    raise GameException(ConfigErrorMessage.get_error_id("AUCTION_STAFF_ALREADY_HAVE"))
 
-        if price < item.min_price:
-            raise GameException(ConfigErrorMessage.get_error_id("AUCTION_BIDDING_TOO_LOW"))
+                if price < item.min_price:
+                    raise GameException(ConfigErrorMessage.get_error_id("AUCTION_BIDDING_TOO_LOW"))
 
-        if item.bidding >= price:
-            raise GameException(ConfigErrorMessage.get_error_id("AUCTION_BIDDING_LOW_THAN_CURRENT"))
+                if item.bidding >= price:
+                    raise GameException(ConfigErrorMessage.get_error_id("AUCTION_BIDDING_LOW_THAN_CURRENT"))
 
-        if price >= item.max_price:
-            price = item.max_price
-            sale = True
+                if price >= item.max_price:
+                    price = item.max_price
+                    sale = True
 
-        bidding_doc = MongoBidding.db(self.server_id).find_one({'_id': self.char_id})
-        key = 'item_{0}'.format(item_id)
-        history_bid = bidding_doc.get(key, 0)
+                bidding_doc = MongoBidding.db(self.server_id).find_one({'_id': self.char_id})
+                key = 'item_{0}'.format(item_id)
+                history_bid = bidding_doc.get(key, 0)
 
-        need_gold = price - history_bid
-        if need_gold <= 0:
-            raise GameException(ConfigErrorMessage.get_error_id("AUCTION_BIDDING_MUST_GREATER_THAN_HISTORY"))
+                need_gold = price - history_bid
+                if need_gold <= 0:
+                    raise GameException(ConfigErrorMessage.get_error_id("AUCTION_BIDDING_MUST_GREATER_THAN_HISTORY"))
 
-        message = u"Auction Bidding {0} price {1}".format(item_id, need_gold)
-        with Resource(self.server_id, self.char_id).check(gold=-need_gold, message=message):
-            if sale:
-                # 竞标结束
-                item.finish()
-                # 取消定时任务
-                Timerd.cancel(item.key)
-            else:
-                # 更新物品竞拍信息
-                MongoAuctionStaff.db(self.server_id).update_one(
-                    {'_id': doc['_id']},
-                    {'$set': {'bidding': price, 'bidder': self.char_id}}
-                )
-                # 更新竞拍者列表信息
-                MongoBidding.db(self.server_id).update_one(
-                    {'_id': item_id},
-                    {
-                        {'$addToSet': {'items': item_id}},
-                        {'$set': {key: price}}
-                    }
-                )
+                message = u"Auction Bidding {0} price {1}".format(item_id, need_gold)
+                with Resource(self.server_id, self.char_id).check(gold=-need_gold, message=message):
+                    if sale:
+                        # 竞标结束
+                        item.finish()
+                        # 取消定时任务
+                        Timerd.cancel(item.key)
+                    else:
+                        # 更新物品竞拍信息
+                        MongoAuctionStaff.db(self.server_id).update_one(
+                            {'_id': doc['_id']},
+                            {'$set': {'bidding': price, 'bidder': self.char_id}}
+                        )
+                        # 更新竞拍者列表信息
+                        MongoBidding.db(self.server_id).update_one(
+                            {'_id': item_id},
+                            {
+                                {'$addToSet': {'items': item_id}},
+                                {'$set': {key: price}}
+                            }
+                        )
 
-                # 通知竞拍失败者 最新竞拍信息
-                bidder_docs = MongoBidding.db(self.server_id).find({'items': item.id})
-                for bidder in bidder_docs:
-                    if bidder['_id'] == self.char_id:
-                        continue
+                        # 通知竞拍失败者 最新竞拍信息
+                        bidder_docs = MongoBidding.db(self.server_id).find({'items': item.id})
+                        for bidder in bidder_docs:
+                            if bidder['_id'] != self.char_id:
+                                AuctionManager(self.server_id, bidder['_id']).send_bidding_list_notify([item.id])
 
-                    AuctionManager(self.server_id, bidder['_id']).send_bidding_list_notify([item.id])
+        except LockTimeOut:
+            raise GameException(ConfigErrorMessage.get_error_id("AUCTION_ITEM_OPERATING"))
 
     # 定时回调, 拍卖时间结束, 处理拍卖物品
     def callback(self, item_id):
         """
         竞拍定时回调
         """
-        doc = MongoAuctionStaff.db(self.server_id).find_one({'_id': item_id})
-        if not doc:
-            return
+        try:
+            with Lock(self.server_id).lock(2, item_id):
+                doc = MongoAuctionStaff.db(self.server_id).find_one({'_id': item_id})
+                if not doc:
+                    return
 
-        item = AuctionItem.load_from_data(self.server_id, doc)
-        item.finish()
+                item = AuctionItem.load_from_data(self.server_id, doc)
+                item.finish()
+        except LockTimeOut:
+            raise GameException(ConfigErrorMessage.get_error_id("AUCTION_ITEM_OPERATING"))
 
     def send_sell_list_notify(self, item_ids=None):
         """
