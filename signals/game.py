@@ -34,6 +34,7 @@ from core.active_value import ActiveValue
 from core.training_match import TrainingMatch
 from core.elite_match import EliteMatch
 from core.auction import AuctionManager
+from core.system import send_broadcast_notify
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
@@ -103,3 +104,5 @@ def game_start_handler(server_id, char_id, **kwargs):
 
     em = EliteMatch(server_id, char_id)
     em.elite_notify()
+
+    send_broadcast_notify(char_id)

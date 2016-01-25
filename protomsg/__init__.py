@@ -230,6 +230,7 @@ MESSAGE_TO_ID = {
     "StaffAuctionBiddingResponse": 2709,
     "StaffAuctionBidingListNotify": 2710,
     "StaffAuctionBidingRemoveNotify": 2711,
+    "BroadcastNotify": 2800,
 }
 
 ID_TO_MESSAGE = {
@@ -463,6 +464,7 @@ ID_TO_MESSAGE = {
     2709: "StaffAuctionBiddingResponse",
     2710: "StaffAuctionBidingListNotify",
     2711: "StaffAuctionBidingRemoveNotify",
+    2800: "BroadcastNotify",
 }
 
 PATH_TO_REQUEST = {
