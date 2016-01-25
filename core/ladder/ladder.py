@@ -191,18 +191,20 @@ class Ladder(object):
         if club_one_id != str(self.char_id):
             return
 
-        MailManager(self.server_id, self.char_id).add(
-            title="Ladder Match Video",
-            content=video,
-        )
-
-        StaffManger(self.server_id, self.char_id).update_winning_rate(result)
+        # MailManager(self.server_id, self.char_id).add(
+        #     title="Ladder Match Video",
+        #     content=video,
+        # )
 
         club_one = MongoLadder.db(self.server_id).find_one({'_id': str(club_one_id)})
         club_two = MongoLadder.db(self.server_id).find_one({'_id': str(club_two_id)})
 
+        StaffManger(self.server_id, self.char_id).update_winning_rate(result)
+        if not club_two['club_name']:
+            StaffManger(self.server_id, int(club_two['_id'])).update_winning_rate(result, False)
+
         match = LadderMatch(self.server_id, club_one, club_two)
-        match.end_match(win_club)
+        match.end_match(int(win_club))
 
         drop = Drop()
         drop.ladder_score = match.club_one_add_score

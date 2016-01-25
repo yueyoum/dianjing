@@ -39,7 +39,7 @@ def match(request):
     target_id = request._proto.id
 
     ladder = Ladder(server_id, char_id)
-    key, msg = ladder.match(target_id)
+    msg = ladder.match(target_id)
 
     response = LadderMatchResponse()
     response.ret = 0
@@ -62,7 +62,8 @@ def match_report(request):
 
     response = LadderMatchReportResponse()
     response.ret = 0
-    response.drop = drop
+    if drop:
+        response.drop.MergeFrom(drop)
 
     return ProtobufResponse(response)
 

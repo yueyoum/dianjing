@@ -112,40 +112,66 @@ class EliteMatch(object):
             doc['_id'] = self.char_id
             MongoEliteMatch.db(self.server_id).insert_one(doc)
 
-        self.cur_times = doc['cur_times']
-
     @classmethod
     def cronjob_clean_match_times(cls, server_id):
+        """
+        定时清除挑战次数
+        """
         for char_id in Character.get_recent_login_char_ids(server_id):
             doc = MongoEliteMatch.db(server_id).find_one({'_id': char_id})
 
             updater = {}
             for area_id, area_info in doc['areas'].iteritems():
                 for ch_id, ch_info in area_info['challenges']:
-                    key = 'areas.{0}.challenges.{1}.times'.format(area_id, ch_id)
-                    updater[key] = ConfigEliteMatch.get(int(ch_id)).max_times
+                    updater['areas.{0}.challenges.{1}.times'.format(area_id, ch_id)] = 0
 
             MongoEliteMatch.db(server_id).update_one(
                 {'_id': char_id},
                 {'$set': updater}
             )
 
-    def open_area(self, aid, send_notify=True):
+    def refresh_challenge_times(self, area_id, challenge_id):
+        MongoEliteMatch.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {'areas.{0}.challenges.{1}.times'.format(area_id, challenge_id): 0}}
+        )
+
+        self.elite_notify(area_id=area_id)
+
+    def open_area(self, aid):
+        """
+        开放精英赛大区
+            这个函数由挑战赛大区通关后调用， 用来开启当前关卡精英赛
+        """
+        # 获取大区配置
         config = ConfigEliteArea.get(aid)
         if not config:
-            return
+            raise GameException(ConfigErrorMessage.get_error_id("ELITE_CONFIG_NOT_EXIST"))
 
+        # 获取玩家数据
         doc = MongoEliteMatch.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'areas.{0}'.format(aid): 1}
         )
 
+        # 如果已经开启， 直接返回
         if str(aid) in doc['areas']:
             return
 
+        # 未开启， 开启， 添加到 玩家数据库
         updater = {
             'areas.{0}'.format(aid): {
-                str(config.first_match_id()): 0
+                'challenges': {
+                    str(config.first_match_id()): {
+                        'stars': 0,
+                        'times': 0,
+                    }
+                },
+                'packages': {
+                    '1': True,
+                    '2': True,
+                    '3': True,
+                }
             }
         }
 
@@ -154,26 +180,15 @@ class EliteMatch(object):
             {'$set': updater}
         )
 
-        # if send_notify:
-        #     self.send_notify(area_id=aid)
-
-    # def cost_cur_times(self):
-    #     if self.cur_times <= 0:
-    #         raise GameException(ConfigErrorMessage.get_error_id("ELITE_TOTAL_NO_TIMES"))
-    #
-    #     self.cur_times -= 1
-    #     # TODO lock
-    #     MongoEliteMatch.db(self.server_id).update_one(
-    #         {'_id': self.char_id},
-    #         {'$set': {'cur_times': self.cur_times}}
-    #     )
-    #
-    #     self.send_times_notify()
+        self.elite_notify(area_id=aid)
 
     def start(self, area_id, challenge_id):
+        """
+        开始精英赛关卡
+        """
         # 判断大区是否存在
         if not ConfigEliteArea.get(area_id):
-            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_AREA_NOT_EXIST"))
+            raise GameException(ConfigErrorMessage.get_error_id("ELITE_CONFIG_NOT_EXIST"))
 
         # 获取玩家数据
         doc = MongoEliteMatch.db(self.server_id).find_one(
@@ -183,16 +198,16 @@ class EliteMatch(object):
 
         # 判断大区是否已开启
         if not doc['areas'].get(str(area_id), {}):
-            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_AREA_NOT_OPEN"))
+            raise GameException(ConfigErrorMessage.get_error_id("ELITE_AREA_NOT_OPEN"))
 
         # 判断是否已开方关卡
-        elite = doc['areas']['challenges'].get(str(challenge_id), {})
+        elite = doc['areas'][str(area_id)]['challenges'].get(str(challenge_id), {})
         if not elite:
-            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NOT_OPEN"))
+            raise GameException(ConfigErrorMessage.get_error_id("ELITE_MATCH_NOT_OPEN"))
 
         # 挑战次数检查
-        if elite.get('times', 0) >= ConfigEliteMatch.get(challenge_id):
-            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_WITHOUT_TIMES"))
+        if elite.get('times', 0) >= ConfigEliteMatch.get(challenge_id).max_times:
+            raise GameException(ConfigErrorMessage.get_error_id("ELITE_TOTAL_NO_TIMES"))
 
         # 体力检查
         doc_char = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'energy': 1})
@@ -209,6 +224,9 @@ class EliteMatch(object):
         return msg
 
     def report(self, key, win_club, result):
+        """
+        精英赛结果汇报
+        """
         # 解析key
         club_one, area_id, challenge_id = str(key).split(',')
 
@@ -217,19 +235,14 @@ class EliteMatch(object):
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         # 更新员工胜率
-        StaffManger(self.server_id, self.char_id).update_winning_rate(result, win_club == club_one)
+        StaffManger(self.server_id, self.char_id).update_winning_rate(result)
 
+        ch = Challenge(self.server_id, self.char_id)
         # 扣除能量
-        MongoCharacter.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$inc': {'energy.power': -ELITE_MATCH_COST}}
-        )
-
-        # 检查重能
-        Challenge(self.server_id, self.char_id).check_energize()
+        ch.change_energy(-ELITE_MATCH_COST)
 
         # 更新挑战次数
-        updater = {'areas.{0}.{1}.times'.format(area_id, challenge_id): 1}
+        updater = {'areas.{0}.challenges.{1}.times'.format(area_id, challenge_id): 1}
         MongoEliteMatch.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$inc': updater}
@@ -254,24 +267,17 @@ class EliteMatch(object):
 
             setter = {}
             # 判断是否需要更新星级
-            if stars > doc['areas'][area_id].get(challenge_id, {}).get('stars', 0):
-                setter['areas.{0}.{1}.stars'.format(area_id, challenge_id)] = stars
+            if stars > doc['areas'][area_id]['challenges'].get(challenge_id, {}).get('stars', 0):
+                setter['areas.{0}.challenges.{1}.stars'.format(area_id, challenge_id)] = stars
 
             next_challenge_id = int(challenge_id) + 1
-            next_area_id = int(area_id) + 1
 
             # 如果下一关存在
             if ConfigEliteMatch.get(next_challenge_id):
-                # 如果是下一大区的， 开启新大区
-                if ConfigEliteArea.get(int(area_id) + 1) <= next_challenge_id:
-                    setter['areas.{0}.{1}'.format(next_area_id, next_challenge_id)] = {'stars': 0,
-                                                                                       'times': 0,
-                                                                                       'packages': []}
-                # 如果是当前大区的， 开启
-                else:
-                    setter['areas.{0}.{1}'.format(area_id, next_challenge_id)] = {'stars': 0,
-                                                                                  'times': 0,
-                                                                                  'packages': []}
+                # 如果当前大关的， 开启
+                if ConfigEliteArea.get(int(area_id)).last_match_id() >= next_challenge_id:
+                    setter['areas.{0}.challenges.{1}'.format(area_id, next_challenge_id)] = {'stars': 0,
+                                                                                             'times': 0}
             # 更新数据
             if setter:
                 MongoEliteMatch.db(self.server_id).update_one(
@@ -280,7 +286,7 @@ class EliteMatch(object):
                 )
 
             # 同步到客户端
-            self.challenge_notify(act=ACT_UPDATE)
+            self.elite_notify(area_id=area_id)
 
             # 通关奖励
             drop = Drop.generate(ConfigEliteMatch.get(int(challenge_id)).reward)
@@ -299,66 +305,70 @@ class EliteMatch(object):
         return None
 
     def star_reward(self, area_id, index):
-        pass
+        """
+        领取星级奖励
+        """
+        # 获取数据
+        doc = MongoEliteMatch.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'areas.{0}.packages.{1}'.format(area_id, index+1): 1},
+            {'areas.{0}.challenges'.format(area_id): 1},
+        )
 
-    # def send_notify(self, area_id=None, match_id=None):
-    #     if area_id:
-    #         act = ACT_UPDATE
-    #         area_ids = [area_id]
-    #     else:
-    #         act = ACT_INIT
-    #         area_ids = ConfigEliteArea.INSTANCES.keys()
-    #
-    #     def get_match_ids(_aid):
-    #         if area_id:
-    #             if match_id:
-    #                 return [match_id]
-    #             return ConfigEliteArea.get(area_id).match_ids
-    #
-    #         return ConfigEliteArea.get(_aid).match_ids
-    #
-    #     doc = MongoEliteMatch.db(self.server_id).find_one({'_id': self.char_id})
-    #
-    #     notify = EliteNotify()
-    #     notify.act = act
-    #     for aid in area_ids:
-    #         notify_area = notify.area.add()
-    #         notify_area.id = aid
-    #
-    #         matchs = doc['areas'].get(str(aid), {})
-    #         if not matchs:
-    #             notify_area.status = ELITE_AREA_NOT_OPEN
-    #             continue
-    #
-    #         if set([int(i) for i in matchs]) == set(ConfigEliteArea.get(aid).match_ids):
-    #             notify_area.status = ELITE_AREA_FINISH
-    #         else:
-    #             notify_area.status = ELITE_AREA_OPEN
-    #
-    #         for mid in get_match_ids(aid):
-    #             cur_times = matchs.get(str(mid), -1)
-    #
-    #             notify_area_match = notify_area.match.add()
-    #             notify_area_match.id = mid
-    #             notify_area_match.cur_times = cur_times
-    #     MessagePipe(self.char_id).put(msg=notify)
+        # 判断是否有星级奖励（实际上是检测是否已开通大区）
+        star_reward = doc['areas'].get(str(area_id), {}).get('packages', {})
+        if not star_reward:
+            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_REWARD_NOT_EXIST"))
 
-    def challenge_notify(self, act=ACT_INIT):
-        doc = MongoEliteMatch.db(self.server_id).find_one({'_id': self.char_id})
+        # 已领取
+        if not star_reward[str(index+1)]:
+            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_REWARD_HAVE_GET"))
+
+        star_count = 0
+        # 计算总星数
+        for ch_id, ch_info in doc['areas'][str(area_id)]['challenges'].iteritems():
+            star_count += ch_info['stars']
+
+        conf = ConfigEliteArea.get(area_id)
+        # 星数不足
+        if conf.star_reward[index]['star'] > star_count:
+            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_REWARD_STARS_NOT_ENOUGH"))
+
+        # 发放奖励
+        drop = Drop.generate(conf.star_reward[index]['reward'])
+        Resource(self.server_id, self.char_id).save_drop(drop)
+
+        return drop.make_protomsg()
+
+    def elite_notify(self, act=ACT_INIT, area_id=None):
+        if area_id:
+            projection = {'areas.{0}'.format(area_id): 1}
+            act = ACT_UPDATE
+        else:
+            projection = {'areas': 1}
+
+        doc = MongoEliteMatch.db(self.server_id).find_one({'_id': self.char_id}, projection)
 
         notify = EliteNotify()
         notify.act = act
-        for k, v in doc['areas'].iteritems():
-            notify_area = notify.area.add()
-            notify_area.id = k
-            notify_area.package_one = v['packages']['1']
-            notify_area.package_two = v['packages']['2']
-            notify_area.package_three = v['packages']['3']
+        if doc['areas']:
+            for k, v in doc['areas'].iteritems():
+                notify_area = notify.area.add()
+                notify_area.id = int(k)
+                notify_area.package_one = v['packages']['1']
+                notify_area.package_two = v['packages']['2']
+                notify_area.package_three = v['packages']['3']
 
-            for challenge_id, info in v['challenges'].iteritems():
-                notify_challenge = notify_area.challenge.add()
-                notify_challenge.id = challenge_id
-                notify_challenge.times = info['times']
-                notify_challenge.stars = info['stars']
+                for challenge_id, info in v['challenges'].iteritems():
+                    notify_challenge = notify_area.challenge.add()
+                    notify_challenge.id = int(challenge_id)
+                    notify_challenge.times = info['times']
+                    notify_challenge.stars = info['stars']
+        else:
+            notify_area = notify.area.add()
+            notify_area.id = 1
+            notify_area.package_one = True
+            notify_area.package_two = True
+            notify_area.package_three = True
 
         MessagePipe(self.char_id).put(msg=notify)

@@ -649,8 +649,15 @@ class StaffManger(object):
         """
         更新玩家 Staff 种族胜率
         """
+        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1})
+        staff_ids = [int(i) for i in doc.get('staffs', {}).keys()]
+
         updater = {}
         for result in results:
+            # 员工是否还在
+            if result.staff_one not in staff_ids:
+                continue
+
             if one:
                 # 挑战者
                 race_two = ConfigStaff.get(result.staff_two).race

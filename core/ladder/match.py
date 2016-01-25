@@ -142,7 +142,7 @@ class LadderMatch(object):
             target_log = (3, (self.club_one_object.name,))
 
         ladder_one = Ladder(self.server_id, int(self.club_one_object.id))
-        ladder_one.add_score(self.club_one_add_score, send_notify=False)
+        ladder_one.add_score(self.club_one_add_score, send_notify=True)
         ladder_one.add_log(self_log, send_notify=False)
 
         if isinstance(self.club_two_object, Club):

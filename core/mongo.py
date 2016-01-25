@@ -90,8 +90,9 @@ class MongoCharacter(BaseDocument):
         'buy_slots': 0,
         # 体力
         'energy': {
-            'key': "",
-            'power': 0,
+            'key': "",              # 充能回调key
+            'power': 0,             # 体力
+            'times': 0,             # 当天花费钻石充能次数
         },
     }
 
@@ -113,9 +114,9 @@ class MongoChallenge(BaseDocument):
                     }
                 },
                 'packages': {
-                    '1': False,
-                    '2': False,
-                    '3': False,
+                    '1': True,
+                    '2': True,
+                    '3': True,
                 }
             }
         }
@@ -561,20 +562,20 @@ class MongoEliteMatch(BaseDocument):
     DOCUMENT = {
         '_id': null,
         # 大区， {area_id: {'challenge_id': {'star': 0}},
-        'areas': {
+        'areas': {}
+    }
+
+    AREA_DOCUMENT = {
+        'challenges': {
             '1': {
-                'challenges': {
-                    '1': {
-                        'stars': 0,     # 历史最佳记录 0为未通过
-                        'times': 0,     # 当天挑战次数， 每天刷新
-                    }
-                },
-                'packages': {
-                    '1': False,
-                    '2': False,
-                    '3': False,
-                }
+                'stars': 0,     # 历史最佳记录 0为未通过
+                'times': 0,     # 当天挑战次数， 每天刷新
             }
+        },
+        'packages': {
+            '1': True,
+            '2': True,
+            '3': True,
         }
     }
 

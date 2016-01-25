@@ -92,20 +92,20 @@ def get_detail(request):
     response.ret = 0
 
     for k, v in staffs.iteritems():
-        print k, v
         s = response.detail.add()
-        s.staff_id = k
+        s.staff_id = int(k)
+        s.rate_human = 0
+        s.rate_bug = 0
+        s.rate_god = 0
 
-        if v['wining_rate']:
+        if v['winning_rate']:
             for race, value in v['winning_rate'].iteritems():
-                rate = s.rate.add()
-                rate.race = race
-                rate.rate = value['win'] * 100 / value['total']
-        else:
-            for i in range(1, 4):
-                rate = s.rate.add()
-                rate.race = i
-                rate.rate = 0
+                if int(race) == 1:
+                    s.rate_human = value.get('win', 0) * 100 / value['total']
+                elif int(race) == 2:
+                    s.rate_bug = value.get('win', 0) * 100 / value['total']
+                elif int(race) == 3:
+                    s.rate_god = value.get('win', 0) * 100 / value['total']
 
     return ProtobufResponse(response)
 
