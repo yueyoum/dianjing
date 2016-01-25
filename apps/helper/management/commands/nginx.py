@@ -26,7 +26,7 @@ server {
     }
 
     location /upload/ {
-        alias %s/static/;
+        alias %s/;
     }
 
     location / {
@@ -38,4 +38,4 @@ server {
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        sys.stdout.write(str_example % (settings.BASE_DIR, settings.BASE_DIR))
+        sys.stdout.write(str_example % (settings.BASE_DIR, settings.UPLOAD_DIR))
