@@ -98,18 +98,18 @@ def get_detail(request):
         s.rate_bug = 0
         s.rate_god = 0
 
-        if v.get('winning_rate', {}):
+        if 'winning_rate' in v:
             tmp_dict = v['winning_rate']
         else:
             tmp_dict = v['race_win_rate']
 
         for race, value in tmp_dict.iteritems():
             if int(race) == 1:
-                s.rate_human = value.get('win', 0) * 100 / value['total']
+                s.rate_human = value.get('win', 0) * 100 / value.get('total', 1)
             elif int(race) == 2:
-                s.rate_bug = value.get('win', 0) * 100 / value['total']
+                s.rate_bug = value.get('win', 0) * 100 / value.get('total', 1)
             elif int(race) == 3:
-                s.rate_god = value.get('win', 0) * 100 / value['total']
+                s.rate_god = value.get('win', 0) * 100 / value.get('total', 1)
 
     return ProtobufResponse(response)
 
