@@ -38,6 +38,7 @@ NORMAL_ENERGIZE_NUM = 6                            # 定时能量回复
 BUY_ENERGY_DIAMOND_COST = 50
 BUY_ENERGY_ENERGIZE = 20
 BUY_ENERGY_TIMES_ADD = 1
+MAX_DAY_BUY_ENERGY_TIMES = 4
 
 
 class ChallengeNPCStaff(AbstractStaff):
@@ -357,7 +358,7 @@ class Challenge(object):
         """
         # 是否还有购买次数
         doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'energy': 1})
-        if doc['energy']['times'] > 4:
+        if doc['energy']['times'] >= MAX_DAY_BUY_ENERGY_TIMES:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NO_BUY_ENERGY_TIMES"))
 
         # 扣除花费， 添加体力和购买次数
