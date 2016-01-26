@@ -147,7 +147,7 @@ class Challenge(object):
                 tmp_area_id = int(area_id)
 
         tmp_ch_id = 0
-        for ch_id in doc['areas'].get(str(tmp_area_id), {}).keys():
+        for ch_id in doc['areas'].get(str(tmp_area_id), {}).get("challenges", {}).keys():
             if tmp_ch_id < int(ch_id):
                 tmp_ch_id = int(ch_id)
 
