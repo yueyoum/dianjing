@@ -33,9 +33,8 @@ def clean_match_times(*args):
         logger.close()
 
 
-@uwsgidecorators.cron(30, -1, -1, -1, -1, target='spooler')
 def energy_energize(*args):
-    logger = Logger("character energize")
+    logger = Logger("challenge energize")
     logger.write("Start")
 
     try:
@@ -48,3 +47,6 @@ def energy_energize(*args):
         logger.write("Done")
     finally:
         logger.close()
+
+uwsgidecorators.cron(0, -1, -1, -1, -1, target="spooler")(energy_energize)
+uwsgidecorators.cron(30, -1, -1, -1, -1, target="spooler")(energy_energize)

@@ -56,7 +56,7 @@ def challenge(request):
     club_id = request._proto.club_id
 
     l = LeagueManger(server_id, char_id)
-    msg = l.challenge(club_id)
+    msg = l.start(club_id)
 
     response = LeagueChallengeResponse()
     response.ret = 0

@@ -46,7 +46,7 @@ from utils.functional import make_string_id
 MAX_CHALLENGE_TIMES = 7
 MAX_MATCH_CLUB = 6
 
-REFRESH_DIAMOND_COST = 200
+REFRESH_DIAMOND_COST = 100
 REFRESH_TYPE_NORMAL = 1
 REFRESH_TYPE_DIAMOND = 2
 REFRESH_TIME = 6 * 60 * 60
@@ -483,7 +483,7 @@ class LeagueManger(object):
         self.notify_user_info()
         return drop.make_protomsg()
 
-    def challenge(self, club_id):
+    def start(self, club_id):
         """
         挑战俱乐部
         """

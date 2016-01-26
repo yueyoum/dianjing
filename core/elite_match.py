@@ -31,7 +31,7 @@ from protomsg.elite_match_pb2 import (
 )
 
 
-ELITE_MATCH_COST = 5
+ELITE_MATCH_COST = 12
 
 
 class EliteNPCStaff(AbstractStaff):
