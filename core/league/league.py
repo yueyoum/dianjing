@@ -523,7 +523,7 @@ class LeagueManger(object):
         """
         doc = MongoLeague.db(self.server_id).find_one(
             {'_id': self.char_id},
-            {'match_club.{0}.staffs'.format(club_id): 1}
+            {'match_club.{0}'.format(club_id): 1}
         )
         if doc['match_club'].get(club_id, {}).get('npc_club', False):
             return doc['match_club'].get(club_id, {}).get('staffs', {})
