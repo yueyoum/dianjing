@@ -31,6 +31,11 @@ from config.settings import LADDER_LOG_MAX_AMOUNT, LADDER_NPC_AMOUNT, LADDER_DEF
 from protomsg.ladder_pb2 import LadderNotify
 
 
+LADDER_BUY_CHALLENGE_TIMES = 1
+LADDER_BUY_CHALLENGE_TIMES_COST = 20
+LADDER_MAX_BUY_CHALLENGE_TIMES = 5
+
+
 class Ladder(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
@@ -62,6 +67,18 @@ class Ladder(object):
             )
 
             Ladder(server_id, cid).add_score(config.reward_score)
+
+    @classmethod
+    def cronjob_refresh_remained_times(cls, server_id):
+        char_ids = Character.get_recent_login_char_ids(server_id)
+        for char_id in char_ids:
+            doc = MongoLadder.db(server_id).find_one({'_id': str(char_id)}, {'order': 1})
+            if not doc:
+                continue
+            MongoLadder.db(server_id).update_one(
+                {'_id': str(char_id)},
+                {'$set': {'remained_times': LADDER_DEFAULT_MATCH_TIMES}}
+            )
 
     @classmethod
     def get_top_clubs(cls, server_id, amount=8):
@@ -151,7 +168,13 @@ class Ladder(object):
         if send_notify:
             self.send_notify()
 
+    def get_self_ladder_data(self):
+        return MongoLadder.db(self.server_id).find_one({'_id': str(self.char_id)})
+
     def match(self, target_id):
+        if self.get_self_ladder_data()['remained_times'] < 1:
+            raise GameException(ConfigErrorMessage.get_error_id("LADDER_NOT_CHALLENGE_TIMES"))
+
         if target_id == str(self.char_id):
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_CANNOT_MATCH_SELF"))
 
@@ -205,6 +228,13 @@ class Ladder(object):
 
         match = LadderMatch(self.server_id, club_one, club_two)
         match.end_match(int(win_club))
+
+        MongoLadder.db(self.server_id).update_one(
+            {'_id': str(self.char_id)},
+            {'$inc': {'remained_times': -1}}
+        )
+
+        self.send_notify()
 
         drop = Drop()
         drop.ladder_score = match.club_one_add_score

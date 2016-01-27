@@ -319,8 +319,7 @@ class EliteMatch(object):
         # 获取数据
         doc = MongoEliteMatch.db(self.server_id).find_one(
             {'_id': self.char_id},
-            {'areas.{0}.packages.{1}'.format(area_id, index+1): 1},
-            {'areas.{0}.challenges'.format(area_id): 1},
+            {'areas.{0}'.format(area_id): 1}
         )
 
         # 判断是否有星级奖励（实际上是检测是否已开通大区）
@@ -346,6 +345,12 @@ class EliteMatch(object):
         drop = Drop.generate(conf.star_reward[index]['reward'])
         Resource(self.server_id, self.char_id).save_drop(drop)
 
+        MongoEliteMatch.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {'areas.{0}.packages.{1}'.format(area_id, index+1): False}}
+        )
+
+        self.elite_notify(area_id=area_id)
         return drop.make_protomsg()
 
     def elite_notify(self, act=ACT_INIT, area_id=None):

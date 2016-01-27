@@ -48,3 +48,20 @@ def ladder_store_clean_buy_times(*args):
         logger.write("Done")
     finally:
         logger.close()
+
+
+@uwsgidecorators.cron(0, 0, -1, -1, -1, target="spooler")
+def ladder_refresh_remained_times(*args):
+    logger = Logger("ladder_refresh_remained_times")
+    logger.write("Start")
+
+    try:
+        for s in Server.opened_server_ids():
+            Ladder.cronjob_refresh_remained_times(s)
+            logger.write("Server {0} finish".format(s))
+    except:
+        logger.error(traceback.format_exc())
+    else:
+        logger.write("Done")
+    finally:
+        logger.close()

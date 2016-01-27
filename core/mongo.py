@@ -422,7 +422,8 @@ class MongoLadder(BaseDocument):
         'club_name': "",
         'club_flag': 0,
         'manager_name': "",
-        'staffs': []
+        'staffs': [],
+        'buy_challenge_times': 0,
     }
 
     COLLECTION = "ladder"

@@ -351,6 +351,8 @@ class Challenge(object):
             {'$set': {'areas.{0}.packages.{1}'.format(area_id, index+1): False}}
         )
 
+        self.challenge_notify(area_id=area_id)
+
         return drop.make_protomsg()
 
     def buy_energy(self):

@@ -107,7 +107,7 @@ class TrainingMatch(object):
 
         doc = MongoTrainingMatch.document()
         doc['_id'] = self.char_id
-        doc['status'] = {'1': 1}
+        doc['status'] = {'0': TRAINING_MATCH_CLUB_OPEN}
         doc['clubs'] = [c.dumps() for c in clubs]
 
         MongoTrainingMatch.db(self.server_id).insert_one(doc)
