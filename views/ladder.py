@@ -18,6 +18,7 @@ from protomsg.ladder_pb2 import (
     LadderStoreBuyResponse,
     LadderStoreRefreshResponse,
     LadderMatchReportResponse,
+    LadderBuyChallengeTimesResponse,
 )
 
 
@@ -112,3 +113,16 @@ def store_buy(request):
     response = LadderStoreBuyResponse()
     response.ret = 0
     return ProtobufResponse(response)
+
+
+def buy_times(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    s = Ladder(server_id, char_id)
+    s.buy_challenge_times()
+
+    response = LadderBuyChallengeTimesResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+

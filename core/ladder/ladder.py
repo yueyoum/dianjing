@@ -269,6 +269,24 @@ class Ladder(object):
         if send_notify:
             self.send_notify()
 
+    def buy_challenge_times(self):
+        data = self.get_self_ladder_data()
+        if data.get('buy_challenge_times', 0) >= LADDER_MAX_BUY_CHALLENGE_TIMES:
+            raise GameException(ConfigErrorMessage.get_error_id("LADDER_NO_CHALLENGE_BUY_TIMES"))
+
+        from core.resource import Resource
+        r = Resource(self.server_id, self.char_id)
+        with r.check(diamond=-LADDER_BUY_CHALLENGE_TIMES_COST,
+                     message="buy ladder challenge times cost {0}".format(LADDER_BUY_CHALLENGE_TIMES_COST)):
+            MongoLadder.db(self.server_id).update_one(
+                {'_id': str(self.char_id)},
+                {'$inc': {'buy_challenge_times': 1,
+                          'remained_times': 1
+                          }}
+            )
+
+            self.send_notify()
+
     def send_notify(self):
         doc = MongoLadder.db(self.server_id).find_one({'_id': str(self.char_id)})
 

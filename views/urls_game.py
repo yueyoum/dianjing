@@ -134,6 +134,7 @@ urlpatterns = [
     url(r'^ladder/store/buy/$', views.ladder.store_buy),
     url(r'^ladder/store/refresh/$', views.ladder.store_refresh),
     url(r'^ladder/store/report/$', views.ladder.match_report),
+    url(r'^ladder/buy/$', views.ladder.buy_times),
 
     url(r'^cup/join/$', views.cup.join),
     url(r'^cup/infomation/$', views.cup.information),
