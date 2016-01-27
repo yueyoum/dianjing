@@ -38,7 +38,7 @@ TIMERD_CALLBACK_PATH = '/api/timerd/training/exp/'
 
 def current_got_exp(passed_seconds, current_building_level):
     config_building_level = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(current_building_level)
-    return passed_seconds / 60 * config_building_level.value1
+    return passed_seconds / 60 * config_building_level.effect.get("9", 100) / 100
 
 
 class ExpSlotStatus(object):
@@ -74,14 +74,15 @@ class ExpSlotStatus(object):
         return current_got_exp(passed_seconds, self.current_building_level)
 
     def _check_slot_id(self):
-        max_building_level = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).max_levels
-        max_slots_amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(max_building_level).value2
+        config = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID)
+        max_building_level = config.max_levels
+        max_slots_amount = config.get_level(max_building_level).effect.get("8", 0)
         if self.slot_id > max_slots_amount:
             self.status = ExpSlotStatus.NOT_EXIST
             return False
 
-        current_slots_amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(
-            self.current_building_level).value2
+        current_slots_amount = config.get_level(
+            self.current_building_level).effect.get("8", 0)
         if self.slot_id > current_slots_amount:
             self.status = ExpSlotStatus.NOT_OPEN
             return False
@@ -154,8 +155,9 @@ class TrainingExp(object):
         current_level = BuildingTrainingCenter(self.server_id, self.char_id).current_level()
         old_level = current_level - 1
 
-        current_slot_amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(current_level).value2
-        old_slot_amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(old_level).value2
+        config = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID)
+        current_slot_amount = config.get_level(current_level).effect.get("8", 0)
+        old_slot_amount = config.get_level(old_level).effect.get("8", 0)
 
         if current_slot_amount <= old_slot_amount:
             return
@@ -350,8 +352,9 @@ class TrainingExp(object):
         self.send_notify(slot_ids=[slot_id])
 
     def send_notify(self, slot_ids=None):
-        building_max_level = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).max_levels
-        max_slot_amount = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(building_max_level).value2
+        config = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID)
+        building_max_level = config.max_levels
+        max_slot_amount = config.get_level(building_max_level).effect.get("8", 0)
 
         current_building_level = BuildingTrainingCenter(self.server_id, self.char_id).current_level()
 

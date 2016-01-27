@@ -14,7 +14,6 @@ from core.signals import game_start_signal
 from core.character import Character
 from core.club import Club
 from core.staff import StaffRecruit, StaffManger
-from core.skill import SkillManager
 from core.training import TrainingExp, TrainingProperty, TrainingBroadcast, TrainingShop, TrainingSponsor
 from core.item import ItemManager
 from core.challenge import Challenge
@@ -35,6 +34,7 @@ from core.active_value import ActiveValue
 from core.training_match import TrainingMatch
 from core.elite_match import EliteMatch
 from core.auction import AuctionManager
+from core.system import send_broadcast_notify
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
@@ -60,7 +60,6 @@ def game_start_handler(server_id, char_id, **kwargs):
     club.send_staff_slots_notify()
 
     StaffRecruit(server_id, char_id).send_notify()
-    SkillManager(server_id, char_id).send_notify()
 
     TrainingExp(server_id, char_id).send_notify()
     TrainingProperty(server_id, char_id).send_notify()
@@ -105,3 +104,5 @@ def game_start_handler(server_id, char_id, **kwargs):
 
     em = EliteMatch(server_id, char_id)
     em.elite_notify()
+
+    send_broadcast_notify(char_id)

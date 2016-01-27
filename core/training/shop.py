@@ -84,7 +84,7 @@ class Shop(object):
 
     def add_goods(self):
         im = ItemManager(self.server_id, self.char_id)
-        goods_amount = im.get_simple_item_amount_by_oid(self.config.goods)
+        goods_amount = im.get_amount_by_oid(self.config.goods)
 
         if not goods_amount:
             raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_EXIST"))
@@ -94,7 +94,7 @@ class Shop(object):
             if goods_amount > need_amount:
                 goods_amount = need_amount
 
-            im.remove_simple_item(self.config.goods, goods_amount)
+            im.remove_items_by_oid([(self.config.goods, goods_amount)])
             self.goods += goods_amount
 
             return False
@@ -118,8 +118,8 @@ class Shop(object):
 
             self.goods = goods_amount
 
-        with im.remove_simple_item_context(self.config.goods, goods_amount):
-            self._start()
+        im.remove_items_by_oid([(self.config.goods, goods_amount)])
+        self._start()
 
         return True
 

@@ -310,7 +310,9 @@ class MongoRecruit(BaseDocument):
         # staffs 记录刷新出来的员工
         'staffs': [],
         # times 记录刷新次数 tp: times
-        'times': {}
+        'times': {},
+        # 记录本次刷新中的 已经招募过的
+        'recruited': [],
     }
 
     COLLECTION = "recruit"
@@ -449,11 +451,8 @@ class MongoCupClub(BaseDocument):
         # club id
         '_id': null,
         # 开始前一小时把玩家的阵容拷贝过来
-        'staffs': "",
-        # 下面几项只有NPC才有
-        'club_name': "",
-        'manager_name': "",
-        'club_flag': 1,
+        'is_npc': False,
+        'data': '',
     }
 
     COLLECTION = "cup_club"

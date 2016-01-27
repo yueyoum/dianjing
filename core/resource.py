@@ -54,7 +54,7 @@ class Resource(object):
 
         im = ItemManager(self.server_id, self.char_id)
         for _id, _amount in drop.items:
-            im.add_item(_id, _amount)
+            im.add_item(_id, amount=_amount)
 
         for _id, _amount in drop.staff_cards:
             im.add_staff_card(_id, 0, _amount)

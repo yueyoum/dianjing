@@ -292,7 +292,7 @@ class Cup(object):
         if len(char_ids) < 32:
             need_npc_amount = 32 - len(char_ids)
             npcs = ConfigNPC.random_npcs(need_npc_amount, 1)
-            total_ids = char_ids
+            npc_ids = []
 
             docs = []
             for n in npcs:
@@ -302,15 +302,31 @@ class Cup(object):
                 doc['_id'] = npc_club.id
                 doc['data'] = npc_club.dumps()
                 docs.append(doc)
-                total_ids.append(npc_club.id)
+                npc_ids.append(npc_club.id)
+
+            for char_id in char_ids:
+                doc = MongoCupClub.document()
+                doc['is_npc'] = False
+                doc['_id'] = char_id
+                doc['data'] = ''
+                docs.append(doc)
 
             MongoCupClub.db(server_id).insert_many(docs)
-            # TODO: 玩家与npc对战安排
+
+            insert_ids = []
+            while len(insert_ids) < 32:
+                if char_ids:
+                    insert_ids.append(char_ids.pop(0))
+
+                if npc_ids:
+                    insert_ids.append(npc_ids.pop(0))
+
             MongoCup.db(server_id).update_one(
                 {'_id': 1},
-                {'$set': {'levels.{0}'.format(CUP_PROCESS_32): total_ids}}
+                {'$set': {'levels.{0}'.format(CUP_PROCESS_32): insert_ids}}
             )
         else:
+            # TODO：报名人数高于32处理
             pass
 
     @staticmethod

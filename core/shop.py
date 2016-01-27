@@ -35,4 +35,4 @@ class ItemShop(object):
         check['message'] = u"Buy Item {0}, amount {1}".format(item_id, amount)
 
         with Resource(self.server_id, self.char_id).check(**check):
-            ItemManager(self.server_id, self.char_id).add_item(item_id, amount)
+            ItemManager(self.server_id, self.char_id).add_item(item_id, amount=amount)

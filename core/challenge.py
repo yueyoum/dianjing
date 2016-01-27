@@ -24,7 +24,6 @@ from core.resource import Resource
 from core.signals import challenge_match_signal
 
 from utils.message import MessagePipe
-# from utils.api import Timerd
 
 from config import ConfigChallengeType, ConfigChallengeMatch, ConfigStaff, ConfigErrorMessage
 
@@ -32,15 +31,14 @@ from protomsg.challenge_pb2 import ChallengeNotify, ChallengeEnergyNotify
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 
-CHALLENGE_MATCH_COST = 3                # 挑战赛花费体力值
+CHALLENGE_MATCH_COST = 6                   # 挑战赛花费体力值
 
-NORMAL_ENERGIZE_TIME = 5 * 60           # 普通充能耗时
-VIP_ENERGIZE_TIME = 4 * 60              # vip 充能耗时
+NORMAL_ENERGIZE_NUM = 6                            # 定时能量回复
 
-ENERGIZE_NUM = 1                        # 定时能量回复
-
-
-TIMERD_CALLBACK_PATH = '/api/timerd/challenge/energy/'
+BUY_ENERGY_DIAMOND_COST = 50
+BUY_ENERGY_ENERGIZE = 20
+BUY_ENERGY_TIMES_ADD = 1
+MAX_DAY_BUY_ENERGY_TIMES = 4
 
 
 class ChallengeNPCStaff(AbstractStaff):
@@ -124,7 +122,19 @@ class Challenge(object):
     @classmethod
     def cronjob_energize(cls, server_id):
         for char_id in Character.get_recent_login_char_ids(server_id):
-            Challenge(server_id, int(char_id)).change_energy(ENERGIZE_NUM)
+
+            doc = MongoCharacter.db(server_id).find_one({"_id": int(char_id)})
+            if doc.get('club', {}).get("vip", 0):
+                max_energy = VIP_MAX_ENERGY
+            else:
+                max_energy = NORMAL_MAX_ENERGY
+
+            if doc.get('energy', {}).get("power", 0) + NORMAL_ENERGIZE_NUM <= max_energy:
+                energize_num = NORMAL_ENERGIZE_NUM
+            else:
+                energize_num = max_energy - doc.get('energy', {}).get("power", 0)
+
+            Challenge(server_id, int(char_id)).change_energy(energize_num)
 
     def current_challenge_id(self):
         doc = MongoChallenge.db(self.server_id).find_one(
@@ -138,48 +148,12 @@ class Challenge(object):
                 tmp_area_id = int(area_id)
 
         tmp_ch_id = 0
-        for ch_id in doc['areas'].get(str(tmp_area_id), {}).get('challenges', {}).keys():
+        for ch_id in doc['areas'].get(str(tmp_area_id), {}).get("challenges", {}).keys():
             if tmp_ch_id < int(ch_id):
                 if doc['areas'][str(tmp_area_id)]['challenges'][str(ch_id)]['stars'] > 0:
                     tmp_ch_id = int(ch_id)
 
         return tmp_ch_id
-    # def check_energize(self):
-    #     """
-    #     检测是否需要注册充能定时任务
-    #     """
-    #     doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'energy': 1, 'club.vip': 1})
-    #
-    #     # 如果正在充能， 直接返回
-    #     if doc['energy']['key']:
-    #         return
-    #
-    #     # 充能耗时
-    #     if doc['club']['vip'] > 1:
-    #         # 是否需要充能
-    #         if doc['energy']['power'] > VIP_MAX_ENERGY:
-    #             return
-    #
-    #         end_at = arrow.utcnow().timestamp + VIP_ENERGIZE_TIME
-    #     else:
-    #         # 是否需要充能
-    #         if doc['energy']['power'] > NORMAL_MAX_ENERGY:
-    #             return
-    #
-    #         end_at = arrow.utcnow().timestamp + NORMAL_ENERGIZE_TIME
-    #
-    #     data = {
-    #             'sid': self.server_id,
-    #             'cid': self.char_id,
-    #         }
-
-        # Timerd.register(end_at, TIMERD_CALLBACK_PATH, data)
-
-    # def energize_callback(self):
-    #     """
-    #     定时充能回调
-    #     """
-    #     self.change_energy(ENERGIZE_NUM)
 
     def change_energy(self, num, times=0):
         """
@@ -385,12 +359,13 @@ class Challenge(object):
         """
         # 是否还有购买次数
         doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'energy': 1})
-        if doc['energy']['times'] > 4:
+        if doc['energy']['times'] >= MAX_DAY_BUY_ENERGY_TIMES:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NO_BUY_ENERGY_TIMES"))
 
         # 扣除花费， 添加体力和购买次数
-        with Resource(self.server_id, self.char_id).check(diamond=50, message="Buy energy power cost 50"):
-            self.change_energy(20, 1)
+        with Resource(self.server_id, self.char_id).check(
+                diamond=BUY_ENERGY_DIAMOND_COST, message="Buy energy power cost {0}".format(BUY_ENERGY_DIAMOND_COST)):
+            self.change_energy(BUY_ENERGY_ENERGIZE, BUY_ENERGY_TIMES_ADD)
 
     def energy_notify(self):
         doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'energy.power': 1, 'club.vip': 1})

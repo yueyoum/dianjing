@@ -31,7 +31,7 @@ from protomsg.elite_match_pb2 import (
 )
 
 
-ELITE_MATCH_COST = 5
+ELITE_MATCH_COST = 12
 
 
 class EliteNPCStaff(AbstractStaff):
@@ -78,6 +78,9 @@ class EliteNPCClub(AbstractClub):
 
 
 def get_next_restore_timestamp():
+    """
+
+    """
     now = arrow.utcnow()
     next_hour = now.replace(hours=1)
 
@@ -96,6 +99,11 @@ def get_next_restore_timestamp():
 
 
 class EliteMatch(object):
+    """
+    精英赛系统
+        精英赛相关功能处理
+    """
+
     __slots__ = ['server_id', 'char_id', 'cur_times']
 
     def __init__(self, server_id, char_id):

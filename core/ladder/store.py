@@ -86,7 +86,7 @@ class LadderStore(object):
             }
         )
 
-        ItemManager(self.server_id, self.char_id).add_item(config.item, config.item_amount)
+        ItemManager(self.server_id, self.char_id).add_item(config.item, amount=config.item_amount)
         ladder.send_notify()
 
     def send_notify(self):

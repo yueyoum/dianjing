@@ -25,11 +25,6 @@ class Skill(object):
         self.max_level = 0
         self.levels = {}
 
-    def get_upgrade_needs(self, level):
-        needs = self.levels[str(level)]
-        return needs['upgrade_training_id'], needs['upgrade_training_amount']
-
-
 class SkillWashCost(object):
     __slots__ = ['id', 'cost_type', 'cost_value']
     def __init__(self):

@@ -47,12 +47,12 @@ def merge(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
-    item_ids = [i for i in request._proto.item_ids]
+    item_ids = [i for i in request._proto.item_ids if i]
 
     im = ItemManager(server_id, char_id)
-    drop = im.merge(item_ids)
+    item = im.merge(item_ids)
 
     response = ItemMergeResponse()
     response.ret = 0
-    response.drop.MergeFrom(drop.make_protomsg())
+    response.item.MergeFrom(item.make_protomsg())
     return ProtobufResponse(response)

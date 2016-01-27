@@ -166,7 +166,7 @@ class CharacterAdmin(admin.ModelAdmin):
 
         from core.item import ItemManager
         for q in queryset:
-            ItemManager(q.server_id, q.id).add_item(value, amount)
+            ItemManager(q.server_id, q.id).add_item(value, amount=1)
 
     add_item.short_description = u"添加物品"
 

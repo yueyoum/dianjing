@@ -29,10 +29,6 @@ class TestSkillManager(object):
     def teardown(self):
         pass
 
-    def test_send_notify(self):
-        SkillManager(1, 1).send_notify()
-        SkillManager(1, 1).send_notify(staff_id=self.staff_id)
-
     def test_get_staff_skills(self):
         assert SkillManager(1, 1).get_staff_skills(self.staff_id)
 

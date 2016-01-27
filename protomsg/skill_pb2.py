@@ -13,153 +13,17 @@ from google.protobuf import descriptor_pb2
 _sym_db = _symbol_database.Default()
 
 
-import common_pb2 as common__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='skill.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0bskill.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"J\n\x05Skill\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0e\n\x06locked\x18\x03 \x02(\x08\x12\x16\n\x0eupgrade_end_at\x18\x04 \x02(\x03\"\xd1\x01\n\x0bSkillNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12?\n\x0cstaff_skills\x18\x03 \x03(\x0b\x32).Dianjing.protocol.SkillNotify.StaffSkill\x1aH\n\nStaffSkill\x12\x10\n\x08staff_id\x18\x01 \x02(\x05\x12(\n\x06skills\x18\x02 \x03(\x0b\x32\x18.Dianjing.protocol.Skill\"M\n\x16SkillLockToggleRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x10\n\x08skill_id\x18\x03 \x02(\x05\"7\n\x17SkillLockToggleResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"5\n\x10SkillWashRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\"1\n\x11SkillWashResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"J\n\x13SkillUpgradeRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x10\n\x08skill_id\x18\x03 \x02(\x05\"4\n\x14SkillUpgradeResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"Q\n\x1aSkillUpgradeSpeedupRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x10\n\x08skill_id\x18\x03 \x02(\x05\";\n\x1bSkillUpgradeSpeedupResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
-  ,
-  dependencies=[common__pb2.DESCRIPTOR,])
+  serialized_pb=_b('\n\x0bskill.proto\x12\x11\x44ianjing.protocol\"M\n\x16SkillLockToggleRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x10\n\x08skill_id\x18\x03 \x02(\x05\"7\n\x17SkillLockToggleResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"5\n\x10SkillWashRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\"1\n\x11SkillWashResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"J\n\x13SkillUpgradeRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x10\n\x08skill_id\x18\x03 \x02(\x05\"4\n\x14SkillUpgradeResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"Q\n\x1aSkillUpgradeSpeedupRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x10\n\x08skill_id\x18\x03 \x02(\x05\";\n\x1bSkillUpgradeSpeedupResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+)
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
-
-
-_SKILL = _descriptor.Descriptor(
-  name='Skill',
-  full_name='Dianjing.protocol.Skill',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='id', full_name='Dianjing.protocol.Skill.id', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='level', full_name='Dianjing.protocol.Skill.level', index=1,
-      number=2, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='locked', full_name='Dianjing.protocol.Skill.locked', index=2,
-      number=3, type=8, cpp_type=7, label=2,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='upgrade_end_at', full_name='Dianjing.protocol.Skill.upgrade_end_at', index=3,
-      number=4, type=3, cpp_type=2, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=48,
-  serialized_end=122,
-)
-
-
-_SKILLNOTIFY_STAFFSKILL = _descriptor.Descriptor(
-  name='StaffSkill',
-  full_name='Dianjing.protocol.SkillNotify.StaffSkill',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='staff_id', full_name='Dianjing.protocol.SkillNotify.StaffSkill.staff_id', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='skills', full_name='Dianjing.protocol.SkillNotify.StaffSkill.skills', index=1,
-      number=2, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=262,
-  serialized_end=334,
-)
-
-_SKILLNOTIFY = _descriptor.Descriptor(
-  name='SkillNotify',
-  full_name='Dianjing.protocol.SkillNotify',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.SkillNotify.session', index=0,
-      number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b(""),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='act', full_name='Dianjing.protocol.SkillNotify.act', index=1,
-      number=2, type=14, cpp_type=8, label=2,
-      has_default_value=False, default_value=1,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='staff_skills', full_name='Dianjing.protocol.SkillNotify.staff_skills', index=2,
-      number=3, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[_SKILLNOTIFY_STAFFSKILL, ],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=125,
-  serialized_end=334,
-)
 
 
 _SKILLLOCKTOGGLEREQUEST = _descriptor.Descriptor(
@@ -202,8 +66,8 @@ _SKILLLOCKTOGGLEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=336,
-  serialized_end=413,
+  serialized_start=34,
+  serialized_end=111,
 )
 
 
@@ -240,8 +104,8 @@ _SKILLLOCKTOGGLERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=415,
-  serialized_end=470,
+  serialized_start=113,
+  serialized_end=168,
 )
 
 
@@ -278,8 +142,8 @@ _SKILLWASHREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=472,
-  serialized_end=525,
+  serialized_start=170,
+  serialized_end=223,
 )
 
 
@@ -316,8 +180,8 @@ _SKILLWASHRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=527,
-  serialized_end=576,
+  serialized_start=225,
+  serialized_end=274,
 )
 
 
@@ -361,8 +225,8 @@ _SKILLUPGRADEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=578,
-  serialized_end=652,
+  serialized_start=276,
+  serialized_end=350,
 )
 
 
@@ -399,8 +263,8 @@ _SKILLUPGRADERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=654,
-  serialized_end=706,
+  serialized_start=352,
+  serialized_end=404,
 )
 
 
@@ -444,8 +308,8 @@ _SKILLUPGRADESPEEDUPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=708,
-  serialized_end=789,
+  serialized_start=406,
+  serialized_end=487,
 )
 
 
@@ -482,16 +346,10 @@ _SKILLUPGRADESPEEDUPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=791,
-  serialized_end=850,
+  serialized_start=489,
+  serialized_end=548,
 )
 
-_SKILLNOTIFY_STAFFSKILL.fields_by_name['skills'].message_type = _SKILL
-_SKILLNOTIFY_STAFFSKILL.containing_type = _SKILLNOTIFY
-_SKILLNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
-_SKILLNOTIFY.fields_by_name['staff_skills'].message_type = _SKILLNOTIFY_STAFFSKILL
-DESCRIPTOR.message_types_by_name['Skill'] = _SKILL
-DESCRIPTOR.message_types_by_name['SkillNotify'] = _SKILLNOTIFY
 DESCRIPTOR.message_types_by_name['SkillLockToggleRequest'] = _SKILLLOCKTOGGLEREQUEST
 DESCRIPTOR.message_types_by_name['SkillLockToggleResponse'] = _SKILLLOCKTOGGLERESPONSE
 DESCRIPTOR.message_types_by_name['SkillWashRequest'] = _SKILLWASHREQUEST
@@ -500,28 +358,6 @@ DESCRIPTOR.message_types_by_name['SkillUpgradeRequest'] = _SKILLUPGRADEREQUEST
 DESCRIPTOR.message_types_by_name['SkillUpgradeResponse'] = _SKILLUPGRADERESPONSE
 DESCRIPTOR.message_types_by_name['SkillUpgradeSpeedupRequest'] = _SKILLUPGRADESPEEDUPREQUEST
 DESCRIPTOR.message_types_by_name['SkillUpgradeSpeedupResponse'] = _SKILLUPGRADESPEEDUPRESPONSE
-
-Skill = _reflection.GeneratedProtocolMessageType('Skill', (_message.Message,), dict(
-  DESCRIPTOR = _SKILL,
-  __module__ = 'skill_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.Skill)
-  ))
-_sym_db.RegisterMessage(Skill)
-
-SkillNotify = _reflection.GeneratedProtocolMessageType('SkillNotify', (_message.Message,), dict(
-
-  StaffSkill = _reflection.GeneratedProtocolMessageType('StaffSkill', (_message.Message,), dict(
-    DESCRIPTOR = _SKILLNOTIFY_STAFFSKILL,
-    __module__ = 'skill_pb2'
-    # @@protoc_insertion_point(class_scope:Dianjing.protocol.SkillNotify.StaffSkill)
-    ))
-  ,
-  DESCRIPTOR = _SKILLNOTIFY,
-  __module__ = 'skill_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.SkillNotify)
-  ))
-_sym_db.RegisterMessage(SkillNotify)
-_sym_db.RegisterMessage(SkillNotify.StaffSkill)
 
 SkillLockToggleRequest = _reflection.GeneratedProtocolMessageType('SkillLockToggleRequest', (_message.Message,), dict(
   DESCRIPTOR = _SKILLLOCKTOGGLEREQUEST,

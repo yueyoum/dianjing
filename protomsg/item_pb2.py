@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='item.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\nitem.proto\x12\x11\x44ianjing.protocol\x1a\rpackage.proto\x1a\x11item_define.proto\x1a\x0c\x63ommon.proto\"m\n\nItemNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12&\n\x05items\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Item\"0\n\x10ItemRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t\">\n\x0fItemSellRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\x12\x0e\n\x06\x61mount\x18\x03 \x02(\x05\"0\n\x10ItemSellResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"=\n\x0eItemUseRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\x12\x0e\n\x06\x61mount\x18\x03 \x02(\x05\"V\n\x0fItemUseResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"5\n\x10ItemMergeRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08item_ids\x18\x02 \x03(\t\"X\n\x11ItemMergeResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop')
+  serialized_pb=_b('\n\nitem.proto\x12\x11\x44ianjing.protocol\x1a\rpackage.proto\x1a\x11item_define.proto\x1a\x0c\x63ommon.proto\"m\n\nItemNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12&\n\x05items\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Item\"0\n\x10ItemRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t\">\n\x0fItemSellRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\x12\x0e\n\x06\x61mount\x18\x03 \x02(\x05\"0\n\x10ItemSellResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"=\n\x0eItemUseRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\x12\x0e\n\x06\x61mount\x18\x03 \x02(\x05\"V\n\x0fItemUseResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"5\n\x10ItemMergeRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08item_ids\x18\x02 \x03(\t\"X\n\x11ItemMergeResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04item\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Item')
   ,
   dependencies=[package__pb2.DESCRIPTOR,item__define__pb2.DESCRIPTOR,common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -346,7 +346,7 @@ _ITEMMERGERESPONSE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='drop', full_name='Dianjing.protocol.ItemMergeResponse.drop', index=2,
+      name='item', full_name='Dianjing.protocol.ItemMergeResponse.item', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -371,7 +371,7 @@ _ITEMMERGERESPONSE = _descriptor.Descriptor(
 _ITEMNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _ITEMNOTIFY.fields_by_name['items'].message_type = item__define__pb2._ITEM
 _ITEMUSERESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
-_ITEMMERGERESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
+_ITEMMERGERESPONSE.fields_by_name['item'].message_type = item__define__pb2._ITEM
 DESCRIPTOR.message_types_by_name['ItemNotify'] = _ITEMNOTIFY
 DESCRIPTOR.message_types_by_name['ItemRemoveNotify'] = _ITEMREMOVENOTIFY
 DESCRIPTOR.message_types_by_name['ItemSellRequest'] = _ITEMSELLREQUEST

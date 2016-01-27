@@ -39,6 +39,8 @@ MESSAGE_TO_ID = {
     "StaffFireResponse": 526,
     "StaffEquipOnRequest": 527,
     "StaffEquipOnResponse": 528,
+    "StaffStrengthenRequest": 529,
+    "StaffStrengthenResponse": 530,
     "LeagueClubNotify": 600,
     "LeagueUserNotify": 601,
     "LeagueChallengeRequest": 602,
@@ -105,7 +107,6 @@ MESSAGE_TO_ID = {
     "TrainingSponsorNotify": 950,
     "TrainingSponsorStartRequest": 951,
     "TrainingSponsorStartResponse": 952,
-    "SkillNotify": 1000,
     "SkillLockToggleRequest": 1001,
     "SkillLockToggleResponse": 1002,
     "SkillWashRequest": 1003,
@@ -229,6 +230,7 @@ MESSAGE_TO_ID = {
     "StaffAuctionBiddingResponse": 2709,
     "StaffAuctionBidingListNotify": 2710,
     "StaffAuctionBidingRemoveNotify": 2711,
+    "BroadcastNotify": 2800,
 }
 
 ID_TO_MESSAGE = {
@@ -271,6 +273,8 @@ ID_TO_MESSAGE = {
     526: "StaffFireResponse",
     527: "StaffEquipOnRequest",
     528: "StaffEquipOnResponse",
+    529: "StaffStrengthenRequest",
+    530: "StaffStrengthenResponse",
     600: "LeagueClubNotify",
     601: "LeagueUserNotify",
     602: "LeagueChallengeRequest",
@@ -337,7 +341,6 @@ ID_TO_MESSAGE = {
     950: "TrainingSponsorNotify",
     951: "TrainingSponsorStartRequest",
     952: "TrainingSponsorStartResponse",
-    1000: "SkillNotify",
     1001: "SkillLockToggleRequest",
     1002: "SkillLockToggleResponse",
     1003: "SkillWashRequest",
@@ -461,6 +464,7 @@ ID_TO_MESSAGE = {
     2709: "StaffAuctionBiddingResponse",
     2710: "StaffAuctionBidingListNotify",
     2711: "StaffAuctionBidingRemoveNotify",
+    2800: "BroadcastNotify",
 }
 
 PATH_TO_REQUEST = {
@@ -480,6 +484,7 @@ PATH_TO_REQUEST = {
     "/game/staff/recruit/": ["staff", "StaffRecruitRequest"],
     "/game/staff/fire/": ["staff", "StaffFireRequest"],
     "/game/staff/equipon/": ["staff", "StaffEquipOnRequest"],
+    "/game/staff/strengthen/": ["staff", "StaffStrengthenRequest"],
     "/game/league/challenge/": ["league", "LeagueChallengeRequest"],
     "/game/league/report/": ["league", "LeagueMatchReportRequest"],
     "/game/league/refresh/": ["league", "LeagueMatchRefreshRequest"],
@@ -575,6 +580,7 @@ PATH_TO_RESPONSE = {
     "/game/staff/recruit/": ["staff", "StaffRecruitResponse"],
     "/game/staff/fire/": ["staff", "StaffFireResponse"],
     "/game/staff/fire/": ["staff", "StaffEquipOnResponse"],
+    "/game/staff/strengthen/": ["staff", "StaffStrengthenResponse"],
     "/game/league/challenge/": ["league", "LeagueChallengeResponse"],
     "/game/league/report/": ["league", "LeagueMatchReportResponse"],
     "/game/league/refresh/": ["league", "LeagueMatchRefreshResponse"],

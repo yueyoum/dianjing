@@ -15,14 +15,11 @@ from dianjing.exception import GameException
 from core.mongo import MongoStaff
 from core.item import ItemManager
 from core.resource import Resource
+from core.staff import StaffManger
 
-from utils.message import MessagePipe
 from utils.api import Timerd
 
-from protomsg.skill_pb2 import SkillNotify
-from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
-
-from config import ConfigStaff, ConfigSkill, ConfigErrorMessage, ConfigTrainingSkillItem, ConfigSkillWashCost
+from config import ConfigStaff, ConfigSkill, ConfigErrorMessage, ConfigSkillWashCost
 
 import formula
 
@@ -151,29 +148,33 @@ class SkillManager(object):
         if level >= config.max_level:
             raise GameException(ConfigErrorMessage.get_error_id("SKILL_ALREADY_MAX_LEVEL"))
 
-        need_id, need_amount = config.get_upgrade_needs(level)
+        level_info = config.levels[str(level)]
+        minutes = level_info['minutes']
+        needs = level_info['upgrade_items']
 
-        with ItemManager(self.server_id, self.char_id).remove_simple_item_context(need_id, need_amount):
-            end_at = arrow.utcnow().timestamp + ConfigTrainingSkillItem.get(need_id).minutes * 60
+        im = ItemManager(self.server_id, self.char_id)
+        im.check_exists(needs, is_oid=True)
 
-            data = {
-                'sid': self.server_id,
-                'cid': self.char_id,
-                'staff_id': staff_id,
-                'skill_id': skill_id,
-            }
+        end_at = arrow.utcnow().timestamp + minutes * 60
+        data = {
+            'sid': self.server_id,
+            'cid': self.char_id,
+            'staff_id': staff_id,
+            'skill_id': skill_id,
+        }
 
-            key = Timerd.register(end_at, TIMER_CALLBACK_PATH, data)
+        key = Timerd.register(end_at, TIMER_CALLBACK_PATH, data)
 
-            MongoStaff.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {'$set': {
-                    "staffs.{0}.skills.{1}.end_at".format(staff_id, skill_id): end_at,
-                    "staffs.{0}.skills.{1}.key".format(staff_id, skill_id): key,
-                }}
-            )
+        MongoStaff.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                "staffs.{0}.skills.{1}.end_at".format(staff_id, skill_id): end_at,
+                "staffs.{0}.skills.{1}.key".format(staff_id, skill_id): key,
+            }}
+        )
 
-        self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
+        im.remove_items_by_oid(needs)
+        self.send_notify(staff_id)
 
     def upgrade_speedup(self, staff_id, skill_id):
         """
@@ -215,7 +216,7 @@ class SkillManager(object):
             {'$bit': {key: {'xor': 1}}}
         )
 
-        self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
+        self.send_notify(staff_id)
 
     def wash(self, staff_id):
         """
@@ -272,42 +273,16 @@ class SkillManager(object):
                 if key:
                     Timerd.cancel(key)
 
-        self.send_notify()
+        self.send_notify(staff_id)
 
-    def send_notify(self, act=ACT_INIT, staff_id=None, skill_id=None):
+    def send_notify(self, staff_id):
         """
             同步员工技能信息
         """
         # 这个必须在 StaffNotify 之后
         # 这里的 act 必须手动指定，因为添加新员工后，这里的skill notify 得是 ACT_INIT
-        if not staff_id:
-            projection = {'staffs': 1}
-        else:
-            if not skill_id:
-                projection = {'staffs.{0}.skills'.format(staff_id): 1}
-            else:
-                projection = {'staffs.{0}.skills.{1}'.format(staff_id, skill_id): 1}
+        StaffManger(self.server_id, self.char_id).send_notify(staff_ids=[staff_id])
 
-        doc = MongoStaff.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            projection
-        )
-
-        notify = SkillNotify()
-        notify.act = act
-
-        for k, v in doc['staffs'].iteritems():
-            notify_staff = notify.staff_skills.add()
-            notify_staff.staff_id = int(k)
-
-            for sid, sinfo in v['skills'].iteritems():
-                notify_staff_skill = notify_staff.skills.add()
-                notify_staff_skill.id = int(sid)
-                notify_staff_skill.level = sinfo['level']
-                notify_staff_skill.locked = sinfo['locked'] == 1
-                notify_staff_skill.upgrade_end_at = sinfo.get('end_at', 0)
-
-        MessagePipe(self.char_id).put(msg=notify)
 
     def update(self, staff_id, skill_id):
         """
@@ -326,7 +301,7 @@ class SkillManager(object):
             }
         )
 
-        self.send_notify(act=ACT_UPDATE, staff_id=staff_id, skill_id=skill_id)
+        self.send_notify(staff_id)
 
     def timer_callback(self, staff_id, skill_id):
         """

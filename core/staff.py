@@ -13,8 +13,7 @@ from core.abstract import AbstractStaff, STAFF_SECONDARY_ATTRS
 from core.mongo import MongoStaff, MongoRecruit, MongoAuctionStaff
 from core.resource import Resource
 from core.common import CommonRecruitHot
-from core.skill import SkillManager
-from core.item import get_item_object, ItemManager, ItemId, ITEM_EQUIPMENT, Equipment
+from core.item import get_item_object, ItemManager, ItemId, ITEM_EQUIPMENT, ITEM_STAFF_CARD, BaseItem
 from core.signals import recruit_staff_signal, staff_level_up_signal
 
 from config import (
@@ -56,11 +55,16 @@ class Staff(AbstractStaff):
         self.level = data['level']
         self.exp = data['exp']
         self.status = data['status']
+        self.star = data.get('star', 0)
 
         config = ConfigStaff.get(self.id)
         self.race = config.race
         self.quality = config.quality
-        self.skills = {int(k): v['level'] for k, v in data['skills'].iteritems()}
+
+        for k, v in data['skills'].iteritems():
+            k = int(k)
+            self.skills[k] = v.pop('level')
+            self.skills_detail[k] = v
 
         self.luoji = config.luoji
         self.minjie = config.minjie
@@ -81,7 +85,7 @@ class Staff(AbstractStaff):
 
             self.luoji += item.luoji
             self.minjie += item.minjie
-            self.lilun += item.lilin
+            self.lilun += item.lilun
             self.wuxing += item.wuxing
             self.meili += item.meili
 
@@ -89,7 +93,8 @@ class Staff(AbstractStaff):
 
         for item in self.equipments:
             for sp in STAFF_SECONDARY_ATTRS:
-                setattr(self, sp, getattr(item, sp))
+                value = getattr(self, sp) + getattr(item, sp)
+                setattr(self, sp, value)
 
         for sp in STAFF_SECONDARY_ATTRS:
             value = getattr(self, sp) + data.get(sp, 0)
@@ -207,7 +212,11 @@ class StaffRecruit(object):
         MongoRecruit.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {
-                    '$set': {'tp': tp, 'staffs': staffs},
+                    '$set': {
+                        'tp': tp,
+                        'staffs': staffs,
+                        'recruited': [],
+                    },
                     '$inc': {'times.{0}'.format(tp): 1}
                 }
         )
@@ -229,34 +238,48 @@ class StaffRecruit(object):
         if not ConfigStaff.get(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
 
+        doc = MongoRecruit.db(self.server_id).find_one(
+                {'_id': self.char_id},
+                {'recruited': 1}
+        )
+        recruited = doc.get('recruited', [])
+
+        if staff_id in recruited:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
         if StaffManger(self.server_id, self.char_id).has_staff(staff_id):
-            raise GameException(ConfigErrorMessage.get_error_id('STAFF_ALREADY_HAVE'))
-
-        recruit_list = self.get_self_refreshed_staffs()
-        if not recruit_list:
-            recruit_list = self.get_hot_staffs()
-
-        if staff_id not in recruit_list:
-            raise GameException(ConfigErrorMessage.get_error_id("STAFF_RECRUIT_NOT_IN_LIST"))
-
-        check = {"message": u"Recruit staff {0}".format(staff_id)}
-        config = ConfigStaff.get(staff_id)
-        if config.buy_type == 1:
-            check['gold'] = -config.buy_cost
+            # raise GameException(ConfigErrorMessage.get_error_id('STAFF_ALREADY_HAVE'))
+            ItemManager(self.server_id, self.char_id).add_staff_card(staff_id, 0)
         else:
-            check['diamond'] = -config.buy_cost
+            recruit_list = self.get_self_refreshed_staffs()
+            if not recruit_list:
+                recruit_list = self.get_hot_staffs()
 
-        with Resource(self.server_id, self.char_id).check(**check):
-            StaffManger(self.server_id, self.char_id).add(staff_id)
+            if staff_id not in recruit_list:
+                raise GameException(ConfigErrorMessage.get_error_id("STAFF_RECRUIT_NOT_IN_LIST"))
 
+            check = {"message": u"Recruit staff {0}".format(staff_id)}
+            config = ConfigStaff.get(staff_id)
+            if config.buy_type == 1:
+                check['gold'] = -config.buy_cost
+            else:
+                check['diamond'] = -config.buy_cost
+
+            with Resource(self.server_id, self.char_id).check(**check):
+                StaffManger(self.server_id, self.char_id).add(staff_id)
+
+        MongoRecruit.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$push': {'recruited': staff_id}}
+        )
+
+        self.send_notify()
         recruit_staff_signal.send(
                 sender=None,
                 server_id=self.server_id,
                 char_id=self.char_id,
                 staff_id=staff_id
         )
-
-        self.send_notify()
 
     def send_notify(self, staffs=None, tp=None):
         """
@@ -273,14 +296,18 @@ class StaffRecruit(object):
             else:
                 tp = MongoRecruit.db(self.server_id).find_one({'_id': self.char_id}, {'tp': 1})['tp']
 
-        already_recruited_staffs = StaffManger(self.server_id, self.char_id).get_all_staff_ids()
+        doc = MongoRecruit.db(self.server_id).find_one(
+                {'_id': self.char_id},
+                {'recruited': 1}
+        )
+        recruited = doc.get('recruited', [])
 
         notify = StaffRecruitNotify()
         notify.tp = tp
         for s in staffs:
             r = notify.recruits.add()
             r.staff_id = s
-            r.has_recruit = s in already_recruited_staffs
+            r.has_recruit = s in recruited
 
         MessagePipe(self.char_id).put(msg=notify)
 
@@ -386,7 +413,6 @@ class StaffManger(object):
 
         if send_notify:
             self.send_notify(staff_ids=[_id])
-            SkillManager(self.server_id, self.char_id).send_notify(staff_id=_id)
 
     def add(self, staff_id, send_notify=True):
         """
@@ -422,7 +448,6 @@ class StaffManger(object):
 
         if send_notify:
             self.send_notify(staff_ids=[staff_id])
-            SkillManager(self.server_id, self.char_id).send_notify(staff_id=staff_id)
 
     def is_free(self, staff_id):
         from core.club import Club
@@ -557,7 +582,7 @@ class StaffManger(object):
         if config.tp != ITEM_EQUIPMENT:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_EQUIP_ON_TYPE_ERROR"))
 
-        metadata = Equipment.get_metadata(self.server_id, self.char_id, item_id)
+        metadata = BaseItem.get_metadata(self.server_id, self.char_id, item_id)
         if not metadata:
             raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_EXIST"))
 
@@ -577,7 +602,7 @@ class StaffManger(object):
 
         for item_id in doc.get('equips', {}):
             id_object = ItemId.parse(item_id)
-            if ConfigItem.get(id_object.oid).sub_tp == config.sub_tp:
+            if ConfigItem.get(id_object.oid).group_id == config.group_id:
                 # 同类型的替换
                 updater['$unset'] = {
                     'staffs.{0}.equips.{1}'.format(staff_id, item_id): 1
@@ -587,6 +612,35 @@ class StaffManger(object):
         MongoStaff.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 updater
+        )
+
+        self.send_notify(staff_ids=[staff_id])
+
+    def strengthen(self, staff_id):
+        staff = self.get_staff(staff_id)
+        if not staff:
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
+
+        im = ItemManager(self.server_id, self.char_id)
+        items = im.get_all_items()
+
+        find_item_id = ""
+        for item in items:
+            if item.id_object.type_id == ITEM_STAFF_CARD and item.id_object.star == staff.star:
+                find_item_id = item.id_object.id
+                break
+
+        if not find_item_id:
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_STRENGTH_NO_CARD"))
+
+        im.remove_by_item_id(find_item_id)
+
+        # TODO max star
+        MongoStaff.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$inc': {
+                    'staffs.{0}.star'.format(staff_id): 1
+                }}
         )
 
         self.send_notify(staff_ids=[staff_id])
@@ -618,8 +672,8 @@ class StaffManger(object):
                     updater['staffs.{0}.winning_rate.{1}.win'.format(result.staff_two, race_one)] = 1
 
         MongoStaff.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$inc': updater}
+                {'_id': self.char_id},
+                {'$inc': updater}
         )
 
     def get_winning_rate(self, staff_ids):

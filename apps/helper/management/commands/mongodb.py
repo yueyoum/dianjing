@@ -26,7 +26,6 @@ class Command(BaseCommand):
         else:
             self.stderr.write("unknown command!")
 
-
     def _create_index(self):
         from core.mongo import ensure_index
         ensure_index()

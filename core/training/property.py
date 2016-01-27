@@ -137,7 +137,8 @@ class PropertyTrainingList(object):
         self.slots[0].calculate()
         for i in range(1, PROPERTY_TRAINING_SLOTS_AMOUNT):
             self.slots[i].start_at = self.slots[i - 1].end_at
-            if self.slots[i].status == PropertySlotStatus.TRAINING or self.slots[i].status == PropertySlotStatus.WAITING:
+            if self.slots[i].status == PropertySlotStatus.TRAINING or \
+                    self.slots[i].status == PropertySlotStatus.WAITING:
                 self.slots[i].end_at = 0
             self.slots[i].calculate()
 
@@ -277,8 +278,7 @@ class TrainingProperty(object):
             raise GameException(ConfigErrorMessage.get_error_id("BUILDING_TRAINING_CENTER_LEVEL_NOT_ENOUGH"))
 
         im = ItemManager(self.server_id, self.char_id)
-        if not im.check_simple_item_is_enough(config.need_items):
-            raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_ENOUGH"))
+        im.check_exists(config.need_items, is_oid=True)
 
         pl = self.get_training_list(staff_id)
 
@@ -308,8 +308,7 @@ class TrainingProperty(object):
             new_list = pl.get_document_list()
             self.update_training_list(staff_id, new_list, key)
 
-            for item_id, item_amount in config.need_items:
-                im.remove_simple_item(item_id, item_amount)
+            im.remove_items_by_oid(config.need_items)
 
         training_property_start_signal.send(
             sender=None,

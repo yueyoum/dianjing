@@ -46,7 +46,7 @@ from utils.functional import make_string_id
 MAX_CHALLENGE_TIMES = 7
 MAX_MATCH_CLUB = 6
 
-REFRESH_DIAMOND_COST = 200
+REFRESH_DIAMOND_COST = 100
 REFRESH_TYPE_NORMAL = 1
 REFRESH_TYPE_DIAMOND = 2
 REFRESH_TIME = 6 * 60 * 60
@@ -213,7 +213,7 @@ class LeagueManger(object):
         ).sort('score', 1).limit(MAX_MATCH_CLUB * 10)
         doc_list = []
         for doc in docs:
-            if not doc['in_rise'] and doc['_d'] != self.char_id:
+            if not doc['in_rise'] and doc['_id'] != self.char_id:
                 doc_list.append(doc)
 
         if doc_list.__len__() >= MAX_MATCH_CLUB:
@@ -483,7 +483,7 @@ class LeagueManger(object):
         self.notify_user_info()
         return drop.make_protomsg()
 
-    def challenge(self, club_id):
+    def start(self, club_id):
         """
         挑战俱乐部
         """
@@ -523,7 +523,7 @@ class LeagueManger(object):
         """
         doc = MongoLeague.db(self.server_id).find_one(
             {'_id': self.char_id},
-            {'match_club.{0}.staffs'.format(club_id): 1}
+            {'match_club.{0}'.format(club_id): 1}
         )
         if doc['match_club'].get(club_id, {}).get('npc_club', False):
             return doc['match_club'].get(club_id, {}).get('staffs', {})
