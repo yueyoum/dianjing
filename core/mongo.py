@@ -548,7 +548,8 @@ class MongoTrainingMatch(BaseDocument):
         # 已领取额外奖励的
         'rewards': [],
         # 俱乐部信息，序列化后的Club
-        'clubs': []
+        'clubs': [],
+        'score': 0,
     }
 
     COLLECTION = 'training_match'

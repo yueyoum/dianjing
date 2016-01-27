@@ -41,7 +41,7 @@ class PackageBase(object):
             所有属性        FIELDS
     """
     FIELDS = STAFF_SECONDARY_ATTRS + [
-        'gold', 'diamond', 'staff_exp', 'club_renown',
+        'gold', 'diamond', 'staff_exp', 'club_renown', 'training_match_score'
     ]
 
     __slots__ = FIELDS + ['items', 'staff_cards']
@@ -61,6 +61,7 @@ class PackageBase(object):
         self.gold = 0  # 角色 - 金币/软妹币
         self.diamond = 0  # 角色 - 钻石
         self.club_renown = 0  # 角色 - 俱乐部声望
+        self.training_match_score = 0
 
         self.items = []  # 角色 - 物品
         self.staff_cards = []
@@ -91,7 +92,7 @@ class PackageBase(object):
 
 # 对应只会给角色加的物品。 关卡掉落，奖励，邮件附件 这些
 class Drop(PackageBase):
-    FIELDS = ['gold', 'diamond', 'club_renown']
+    FIELDS = ['gold', 'diamond', 'club_renown', 'training_match_score']
 
     # 还有 items, staff_cards
 

@@ -14,7 +14,7 @@ from core.training_match import TrainingMatch
 from protomsg.training_match_pb2 import (
     TrainingMatchReportResponse,
     TrainingMatchStartResponse,
-    TrainingMatchGetAdditionalRewardResponse,
+    TrainingMatchGetMatchClubDetailResponse,
 )
 
 
@@ -53,16 +53,20 @@ def match_report(request):
     return ProtobufResponse(response)
 
 
-def additional(request):
+def match_detail(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
-    index = request._proto.index
-    drop = TrainingMatch(server_id, char_id).get_additional_reward(index)
+    index = request._proto.club_index
+    tm = TrainingMatch(server_id, char_id)
 
-    response = TrainingMatchGetAdditionalRewardResponse
-
+    staffs = tm.get_match_detail(index)
+    response = TrainingMatchGetMatchClubDetailResponse()
     response.ret = 0
-    response.drop = drop
+
+    for k, v in staffs.iteritems():
+        staff_detail = response.staffs.add()
+        staff_detail.staff_id = k
+        staff_detail.staff_level = v.level
 
     return ProtobufResponse(response)

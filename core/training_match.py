@@ -34,8 +34,11 @@ from protomsg.training_match_pb2 import (
     TrainingMatchNotify,
 )
 
-RELIVE_TIMES = 3
-RELIVE_DIAMOND = 20
+MAX_RELIVE_TIMES = 3
+RELIVE_COST_DIAMOND = 20
+
+MAX_MATCH_CLUB_INDEX = 13
+MAX_MATCH_CLUB = 14
 
 
 class TrainingMatch(object):
@@ -73,11 +76,11 @@ class TrainingMatch(object):
         char_docs = MongoCharacter.db(self.server_id).find(condition, {'club.level': 1}).sort('club.level', 1).limit(
             100)
 
-        if char_docs.count() < 14:
+        if char_docs.count() < MAX_MATCH_CLUB:
             for doc in char_docs:
                 clubs.append(Club(self.server_id, doc['_id']))
 
-            need_amount = 14 - len(clubs)
+            need_amount = MAX_MATCH_CLUB - len(clubs)
             for i in range(need_amount):
                 c = Club(self.server_id, self.char_id)
                 c.name = random.choice(ConfigNPC.CLUB_NAMES)
@@ -109,64 +112,80 @@ class TrainingMatch(object):
 
         MongoTrainingMatch.db(self.server_id).insert_one(doc)
 
+    def add_score(self, score):
+        MongoTrainingMatch.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$inc': {'score': score}}
+        )
+
     def start(self, index):
-        config = ConfigTrainingMatchReward.get(index)
-        if not config:
+        if index > MAX_MATCH_CLUB_INDEX:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_MATCH_NOT_EXIST"))
 
-        doc = MongoTrainingMatch.db(self.server_id).find_one({'_id': self.char_id})
+        doc = self.get_training_match_data()
 
         status = doc['status'].get(str(index), None)
         if status is None:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_MATCH_NOT_OPEN"))
 
-        if status == 2:
+        if status == TRAINING_MATCH_CLUB_PASS:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_MATCH_ALREADY_PASSED"))
 
-        if status == 3:
-            if doc['relive_times'] >= RELIVE_TIMES:
+        if status == TRAINING_MATCH_CLUB_FAIL:
+            if doc['relive_times'] >= MAX_RELIVE_TIMES:
                 raise GameException(ConfigErrorMessage.get_error_id("TRAINING_MATCH_RELIVE_NO_TIMES"))
 
             message = u"Training Match relive for {0}".format(index)
-            with Resource(self.server_id, self.char_id).check(diamond=-RELIVE_DIAMOND, message=message):
+            with Resource(self.server_id, self.char_id).check(diamond=-RELIVE_COST_DIAMOND, message=message):
                 MongoTrainingMatch.db(self.server_id).update_one(
                     {'_id': self.char_id},
                     {'$inc': {'relive_times': 1}}
                 )
 
         club = Club(self.server_id, self.char_id)
-        club_data = doc['clubs'][index - 1]
+        club_data = doc['clubs'][index]
         opposite_club = Club.loads(club_data)
 
         match = ClubMatch(club, opposite_club)
-        key = str(arrow.utcnow().timestamp) + ',' + str(index) + ',' + str(self.char_id) + ',' + str(opposite_club.char_id)
+
         msg = match.start()
-        msg.key = key
+        msg.key = self.make_match_key(index, opposite_club.char_id)
         return msg
+
+    def make_match_key(self, index, target_id):
+        return str(arrow.utcnow().timestamp) + ',' + str(index) + ',' + str(self.char_id) + ',' + str(target_id)
+
+    def get_training_match_data(self):
+        return MongoTrainingMatch.db(self.server_id).find_one({'_id': self.char_id})
 
     def match_report(self, is_win, key, result):
         timestamp, index, club_one, club_two = str(key).split(',')
-
-        StaffManger(self.server_id, self.char_id).update_winning_rate(result)
-        StaffManger(self.server_id, int(club_two)).update_winning_rate(result, False)
 
         tmp_drop = None
         updater = {}
         updated_ids = []
 
         if is_win:
-            ret = int(index)
-            updated_ids = [ret]
-            tmp_drop = Drop.generate(ConfigTrainingMatchReward.get(ret).reward)
-            Resource(self.server_id, self.char_id).save_drop(tmp_drop, message="Training Match {0} drop".format(ret))
+            index = int(index)
+            updated_ids = [index]
+            if not ConfigTrainingMatchReward.get(index):
+                raise GameException(ConfigErrorMessage.get_error_id("TRAINING_MATCH_NOT_EXIST"))
 
-            updater['status.{0}'.format(ret)] = 2
+            reward_config = ConfigTrainingMatchReward.get(index)
+            tmp_drop = Drop.generate(reward_config.reward)
+            tmp_drop.training_match_score = reward_config.score
 
-            if ret < 14:
-                updated_ids.append(ret+1)
-                updater['status.{0}'.format(ret+1)] = 1
+            message = "Training Match {0} drop".format(index)
+            Resource(self.server_id, self.char_id).save_drop(tmp_drop, message=message)
+
+            updater['status.{0}'.format(index)] = TRAINING_MATCH_CLUB_PASS
+
+            if index < MAX_MATCH_CLUB_INDEX:
+                next_index = index + 1
+                updated_ids.append(next_index)
+                updater['status.{0}'.format(next_index)] = TRAINING_MATCH_CLUB_OPEN
         else:
-            updater['status.{0}'.format(index)] = 3
+            updater['status.{0}'.format(index)] = TRAINING_MATCH_CLUB_FAIL
 
         MongoTrainingMatch.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -178,53 +197,27 @@ class TrainingMatch(object):
         if tmp_drop:
             return tmp_drop.make_protomsg()
 
-    def get_additional_reward(self, index):
-        config = ConfigTrainingMatchReward.get(index)
-        if not config:
-            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_MATCH_NOT_EXIST"))
-
-        if not config.additional_reward:
-            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
-
-        doc = MongoTrainingMatch.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {'status': 1, 'rewards': 1}
-        )
-
-        status = doc['status'].get(str(index), None)
-        if status != 2:
-            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_MATCH_NOT_PASS"))
-
-        if index in doc['rewards']:
-            raise GameException(ConfigErrorMessage.get_error_id("TRAINING_MATCH_ALREADY_GET_REWARD"))
-
-        drop = Drop.generate(config.additional_reward)
-        Resource(self.server_id, self.char_id).save_drop(drop, message="Training Match {0} additional drop".format(index))
-
-        MongoTrainingMatch.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$push': {'rewards': index}}
-        )
-
-        self.send_notify()
-        return drop.make_protomsg()
+    def get_match_detail(self, index):
+        doc = self.get_training_match_data()
+        staff_ids = Club.loads(doc['clubs'][index]).match_staffs
+        return StaffManger(self.server_id, self.char_id).get_staff_by_ids(staff_ids)
 
     def send_notify(self, ids=None):
         if ids:
             act = ACT_UPDATE
         else:
             act = ACT_INIT
-            ids = ConfigTrainingMatchReward.INSTANCES.keys()
+            ids = [i-1 for i in ConfigTrainingMatchReward.INSTANCES.keys()]
 
-        doc = MongoTrainingMatch.db(self.server_id).find_one({'_id': self.char_id})
+        doc = self.get_training_match_data()
 
         notify = TrainingMatchNotify()
         notify.act = act
-        notify.remained_relive_times = RELIVE_TIMES - doc['relive_times']
-        notify.relive_cost = RELIVE_DIAMOND
+        notify.remained_relive_times = MAX_RELIVE_TIMES - doc['relive_times']
+        notify.relive_cost = RELIVE_COST_DIAMOND
 
         for i in ids:
-            club = Club.loads(doc['clubs'][i - 1])
+            club = Club.loads(doc['clubs'][i])
 
             notify_club = notify.clubs.add()
             notify_club.index = i
@@ -241,11 +234,7 @@ class TrainingMatch(object):
             status = doc['status'].get(str(i), None)
             if status is None:
                 notify_club.status = TRAINING_MATCH_CLUB_NOT_OPEN
-            elif status == 1:
-                notify_club.status = TRAINING_MATCH_CLUB_OPEN
-            elif status == 2:
-                notify_club.status = TRAINING_MATCH_CLUB_PASS
             else:
-                notify_club.status = TRAINING_MATCH_CLUB_FAIL
+                notify_club.status = status
 
         MessagePipe(self.char_id).put(msg=notify)

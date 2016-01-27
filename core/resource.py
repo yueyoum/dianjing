@@ -34,29 +34,50 @@ class Resource(object):
 
         :type drop: core.package.Drop
         """
-        from core.club import Club
-        from core.item import ItemManager
 
         if drop.club_renown or drop.gold or drop.diamond:
-            club_data = {
-                'renown': drop.club_renown,
-                'gold': drop.gold,
-                'diamond': drop.diamond,
-            }
+            self.__save_club_drop(drop, message)
 
-            club = Club(self.server_id, self.char_id)
-            club.update(**club_data)
+        if drop.training_match_score:
+            self.__save_training_match_drop(drop.training_match_score)
 
-            if drop.gold or drop.diamond:
-                FinanceStatistics(self.server_id, self.char_id).add_log(
-                        gold=drop.gold, diamond=drop.diamond, message=message
-                )
+        if drop.items:
+            self.__save_item_drop(drop.items)
 
+        if drop.staff_cards:
+            self.__save_staff_cards(drop.staff_cards)
+
+    def __save_club_drop(self, drop, message):
+        from core.club import Club
+
+        club_data = {
+            'renown': drop.club_renown,
+            'gold': drop.gold,
+            'diamond': drop.diamond,
+        }
+
+        club = Club(self.server_id, self.char_id)
+        club.update(**club_data)
+
+        if drop.gold or drop.diamond:
+            FinanceStatistics(self.server_id, self.char_id).add_log(
+                    gold=drop.gold, diamond=drop.diamond, message=message
+            )
+
+    def __save_training_match_drop(self, score):
+        from core.training_match import TrainingMatch
+        TrainingMatch(self.server_id, self.char_id).add_score(score)
+
+    def __save_item_drop(self, items):
+        from core.item import ItemManager
         im = ItemManager(self.server_id, self.char_id)
-        for _id, _amount in drop.items:
+        for _id, _amount in items:
             im.add_item(_id, amount=_amount)
 
-        for _id, _amount in drop.staff_cards:
+    def __save_staff_cards(self, staff_cards):
+        from core.item import ItemManager
+        im = ItemManager(self.server_id, self.char_id)
+        for _id, _amount in staff_cards:
             im.add_staff_card(_id, 0, _amount)
 
     @contextmanager

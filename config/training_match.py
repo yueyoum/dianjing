@@ -10,11 +10,11 @@ Description:
 from config.base import ConfigBase
 
 class TrainingMatchReward(object):
-    __slots__ = ['id', 'reward', 'additional_reward']
+    __slots__ = ['id', 'reward', 'score']
     def __init__(self):
         self.id = 0
         self.reward = 0
-        self.additional_reward = 0
+        self.score = 0
 
 
 class ConfigTrainingMatchReward(ConfigBase):
