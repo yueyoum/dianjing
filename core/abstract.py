@@ -113,11 +113,11 @@ class AbstractStaff(object):
             setattr(self, sp, int(value))
 
     def strengthen(self, multiple):
-        self.luoji += multiple
-        self.minjie += multiple
-        self.lilun += multiple
-        self.wuxing += multiple
-        self.meili += multiple
+        self.luoji *= multiple
+        self.minjie *= multiple
+        self.lilun *= multiple
+        self.wuxing *= multiple
+        self.meili *= multiple
 
         self.calculate_secondary_property()
 

@@ -408,6 +408,7 @@ class MongoLadder(BaseDocument):
         'score': 0,
         'order': 0,
 
+        'last_challenge_timestamp': 0,
         # 刷新结果 _id: order
         'refreshed': {},
         # 剩余次数
@@ -546,8 +547,6 @@ class MongoTrainingMatch(BaseDocument):
         # 进度 id: flag. flag 1 表示新开启，2 表示通过 3 表示失败
         # 不在这里面的表示没有开启
         'status': {},
-        # 已领取额外奖励的
-        'rewards': [],
         # 俱乐部信息，序列化后的Club
         'clubs': [],
         'score': 0,

@@ -57,52 +57,16 @@ class TrainingMatch(object):
         clubs = []
         """:type: list[core.club.Club]"""
 
-        club = Club(self.server_id, self.char_id)
+        for i in range(MAX_MATCH_CLUB):
+            match_club = Club(self.server_id, self.char_id)
+            match_club.name = random.choice(ConfigNPC.CLUB_NAMES)
+            match_club.manager_name = random.choice(ConfigNPC.MANAGER_NAMES)
 
-        min_level = club.level - 5
-        if min_level < 1:
-            min_level = 1
-
-        max_level = club.level + 5
-
-        condition = {
-            '$and': [
-                {'club.level': {'$gte': min_level}},
-                {'club.level': {'$lte': max_level}}
-            ]
-        }
-
-        # TODO, better method to find clubs
-        char_docs = MongoCharacter.db(self.server_id).find(condition, {'club.level': 1}).sort('club.level', 1).limit(
-            100)
-
-        if char_docs.count() < MAX_MATCH_CLUB:
-            for doc in char_docs:
-                clubs.append(Club(self.server_id, doc['_id']))
-
-            need_amount = MAX_MATCH_CLUB - len(clubs)
-            for i in range(need_amount):
-                c = Club(self.server_id, self.char_id)
-                c.name = random.choice(ConfigNPC.CLUB_NAMES)
-                c.manager_name = random.choice(ConfigNPC.MANAGER_NAMES)
-
-                clubs.append(c)
-        else:
-            char_ids = [(doc['_id'], doc['club']['level']) for doc in char_docs]
-            char_ids = random.sample(char_ids, 14)
-            char_ids.sort(key=lambda item: item[1])
-
-            for cid, club_level in char_ids:
-                c = Club(self.server_id, cid)
-                if cid == self.char_id:
-                    c.name = random.choice(ConfigNPC.CLUB_NAMES)
-                    c.manager_name = random.choice(ConfigNPC.MANAGER_NAMES)
-
-                clubs.append(c)
+            clubs.append(match_club)
 
         multiple = [0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0]
 
-        for i in range(14):
+        for i in range(MAX_MATCH_CLUB):
             clubs[i].change_staff_strengthen(multiple[i])
 
         doc = MongoTrainingMatch.document()
@@ -119,6 +83,7 @@ class TrainingMatch(object):
         )
 
     def start(self, index):
+        print index
         if index > MAX_MATCH_CLUB_INDEX:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_MATCH_NOT_EXIST"))
 
@@ -168,10 +133,12 @@ class TrainingMatch(object):
         if is_win:
             index = int(index)
             updated_ids = [index]
-            if not ConfigTrainingMatchReward.get(index):
+            config_id = index + 1
+
+            if not ConfigTrainingMatchReward.get(config_id):
                 raise GameException(ConfigErrorMessage.get_error_id("TRAINING_MATCH_NOT_EXIST"))
 
-            reward_config = ConfigTrainingMatchReward.get(index)
+            reward_config = ConfigTrainingMatchReward.get(config_id)
             tmp_drop = Drop.generate(reward_config.reward)
             tmp_drop.training_match_score = reward_config.score
 
@@ -215,6 +182,7 @@ class TrainingMatch(object):
         notify.act = act
         notify.remained_relive_times = MAX_RELIVE_TIMES - doc['relive_times']
         notify.relive_cost = RELIVE_COST_DIAMOND
+        notify.score = doc['score']
 
         for i in ids:
             club = Club.loads(doc['clubs'][i])
@@ -226,10 +194,6 @@ class TrainingMatch(object):
             notify_club.level = club.level
             # TODO
             notify_club.power = 9999
-
-            if i in doc['rewards']:
-                notify_club.status = TRAINING_MATCH_CLUB_DONE
-                continue
 
             status = doc['status'].get(str(i), None)
             if status is None:

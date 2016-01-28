@@ -35,6 +35,8 @@ LADDER_BUY_CHALLENGE_TIMES = 1
 LADDER_BUY_CHALLENGE_TIMES_COST = 20
 LADDER_MAX_BUY_CHALLENGE_TIMES = 5
 
+LADDER_NEXT_CHALLENGE_INTERVAL_TIMES = 5 * 60
+
 
 class Ladder(object):
     def __init__(self, server_id, char_id):
@@ -178,9 +180,12 @@ class Ladder(object):
         if target_id == str(self.char_id):
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_CANNOT_MATCH_SELF"))
 
-        doc = MongoLadder.db(self.server_id).find_one({'_id': str(self.char_id)})
+        doc = self.get_self_ladder_data()
         if target_id not in doc['refreshed']:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_TARGET_NOT_EXIST"))
+
+        if arrow.utcnow().timestamp - doc.get('last_challenge_timestamp', 0) < LADDER_NEXT_CHALLENGE_INTERVAL_TIMES:
+            raise GameException(ConfigErrorMessage.get_error_id("LADDER_CHALLENGE_SHUTDOWN"))
 
         target = MongoLadder.db(self.server_id).find_one({'_id': target_id}, {'order': 1})
         if target['order'] != doc['refreshed'][target_id]:
@@ -231,7 +236,9 @@ class Ladder(object):
 
         MongoLadder.db(self.server_id).update_one(
             {'_id': str(self.char_id)},
-            {'$inc': {'remained_times': -1}}
+            {'$inc': {'remained_times': -1},
+             '$set': {'last_challenge_timestamp': arrow.utcnow().timestamp}
+             }
         )
 
         self.send_notify()
@@ -288,12 +295,19 @@ class Ladder(object):
             self.send_notify()
 
     def send_notify(self):
-        doc = MongoLadder.db(self.server_id).find_one({'_id': str(self.char_id)})
+        doc = self.get_self_ladder_data()
 
         notify = LadderNotify()
         notify.remained_times = doc['remained_times']
         notify.my_order = doc['order']
         notify.my_score = doc['score']
+
+        if not doc.get('last_challenge_timestamp', 0):
+            time = arrow.utcnow().timestamp
+        else:
+            time = doc.get('last_challenge_timestamp', 0) + LADDER_NEXT_CHALLENGE_INTERVAL_TIMES
+
+        notify.next_challenge_time = time
 
         refreshed = doc['refreshed']
         refreshed_docs = MongoLadder.db(self.server_id).find({'_id': {'$in': refreshed.keys()}})
