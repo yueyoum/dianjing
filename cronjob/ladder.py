@@ -34,8 +34,8 @@ def ladder_send_rank_reward(*args):
 
 
 @uwsgidecorators.cron(0, 0, -1, -1, -1, target="spooler")
-def ladder_store_clean_buy_times(*args):
-    logger = Logger("ladder_store_clean_buy_times")
+def ladder_store_reset(*args):
+    logger = Logger("ladder_store_reset")
     logger.write("Start")
 
     try:
