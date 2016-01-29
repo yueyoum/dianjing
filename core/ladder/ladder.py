@@ -39,6 +39,9 @@ LADDER_MAX_BUY_CHALLENGE_TIMES = 5
 
 LADDER_NEXT_CHALLENGE_INTERVAL_TIMES = 5 * 60
 
+LADDER_MATCH_INFO_TITLE = "天梯挑战赛战报"
+LADDER_MATCH_INFO_CONTENT = ""
+
 
 class Ladder(object):
     def __init__(self, server_id, char_id):
@@ -176,13 +179,14 @@ class Ladder(object):
         return MongoLadder.db(self.server_id).find_one({'_id': str(self.char_id)})
 
     def match(self, target_id):
-        if self.get_self_ladder_data()['remained_times'] < 1:
+        doc = self.get_self_ladder_data()
+
+        if doc['remained_times'] < 1:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_NOT_CHALLENGE_TIMES"))
 
         if target_id == str(self.char_id):
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_CANNOT_MATCH_SELF"))
 
-        doc = self.get_self_ladder_data()
         if target_id not in doc['refreshed']:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_TARGET_NOT_EXIST"))
 
@@ -221,8 +225,8 @@ class Ladder(object):
             return
 
         MailManager(self.server_id, self.char_id).add(
-            title="Ladder Match Video",
-            content="",
+            title=LADDER_MATCH_INFO_TITLE,
+            content=LADDER_MATCH_INFO_CONTENT,
             data=video,
             function=MAIL_FUNCTION_VIDEO,
         )
@@ -322,7 +326,6 @@ class Ladder(object):
             notify_club = notify.clubs.add()
             notify_club.id = k
             notify_club.order = v
-            # TODO
             notify_club.score = this_ladder_club['score']
 
             ladder_club = LadderClub(self.server_id, this_ladder_club)

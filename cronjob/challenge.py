@@ -34,7 +34,7 @@ def clean_match_times(*args):
 
 
 def energy_energize(*args):
-    logger = Logger("challenge energize")
+    logger = Logger("challenge_energize")
     logger.write("Start")
 
     try:

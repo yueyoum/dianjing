@@ -92,7 +92,7 @@ class ChallengeNPCClub(AbstractClub):
 
 
 class Challenge(object):
-    # __slots__ = ['server_id', 'char_id']
+    __slots__ = ['server_id', 'char_id']
 
     def __init__(self, server_id, char_id):
         self.server_id = server_id
@@ -149,10 +149,7 @@ class Challenge(object):
             {'areas': 1}
         )
 
-        tmp_area_id = 0
-        for area_id in doc['areas'].keys():
-            if tmp_area_id < int(area_id):
-                tmp_area_id = int(area_id)
+        tmp_area_id = max([int(area_id) for area_id in doc['areas'].keys()])
 
         tmp_ch_id = 0
         for ch_id in doc['areas'].get(str(tmp_area_id), {}).get("challenges", {}).keys():
