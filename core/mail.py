@@ -8,6 +8,8 @@ Description:
 """
 
 import arrow
+import base64
+
 from django.conf import settings
 from dianjing.exception import GameException
 
@@ -85,7 +87,7 @@ class MailManager(object):
         title = u"来自 {0} 的邮件".format(self_doc['name'])
         MailManager(self.server_id, to_id).add(title, content, from_id=self.char_id)
 
-    def add(self, title, content, attachment="", from_id=0, function=0):
+    def add(self, title, content, attachment="", from_id=0, function=0, data=None):
         from apps.history_record.models import MailHistoryRecord
 
         now = arrow.utcnow()
@@ -97,6 +99,7 @@ class MailManager(object):
         doc['attachment'] = attachment
         doc['create_at'] = now.timestamp
         doc['function'] = function
+        doc['data'] = base64.encodestring(data)
 
         mail_id = make_string_id()
 
@@ -222,6 +225,9 @@ class MailManager(object):
             notify_mail.content = v['content']
             notify_mail.has_read = v['has_read']
             notify_mail.create_at = v['create_at']
+            notify_mail.function = v['function']
+            if v.get('data', None):
+                notify_mail.data = base64.decodestring(v['data'])
 
             remained_seconds = v['create_at'] - limit_timestamp
             if remained_seconds < 0:

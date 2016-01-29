@@ -12,8 +12,7 @@ import arrow
 
 from dianjing.exception import GameException
 
-from core.mongo import MongoCharacter, MongoTrainingMatch
-
+from core.mongo import MongoTrainingMatch
 from core.club import Club
 from core.package import Drop
 from core.resource import Resource
@@ -26,7 +25,6 @@ from config import ConfigTrainingMatchReward, ConfigErrorMessage, ConfigNPC
 
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 from protomsg.training_match_pb2 import (
-    TRAINING_MATCH_CLUB_DONE,
     TRAINING_MATCH_CLUB_FAIL,
     TRAINING_MATCH_CLUB_NOT_OPEN,
     TRAINING_MATCH_CLUB_OPEN,
@@ -123,7 +121,7 @@ class TrainingMatch(object):
     def get_training_match_data(self):
         return MongoTrainingMatch.db(self.server_id).find_one({'_id': self.char_id})
 
-    def match_report(self, is_win, key, result):
+    def match_report(self, is_win, key):
         timestamp, index, club_one, club_two = str(key).split(',')
 
         tmp_drop = None
@@ -192,8 +190,7 @@ class TrainingMatch(object):
             notify_club.flag = club.flag
             notify_club.name = club.name
             notify_club.level = club.level
-            # TODO
-            notify_club.power = 9999
+            notify_club.power = club.get_power()
 
             status = doc['status'].get(str(i), None)
             if status is None:

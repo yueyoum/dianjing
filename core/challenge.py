@@ -31,7 +31,7 @@ from protomsg.challenge_pb2 import ChallengeNotify, ChallengeEnergyNotify
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 
-CHALLENGE_MATCH_COST = 6                   # 挑战赛花费体力值
+CHALLENGE_MATCH_COST = -6                   # 挑战赛花费体力值
 
 NORMAL_ENERGIZE_NUM = 6                            # 定时能量回复
 
@@ -39,6 +39,13 @@ BUY_ENERGY_DIAMOND_COST = 50
 BUY_ENERGY_ENERGIZE = 20
 BUY_ENERGY_TIMES_ADD = 1
 MAX_DAY_BUY_ENERGY_TIMES = 4
+
+MATCH_LOSE_ZERO_ROUND = 5
+MATCH_LOSE_ONE_ROUND = 4
+
+LOSE_ZERO_ROUND_GET_STAR = 3
+LOSE_ONE_ROUND_GET_STAR = 2
+LOSE_TWO_ROUND_GET_STAR = 1
 
 
 class ChallengeNPCStaff(AbstractStaff):
@@ -213,27 +220,21 @@ class Challenge(object):
         return msg
 
     def report(self, key, win_club, result):
-        # 解析key
         club_one, area_id, challenge_id = str(key).split(',')
 
-        # 判断是否是用户自身比赛
         if club_one != str(self.char_id):
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-        # 更新员工胜率
         StaffManger(self.server_id, self.char_id).update_winning_rate(result)
 
-        # 扣除能量
-        self.change_energy(-CHALLENGE_MATCH_COST)
+        self.deduct_challenge_energy_cost(CHALLENGE_MATCH_COST)
 
-        # 更新挑战次数
         updater = {'areas.{0}.challenges.{1}.times'.format(area_id, challenge_id): 1}
         MongoChallenge.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$inc': updater}
+            {'$inc': updater},
         )
 
-        # send signal
         challenge_match_signal.send(
             sender=None,
             server_id=self.server_id,
@@ -242,70 +243,83 @@ class Challenge(object):
             win=(win_club == club_one),
         )
 
-        # 通关处理
-        if win_club == club_one:
-            counter = 0
-            for r in result:
-                if r.staff_one_win:
-                    counter += 1
+        if win_club != club_one:
+            return
 
-            if counter == 5:            # 3星
-                stars = 3
-            elif counter == 4:          # 2星
-                stars = 2
-            else:                       # 1星
-                stars = 1
-            doc = MongoChallenge.db(self.server_id).find_one(
-                {'_id': self.char_id}, {'areas.{0}'.format(area_id): 1}
-            )
+        doc = MongoChallenge.db(self.server_id).find_one(
+            {'_id': self.char_id}, {'areas.{0}'.format(area_id): 1}
+        )
 
-            setter = {}
-            # 判断是否需要更新星级
-            if stars > doc['areas'][area_id]['challenges'].get(challenge_id, {}).get('stars', 0):
-                setter['areas.{0}.challenges.{1}.stars'.format(area_id, challenge_id)] = stars
+        stars = self.calculate_stars(result)
+        setter = {}
+        doc_stars = doc['areas'][area_id]['challenges'].get(challenge_id, {}).get('stars', 0)
 
-            next_challenge_id = int(challenge_id) + 1
-            next_area_id = int(area_id) + 1
+        if stars > doc_stars:
+            setter['areas.{0}.challenges.{1}.stars'.format(area_id, challenge_id)] = stars
 
-            elite_open = True
-            # 如果下一关存在
-            if ConfigChallengeMatch.get(next_challenge_id):
-                # 如果是下一大区的， 开启新大区
-                if ConfigChallengeType.get(int(area_id)).condition_challenge_id < next_challenge_id:
-                    setter['areas.{0}.challenges.{1}'.format(next_area_id, next_challenge_id)] = {'stars': 0,
-                                                                                                  'times': 0}
-                    setter['areas.{0}.packages'.format(next_area_id)] = {'1': True, '2': True, '3': True}
+        next_challenge_id = int(challenge_id) + 1
+        next_area_id = int(area_id) + 1
 
-                    self.challenge_notify(area_id=next_area_id)
-                # 如果是当前大区的
-                else:
-                    # 如果还没开启
-                    if str(next_challenge_id) not in doc['areas'][str(area_id)]['challenges']:
-                        setter['areas.{0}.challenges.{1}'.format(area_id, next_challenge_id)] = {'stars': 0,
-                                                                                                 'times': 0}
-                    elite_open = False
+        elite_open = True
+        if ConfigChallengeMatch.get(next_challenge_id):
+            if ConfigChallengeType.get(int(area_id)).condition_challenge_id < next_challenge_id:
+                setter['areas.{0}.challenges.{1}'.format(next_area_id, next_challenge_id)] = {'stars': 0, 'times': 0}
+                self.open_new_area(next_area_id)
+            else:
+                if str(next_challenge_id) not in doc['areas'][str(area_id)]['challenges']:
+                    setter['areas.{0}.challenges.{1}'.format(area_id, next_challenge_id)] = {'stars': 0, 'times': 0}
+                elite_open = False
 
-            # 是否开启精英赛
-            if elite_open:
-                from core.elite_match import EliteMatch
-                EliteMatch(self.server_id, self.char_id).open_area(int(area_id))
+        if elite_open:
+            from core.elite_match import EliteMatch
+            EliteMatch(self.server_id, self.char_id).open_area(int(area_id))
 
-            # 更新数据
-            if setter:
-                MongoChallenge.db(self.server_id).update_one(
+        if setter:
+            self.update_setter_data(setter)
+
+        self.challenge_notify(area_id=area_id)
+
+        drop = Drop.generate(ConfigChallengeMatch.get(int(challenge_id)).package)
+        Resource(self.server_id, self.char_id).save_drop(drop)
+        return drop.make_protomsg()
+
+    def calculate_stars(self, result):
+        win_rounds = 0
+        for r in result:
+            if r.staff_one_win:
+                win_rounds += 1
+
+        if win_rounds == MATCH_LOSE_ZERO_ROUND:
+            return LOSE_ZERO_ROUND_GET_STAR
+        elif win_rounds == MATCH_LOSE_ONE_ROUND:
+            return LOSE_ONE_ROUND_GET_STAR
+        else:
+            return LOSE_TWO_ROUND_GET_STAR
+
+    def open_new_area(self, area_id):
+        config = ConfigChallengeType.get(area_id-1)
+        setter = {
+            'areas.{0}.challenges.{1}.stars'.format(area_id, config.condition_challenge_id+1): 0,
+            'areas.{0}.challenges.{1}.times'.format(area_id, config.condition_challenge_id+1): 0,
+            'areas.{0}.packages.1'.format(area_id): True,
+            'areas.{0}.packages.2'.format(area_id): True,
+            'areas.{0}.packages.3'.format(area_id): True,
+        }
+
+        self.update_setter_data(setter)
+        self.challenge_notify(area_id=area_id)
+
+    def update_setter_data(self, setter):
+        MongoChallenge.db(self.server_id).update_one(
                     {'_id': self.char_id},
                     {'$set': setter}
-                )
+        )
 
-            # 同步到客户端
-            self.challenge_notify(area_id=area_id)
+    def get_challenge_data(self):
+        return MongoChallenge.db(self.server_id).find({'_id': self.char_id})
 
-            # # 通关奖励
-            drop = Drop.generate(ConfigChallengeMatch.get(int(challenge_id)).package)
-            Resource(self.server_id, self.char_id).save_drop(drop)
-            return drop.make_protomsg()
-
-        return None
+    def deduct_challenge_energy_cost(self, num):
+        self.change_energy(num)
 
     def get_star_reward(self, area_id, index):
         """
@@ -323,26 +337,21 @@ class Challenge(object):
              },
         )
 
-        # 判断是否有星级奖励（实际上是检测是否已开通大区）
         star_reward = doc['areas'].get(str(area_id), {}).get('packages', {})
         if not star_reward:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_REWARD_NOT_EXIST"))
 
-        # 已领取
         if not star_reward[str(index+1)]:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_REWARD_HAVE_GET"))
 
         star_count = 0
-        # 计算总星数
         for ch_id, ch_info in doc['areas'][str(area_id)]['challenges'].iteritems():
             star_count += ch_info['stars']
 
         conf = ConfigChallengeType.get(area_id)
-        # 星数不足
         if conf.star_reward[index]['star'] > star_count:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_REWARD_STARS_NOT_ENOUGH"))
 
-        # 发放奖励
         drop = Drop.generate(conf.star_reward[index]['reward'])
 
         Resource(self.server_id, self.char_id).save_drop(drop)
@@ -359,12 +368,10 @@ class Challenge(object):
         """
         购买 体力
         """
-        # 是否还有购买次数
         doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'energy': 1})
         if doc['energy']['times'] >= MAX_DAY_BUY_ENERGY_TIMES:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NO_BUY_ENERGY_TIMES"))
 
-        # 扣除花费， 添加体力和购买次数
         with Resource(self.server_id, self.char_id).check(
                 diamond=BUY_ENERGY_DIAMOND_COST, message="Buy energy power cost {0}".format(BUY_ENERGY_DIAMOND_COST)):
             self.change_energy(BUY_ENERGY_ENERGIZE, BUY_ENERGY_TIMES_ADD)
@@ -420,4 +427,6 @@ class Challenge(object):
                 notify_challenge.times = info['times']
                 notify_challenge.stars = info['stars']
 
+        print " * " * 25
+        print notify
         MessagePipe(self.char_id).put(msg=notify)

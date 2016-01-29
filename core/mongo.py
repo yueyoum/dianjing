@@ -366,6 +366,7 @@ class MongoMail(BaseDocument):
         'create_at': null,
         'attachment': "",
         'function': 0,
+        'data': None,
     }
 
     COLLECTION = "mail"

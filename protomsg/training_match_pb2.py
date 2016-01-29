@@ -23,7 +23,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='training_match.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x14training_match.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\x1a\x0bmatch.proto\"\x8e\x01\n\x0cOppositeClub\x12\r\n\x05index\x18\x01 \x02(\x05\x12\x0c\n\x04\x66lag\x18\x02 \x02(\x05\x12\x0c\n\x04name\x18\x03 \x02(\t\x12\r\n\x05level\x18\x04 \x02(\x05\x12\r\n\x05power\x18\x05 \x02(\x05\x12\x35\n\x06status\x18\x06 \x02(\x0e\x32%.Dianjing.protocol.OppositeClubStatus\"\xb2\x01\n\x13TrainingMatchNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x1d\n\x15remained_relive_times\x18\x03 \x02(\x05\x12\x13\n\x0brelive_cost\x18\x04 \x02(\x05\x12.\n\x05\x63lubs\x18\x05 \x03(\x0b\x32\x1f.Dianjing.protocol.OppositeClub\"@\n\x19TrainingMatchStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x12\n\nclub_index\x18\x02 \x02(\x05\"g\n\x1aTrainingMatchStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"O\n\x10StaffMatchResult\x12\x11\n\tstaff_one\x18\x01 \x02(\x05\x12\x11\n\tstaff_two\x18\x02 \x02(\x05\x12\x15\n\rstaff_one_win\x18\x03 \x02(\x08\"\x7f\n\x1aTrainingMatchReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0e\n\x06is_win\x18\x02 \x02(\x08\x12\x0b\n\x03key\x18\x03 \x02(\t\x12\x33\n\x06result\x18\x04 \x03(\x0b\x32#.Dianjing.protocol.StaffMatchResult\"b\n\x1bTrainingMatchReportResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"M\n&TrainingMatchGetMatchClubDetailRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x12\n\nclub_index\x18\x02 \x02(\x05\"2\n\tClubStaff\x12\x10\n\x08staff_id\x18\x01 \x02(\x05\x12\x13\n\x0bstaff_level\x18\x02 \x02(\x05\"u\n\'TrainingMatchGetMatchClubDetailResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12,\n\x06staffs\x18\x03 \x03(\x0b\x32\x1c.Dianjing.protocol.ClubStaff*\xae\x01\n\x12OppositeClubStatus\x12\x1c\n\x18TRAINING_MATCH_CLUB_PASS\x10\x01\x12\x1c\n\x18TRAINING_MATCH_CLUB_FAIL\x10\x02\x12\x1c\n\x18TRAINING_MATCH_CLUB_OPEN\x10\x03\x12 \n\x1cTRAINING_MATCH_CLUB_NOT_OPEN\x10\x04\x12\x1c\n\x18TRAINING_MATCH_CLUB_DONE\x10\x05')
+  serialized_pb=_b('\n\x14training_match.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\x1a\x0bmatch.proto\"\x8e\x01\n\x0cOppositeClub\x12\r\n\x05index\x18\x01 \x02(\x05\x12\x0c\n\x04\x66lag\x18\x02 \x02(\x05\x12\x0c\n\x04name\x18\x03 \x02(\t\x12\r\n\x05level\x18\x04 \x02(\x05\x12\r\n\x05power\x18\x05 \x02(\x05\x12\x35\n\x06status\x18\x06 \x02(\x0e\x32%.Dianjing.protocol.OppositeClubStatus\"\xc1\x01\n\x13TrainingMatchNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x1d\n\x15remained_relive_times\x18\x03 \x02(\x05\x12\x13\n\x0brelive_cost\x18\x04 \x02(\x05\x12.\n\x05\x63lubs\x18\x05 \x03(\x0b\x32\x1f.Dianjing.protocol.OppositeClub\x12\r\n\x05score\x18\x06 \x02(\x05\"@\n\x19TrainingMatchStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x12\n\nclub_index\x18\x02 \x02(\x05\"g\n\x1aTrainingMatchStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"O\n\x10StaffMatchResult\x12\x11\n\tstaff_one\x18\x01 \x02(\x05\x12\x11\n\tstaff_two\x18\x02 \x02(\x05\x12\x15\n\rstaff_one_win\x18\x03 \x02(\x08\"\x7f\n\x1aTrainingMatchReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0e\n\x06is_win\x18\x02 \x02(\x08\x12\x0b\n\x03key\x18\x03 \x02(\t\x12\x33\n\x06result\x18\x04 \x03(\x0b\x32#.Dianjing.protocol.StaffMatchResult\"b\n\x1bTrainingMatchReportResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"M\n&TrainingMatchGetMatchClubDetailRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x12\n\nclub_index\x18\x02 \x02(\x05\"2\n\tClubStaff\x12\x10\n\x08staff_id\x18\x01 \x02(\x05\x12\x13\n\x0bstaff_level\x18\x02 \x02(\x05\"u\n\'TrainingMatchGetMatchClubDetailResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12,\n\x06staffs\x18\x03 \x03(\x0b\x32\x1c.Dianjing.protocol.ClubStaff*\xae\x01\n\x12OppositeClubStatus\x12\x1c\n\x18TRAINING_MATCH_CLUB_PASS\x10\x01\x12\x1c\n\x18TRAINING_MATCH_CLUB_FAIL\x10\x02\x12\x1c\n\x18TRAINING_MATCH_CLUB_OPEN\x10\x03\x12 \n\x1cTRAINING_MATCH_CLUB_NOT_OPEN\x10\x04\x12\x1c\n\x18TRAINING_MATCH_CLUB_DONE\x10\x05')
   ,
   dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,match__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -57,8 +57,8 @@ _OPPOSITECLUBSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1143,
-  serialized_end=1317,
+  serialized_start=1158,
+  serialized_end=1332,
 )
 _sym_db.RegisterEnumDescriptor(_OPPOSITECLUBSTATUS)
 
@@ -179,6 +179,13 @@ _TRAININGMATCHNOTIFY = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='score', full_name='Dianjing.protocol.TrainingMatchNotify.score', index=5,
+      number=6, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -192,7 +199,7 @@ _TRAININGMATCHNOTIFY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=231,
-  serialized_end=409,
+  serialized_end=424,
 )
 
 
@@ -229,8 +236,8 @@ _TRAININGMATCHSTARTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=411,
-  serialized_end=475,
+  serialized_start=426,
+  serialized_end=490,
 )
 
 
@@ -274,8 +281,8 @@ _TRAININGMATCHSTARTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=477,
-  serialized_end=580,
+  serialized_start=492,
+  serialized_end=595,
 )
 
 
@@ -319,8 +326,8 @@ _STAFFMATCHRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=582,
-  serialized_end=661,
+  serialized_start=597,
+  serialized_end=676,
 )
 
 
@@ -371,8 +378,8 @@ _TRAININGMATCHREPORTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=663,
-  serialized_end=790,
+  serialized_start=678,
+  serialized_end=805,
 )
 
 
@@ -416,8 +423,8 @@ _TRAININGMATCHREPORTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=792,
-  serialized_end=890,
+  serialized_start=807,
+  serialized_end=905,
 )
 
 
@@ -454,8 +461,8 @@ _TRAININGMATCHGETMATCHCLUBDETAILREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=892,
-  serialized_end=969,
+  serialized_start=907,
+  serialized_end=984,
 )
 
 
@@ -492,8 +499,8 @@ _CLUBSTAFF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=971,
-  serialized_end=1021,
+  serialized_start=986,
+  serialized_end=1036,
 )
 
 
@@ -537,8 +544,8 @@ _TRAININGMATCHGETMATCHCLUBDETAILRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1023,
-  serialized_end=1140,
+  serialized_start=1038,
+  serialized_end=1155,
 )
 
 _OPPOSITECLUB.fields_by_name['status'].enum_type = _OPPOSITECLUBSTATUS

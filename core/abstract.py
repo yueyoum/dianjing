@@ -220,6 +220,10 @@ class AbstractClub(object):
         for s in self.staffs.values():
             s.strengthen(multiple)
 
+    def get_power(self):
+        # TODO:
+        return 9999
+
     def make_protomsg(self):
         msg = MessageClub()
         # 因为NPC的ID是UUID，所以这里为了统一，club的ID 都是 str

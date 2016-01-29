@@ -28,7 +28,9 @@ from config import (
     ConfigErrorMessage,
 )
 from config.settings import LADDER_LOG_MAX_AMOUNT, LADDER_NPC_AMOUNT, LADDER_DEFAULT_MATCH_TIMES, LADDER_MAX_SCORE
+
 from protomsg.ladder_pb2 import LadderNotify
+from protomsg.mail_pb2 import MAIL_FUNCTION_VIDEO
 
 
 LADDER_BUY_CHALLENGE_TIMES = 1
@@ -185,7 +187,7 @@ class Ladder(object):
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_TARGET_NOT_EXIST"))
 
         if arrow.utcnow().timestamp - doc.get('last_challenge_timestamp', 0) < LADDER_NEXT_CHALLENGE_INTERVAL_TIMES:
-            raise GameException(ConfigErrorMessage.get_error_id("LADDER_CHALLENGE_SHUTDOWN"))
+            raise GameException(ConfigErrorMessage.get_error_id("LADDER_CHALLENGE_COOLING_DOWN"))
 
         target = MongoLadder.db(self.server_id).find_one({'_id': target_id}, {'order': 1})
         if target['order'] != doc['refreshed'][target_id]:
@@ -212,17 +214,18 @@ class Ladder(object):
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_SELF_IN_MATCH"))
 
     def match_report(self, video, key, win_club, result):
-        # TODO: video save
         self.make_refresh()
 
         timestamp, club_one_id, club_two_id = str(key).split(',')
         if club_one_id != str(self.char_id):
             return
 
-        # MailManager(self.server_id, self.char_id).add(
-        #     title="Ladder Match Video",
-        #     content=video,
-        # )
+        MailManager(self.server_id, self.char_id).add(
+            title="Ladder Match Video",
+            content="",
+            data=video,
+            function=MAIL_FUNCTION_VIDEO,
+        )
 
         club_one = MongoLadder.db(self.server_id).find_one({'_id': str(club_one_id)})
         club_two = MongoLadder.db(self.server_id).find_one({'_id': str(club_two_id)})
@@ -320,12 +323,12 @@ class Ladder(object):
             notify_club.id = k
             notify_club.order = v
             # TODO
-            notify_club.power = 999
             notify_club.score = this_ladder_club['score']
 
             ladder_club = LadderClub(self.server_id, this_ladder_club)
             notify_club.name = ladder_club.name
             notify_club.flag = ladder_club.flag
+            notify_club.power = ladder_club.get_power()
 
         for template_id, args in doc['logs']:
             notify_log = notify.logs.add()

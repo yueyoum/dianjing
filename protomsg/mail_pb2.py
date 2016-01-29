@@ -23,7 +23,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mail.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\nmail.proto\x12\x11\x44ianjing.protocol\x1a\x0f\x63haracter.proto\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"j\n\x08MailFrom\x12\x32\n\tfrom_type\x18\x01 \x02(\x0e\x32\x1f.Dianjing.protocol.MailFromType\x12*\n\x04\x63har\x18\x02 \x01(\x0b\x32\x1c.Dianjing.protocol.Character\"\x95\x02\n\x04Mail\x12\n\n\x02id\x18\x01 \x02(\t\x12.\n\tmail_from\x18\x02 \x02(\x0b\x32\x1b.Dianjing.protocol.MailFrom\x12\r\n\x05title\x18\x03 \x02(\t\x12\x0f\n\x07\x63ontent\x18\x04 \x02(\t\x12\x10\n\x08has_read\x18\x05 \x02(\x08\x12\x11\n\tcreate_at\x18\x06 \x02(\x03\x12\x18\n\x10remained_seconds\x18\x07 \x02(\x05\x12+\n\nattachment\x18\x08 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\x12\x45\n\x08\x66unction\x18\t \x01(\x0e\x32\x1f.Dianjing.protocol.MailFunction:\x12MAIL_FUNCTION_NONE\"m\n\nMailNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12&\n\x05mails\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Mail\"0\n\x10MailRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t\"B\n\x0fMailSendRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05to_id\x18\x02 \x02(\t\x12\x0f\n\x07\x63ontent\x18\x03 \x02(\t\"0\n\x10MailSendResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\".\n\x0fMailOpenRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"0\n\x10MailOpenResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"0\n\x11MailDeleteRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"2\n\x12MailDeleteResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"7\n\x18MailGetAttachmentRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"f\n\x19MailGetAttachmentResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\nattachment\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*8\n\x0cMailFromType\x12\x14\n\x10MAIL_FROM_SYSTEM\x10\x01\x12\x12\n\x0eMAIL_FROM_USER\x10\x02*&\n\x0cMailFunction\x12\x16\n\x12MAIL_FUNCTION_NONE\x10\x01')
+  serialized_pb=_b('\n\nmail.proto\x12\x11\x44ianjing.protocol\x1a\x0f\x63haracter.proto\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"j\n\x08MailFrom\x12\x32\n\tfrom_type\x18\x01 \x02(\x0e\x32\x1f.Dianjing.protocol.MailFromType\x12*\n\x04\x63har\x18\x02 \x01(\x0b\x32\x1c.Dianjing.protocol.Character\"\xa3\x02\n\x04Mail\x12\n\n\x02id\x18\x01 \x02(\t\x12.\n\tmail_from\x18\x02 \x02(\x0b\x32\x1b.Dianjing.protocol.MailFrom\x12\r\n\x05title\x18\x03 \x02(\t\x12\x0f\n\x07\x63ontent\x18\x04 \x02(\t\x12\x10\n\x08has_read\x18\x05 \x02(\x08\x12\x11\n\tcreate_at\x18\x06 \x02(\x03\x12\x18\n\x10remained_seconds\x18\x07 \x02(\x05\x12+\n\nattachment\x18\x08 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\x12\x45\n\x08\x66unction\x18\t \x01(\x0e\x32\x1f.Dianjing.protocol.MailFunction:\x12MAIL_FUNCTION_NONE\x12\x0c\n\x04\x64\x61ta\x18\n \x01(\x0c\"m\n\nMailNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12&\n\x05mails\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Mail\"0\n\x10MailRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t\"B\n\x0fMailSendRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05to_id\x18\x02 \x02(\t\x12\x0f\n\x07\x63ontent\x18\x03 \x02(\t\"0\n\x10MailSendResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\".\n\x0fMailOpenRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"0\n\x10MailOpenResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"0\n\x11MailDeleteRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"2\n\x12MailDeleteResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"7\n\x18MailGetAttachmentRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"f\n\x19MailGetAttachmentResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\nattachment\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*8\n\x0cMailFromType\x12\x14\n\x10MAIL_FROM_SYSTEM\x10\x01\x12\x12\n\x0eMAIL_FROM_USER\x10\x02*?\n\x0cMailFunction\x12\x16\n\x12MAIL_FUNCTION_NONE\x10\x00\x12\x17\n\x13MAIL_FUNCTION_VIDEO\x10\x01')
   ,
   dependencies=[character__pb2.DESCRIPTOR,common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -45,8 +45,8 @@ _MAILFROMTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1107,
-  serialized_end=1163,
+  serialized_start=1121,
+  serialized_end=1177,
 )
 _sym_db.RegisterEnumDescriptor(_MAILFROMTYPE)
 
@@ -58,21 +58,26 @@ _MAILFUNCTION = _descriptor.EnumDescriptor(
   file=DESCRIPTOR,
   values=[
     _descriptor.EnumValueDescriptor(
-      name='MAIL_FUNCTION_NONE', index=0, number=1,
+      name='MAIL_FUNCTION_NONE', index=0, number=0,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='MAIL_FUNCTION_VIDEO', index=1, number=1,
       options=None,
       type=None),
   ],
   containing_type=None,
   options=None,
-  serialized_start=1165,
-  serialized_end=1203,
+  serialized_start=1179,
+  serialized_end=1242,
 )
 _sym_db.RegisterEnumDescriptor(_MAILFUNCTION)
 
 MailFunction = enum_type_wrapper.EnumTypeWrapper(_MAILFUNCTION)
 MAIL_FROM_SYSTEM = 1
 MAIL_FROM_USER = 2
-MAIL_FUNCTION_NONE = 1
+MAIL_FUNCTION_NONE = 0
+MAIL_FUNCTION_VIDEO = 1
 
 
 
@@ -180,7 +185,14 @@ _MAIL = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='function', full_name='Dianjing.protocol.Mail.function', index=8,
       number=9, type=14, cpp_type=8, label=1,
-      has_default_value=True, default_value=1,
+      has_default_value=True, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='data', full_name='Dianjing.protocol.Mail.data', index=9,
+      number=10, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -197,7 +209,7 @@ _MAIL = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=188,
-  serialized_end=465,
+  serialized_end=479,
 )
 
 
@@ -241,8 +253,8 @@ _MAILNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=467,
-  serialized_end=576,
+  serialized_start=481,
+  serialized_end=590,
 )
 
 
@@ -279,8 +291,8 @@ _MAILREMOVENOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=578,
-  serialized_end=626,
+  serialized_start=592,
+  serialized_end=640,
 )
 
 
@@ -324,8 +336,8 @@ _MAILSENDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=628,
-  serialized_end=694,
+  serialized_start=642,
+  serialized_end=708,
 )
 
 
@@ -362,8 +374,8 @@ _MAILSENDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=696,
-  serialized_end=744,
+  serialized_start=710,
+  serialized_end=758,
 )
 
 
@@ -400,8 +412,8 @@ _MAILOPENREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=746,
-  serialized_end=792,
+  serialized_start=760,
+  serialized_end=806,
 )
 
 
@@ -438,8 +450,8 @@ _MAILOPENRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=794,
-  serialized_end=842,
+  serialized_start=808,
+  serialized_end=856,
 )
 
 
@@ -476,8 +488,8 @@ _MAILDELETEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=844,
-  serialized_end=892,
+  serialized_start=858,
+  serialized_end=906,
 )
 
 
@@ -514,8 +526,8 @@ _MAILDELETERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=894,
-  serialized_end=944,
+  serialized_start=908,
+  serialized_end=958,
 )
 
 
@@ -552,8 +564,8 @@ _MAILGETATTACHMENTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=946,
-  serialized_end=1001,
+  serialized_start=960,
+  serialized_end=1015,
 )
 
 
@@ -597,8 +609,8 @@ _MAILGETATTACHMENTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1003,
-  serialized_end=1105,
+  serialized_start=1017,
+  serialized_end=1119,
 )
 
 _MAILFROM.fields_by_name['from_type'].enum_type = _MAILFROMTYPE

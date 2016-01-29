@@ -43,7 +43,7 @@ def match_report(request):
     result = request._proto.result
 
     tm = TrainingMatch(server_id, char_id)
-    drop = tm.match_report(is_win, key, result)
+    drop = tm.match_report(is_win, key)
 
     response = TrainingMatchReportResponse()
     response.ret = 0
