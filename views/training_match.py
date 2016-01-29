@@ -9,12 +9,14 @@ Description:
 
 from utils.http import ProtobufResponse
 
-from core.training_match import TrainingMatch
+from core.training_match import TrainingMatch, TrainingMatchStore
 
 from protomsg.training_match_pb2 import (
     TrainingMatchReportResponse,
     TrainingMatchStartResponse,
     TrainingMatchGetMatchClubDetailResponse,
+    TrainingMatchStoreBuyResponse,
+    TrainingMatchStoreRefreshResponse
 )
 
 
@@ -69,4 +71,31 @@ def match_detail(request):
         staff_detail.staff_id = k
         staff_detail.staff_level = v.level
 
+    return ProtobufResponse(response)
+
+
+
+def store_refresh(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    t = TrainingMatchStore(server_id, char_id)
+    t.refresh_by_self()
+
+    response = TrainingMatchStoreRefreshResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+
+def store_buy(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    item_id = request._proto.id
+
+    t = TrainingMatchStore(server_id, char_id)
+    t.buy(item_id)
+
+    response = TrainingMatchStoreBuyResponse()
+    response.ret = 0
     return ProtobufResponse(response)

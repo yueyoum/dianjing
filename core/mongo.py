@@ -554,6 +554,9 @@ class MongoTrainingMatch(BaseDocument):
         # 俱乐部信息，序列化后的Club
         'clubs': [],
         'score': 0,
+        # 商店，和ladder一样
+        'store_items': [],
+        'buy_times': {},
     }
 
     COLLECTION = 'training_match'

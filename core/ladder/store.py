@@ -70,7 +70,8 @@ class LadderStore(object):
         MongoLadder.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
-                'store_items': self.items
+                'store_items': self.items,
+                'buy_times': {},
             }}
         )
 
@@ -99,7 +100,7 @@ class LadderStore(object):
         ladder = Ladder(self.server_id, self.char_id)
 
         if item_id not in self.items:
-            raise GameException(ConfigErrorMessage.get_error_id("LADDER_STORE_ITEM_NOT_EXIST"))
+            raise GameException(ConfigErrorMessage.get_error_id("STORE_ITEM_NOT_EXIST"))
 
         doc = MongoLadder.db(self.server_id).find_one(
             {'_id': str(self.char_id)},
@@ -108,12 +109,12 @@ class LadderStore(object):
 
         config = ConfigLadderScoreStore.get(item_id)
         if config.times_limit == 0:
-            raise GameException(ConfigErrorMessage.get_error_id("LADDER_SCORE_CANNOT_BUY"))
+            raise GameException(ConfigErrorMessage.get_error_id("STORE_ITEM_CANNOT_BUY"))
 
         if config.times_limit > 0:
             # has limit
             if doc.get('buy_times', {}).get(str(item_id), 0) >= config.times_limit:
-                raise GameException(ConfigErrorMessage.get_error_id("LADDER_STORE_ITEM_REACH_LIMIT"))
+                raise GameException(ConfigErrorMessage.get_error_id("STORE_ITEM_REACH_LIMIT"))
 
         if doc['score'] < config.score:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_SCORE_NOT_ENOUGH"))

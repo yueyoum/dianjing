@@ -152,6 +152,8 @@ urlpatterns = [
     url(r'^trainingmatch/start/$', views.training_match.start),
     url(r'^trainingmatch/report/$', views.training_match.match_report),
     url(r'^trainingmatch/detail/$', views.training_match.match_detail),
+    url(r'^trainingmatch/store/buy/$', views.training_match.store_buy),
+    url(r'^trainingmatch/store/refresh/$', views.training_match.store_refresh),
 
     url(r'^elite/start/$', views.elite_match.start),
     url(r'^elite/reward/$', views.elite_match.reward),

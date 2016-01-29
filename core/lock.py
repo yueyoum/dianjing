@@ -65,3 +65,6 @@ class LadderLock(Lock):
 
 class LadderStoreLock(Lock):
     KEY = 'lock_ladder_store'
+
+class TrainingMatchStoreLock(Lock):
+    KEY = 'training_match_store'
