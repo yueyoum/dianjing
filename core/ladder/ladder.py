@@ -175,8 +175,8 @@ class Ladder(object):
         if send_notify:
             self.send_notify()
 
-    def get_self_ladder_data(self):
-        return MongoLadder.db(self.server_id).find_one({'_id': str(self.char_id)})
+    def get_self_ladder_data(self, projection=None):
+        return MongoLadder.db(self.server_id).find_one({'_id': str(self.char_id)}, projection)
 
     def match(self, target_id):
         doc = self.get_self_ladder_data()
@@ -284,7 +284,7 @@ class Ladder(object):
             self.send_notify()
 
     def buy_challenge_times(self):
-        data = self.get_self_ladder_data()
+        data = self.get_self_ladder_data(projection={'buy_challenge_times': 1})
         if data.get('buy_challenge_times', 0) >= LADDER_MAX_BUY_CHALLENGE_TIMES:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_NO_CHALLENGE_BUY_TIMES"))
 
