@@ -176,13 +176,14 @@ class Ladder(object):
         return MongoLadder.db(self.server_id).find_one({'_id': str(self.char_id)})
 
     def match(self, target_id):
-        if self.get_self_ladder_data()['remained_times'] < 1:
+        doc = self.get_self_ladder_data()
+
+        if doc['remained_times'] < 1:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_NOT_CHALLENGE_TIMES"))
 
         if target_id == str(self.char_id):
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_CANNOT_MATCH_SELF"))
 
-        doc = self.get_self_ladder_data()
         if target_id not in doc['refreshed']:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_TARGET_NOT_EXIST"))
 

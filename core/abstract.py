@@ -221,8 +221,12 @@ class AbstractClub(object):
             s.strengthen(multiple)
 
     def get_power(self):
-        # TODO:
-        return 9999
+        power = 0
+        for s in self.staffs.values():
+            if s.id in self.match_staffs:
+                power += s.power
+
+        return power
 
     def make_protomsg(self):
         msg = MessageClub()

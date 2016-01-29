@@ -99,7 +99,8 @@ class MailManager(object):
         doc['attachment'] = attachment
         doc['create_at'] = now.timestamp
         doc['function'] = function
-        doc['data'] = base64.encodestring(data)
+
+        doc['data'] = base64.b64encode(data)
 
         mail_id = make_string_id()
 
@@ -227,7 +228,7 @@ class MailManager(object):
             notify_mail.create_at = v['create_at']
             notify_mail.function = v['function']
             if v.get('data', None):
-                notify_mail.data = base64.decodestring(v['data'])
+                notify_mail.data = base64.b64decode(v['data'])
 
             remained_seconds = v['create_at'] - limit_timestamp
             if remained_seconds < 0:
