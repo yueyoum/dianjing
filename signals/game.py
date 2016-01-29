@@ -31,7 +31,7 @@ from core.activity import ActivityCategory
 from core.activity.login_reward import ActivityLoginReward
 from core.activity.signin import SignIn
 from core.active_value import ActiveValue
-from core.training_match import TrainingMatch
+from core.training_match import TrainingMatch, TrainingMatchStore
 from core.elite_match import EliteMatch
 from core.auction import AuctionManager
 from core.system import send_broadcast_notify
@@ -101,6 +101,7 @@ def game_start_handler(server_id, char_id, **kwargs):
     av.send_value_notify()
 
     TrainingMatch(server_id, char_id).send_notify()
+    TrainingMatchStore(server_id, char_id).send_notify()
 
     em = EliteMatch(server_id, char_id)
     em.elite_notify()

@@ -89,7 +89,6 @@ class TrainingMatch(object):
         self.send_notify()
 
     def start(self, index):
-        print index
         if index > MAX_MATCH_CLUB_INDEX:
             raise GameException(ConfigErrorMessage.get_error_id("TRAINING_MATCH_NOT_EXIST"))
 
@@ -188,7 +187,7 @@ class TrainingMatch(object):
         notify.act = act
         notify.remained_relive_times = MAX_RELIVE_TIMES - doc['relive_times']
         notify.relive_cost = RELIVE_COST_DIAMOND
-        notify.score = doc['score']
+        notify.score = doc.get('score', 0)
 
         for i in ids:
             club = Club.loads(doc['clubs'][i])

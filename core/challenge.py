@@ -424,6 +424,4 @@ class Challenge(object):
                 notify_challenge.times = info['times']
                 notify_challenge.stars = info['stars']
 
-        print " * " * 25
-        print notify
         MessagePipe(self.char_id).put(msg=notify)
