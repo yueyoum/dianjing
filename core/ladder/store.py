@@ -68,7 +68,7 @@ class LadderStore(object):
     def refresh_by_self(self):
         self.items = random.sample(ConfigLadderScoreStore.INSTANCES.keys(), 9)
         MongoLadder.db(self.server_id).update_one(
-            {'_id': self.char_id},
+            {'_id': str(self.char_id)},
             {'$set': {
                 'store_items': self.items,
                 'buy_times': {},
@@ -79,7 +79,7 @@ class LadderStore(object):
 
     def get_items(self):
         doc = MongoLadder.db(self.server_id).find_one(
-            {'_id': self.char_id},
+            {'_id': str(self.char_id)},
             {'store_items': 1}
         )
 
