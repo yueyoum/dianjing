@@ -15,16 +15,15 @@ _sym_db = _symbol_database.Default()
 
 import match_pb2 as match__pb2
 import package_pb2 as package__pb2
-import training_match_pb2 as training__match__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='ladder.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0cladder.proto\x12\x11\x44ianjing.protocol\x1a\x0bmatch.proto\x1a\rpackage.proto\x1a\x14training_match.proto\"a\n\nLadderClub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\x12\r\n\x05order\x18\x04 \x02(\x05\x12\r\n\x05power\x18\x05 \x02(\x05\x12\r\n\x05score\x18\x06 \x02(\x05\".\n\tLadderLog\x12\x13\n\x0btemplate_id\x18\x01 \x02(\x05\x12\x0c\n\x04\x61rgs\x18\x02 \x03(\t\"\xd2\x01\n\x0cLadderNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12,\n\x05\x63lubs\x18\x02 \x03(\x0b\x32\x1d.Dianjing.protocol.LadderClub\x12\x16\n\x0eremained_times\x18\x03 \x02(\x05\x12\x10\n\x08my_order\x18\x04 \x02(\x05\x12\x10\n\x08my_score\x18\x05 \x02(\x05\x12*\n\x04logs\x18\x06 \x03(\x0b\x32\x1c.Dianjing.protocol.LadderLog\x12\x1b\n\x13next_challenge_time\x18\x07 \x02(\x03\"\'\n\x14LadderRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"5\n\x15LadderRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"1\n\x12LadderMatchRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"`\n\x13LadderMatchResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"\x8e\x01\n\x18LadderMatchReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05video\x18\x02 \x02(\x0c\x12\x0b\n\x03key\x18\x03 \x02(\t\x12\x10\n\x08win_club\x18\x04 \x02(\t\x12\x33\n\x06result\x18\x05 \x03(\x0b\x32#.Dianjing.protocol.StaffMatchResult\"`\n\x19LadderMatchReportResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"L\n\x11LadderStoreNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x19\n\x11next_refresh_time\x18\x02 \x02(\x03\x12\x0b\n\x03ids\x18\x03 \x03(\x05\"4\n\x15LadderStoreBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"6\n\x16LadderStoreBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\",\n\x19LadderStoreRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\":\n\x1aLadderStoreRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"+\n\x18LadderLeaderBoardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"g\n\x19LadderLeaderBoardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12,\n\x05\x63lubs\x18\x03 \x03(\x0b\x32\x1d.Dianjing.protocol.LadderClub\"1\n\x1eLadderBuyChallengeTimesRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"?\n\x1fLadderBuyChallengeTimesResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+  serialized_pb=_b('\n\x0cladder.proto\x12\x11\x44ianjing.protocol\x1a\x0bmatch.proto\x1a\rpackage.proto\"a\n\nLadderClub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\x12\r\n\x05order\x18\x04 \x02(\x05\x12\r\n\x05power\x18\x05 \x02(\x05\x12\r\n\x05score\x18\x06 \x02(\x05\".\n\tLadderLog\x12\x13\n\x0btemplate_id\x18\x01 \x02(\x05\x12\x0c\n\x04\x61rgs\x18\x02 \x03(\t\"\xd2\x01\n\x0cLadderNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12,\n\x05\x63lubs\x18\x02 \x03(\x0b\x32\x1d.Dianjing.protocol.LadderClub\x12\x16\n\x0eremained_times\x18\x03 \x02(\x05\x12\x10\n\x08my_order\x18\x04 \x02(\x05\x12\x10\n\x08my_score\x18\x05 \x02(\x05\x12*\n\x04logs\x18\x06 \x03(\x0b\x32\x1c.Dianjing.protocol.LadderLog\x12\x1b\n\x13next_challenge_time\x18\x07 \x02(\x03\"\'\n\x14LadderRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"5\n\x15LadderRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"1\n\x12LadderMatchRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"`\n\x13LadderMatchResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"\x8e\x01\n\x18LadderMatchReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05video\x18\x02 \x02(\x0c\x12\x0b\n\x03key\x18\x03 \x02(\t\x12\x10\n\x08win_club\x18\x04 \x02(\t\x12\x33\n\x06result\x18\x05 \x03(\x0b\x32#.Dianjing.protocol.StaffMatchResult\"`\n\x19LadderMatchReportResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"L\n\x11LadderStoreNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x19\n\x11next_refresh_time\x18\x02 \x02(\x03\x12\x0b\n\x03ids\x18\x03 \x03(\x05\"4\n\x15LadderStoreBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"6\n\x16LadderStoreBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\",\n\x19LadderStoreRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\":\n\x1aLadderStoreRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"+\n\x18LadderLeaderBoardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"g\n\x19LadderLeaderBoardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12,\n\x05\x63lubs\x18\x03 \x03(\x0b\x32\x1d.Dianjing.protocol.LadderClub\"1\n\x1eLadderBuyChallengeTimesRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"?\n\x1fLadderBuyChallengeTimesResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
   ,
-  dependencies=[match__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,training__match__pb2.DESCRIPTOR,])
+  dependencies=[match__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
@@ -91,8 +90,8 @@ _LADDERCLUB = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=85,
-  serialized_end=182,
+  serialized_start=63,
+  serialized_end=160,
 )
 
 
@@ -129,8 +128,8 @@ _LADDERLOG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=184,
-  serialized_end=230,
+  serialized_start=162,
+  serialized_end=208,
 )
 
 
@@ -202,8 +201,8 @@ _LADDERNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=233,
-  serialized_end=443,
+  serialized_start=211,
+  serialized_end=421,
 )
 
 
@@ -233,8 +232,8 @@ _LADDERREFRESHREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=445,
-  serialized_end=484,
+  serialized_start=423,
+  serialized_end=462,
 )
 
 
@@ -271,8 +270,8 @@ _LADDERREFRESHRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=486,
-  serialized_end=539,
+  serialized_start=464,
+  serialized_end=517,
 )
 
 
@@ -309,8 +308,8 @@ _LADDERMATCHREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=541,
-  serialized_end=590,
+  serialized_start=519,
+  serialized_end=568,
 )
 
 
@@ -354,8 +353,8 @@ _LADDERMATCHRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=592,
-  serialized_end=688,
+  serialized_start=570,
+  serialized_end=666,
 )
 
 
@@ -413,8 +412,8 @@ _LADDERMATCHREPORTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=691,
-  serialized_end=833,
+  serialized_start=669,
+  serialized_end=811,
 )
 
 
@@ -458,8 +457,8 @@ _LADDERMATCHREPORTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=835,
-  serialized_end=931,
+  serialized_start=813,
+  serialized_end=909,
 )
 
 
@@ -503,8 +502,8 @@ _LADDERSTORENOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=933,
-  serialized_end=1009,
+  serialized_start=911,
+  serialized_end=987,
 )
 
 
@@ -541,8 +540,8 @@ _LADDERSTOREBUYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1011,
-  serialized_end=1063,
+  serialized_start=989,
+  serialized_end=1041,
 )
 
 
@@ -579,8 +578,8 @@ _LADDERSTOREBUYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1065,
-  serialized_end=1119,
+  serialized_start=1043,
+  serialized_end=1097,
 )
 
 
@@ -610,8 +609,8 @@ _LADDERSTOREREFRESHREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1121,
-  serialized_end=1165,
+  serialized_start=1099,
+  serialized_end=1143,
 )
 
 
@@ -648,8 +647,8 @@ _LADDERSTOREREFRESHRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1167,
-  serialized_end=1225,
+  serialized_start=1145,
+  serialized_end=1203,
 )
 
 
@@ -679,8 +678,8 @@ _LADDERLEADERBOARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1227,
-  serialized_end=1270,
+  serialized_start=1205,
+  serialized_end=1248,
 )
 
 
@@ -724,8 +723,8 @@ _LADDERLEADERBOARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1272,
-  serialized_end=1375,
+  serialized_start=1250,
+  serialized_end=1353,
 )
 
 
@@ -755,8 +754,8 @@ _LADDERBUYCHALLENGETIMESREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1377,
-  serialized_end=1426,
+  serialized_start=1355,
+  serialized_end=1404,
 )
 
 
@@ -793,14 +792,14 @@ _LADDERBUYCHALLENGETIMESRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1428,
-  serialized_end=1491,
+  serialized_start=1406,
+  serialized_end=1469,
 )
 
 _LADDERNOTIFY.fields_by_name['clubs'].message_type = _LADDERCLUB
 _LADDERNOTIFY.fields_by_name['logs'].message_type = _LADDERLOG
 _LADDERMATCHRESPONSE.fields_by_name['match'].message_type = match__pb2._CLUBMATCH
-_LADDERMATCHREPORTREQUEST.fields_by_name['result'].message_type = training__match__pb2._STAFFMATCHRESULT
+_LADDERMATCHREPORTREQUEST.fields_by_name['result'].message_type = match__pb2._STAFFMATCHRESULT
 _LADDERMATCHREPORTRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 _LADDERLEADERBOARDRESPONSE.fields_by_name['clubs'].message_type = _LADDERCLUB
 DESCRIPTOR.message_types_by_name['LadderClub'] = _LADDERCLUB

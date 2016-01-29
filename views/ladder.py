@@ -93,8 +93,7 @@ def store_refresh(request):
     char_id = request._game_session.char_id
 
     s = LadderStore(server_id, char_id)
-    s.items = LadderStore.refresh(s.server_id, force=True)
-    s.send_notify()
+    s.refresh_by_self()
 
     response = LadderStoreRefreshResponse()
     response.ret = 0

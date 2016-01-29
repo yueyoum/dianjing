@@ -23,7 +23,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='training_match.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x14training_match.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\x1a\x0bmatch.proto\"\x8e\x01\n\x0cOppositeClub\x12\r\n\x05index\x18\x01 \x02(\x05\x12\x0c\n\x04\x66lag\x18\x02 \x02(\x05\x12\x0c\n\x04name\x18\x03 \x02(\t\x12\r\n\x05level\x18\x04 \x02(\x05\x12\r\n\x05power\x18\x05 \x02(\x05\x12\x35\n\x06status\x18\x06 \x02(\x0e\x32%.Dianjing.protocol.OppositeClubStatus\"\xc1\x01\n\x13TrainingMatchNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x1d\n\x15remained_relive_times\x18\x03 \x02(\x05\x12\x13\n\x0brelive_cost\x18\x04 \x02(\x05\x12.\n\x05\x63lubs\x18\x05 \x03(\x0b\x32\x1f.Dianjing.protocol.OppositeClub\x12\r\n\x05score\x18\x06 \x02(\x05\"@\n\x19TrainingMatchStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x12\n\nclub_index\x18\x02 \x02(\x05\"g\n\x1aTrainingMatchStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"O\n\x10StaffMatchResult\x12\x11\n\tstaff_one\x18\x01 \x02(\x05\x12\x11\n\tstaff_two\x18\x02 \x02(\x05\x12\x15\n\rstaff_one_win\x18\x03 \x02(\x08\"\x7f\n\x1aTrainingMatchReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0e\n\x06is_win\x18\x02 \x02(\x08\x12\x0b\n\x03key\x18\x03 \x02(\t\x12\x33\n\x06result\x18\x04 \x03(\x0b\x32#.Dianjing.protocol.StaffMatchResult\"b\n\x1bTrainingMatchReportResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"M\n&TrainingMatchGetMatchClubDetailRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x12\n\nclub_index\x18\x02 \x02(\x05\"2\n\tClubStaff\x12\x10\n\x08staff_id\x18\x01 \x02(\x05\x12\x13\n\x0bstaff_level\x18\x02 \x02(\x05\"u\n\'TrainingMatchGetMatchClubDetailResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12,\n\x06staffs\x18\x03 \x03(\x0b\x32\x1c.Dianjing.protocol.ClubStaff*\xae\x01\n\x12OppositeClubStatus\x12\x1c\n\x18TRAINING_MATCH_CLUB_PASS\x10\x01\x12\x1c\n\x18TRAINING_MATCH_CLUB_FAIL\x10\x02\x12\x1c\n\x18TRAINING_MATCH_CLUB_OPEN\x10\x03\x12 \n\x1cTRAINING_MATCH_CLUB_NOT_OPEN\x10\x04\x12\x1c\n\x18TRAINING_MATCH_CLUB_DONE\x10\x05')
+  serialized_pb=_b('\n\x14training_match.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\x1a\x0bmatch.proto\"\x8e\x01\n\x0cOppositeClub\x12\r\n\x05index\x18\x01 \x02(\x05\x12\x0c\n\x04\x66lag\x18\x02 \x02(\x05\x12\x0c\n\x04name\x18\x03 \x02(\t\x12\r\n\x05level\x18\x04 \x02(\x05\x12\r\n\x05power\x18\x05 \x02(\x05\x12\x35\n\x06status\x18\x06 \x02(\x0e\x32%.Dianjing.protocol.OppositeClubStatus\"\xc1\x01\n\x13TrainingMatchNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x1d\n\x15remained_relive_times\x18\x03 \x02(\x05\x12\x13\n\x0brelive_cost\x18\x04 \x02(\x05\x12.\n\x05\x63lubs\x18\x05 \x03(\x0b\x32\x1f.Dianjing.protocol.OppositeClub\x12\r\n\x05score\x18\x06 \x02(\x05\"@\n\x19TrainingMatchStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x12\n\nclub_index\x18\x02 \x02(\x05\"g\n\x1aTrainingMatchStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"\x7f\n\x1aTrainingMatchReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0e\n\x06is_win\x18\x02 \x02(\x08\x12\x0b\n\x03key\x18\x03 \x02(\t\x12\x33\n\x06result\x18\x04 \x03(\x0b\x32#.Dianjing.protocol.StaffMatchResult\"b\n\x1bTrainingMatchReportResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"M\n&TrainingMatchGetMatchClubDetailRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x12\n\nclub_index\x18\x02 \x02(\x05\"2\n\tClubStaff\x12\x10\n\x08staff_id\x18\x01 \x02(\x05\x12\x13\n\x0bstaff_level\x18\x02 \x02(\x05\"u\n\'TrainingMatchGetMatchClubDetailResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12,\n\x06staffs\x18\x03 \x03(\x0b\x32\x1c.Dianjing.protocol.ClubStaff\"S\n\x18TrainingMatchStoreNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x19\n\x11next_refresh_time\x18\x02 \x02(\x03\x12\x0b\n\x03ids\x18\x03 \x03(\x05\";\n\x1cTrainingMatchStoreBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"=\n\x1dTrainingMatchStoreBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"3\n TrainingMatchStoreRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"A\n!TrainingMatchStoreRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*\xae\x01\n\x12OppositeClubStatus\x12\x1c\n\x18TRAINING_MATCH_CLUB_PASS\x10\x01\x12\x1c\n\x18TRAINING_MATCH_CLUB_FAIL\x10\x02\x12\x1c\n\x18TRAINING_MATCH_CLUB_OPEN\x10\x03\x12 \n\x1cTRAINING_MATCH_CLUB_NOT_OPEN\x10\x04\x12\x1c\n\x18TRAINING_MATCH_CLUB_DONE\x10\x05')
   ,
   dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,match__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -57,8 +57,8 @@ _OPPOSITECLUBSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1158,
-  serialized_end=1332,
+  serialized_start=1406,
+  serialized_end=1580,
 )
 _sym_db.RegisterEnumDescriptor(_OPPOSITECLUBSTATUS)
 
@@ -286,51 +286,6 @@ _TRAININGMATCHSTARTRESPONSE = _descriptor.Descriptor(
 )
 
 
-_STAFFMATCHRESULT = _descriptor.Descriptor(
-  name='StaffMatchResult',
-  full_name='Dianjing.protocol.StaffMatchResult',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='staff_one', full_name='Dianjing.protocol.StaffMatchResult.staff_one', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='staff_two', full_name='Dianjing.protocol.StaffMatchResult.staff_two', index=1,
-      number=2, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='staff_one_win', full_name='Dianjing.protocol.StaffMatchResult.staff_one_win', index=2,
-      number=3, type=8, cpp_type=7, label=2,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=597,
-  serialized_end=676,
-)
-
-
 _TRAININGMATCHREPORTREQUEST = _descriptor.Descriptor(
   name='TrainingMatchReportRequest',
   full_name='Dianjing.protocol.TrainingMatchReportRequest',
@@ -378,8 +333,8 @@ _TRAININGMATCHREPORTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=678,
-  serialized_end=805,
+  serialized_start=597,
+  serialized_end=724,
 )
 
 
@@ -423,8 +378,8 @@ _TRAININGMATCHREPORTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=807,
-  serialized_end=905,
+  serialized_start=726,
+  serialized_end=824,
 )
 
 
@@ -461,8 +416,8 @@ _TRAININGMATCHGETMATCHCLUBDETAILREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=907,
-  serialized_end=984,
+  serialized_start=826,
+  serialized_end=903,
 )
 
 
@@ -499,8 +454,8 @@ _CLUBSTAFF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=986,
-  serialized_end=1036,
+  serialized_start=905,
+  serialized_end=955,
 )
 
 
@@ -544,27 +499,221 @@ _TRAININGMATCHGETMATCHCLUBDETAILRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1038,
-  serialized_end=1155,
+  serialized_start=957,
+  serialized_end=1074,
+)
+
+
+_TRAININGMATCHSTORENOTIFY = _descriptor.Descriptor(
+  name='TrainingMatchStoreNotify',
+  full_name='Dianjing.protocol.TrainingMatchStoreNotify',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TrainingMatchStoreNotify.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='next_refresh_time', full_name='Dianjing.protocol.TrainingMatchStoreNotify.next_refresh_time', index=1,
+      number=2, type=3, cpp_type=2, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='ids', full_name='Dianjing.protocol.TrainingMatchStoreNotify.ids', index=2,
+      number=3, type=5, cpp_type=1, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1076,
+  serialized_end=1159,
+)
+
+
+_TRAININGMATCHSTOREBUYREQUEST = _descriptor.Descriptor(
+  name='TrainingMatchStoreBuyRequest',
+  full_name='Dianjing.protocol.TrainingMatchStoreBuyRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TrainingMatchStoreBuyRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.TrainingMatchStoreBuyRequest.id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1161,
+  serialized_end=1220,
+)
+
+
+_TRAININGMATCHSTOREBUYRESPONSE = _descriptor.Descriptor(
+  name='TrainingMatchStoreBuyResponse',
+  full_name='Dianjing.protocol.TrainingMatchStoreBuyResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.TrainingMatchStoreBuyResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TrainingMatchStoreBuyResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1222,
+  serialized_end=1283,
+)
+
+
+_TRAININGMATCHSTOREREFRESHREQUEST = _descriptor.Descriptor(
+  name='TrainingMatchStoreRefreshRequest',
+  full_name='Dianjing.protocol.TrainingMatchStoreRefreshRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TrainingMatchStoreRefreshRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1285,
+  serialized_end=1336,
+)
+
+
+_TRAININGMATCHSTOREREFRESHRESPONSE = _descriptor.Descriptor(
+  name='TrainingMatchStoreRefreshResponse',
+  full_name='Dianjing.protocol.TrainingMatchStoreRefreshResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.TrainingMatchStoreRefreshResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TrainingMatchStoreRefreshResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1338,
+  serialized_end=1403,
 )
 
 _OPPOSITECLUB.fields_by_name['status'].enum_type = _OPPOSITECLUBSTATUS
 _TRAININGMATCHNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _TRAININGMATCHNOTIFY.fields_by_name['clubs'].message_type = _OPPOSITECLUB
 _TRAININGMATCHSTARTRESPONSE.fields_by_name['match'].message_type = match__pb2._CLUBMATCH
-_TRAININGMATCHREPORTREQUEST.fields_by_name['result'].message_type = _STAFFMATCHRESULT
+_TRAININGMATCHREPORTREQUEST.fields_by_name['result'].message_type = match__pb2._STAFFMATCHRESULT
 _TRAININGMATCHREPORTRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 _TRAININGMATCHGETMATCHCLUBDETAILRESPONSE.fields_by_name['staffs'].message_type = _CLUBSTAFF
 DESCRIPTOR.message_types_by_name['OppositeClub'] = _OPPOSITECLUB
 DESCRIPTOR.message_types_by_name['TrainingMatchNotify'] = _TRAININGMATCHNOTIFY
 DESCRIPTOR.message_types_by_name['TrainingMatchStartRequest'] = _TRAININGMATCHSTARTREQUEST
 DESCRIPTOR.message_types_by_name['TrainingMatchStartResponse'] = _TRAININGMATCHSTARTRESPONSE
-DESCRIPTOR.message_types_by_name['StaffMatchResult'] = _STAFFMATCHRESULT
 DESCRIPTOR.message_types_by_name['TrainingMatchReportRequest'] = _TRAININGMATCHREPORTREQUEST
 DESCRIPTOR.message_types_by_name['TrainingMatchReportResponse'] = _TRAININGMATCHREPORTRESPONSE
 DESCRIPTOR.message_types_by_name['TrainingMatchGetMatchClubDetailRequest'] = _TRAININGMATCHGETMATCHCLUBDETAILREQUEST
 DESCRIPTOR.message_types_by_name['ClubStaff'] = _CLUBSTAFF
 DESCRIPTOR.message_types_by_name['TrainingMatchGetMatchClubDetailResponse'] = _TRAININGMATCHGETMATCHCLUBDETAILRESPONSE
+DESCRIPTOR.message_types_by_name['TrainingMatchStoreNotify'] = _TRAININGMATCHSTORENOTIFY
+DESCRIPTOR.message_types_by_name['TrainingMatchStoreBuyRequest'] = _TRAININGMATCHSTOREBUYREQUEST
+DESCRIPTOR.message_types_by_name['TrainingMatchStoreBuyResponse'] = _TRAININGMATCHSTOREBUYRESPONSE
+DESCRIPTOR.message_types_by_name['TrainingMatchStoreRefreshRequest'] = _TRAININGMATCHSTOREREFRESHREQUEST
+DESCRIPTOR.message_types_by_name['TrainingMatchStoreRefreshResponse'] = _TRAININGMATCHSTOREREFRESHRESPONSE
 DESCRIPTOR.enum_types_by_name['OppositeClubStatus'] = _OPPOSITECLUBSTATUS
 
 OppositeClub = _reflection.GeneratedProtocolMessageType('OppositeClub', (_message.Message,), dict(
@@ -594,13 +743,6 @@ TrainingMatchStartResponse = _reflection.GeneratedProtocolMessageType('TrainingM
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingMatchStartResponse)
   ))
 _sym_db.RegisterMessage(TrainingMatchStartResponse)
-
-StaffMatchResult = _reflection.GeneratedProtocolMessageType('StaffMatchResult', (_message.Message,), dict(
-  DESCRIPTOR = _STAFFMATCHRESULT,
-  __module__ = 'training_match_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffMatchResult)
-  ))
-_sym_db.RegisterMessage(StaffMatchResult)
 
 TrainingMatchReportRequest = _reflection.GeneratedProtocolMessageType('TrainingMatchReportRequest', (_message.Message,), dict(
   DESCRIPTOR = _TRAININGMATCHREPORTREQUEST,
@@ -636,6 +778,41 @@ TrainingMatchGetMatchClubDetailResponse = _reflection.GeneratedProtocolMessageTy
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingMatchGetMatchClubDetailResponse)
   ))
 _sym_db.RegisterMessage(TrainingMatchGetMatchClubDetailResponse)
+
+TrainingMatchStoreNotify = _reflection.GeneratedProtocolMessageType('TrainingMatchStoreNotify', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGMATCHSTORENOTIFY,
+  __module__ = 'training_match_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingMatchStoreNotify)
+  ))
+_sym_db.RegisterMessage(TrainingMatchStoreNotify)
+
+TrainingMatchStoreBuyRequest = _reflection.GeneratedProtocolMessageType('TrainingMatchStoreBuyRequest', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGMATCHSTOREBUYREQUEST,
+  __module__ = 'training_match_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingMatchStoreBuyRequest)
+  ))
+_sym_db.RegisterMessage(TrainingMatchStoreBuyRequest)
+
+TrainingMatchStoreBuyResponse = _reflection.GeneratedProtocolMessageType('TrainingMatchStoreBuyResponse', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGMATCHSTOREBUYRESPONSE,
+  __module__ = 'training_match_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingMatchStoreBuyResponse)
+  ))
+_sym_db.RegisterMessage(TrainingMatchStoreBuyResponse)
+
+TrainingMatchStoreRefreshRequest = _reflection.GeneratedProtocolMessageType('TrainingMatchStoreRefreshRequest', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGMATCHSTOREREFRESHREQUEST,
+  __module__ = 'training_match_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingMatchStoreRefreshRequest)
+  ))
+_sym_db.RegisterMessage(TrainingMatchStoreRefreshRequest)
+
+TrainingMatchStoreRefreshResponse = _reflection.GeneratedProtocolMessageType('TrainingMatchStoreRefreshResponse', (_message.Message,), dict(
+  DESCRIPTOR = _TRAININGMATCHSTOREREFRESHRESPONSE,
+  __module__ = 'training_match_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TrainingMatchStoreRefreshResponse)
+  ))
+_sym_db.RegisterMessage(TrainingMatchStoreRefreshResponse)
 
 
 # @@protoc_insertion_point(module_scope)

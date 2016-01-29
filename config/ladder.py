@@ -45,12 +45,12 @@ class ConfigLadderRankReward(ConfigBase):
 
 
     @classmethod
-    def get(cls, id):
+    def get(cls, _id):
         """
 
         :rtype : LadderRankReward
         """
-        return super(ConfigLadderRankReward, cls).get(id)
+        return super(ConfigLadderRankReward, cls).get(_id)
 
     @classmethod
     def get_reward_object(cls, rank):
@@ -71,9 +71,9 @@ class ConfigLadderScoreStore(ConfigBase):
     FILTER_CACHE = {}
     
     @classmethod
-    def get(cls, id):
+    def get(cls, _id):
         """
 
         :rtype : LadderScoreStore
         """
-        return super(ConfigLadderScoreStore, cls).get(id)
+        return super(ConfigLadderScoreStore, cls).get(_id)

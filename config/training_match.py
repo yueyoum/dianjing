@@ -17,6 +17,16 @@ class TrainingMatchReward(object):
         self.score = 0
 
 
+class TrainingMatchStore(object):
+    __slots__ = ['id', 'times_limit', 'score', 'item', 'item_amount']
+    def __init__(self):
+        self.id = 0
+        self.times_limit = 0
+        self.score = 0
+        self.item = 0
+        self.item_amount = 0
+
+
 class ConfigTrainingMatchReward(ConfigBase):
     EntityClass = TrainingMatchReward
     INSTANCES = {}
@@ -29,3 +39,17 @@ class ConfigTrainingMatchReward(ConfigBase):
         :rtype : TrainingMatchReward
         """
         return super(ConfigTrainingMatchReward, cls).get(_id)
+
+
+class ConfigTrainingMatchStore(ConfigBase):
+    EntityClass = TrainingMatchStore
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype : TrainingMatchStore
+        """
+        return super(ConfigTrainingMatchStore, cls).get(_id)

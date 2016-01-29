@@ -417,6 +417,9 @@ class MongoLadder(BaseDocument):
         # 战报 [(template_id, args) ...]
         'logs': [],
 
+        # 商店物品，如果为空，就去去common中的
+        # 每次刷新也要把这里清空
+        'store_items': [],
         # 天梯商店购买次数，每天清空
         'buy_times': {},
 

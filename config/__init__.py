@@ -32,7 +32,7 @@ from config.activity import ConfigActivityCategory
 from config.signin import ConfigSignIn
 from config.activity_login_reward import ConfigLoginReward
 from config.active_value import ConfigActiveFunction, ConfigActiveReward
-from config.training_match import ConfigTrainingMatchReward
+from config.training_match import ConfigTrainingMatchReward, ConfigTrainingMatchStore
 from config.elite_match import ConfigEliteArea, ConfigEliteMatch
 from config.business_broadcast_reward import ConfigBusinessBroadCastReward
 
@@ -140,6 +140,8 @@ def load_config():
             ConfigTaskTargetType.initialize(data)
         elif item == 'training_match_reward.json':
             ConfigTrainingMatchReward.initialize(data)
+        elif item == 'training_match_store.json':
+            ConfigTrainingMatchStore.initialize(data)
         elif item == 'elite_match.json':
             ConfigEliteMatch.initialize(data)
         elif item == 'elite_area.json':

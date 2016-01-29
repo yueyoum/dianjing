@@ -45,3 +45,7 @@ class CommonTask(BaseCommon):
 
 class CommonLadderStore(BaseCommon):
     ID = 'ladder_store'
+
+
+class CommonTrainingMatchStore(BaseCommon):
+    ID = 'training_match_store'

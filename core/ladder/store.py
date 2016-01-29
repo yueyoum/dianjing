@@ -15,9 +15,10 @@ from django.conf import settings
 from dianjing.exception import GameException
 from core.mongo import MongoLadder
 from core.common import CommonLadderStore
+from core.character import Character
 from core.item import ItemManager
 from core.lock import LadderStoreLock
-from utils.message import MessagePipe
+from utils.message import MessagePipe, MessageFactory
 from config import (
     ConfigLadderScoreStore,
     ConfigErrorMessage,
@@ -25,30 +26,71 @@ from config import (
 from protomsg.ladder_pb2 import LadderStoreNotify
 
 
+def make_notify_protomsg(items):
+    next_day = arrow.utcnow().to(settings.TIME_ZONE).replace(days=1)
+    next_time = arrow.Arrow(next_day.year, next_day.month, next_day.day).timestamp
+
+    notify = LadderStoreNotify()
+    notify.next_refresh_time = next_time
+    notify.ids.extend(items)
+    return notify
+
+
+# 必须在Ladder后面初始化
 class LadderStore(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
 
-        self.items = LadderStore.refresh(self.server_id)
+        self.items = self.get_items()
 
     @staticmethod
     def cronjob(server_id):
-        # 每天刷新购买次数
+        # 每天刷新物品和购买次数
         MongoLadder.db(server_id).update_many(
             {},
-            {'$set': {'buy_times': {}}}
+            {'$set': {
+                'store_items': [],
+                'buy_times': {},
+            }}
         )
 
-    @staticmethod
-    def refresh(server_id, force=False):
         with LadderStoreLock(server_id).lock():
-            items = CommonLadderStore.get(server_id)
-            if not force and items:
-                return items
-
             items = random.sample(ConfigLadderScoreStore.INSTANCES.keys(), 9)
             CommonLadderStore.set(server_id, items)
+
+        notify = make_notify_protomsg(items)
+        data = MessageFactory.pack(notify)
+        char_ids = Character.get_recent_login_char_ids(server_id)
+        for cid in char_ids:
+            MessagePipe(cid).put(data=data)
+
+    def refresh_by_self(self):
+        self.items = random.sample(ConfigLadderScoreStore.INSTANCES.keys(), 9)
+        MongoLadder.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'store_items': self.items
+            }}
+        )
+
+        self.send_notify()
+
+    def get_items(self):
+        doc = MongoLadder.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'store_items': 1}
+        )
+
+        items = doc.get('store_items', [])
+        if items:
+            return items
+
+        items = CommonLadderStore.get(self.server_id)
+        if not items:
+            with LadderStoreLock(self.server_id).lock():
+                items = random.sample(ConfigLadderScoreStore.INSTANCES.keys(), 9)
+                CommonLadderStore.set(self.server_id, items)
 
         return items
 
@@ -90,11 +132,5 @@ class LadderStore(object):
         ladder.send_notify()
 
     def send_notify(self):
-        next_day = arrow.utcnow().to(settings.TIME_ZONE).replace(days=1)
-        next_time = arrow.Arrow(next_day.year, next_day.month, next_day.day).timestamp
-
-        notify = LadderStoreNotify()
-        notify.next_refresh_time = next_time
-        notify.ids.extend(self.items)
-
+        notify = make_notify_protomsg(self.items)
         MessagePipe(self.char_id).put(msg=notify)
