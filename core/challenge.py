@@ -47,6 +47,8 @@ LOSE_ZERO_ROUND_GET_STAR = 3
 LOSE_ONE_ROUND_GET_STAR = 2
 LOSE_TWO_ROUND_GET_STAR = 1
 
+STAR_REWARD_MAX_INDEX = 3
+
 
 class ChallengeNPCStaff(AbstractStaff):
     __slots__ = []
@@ -166,53 +168,49 @@ class Challenge(object):
             {'_id': self.char_id},
             {'$inc': {'energy.power': num, 'energy.times': times}}
         )
-
         self.energy_notify()
 
-    def start(self, area_id, challenge_id):
-        """
-        开始挑战关卡
-            1 检测, 大区、关卡、是否开启，俱乐部等级是否满足，该关卡是否仍有挑战次数、体力是否足够
-            2 ClubMatch
-            3 返回对战双方信息
-        """
-        # 判断大区是否存在
-        if not ConfigChallengeType.get(area_id):
-            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_AREA_NOT_EXIST"))
+    def match_check(self, area_id, challenge_id):
+        self.config_check(area_id)
 
-        # 俱乐部等级检查
-        club_one = Club(self.server_id, self.char_id)
-        config = ConfigChallengeMatch.get(challenge_id)
-        if club_one.current_level() < config.need_club_level:
-            raise GameException(ConfigErrorMessage.get_error_id("CLUB_LEVEL_NOT_ENOUGH"))
+        doc = self.get_challenge_data({'areas.{0}.challenges.{1}'.format(area_id, challenge_id): 1})
 
-        # 获取玩家数据
-        doc = MongoChallenge.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {'areas.{0}.challenges.{1}'.format(area_id, challenge_id): 1}
-        )
-
-        # 判断大区是否已开启
         if not doc['areas'].get(str(area_id), {}):
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_AREA_NOT_OPEN"))
 
-        # 判断是否已开方关卡
         challenge = doc['areas'][str(area_id)]['challenges'].get(str(challenge_id), {})
         if not challenge:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NOT_OPEN"))
 
-        # 体力检查
+        self.energy_check()
+
+    def energy_check(self):
         doc_char = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'energy': 1})
         if doc_char['energy']['power'] < CHALLENGE_MATCH_COST:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NOT_ENOUGH_ENERGY"))
 
-        # match
+    def config_check(self, area_id):
+        if not ConfigChallengeType.get(area_id):
+            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_AREA_NOT_EXIST"))
+
+    def club_match(self, challenge_id):
+        club_one = Club(self.server_id, self.char_id)
         club_two = ChallengeNPCClub(challenge_id)
-        match = ClubMatch(club_one, club_two)
+        return ClubMatch(club_one, club_two)
+
+    def make_match_key(self, area_id, challenge_id):
+        return "%s,%s,%s" % (self.char_id, area_id, challenge_id)
+
+    def start(self, area_id, challenge_id):
+        self.match_check(area_id, challenge_id)
+        match = self.club_match(challenge_id)
 
         msg = match.start()
-        msg.key = "%s,%s,%s" % (self.char_id, area_id, challenge_id)
+        msg.key = self.make_match_key(area_id, challenge_id)
         return msg
+
+    def update_win_rate(self, result):
+        StaffManger(self.server_id, self.char_id).update_winning_rate(result)
 
     def report(self, key, win_club, result):
         club_one, area_id, challenge_id = str(key).split(',')
@@ -220,15 +218,11 @@ class Challenge(object):
         if club_one != str(self.char_id):
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-        StaffManger(self.server_id, self.char_id).update_winning_rate(result)
-
+        self.update_win_rate(result)
         self.deduct_challenge_energy_cost(CHALLENGE_MATCH_COST)
 
         updater = {'areas.{0}.challenges.{1}.times'.format(area_id, challenge_id): 1}
-        MongoChallenge.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$inc': updater},
-        )
+        self.update_data({'$inc': updater})
 
         challenge_match_signal.send(
             sender=None,
@@ -241,12 +235,9 @@ class Challenge(object):
         if win_club != club_one:
             return
 
-        doc = MongoChallenge.db(self.server_id).find_one(
-            {'_id': self.char_id}, {'areas.{0}'.format(area_id): 1}
-        )
-
         stars = self.calculate_stars(result)
         setter = {}
+        doc = self.get_challenge_data({'areas.{0}'.format(area_id): 1})
         doc_stars = doc['areas'][area_id]['challenges'].get(challenge_id, {}).get('stars', 0)
 
         if stars > doc_stars:
@@ -256,21 +247,20 @@ class Challenge(object):
         next_area_id = int(area_id) + 1
 
         elite_open = True
-        if ConfigChallengeMatch.get(next_challenge_id):
-            if ConfigChallengeType.get(int(area_id)).condition_challenge_id < next_challenge_id:
-                setter['areas.{0}.challenges.{1}'.format(next_area_id, next_challenge_id)] = {'stars': 0, 'times': 0}
-                self.open_new_area(next_area_id)
-            else:
-                if str(next_challenge_id) not in doc['areas'][str(area_id)]['challenges']:
-                    setter['areas.{0}.challenges.{1}'.format(area_id, next_challenge_id)] = {'stars': 0, 'times': 0}
-                elite_open = False
+        if ConfigChallengeType.get(int(area_id)).condition_challenge_id < next_challenge_id:
+            setter['areas.{0}.challenges.{1}'.format(next_area_id, next_challenge_id)] = {'stars': 0, 'times': 0}
+            self.open_new_area(next_area_id)
+        else:
+            elite_open = False
+            if str(next_challenge_id) not in doc['areas'][str(area_id)]['challenges']:
+                setter['areas.{0}.challenges.{1}'.format(area_id, next_challenge_id)] = {'stars': 0, 'times': 0}
 
         if elite_open:
             from core.elite_match import EliteMatch
             EliteMatch(self.server_id, self.char_id).open_area(int(area_id))
 
         if setter:
-            self.update_setter_data(setter)
+            self.update_data({'$set': setter})
 
         self.challenge_notify(area_id=area_id)
 
@@ -301,37 +291,26 @@ class Challenge(object):
             'areas.{0}.packages.3'.format(area_id): True,
         }
 
-        self.update_setter_data(setter)
+        self.update_data({'$set': setter})
         self.challenge_notify(area_id=area_id)
 
-    def update_setter_data(self, setter):
+    def update_data(self, updater):
         MongoChallenge.db(self.server_id).update_one(
                     {'_id': self.char_id},
-                    {'$set': setter}
+                    updater,
         )
 
-    def get_challenge_data(self):
-        return MongoChallenge.db(self.server_id).find({'_id': self.char_id})
+    def get_challenge_data(self, projection):
+        return MongoChallenge.db(self.server_id).find({'_id': self.char_id}, projection)
 
     def deduct_challenge_energy_cost(self, num):
         self.change_energy(num)
 
     def get_star_reward(self, area_id, index):
-        """
-        领取星级奖励
-        """
-        # 奖励不存在
-        if index >= 3:
+        if index >= STAR_REWARD_MAX_INDEX:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_REWARD_NOT_EXIST"))
 
-        # 获取数据
-        doc = MongoChallenge.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {
-                'areas.{0}'.format(area_id): 1
-             },
-        )
-
+        doc = self.get_challenge_data({'areas.{0}'.format(area_id): 1})
         star_reward = doc['areas'].get(str(area_id), {}).get('packages', {})
         if not star_reward:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_REWARD_NOT_EXIST"))
@@ -348,21 +327,15 @@ class Challenge(object):
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_REWARD_STARS_NOT_ENOUGH"))
 
         drop = Drop.generate(conf.star_reward[index]['reward'])
-
         Resource(self.server_id, self.char_id).save_drop(drop)
-        MongoChallenge.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': {'areas.{0}.packages.{1}'.format(area_id, index+1): False}}
-        )
 
+        setter = {'areas.{0}.packages.{1}'.format(area_id, index+1): False}
+        self.update_data({'$set': setter})
         self.challenge_notify(area_id=area_id)
 
         return drop.make_protomsg()
 
     def buy_energy(self):
-        """
-        购买 体力
-        """
         doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'energy': 1})
         if doc['energy']['times'] >= MAX_DAY_BUY_ENERGY_TIMES:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NO_BUY_ENERGY_TIMES"))
@@ -422,6 +395,4 @@ class Challenge(object):
                 notify_challenge.times = info['times']
                 notify_challenge.stars = info['stars']
 
-        print " * " * 25
-        print notify
         MessagePipe(self.char_id).put(msg=notify)
