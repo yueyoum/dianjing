@@ -128,7 +128,7 @@ urlpatterns = [
     url(r'^notification/open/$', views.notification.open),
     url(r'^notification/delete/$', views.notification.delete),
 
-    url(r'^ladder/refresh/$', views.ladder.refresh),
+    # url(r'^ladder/refresh/$', views.ladder.refresh),
     url(r'^ladder/match/$', views.ladder.match),
     url(r'^ladder/leaderboard/$', views.ladder.get_leader_board),
     url(r'^ladder/store/buy/$', views.ladder.store_buy),

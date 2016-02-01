@@ -90,7 +90,7 @@ class CupNpcClub(AbstractClub):
 
     def dumps(self):
         """
-        序列化CupNpcClub实例
+
         :rtype: str
         """
         return base64.b64encode(dill.dumps(self))
@@ -98,7 +98,7 @@ class CupNpcClub(AbstractClub):
     @classmethod
     def loads(cls, data):
         """
-        反序列化CupNpcClub实例
+
         :rtype: CupNpcClub
         """
         return dill.loads(base64.b64decode(data))
@@ -106,9 +106,7 @@ class CupNpcClub(AbstractClub):
 
 class CupClub(object):
     def __new__(cls, server_id, club_data):
-        """
-        杯赛俱乐部
-        """
+
         if club_data['is_npc']:
             return CupNpcClub.loads(club_data['data'])
 
@@ -117,25 +115,6 @@ class CupClub(object):
 
 class CupLevel(object):
     def __init__(self, year, month, lv):
-        """
-        杯赛状态:
-            CUP_PROCESS_APPLY:      报名期
-            CUP_PROCESS_PREPARE:    预选赛
-            CUP_PROCESS_32:         32强
-            CUP_PROCESS_16:         16强
-            CUP_PROCESS_8:          8强
-            CUP_PROCESS_4:          4强
-            CUP_PROCESS_2:          半决赛
-            CUP_PROCESS_1:          决赛
-
-            self.level:             杯赛阶段
-            self.start_time:        阶段开始时间
-
-        某个阶段比赛的进行时间,
-            lv == CUP_PROCESS_PREPARE:
-                day = 4
-            即,将在每个月的4号进行预选赛
-        """
         self.level = lv
         self.match_time = 0
 
@@ -163,10 +142,6 @@ class CupLevel(object):
 
     @classmethod
     def current_level(cls):
-        """
-        获取当前杯赛阶段
-            通过当前日期判断杯赛进行到哪个阶段
-        """
         now = arrow.utcnow().to(settings.TIME_ZONE)
         current_day = now.day
         last_day_of_this_month = calendar.monthrange(now.year, now.month)
@@ -203,9 +178,6 @@ class CupLevel(object):
 
     @classmethod
     def all_match_levels(cls):
-        """
-        获取所有杯赛各阶段实例
-        """
         now = arrow.utcnow().to(settings.TIME_ZONE)
         result = []
         for lv in CUP_LEVELS:
@@ -218,43 +190,18 @@ class CupLevel(object):
 
     @classmethod
     def all_passed_match_levels(cls):
-        """
-        获取当前杯赛已进行的阶段
-        """
         now = arrow.utcnow().to(settings.TIME_ZONE)
         levels = cls.all_match_levels()
         return [lv for lv in levels if lv.start_time <= now]
 
 
 class Cup(object):
-    """
-    杯赛
-        每个月进行一次
-        1-3号开始报名
-
-        比赛仅显示结果
-            5号进行预选赛
-            10号进行32强
-            15号进行16强
-            20号进行8强
-            25号进行半决赛
-
-            每个月最后一天进行总决赛
-            决赛晚上十点公布比赛结果，全服发送公告，并将冠军名字及俱乐部图标在当时所有在线玩家屏幕发布
-    """
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
 
     @staticmethod
     def new(server_id):
-        """
-        开启新杯赛,旧杯赛数据将会删除
-            1,获取上赛季杯赛冠军俱乐部名字用于显示
-            2,将玩家in_cup状态置为False
-            3,drop MongoCupClub
-            4,清空MongoCup中levels内容,并将上赛季杯赛冠军写入last_champion, 赛季次数order+1
-        """
         cup_doc = MongoCup.db(server_id).find_one({'_id': 1}, {'levels.1': 1})
         club_name = ""
         if cup_doc['level'].get('1', 0):
@@ -282,11 +229,6 @@ class Cup(object):
 
     @staticmethod
     def prepare(server_id):
-        """
-        预选赛阶段
-            如果报名人数不够32,由npc填充,并直接进入32强
-            暂不处理超过玩家超过32人情况
-        """
         chars = MongoCharacter.db(server_id).find({'in_cup': True}, {'_id': 1})
         char_ids = [c['_id'] for c in chars]
         if len(char_ids) < 32:
@@ -331,16 +273,6 @@ class Cup(object):
 
     @staticmethod
     def match(server_id):
-        """
-        杯赛比赛
-            1, 获取当前进行到阶段
-            2, 从头开始检测未进行比赛行阶段(32强由预选赛决出，故由1开始)
-            3, 如果杯赛数据里面没有该阶段记录(lv)
-                3.1, 从上一阶段获取将要战斗俱乐部ID(all_passed_match_levels[index - 1].level)
-                3.2, 两两ClubMatch(),ClubMatch(CupClub(server_id, club_one), CupClub(server_id, club_two)).start()
-                3.3, 记录胜者
-                3.4, 将结果写入数据库, current_level_club_ids
-        """
         all_passed_match_levels = CupLevel.all_passed_match_levels()
 
         cup_doc = MongoCup.db(server_id).find_one({'_id': 1})
@@ -374,12 +306,6 @@ class Cup(object):
 
     @staticmethod
     def club_data_dumps(server_id):
-        """
-        开赛前一小时获取玩家出战配置信息
-            1, 获取已进行阶段
-            2, 获取最新杯赛阶段club_ids
-            3, dumps玩家club信息, 写入数据库MongoCupClub
-        """
         all_passed_match_levels = CupLevel.all_passed_match_levels()
 
         cup_doc = MongoCup.db(server_id).find_one({'_id': 1})
@@ -393,11 +319,6 @@ class Cup(object):
                 )
 
     def join_cup(self):
-        """
-        参加杯赛
-            只能在报名时间(CUP_PROCESS_PREPARE)加入
-            加入成功, 设置玩家in_cup为True, 结束杯赛时要设为False
-        """
         if Cup.current_level().level != CUP_PROCESS_PREPARE:
             raise GameException(ConfigErrorMessage.get_error_id("CUP_OUT_OF_APPLY_TIME"))
 
@@ -407,9 +328,6 @@ class Cup(object):
         )
 
     def make_cup_protomsg(self):
-        """
-        发送杯赛信息
-        """
         doc = MongoCup.db(self.server_id).find_one({'_id': 1})
         if not doc:
             doc = MongoCup.document()

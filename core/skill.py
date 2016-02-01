@@ -27,20 +27,11 @@ TIMER_CALLBACK_PATH = "/api/timerd/skill/"
 
 
 class SkillManager(object):
-    """
-    技能管理系统
-        员工技能管理
-    """
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
 
     def staff_is_training(self, staff_id):
-        """
-            返回员工是否正在技能训练
-            是, 返回 True
-            不是, 返回 False
-        """
         skills = self.get_staff_skills(staff_id)
         if not skills:
             return False
@@ -52,10 +43,6 @@ class SkillManager(object):
         return False
 
     def get_staff_skills(self, staff_id):
-        """
-            如果 玩家 拥有 该员工, 返回员工技能list
-            否则，返回None
-        """
         key = "staffs.{0}.skills".format(staff_id)
         doc = MongoStaff.db(self.server_id).find_one(
             {'_id': self.char_id},
@@ -67,10 +54,6 @@ class SkillManager(object):
         return doc['staffs'][str(staff_id)]['skills']
 
     def get_staff_skill_level(self, staff_id, skill_id):
-        """
-            如果员工拥有该技能， 返回该技能等级
-            否则，返回0
-        """
         skills = self.get_staff_skills(staff_id)
         if skills and skills.get(str(skill_id), None):
             return int(skills[str(skill_id)]['level'])
@@ -78,34 +61,15 @@ class SkillManager(object):
             return 0
 
     def get_staff_shop_skill_level(self, staff_id):
-        """
-        返回员工 网店 技能等级
-        """
         return self.get_staff_skill_level(staff_id, ConfigSkill.SHOP_SKILL_ID)
 
     def get_staff_broadcast_skill_level(self, staff_id):
-        """
-        返回员工 直播 技能等级
-        """
         return self.get_staff_skill_level(staff_id, ConfigSkill.BROADCAST_SKILL_ID)
 
     def get_staff_sponsor_skill_level(self, staff_id):
-        """
-        返回员工 赞助 技能等级
-        """
         return self.get_staff_skill_level(staff_id, ConfigSkill.SPONSOR_SKILL_ID)
 
     def check(self, staff_id, skill_id=None):
-        """
-        检查员工是否存在, 且是否拥有某技能
-            拥有, 则返回技能属性
-            否则, 返回None
-
-            1 检测是否拥有该员工
-            2 检查技能是否存在
-            3 检查 该员工 是否拥有 该技能
-            4 返回结果(拥有 返回技能; 没有, 返回 None)
-        """
         from core.staff import StaffManger
 
         if not StaffManger(self.server_id, self.char_id).has_staff(staff_id):
@@ -130,15 +94,6 @@ class SkillManager(object):
         return None
 
     def upgrade(self, staff_id, skill_id):
-        """
-        升级技能
-            1 检测升级条件
-                1.1 正在升级技能不能重复升级
-                1.2 满级技能不能升级
-                1.3 消耗品不足不能升级
-            2 设置技能为升级状态
-            3 同步技能信息到客户端
-        """
         this_skill = self.check(staff_id, skill_id)
         if this_skill.get('end_at', 0):
             raise GameException(ConfigErrorMessage.get_error_id("SKILL_ALREADY_IN_UPGRADE"))
@@ -177,14 +132,6 @@ class SkillManager(object):
         self.send_notify(staff_id)
 
     def upgrade_speedup(self, staff_id, skill_id):
-        """
-        技能升级加速,立即完成技能升级
-            1 检查技能升级是否已经完成
-            2 计算加速消耗
-            3 检查消耗是否足够
-            4 扣除消耗, 立刻完成技能升级
-            5 取消升级定时任务
-        """
         this_skill = self.check(staff_id, skill_id)
         end_at = this_skill.get('end_at', 0)
         if not end_at:
@@ -204,10 +151,6 @@ class SkillManager(object):
             Timerd.cancel(this_skill['key'])
 
     def lock_toggle(self, staff_id, skill_id):
-        """
-            技能加锁/解锁
-            加锁技能不会被洗练
-        """
         self.check(staff_id, skill_id)
         key = "staffs.{0}.skills.{1}.locked".format(staff_id, skill_id)
 
@@ -219,16 +162,6 @@ class SkillManager(object):
         self.send_notify(staff_id)
 
     def wash(self, staff_id):
-        """
-        技能洗练
-            传入一个员工ID(int)
-            获取未锁定技能wash_skills(locked != 1)
-            计算资源消耗并检测资源是否足够
-            获得员工可学习技能race_skill_ids(剔除掉已学习的技能--加锁技能槽技能)
-            添加技能到new_skill
-            写入MongoStaff
-            通知客户端员工技能
-        """
         self.check(staff_id)
 
         skills = self.get_staff_skills(staff_id)
@@ -276,19 +209,11 @@ class SkillManager(object):
         self.send_notify(staff_id)
 
     def send_notify(self, staff_id):
-        """
-            同步员工技能信息
-        """
         # 这个必须在 StaffNotify 之后
         # 这里的 act 必须手动指定，因为添加新员工后，这里的skill notify 得是 ACT_INIT
         StaffManger(self.server_id, self.char_id).send_notify(staff_ids=[staff_id])
 
-
     def update(self, staff_id, skill_id):
-        """
-            1, 将升级技能更新到MongoStaff
-            2, 同步技能信息到客户端
-        """
         level = "staffs.{0}.skills.{1}.level".format(staff_id, skill_id)
         end_at = "staffs.{0}.skills.{1}.end_at".format(staff_id, skill_id)
         key = "staffs.{0}.skills.{1}.key".format(staff_id, skill_id)
@@ -304,7 +229,4 @@ class SkillManager(object):
         self.send_notify(staff_id)
 
     def timer_callback(self, staff_id, skill_id):
-        """
-        技能升级 timer 回调
-        """
         self.update(staff_id, skill_id)

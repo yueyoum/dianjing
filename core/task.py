@@ -27,11 +27,6 @@ DAILY_TASK = 3
 
 
 def get_target_current_value(server_id, char_id, target_id, param, task_data):
-    """
-    获取 任务目标当前进度
-        如果是累加比较( mode == 1 ), 直接从配置文件中返回数值
-        如果是直接比较, 转到比较源获取进度值
-    """
     config = ConfigTaskTargetType.get(target_id)
     if config.mode == 1:
         key = '{0}:{1}'.format(target_id, param)
@@ -50,18 +45,7 @@ def get_target_current_value(server_id, char_id, target_id, param, task_data):
 
 
 class TaskManager(object):
-    """
-    任务管理系统
-        管理任务各个功能
-    """
     def __init__(self, server_id, char_id):
-        """
-        初始化 TaskManager 数据
-            如果 玩家 在 MongoTask 没有数据,
-            从 任务头 ConfigTask.HEAD_TASKS 获取任务,
-            如果不是 支线任务 , 添加到 MongoTask
-            检测任务是否完成 (防止任务添加时任务已完成导致玩家任务不能继续进行)
-        """
         self.server_id = server_id
         self.char_id = char_id
 
@@ -83,26 +67,11 @@ class TaskManager(object):
 
     @classmethod
     def cronjob(cls, server_id):
-        """
-        定时刷新任务接口
-            更新最近登录用户任务
-        """
         char_ids = Character.get_recent_login_char_ids(server_id)
         for cid in char_ids:
             cls(server_id, cid).refresh()
 
     def refresh(self):
-        """
-        日常任务刷新
-            1, 取出玩家任务日志
-            2, 去除日常任务
-                2.1, 组装 doing 日常任务去除语句
-                2.2, 组装 finish 日常任务去除语句
-                2.3, 去除数据
-            3, 更新日常任务
-                3.1, 从TaskConfig获取日常任务链链首任务
-                3.2, 加入玩家任务数据库
-        """
         doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'history': 0})
 
         doing_ids = doc['doing'].keys()
@@ -146,15 +115,6 @@ class TaskManager(object):
         self.send_notify()
 
     def add_task(self, task_id):
-        """
-        添加任务
-            1, 检测任务是否可添加
-                1.1, 任务是否存在
-                1.2, 任务是否已接受
-                1.3, 任务是否可重复完成
-            2, 写入数据库
-            3, 检测是否已完成
-        """
         config = ConfigTask.get(task_id)
         if not config:
             raise GameException(ConfigErrorMessage.get_error_id('TASK_NOT_EXIST'))
@@ -174,16 +134,6 @@ class TaskManager(object):
         self.check(task_ids=[task_id])
 
     def get_reward(self, task_id):
-        """
-        领取任务奖励
-            1 获取 任务 configure, 检测任务是否存在，并以完成
-            2 发送奖励
-            3 检查是否是日常任务, 如果不是日常任务: 从 finish 中移除, 并 写入 history
-            4 通知客户端移除任务
-            5 如果有 next_id, 添加
-            6 返回结果
-
-        """
         config = ConfigTask.get(task_id)
         if not config:
             raise GameException(ConfigErrorMessage.get_error_id("TASK_NOT_EXIST"))
@@ -217,14 +167,6 @@ class TaskManager(object):
         return drop.make_protomsg()
 
     def trigger(self, trigger, num):
-        """
-        任务触发
-            1 通过触发类型获取可触发任务列表
-            2 获取玩家任务数据
-            3 判断触发任务是否可添加
-                任务在 history (不能重复完成) , doing (正在进行中), finish (已完成) 中,
-                或触发值低于可触发值的, 不可添加)
-        """
         task_ids = ConfigTask.filter(trigger=trigger).keys()
         doc = MongoTask.db(self.server_id).find_one({'_id': self.char_id})
 
@@ -239,14 +181,6 @@ class TaskManager(object):
                 self.add_task(task_id)
 
     def update(self, target_id, param, value):
-        """
-        更新任务数据
-            1 获取与目标相关的任务 task_ids, 如果为空, 直接返回
-            2 获取 doing 任务信息
-            3 获取 目标 类型配置
-            4 如果是累加比较类型, 更新任务数据 (非累加类型不用处理, 会在check中检测)
-            5 检查任务是否完成
-        """
         task_ids = ConfigTask.TARGET_TASKS.get(target_id, [])
         if not task_ids:
             return
@@ -283,23 +217,6 @@ class TaskManager(object):
         self.check(task_ids=task_ids)
 
     def check(self, task_ids=None, send_notify=True):
-        """
-        检查任务是否完成
-            1 从任务数据库中取出正在进行的任务 doing ;
-                如果 task_ids == None, task_ids 为数据库 doing 任务id
-
-            2 遍历检测是否完成
-                2.1 获取任务 config
-                2.2 从 get_target_current_value 获取任务当前进度
-                2.3 如果任务 compare_type == 1, 比较方式为 >=; 否则, 为<=
-                2.4 如果任务完成, 把任务从 doing 中清除( 写入 unsetter 语句中),
-                    并把任务加到 finish 中( 写入 finish_ids)
-
-            3 更新到玩家数据库
-
-            4 同步任务信息到客户端
-
-        """
         docs = MongoTask.db(self.server_id).find_one({'_id': self.char_id}, {'doing': 1})
         if not task_ids:
             task_ids = [int(i) for i in docs['doing']]
@@ -367,22 +284,11 @@ class TaskManager(object):
             self.update(target_id, param, expected_value)
 
     def send_remove_notify(self, _id):
-        """
-        任务移除
-            通知客户端移除任务
-        """
         notify = TaskRemoveNotify()
         notify.id = _id
         MessagePipe(self.char_id).put(msg=notify)
 
     def send_notify(self, ids=None):
-        """
-        任务通知
-            通知玩家任务详情
-
-            ACT_INIT    客户端会清除数据, 然后重新赋值
-            ACT_UPDATE  客户端更新对应数据
-        """
         if not ids:
             act = ACT_INIT
         else:

@@ -115,7 +115,6 @@ class FriendManager(object):
 
         return candidate_ids
 
-
     def match(self, friend_id):
         friend_id = int(friend_id)
         if not self.check_friend_exist(friend_id):
