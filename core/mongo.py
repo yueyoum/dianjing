@@ -409,7 +409,7 @@ class MongoLadder(BaseDocument):
         'score': 0,
         'order': 0,
 
-        'last_challenge_timestamp': 0,
+        'match_timestamp': 0,
         # 刷新结果 _id: order
         'refreshed': {},
         # 剩余次数
@@ -417,15 +417,13 @@ class MongoLadder(BaseDocument):
         # 战报 [(template_id, args) ...]
         'logs': [],
 
-        # 天梯商店购买次数，每天清空
-        'buy_times': {},
+        'buy_match_times': {},
 
         # 以下几项只有NPC才有
         'club_name': "",
         'club_flag': 0,
         'manager_name': "",
         'staffs': [],
-        'buy_challenge_times': 0,
     }
 
     COLLECTION = "ladder"

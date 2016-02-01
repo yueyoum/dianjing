@@ -116,7 +116,7 @@ class TrainingMatch(object):
         return msg
 
     def make_match_key(self, index, target_id):
-        return str(arrow.utcnow().timestamp) + ',' + str(index) + ',' + str(self.char_id) + ',' + str(target_id)
+        return "%s,%s,%s,%s" % (arrow.utcnow().timestamp, index, self.char_id, target_id)
 
     def get_training_match_data(self):
         return MongoTrainingMatch.db(self.server_id).find_one({'_id': self.char_id})

@@ -21,9 +21,6 @@ from protomsg.spread_pb2 import SponsorNotify
 
 
 class SponsorManager(object):
-    """
-    赞助商管理系统
-    """
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
@@ -93,7 +90,7 @@ class SponsorManager(object):
         level = BuildingSponsorCenter(self.server_id, self.char_id).current_level()
         config = ConfigBuilding.get(BuildingSponsorCenter.BUILDING_ID).get_level(level)
 
-        value = config.value1 if step == 1 else config.value2
+        value = config.effect.get('2', 1) if step == 1 else config.effect.get('2', 1)
 
         got = int(purchase_got * value / 100.0)
         if not got:

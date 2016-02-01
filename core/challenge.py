@@ -128,6 +128,7 @@ class Challenge(object):
 
     @classmethod
     def cronjob_energize(cls, server_id):
+        from core.lock import Lock
         for char_id in Character.get_recent_login_char_ids(server_id):
 
             doc = MongoCharacter.db(server_id).find_one({"_id": int(char_id)})
@@ -141,7 +142,8 @@ class Challenge(object):
             else:
                 energize_num = max_energy - doc.get('energy', {}).get("power", 0)
 
-            Challenge(server_id, int(char_id)).change_energy(energize_num)
+            with Lock(server_id).lock(key="character_energize_{0}".format(char_id)):
+                Challenge(server_id, int(char_id)).change_energy(energize_num)
 
     def current_challenge_id(self):
         doc = MongoChallenge.db(self.server_id).find_one(
@@ -160,16 +162,12 @@ class Challenge(object):
         return tmp_ch_id
 
     def change_energy(self, num, times=0):
-        """
-        改变能量
-        """
         MongoCharacter.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$inc': {'energy.power': num, 'energy.times': times}}
         )
-        # 同步能量数据
+
         self.energy_notify()
-        # self.check_energize()
 
     def start(self, area_id, challenge_id):
         """
@@ -213,7 +211,7 @@ class Challenge(object):
         match = ClubMatch(club_one, club_two)
 
         msg = match.start()
-        msg.key = str(self.char_id) + ',' + str(area_id) + ',' + str(challenge_id)
+        msg.key = "%s,%s,%s" % (self.char_id, area_id, challenge_id)
         return msg
 
     def report(self, key, win_club, result):

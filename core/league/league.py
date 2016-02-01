@@ -114,9 +114,6 @@ class LeagueClub(object):
 
 
 def get_next_refresh_timestamp():
-    """
-    获取 联赛俱乐部 下一个刷新时间戳
-    """
     time_now = arrow.utcnow()
     if time_now.time() < arrow.get(LEAGUE_REFRESH_TIME_TWO, 'HH:mm:ssZ').time():
         return arrow.get(time_now.date()).replace(hours=6).timestamp
@@ -147,18 +144,12 @@ class LeagueManger(object):
 
     @classmethod
     def timer_refresh(cls, server_id):
-        """
-        刷新 -- 定时刷新
-        """
         char_ids = Character.get_recent_login_char_ids(server_id)
         for char_id in char_ids:
             LeagueManger(server_id, char_id).normal_refresh()
 
     @classmethod
     def refresh_challenge_times(cls, server_id):
-        """
-        刷新 -- 挑战次数
-        """
         char_ids = Character.get_recent_login_char_ids(server_id)
         for char_id in char_ids:
             MongoLeague.db(server_id).update_one(
@@ -168,9 +159,6 @@ class LeagueManger(object):
             LeagueManger(server_id, char_id).notify_user_info()
 
     def diamond_refresh(self):
-        """
-        钻石刷新 -- 匹配俱乐部
-        """
         need_diamond = REFRESH_DIAMOND_COST
         message = u"Refresh {0} League Match CLub".format(self.char_id)
         # 扣除钻石
@@ -178,9 +166,6 @@ class LeagueManger(object):
             self.normal_refresh(True)
 
     def normal_refresh(self, diamond_refresh=False,):
-        """
-        普通刷新 -- 匹配俱乐部
-        """
         # 检查是否在晋级赛状态
         doc_self = MongoLeague.db(self.server_id).find_one({'_id': self.char_id})
         if doc_self['in_rise']:
@@ -191,9 +176,6 @@ class LeagueManger(object):
         self.notify_match_club()
 
     def rise_in_rank_match_refresh(self, level):
-        """
-        晋级刷新 -- 匹配俱乐部
-        """
         self.refresh(level=level, score=1)
         MongoLeague.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -202,9 +184,6 @@ class LeagueManger(object):
         self.notify_match_club()
 
     def refresh(self, diamond_refresh=False, level=1, score=1):
-        """
-        刷新 -- 匹配俱乐部
-        """
         # 查找club
         updater = {}
         # 根据玩家等级， 积分 分配对手
@@ -282,10 +261,6 @@ class LeagueManger(object):
         )
 
     def report(self, key, win_club, result):
-        """
-        战斗结果汇报
-            客户端返回战斗结果， 服务端处理结果数据
-        """
         timestamp, club_one_id, club_two_id, npc_club = str(key).split(',')
         # 如果不是自己的战斗, 直接返回
         if club_one_id != str(self.char_id):
@@ -344,9 +319,6 @@ class LeagueManger(object):
                 )
 
     def normal_result(self, win=False, challenger=False, club_two_id=""):
-        """
-        积分赛结果处理
-        """
         doc = MongoLeague.db(self.server_id).find_one({'_id': self.char_id})
         score = doc['score']
         # 获得积分、挑战状态、胜率
@@ -411,9 +383,6 @@ class LeagueManger(object):
         self.notify_user_info()
 
     def rise_rank_result(self, win=False, club_id=""):
-        """
-        晋级赛结果处理
-        """
         if win:
             result = SUCCESS
             win_time_add = 1
@@ -511,7 +480,7 @@ class LeagueManger(object):
         club_two = LeagueClub(self.server_id, club_id, club_tmp)
 
         # 挑战信息
-        key = str(arrow.utcnow().timestamp) + ',' + str(self.char_id) + ',' + club_id + ',' + str(club_tmp['npc_club'])
+        key = "%s,%s,%s,%s" % (arrow.utcnow().timestamp, self.char_id, club_id, club_tmp['npc_club'])
         msg = ClubMatch(club_self, club_two).start()
         msg.key = key
 

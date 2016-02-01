@@ -19,6 +19,7 @@ from core.mail import MailManager
 from core.lock import Lock, LadderLock, LadderNPCLock, LockTimeOut
 from core.ladder.match import LadderClub, LadderMatch
 from core.staff import StaffManger
+# from core.resource import Resource
 
 from utils.functional import make_string_id
 from utils.message import MessagePipe
@@ -122,7 +123,7 @@ class Ladder(object):
             MongoLadder.db(self.server_id).insert_many(docs)
 
     def add_self_to_ladder(self):
-        if MongoLadder.db(self.server_id).find_one({'_id': str(self.char_id)}, {'_id': 1}):
+        if self.get_self_ladder_data(projection={'_id': 1}):
             return
 
         with LadderLock(self.server_id).lock():
@@ -135,14 +136,13 @@ class Ladder(object):
             MongoLadder.db(self.server_id).insert_one(doc)
 
         # 立即refresh一次
-        self.make_refresh(send_notify=False)
+        self.refresh_match_club()
+        self.send_notify()
 
-    def do_refresh(self):
+    def get_choose_order(self):
         order = MongoLadder.db(self.server_id).find_one({'_id': str(self.char_id)}, {'order': 1})['order']
-        if order <= 6:
-            order_range = [1, 2, 3, 4, 5]
-        elif order <= 15:
-            order_range = xrange(order - 1, order - 6, -1)
+        if order <= 15:
+            return [i for i in range(1, 16)]
         elif order <= 29:
             order_range = xrange(order - 1, order - 10, -1)
         elif order <= 69:
@@ -160,25 +160,30 @@ class Ladder(object):
         else:
             order_range = xrange(order - 1, 1994, -1)
 
-        choose_orders = random.sample(order_range, 5)
+        return random.sample(order_range, 5)
 
+    def do_refresh(self):
+        choose_orders = self.get_choose_order()
         doc = MongoLadder.db(self.server_id).find({'order': {'$in': choose_orders}}, {'order': 1})
         return {d['_id']: d['order'] for d in doc}
 
-    def make_refresh(self, send_notify=True):
+    def refresh_match_club(self):
         refreshed = self.do_refresh()
         MongoLadder.db(self.server_id).update_one(
             {'_id': str(self.char_id)},
             {'$set': {'refreshed': refreshed}}
         )
 
-        if send_notify:
-            self.send_notify()
-
     def get_self_ladder_data(self, projection=None):
         return MongoLadder.db(self.server_id).find_one({'_id': str(self.char_id)}, projection)
 
-    def match(self, target_id):
+    def update_ladder_data(self, updater):
+        MongoLadder.db(self.server_id).update_one(
+            {'_id': str(self.char_id)},
+            updater,
+        )
+
+    def match_check(self, target_id):
         doc = self.get_self_ladder_data()
 
         if doc['remained_times'] < 1:
@@ -190,12 +195,15 @@ class Ladder(object):
         if target_id not in doc['refreshed']:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_TARGET_NOT_EXIST"))
 
-        if arrow.utcnow().timestamp - doc.get('last_challenge_timestamp', 0) < LADDER_NEXT_CHALLENGE_INTERVAL_TIMES:
+        if arrow.utcnow().timestamp - doc.get('match_timestamp', 0) < LADDER_NEXT_CHALLENGE_INTERVAL_TIMES:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_CHALLENGE_COOLING_DOWN"))
 
         target = MongoLadder.db(self.server_id).find_one({'_id': target_id}, {'order': 1})
         if target['order'] != doc['refreshed'][target_id]:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_TARGET_ORDER_CHANGED"))
+
+    def match(self, target_id):
+        self.match_check(target_id)
 
         self_lock_key = 'ladder_match_{0}'.format(self.char_id)
         target_lock_key = 'ladder_match_{0}'.format(target_id)
@@ -207,7 +215,7 @@ class Ladder(object):
                         club_one = MongoLadder.db(self.server_id).find_one({'_id': str(self.char_id)})
                         club_two = MongoLadder.db(self.server_id).find_one({'_id': str(target_id)})
 
-                        key = str(arrow.utcnow().timestamp) + ',' + str(self.char_id) + ',' + str(target_id)
+                        key = "%s,%s,%s" % (arrow.utcnow().timestamp, self.char_id, target_id)
                         msg = LadderMatch(self.server_id, club_one, club_two).start()
                         msg.key = key
                         return msg
@@ -218,18 +226,11 @@ class Ladder(object):
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_SELF_IN_MATCH"))
 
     def match_report(self, video, key, win_club, result):
-        self.make_refresh()
-
         timestamp, club_one_id, club_two_id = str(key).split(',')
         if club_one_id != str(self.char_id):
             return
 
-        MailManager(self.server_id, self.char_id).add(
-            title=LADDER_MATCH_INFO_TITLE,
-            content=LADDER_MATCH_INFO_CONTENT,
-            data=video,
-            function=MAIL_FUNCTION_VIDEO,
-        )
+        self.add_match_video(video)
 
         club_one = MongoLadder.db(self.server_id).find_one({'_id': str(club_one_id)})
         club_two = MongoLadder.db(self.server_id).find_one({'_id': str(club_two_id)})
@@ -241,64 +242,63 @@ class Ladder(object):
         match = LadderMatch(self.server_id, club_one, club_two)
         match.end_match(int(win_club))
 
-        MongoLadder.db(self.server_id).update_one(
-            {'_id': str(self.char_id)},
-            {'$inc': {'remained_times': -1},
-             '$set': {'last_challenge_timestamp': arrow.utcnow().timestamp}
-             }
-        )
+        updater = {'$inc': {'remained_times': -1},
+                   '$set': {'match_timestamp': arrow.utcnow().timestamp}}
+        self.update_ladder_data(updater)
 
+        self.refresh_match_club()
         self.send_notify()
 
         drop = Drop()
         drop.ladder_score = match.club_one_add_score
         return drop.make_protomsg()
 
+    def add_match_video(self, video):
+        MailManager(self.server_id, self.char_id).add(
+            title=LADDER_MATCH_INFO_TITLE,
+            content=LADDER_MATCH_INFO_CONTENT,
+            data=video,
+            function=MAIL_FUNCTION_VIDEO,
+        )
+
     def add_score(self, score, send_notify=True):
         lock_key = "ladder_add_score_{0}".format(self.char_id)
 
         with Lock(self.server_id).lock(key=lock_key):
-            doc = MongoLadder.db(self.server_id).find_one({'_id': str(self.char_id)}, {'score': 1})
+            doc = self.get_self_ladder_data(projection={'score': 1})
             new_score = doc['score'] + score
             if new_score > LADDER_MAX_SCORE:
                 new_score = LADDER_MAX_SCORE
 
-            MongoLadder.db(self.server_id).update_one(
-                {'_id': str(self.char_id)},
-                {'$set': {'score': new_score}}
-            )
+            updater = {'$set': {'score': new_score}}
+            self.update_ladder_data(updater)
 
         if send_notify:
             self.send_notify()
 
     def add_log(self, log, send_notify=True):
-        MongoLadder.db(self.server_id).update_one(
-            {'_id': str(self.char_id)},
-            {'$push': {'logs': {
+        updater = {'$push': {
+            'logs': {
                 '$each': [log],
                 '$slice': -LADDER_LOG_MAX_AMOUNT
-            }}},
-        )
+            }}}
+
+        self.update_ladder_data(updater)
 
         if send_notify:
             self.send_notify()
 
-    def buy_challenge_times(self):
-        data = self.get_self_ladder_data(projection={'buy_challenge_times': 1})
-        if data.get('buy_challenge_times', 0) >= LADDER_MAX_BUY_CHALLENGE_TIMES:
+    def buy_match_times(self):
+        data = self.get_self_ladder_data(projection={'buy_match_times': 1})
+        if data.get('buy_match_times', 0) >= LADDER_MAX_BUY_CHALLENGE_TIMES:
             raise GameException(ConfigErrorMessage.get_error_id("LADDER_NO_CHALLENGE_BUY_TIMES"))
 
         from core.resource import Resource
         r = Resource(self.server_id, self.char_id)
         with r.check(diamond=-LADDER_BUY_CHALLENGE_TIMES_COST,
                      message="buy ladder challenge times cost {0}".format(LADDER_BUY_CHALLENGE_TIMES_COST)):
-            MongoLadder.db(self.server_id).update_one(
-                {'_id': str(self.char_id)},
-                {'$inc': {'buy_challenge_times': 1,
-                          'remained_times': 1
-                          }}
-            )
 
+            self.update_ladder_data({'$inc': {'buy_match_times': 1, 'remained_times': 1}})
             self.send_notify()
 
     def send_notify(self):
@@ -309,10 +309,10 @@ class Ladder(object):
         notify.my_order = doc['order']
         notify.my_score = doc['score']
 
-        if not doc.get('last_challenge_timestamp', 0):
+        if not doc.get('match_timestamp', 0):
             time = arrow.utcnow().timestamp
         else:
-            time = doc.get('last_challenge_timestamp', 0) + LADDER_NEXT_CHALLENGE_INTERVAL_TIMES
+            time = doc.get('match_timestamp', 0) + LADDER_NEXT_CHALLENGE_INTERVAL_TIMES
 
         notify.next_challenge_time = time
 

@@ -47,8 +47,8 @@ class LadderStore(object):
             if not force and items:
                 return items
 
-            items = random.sample(ConfigLadderScoreStore.INSTANCES.keys(), 9)
-            CommonLadderStore.set(server_id, items)
+            # items = random.sample(ConfigLadderScoreStore.INSTANCES.keys(), 9)
+            # CommonLadderStore.set(server_id, items)
 
         return items
 
