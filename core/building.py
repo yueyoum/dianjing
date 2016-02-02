@@ -32,7 +32,7 @@ BUSINESS_INCOME_ADD = 2     # 商务收益增加
 BROADCAST_NUM_INC = 3       # 直播位置累计增加
 SHOP_NUM_ADD = 4            # 网店数量累计增加
 SPONSOR_NUM_INC = 5         # 合约数量累计增加
-CHALLENGE_EXP_ADD = 6       # 联赛经验增加
+LEAGUE_EXP_ADD = 6       # 联赛经验增加
 FUNCTION_OPEN = 7           # 功能开放
 TRAINING_SLOT_ADD = 8       # 训练位置累计增加
 TRAINING_EXP_ADD = 9        # 训练效果加成
@@ -251,7 +251,7 @@ class BuildingTrainingCenter(BaseBuilding):
 class BuildingStaffCenter(BaseBuilding):
     BUILDING_ID = 3
 
-    def recruit_addition(self):
+    def recruit_discount(self):
         return self.current_effect().get(str(RECRUIT_COST_CUT), 0)
 
 
@@ -279,3 +279,6 @@ class BuildingBusinessCenter(BaseBuilding):
 
     def broadcast_slots_num(self):
         return self.current_effect().get(str(BROADCAST_NUM_INC), 0)
+
+    def shop_slots_num(self):
+        return self.current_effect().get(str(SHOP_NUM_ADD), 0)

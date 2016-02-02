@@ -211,12 +211,15 @@ class StaffRecruit(object):
             if staff_id not in recruit_list:
                 raise GameException(ConfigErrorMessage.get_error_id("STAFF_RECRUIT_NOT_IN_LIST"))
 
+            from core.building import BuildingStaffCenter
+            discount = BuildingStaffCenter(self.server_id, self.char_id).recruit_discount()
+
             check = {"message": u"Recruit staff {0}".format(staff_id)}
             config = ConfigStaff.get(staff_id)
             if config.buy_type == 1:
-                check['gold'] = -config.buy_cost
+                check['gold'] = -config.buy_cost * (100 + discount) / 100
             else:
-                check['diamond'] = -config.buy_cost
+                check['diamond'] = -config.buy_cost * (100 + discount) / 100
 
             with Resource(self.server_id, self.char_id).check(**check):
                 StaffManger(self.server_id, self.char_id).add(staff_id)

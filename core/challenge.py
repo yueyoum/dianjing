@@ -174,7 +174,7 @@ class Challenge(object):
         self.config_check(area_id)
 
         doc = self.get_challenge_data({'areas.{0}.challenges.{1}'.format(area_id, challenge_id): 1})
-
+        print doc
         if not doc['areas'].get(str(area_id), {}):
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_AREA_NOT_OPEN"))
 
@@ -301,7 +301,7 @@ class Challenge(object):
         )
 
     def get_challenge_data(self, projection):
-        return MongoChallenge.db(self.server_id).find({'_id': self.char_id}, projection)
+        return MongoChallenge.db(self.server_id).find_one({'_id': self.char_id}, projection)
 
     def deduct_challenge_energy_cost(self, num):
         self.change_energy(num)
