@@ -243,10 +243,16 @@ class BuildingClubCenter(BaseBuilding):
 class BuildingTrainingCenter(BaseBuilding):
     BUILDING_ID = 2
 
+    def exp_addition(self):
+        return self.current_effect().get(str(TRAINING_EXP_ADD), 0)
+
 
 # 人才市场
 class BuildingStaffCenter(BaseBuilding):
     BUILDING_ID = 3
+
+    def recruit_addition(self):
+        return self.current_effect().get(str(RECRUIT_COST_CUT), 0)
 
 
 # 精彩活动
@@ -267,3 +273,9 @@ class BuildingSponsorCenter(BaseBuilding):
 # 商务部
 class BuildingBusinessCenter(BaseBuilding):
     BUILDING_ID = 7
+
+    def business_addition(self):
+        return self.current_effect().get(str(BUSINESS_INCOME_ADD), 0)
+
+    def broadcast_slots_num(self):
+        return self.current_effect().get(str(BROADCAST_NUM_INC), 0)

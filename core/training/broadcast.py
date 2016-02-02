@@ -58,7 +58,8 @@ def current_got_gold(server_id, char_id, staff_id, passed_seconds, current_build
         config_building_level.effect.get("2", 1)
     )
 
-    gold = passed_seconds / 60 * gold_per_minute
+    addition = BuildingBusinessCenter(server_id, char_id).business_addition()
+    gold = passed_seconds * gold_per_minute * (addition + 100) / 60 / 100
     return gold
 
 
@@ -121,7 +122,7 @@ class BroadcastSlotStatus(object):
             self.status = BroadcastSlotStatus.NOT_EXIST
             return False
 
-        current_slots_amount = config.get_level(self.current_building_level).effect.get("3", 0)
+        current_slots_amount = BuildingBusinessCenter(self.server_id, self.char_id).broadcast_slots_num()
         if self.slot_id > current_slots_amount:
             self.status = BroadcastSlotStatus.NOT_OPEN
             return False

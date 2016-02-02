@@ -76,8 +76,11 @@ class TrainingSponsor(object):
                     # send mail
                     config = ConfigBusinessSponsor.get(sponsor_id)
 
+                    from core.building import BuildingBusinessCenter
+                    addition = BuildingBusinessCenter(server_id, doc['_id']).business_addition()
+
                     drop = Drop()
-                    drop.gold = config.income
+                    drop.gold = config.income * (100 + addition) / 100
                     attachment = drop.to_json()
 
                     m = MailManager(server_id, doc['_id'])
