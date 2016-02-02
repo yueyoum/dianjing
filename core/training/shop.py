@@ -158,8 +158,11 @@ class Shop(object):
         self.key = ''
         self.goods -= sell_amount
 
+        from core.building import BuildingBusinessCenter
+        addition = BuildingBusinessCenter(self.server_id, self.char_id).business_addition()
+
         drop = Drop()
-        drop.gold = gold
+        drop.gold = gold * (100 + addition) / 100
         return drop
 
     def to_document(self):

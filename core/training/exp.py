@@ -38,7 +38,7 @@ TIMERD_CALLBACK_PATH = '/api/timerd/training/exp/'
 
 def current_got_exp(passed_seconds, current_building_level):
     config_building_level = ConfigBuilding.get(BuildingTrainingCenter.BUILDING_ID).get_level(current_building_level)
-    return passed_seconds / 60 * config_building_level.effect.get("9", 100) / 100
+    return passed_seconds * (100 + config_building_level.effect.get("9", 0)) / 100 / 60
 
 
 class ExpSlotStatus(object):

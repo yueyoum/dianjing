@@ -222,9 +222,8 @@ class AbstractClub(object):
 
     def get_power(self):
         power = 0
-        for s in self.staffs.values():
-            if s.id in self.match_staffs:
-                power += s.power
+        for staff_id in self.match_staffs:
+            power += self.staffs[staff_id].power
 
         return power
 

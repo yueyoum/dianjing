@@ -236,22 +236,6 @@ class AuctionItem(object):
             self._fail()
 
     def _success(self):
-        """
-        竞拍成功结束(卖出去)
-
-            处理竞拍正常结束情况 -- 一口价 或 竞拍时间结束(有竞拍者)
-
-            将 物品 发送给获胜者, 并通知其将物品从竞价列表移除
-
-            通知其余竞拍者将竞拍物品从竞标列表中移除, 返还竞拍金币
-
-            删除物品
-
-            将扣除税率后的金币发送给拍卖者
-
-            char_id  获胜者ID
-
-        """
         staff_name = ConfigStaff.get(self.staff_id).name
 
         StaffManger(self.server_id, self.bidder).add_staff(self.staff_id, self.exp, self.level, self.status,
@@ -307,10 +291,6 @@ class AuctionItem(object):
         )
 
     def _fail(self):
-        """
-        流拍
-            流拍物品将发还拍卖者
-        """
         StaffManger(self.server_id, self.char_id).add_staff(self.staff_id, self.exp, self.level, self.status,
                                                             self.skills)
         staff_name = ConfigStaff.get(self.staff_id).name
@@ -336,20 +316,6 @@ class AuctionManager(object):
         return [AuctionItem.load_from_data(self.server_id, doc) for doc in docs]
 
     def sell(self, staff_id, tp, min_price, max_price):
-        """
-         拍卖员工
-
-            客户端将自身拥有员工拍卖, 被拍卖员工必须处于空闲状态
-
-            1 是否拥有该员工
-            2 出售时长是否是规定类型
-            3 最高价是否高于最低价
-            4 员工是否空闲
-            5 获取员工属性
-            6 将员工从玩家员工列表中移除
-            7 加入到服务器拍卖列表
-            8 同步玩家出售列表
-        """
         staff = StaffManger(self.server_id, self.char_id).get_staff(staff_id)
         if not staff:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
@@ -383,19 +349,6 @@ class AuctionManager(object):
         self.send_sell_list_notify([item.id])
 
     def cancel(self, item_id):
-        """
-        取消拍卖
-
-            客户端将取消拍卖物品ID发送到服务器, 服务器检查物品状态, 如果已被竞标 或 非物品属主, 取消失败
-            成功取消, 返还物品
-
-            1 商品是否存在
-            2 是否为商品属主
-            3 是否已被竞标
-            4 删除商品, 取消定时任务, 发还给玩家, 通知客户端从拍卖列表移除, 发送邮件
-
-            :type item_id : str
-        """
         try:
             with Lock(self.server_id).lock(AUCTION_LOCK_TIME, AUCTION_LOCK_KEY.format(item_id)):
                 doc = MongoAuctionStaff.db(self.server_id).find_one({'_id': item_id})
@@ -427,40 +380,6 @@ class AuctionManager(object):
             GameException(ConfigErrorMessage.get_error_id("AUCTION_ITEM_OPERATING"))
 
     def bidding(self, item_id, price):
-        """
-        竞标员工
-
-            客户端将竞标价发送到服务器, 如果玩家曾经竞标过该物品, 当前价码 = 历史价码 + 新增价码;
-            否则, 当前价码 = 新增价码.
-
-            当 当前价码 高于物品的 一口价 时, 当前价码 = 一口价, 新增价码 = 当前价码 - 历史价码
-
-            竞标价码每次只扣除 新增价码
-
-            竞标成功处理
-                当出现 一口价 时, 拍卖结束
-                    调用 竞标结束 接口 success
-                        -- 只有当竞拍结束, 竞拍参与者 竞标失败 的才会返还竞标金币
-
-                拍卖继续
-                    更新拍卖数据
-                    通知所有竞标参与者竞标变化
-
-            竞标
-                1 商品是否还存在
-                2 玩家是否已拥有该员工    -- StaffManger.has_staff
-                3 竞标价码是否低于最低价
-                4 竞标价码是否高于当前竞标价码
-                5 竞标价码是否高于一口价价码
-                6 玩家是否有足够资源被扣除
-                7 竞拍成功处理
-                    1 一口价处理
-                    2 普通竞标处理
-                8 竞标失败者处理
-
-            :type item_id : str
-            :type price : int
-        """
         lock_key = item_id
         try:
             with Lock(self.server_id).lock(2, lock_key):
@@ -525,9 +444,6 @@ class AuctionManager(object):
 
     # 定时回调, 拍卖时间结束, 处理拍卖物品
     def callback(self, item_id):
-        """
-        竞拍定时回调
-        """
         try:
             with Lock(self.server_id).lock(2, item_id):
                 doc = MongoAuctionStaff.db(self.server_id).find_one({'_id': item_id})
@@ -540,12 +456,6 @@ class AuctionManager(object):
             raise GameException(ConfigErrorMessage.get_error_id("AUCTION_ITEM_OPERATING"))
 
     def send_sell_list_notify(self, item_ids=None):
-        """
-        通知用户拍卖
-            1 如果 item_ids 为空, 初始化, 通知所有信息;
-                否则, 只通知 item_ids 中信息
-            2 组装发送信息
-        """
         if not item_ids:
             act = ACT_INIT
             condition = {'char_id': self.char_id}
@@ -565,17 +475,11 @@ class AuctionManager(object):
         MessagePipe(self.char_id).put(msg=notify)
 
     def send_sell_remove_notify(self, item_id):
-        """
-        从拍卖列表中移除物品
-        """
         notify = StaffAuctionSellRemoveNotify()
         notify.item_id = item_id
         MessagePipe(self.char_id).put(msg=notify)
 
     def send_bidding_list_notify(self, item_ids=None):
-        """
-        通知玩家竞拍信息
-        """
         doc = MongoBidding.db(self.server_id).find_one({'_id': self.char_id})
 
         if item_ids:
@@ -600,9 +504,6 @@ class AuctionManager(object):
             MessagePipe(self.char_id).put(msg=notify)
 
     def send_bidding_remove_notify(self, item_id):
-        """
-        从竞标列表中移除物品
-        """
         notify = StaffAuctionBidingRemoveNotify()
         notify.item_id = item_id
         MessagePipe(self.char_id).put(msg=notify)

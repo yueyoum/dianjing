@@ -11,7 +11,7 @@ from core.mongo import MongoLadder
 from core.abstract import AbstractStaff, AbstractClub
 from core.club import Club
 from core.match import ClubMatch
-from core.package import Drop
+# from core.package import Drop
 from core.notification import Notification
 from core.signals import ladder_match_signal
 
@@ -19,6 +19,14 @@ from config import (
     ConfigLadderRankReward,
     ConfigStaff,
 )
+
+LADDER_MATCH_LOG_TEMPLATE_ONE = 1
+LADDER_MATCH_LOG_TEMPLATE_TWO = 2
+LADDER_MATCH_LOG_TEMPLATE_THREE = 3
+LADDER_MATCH_LOG_TEMPLATE_FOUR = 4
+LADDER_MATCH_LOG_TEMPLATE_FIVE = 5
+LADDER_MATCH_LOG_TEMPLATE_SIX = 6
+LADDER_MATCH_LOG_TEMPLATE_SEVEN = 7
 
 
 class LadderNPCStaff(AbstractStaff):
@@ -131,15 +139,15 @@ class LadderMatch(object):
                 # final_club_one_order = self.club_two['order']
                 final_club_two_order = self.club_one['order']
 
-                self_log = (1, (self.club_two_object.name, str(order_changed)))
-                target_log = (4, (self.club_one_object.name, str(order_changed)))
+                self_log = (LADDER_MATCH_LOG_TEMPLATE_ONE, (self.club_two_object.name, str(order_changed)))
+                target_log = (LADDER_MATCH_LOG_TEMPLATE_FOUR, (self.club_one_object.name, str(order_changed)))
             else:
-                self_log = (5, (self.club_two_object.name,))
-                target_log = (6, (self.club_one_object.name,))
+                self_log = (LADDER_MATCH_LOG_TEMPLATE_FIVE, (self.club_two_object.name,))
+                target_log = (LADDER_MATCH_LOG_TEMPLATE_SIX, (self.club_one_object.name,))
         else:
             self.club_one_add_score = 5
-            self_log = (2, (self.club_two_object.name,))
-            target_log = (3, (self.club_one_object.name,))
+            self_log = (LADDER_MATCH_LOG_TEMPLATE_TWO, (self.club_two_object.name,))
+            target_log = (LADDER_MATCH_LOG_TEMPLATE_THREE, (self.club_one_object.name,))
 
         ladder_one = Ladder(self.server_id, int(self.club_one_object.id))
         ladder_one.add_score(self.club_one_add_score, send_notify=True)

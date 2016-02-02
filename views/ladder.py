@@ -22,15 +22,15 @@ from protomsg.ladder_pb2 import (
 )
 
 
-def refresh(request):
-    server_id = request._game_session.server_id
-    char_id = request._game_session.char_id
-
-    Ladder(server_id, char_id).make_refresh()
-
-    response = LadderRefreshResponse()
-    response.ret = 0
-    return ProtobufResponse(response)
+# def refresh(request):
+#     server_id = request._game_session.server_id
+#     char_id = request._game_session.char_id
+#
+#     Ladder(server_id, char_id).make_refresh()
+#
+#     response = LadderRefreshResponse()
+#     response.ret = 0
+#     return ProtobufResponse(response)
 
 
 def match(request):
@@ -119,7 +119,7 @@ def buy_times(request):
     char_id = request._game_session.char_id
 
     s = Ladder(server_id, char_id)
-    s.buy_challenge_times()
+    s.buy_match_times()
 
     response = LadderBuyChallengeTimesResponse()
     response.ret = 0

@@ -34,14 +34,9 @@ def set_package_value(obj, attr_name, values):
 
 # 这个对应编辑器中的 Package
 class PackageBase(object):
-    """
-    物品包基类
-        基本字段包括:
-            员工属性        STAFF_BASE_ATTRS
-            所有属性        FIELDS
-    """
     FIELDS = STAFF_SECONDARY_ATTRS + [
-        'gold', 'diamond', 'staff_exp', 'club_renown', 'training_match_score'
+        'gold', 'diamond', 'staff_exp', 'club_renown', 'training_match_score',
+        'ladder_score',
     ]
 
     __slots__ = FIELDS + ['items', 'staff_cards']
@@ -65,6 +60,8 @@ class PackageBase(object):
 
         self.items = []  # 角色 - 物品
         self.staff_cards = []
+
+        self.ladder_score = 0
 
     def __str__(self):
         data = {}
@@ -92,7 +89,8 @@ class PackageBase(object):
 
 # 对应只会给角色加的物品。 关卡掉落，奖励，邮件附件 这些
 class Drop(PackageBase):
-    FIELDS = ['gold', 'diamond', 'club_renown', 'training_match_score']
+    FIELDS = ['gold', 'diamond', 'club_renown', 'training_match_score',
+              'ladder_score']
 
     # 还有 items, staff_cards
 

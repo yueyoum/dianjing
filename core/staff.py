@@ -38,11 +38,6 @@ def staff_training_exp_need_gold(staff_level):
 
 
 class Staff(AbstractStaff):
-    """
-    Staff对象
-        实例化Staff对象时, 根据staff_id从ConfigStaff获取Staff配置数据
-        通过Staff等级和培养数据计算出当前真实数据
-    """
     __slots__ = []
 
     def __init__(self, server_id, char_id, _id, data):
@@ -109,17 +104,8 @@ RECRUIT_ENUM_TO_CONFIG_ID = {
 
 
 class StaffRecruit(object):
-    """
-    Staff招募
-        管理员工合约
-    """
 
     def __init__(self, server_id, char_id):
-        """
-        初始化 StaffRecruit
-            如果 玩家 MongoRecruit, 不存在
-            创建， 并将 热门 员工添加到招募数据库
-        """
         self.server_id = server_id
         self.char_id = char_id
 
@@ -131,10 +117,6 @@ class StaffRecruit(object):
             MongoRecruit.db(server_id).insert_one(doc)
 
     def get_self_refreshed_staffs(self):
-        """
-        获取数据库招募员工
-        如果招募类型是 热门, 从热门列表中获取
-        """
         doc = MongoRecruit.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1, 'tp': 1})
         tp = doc.get('tp', RECRUIT_HOT)
         if tp == RECRUIT_HOT:
@@ -143,9 +125,6 @@ class StaffRecruit(object):
         return doc['staffs']
 
     def get_hot_staffs(self):
-        """
-            获取当前服务器热门合约员工
-        """
         value = CommonRecruitHot.get(self.server_id)
         if not value:
             value = ConfigStaffHot.random_three()
@@ -154,22 +133,6 @@ class StaffRecruit(object):
         return value
 
     def refresh(self, tp):
-        """
-            RECRUIT_HOT: 热门合约
-            RECRUIT_NORMAL: 普通合约
-            RECRUIT_GOLD: 白金合约
-            RECRUIT_DIAMOND: 钻石合约
-
-            合约累计刷新到配置的lucky_times, 刷出配置的幸运员工
-
-            1, 判断是否是有效的刷新类型
-            2, 如果 tp == RECRUIT_HOT, 直接获取
-                2.1 如果 tp != RECRUIT_HOT, 扣除对应资源, 获取对应 tp 的刷新数据
-                2.2, 首次刷新普通合约, 必得到 staff 11
-                2.3, 非热门合约累计刷新到一定次数就会获得幸运员工
-            3, 写入数据库
-            4, 同步到客户端
-        """
         if tp not in [RECRUIT_HOT, RECRUIT_NORMAL, RECRUIT_GOLD, RECRUIT_DIAMOND]:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
@@ -225,16 +188,6 @@ class StaffRecruit(object):
         return staffs
 
     def recruit(self, staff_id):
-        """
-        招募员工
-            1, 员工是否存在
-            2, 是否已拥有该员工
-            3, 获取招募列表(普通合约 | 白金合约 | 钻石合约 | 热门合约)
-            4, 员工是否在招募列表中
-            5, 检查并扣除所消耗资源
-            6, 添加到用户数据库
-            7, 同步到客户端
-        """
         if not ConfigStaff.get(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
 
@@ -258,12 +211,15 @@ class StaffRecruit(object):
             if staff_id not in recruit_list:
                 raise GameException(ConfigErrorMessage.get_error_id("STAFF_RECRUIT_NOT_IN_LIST"))
 
+            from core.building import BuildingStaffCenter
+            discount = BuildingStaffCenter(self.server_id, self.char_id).recruit_discount()
+
             check = {"message": u"Recruit staff {0}".format(staff_id)}
             config = ConfigStaff.get(staff_id)
             if config.buy_type == 1:
-                check['gold'] = -config.buy_cost
+                check['gold'] = -config.buy_cost * (100 + discount) / 100
             else:
-                check['diamond'] = -config.buy_cost
+                check['diamond'] = -config.buy_cost * (100 + discount) / 100
 
             with Resource(self.server_id, self.char_id).check(**check):
                 StaffManger(self.server_id, self.char_id).add(staff_id)
@@ -282,11 +238,6 @@ class StaffRecruit(object):
         )
 
     def send_notify(self, staffs=None, tp=None):
-        """
-        同步招募数据
-            如果 staffs == None 同步数据库数据
-            否则同步传入数据
-        """
         if not staffs:
             staffs = self.get_self_refreshed_staffs()
             if not staffs:
@@ -313,9 +264,6 @@ class StaffRecruit(object):
 
 
 class StaffManger(object):
-    """
-    员工管理
-    """
     __slots__ = ['server_id', 'char_id']
 
     def __init__(self, server_id, char_id):
@@ -367,13 +315,6 @@ class StaffManger(object):
         return staffs
 
     def has_staff(self, staff_ids):
-        """
-        判断玩家是否拥有该员工
-            1, 如果 staff_ids 不是 list 转为list
-            2, 获取 staff_ids 中玩家员工信息
-            3, 判断是否拥有, len(staff_ids) != len(staffs.keys())
-                只有全部拥有才返回True
-        """
         if not isinstance(staff_ids, (list, tuple)):
             staff_ids = [staff_ids]
 
@@ -415,13 +356,6 @@ class StaffManger(object):
             self.send_notify(staff_ids=[_id])
 
     def add(self, staff_id, send_notify=True):
-        """
-        添加员工
-            1, 员工是否在配置中
-            2, 员工是否拥有
-            3, 员工数是否已达到当前俱乐部等级所能容纳上限
-            4, 添加员工, 写入数据库MongoStaff
-        """
         from core.club import Club
 
         if not ConfigStaff.get(staff_id):
@@ -476,13 +410,6 @@ class StaffManger(object):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_FIRE_TRAINING_SKILL"))
 
     def remove(self, staff_id):
-        """
-            移除员工
-            1, 是否拥有该员工
-            2, 该员工是否处于空闲状态, 非空闲状态， 返回错误信息
-            3, 移除员工
-            4, 通知客户端员工移除信息
-        """
         self.is_free(staff_id)
 
         MongoStaff.db(self.server_id).update_one(
@@ -495,14 +422,6 @@ class StaffManger(object):
         MessagePipe(self.char_id).put(msg=notify)
 
     def update(self, staff_id, **kwargs):
-        """
-        员工属性变更接口
-            1, 是否拥有该员工
-            2, 解析传入数据
-            3, 经验是否增加, 增加， 则进行等级计算
-            4, 把新数据写入数据库
-            5, 同步该员工信息到客户端
-        """
         this_staff = self.get_staff(staff_id)
         if not this_staff:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
@@ -646,9 +565,6 @@ class StaffManger(object):
         self.send_notify(staff_ids=[staff_id])
 
     def update_winning_rate(self, results, one=True):
-        """
-        更新玩家 Staff 种族胜率
-        """
         doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1})
         staff_ids = [int(i) for i in doc.get('staffs', {}).keys()]
 
@@ -677,19 +593,11 @@ class StaffManger(object):
         )
 
     def get_winning_rate(self, staff_ids):
-        """
-        获取 Staff 胜率
-        """
         projection = {'staffs.{0}.winning_rate'.format(staff_id): 1 for staff_id in staff_ids}
         doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, projection)
         return doc['staffs']
 
     def send_notify(self, staff_ids=None):
-        """
-        员工信息同步接口
-            staff_ids 非空，则同步指定员工信息; 否则同步所有员工信息
-            ACT_INIT, ACT_UPDATE, 客户端通过其判断是否需要清除客户端对应数据
-        """
         if not staff_ids:
             projection = {'staffs': 1}
             act = ACT_INIT
