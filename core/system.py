@@ -31,7 +31,7 @@ def send_broadcast_notify(char_id, text=None, repeat_times=1):
     notify.act = ACT_INIT
     for cast in broadcasts:
         b = notify.broadcast.add()
-        b.text = cast.text
+        b.text = cast.content
         b.repeat_times = cast.repeat_times
 
     MessagePipe(char_id).put(msg=notify)
