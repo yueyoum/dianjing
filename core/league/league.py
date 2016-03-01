@@ -318,6 +318,8 @@ class LeagueManger(object):
                     {'$inc': npc_updater}
                 )
 
+        self.send_notify()
+
     def normal_result(self, win=False, challenger=False, club_two_id=""):
         doc = MongoLeague.db(self.server_id).find_one({'_id': self.char_id})
         score = doc['score']
