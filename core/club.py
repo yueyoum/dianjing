@@ -155,11 +155,29 @@ class Club(AbstractClub):
 
         self.send_notify()
 
-    def set_unit(self, staff_id, unit_id):
-        if not StaffManger(self.server_id, self.char_id).has_staff(staff_id):
-            raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
+    def set_unit(self, index, staff_id, unit_id):
+        # if not StaffManger(self.server_id, self.char_id).has_staff(staff_id):
+        #     raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
 
-        # TODO 检测unit是否存在， 与staff种族是否匹配
+        assert index >=0 and index <= 5
+
+        if staff_id == 0:
+            # 设置兵种
+            staff_id = self.match_staffs[index]
+            assert staff_id != 0
+
+            # TODO 检测unit是否存在， 与staff种族是否匹配
+        else:
+            # 设置员工
+            unit_id = 0
+
+            MongoCharacter.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {
+                    'club.tibu_staffs.{0}'.format(index): staff_id
+                }}
+            )
+
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
             {
@@ -169,12 +187,11 @@ class Club(AbstractClub):
             }
         )
 
-        self.staffs[staff_id].unit_id = unit_id
+        self.load_match_staffs()
         self.send_notify()
 
     def set_formation(self, info):
         # info: [(staff_id, position),...]
-
         doc = MongoStaff.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'staffs': 1}
@@ -195,12 +212,13 @@ class Club(AbstractClub):
         updater = {}
         for staff_id, position in info:
             updater['staffs.{0}.position'.format(staff_id)] = position
-            self.staffs[staff_id].position = position
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': updater}
         )
+
+        self.load_match_staffs()
         self.send_notify()
 
 

@@ -90,11 +90,12 @@ def set_match_staffs(request):
 def set_unit(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
+    index = request._proto.index
     staff_id = request._proto.staff_id
     unit_id = request._proto.unit_id
 
     club = Club(server_id, char_id)
-    club.set_unit(staff_id, unit_id)
+    club.set_unit(index, staff_id, unit_id)
 
     response = ClubSetUnitResponse()
     response.ret = 0
