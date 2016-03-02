@@ -181,7 +181,9 @@ class AbstractClub(object):
         'id', 'name', 'manager_name', 'flag', 'level',
         'renown', 'vip', 'gold', 'diamond',
         'staffs', 'match_staffs', #'tibu_staffs',
-        'policy'
+        'policy',
+        'opened_slots',
+        'max_slots',
     ]
 
     def __init__(self, *args, **kwargs):
@@ -202,6 +204,8 @@ class AbstractClub(object):
         # self.tibu_staffs = []  # int
 
         self.policy = 1
+        self.opened_slots = 6
+        self.max_slots = 6
 
     def all_match_staffs(self):
         # 所有上阵员工
@@ -249,6 +253,9 @@ class AbstractClub(object):
         msg.gold = self.gold
         msg.diamond = self.diamond
         msg.policy = self.policy
+
+        msg.opened_slots = self.opened_slots
+        msg.max_slots = self.max_slots
 
         match_staffs = self.match_staffs[:]
         while len(match_staffs) < 6:
