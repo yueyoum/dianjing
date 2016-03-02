@@ -44,10 +44,10 @@ class LadderNPCStaff(AbstractStaff):
         skill_level = data.get('skill_level', 1)
         self.skills = {i: skill_level for i in config.skill_ids}
 
-        self.caozuo = data['caozuo']
-        self.baobing = data['baobing']
-        self.jingying = data['jingying']
-        self.zhanshu = data['zhanshu']
+        self.caozuo = data.get('caozuo', 0)
+        self.baobing = data.get('baobing', 0)
+        self.jingying = data.get('jingying', 0)
+        self.zhanshu = data.get('zhanshu', 0)
 
 
 class LadderNPCClub(AbstractClub):

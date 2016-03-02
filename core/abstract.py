@@ -236,6 +236,8 @@ class AbstractClub(object):
     def get_power(self):
         power = 0
         for staff_id in self.match_staffs:
+            if not staff_id:
+                continue
             power += self.staffs[staff_id].power
 
         return power

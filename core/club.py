@@ -169,6 +169,7 @@ class Club(AbstractClub):
             }
         )
 
+        self.staffs[staff_id].unit_id = unit_id
         self.send_notify()
 
     def set_formation(self, info):
@@ -194,12 +195,12 @@ class Club(AbstractClub):
         updater = {}
         for staff_id, position in info:
             updater['staffs.{0}.position'.format(staff_id)] = position
+            self.staffs[staff_id].position = position
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': updater}
         )
-
         self.send_notify()
 
 
