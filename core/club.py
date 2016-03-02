@@ -174,7 +174,7 @@ class Club(AbstractClub):
             MongoCharacter.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {'$set': {
-                    'club.tibu_staffs.{0}'.format(index): staff_id
+                    'club.match_staffs.{0}'.format(index): staff_id
                 }}
             )
 
@@ -187,8 +187,9 @@ class Club(AbstractClub):
             }
         )
 
-        self.load_match_staffs()
-        self.send_notify()
+        # self.load_match_staffs()
+        # self.send_notify()
+        Club(self.server_id, self.char_id).send_notify()
 
     def set_formation(self, info):
         # info: [(staff_id, position),...]
@@ -218,9 +219,9 @@ class Club(AbstractClub):
             {'$set': updater}
         )
 
-        self.load_match_staffs()
-        self.send_notify()
-
+        # self.load_match_staffs()
+        # self.send_notify()
+        Club(self.server_id, self.char_id).send_notify()
 
     def update(self, **kwargs):
         renown = kwargs.get('renown', 0)
