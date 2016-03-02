@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='match.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0bmatch.proto\x12\x11\x44ianjing.protocol\x1a\nclub.proto\"\xf4\x01\n\nStaffMatch\x12\x36\n\tstaff_one\x18\x01 \x02(\x0b\x32#.Dianjing.protocol.StaffMatch.Staff\x12\x36\n\tstaff_two\x18\x02 \x02(\x0b\x32#.Dianjing.protocol.StaffMatch.Staff\x1av\n\x05Staff\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0e\n\x06\x63\x61ozuo\x18\x02 \x02(\x05\x12\x10\n\x08jingying\x18\x03 \x02(\x05\x12\x0f\n\x07\x62\x61obing\x18\x04 \x02(\x05\x12\x0f\n\x07zhanshu\x18\x05 \x02(\x05\x12\x0e\n\x06skills\x18\x06 \x03(\x05\x12\r\n\x05power\x18\x07 \x02(\x05\"\xaa\x01\n\tClubMatch\x12)\n\x08\x63lub_one\x18\x01 \x02(\x0b\x32\x17.Dianjing.protocol.Club\x12)\n\x08\x63lub_two\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\x12,\n\x05match\x18\x03 \x03(\x0b\x32\x1d.Dianjing.protocol.StaffMatch\x12\x0c\n\x04seed\x18\x04 \x02(\x05\x12\x0b\n\x03key\x18\x05 \x02(\t\"O\n\x10StaffMatchResult\x12\x11\n\tstaff_one\x18\x01 \x02(\x05\x12\x11\n\tstaff_two\x18\x02 \x02(\x05\x12\x15\n\rstaff_one_win\x18\x03 \x02(\x08')
+  serialized_pb=_b('\n\x0bmatch.proto\x12\x11\x44ianjing.protocol\x1a\nclub.proto\"\x98\x02\n\nStaffMatch\x12\x36\n\tstaff_one\x18\x01 \x02(\x0b\x32#.Dianjing.protocol.StaffMatch.Staff\x12\x36\n\tstaff_two\x18\x02 \x02(\x0b\x32#.Dianjing.protocol.StaffMatch.Staff\x1a\x99\x01\n\x05Staff\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0e\n\x06\x63\x61ozuo\x18\x02 \x02(\x05\x12\x10\n\x08jingying\x18\x03 \x02(\x05\x12\x0f\n\x07\x62\x61obing\x18\x04 \x02(\x05\x12\x0f\n\x07zhanshu\x18\x05 \x02(\x05\x12\x0e\n\x06skills\x18\x06 \x03(\x05\x12\r\n\x05power\x18\x07 \x02(\x05\x12\x0f\n\x07unit_id\x18\x08 \x02(\x05\x12\x10\n\x08position\x18\t \x02(\x05\"\xaa\x01\n\tClubMatch\x12)\n\x08\x63lub_one\x18\x01 \x02(\x0b\x32\x17.Dianjing.protocol.Club\x12)\n\x08\x63lub_two\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\x12,\n\x05match\x18\x03 \x03(\x0b\x32\x1d.Dianjing.protocol.StaffMatch\x12\x0c\n\x04seed\x18\x04 \x02(\x05\x12\x0b\n\x03key\x18\x05 \x02(\t\"O\n\x10StaffMatchResult\x12\x11\n\tstaff_one\x18\x01 \x02(\x05\x12\x11\n\tstaff_two\x18\x02 \x02(\x05\x12\x15\n\rstaff_one_win\x18\x03 \x02(\x08')
   ,
   dependencies=[club__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -84,6 +84,20 @@ _STAFFMATCH_STAFF = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='unit_id', full_name='Dianjing.protocol.StaffMatch.Staff.unit_id', index=7,
+      number=8, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='position', full_name='Dianjing.protocol.StaffMatch.Staff.position', index=8,
+      number=9, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -96,8 +110,8 @@ _STAFFMATCH_STAFF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=173,
-  serialized_end=291,
+  serialized_start=174,
+  serialized_end=327,
 )
 
 _STAFFMATCH = _descriptor.Descriptor(
@@ -134,7 +148,7 @@ _STAFFMATCH = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=47,
-  serialized_end=291,
+  serialized_end=327,
 )
 
 
@@ -192,8 +206,8 @@ _CLUBMATCH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=294,
-  serialized_end=464,
+  serialized_start=330,
+  serialized_end=500,
 )
 
 
@@ -237,8 +251,8 @@ _STAFFMATCHRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=466,
-  serialized_end=545,
+  serialized_start=502,
+  serialized_end=581,
 )
 
 _STAFFMATCH_STAFF.containing_type = _STAFFMATCH

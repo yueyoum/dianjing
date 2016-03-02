@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='club.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\nclub.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"8\n\nMatchStaff\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0f\n\x07qianban\x18\x03 \x03(\x05\"\xcf\x01\n\x04\x43lub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0f\n\x07manager\x18\x03 \x02(\t\x12\x0c\n\x04\x66lag\x18\x04 \x02(\x05\x12\r\n\x05level\x18\x05 \x02(\x05\x12\x0e\n\x06renown\x18\x06 \x02(\x05\x12\x0b\n\x03vip\x18\x07 \x02(\x05\x12\x0c\n\x04gold\x18\x08 \x02(\x05\x12\x0f\n\x07\x64iamond\x18\t \x02(\x05\x12\x33\n\x0cmatch_staffs\x18\n \x03(\x0b\x32\x1d.Dianjing.protocol.MatchStaff\x12\x0e\n\x06policy\x18\x0b \x02(\x05\"D\n\nClubNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12%\n\x04\x63lub\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\"@\n\x11\x43reateClubRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\"2\n\x12\x43reateClubResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\":\n\x14\x43lubSetPolicyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tpolicy_id\x18\x02 \x02(\x05\"5\n\x15\x43lubSetPolicyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\">\n\x18\x43lubSetMatchStaffRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tstaff_ids\x18\x02 \x03(\x05\"9\n\x19\x43lubSetMatchStaffResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"S\n\x1a\x43lubStaffSlotsAmountNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0e\n\x06\x61mount\x18\x02 \x02(\x05\x12\x14\n\x0c\x63ost_diamond\x18\x03 \x02(\x05\"*\n\x17\x43lubStaffSlotBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"8\n\x18\x43lubStaffSlotBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+  serialized_pb=_b('\n\nclub.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"[\n\nMatchStaff\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0f\n\x07qianban\x18\x03 \x03(\x05\x12\x0f\n\x07unit_id\x18\x04 \x02(\x05\x12\x10\n\x08position\x18\x05 \x02(\x05\"\xcf\x01\n\x04\x43lub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0f\n\x07manager\x18\x03 \x02(\t\x12\x0c\n\x04\x66lag\x18\x04 \x02(\x05\x12\r\n\x05level\x18\x05 \x02(\x05\x12\x0e\n\x06renown\x18\x06 \x02(\x05\x12\x0b\n\x03vip\x18\x07 \x02(\x05\x12\x0c\n\x04gold\x18\x08 \x02(\x05\x12\x0f\n\x07\x64iamond\x18\t \x02(\x05\x12\x33\n\x0cmatch_staffs\x18\n \x03(\x0b\x32\x1d.Dianjing.protocol.MatchStaff\x12\x0e\n\x06policy\x18\x0b \x02(\x05\"D\n\nClubNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12%\n\x04\x63lub\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\"@\n\x11\x43reateClubRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\"2\n\x12\x43reateClubResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\":\n\x14\x43lubSetPolicyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tpolicy_id\x18\x02 \x02(\x05\"5\n\x15\x43lubSetPolicyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\">\n\x18\x43lubSetMatchStaffRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tstaff_ids\x18\x02 \x03(\x05\"9\n\x19\x43lubSetMatchStaffResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"S\n\x1a\x43lubStaffSlotsAmountNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0e\n\x06\x61mount\x18\x02 \x02(\x05\x12\x14\n\x0c\x63ost_diamond\x18\x03 \x02(\x05\"*\n\x17\x43lubStaffSlotBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"8\n\x18\x43lubStaffSlotBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"H\n\x12\x43lubSetUnitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x0f\n\x07unit_id\x18\x03 \x02(\x05\"3\n\x13\x43lubSetUnitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\xab\x01\n\x17\x43lubSetFormationRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12J\n\x08position\x18\x02 \x03(\x0b\x32\x38.Dianjing.protocol.ClubSetFormationRequest.StaffPosition\x1a\x33\n\rStaffPosition\x12\x10\n\x08staff_id\x18\x01 \x02(\x05\x12\x10\n\x08position\x18\x02 \x02(\x05\"8\n\x18\x43lubSetFormationResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
   ,
   dependencies=[common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -56,6 +56,20 @@ _MATCHSTAFF = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='unit_id', full_name='Dianjing.protocol.MatchStaff.unit_id', index=3,
+      number=4, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='position', full_name='Dianjing.protocol.MatchStaff.position', index=4,
+      number=5, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -69,7 +83,7 @@ _MATCHSTAFF = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=47,
-  serialized_end=103,
+  serialized_end=138,
 )
 
 
@@ -169,8 +183,8 @@ _CLUB = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=106,
-  serialized_end=313,
+  serialized_start=141,
+  serialized_end=348,
 )
 
 
@@ -207,8 +221,8 @@ _CLUBNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=315,
-  serialized_end=383,
+  serialized_start=350,
+  serialized_end=418,
 )
 
 
@@ -252,8 +266,8 @@ _CREATECLUBREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=385,
-  serialized_end=449,
+  serialized_start=420,
+  serialized_end=484,
 )
 
 
@@ -290,8 +304,8 @@ _CREATECLUBRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=451,
-  serialized_end=501,
+  serialized_start=486,
+  serialized_end=536,
 )
 
 
@@ -328,8 +342,8 @@ _CLUBSETPOLICYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=503,
-  serialized_end=561,
+  serialized_start=538,
+  serialized_end=596,
 )
 
 
@@ -366,8 +380,8 @@ _CLUBSETPOLICYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=563,
-  serialized_end=616,
+  serialized_start=598,
+  serialized_end=651,
 )
 
 
@@ -404,8 +418,8 @@ _CLUBSETMATCHSTAFFREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=618,
-  serialized_end=680,
+  serialized_start=653,
+  serialized_end=715,
 )
 
 
@@ -442,8 +456,8 @@ _CLUBSETMATCHSTAFFRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=682,
-  serialized_end=739,
+  serialized_start=717,
+  serialized_end=774,
 )
 
 
@@ -487,8 +501,8 @@ _CLUBSTAFFSLOTSAMOUNTNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=741,
-  serialized_end=824,
+  serialized_start=776,
+  serialized_end=859,
 )
 
 
@@ -518,8 +532,8 @@ _CLUBSTAFFSLOTBUYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=826,
-  serialized_end=868,
+  serialized_start=861,
+  serialized_end=903,
 )
 
 
@@ -556,12 +570,210 @@ _CLUBSTAFFSLOTBUYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=870,
-  serialized_end=926,
+  serialized_start=905,
+  serialized_end=961,
+)
+
+
+_CLUBSETUNITREQUEST = _descriptor.Descriptor(
+  name='ClubSetUnitRequest',
+  full_name='Dianjing.protocol.ClubSetUnitRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ClubSetUnitRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='staff_id', full_name='Dianjing.protocol.ClubSetUnitRequest.staff_id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='unit_id', full_name='Dianjing.protocol.ClubSetUnitRequest.unit_id', index=2,
+      number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=963,
+  serialized_end=1035,
+)
+
+
+_CLUBSETUNITRESPONSE = _descriptor.Descriptor(
+  name='ClubSetUnitResponse',
+  full_name='Dianjing.protocol.ClubSetUnitResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.ClubSetUnitResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ClubSetUnitResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1037,
+  serialized_end=1088,
+)
+
+
+_CLUBSETFORMATIONREQUEST_STAFFPOSITION = _descriptor.Descriptor(
+  name='StaffPosition',
+  full_name='Dianjing.protocol.ClubSetFormationRequest.StaffPosition',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='staff_id', full_name='Dianjing.protocol.ClubSetFormationRequest.StaffPosition.staff_id', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='position', full_name='Dianjing.protocol.ClubSetFormationRequest.StaffPosition.position', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1211,
+  serialized_end=1262,
+)
+
+_CLUBSETFORMATIONREQUEST = _descriptor.Descriptor(
+  name='ClubSetFormationRequest',
+  full_name='Dianjing.protocol.ClubSetFormationRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ClubSetFormationRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='position', full_name='Dianjing.protocol.ClubSetFormationRequest.position', index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[_CLUBSETFORMATIONREQUEST_STAFFPOSITION, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1091,
+  serialized_end=1262,
+)
+
+
+_CLUBSETFORMATIONRESPONSE = _descriptor.Descriptor(
+  name='ClubSetFormationResponse',
+  full_name='Dianjing.protocol.ClubSetFormationResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.ClubSetFormationResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ClubSetFormationResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1264,
+  serialized_end=1320,
 )
 
 _CLUB.fields_by_name['match_staffs'].message_type = _MATCHSTAFF
 _CLUBNOTIFY.fields_by_name['club'].message_type = _CLUB
+_CLUBSETFORMATIONREQUEST_STAFFPOSITION.containing_type = _CLUBSETFORMATIONREQUEST
+_CLUBSETFORMATIONREQUEST.fields_by_name['position'].message_type = _CLUBSETFORMATIONREQUEST_STAFFPOSITION
 DESCRIPTOR.message_types_by_name['MatchStaff'] = _MATCHSTAFF
 DESCRIPTOR.message_types_by_name['Club'] = _CLUB
 DESCRIPTOR.message_types_by_name['ClubNotify'] = _CLUBNOTIFY
@@ -574,6 +786,10 @@ DESCRIPTOR.message_types_by_name['ClubSetMatchStaffResponse'] = _CLUBSETMATCHSTA
 DESCRIPTOR.message_types_by_name['ClubStaffSlotsAmountNotify'] = _CLUBSTAFFSLOTSAMOUNTNOTIFY
 DESCRIPTOR.message_types_by_name['ClubStaffSlotBuyRequest'] = _CLUBSTAFFSLOTBUYREQUEST
 DESCRIPTOR.message_types_by_name['ClubStaffSlotBuyResponse'] = _CLUBSTAFFSLOTBUYRESPONSE
+DESCRIPTOR.message_types_by_name['ClubSetUnitRequest'] = _CLUBSETUNITREQUEST
+DESCRIPTOR.message_types_by_name['ClubSetUnitResponse'] = _CLUBSETUNITRESPONSE
+DESCRIPTOR.message_types_by_name['ClubSetFormationRequest'] = _CLUBSETFORMATIONREQUEST
+DESCRIPTOR.message_types_by_name['ClubSetFormationResponse'] = _CLUBSETFORMATIONRESPONSE
 
 MatchStaff = _reflection.GeneratedProtocolMessageType('MatchStaff', (_message.Message,), dict(
   DESCRIPTOR = _MATCHSTAFF,
@@ -658,6 +874,42 @@ ClubStaffSlotBuyResponse = _reflection.GeneratedProtocolMessageType('ClubStaffSl
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.ClubStaffSlotBuyResponse)
   ))
 _sym_db.RegisterMessage(ClubStaffSlotBuyResponse)
+
+ClubSetUnitRequest = _reflection.GeneratedProtocolMessageType('ClubSetUnitRequest', (_message.Message,), dict(
+  DESCRIPTOR = _CLUBSETUNITREQUEST,
+  __module__ = 'club_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ClubSetUnitRequest)
+  ))
+_sym_db.RegisterMessage(ClubSetUnitRequest)
+
+ClubSetUnitResponse = _reflection.GeneratedProtocolMessageType('ClubSetUnitResponse', (_message.Message,), dict(
+  DESCRIPTOR = _CLUBSETUNITRESPONSE,
+  __module__ = 'club_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ClubSetUnitResponse)
+  ))
+_sym_db.RegisterMessage(ClubSetUnitResponse)
+
+ClubSetFormationRequest = _reflection.GeneratedProtocolMessageType('ClubSetFormationRequest', (_message.Message,), dict(
+
+  StaffPosition = _reflection.GeneratedProtocolMessageType('StaffPosition', (_message.Message,), dict(
+    DESCRIPTOR = _CLUBSETFORMATIONREQUEST_STAFFPOSITION,
+    __module__ = 'club_pb2'
+    # @@protoc_insertion_point(class_scope:Dianjing.protocol.ClubSetFormationRequest.StaffPosition)
+    ))
+  ,
+  DESCRIPTOR = _CLUBSETFORMATIONREQUEST,
+  __module__ = 'club_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ClubSetFormationRequest)
+  ))
+_sym_db.RegisterMessage(ClubSetFormationRequest)
+_sym_db.RegisterMessage(ClubSetFormationRequest.StaffPosition)
+
+ClubSetFormationResponse = _reflection.GeneratedProtocolMessageType('ClubSetFormationResponse', (_message.Message,), dict(
+  DESCRIPTOR = _CLUBSETFORMATIONRESPONSE,
+  __module__ = 'club_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ClubSetFormationResponse)
+  ))
+_sym_db.RegisterMessage(ClubSetFormationResponse)
 
 
 # @@protoc_insertion_point(module_scope)

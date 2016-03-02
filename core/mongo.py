@@ -152,6 +152,11 @@ class MongoStaff(BaseDocument):
         'winning_rate': {},
         # equips 直接从 item 中移动过来
         'equips': {},
+        # 所带兵种
+        'unit_id': 0,
+        # 在阵型中的位置
+        'position': 0,
+
         # 此外这里还有属性
 
     }

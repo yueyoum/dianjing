@@ -67,6 +67,9 @@ class AbstractStaff(object):
         'zhimingdu',
 
         'equipments',
+
+        'unit_id',
+        'position',
     ]
 
     def __init__(self, *args, **kwargs):
@@ -103,6 +106,9 @@ class AbstractStaff(object):
 
         self.equipments = []
         """:type: list[core.item.Equipment]"""
+
+        self.unit_id = 0
+        self.position = -1
 
     def calculate_secondary_property(self):
         for sp, info in SECONDARY_PROPERTY_TABLE.iteritems():
@@ -174,7 +180,7 @@ class AbstractClub(object):
     __slots__ = [
         'id', 'name', 'manager_name', 'flag', 'level',
         'renown', 'vip', 'gold', 'diamond',
-        'staffs', 'match_staffs', 'tibu_staffs',
+        'staffs', 'match_staffs', #'tibu_staffs',
         'policy'
     ]
 
@@ -193,28 +199,31 @@ class AbstractClub(object):
         """:type: dict[int, AbstractStaff]"""
 
         self.match_staffs = []  # int
-        self.tibu_staffs = []  # int
+        # self.tibu_staffs = []  # int
 
         self.policy = 1
 
     def all_match_staffs(self):
         # 所有上阵员工
-        staffs = []
-        staffs.extend([i for i in self.match_staffs if i != 0])
-        staffs.extend([i for i in self.tibu_staffs if i != 0])
-
-        return staffs
+        # staffs = []
+        # staffs.extend([i for i in self.match_staffs if i != 0])
+        # staffs.extend([i for i in self.tibu_staffs if i != 0])
+        #
+        # return staffs
+        return self.match_staffs
 
     def qianban_affect(self):
         qc = QianBanContainer(self.all_match_staffs())
-        for i in chain(self.match_staffs, self.tibu_staffs):
+        # for i in chain(self.match_staffs, self.tibu_staffs):
+        for i in self.match_staffs:
             if i == 0:
                 continue
 
             qc.affect(self.staffs[i])
 
     def match_staffs_ready(self):
-        return len(self.match_staffs) == 5 and all([i != 0 for i in self.match_staffs])
+        # return len(self.match_staffs) == 5 and all([i != 0 for i in self.match_staffs])
+        return True
 
     def change_staff_strengthen(self, multiple):
         for s in self.staffs.values():
@@ -242,21 +251,26 @@ class AbstractClub(object):
         msg.policy = self.policy
 
         match_staffs = self.match_staffs[:]
-        while len(match_staffs) < 5:
+        while len(match_staffs) < 6:
             match_staffs.append(0)
+        #
+        # tibu_staffs = self.tibu_staffs[:]
+        # while len(tibu_staffs) < 5:
+        #     tibu_staffs.append(0)
 
-        tibu_staffs = self.tibu_staffs[:]
-        while len(tibu_staffs) < 5:
-            tibu_staffs.append(0)
-
-        for i in chain(match_staffs, tibu_staffs):
+        # for i in chain(match_staffs, tibu_staffs):
+        for i in match_staffs:
             msg_match_staff = msg.match_staffs.add()
             if i == 0:
                 msg_match_staff.id = 0
                 msg_match_staff.level = 0
+                msg_match_staff.unit_id = 0
+                msg_match_staff.position = 0
             else:
                 msg_match_staff.id = i
                 msg_match_staff.level = self.staffs[i].level
                 msg_match_staff.qianban.extend(self.staffs[i].active_qianban_ids)
+                msg_match_staff.unit_id = self.staffs[i].unit_id
+                msg_match_staff.position = self.staffs[i].position
 
         return msg

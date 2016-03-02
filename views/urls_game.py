@@ -53,6 +53,8 @@ urlpatterns = [
     url(r'^club/policy/$', views.club.set_policy),
     url(r'^club/matchstaff/$', views.club.set_match_staffs),
     url(r'^club/staffslots/buy/$', views.club.buy_slots),
+    url(r'^club/setunit/$', views.club.set_unit),
+    url(r'^club/setformation/$', views.club.set_formation),
 
     url(r'^staff/recruit/refresh/$', views.staff.recruit_refresh),
     url(r'^staff/recruit/$', views.staff.recruit_staff),

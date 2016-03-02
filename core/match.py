@@ -61,6 +61,8 @@ class ClubMatch(object):
             msg_match.staff_one.zhanshu = int(staff_one.zhanshu)
             msg_match.staff_one.skills.extend(staff_one.skills.keys())
             msg_match.staff_one.power = staff_one.power
+            msg_match.staff_one.unit_id = staff_one.unit_id
+            msg_match.staff_one.position = staff_one.position
 
             msg_match.staff_two.id = staff_two.id
             msg_match.staff_two.caozuo = int(staff_two.caozuo)
@@ -69,5 +71,7 @@ class ClubMatch(object):
             msg_match.staff_two.zhanshu = int(staff_two.zhanshu)
             msg_match.staff_two.skills.extend(staff_two.skills.keys())
             msg_match.staff_two.power = staff_two.power
+            msg_match.staff_two.unit_id = staff_two.unit_id
+            msg_match.staff_two.position = staff_two.position
 
         return msg

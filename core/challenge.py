@@ -49,6 +49,7 @@ LOSE_TWO_ROUND_GET_STAR = 1
 
 STAR_REWARD_MAX_INDEX = 3
 
+import random
 
 class ChallengeNPCStaff(AbstractStaff):
     __slots__ = []
@@ -68,6 +69,8 @@ class ChallengeNPCStaff(AbstractStaff):
         self.lilun = config.lilun * strength
         self.wuxing = config.wuxing * strength
         self.meili = config.meili * strength
+
+        self.unit_id = random.randint(1, 20)
 
         self.calculate_secondary_property()
 
@@ -91,6 +94,14 @@ class ChallengeNPCClub(AbstractClub):
             self.staffs[i] = ChallengeNPCStaff(i, config.level, config.strength)
 
         self.qianban_affect()
+
+        position = range(0, 30)
+        for s in self.staffs.values():
+            pos = random.choice(position)
+            position.remove(pos)
+
+            s.position = pos
+
 
 
 class Challenge(object):

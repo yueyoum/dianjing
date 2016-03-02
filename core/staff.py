@@ -51,6 +51,8 @@ class Staff(AbstractStaff):
         self.exp = data['exp']
         self.status = data['status']
         self.star = data.get('star', 0)
+        self.unit_id = data.get('unit_id', 0)
+        self.position = data.get('position', -1)
 
         config = ConfigStaff.get(self.id)
         self.race = config.race

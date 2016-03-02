@@ -61,7 +61,7 @@ class Club(AbstractClub):
         self.policy = club.get('policy', 1)  # 战术
 
         self.match_staffs = club.get('match_staffs', [])  # 出战员工
-        self.tibu_staffs = club.get('tibu_staffs', [])  # 替补员工
+        # self.tibu_staffs = club.get('tibu_staffs', [])  # 替补员工
 
         self.buy_slots = doc.get('buy_slots', 0)
 
@@ -91,7 +91,8 @@ class Club(AbstractClub):
         self.qianban_affect()
 
     def is_staff_in_match(self, staff_id):
-        return staff_id in self.match_staffs or staff_id in self.tibu_staffs
+        # return staff_id in self.match_staffs or staff_id in self.tibu_staffs
+        return staff_id in self.match_staffs
 
     def set_policy(self, policy):
         if not ConfigPolicy.get(policy):
@@ -106,24 +107,24 @@ class Club(AbstractClub):
         self.send_notify()
 
     def set_match_staffs(self, staff_ids, trig_signal=True):
-        if len(staff_ids) != 10:
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+        # if len(staff_ids) != 10:
+        #     raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         if not StaffManger(self.server_id, self.char_id).has_staff([i for i in staff_ids if i != 0]):
             raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
 
-        match_staffs = staff_ids[:5]
-        tibu_staffs = staff_ids[5:]
+        # match_staffs = staff_ids[:5]
+        # tibu_staffs = staff_ids[5:]
 
         doc = MongoCharacter.db(self.server_id).find_one(
             {'_id': self.char_id},
             {
                 'club.match_staffs': 1,
-                'club.tibu_staffs': 1
+                # 'club.tibu_staffs': 1
             }
         )
 
-        old_staff_ids = doc['club']['match_staffs'] + doc['club']['tibu_staffs']
+        old_staff_ids = doc['club']['match_staffs']
         if trig_signal and staff_ids != old_staff_ids:
             match_staffs_set_change_signal.send(
                 sender=None,
@@ -134,25 +135,73 @@ class Club(AbstractClub):
         MongoCharacter.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
-                'club.match_staffs': match_staffs,
-                'club.tibu_staffs': tibu_staffs
+                'club.match_staffs': staff_ids,
+                # 'club.tibu_staffs': tibu_staffs
             }}
         )
 
-        self.match_staffs = match_staffs
-        self.tibu_staffs = tibu_staffs
+        self.match_staffs = staff_ids
+        # self.tibu_staffs = tibu_staffs
         self.load_match_staffs()
 
-        if trig_signal and all([i != 0 for i in match_staffs]):
+        if trig_signal and all([i != 0 for i in staff_ids]):
             # set done
             match_staffs_set_done_signal.send(
                 sender=None,
                 server_id=self.server_id,
                 char_id=self.char_id,
-                match_staffs=match_staffs
+                match_staffs=staff_ids
             )
 
         self.send_notify()
+
+    def set_unit(self, staff_id, unit_id):
+        if not StaffManger(self.server_id, self.char_id).has_staff(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
+
+        # TODO 检测unit是否存在， 与staff种族是否匹配
+        MongoStaff.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {
+                '$set': {
+                    'staffs.{0}.unit_id'.format(staff_id): unit_id
+                }
+            }
+        )
+
+        self.send_notify()
+
+    def set_formation(self, info):
+        # info: [(staff_id, position),...]
+
+        doc = MongoStaff.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'staffs': 1}
+        )
+
+        for staff_id, position in info:
+            if position < 0 or position > 29:
+                raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+            if staff_id not in self.match_staffs:
+                # TODO error code
+                raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+            this_staff = doc['staffs'][str(staff_id)]
+            if not this_staff.get('unit_id', 0):
+                raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        updater = {}
+        for staff_id, position in info:
+            updater['staffs.{0}.position'.format(staff_id)] = position
+
+        MongoStaff.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': updater}
+        )
+
+        self.send_notify()
+
 
     def update(self, **kwargs):
         renown = kwargs.get('renown', 0)
