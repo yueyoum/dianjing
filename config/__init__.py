@@ -13,9 +13,9 @@ import json
 import zipfile
 
 from config.errormsg import ConfigErrorMessage
-from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigStaffLevel, ConfigStaffStatus
+from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigStaffLevel, ConfigStaffStatus, ConfigStaffNew
 from config.challenge import ConfigChallengeType, ConfigChallengeMatch
-from config.unit import ConfigUnit, ConfigPolicy
+from config.unit import ConfigUnit, ConfigPolicy, ConfigUnitNew
 from config.building import ConfigBuilding
 from config.package import ConfigPackage
 from config.training import ConfigTrainingProperty
@@ -74,6 +74,8 @@ def load_config():
             ConfigEquipment.initialize(data)
         elif item == 'staff.json':
             ConfigStaff.initialize(data)
+        elif item == 'staff_new.json':
+            ConfigStaffNew.initialize(data)
         elif item == 'staff_hot.json':
             ConfigStaffHot.initialize(data)
         elif item == 'staff_recruit.json':
@@ -88,6 +90,8 @@ def load_config():
             ConfigChallengeMatch.initialize(data)
         elif item == 'unit.json':
             ConfigUnit.initialize(data)
+        elif item == 'unit_new.json':
+            ConfigUnitNew.initialize(data)
         elif item == 'building.json':
             ConfigBuilding.initialize(data)
         elif item == 'package.json':

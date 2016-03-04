@@ -46,6 +46,19 @@ class Staff(object):
         self.meili = 0
 
 
+class StaffNew(object):
+    __slots__ = [
+        'id', 'attack', 'defense', 'manage', 'cost'
+    ]
+
+    def __init__(self):
+        self.id = 0
+        self.attack = 0
+        self.defense = 0
+        self.manage = 0
+        self.cost = 0
+
+
 class StaffHot(object):
     __slots__ = ['id', 'cost']
 
@@ -137,6 +150,20 @@ class ConfigStaff(ConfigBase):
     @classmethod
     def random_ids(cls, amount):
         return random.sample(cls.INSTANCES.keys(), amount)
+
+
+class ConfigStaffNew(ConfigBase):
+    EntityClass = StaffNew
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: StaffNew
+        """
+        return super(ConfigStaffNew, cls).get(_id)
 
 
 class ConfigStaffHot(ConfigBase):

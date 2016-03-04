@@ -259,16 +259,16 @@ class AbstractClub(object):
         msg.opened_slots = self.opened_slots
         msg.max_slots = self.max_slots
 
-        match_staffs = self.match_staffs[:]
-        while len(match_staffs) < 6:
-            match_staffs.append(0)
+        # match_staffs = self.match_staffs[:]
+        # while len(match_staffs) < 6:
+        #     match_staffs.append(0)
         #
         # tibu_staffs = self.tibu_staffs[:]
         # while len(tibu_staffs) < 5:
         #     tibu_staffs.append(0)
 
         # for i in chain(match_staffs, tibu_staffs):
-        for i in match_staffs:
+        for i in self.match_staffs:
             msg_match_staff = msg.match_staffs.add()
             if i == 0:
                 msg_match_staff.id = 0
