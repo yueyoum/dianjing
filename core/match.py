@@ -57,7 +57,14 @@ class ClubMatch(object):
             for i in club_obj.match_staffs:
                 # TODO 现在是直接从config获取 staff, unit的数据
                 # 需要改成 Staff, Unit 类，它们包含了这些数据
+                if not i:
+                    continue
+
                 staff_obj = club_obj.staffs[i]
+
+                if not staff_obj.unit_id:
+                    continue
+
                 config_staff_new = ConfigStaffNew.get(i)
                 config_unit_new = ConfigUnitNew.get(staff_obj.unit_id)
 
@@ -92,11 +99,11 @@ class ClubMatch(object):
                 msg_troop.army.critMulti = config_unit_new.crit_multiple
                 msg_troop.army.critAntiRate = config_unit_new.toughness_rate
 
-                msg_troop.army.appendAttackTerrn = config_unit_new.hurt_addition_to_terran
+                msg_troop.army.appendAttackTerran = config_unit_new.hurt_addition_to_terran
                 msg_troop.army.appendAttackProtoss = config_unit_new.hurt_addition_to_protoss
                 msg_troop.army.appendAttackZerg = config_unit_new.hurt_addition_to_zerg
 
-                msg_troop.army.appendAttackedByTerrn = config_unit_new.hurt_addition_by_terran
+                msg_troop.army.appendAttackedByTerran = config_unit_new.hurt_addition_by_terran
                 msg_troop.army.appendAttackedByProtoss = config_unit_new.hurt_addition_by_protoss
                 msg_troop.army.appendAttackedByZerg = config_unit_new.hurt_addition_by_zerg
 
