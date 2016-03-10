@@ -252,6 +252,8 @@ MESSAGE_TO_ID = {
     "BagItemDestroyResponse": 3007,
     "BagEquipmentOnRequest": 3008,
     "BagEquipmentOnResponse": 3009,
+    "BagEquipmentLevelupRequest": 3010,
+    "BagEquipmentLevelupResponse": 3011,
 }
 
 ID_TO_MESSAGE = {
@@ -507,6 +509,8 @@ ID_TO_MESSAGE = {
     3007: "BagItemDestroyResponse",
     3008: "BagEquipmentOnRequest",
     3009: "BagEquipmentOnResponse",
+    3010: "BagEquipmentLevelupRequest",
+    3011: "BagEquipmentLevelupResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -612,6 +616,7 @@ PATH_TO_REQUEST = {
     "/game/bagitem/merge/": ["bag.proto", "BagItemMergeRequest"],
     "/game/bagitem/destroy/": ["bag.proto", "BagItemDestroyRequest"],
     "/game/bagequipment/on/": ["bag.proto", "BagEquipmentOnRequest"],
+    "/game/bagequipment/levelup/": ["bag.proto", "BagEquipmentLevelupRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -717,4 +722,5 @@ PATH_TO_RESPONSE = {
     "/game/bagitem/merge/": ["bag.proto", "BagItemMergeResponse"],
     "/game/bagitem/destroy/": ["bag.proto", "BagItemDestroyResponse"],
     "/game/bagequipment/on/": ["bag.proto", "BagEquipmentOnResponse"],
+    "/game/bagequipment/levelup/": ["bag.proto", "BagEquipmentLevelupResponse"],
 }

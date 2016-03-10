@@ -68,7 +68,7 @@ class Bag(object):
 
         if config.tp == 4:
             # 装备
-            level = kwargs.get('level', 1)
+            level = kwargs.get('level', 0)
             new_state = self._add_equipment(item_id, level)
         else:
             # 这些是可以堆叠的，先找是否有格子已经是这个物品了，如果有了，再判断是否达到堆叠上限
@@ -181,12 +181,46 @@ class Bag(object):
             self.add(config.to_id, amount=1)
 
     def destroy(self, slot_id):
-        item_id = self.doc['slots'][slot_id]
+        item_id = self.doc['slots'][slot_id]['item_id']
         tp = get_item_type(item_id)
         assert tp in [4, 5]
 
         # TODO destroy reward
         self.remove_by_slot_id(slot_id, 1)
+
+    def equipment_level_up(self, slot_id):
+        this_slot = self.doc['slots'][slot_id]
+        item_id = this_slot['item_id']
+        level = this_slot['level']
+        item_needs = ConfigEquipmentNew.get(item_id).levels[level].update_item_need
+
+        if not item_needs:
+            # TODO max level
+            raise Exception("max level")
+
+        bag_items = []
+        for item_id, amount in item_needs:
+            if item_id in DAIBI:
+                # TODO
+                continue
+
+            bag_items.append((item_id, amount))
+
+        if not self.has(bag_items):
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_ENOUGH"))
+
+        for item_id, amount in bag_items:
+            self.remove_by_item_id(item_id, amount)
+
+        self.doc['slots'][slot_id]['level'] += 1
+        MongoBag.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$inc': {
+                'slots.{0}.level'.format(slot_id): 1
+            }}
+        )
+
+        self.send_notify(slot_ids=[slot_id])
 
     def _add_equipment(self, item_id, level):
         slot_id = make_string_id()

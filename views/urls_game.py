@@ -170,4 +170,6 @@ urlpatterns = [
     url(r'^bagitem/use/$', views.bag.use),
     url(r'^bagitem/merge/$', views.bag.merge),
     url(r'^bagitem/destroy/$', views.bag.destroy),
+    url(r'^bagitem/destroy/$', views.bag.destroy),
+    url(r'^bagequipment/levelup/$', views.bag.equipment_level_up),
 ]

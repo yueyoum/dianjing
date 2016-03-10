@@ -11,6 +11,7 @@ from utils.http import ProtobufResponse
 from core.bag import Bag
 
 from protomsg.bag_pb2 import (
+    BagEquipmentLevelupResponse,
     BagEquipmentOnResponse,
     BagItemDestroyResponse,
     BagItemMergeResponse,
@@ -61,5 +62,19 @@ def destroy(request):
     bag.destroy(slot_id)
 
     response = BagItemDestroyResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+
+def equipment_level_up(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    slot_id = request._proto.slot_id
+
+    bag = Bag(server_id, char_id)
+    bag.destroy(slot_id)
+
+    response = BagEquipmentLevelupResponse()
     response.ret = 0
     return ProtobufResponse(response)
