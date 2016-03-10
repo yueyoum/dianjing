@@ -35,6 +35,7 @@ import views.shop
 import views.training_match
 import views.elite_match
 import views.auction
+import views.bag
 
 urlpatterns = [
     url(r'^sync/$', views.common.sync),
@@ -165,4 +166,8 @@ urlpatterns = [
     url(r'^auction/sell/$', views.auction.sell),
     url(r'^auction/cancel/$', views.auction.cancel),
     url(r'^auction/bidding/$', views.auction.bidding),
+
+    url(r'^bagitem/use/$', views.bag.use),
+    url(r'^bagitem/merge/$', views.bag.merge),
+    url(r'^bagitem/destroy/$', views.bag.destroy),
 ]

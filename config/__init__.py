@@ -20,7 +20,7 @@ from config.building import ConfigBuilding
 from config.package import ConfigPackage
 from config.training import ConfigTrainingProperty
 from config.business import ConfigBusinessSponsor, ConfigBusinessShop
-from config.item import ConfigItem, ConfigEquipment
+from config.item import ConfigItem, ConfigEquipment, ConfigItemNew, ConfigItemUse, ConfigItemMerge, ConfigEquipmentNew
 from config.npc import ConfigNPC
 from config.skill import ConfigSkill, ConfigSkillWashCost
 from config.task import ConfigTask, ConfigRandomEvent, ConfigTaskTargetType
@@ -72,6 +72,14 @@ def load_config():
             ConfigItem.initialize(data)
         elif item == 'equipment.json':
             ConfigEquipment.initialize(data)
+        elif item == 'item_new.json':
+            ConfigItemNew.initialize(data)
+        elif item == 'item_use.json':
+            ConfigItemUse.initialize(data)
+        elif item == 'item_merge.json':
+            ConfigItemMerge.initialize(data)
+        elif item == 'equipment_new.json':
+            ConfigEquipmentNew.initialize(data)
         elif item == 'staff.json':
             ConfigStaff.initialize(data)
         elif item == 'staff_new.json':

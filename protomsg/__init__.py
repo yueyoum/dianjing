@@ -242,6 +242,16 @@ MESSAGE_TO_ID = {
     "StaffAuctionBidingListNotify": 2710,
     "StaffAuctionBidingRemoveNotify": 2711,
     "BroadcastNotify": 2800,
+    "BagSlotsNotify": 3000,
+    "BagSlotsRemoveNotify": 3001,
+    "BagItemUseRequest": 3002,
+    "BagItemUseResponse": 3003,
+    "BagItemMergeRequest": 3004,
+    "BagItemMergeResponse": 3005,
+    "BagItemDestroyRequest": 3006,
+    "BagItemDestroyResponse": 3007,
+    "BagEquipmentOnRequest": 3008,
+    "BagEquipmentOnResponse": 3009,
 }
 
 ID_TO_MESSAGE = {
@@ -487,6 +497,16 @@ ID_TO_MESSAGE = {
     2710: "StaffAuctionBidingListNotify",
     2711: "StaffAuctionBidingRemoveNotify",
     2800: "BroadcastNotify",
+    3000: "BagSlotsNotify",
+    3001: "BagSlotsRemoveNotify",
+    3002: "BagItemUseRequest",
+    3003: "BagItemUseResponse",
+    3004: "BagItemMergeRequest",
+    3005: "BagItemMergeResponse",
+    3006: "BagItemDestroyRequest",
+    3007: "BagItemDestroyResponse",
+    3008: "BagEquipmentOnRequest",
+    3009: "BagEquipmentOnResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -588,6 +608,10 @@ PATH_TO_REQUEST = {
     "/game/auction/sell/": ["auction", "StaffAuctionSellRequest"],
     "/game/auction/cancel/": ["auction", "StaffAuctionCancelRequest"],
     "/game/auction/bidding/": ["auction", "StaffAuctionBidingRequest"],
+    "/game/bagitem/use/": ["bag.proto", "BagItemUseRequest"],
+    "/game/bagitem/merge/": ["bag.proto", "BagItemMergeRequest"],
+    "/game/bagitem/destroy/": ["bag.proto", "BagItemDestroyRequest"],
+    "/game/bagequipment/on/": ["bag.proto", "BagEquipmentOnRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -689,4 +713,8 @@ PATH_TO_RESPONSE = {
     "/game/auction/sell/": ["auction", "StaffAuctionSellResponse"],
     "/game/auction/cancel/": ["auction", "StaffAuctionCancelResponse"],
     "/game/auction/bidding/": ["auction", "StaffAuctionBiddingResponse"],
+    "/game/bagitem/use/": ["bag.proto", "BagItemUseResponse"],
+    "/game/bagitem/merge/": ["bag.proto", "BagItemMergeResponse"],
+    "/game/bagitem/destroy/": ["bag.proto", "BagItemDestroyResponse"],
+    "/game/bagequipment/on/": ["bag.proto", "BagEquipmentOnResponse"],
 }

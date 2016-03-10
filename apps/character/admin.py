@@ -35,7 +35,7 @@ class CharacterAdmin(admin.ModelAdmin):
 
     action_form = MyActionForm
     actions = ['add_gold', 'add_diamond', 'add_club_level', 'add_ladder_score', 'add_purchase_diamond',
-               'add_staff_card', 'add_item',
+               'add_item',
                ]
 
     def Avatar(self, obj):
@@ -140,35 +140,38 @@ class CharacterAdmin(admin.ModelAdmin):
 
     add_purchase_diamond.short_description = u"添加充值钻石"
 
-    def add_staff_card(self, request, queryset):
-        value, amount = self.check_value_and_amount(request)
-        if not value:
-            return
-
-        from config import ConfigStaff
-        if not ConfigStaff.get(value):
-            return
-
-        from core.item import ItemManager
-        for q in queryset:
-            ItemManager(q.server_id, q.id).add_staff_card(value, 0, amount)
-
-    add_staff_card.short_description = u"添加员工卡"
+    # def add_staff_card(self, request, queryset):
+    #     value, amount = self.check_value_and_amount(request)
+    #     if not value:
+    #         return
+    #
+    #     from config import ConfigStaff
+    #     if not ConfigStaff.get(value):
+    #         return
+    #
+    #     from core.item import ItemManager
+    #     for q in queryset:
+    #         ItemManager(q.server_id, q.id).add_staff_card(value, 0, amount)
+    #
+    # add_staff_card.short_description = u"添加员工卡"
 
     def add_item(self, request, queryset):
         value, amount = self.check_value_and_amount(request)
         if not value:
             return
 
-        from config import ConfigItem
-        if not ConfigItem.get(value):
-            return
-
-        from core.item import ItemManager
+        # from config import ConfigItem
+        # if not ConfigItem.get(value):
+        #     return
+        #
+        # from core.item import ItemManager
+        # for q in queryset:
+        #     ItemManager(q.server_id, q.id).add_item(value, amount=1)
+        from core.bag import Bag
         for q in queryset:
-            ItemManager(q.server_id, q.id).add_item(value, amount=1)
+            Bag(q.server_id, q.id).add(value, amount=amount)
 
-    add_item.short_description = u"添加物品"
+    add_item.short_description = u"添加道具"
 
     def avatar_set_ok(self, request, queryset):
         for q in queryset:

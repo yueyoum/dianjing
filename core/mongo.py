@@ -200,6 +200,25 @@ class MongoItem(BaseDocument):
     COLLECTION = 'item'
 
 
+# 新背包
+class MongoBag(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # 格子
+        'slots': {},
+    }
+
+    SLOT_DOCUMENT = {
+        'item_id': 0,
+        # 如果是一般道具，碎片，则有amount这个属性
+        'amount': 0,
+        # 如果是装备，则有下面的属性
+        'level': 0,
+    }
+
+    COLLECTION = 'bag'
+
+
 # 经验训练
 class MongoTrainingExp(BaseDocument):
     DOCUMENT = {

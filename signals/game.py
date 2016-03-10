@@ -16,6 +16,7 @@ from core.club import Club
 from core.staff import StaffRecruit, StaffManger
 from core.training import TrainingExp, TrainingProperty, TrainingBroadcast, TrainingShop, TrainingSponsor
 from core.item import ItemManager
+from core.bag import Bag
 from core.challenge import Challenge
 from core.building import BuildingManager
 from core.league.league import LeagueManger
@@ -107,3 +108,5 @@ def game_start_handler(server_id, char_id, **kwargs):
     em.elite_notify()
 
     send_broadcast_notify(char_id)
+
+    Bag(server_id, char_id).send_notify()
