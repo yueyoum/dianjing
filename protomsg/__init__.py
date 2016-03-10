@@ -612,11 +612,11 @@ PATH_TO_REQUEST = {
     "/game/auction/sell/": ["auction", "StaffAuctionSellRequest"],
     "/game/auction/cancel/": ["auction", "StaffAuctionCancelRequest"],
     "/game/auction/bidding/": ["auction", "StaffAuctionBidingRequest"],
-    "/game/bagitem/use/": ["bag.proto", "BagItemUseRequest"],
-    "/game/bagitem/merge/": ["bag.proto", "BagItemMergeRequest"],
-    "/game/bagitem/destroy/": ["bag.proto", "BagItemDestroyRequest"],
-    "/game/bagequipment/on/": ["bag.proto", "BagEquipmentOnRequest"],
-    "/game/bagequipment/levelup/": ["bag.proto", "BagEquipmentLevelupRequest"],
+    "/game/bagitem/use/": ["bag", "BagItemUseRequest"],
+    "/game/bagitem/merge/": ["bag", "BagItemMergeRequest"],
+    "/game/bagitem/destroy/": ["bag", "BagItemDestroyRequest"],
+    "/game/bagequipment/on/": ["bag", "BagEquipmentOnRequest"],
+    "/game/bagequipment/levelup/": ["bag", "BagEquipmentLevelupRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -718,9 +718,9 @@ PATH_TO_RESPONSE = {
     "/game/auction/sell/": ["auction", "StaffAuctionSellResponse"],
     "/game/auction/cancel/": ["auction", "StaffAuctionCancelResponse"],
     "/game/auction/bidding/": ["auction", "StaffAuctionBiddingResponse"],
-    "/game/bagitem/use/": ["bag.proto", "BagItemUseResponse"],
-    "/game/bagitem/merge/": ["bag.proto", "BagItemMergeResponse"],
-    "/game/bagitem/destroy/": ["bag.proto", "BagItemDestroyResponse"],
-    "/game/bagequipment/on/": ["bag.proto", "BagEquipmentOnResponse"],
-    "/game/bagequipment/levelup/": ["bag.proto", "BagEquipmentLevelupResponse"],
+    "/game/bagitem/use/": ["bag", "BagItemUseResponse"],
+    "/game/bagitem/merge/": ["bag", "BagItemMergeResponse"],
+    "/game/bagitem/destroy/": ["bag", "BagItemDestroyResponse"],
+    "/game/bagequipment/on/": ["bag", "BagEquipmentOnResponse"],
+    "/game/bagequipment/levelup/": ["bag", "BagEquipmentLevelupResponse"],
 }
