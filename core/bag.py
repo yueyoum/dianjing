@@ -91,8 +91,9 @@ class Bag(object):
 
     def remove_by_slot_id(self, slot_id, amount):
         this_slot = self.doc['slots'][slot_id]
-        # TODO equipment
-        new_amount = this_slot['amount'] - amount
+        bag_amount = this_slot.get('amount', 1)
+
+        new_amount = bag_amount - amount
         if new_amount <= 0:
             self.doc['slots'].pop(slot_id)
             MongoBag.db(self.server_id).update_one(
