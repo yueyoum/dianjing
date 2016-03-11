@@ -272,12 +272,12 @@ class Bag(object):
             raise Exception("max level")
 
         bag_items = []
-        for item_id, amount in item_needs:
-            if item_id in DAIBI:
+        for a, b in item_needs:
+            if a in DAIBI:
                 # TODO
                 continue
 
-            bag_items.append((item_id, amount))
+            bag_items.append((a, b))
 
         if not self.has(bag_items):
             raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_ENOUGH"))
@@ -300,12 +300,12 @@ class Bag(object):
                 return -1
 
             bag_items = []
-            for item_id, amount in item_needs:
-                if item_id in DAIBI:
+            for a, b in item_needs:
+                if a in DAIBI:
                     # TODO
                     continue
 
-                bag_items.append((item_id, amount))
+                bag_items.append((a, b))
 
             if not self.has(bag_items):
                 return -2
