@@ -167,9 +167,10 @@ urlpatterns = [
     url(r'^auction/cancel/$', views.auction.cancel),
     url(r'^auction/bidding/$', views.auction.bidding),
 
-    url(r'^bagitem/use/$', views.bag.use),
-    url(r'^bagitem/merge/$', views.bag.merge),
-    url(r'^bagitem/destroy/$', views.bag.destroy),
-    url(r'^bagitem/destroy/$', views.bag.destroy),
+    url(r'^bagitem/use/$', views.bag.item_use),
+    url(r'^bagitem/merge/$', views.bag.item_merge),
+    url(r'^bagitem/destroy/$', views.bag.item_destroy),
+    url(r'^bagequipment/destroy/$', views.bag.equipment_destroy),
     url(r'^bagequipment/levelup/$', views.bag.equipment_level_up),
+    url(r'^bagequipment/levelup/confirm/$', views.bag.equipment_level_up_confirm),
 ]

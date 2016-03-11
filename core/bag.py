@@ -9,17 +9,19 @@ Description:
 from dianjing.exception import GameException
 
 from core.mongo import MongoBag
+from core.resource import Resource
 
 from utils.functional import make_string_id
 from utils.message import MessagePipe
 
-from config import ConfigErrorMessage, ConfigItemNew, ConfigEquipmentNew, ConfigItemUse, ConfigItemMerge
+from config import ConfigErrorMessage, ConfigItemNew, ConfigEquipmentNew, ConfigItemUse, ConfigItemMerge, GlobalConfig
 from config.settings import BAG_EQUIPMENT_MAX_AMOUNT, BAG_FRAGMENT_MAX_AMOUNT, BAG_STUFF_MAX_AMOUNT
 
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 from protomsg.bag_pb2 import (
     BagSlotsNotify,
-    BagSlotsRemoveNotify
+    BagSlotsRemoveNotify,
+    Equipment as MsgEquipment,
 )
 
 DAIBI = [30000, 30001, 30002, 30003, 30004]
@@ -27,6 +29,44 @@ DAIBI = [30000, 30001, 30002, 30003, 30004]
 
 def get_item_type(item_id):
     return ConfigItemNew.get(item_id).tp
+
+
+def get_equipment_level_up_needs_to_level(item_id, level):
+    config = ConfigEquipmentNew.get(item_id)
+
+    items = {}
+    for i in range(0, level):
+        this_level = config.levels[i]
+        for _id, _amount in this_level.update_item_need:
+            if _id in items:
+                items[_id] += _amount
+            else:
+                items[_id] = _amount
+
+    return items.items()
+
+
+def make_equipment_msg(item_id, level):
+    """
+
+    :rtype: MsgEquipment
+    """
+    config = ConfigEquipmentNew.get(item_id)
+    this_level = config.levels[level]
+
+    msg = MsgEquipment()
+    msg.level = level
+    msg.attack = this_level.attack
+    msg.attack_percent = this_level.attack_percent
+    msg.defense = this_level.defense
+    msg.defense_percent = this_level.defense_percent
+    msg.manage = this_level.manage
+    msg.manage_percent = this_level.manage_percent
+    msg.operation = this_level.cost
+    msg.operation_percent = this_level.cost_percent
+
+    return msg
+
 
 
 class Bag(object):
@@ -69,7 +109,8 @@ class Bag(object):
         if config.tp == 4:
             # 装备
             level = kwargs.get('level', 0)
-            new_state = self._add_equipment(item_id, level)
+            amount = kwargs.get('amount', 1)
+            new_state = self._add_equipment(item_id, level, amount)
         else:
             # 这些是可以堆叠的，先找是否有格子已经是这个物品了，如果有了，再判断是否达到堆叠上限
             amount = kwargs.get('amount', 1)
@@ -131,7 +172,7 @@ class Bag(object):
         for slot_id, amount in slot_amount:
             self.remove_by_slot_id(slot_id, amount)
 
-    def use(self, slot_id):
+    def item_use(self, slot_id):
         # TODO error handle
         this_slot = self.doc['slots'][slot_id]
         config = ConfigItemUse.get(this_slot['item_id'])
@@ -163,7 +204,7 @@ class Bag(object):
 
         return result
 
-    def merge(self, slot_id):
+    def item_merge(self, slot_id):
         # TODO error handler
         this_slot = self.doc['slots'][slot_id]
         item_id = this_slot['item_id']
@@ -181,13 +222,44 @@ class Bag(object):
         else:
             self.add(config.to_id, amount=1)
 
-    def destroy(self, slot_id):
+    def item_destroy(self, slot_id):
         item_id = self.doc['slots'][slot_id]['item_id']
         tp = get_item_type(item_id)
         assert tp in [4, 5]
 
         # TODO destroy reward
         self.remove_by_slot_id(slot_id, 1)
+
+    def equipment_destroy(self, slot_id, use_sycee):
+        this_slot = self.doc['slots'][slot_id]
+        item_id = this_slot['item_id']
+
+        if get_item_type(item_id) != 4:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        level = this_slot['level']
+        items = get_equipment_level_up_needs_to_level(item_id, level)
+
+        if use_sycee:
+            sycee = GlobalConfig.value("EQUIPMENT_DESTROY_SYCEE")
+            with Resource(self.server_id, self.char_id).check(sycee=-sycee, message="Equipment Destroy"):
+                pass
+
+            MongoBag.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {
+                    'slots.{0}.level'.format(slot_id): 0
+                }}
+            )
+        else:
+            self.remove_by_slot_id(slot_id, 1)
+
+        # TODO daibi
+        for a, b in items:
+            if a not in DAIBI:
+                self.add(a, amount=b)
+
+        return items
 
     def equipment_level_up(self, slot_id):
         this_slot = self.doc['slots'][slot_id]
@@ -210,27 +282,74 @@ class Bag(object):
         if not self.has(bag_items):
             raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_ENOUGH"))
 
-        for item_id, amount in bag_items:
-            self.remove_by_item_id(item_id, amount)
+        return make_equipment_msg(item_id, level+1)
 
-        self.doc['slots'][slot_id]['level'] += 1
-        MongoBag.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$inc': {
-                'slots.{0}.level'.format(slot_id): 1
-            }}
-        )
+
+    def equipment_level_up_confirm(self, slot_id, times=1):
+        this_slot = self.doc['slots'][slot_id]
+        item_id = this_slot['item_id']
+        level = this_slot['level']
+
+        config = ConfigEquipmentNew.get(item_id)
+
+        def do_level_up(_item_id, _level):
+            item_needs = config.levels[level].update_item_need
+
+            if not item_needs:
+                # TODO max level
+                return -1
+
+            bag_items = []
+            for item_id, amount in item_needs:
+                if item_id in DAIBI:
+                    # TODO
+                    continue
+
+                bag_items.append((item_id, amount))
+
+            if not self.has(bag_items):
+                return -2
+
+            for a, b in bag_items:
+                self.remove_by_item_id(a, b)
+
+            return _level + 1
+
+        old_level = level
+        equipment_messages = []
+        for i in range(times):
+            level = do_level_up(item_id, level)
+            if level < 0:
+                break
+
+            equipment_messages.append((make_equipment_msg(item_id, level)))
+
+        if level > old_level:
+            self.doc['slots'][slot_id]['level'] = level
+
+            MongoBag.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'set': {
+                    'slots.{0}.level'.format(slot_id): level
+                }}
+            )
 
         self.send_notify(slot_ids=[slot_id])
+        return equipment_messages
 
-    def _add_equipment(self, item_id, level):
-        slot_id = make_string_id()
-        data = {
-            'item_id': item_id,
-            'level': level,
-        }
 
-        return [(slot_id, data)]
+    def _add_equipment(self, item_id, level, amount):
+        new_state = []
+        for i in range(amount):
+            slot_id = make_string_id()
+            data = {
+                'item_id': item_id,
+                'level': level,
+            }
+
+            new_state.append((slot_id, data))
+
+        return new_state
 
     def _add_stack_item(self, item_id, amount):
         stack_max = ConfigItemNew.get(item_id).stack_max
@@ -313,16 +432,6 @@ class Bag(object):
 
             if get_item_type(this_slot['item_id']) == 4:
                 # 装备
-                config_equipment = ConfigEquipmentNew.get(this_slot['item_id'])
-                this_level = config_equipment.levels[this_slot['level']]
-                notify_slot.equipment.level = this_slot['level']
-                notify_slot.equipment.attack = this_level.attack
-                notify_slot.equipment.attack_percent = this_level.attack
-                notify_slot.equipment.defense = this_level.defense
-                notify_slot.equipment.defense_percent = this_level.defense_percent
-                notify_slot.equipment.manage = this_level.manage
-                notify_slot.equipment.manage_percent = this_level.manage_percent
-                notify_slot.equipment.operation = this_level.cost
-                notify_slot.equipment.operation_percent = this_level.cost_percent
+                notify_slot.equipment.MergeFrom(make_equipment_msg(this_slot['item_id'], this_slot['level']))
 
         MessagePipe(self.char_id).put(msg=notify)

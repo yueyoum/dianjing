@@ -12,6 +12,7 @@ import sys
 import json
 import zipfile
 
+from config.global_config import GlobalConfig
 from config.errormsg import ConfigErrorMessage
 from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigStaffLevel, ConfigStaffStatus, ConfigStaffNew
 from config.challenge import ConfigChallengeType, ConfigChallengeMatch
@@ -66,7 +67,9 @@ def load_config():
 
         data = json.loads(content)
 
-        if item == 'errormsg.json':
+        if item == 'global_config.json':
+            GlobalConfig.initialize(data)
+        elif item == 'errormsg.json':
             ConfigErrorMessage.initialize(data)
         elif item == 'item.json':
             ConfigItem.initialize(data)
