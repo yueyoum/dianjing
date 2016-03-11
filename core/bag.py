@@ -68,6 +68,15 @@ def make_equipment_msg(item_id, level):
     return msg
 
 
+class EquipmentLevelUpError(Exception):
+    pass
+
+class EquipmentMaxLevel(EquipmentLevelUpError):
+    pass
+
+class NoItems(EquipmentLevelUpError):
+    pass
+
 
 class Bag(object):
     def __init__(self, server_id, char_id):
@@ -297,7 +306,7 @@ class Bag(object):
 
             if not item_needs:
                 # TODO max level
-                return -1
+                raise EquipmentMaxLevel()
 
             bag_items = []
             for a, b in item_needs:
@@ -308,7 +317,7 @@ class Bag(object):
                 bag_items.append((a, b))
 
             if not self.has(bag_items):
-                return -2
+                raise NoItems()
 
             for a, b in bag_items:
                 self.remove_by_item_id(a, b)
@@ -318,8 +327,9 @@ class Bag(object):
         old_level = level
         equipment_messages = []
         for i in range(times):
-            level = do_level_up(item_id, level)
-            if level < 0:
+            try:
+                level = do_level_up(item_id, level)
+            except EquipmentLevelUpError:
                 break
 
             equipment_messages.append((make_equipment_msg(item_id, level)))
@@ -329,7 +339,7 @@ class Bag(object):
 
             MongoBag.db(self.server_id).update_one(
                 {'_id': self.char_id},
-                {'set': {
+                {'$set': {
                     'slots.{0}.level'.format(slot_id): level
                 }}
             )
