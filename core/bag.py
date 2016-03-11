@@ -71,8 +71,10 @@ def make_equipment_msg(item_id, level):
 class EquipmentLevelUpError(Exception):
     pass
 
+
 class EquipmentMaxLevel(EquipmentLevelUpError):
     pass
+
 
 class NoItems(EquipmentLevelUpError):
     pass
@@ -291,8 +293,7 @@ class Bag(object):
         if not self.has(bag_items):
             raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_ENOUGH"))
 
-        return make_equipment_msg(item_id, level+1)
-
+        return make_equipment_msg(item_id, level + 1)
 
     def equipment_level_up_confirm(self, slot_id, times=1):
         this_slot = self.doc['slots'][slot_id]
@@ -301,7 +302,7 @@ class Bag(object):
 
         config = ConfigEquipmentNew.get(item_id)
 
-        def do_level_up(_item_id, _level):
+        def do_level_up(_level):
             item_needs = config.levels[level].update_item_need
 
             if not item_needs:
@@ -328,7 +329,7 @@ class Bag(object):
         equipment_messages = []
         for i in range(times):
             try:
-                level = do_level_up(item_id, level)
+                level = do_level_up(level)
             except EquipmentLevelUpError:
                 break
 
@@ -345,8 +346,7 @@ class Bag(object):
             )
 
         self.send_notify(slot_ids=[slot_id])
-        return equipment_messages
-
+        return make_equipment_msg(item_id, level)
 
     def _add_equipment(self, item_id, level, amount):
         new_state = []

@@ -124,12 +124,9 @@ def equipment_level_up_confirm(request):
         times = 5
 
     bag = Bag(server_id, char_id)
-    msgs = bag.equipment_level_up_confirm(slot_id, times)
+    msg_equip = bag.equipment_level_up_confirm(slot_id, times)
 
     response = BagEquipmentLevelupConfirmResponse()
     response.ret = 0
-    for m in msgs:
-        response_level = response.levels.add()
-        response_level.MergeFrom(m)
-
+    response.equipment.MergeFrom(msg_equip)
     return ProtobufResponse(response)
