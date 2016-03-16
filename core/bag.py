@@ -262,6 +262,8 @@ class Bag(object):
                     'slots.{0}.level'.format(slot_id): 0
                 }}
             )
+            self.doc['slots'][slot_id]['level'] = 0
+            self.send_notify(slot_ids=[slot_id])
         else:
             self.remove_by_slot_id(slot_id, 1)
 
