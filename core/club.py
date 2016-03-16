@@ -15,6 +15,7 @@ from core.abstract import AbstractClub
 from core.signals import match_staffs_set_done_signal, club_level_up_signal, match_staffs_set_change_signal
 from core.staff import StaffManger
 from core.resource import Resource
+from core.statistics import FinanceStatistics
 
 from dianjing.exception import GameException
 
@@ -58,6 +59,9 @@ class Club(AbstractClub):
         self.vip = club['vip']  # vip等级
         self.gold = club['gold']  # 游戏币
         self.diamond = club['diamond']  # 钻石
+
+        self.crystal = club.get('crystal', 0)
+        self.gas = club.get('gas', 0)
         self.policy = club.get('policy', 1)  # 战术
 
         self.match_staffs = club.get('match_staffs', [])  # 出战员工
@@ -67,6 +71,18 @@ class Club(AbstractClub):
 
         if load_staff:
             self.load_match_staffs()
+
+    def check_money(self, diamond=0, gold=0, renown=0, crystal=0, gas=0):
+        # TODO 其他货币
+        if diamond > self.diamond:
+            raise GameException(ConfigErrorMessage.get_error_id("DIAMOND_NOT_ENOUGH"))
+        if gold > self.gold:
+            raise GameException(ConfigErrorMessage.get_error_id("GOLD_NOT_ENOUGH"))
+        if crystal > self.crystal:
+            raise GameException(ConfigErrorMessage.get_error_id("CRYSTAL_NOT_ENOUGH"))
+        if gas > self.gas:
+            raise GameException(ConfigErrorMessage.get_error_id("GAS_NOT_ENOUGH"))
+
 
     # 这些 current_* 接口是给 编辑器使用的
     # 比如需要俱乐部等级的任务 里面只要填写 core.club.Club.current_level
@@ -227,10 +243,24 @@ class Club(AbstractClub):
         renown = kwargs.get('renown', 0)
         gold = kwargs.get('gold', 0)
         diamond = kwargs.get('diamond', 0)
+        crystal = kwargs.get('crystal', 0)
+        gas = kwargs.get('gas', 0)
+        message = kwargs.get('message', "")
 
         self.gold += gold
         self.diamond += diamond
         self.renown += renown
+        self.crystal += crystal
+        self.gas += gas
+
+        if self.gold < 0:
+            raise GameException(ConfigErrorMessage.get_error_id("GOLD_NOT_ENOUGH"))
+        if self.diamond < 0:
+            raise GameException(ConfigErrorMessage.get_error_id("DIAMOND_NOT_ENOUGH"))
+        if self.crystal < 0:
+            raise GameException(ConfigErrorMessage.get_error_id("CRYSTAL_NOT_ENOUGH"))
+        if self.gas < 0:
+            raise GameException(ConfigErrorMessage.get_error_id("GAS_NOT_ENOUGH"))
 
         # update
         level_changed = False
@@ -256,6 +286,8 @@ class Club(AbstractClub):
                 'club.renown': self.renown,
                 'club.gold': self.gold,
                 'club.diamond': self.diamond,
+                'club.crystal': self.crystal,
+                'club.gas': self.gas,
             }}
         )
 
@@ -270,6 +302,14 @@ class Club(AbstractClub):
             self.send_staff_slots_notify()
 
         self.send_notify()
+
+        if gold or diamond:
+            FinanceStatistics(self.server_id, self.char_id).add_log(
+                    gold=gold,
+                    diamond=diamond,
+                    message=message
+            )
+
 
     def buy_slot(self):
         with Resource(self.server_id, self.char_id).check(diamond=-BUY_STAFF_SLOT_COST, message=u"Club Buy Slot"):

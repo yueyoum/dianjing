@@ -15,10 +15,73 @@ from core.statistics import FinanceStatistics
 from config import ConfigErrorMessage
 
 
+MONEY = {
+    30000: 'diamond', # 钻石
+    30001: 'gold',    # 金币
+    30002: 'renown',  # 声望
+    30003: 'crystal', # 水晶
+    30004: 'gas',     # 气矿
+}
+
+
+def filter_money(items):
+    # items: [(id, amount), (id, amount)...]
+    """
+
+    :rtype: dict[string, int]
+    """
+    money = {}
+    for _id, _amount in items:
+        name = MONEY.get(_id, None)
+        if not name:
+            continue
+
+        if name in money:
+            money[name] += _amount
+        else:
+            money[name] = _amount
+
+    return money
+
+
+def filter_bag_item(items):
+    """
+
+    :rtype: list
+    """
+    return [(_id, _amount) for _id, _amount in items if _id not in MONEY]
+
+
 class Resource(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
+
+    # NEW API
+    def add(self, items, message=""):
+        # items: [(id, amount), (id, amount)...]
+        from core.club import Club
+        from core.bag import Bag
+
+        money = filter_money(items)
+        bag = filter_bag_item(items)
+
+        if money:
+            Club(self.server_id, self.char_id).update(**money)
+
+            gold = money.get('gold', 0)
+            diamond = money.get('diamond', 0)
+
+            if gold or diamond:
+                FinanceStatistics(self.server_id, self.char_id).add_log(
+                        gold=gold, diamond=diamond, message=message
+                )
+
+        if bag:
+            b = Bag(self.server_id, self.char_id)
+            for _id, _amount in bag:
+                b.add(_id, amount=_amount)
+
 
     def save_drop(self, drop, message=""):
         """

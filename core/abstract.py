@@ -179,7 +179,7 @@ class AbstractStaff(object):
 class AbstractClub(object):
     __slots__ = [
         'id', 'name', 'manager_name', 'flag', 'level',
-        'renown', 'vip', 'gold', 'diamond',
+        'renown', 'vip', 'gold', 'diamond', 'crystal', 'gas',
         'staffs', 'match_staffs', #'tibu_staffs',
         'policy',
         'opened_slots',

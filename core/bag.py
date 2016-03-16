@@ -9,13 +9,26 @@ Description:
 from dianjing.exception import GameException
 
 from core.mongo import MongoBag
-from core.resource import Resource
+from core.club import Club
+from core.resource import MONEY, filter_bag_item, filter_money
 
 from utils.functional import make_string_id
 from utils.message import MessagePipe
 
-from config import ConfigErrorMessage, ConfigItemNew, ConfigEquipmentNew, ConfigItemUse, ConfigItemMerge, GlobalConfig
-from config.settings import BAG_EQUIPMENT_MAX_AMOUNT, BAG_FRAGMENT_MAX_AMOUNT, BAG_STUFF_MAX_AMOUNT
+from config import (
+    ConfigErrorMessage,
+    ConfigItemNew,
+    ConfigEquipmentNew,
+    ConfigItemUse,
+    ConfigItemMerge,
+    GlobalConfig,
+)
+
+from config.settings import (
+    BAG_EQUIPMENT_MAX_AMOUNT,
+    BAG_FRAGMENT_MAX_AMOUNT,
+    BAG_STUFF_MAX_AMOUNT,
+)
 
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 from protomsg.bag_pb2 import (
@@ -24,7 +37,19 @@ from protomsg.bag_pb2 import (
     Equipment as MsgEquipment,
 )
 
-DAIBI = [30000, 30001, 30002, 30003, 30004]
+TYPE_ITEM_NORMAL = 1  # 普通道具
+TYPE_ITEM_CAN_USE = 2  # 可使用道具
+TYPE_MONEY = 3  # 代币 -- 不会进包裹
+TYPE_EQUIPMENT = 4  # 装备
+TYPE_FRAGMENT = 5  # 碎片
+TYPE_STAFF = 6  # 选手 -- 不会进包裹
+
+BAG_CAN_CONTAINS_TYPE = [
+    TYPE_ITEM_NORMAL,
+    TYPE_ITEM_CAN_USE,
+    TYPE_EQUIPMENT,
+    TYPE_FRAGMENT,
+]
 
 
 def get_item_type(item_id):
@@ -49,6 +74,9 @@ def get_equipment_level_up_needs_to_level(item_id, level):
 def make_equipment_msg(item_id, level):
     """
 
+    :param item_id: Item id
+    :param level: Item current level
+    :return: Equipment Protocol Message
     :rtype: MsgEquipment
     """
     config = ConfigEquipmentNew.get(item_id)
@@ -68,15 +96,7 @@ def make_equipment_msg(item_id, level):
     return msg
 
 
-class EquipmentLevelUpError(Exception):
-    pass
-
-
-class EquipmentMaxLevel(EquipmentLevelUpError):
-    pass
-
-
-class NoItems(EquipmentLevelUpError):
+class EquipmentMaxLevel(GameException):
     pass
 
 
@@ -91,8 +111,15 @@ class Bag(object):
             self.doc['_id'] = self.char_id
             MongoBag.db(self.server_id).insert_one(self.doc)
 
-    def has(self, data):
-        # data [(item_id, amount), ...]
+    def check_items(self, items):
+        # items [(item_id, amount)...]
+        if not self.has(items):
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_ENOUGH"))
+
+    def has(self, items):
+        # items [(item_id, amount)...]
+
+        # 把堆叠的加好， 这里算出每个物品的全部数量
         bag_items = {}
         for k, v in self.doc['slots'].iteritems():
             item_id = v['item_id']
@@ -102,7 +129,7 @@ class Bag(object):
             else:
                 bag_items[item_id] = amount
 
-        for item_id, amount in data:
+        for item_id, amount in items:
             for bag_item_id, bag_item_amount in bag_items.iteritems():
                 if bag_item_id == item_id and bag_item_amount >= amount:
                     break
@@ -115,10 +142,9 @@ class Bag(object):
         # TODO max slot amount
 
         config = ConfigItemNew.get(item_id)
-        assert config.tp in [1, 2, 4, 5]
+        assert config.tp in BAG_CAN_CONTAINS_TYPE
 
-        if config.tp == 4:
-            # 装备
+        if config.tp == TYPE_EQUIPMENT:
             level = kwargs.get('level', 0)
             amount = kwargs.get('amount', 1)
             new_state = self._add_equipment(item_id, level, amount)
@@ -140,6 +166,72 @@ class Bag(object):
         )
 
         self.send_notify(slot_ids=slot_ids)
+
+    def _add_equipment(self, item_id, level, amount):
+        new_state = []
+        for i in range(amount):
+            slot_id = make_string_id()
+            data = {
+                'item_id': item_id,
+                'level': level,
+            }
+
+            new_state.append((slot_id, data))
+
+        return new_state
+
+    def _add_stack_item(self, item_id, amount):
+        stack_max = ConfigItemNew.get(item_id).stack_max
+        new_state = []
+
+        # 先尝试把物品往现有的格子中放
+        remained_amount = amount
+        for k, v in self.doc['slots'].iteritems():
+            if not remained_amount:
+                break
+
+            if v['item_id'] != item_id:
+                continue
+
+            empty_space = stack_max - v['amount']
+            if empty_space >= remained_amount:
+                # 这个位置还是可以把这些amount全部装下的
+                state = {
+                    'item_id': item_id,
+                    'amount': v['amount'] + remained_amount
+                }
+
+                remained_amount = 0
+            else:
+                state = {
+                    'item_id': item_id,
+                    'amount': stack_max
+                }
+                remained_amount -= empty_space
+
+            new_state.append((k, state))
+
+        # 把有物品的格子都跑了一遍还是有剩余的数量
+        # TODO 格子总量
+        while remained_amount:
+            slot_id = make_string_id()
+            if remained_amount <= stack_max:
+                state = {
+                    'item_id': item_id,
+                    'amount': remained_amount
+                }
+
+                remained_amount = 0
+            else:
+                state = {
+                    'item_id': item_id,
+                    'amount': stack_max
+                }
+
+                remained_amount -= stack_max
+            new_state.append((slot_id, state))
+
+        return new_state
 
     def remove_by_slot_id(self, slot_id, amount):
         this_slot = self.doc['slots'][slot_id]
@@ -167,55 +259,64 @@ class Bag(object):
             self.send_notify(slot_ids=[slot_id])
 
     def remove_by_item_id(self, item_id, amount):
-        # TODO equipment
+        assert get_item_type(item_id) != TYPE_EQUIPMENT
 
         slot_amount = []
         for k, v in self.doc['slots'].iteritems():
             if v['item_id'] != item_id:
                 continue
 
+            if amount == 0:
+                break
+
             if v['amount'] >= amount:
                 slot_amount.append((k, amount))
+                amount = 0
             else:
                 slot_amount.append((k, v['amount']))
                 amount -= v['amount']
+
+        if amount:
+            # 跑了还有 amount，说明背包中的数量不足
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_ENOUGH"))
 
         for slot_id, amount in slot_amount:
             self.remove_by_slot_id(slot_id, amount)
 
     def item_use(self, slot_id):
+        # 道具使用
         # TODO error handle
         this_slot = self.doc['slots'][slot_id]
         config = ConfigItemUse.get(this_slot['item_id'])
 
         if config.use_item_id:
-            if config.use_item_id in DAIBI:
-                # TODO 代币
-                pass
+            if config.use_item_id in MONEY:
+                money = {
+                    MONEY[config.use_item_id]: config.use_item_amount,
+                    'message': "item use: {0}".format(this_slot['item_id'])
+                }
+                Club(self.server_id, self.char_id).update(**money)
             else:
-                if not self.has([(config.use_item_id, config.use_item_amount)]):
-                    raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_ENOUGH"))
-
                 self.remove_by_item_id(config.use_item_id, config.use_item_amount)
 
         self.remove_by_slot_id(slot_id, 1)
 
         result = config.using_result()
-        for item_id, amount in result:
-            if item_id in DAIBI:
-                # TODO
-                pass
-            else:
-                if get_item_type(item_id) == 4:
-                    # 装备
-                    for i in range(amount):
-                        self.add(item_id)
-                else:
-                    self.add(item_id, amount=amount)
+
+        result_money = filter_money(result)
+        result_items = filter_bag_item(result)
+
+        if result_money:
+            result_money['message'] = "item use: {0}".format(this_slot['item_id'])
+            Club(self.server_id, self.char_id).update(**result_money)
+
+        for item_id, amount in result_items:
+            self.add(item_id, amount=amount)
 
         return result
 
     def item_merge(self, slot_id):
+        # 碎片合成
         # TODO error handler
         this_slot = self.doc['slots'][slot_id]
         item_id = this_slot['item_id']
@@ -227,34 +328,38 @@ class Bag(object):
 
         self.remove_by_slot_id(slot_id, config.amount)
 
-        if config.to_id in DAIBI:
-            # TODO
-            pass
+        if config.to_id in MONEY:
+            money = {MONEY[config.to_id]: 1}
+            Club(self.server_id, self.char_id).update(**money)
         else:
             self.add(config.to_id, amount=1)
 
     def item_destroy(self, slot_id):
+        # 碎片销毁
         item_id = self.doc['slots'][slot_id]['item_id']
-        tp = get_item_type(item_id)
-        assert tp in [4, 5]
+        amount = self.doc['slots'][slot_id]['amount']
 
-        # TODO destroy reward
-        self.remove_by_slot_id(slot_id, 1)
+        tp = get_item_type(item_id)
+        assert tp == TYPE_FRAGMENT
+        self.remove_by_slot_id(slot_id, amount)
+
+        # TODO reward
 
     def equipment_destroy(self, slot_id, use_sycee):
+        # 装备销毁
         this_slot = self.doc['slots'][slot_id]
         item_id = this_slot['item_id']
 
-        if get_item_type(item_id) != 4:
+        if get_item_type(item_id) != TYPE_EQUIPMENT:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
         level = this_slot['level']
-        items = get_equipment_level_up_needs_to_level(item_id, level)
+        results = get_equipment_level_up_needs_to_level(item_id, level)
 
         if use_sycee:
-            sycee = GlobalConfig.value("EQUIPMENT_DESTROY_SYCEE")
-            with Resource(self.server_id, self.char_id).check(sycee=-sycee, message="Equipment Destroy"):
-                pass
+            diamond = GlobalConfig.value("EQUIPMENT_DESTROY_SYCEE")
+            Club(self.server_id, self.char_id).update(diamond=-diamond,
+                                                      message='Equipment Destroy: {0}'.format(item_id))
 
             MongoBag.db(self.server_id).update_one(
                 {'_id': self.char_id},
@@ -267,14 +372,21 @@ class Bag(object):
         else:
             self.remove_by_slot_id(slot_id, 1)
 
-        # TODO daibi
-        for a, b in items:
-            if a not in DAIBI:
-                self.add(a, amount=b)
+        result_money = filter_money(results)
+        result_items = filter_bag_item(results)
 
-        return items
+        if result_money:
+            result_money['message'] = 'Equipment Destroy: {0}'.format(item_id)
+            Club(self.server_id, self.char_id).update(**result_money)
+
+        for _id, _amount in result_items:
+            self.add(_id, amount=_amount)
+
+        return results
 
     def equipment_level_up(self, slot_id):
+        # 装备升级准备
+        # 客户端请求一下，把计算好的下一级属性发回去， 先不升级
         this_slot = self.doc['slots'][slot_id]
         item_id = this_slot['item_id']
         level = this_slot['level']
@@ -284,58 +396,59 @@ class Bag(object):
             # TODO max level
             raise Exception("max level")
 
-        bag_items = []
-        for a, b in item_needs:
-            if a in DAIBI:
-                # TODO
-                continue
+        need_money = filter_money(item_needs)
+        need_items = filter_bag_item(item_needs)
 
-            bag_items.append((a, b))
-
-        if not self.has(bag_items):
-            raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_ENOUGH"))
+        if need_money:
+            Club(self.server_id, self.char_id).check_money(**need_money)
+        if need_items:
+            self.check_items(need_items)
 
         return make_equipment_msg(item_id, level + 1)
 
     def equipment_level_up_confirm(self, slot_id, times=1):
+        # 装备升级确认
+        # 上一步 用户看到下一级属性后， 点击确认升级
         this_slot = self.doc['slots'][slot_id]
         item_id = this_slot['item_id']
         level = this_slot['level']
 
         config = ConfigEquipmentNew.get(item_id)
+        if not config.levels[level].update_item_need:
+            # TODO max level
+            raise Exception("max level")
 
         def do_level_up(_level):
-            item_needs = config.levels[level].update_item_need
+            item_needs = config.levels[_level].update_item_need
 
             if not item_needs:
                 # TODO max level
-                raise EquipmentMaxLevel()
+                raise EquipmentMaxLevel(0)
 
-            bag_items = []
-            for a, b in item_needs:
-                if a in DAIBI:
-                    # TODO
-                    continue
+            need_money = filter_money(item_needs)
+            need_items = filter_bag_item(item_needs)
 
-                bag_items.append((a, b))
+            club = Club(self.server_id, self.char_id)
+            if need_money:
+                club.check_money(**need_money)
+            if need_items:
+                self.check_items(need_items)
 
-            if not self.has(bag_items):
-                raise NoItems()
-
-            for a, b in bag_items:
-                self.remove_by_item_id(a, b)
+            # check passed
+            if need_money:
+                club.update(**need_money)
+            if need_items:
+                for _id, _amount in need_items:
+                    self.remove_by_item_id(_id, _amount)
 
             return _level + 1
 
         old_level = level
-        equipment_messages = []
         for i in range(times):
             try:
                 level = do_level_up(level)
-            except EquipmentLevelUpError:
+            except GameException:
                 break
-
-            equipment_messages.append((make_equipment_msg(item_id, level)))
 
         if level > old_level:
             self.doc['slots'][slot_id]['level'] = level
@@ -349,72 +462,6 @@ class Bag(object):
 
         self.send_notify(slot_ids=[slot_id])
         return make_equipment_msg(item_id, level)
-
-    def _add_equipment(self, item_id, level, amount):
-        new_state = []
-        for i in range(amount):
-            slot_id = make_string_id()
-            data = {
-                'item_id': item_id,
-                'level': level,
-            }
-
-            new_state.append((slot_id, data))
-
-        return new_state
-
-    def _add_stack_item(self, item_id, amount):
-        stack_max = ConfigItemNew.get(item_id).stack_max
-        new_state = []
-
-        remained_amount = amount
-        for k, v in self.doc['slots'].iteritems():
-            if not remained_amount:
-                break
-
-            if v['item_id'] != item_id:
-                continue
-
-            empty_space = stack_max - v['amount']
-            if empty_space >= remained_amount:
-                # 这个位置还是可以把这些amount全部装下的
-                state = {
-                    'item_id': item_id,
-                    'amount': v['amount'] + remained_amount
-                }
-
-                remained_amount = 0
-            else:
-                state = {
-                    'item_id': item_id,
-                    'amount': stack_max
-                }
-                remained_amount -= empty_space
-
-            new_state.append((k, state))
-
-        while remained_amount:
-            # 把有物品的格子都跑了一遍还是有剩余的数量
-            # TODO 格子总量
-            slot_id = make_string_id()
-            if remained_amount <= stack_max:
-                state = {
-                    'item_id': item_id,
-                    'amount': remained_amount
-                }
-
-                remained_amount = 0
-            else:
-                state = {
-                    'item_id': item_id,
-                    'amount': stack_max
-                }
-
-                remained_amount -= stack_max
-
-            new_state.append((slot_id, state))
-
-        return new_state
 
     def send_remove_notify(self, slots_ids):
         notify = BagSlotsRemoveNotify()
