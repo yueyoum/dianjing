@@ -292,7 +292,7 @@ class Bag(object):
         if config.use_item_id:
             if config.use_item_id in MONEY:
                 money = {
-                    MONEY[config.use_item_id]: config.use_item_amount,
+                    MONEY[config.use_item_id]: -config.use_item_amount,
                     'message': "item use: {0}".format(this_slot['item_id'])
                 }
                 Club(self.server_id, self.char_id).update(**money)
@@ -390,11 +390,13 @@ class Bag(object):
         this_slot = self.doc['slots'][slot_id]
         item_id = this_slot['item_id']
         level = this_slot['level']
-        item_needs = ConfigEquipmentNew.get(item_id).levels[level].update_item_need
 
-        if not item_needs:
-            # TODO max level
-            raise Exception("max level")
+        config = ConfigEquipmentNew.get(item_id)
+
+        if level >= config.max_level:
+            raise GameException("max level")
+
+        item_needs = ConfigEquipmentNew.get(item_id).levels[level].update_item_need
 
         need_money = filter_money(item_needs)
         need_items = filter_bag_item(item_needs)
@@ -419,12 +421,10 @@ class Bag(object):
             raise Exception("max level")
 
         def do_level_up(_level):
-            item_needs = config.levels[_level].update_item_need
-
-            if not item_needs:
-                # TODO max level
+            if _level >= config.max_level:
                 raise EquipmentMaxLevel(0)
 
+            item_needs = config.levels[_level].update_item_need
             need_money = filter_money(item_needs)
             need_items = filter_bag_item(item_needs)
 
@@ -436,6 +436,7 @@ class Bag(object):
 
             # check passed
             if need_money:
+                need_money = {k: -v for k, v in need_money.iteritems()}
                 club.update(**need_money)
             if need_items:
                 for _id, _amount in need_items:
