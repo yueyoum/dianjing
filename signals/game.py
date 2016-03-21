@@ -33,7 +33,7 @@ from core.activity.login_reward import ActivityLoginReward
 from core.activity.signin import SignIn
 from core.active_value import ActiveValue
 from core.training_match import TrainingMatch, TrainingMatchStore
-from core.elite_match import EliteMatch
+# from core.elite_match import EliteMatch
 from core.auction import AuctionManager
 from core.system import send_broadcast_notify
 
@@ -70,8 +70,11 @@ def game_start_handler(server_id, char_id, **kwargs):
 
     ItemManager(server_id, char_id).send_notify()
 
-    Challenge(server_id, char_id).energy_notify()
-    Challenge(server_id, char_id).challenge_notify()
+    chall = Challenge(server_id, char_id)
+    chall.send_chapter_notify()
+    chall.send_challenge_notify()
+    chall.energy_notify()
+
 
     BuildingManager(server_id, char_id).send_notify()
     LeagueManger(server_id, char_id).send_notify()
@@ -104,8 +107,8 @@ def game_start_handler(server_id, char_id, **kwargs):
     TrainingMatch(server_id, char_id).send_notify()
     TrainingMatchStore(server_id, char_id).send_notify()
 
-    em = EliteMatch(server_id, char_id)
-    em.elite_notify()
+    # em = EliteMatch(server_id, char_id)
+    # em.elite_notify()
 
     send_broadcast_notify(char_id)
 

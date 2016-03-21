@@ -15,7 +15,7 @@ import zipfile
 from config.global_config import GlobalConfig
 from config.errormsg import ConfigErrorMessage
 from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigStaffLevel, ConfigStaffStatus, ConfigStaffNew
-from config.challenge import ConfigChallengeType, ConfigChallengeMatch
+from config.challenge import ConfigChallengeMatch, ConfigChapter
 from config.unit import ConfigUnit, ConfigPolicy, ConfigUnitNew
 from config.building import ConfigBuilding
 from config.package import ConfigPackage
@@ -95,8 +95,8 @@ def load_config():
             ConfigStaffLevel.initialize(data)
         elif item == 'staff_status.json':
             ConfigStaffStatus.initialize(data)
-        elif item == 'challenge_type.json':
-            ConfigChallengeType.initialize(data)
+        elif item == 'challenge_chapter.json':
+            ConfigChapter.initialize(data)
         elif item == 'challenge_match.json':
             ConfigChallengeMatch.initialize(data)
         elif item == 'unit.json':

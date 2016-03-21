@@ -68,9 +68,9 @@ urlpatterns = [
     url(r'^item/merge/$', views.item.merge),
 
     url(r'^challenge/start/$', views.challenge.start),
-    url(r'^challenge/reward/$', views.challenge.reward),
+    # url(r'^challenge/reward/$', views.challenge.reward),
     url(r'^challenge/report/$', views.challenge.report),
-    url(r'^challenge/buy/$', views.challenge.buy),
+    # url(r'^challenge/buy/$', views.challenge.buy),
 
     url(r'^building/levelup/$', views.building.levelup),
     url(r'^building/speedup/$', views.building.speedup),

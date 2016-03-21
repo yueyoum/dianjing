@@ -23,11 +23,10 @@ def start(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
-    area_id = request._proto.area_id
-    challenge_id = request._proto.challenge_id
+    challenge_id = request._proto.id
 
     c = Challenge(server_id, char_id)
-    msg = c.start(int(area_id), int(challenge_id))
+    msg = c.start(challenge_id)
 
     response = ChallengeStartResponse()
     response.ret = 0
@@ -41,14 +40,17 @@ def report(request):
     char_id = request._game_session.char_id
 
     key = request._proto.key
-    win_club = request._proto.win_club
-    result = request._proto.result
+    star = request._proto.star
 
-    drop = Challenge(server_id, char_id).report(key, win_club, result)
+    items = Challenge(server_id, char_id).report(key, star)
     response = ChallengeMatchReportResponse()
     response.ret = 0
-    if drop:
-        response.drop.MergeFrom(drop)
+
+    for _id, _amount in items:
+        drop_item = response.drop.items.add()
+        drop_item.id = _id
+        drop_item.amount = _amount
+        drop_item.tp = 100
 
     return ProtobufResponse(response)
 

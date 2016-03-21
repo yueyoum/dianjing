@@ -104,22 +104,17 @@ class MongoCharacter(BaseDocument):
 class MongoChallenge(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        # 大区， {area_id: {'challenge_id': {'star': 0}},
-        'areas': {
-            '1': {
-                'challenges': {
-                    '1': {
-                        'stars': 0,     # 历史最佳记录 0为未通过
-                        'times': 0,     # 当天挑战次数， 每天刷新
-                    }
-                },
-                'packages': {
-                    '1': True,
-                    '2': True,
-                    '3': True,
-                }
-            }
-        }
+        # 只记录已经开启的
+        'chapters': {},
+        # id: star
+        'challenge_star': {},
+        # id: times,  已经打过的次数
+        'challenge_times': {}
+    }
+
+    CHAPTER_DOCUMENT = {
+        'star': 0,
+        'rewards': []   # 保存已经领奖的index
     }
 
     COLLECTION = 'challenge'
