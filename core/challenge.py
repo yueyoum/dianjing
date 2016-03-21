@@ -23,7 +23,7 @@ from core.signals import challenge_match_signal
 
 from utils.message import MessagePipe
 
-from config import ConfigChapter, ConfigChallengeMatch, ConfigStaff, ConfigErrorMessage
+from config import ConfigChapter, ConfigChallengeMatch, ConfigStaffNew, ConfigErrorMessage
 
 from protomsg.challenge_pb2 import (
     ChallengeNotify,
@@ -64,15 +64,15 @@ class ChallengeNPCStaff(AbstractStaff):
         self.id = _id
         self.level = 1
 
-        config = ConfigStaff.get(_id)
-        self.race = config.race
-        self.skills = {i: 1 for i in config.skill_ids}
-
-        self.luoji = config.luoji
-        self.minjie = config.minjie
-        self.lilun = config.lilun
-        self.wuxing = config.wuxing
-        self.meili = config.meili
+        # config = ConfigStaffNew.get(_id)
+        # self.race =
+        # self.skills = {i: 1 for i in config.skill_ids}
+        #
+        # self.luoji = config.luoji
+        # self.minjie = config.minjie
+        # self.lilun = config.lilun
+        # self.wuxing = config.wuxing
+        # self.meili = config.meili
 
         self.unit_id = unit_id
         self.calculate_secondary_property()
@@ -88,7 +88,6 @@ class ChallengeNPCClub(AbstractClub):
 
         self.id = challenge_match_id
 
-        self.match_staffs = config.staffs
         # TODO
         self.policy = 1
         self.name = config.name
@@ -228,7 +227,7 @@ class Challenge(object):
             {'challenge_star': 1, 'challenge_times': 1}
         )
 
-        if str(config.condition_challenge) not in doc['challenge_star']:
+        if config.condition_challenge and str(config.condition_challenge) not in doc['challenge_star']:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NOT_OPEN"))
 
         if doc['challenge_times'].get(str(challenge_id), 0) >= config.times_limit:
@@ -264,6 +263,10 @@ class Challenge(object):
             }}
         )
 
+        if star <= 0:
+            self.send_challenge_notify(ids=[challenge_id])
+            return
+
         updated_chapter_ids = []
         updated_challenge_ids = []
 
@@ -290,8 +293,8 @@ class Challenge(object):
                 MongoChallenge.db(self.server_id).update_one(
                     {'_id': self.char_id},
                     {'$set': {
-                        'challenge_star.{0}'.format(challenge_id): star,
-                        'challenge_times.{0}'.format(challenge_id): 1
+                        'challenge_star.{0}'.format(i): 0,
+                        'challenge_times.{0}'.format(i): 0
                     }}
                 )
 
@@ -359,7 +362,7 @@ class Challenge(object):
     def send_chapter_notify(self, ids=None):
         if ids:
             act = ACT_UPDATE
-            projection = {'chapters.{0}'.format(i) for i in ids}
+            projection = {'chapters.{0}'.format(i): 1 for i in ids}
         else:
             act = ACT_INIT
             projection = {'chapters': 1}
