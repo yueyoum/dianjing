@@ -15,7 +15,7 @@ from protomsg.challenge_pb2 import (
     ChallengeStartResponse,
     ChallengeBuyEnergyResponse,
     ChallengeMatchReportResponse,
-    ChallengeGetStarRewardResponse,
+    ChapterGetStarRewardResponse,
 )
 
 
@@ -46,6 +46,7 @@ def report(request):
     response = ChallengeMatchReportResponse()
     response.ret = 0
 
+    # TODO drop message
     for _id, _amount in items:
         drop_item = response.drop.items.add()
         drop_item.id = _id
@@ -55,19 +56,21 @@ def report(request):
     return ProtobufResponse(response)
 
 
-def reward(request):
+def chapter_reward(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
-    area_id = request._proto.area_id
+    chapter_id = request._proto.area_id
     index = request._proto.index
 
-    drop = Challenge(server_id, char_id).get_star_reward(area_id, index)
-    response = ChallengeGetStarRewardResponse()
+    item_id, item_amount = Challenge(server_id, char_id).get_chapter_reward(chapter_id, index)
+    response = ChapterGetStarRewardResponse()
     response.ret = 0
-    if drop:
-        response.drop.MergeFrom(drop)
 
+    response_drop = response.drop.items.add()
+    response_drop.id = item_id
+    response_drop.amount = item_amount
+    response_drop.tp = 100
     return ProtobufResponse(response)
 
 

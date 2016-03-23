@@ -322,8 +322,44 @@ class Challenge(object):
 
         return drop
 
-    def get_star_reward(self, area_id, index):
-        raise NotImplementedError()
+    def get_chapter_reward(self, chapter_id, index):
+        config = ConfigChapter.get(chapter_id)
+        # TODO error code
+
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        doc = MongoChallenge.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'chapters.{0}'.format(chapter_id): 1}
+        )
+
+        try:
+            this_chapter = doc['chapters'][str(chapter_id)]
+        except KeyError:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        if index in this_chapter['rewards']:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        need_star, item_id, item_amount = config.star_reward[index]
+        if need_star > this_chapter['star']:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        Resource(self.server_id, self.char_id).add([(item_id, item_amount)])
+
+        MongoChallenge.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {
+                '$push': {
+                    'chapters.{0}.rewards'.format(chapter_id): index
+                }
+            }
+        )
+
+        self.send_chapter_notify(ids=[chapter_id])
+        return item_id, item_amount
+
 
     def buy_energy(self):
         doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'energy': 1})
