@@ -285,6 +285,10 @@ class StaffManger(object):
         return [int(i) for i in self.get_all_staffs().keys()]
 
     def get_all_staffs(self):
+        """
+
+        :rtype: dict[str, dict]
+        """
         doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1})
         return doc['staffs']
 

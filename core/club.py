@@ -123,6 +123,7 @@ class Club(AbstractClub):
         self.policy = policy
         self.send_notify()
 
+    # TODO 这个不再要呢？
     def set_match_staffs(self, staff_ids, trig_signal=True):
         # if len(staff_ids) != 6:
         #     raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
@@ -209,16 +210,34 @@ class Club(AbstractClub):
 
         assert index >=0 and index <= 5
 
+        all_staffs = StaffManger(self.server_id, self.char_id).get_all_staffs()
+        positions = []
+        for v in all_staffs.values():
+            _pos = v.get('position', 0)
+            if _pos:
+                positions.append(_pos)
+
+        updater = {
+            'staffs.{0}.unit_id'.format(staff_id): unit_id
+        }
+
         if staff_id == 0:
-            # 设置兵种
+            # 设置兵种. 如果本来没有位置， 就设定位置
             staff_id = self.match_staffs[index]
             assert staff_id != 0
+
+            pos = all_staffs[str(staff_id)].get('position', 0)
+            if not pos:
+                while True:
+                    pos = random.randint(0, 29)
+                    if pos not in positions:
+                        updater['staffs.{0}.position'.format(staff_id)] = pos
+                        break
 
             # TODO 检测unit是否存在， 与staff种族是否匹配
         else:
             # 设置员工
             unit_id = 0
-
             MongoCharacter.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {'$set': {
@@ -226,13 +245,24 @@ class Club(AbstractClub):
                 }}
             )
 
+            old_staff_id = self.match_staffs[index]
+            assert old_staff_id != 0
+            pos = all_staffs[str(staff_id)].get('position', 0)
+            if not pos:
+                while True:
+                    pos = random.randint(0, 29)
+                    if pos not in positions:
+                        break
+
+            # 撤下的队员 位置清除
+            updater['staffs.{0}.position'.format(old_staff_id)] = 0
+            # 设置新上场的
+            updater['staffs.{0}.position'.format(staff_id)] = pos
+
+
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {
-                '$set': {
-                    'staffs.{0}.unit_id'.format(staff_id): unit_id
-                }
-            }
+            {'$set': updater}
         )
 
         # self.load_match_staffs()

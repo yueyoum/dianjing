@@ -266,7 +266,7 @@ class Challenge(object):
 
         if star <= 0:
             self.send_challenge_notify(ids=[challenge_id])
-            return
+            return []
 
         updated_chapter_ids = []
         updated_challenge_ids = []
