@@ -75,6 +75,7 @@ class ChallengeNPCStaff(AbstractStaff):
         # self.meili = config.meili
 
         self.unit_id = unit_id
+        self.position = position
         self.calculate_secondary_property()
 
 

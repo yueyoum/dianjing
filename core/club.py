@@ -7,6 +7,7 @@ Description:
 
 """
 
+import random
 import base64
 import dill
 
@@ -123,25 +124,55 @@ class Club(AbstractClub):
         self.send_notify()
 
     def set_match_staffs(self, staff_ids, trig_signal=True):
-        # if len(staff_ids) != 10:
+        # if len(staff_ids) != 6:
         #     raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-        if not StaffManger(self.server_id, self.char_id).has_staff([i for i in staff_ids if i != 0]):
+        sm = StaffManger(self.server_id, self.char_id)
+
+        # if not sm.has_staff([i for i in staff_ids if i != 0]):
+        if not sm.has_staff(staff_ids):
             raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
 
         # match_staffs = staff_ids[:5]
         # tibu_staffs = staff_ids[5:]
 
-        doc = MongoCharacter.db(self.server_id).find_one(
+        all_staffs = sm.get_all_staffs()
+
+        old_match_staff_ids = self.match_staffs
+        in_staff_ids = set(staff_ids) - set(old_match_staff_ids)
+        out_staff_ids = set(staff_ids) - set(old_match_staff_ids)
+        keep_staff_ids = set(staff_ids) & set(old_match_staff_ids)
+
+        # in 的设置位置
+        # out 的清除位置
+        # keep 的不变
+
+        kept_positions = [all_staffs[str(i)]['position'] for i in keep_staff_ids]
+
+        in_positions = {}
+        for i in in_staff_ids:
+            while True:
+                pos = random.randint(0, 29)
+                if pos not in kept_positions:
+                    in_positions[i] = pos
+                    break
+
+        updater = {
+            'staffs.{0}.position'.format(i): 0 for i in out_staff_ids
+        }
+
+        updater.update({
+            'staffs.{0}.position'.format(k): v for k, v in in_positions.iteritems()
+        })
+
+        MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {
-                'club.match_staffs': 1,
-                # 'club.tibu_staffs': 1
-            }
+            {'$set': updater}
         )
 
-        old_staff_ids = doc['club']['match_staffs']
-        if trig_signal and staff_ids != old_staff_ids:
+        Club(self.server_id, self.char_id).send_notify()
+
+        if trig_signal and staff_ids != old_match_staff_ids:
             match_staffs_set_change_signal.send(
                 sender=None,
                 server_id=self.server_id,
@@ -160,7 +191,8 @@ class Club(AbstractClub):
         # self.tibu_staffs = tibu_staffs
         self.load_match_staffs()
 
-        if trig_signal and all([i != 0 for i in staff_ids]):
+        # if trig_signal and all([i != 0 for i in staff_ids]):
+        if trig_signal and staff_ids:
             # set done
             match_staffs_set_done_signal.send(
                 sender=None,
