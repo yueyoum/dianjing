@@ -217,14 +217,14 @@ class Club(AbstractClub):
             if _pos:
                 positions.append(_pos)
 
-        updater = {
-            'staffs.{0}.unit_id'.format(staff_id): unit_id
-        }
+        updater = {}
 
         if staff_id == 0:
             # 设置兵种. 如果本来没有位置， 就设定位置
             staff_id = self.match_staffs[index]
             assert staff_id != 0
+
+            updater['staffs.{0}.unit_id'.format(staff_id)] = unit_id
 
             pos = all_staffs[str(staff_id)].get('position', 0)
             if not pos:
