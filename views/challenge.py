@@ -16,6 +16,7 @@ from protomsg.challenge_pb2 import (
     ChallengeBuyEnergyResponse,
     ChallengeMatchReportResponse,
     ChapterGetStarRewardResponse,
+    ChallengeSweepResponse,
 )
 
 
@@ -34,6 +35,26 @@ def start(request):
 
     return ProtobufResponse(response)
 
+def sweep(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    challenge_id = request._proto.id
+
+    c = Challenge(server_id, char_id)
+    drops = c.sweep(challenge_id)
+
+    response = ChallengeSweepResponse()
+    response.ret = 0
+    for drop in drops:
+        response_drop = response.drop.add()
+        for _id, _amount in drop:
+            response_drop_item = response_drop.items.add()
+            response_drop_item.id = _id
+            response_drop_item.amount = _amount
+            response_drop_item.tp = 100
+
+    return ProtobufResponse(response)
 
 def report(request):
     server_id = request._game_session.server_id

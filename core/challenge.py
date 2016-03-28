@@ -243,6 +243,49 @@ class Challenge(object):
         msg.key = str(challenge_id)
         return msg
 
+    def sweep(self, challenge_id):
+        # 扫荡
+        config = ConfigChallengeMatch.get(challenge_id)
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        # TODO check club level
+        # TODO error code
+
+        doc = MongoChallenge.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'challenge_star': 1, 'challenge_times': 1}
+        )
+
+        star = doc['challenge_times'].get(str(challenge_id), 0)
+        if star != 3:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        already_times = doc['challenge_times'].get(str(challenge_id), 0)
+        remained_times = config.times_limit - already_times
+
+        if remained_times > 5:
+            sweep_times = 5
+        else:
+            sweep_times = remained_times
+
+
+        drops = []
+        for i in sweep_times:
+            d = self.get_drop(challenge_id)
+            drops.append(d)
+            Resource(self.server_id, self.char_id).add(d, message="challenge {0} sweep times {1}".format(challenge_id, i+1))
+
+        MongoChallenge.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$inc': {
+                'challenge_times.{0}'.format(challenge_id): sweep_times
+            }}
+        )
+
+        self.send_challenge_notify(ids=[challenge_id])
+        return drops
+
     def report(self, key, star):
         # club_one, area_id, challenge_id = str(key).split(',')
         #
@@ -318,10 +361,17 @@ class Challenge(object):
             self.send_challenge_notify(ids=updated_challenge_ids)
 
         # TODO drop
-        drop = [(_id, _amount) for _id, _amount, _, _ in config.drop]
+        drop = self.get_drop(challenge_id)
         Resource(self.server_id, self.char_id).add(drop, message="Challenge {0}".format(challenge_id))
-
         return drop
+
+
+    def get_drop(self, challenge_id):
+        config = ConfigChallengeMatch.get(challenge_id)
+        # TODO drop
+        drop = [(_id, _amount) for _id, _amount, _, _ in config.drop]
+        return drop
+
 
     def get_chapter_reward(self, chapter_id, index):
         config = ConfigChapter.get(chapter_id)
