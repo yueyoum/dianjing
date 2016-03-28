@@ -384,7 +384,7 @@ class Bag(object):
 
         return results
 
-    def equipment_level_up(self, slot_id):
+    def equipment_level_up_preview(self, slot_id):
         # 装备升级准备
         # 客户端请求一下，把计算好的下一级属性发回去， 先不升级
         this_slot = self.doc['slots'][slot_id]
@@ -392,19 +392,10 @@ class Bag(object):
         level = this_slot['level']
 
         config = ConfigEquipmentNew.get(item_id)
+        # TODO check exists
 
         if level >= config.max_level:
             raise GameException("max level")
-
-        item_needs = ConfigEquipmentNew.get(item_id).levels[level].update_item_need
-
-        need_money = filter_money(item_needs)
-        need_items = filter_bag_item(item_needs)
-
-        if need_money:
-            Club(self.server_id, self.char_id).check_money(**need_money)
-        if need_items:
-            self.check_items(need_items)
 
         return make_equipment_msg(item_id, level + 1)
 

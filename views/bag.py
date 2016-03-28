@@ -97,14 +97,14 @@ def equipment_destroy(request):
     return ProtobufResponse(response)
 
 
-def equipment_level_up(request):
+def equipment_level_up_preview(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
     slot_id = request._proto.slot_id
 
     bag = Bag(server_id, char_id)
-    msg_equip = bag.equipment_level_up(slot_id)
+    msg_equip = bag.equipment_level_up_preview(slot_id)
 
     response = BagEquipmentLevelupResponse()
     response.ret = 0
