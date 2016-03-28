@@ -257,7 +257,7 @@ class Challenge(object):
             {'challenge_star': 1, 'challenge_times': 1}
         )
 
-        star = doc['challenge_times'].get(str(challenge_id), 0)
+        star = doc['challenge_star'].get(str(challenge_id), 0)
         if star != 3:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
@@ -271,7 +271,7 @@ class Challenge(object):
 
 
         drops = []
-        for i in sweep_times:
+        for i in range(sweep_times):
             d = self.get_drop(challenge_id)
             drops.append(d)
             Resource(self.server_id, self.char_id).add(d, message="challenge {0} sweep times {1}".format(challenge_id, i+1))
