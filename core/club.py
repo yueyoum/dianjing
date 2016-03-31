@@ -14,7 +14,6 @@ import dill
 from core.mongo import MongoCharacter, MongoStaff
 from core.abstract import AbstractClub
 from core.signals import match_staffs_set_done_signal, club_level_up_signal, match_staffs_set_change_signal
-from core.staff import StaffManger
 from core.resource import Resource
 from core.statistics import FinanceStatistics
 
@@ -100,6 +99,7 @@ class Club(AbstractClub):
         return config.max_staff_amount + self.buy_slots
 
     def load_match_staffs(self):
+        from core.staff import StaffManger
         all_match_staff_ids = self.all_match_staffs()
         if not all_match_staff_ids:
             return
@@ -125,6 +125,7 @@ class Club(AbstractClub):
 
     # TODO 这个不再要呢？
     def set_match_staffs(self, staff_ids, trig_signal=True):
+        from core.staff import StaffManger
         # if len(staff_ids) != 6:
         #     raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
@@ -205,6 +206,7 @@ class Club(AbstractClub):
         self.send_notify()
 
     def set_unit(self, index, staff_id, unit_id):
+        from core.staff import StaffManger
         # if not StaffManger(self.server_id, self.char_id).has_staff(staff_id):
         #     raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
 
@@ -383,6 +385,7 @@ class Club(AbstractClub):
         self.send_staff_slots_notify()
 
     def batch_add_zhimingdu_for_match_staffs(self, zhimingdu=1):
+        from core.staff import StaffManger
         # 降低IO，批量操作
         updater = {}
         for s in self.match_staffs:
