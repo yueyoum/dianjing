@@ -93,10 +93,10 @@ class AbstractClub(object):
         self.diamond = 0
 
         self.staffs = {}  # Staff
-        """:type: dict[int, AbstractStaff]"""
+        """:type: dict[string, AbstractStaff]"""
 
         self.match_staffs = []
-        """:type: list[int]"""
+        """:type: list[string]"""
 
         self.policy = 1
         self.opened_slots = 6

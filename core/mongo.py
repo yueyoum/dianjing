@@ -78,7 +78,6 @@ class MongoCharacter(BaseDocument):
 
             'policy': 1,
             'match_staffs': [],
-            'tibu_staffs': []
         },
 
         # 所属联赛小组

@@ -68,8 +68,10 @@ class ClubMatch(object):
                 config_staff_new = ConfigStaffNew.get(i)
                 config_unit_new = ConfigUnitNew.get(staff_obj.unit_id)
 
+                # TODO id, oid
                 msg_troop = club_msg.troop.add()
-                msg_troop.hero.id = i
+                msg_troop.hero.id = staff_obj.id
+                msg_troop.hero.oid = staff_obj.oid
                 msg_troop.hero.position = staff_obj.position
                 msg_troop.hero.attack = config_staff_new.attack
                 msg_troop.hero.attackPercent = 0
@@ -77,7 +79,7 @@ class ClubMatch(object):
                 msg_troop.hero.defensePercent = 0
                 msg_troop.hero.manage = config_staff_new.manage
                 msg_troop.hero.managePercent = 0
-                msg_troop.hero.operation = config_staff_new.cost
+                msg_troop.hero.operation = config_staff_new.operation
                 msg_troop.hero.operationPercent = 0
 
                 msg_troop.army.id = staff_obj.unit_id

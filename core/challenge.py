@@ -61,7 +61,8 @@ class ChallengeNPCStaff(AbstractStaff):
     def __init__(self, _id, unit_id, position):
         super(ChallengeNPCStaff, self).__init__()
 
-        self.id = _id
+        self.id = str(_id)
+        self.oid = _id
         self.level = 1
 
         # config = ConfigStaffNew.get(_id)
@@ -76,7 +77,12 @@ class ChallengeNPCStaff(AbstractStaff):
 
         self.unit_id = unit_id
         self.position = position
-        self.calculate_secondary_property()
+
+        config = ConfigStaffNew.get(_id)
+        self.attack = config.attack
+        self.defense = config.defense
+        self.manage = config.manage
+        self.operation = config.operation
 
 
 class ChallengeNPCClub(AbstractClub):

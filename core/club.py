@@ -105,7 +105,7 @@ class Club(AbstractClub):
             return
 
         self.staffs = StaffManger(self.server_id, self.char_id).get_dict_of_staff_object_by_ids(all_match_staff_ids)
-        self.qianban_affect()
+        # self.qianban_affect()
 
     def is_staff_in_match(self, staff_id):
         # return staff_id in self.match_staffs or staff_id in self.tibu_staffs
@@ -123,87 +123,6 @@ class Club(AbstractClub):
         self.policy = policy
         self.send_notify()
 
-    # TODO 这个不再要呢？
-    def set_match_staffs(self, staff_ids, trig_signal=True):
-        from core.staff import StaffManger
-        # if len(staff_ids) != 6:
-        #     raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
-
-        sm = StaffManger(self.server_id, self.char_id)
-
-        # if not sm.has_staff([i for i in staff_ids if i != 0]):
-        if not sm.has_staff(staff_ids):
-            raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
-
-        # match_staffs = staff_ids[:5]
-        # tibu_staffs = staff_ids[5:]
-
-        all_staffs = sm.get_all_staff_data()
-
-        old_match_staff_ids = self.match_staffs
-        in_staff_ids = set(staff_ids) - set(old_match_staff_ids)
-        out_staff_ids = set(staff_ids) - set(old_match_staff_ids)
-        keep_staff_ids = set(staff_ids) & set(old_match_staff_ids)
-
-        # in 的设置位置
-        # out 的清除位置
-        # keep 的不变
-
-        kept_positions = [all_staffs[str(i)]['position'] for i in keep_staff_ids]
-
-        in_positions = {}
-        for i in in_staff_ids:
-            while True:
-                pos = random.randint(0, 29)
-                if pos not in kept_positions:
-                    in_positions[i] = pos
-                    break
-
-        updater = {
-            'staffs.{0}.position'.format(i): 0 for i in out_staff_ids
-        }
-
-        updater.update({
-            'staffs.{0}.position'.format(k): v for k, v in in_positions.iteritems()
-        })
-
-        MongoStaff.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': updater}
-        )
-
-        Club(self.server_id, self.char_id).send_notify()
-
-        if trig_signal and staff_ids != old_match_staff_ids:
-            match_staffs_set_change_signal.send(
-                sender=None,
-                server_id=self.server_id,
-                char_id=self.char_id,
-            )
-
-        MongoCharacter.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': {
-                'club.match_staffs': staff_ids,
-                # 'club.tibu_staffs': tibu_staffs
-            }}
-        )
-
-        self.match_staffs = staff_ids
-        # self.tibu_staffs = tibu_staffs
-        self.load_match_staffs()
-
-        # if trig_signal and all([i != 0 for i in staff_ids]):
-        if trig_signal and staff_ids:
-            # set done
-            match_staffs_set_done_signal.send(
-                sender=None,
-                server_id=self.server_id,
-                char_id=self.char_id,
-                match_staffs=staff_ids
-            )
-
-        self.send_notify()
 
     def set_unit(self, index, staff_id, unit_id):
         from core.staff import StaffManger

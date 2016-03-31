@@ -89,8 +89,8 @@ def game_start_handler(server_id, char_id, **kwargs):
 
     Notification(server_id, char_id).send_notify()
 
-    Ladder(server_id, char_id).send_notify()
-    LadderStore(server_id, char_id).send_notify()
+    # Ladder(server_id, char_id).send_notify()
+    # LadderStore(server_id, char_id).send_notify()
 
     FinanceStatistics(server_id, char_id).send_notify()
     SponsorManager(server_id, char_id).send_notify()
@@ -106,8 +106,8 @@ def game_start_handler(server_id, char_id, **kwargs):
     av.send_function_notify()
     av.send_value_notify()
 
-    TrainingMatch(server_id, char_id).send_notify()
-    TrainingMatchStore(server_id, char_id).send_notify()
+    # TrainingMatch(server_id, char_id).send_notify()
+    # TrainingMatchStore(server_id, char_id).send_notify()
 
     # em = EliteMatch(server_id, char_id)
     # em.elite_notify()

@@ -6,7 +6,6 @@ Date Created:   2016-03-30 10-17
 Description:
 
 """
-
 from django.core.management.base import BaseCommand
 
 from apps.server.models import Server
@@ -35,6 +34,9 @@ class Command(BaseCommand):
             self.stderr.write("unknown command!")
 
     def _reset(self):
+        RedisDB.connect()
+        MongoDB.connect()
+
         Statistics.objects.all().delete()
         Character.objects.all().delete()
         AccountBan.objects.all().delete()
@@ -42,6 +44,7 @@ class Command(BaseCommand):
         AccountThird.objects.all().delete()
         AccountRegular.objects.all().delete()
         Account.objects.all().delete()
+
 
         RedisDB.get().flushall()
 

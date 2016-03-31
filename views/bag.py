@@ -14,7 +14,6 @@ from protomsg.bag_pb2 import (
     BagEquipmentLevelupResponse,
     BagEquipmentLevelupConfirmResponse,
     BagEquipmentDestroyResponse,
-    BagEquipmentOnResponse,
     BagItemDestroyResponse,
     BagItemMergeResponse,
     BagItemUseResponse,

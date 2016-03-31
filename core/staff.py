@@ -514,6 +514,8 @@ class StaffManger(object):
         if send_notify:
             self.send_notify(ids=[unique_id])
 
+        return unique_id
+
     def is_free(self, staff_id):
         # from core.club import Club
         # from core.training import TrainingShop, TrainingBroadcast, TrainingExp, TrainingProperty
