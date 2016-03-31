@@ -63,10 +63,22 @@ class AbstractStaff(object):
         return 0
 
     def make_protomsg(self):
-        fields = get_protocol_field_names(MessageStaff)
         msg = MessageStaff()
-        for f in fields:
-            setattr(msg, f, getattr(self, f))
+        msg.id = self.id
+        msg.oid = self.oid
+        msg.level = self.level
+        msg.step = self.step
+        msg.star = self.star
+        msg.level_exp = self.level_exp
+        msg.star_exp =self.star_exp
+        msg.attack = self.attack
+        msg.defense = self.defense
+        msg.manage = self.manage
+        msg.operation = self.operation
+        msg.equip_mouse_slot_id = self.equip_mouse
+        msg.equip_keyboard_slot_id = self.equip_keyboard
+        msg.equip_monitor_slot_id = self.equip_monitor
+        msg.equip_decoration_slot_id = self.equip_decoration
 
         return msg
 

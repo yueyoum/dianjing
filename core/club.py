@@ -134,21 +134,21 @@ class Club(AbstractClub):
         all_staffs = StaffManger(self.server_id, self.char_id).get_all_staff_data()
         positions = []
         for v in all_staffs.values():
-            _pos = v.get('position', 0)
-            if _pos:
+            _pos = v.get('position', -1)
+            if _pos != -1:
                 positions.append(_pos)
 
         updater = {}
 
-        if staff_id == 0:
+        if not staff_id:
             # 设置兵种. 如果本来没有位置， 就设定位置
             staff_id = self.match_staffs[index]
-            assert staff_id != 0
+            assert staff_id
 
             updater['staffs.{0}.unit_id'.format(staff_id)] = unit_id
 
-            pos = all_staffs[str(staff_id)].get('position', 0)
-            if not pos:
+            pos = all_staffs[staff_id].get('position', -1)
+            if pos == -1:
                 while True:
                     pos = random.randint(0, 29)
                     if pos not in positions:
@@ -167,16 +167,16 @@ class Club(AbstractClub):
             )
 
             old_staff_id = self.match_staffs[index]
-            assert old_staff_id != 0
-            pos = all_staffs[str(staff_id)].get('position', 0)
-            if not pos:
+            assert old_staff_id
+            pos = all_staffs[staff_id].get('position', -1)
+            if pos == -1:
                 while True:
                     pos = random.randint(0, 29)
                     if pos not in positions:
                         break
 
             # 撤下的队员 位置清除
-            updater['staffs.{0}.position'.format(old_staff_id)] = 0
+            updater['staffs.{0}.position'.format(old_staff_id)] = -1
             # 设置新上场的
             updater['staffs.{0}.position'.format(staff_id)] = pos
 
@@ -205,7 +205,7 @@ class Club(AbstractClub):
                 # TODO error code
                 raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
-            this_staff = doc['staffs'][str(staff_id)]
+            this_staff = doc['staffs'][staff_id]
             if not this_staff.get('unit_id', 0):
                 raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 

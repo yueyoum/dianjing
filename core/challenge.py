@@ -101,8 +101,8 @@ class ChallengeNPCClub(AbstractClub):
         self.flag = 1
 
         for position, _id, unit_id in config.staffs:
-            self.match_staffs.append(_id)
-            self.staffs[_id] = ChallengeNPCStaff(_id, unit_id, position)
+            self.match_staffs.append(str(_id))
+            self.staffs[str(_id)] = ChallengeNPCStaff(_id, unit_id, position)
 
             # self.qianban_affect()
 

@@ -65,7 +65,6 @@ class ClubMatch(object):
                 if not staff_obj.unit_id:
                     continue
 
-                config_staff_new = ConfigStaffNew.get(i)
                 config_unit_new = ConfigUnitNew.get(staff_obj.unit_id)
 
                 # TODO id, oid
@@ -73,13 +72,13 @@ class ClubMatch(object):
                 msg_troop.hero.id = staff_obj.id
                 msg_troop.hero.oid = staff_obj.oid
                 msg_troop.hero.position = staff_obj.position
-                msg_troop.hero.attack = config_staff_new.attack
+                msg_troop.hero.attack = staff_obj.attack
                 msg_troop.hero.attackPercent = 0
-                msg_troop.hero.defense = config_staff_new.defense
+                msg_troop.hero.defense = staff_obj.defense
                 msg_troop.hero.defensePercent = 0
-                msg_troop.hero.manage = config_staff_new.manage
+                msg_troop.hero.manage = staff_obj.manage
                 msg_troop.hero.managePercent = 0
-                msg_troop.hero.operation = config_staff_new.operation
+                msg_troop.hero.operation = staff_obj.operation
                 msg_troop.hero.operationPercent = 0
 
                 msg_troop.army.id = staff_obj.unit_id
