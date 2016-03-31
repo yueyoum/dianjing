@@ -195,7 +195,7 @@ class TrainingExp(object):
     def start(self, slot_id, staff_id):
         from core.training import TrainingBroadcast, TrainingShop
 
-        staff = StaffManger(self.server_id, self.char_id).get_staff(staff_id)
+        staff = StaffManger(self.server_id, self.char_id).get_staff_object(staff_id)
         if not staff:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 

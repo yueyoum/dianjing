@@ -128,7 +128,7 @@ class ItemMerge(object):
 class EquipmentLevel(object):
     __slots__ = [
         'attack', 'attack_percent', 'defense', 'defense_percent',
-        'manage', 'manage_percent', 'cost', 'cost_percent',
+        'manage', 'manage_percent', 'operation', 'operation_percent',
         'update_item_need'
     ]
 
@@ -147,8 +147,8 @@ class EquipmentLevel(object):
         self.defense_percent = 0
         self.manage = 0
         self.manage_percent = 0
-        self.cost = 0
-        self.cost_percent = 0
+        self.operation = 0
+        self.operation_percent = 0
         self.update_item_need = []
 
 
@@ -164,6 +164,15 @@ class EquipmentNew(object):
         self.max_level = 0
         self.levels = {}
         """:type: dict[int, EquipmentLevel]"""
+
+class ItemExp(object):
+    __slots__ = [
+        'id', 'exp'
+    ]
+
+    def __init__(self):
+        self.id = 0
+        self.exp = 0
 
 
 class ConfigItemNew(ConfigBase):
@@ -230,3 +239,19 @@ class ConfigEquipmentNew(ConfigBase):
         """
         return super(ConfigEquipmentNew, cls).get(_id)
 
+class ConfigItemExp(ConfigBase):
+    EntityClass = ItemExp
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    ALL_ITEM_IDS = []
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigItemExp, cls).initialize(fixture)
+        cls.ALL_ITEM_IDS = cls.INSTANCES.keys()
+
+    @classmethod
+    def get(cls, _id):
+        # type: (int) -> ItemExp
+        return super(ConfigItemExp, cls).get(_id)

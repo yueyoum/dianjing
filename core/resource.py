@@ -12,7 +12,7 @@ from dianjing.exception import GameException
 
 from core.statistics import FinanceStatistics
 
-from config import ConfigErrorMessage
+from config import ConfigErrorMessage, ConfigItemNew
 
 
 MONEY = {
@@ -22,6 +22,11 @@ MONEY = {
     30003: 'crystal', # 水晶
     30004: 'gas',     # 气矿
 }
+
+_MONEY_REVERSE = {v: k for k, v in MONEY.iteritems()}
+
+def money_text_to_item_id(text):
+    return _MONEY_REVERSE[text]
 
 
 def filter_money(items):
@@ -50,6 +55,57 @@ def filter_bag_item(items):
     :rtype: list
     """
     return [(_id, _amount) for _id, _amount in items if _id not in MONEY]
+
+
+class ResourceClassification(object):
+    __slots__ = ['money', 'bag', 'staff']
+
+    def __init__(self):
+        self.money = []
+        self.bag = []
+        self.staff = []
+
+    @classmethod
+    def classify(cls, items):
+        # type: (list) -> ResourceClassification
+        # items: [(id, amount)...]
+
+        money = {}
+        bag = {}
+        staff = {}
+
+        for _id, _amount in items:
+            tp = ConfigItemNew.get(_id).tp
+            if tp == 3:
+                if _id in money:
+                    money[_id] += _amount
+                else:
+                    money[_id] = _amount
+            elif tp == 6:
+                if _id in staff:
+                    staff[_id] += _amount
+                else:
+                    staff[_id] = _amount
+            else:
+                if _id in bag:
+                    bag[_id] += _amount
+                else:
+                    bag[_id] = _amount
+
+        obj = cls()
+        obj.money = money.items()
+        obj.bag = bag.items()
+        obj.staff = staff.items()
+
+        return obj
+
+
+    def check_exist(self):
+        from core.club import Club
+        from core.bag import Bag
+        from core.staff import StaffManger
+
+        pass
 
 
 class Resource(object):

@@ -90,8 +90,8 @@ def make_equipment_msg(item_id, level):
     msg.defense_percent = this_level.defense_percent
     msg.manage = this_level.manage
     msg.manage_percent = this_level.manage_percent
-    msg.operation = this_level.cost
-    msg.operation_percent = this_level.cost_percent
+    msg.operation = this_level.operation
+    msg.operation_percent = this_level.operation_percent
 
     return msg
 
@@ -137,6 +137,9 @@ class Bag(object):
                 return False
 
         return True
+
+    def get_slot(self, slot_id):
+        return self.doc['slots'][slot_id]
 
     def add(self, item_id, **kwargs):
         # TODO max slot amount

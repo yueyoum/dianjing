@@ -104,7 +104,7 @@ class Club(AbstractClub):
         if not all_match_staff_ids:
             return
 
-        self.staffs = StaffManger(self.server_id, self.char_id).get_staff_by_ids(all_match_staff_ids)
+        self.staffs = StaffManger(self.server_id, self.char_id).get_dict_of_staff_object_by_ids(all_match_staff_ids)
         self.qianban_affect()
 
     def is_staff_in_match(self, staff_id):
@@ -137,7 +137,7 @@ class Club(AbstractClub):
         # match_staffs = staff_ids[:5]
         # tibu_staffs = staff_ids[5:]
 
-        all_staffs = sm.get_all_staffs()
+        all_staffs = sm.get_all_staff_data()
 
         old_match_staff_ids = self.match_staffs
         in_staff_ids = set(staff_ids) - set(old_match_staff_ids)
@@ -210,7 +210,7 @@ class Club(AbstractClub):
 
         assert index >=0 and index <= 5
 
-        all_staffs = StaffManger(self.server_id, self.char_id).get_all_staffs()
+        all_staffs = StaffManger(self.server_id, self.char_id).get_all_staff_data()
         positions = []
         for v in all_staffs.values():
             _pos = v.get('position', 0)

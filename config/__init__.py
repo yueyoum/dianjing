@@ -14,16 +14,16 @@ import zipfile
 
 from config.global_config import GlobalConfig
 from config.errormsg import ConfigErrorMessage
-from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigStaffLevel, ConfigStaffStatus, ConfigStaffNew
+from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigStaffLevel, ConfigStaffStatus, ConfigStaffNew, ConfigStaffStar, ConfigStaffLevelNew
 from config.challenge import ConfigChallengeMatch, ConfigChapter
 from config.unit import ConfigUnit, ConfigPolicy, ConfigUnitNew
 from config.building import ConfigBuilding
 from config.package import ConfigPackage
 from config.training import ConfigTrainingProperty
 from config.business import ConfigBusinessSponsor, ConfigBusinessShop
-from config.item import ConfigItem, ConfigEquipment, ConfigItemNew, ConfigItemUse, ConfigItemMerge, ConfigEquipmentNew
+from config.item import ConfigItem, ConfigEquipment, ConfigItemNew, ConfigItemUse, ConfigItemMerge, ConfigEquipmentNew, ConfigItemExp
 from config.npc import ConfigNPC
-from config.skill import ConfigSkill, ConfigSkillWashCost
+from config.skill import ConfigSkill, ConfigSkillWashCost, ConfigTalentSkill
 from config.task import ConfigTask, ConfigRandomEvent, ConfigTaskTargetType
 from config.club import ConfigClubLevel, ConfigClubFlag
 from config.ladder import ConfigLadderRankReward, ConfigLadderScoreStore
@@ -83,10 +83,16 @@ def load_config():
             ConfigItemMerge.initialize(data)
         elif item == 'equipment_new.json':
             ConfigEquipmentNew.initialize(data)
+        elif item == 'item_exp.json':
+            ConfigItemExp.initialize(data)
         elif item == 'staff.json':
             ConfigStaff.initialize(data)
         elif item == 'staff_new.json':
             ConfigStaffNew.initialize(data)
+        elif item == 'staff_level_new.json':
+            ConfigStaffLevelNew.initialize(data)
+        elif item == 'staff_star.json':
+            ConfigStaffStar.initialize(data)
         elif item == 'staff_hot.json':
             ConfigStaffHot.initialize(data)
         elif item == 'staff_recruit.json':
@@ -121,6 +127,8 @@ def load_config():
             ConfigNPC.initialize_manager_name(data)
         elif item == 'skill.json':
             ConfigSkill.initialize(data)
+        elif item == 'talent_skill.json':
+            ConfigTalentSkill.initialize(data)
         elif item == 'skill_wash_cost.json':
             ConfigSkillWashCost.initialize(data)
         elif item == 'policy.json':

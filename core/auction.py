@@ -316,7 +316,7 @@ class AuctionManager(object):
         return [AuctionItem.load_from_data(self.server_id, doc) for doc in docs]
 
     def sell(self, staff_id, tp, min_price, max_price):
-        staff = StaffManger(self.server_id, self.char_id).get_staff(staff_id)
+        staff = StaffManger(self.server_id, self.char_id).get_staff_object(staff_id)
         if not staff:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 

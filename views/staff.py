@@ -13,9 +13,12 @@ from core.staff import StaffRecruit, StaffManger
 from protomsg.staff_pb2 import (
     StaffRecruitRefreshResponse,
     StaffRecruitResponse,
-    StaffFireResponse,
-    StaffEquipOnResponse,
-    StaffStrengthenResponse,
+
+    StaffDestroyResponse,
+    StaffEquipChangeResponse,
+    StaffLevelUpResponse,
+    StaffStarUpResponse,
+    StaffStepUpResponse,
 )
 
 
@@ -47,42 +50,75 @@ def recruit_staff(request):
     return ProtobufResponse(response)
 
 
-def fire(request):
+def equipment_change(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
     staff_id = request._proto.staff_id
+    slot_id = request._proto.slot_id
+    tp = request._proto.tp
 
-    sm = StaffManger(server_id, char_id)
-    sm.remove(staff_id)
+    StaffManger(server_id, char_id).equipment_change(staff_id, slot_id, tp)
 
-    response = StaffFireResponse()
+    response = StaffEquipChangeResponse()
     response.ret = 0
     return ProtobufResponse(response)
 
-def equip_on(request):
+
+def level_up(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
     staff_id = request._proto.staff_id
-    item_id = request._proto.item_id
+    item = request._proto.item
+    item = [(i.id, i.amount) for i in item]
 
-    sm = StaffManger(server_id, char_id)
-    sm.equipment_on(staff_id, item_id)
+    StaffManger(server_id, char_id).level_up(staff_id, item)
 
-    response = StaffEquipOnResponse()
+    response = StaffLevelUpResponse()
     response.ret = 0
     return ProtobufResponse(response)
 
-def strengthen(request):
+def step_up(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
     staff_id = request._proto.staff_id
 
-    sm = StaffManger(server_id, char_id)
-    sm.strengthen(staff_id)
+    StaffManger(server_id, char_id).step_up(staff_id)
 
-    response = StaffStrengthenResponse()
+    response = StaffStepUpResponse()
     response.ret = 0
+    return ProtobufResponse(response)
+
+def star_up(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    staff_id = request._proto.staff_id
+
+    StaffManger(server_id, char_id).star_up(staff_id)
+
+    response = StaffStarUpResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+
+def destroy(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    staff_id = request._proto.staff_id
+
+    drop = StaffManger(server_id, char_id).destroy(staff_id)
+
+    # FIXME
+    response = StaffDestroyResponse()
+    response.ret = 0
+    for _id, _amount in drop:
+        response_drop_item = response.drop.items.add()
+        response_drop_item.id = _id
+        response_drop_item.amount = _amount
+        response_drop_item.tp = 100
+
     return ProtobufResponse(response)

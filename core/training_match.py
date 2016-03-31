@@ -172,7 +172,7 @@ class TrainingMatch(object):
     def get_match_detail(self, index):
         doc = self.get_training_match_data()
         staff_ids = Club.loads(doc['clubs'][index]).match_staffs
-        return StaffManger(self.server_id, self.char_id).get_staff_by_ids(staff_ids)
+        return StaffManger(self.server_id, self.char_id).get_dict_of_staff_object_by_ids(staff_ids)
 
     def send_notify(self, ids=None):
         if ids:

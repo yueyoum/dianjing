@@ -43,7 +43,7 @@ TIMERD_CALLBACK_PATH = '/api/timerd/training/broadcast/'
 
 
 def current_got_gold(server_id, char_id, staff_id, passed_seconds, current_building_level):
-    staff = StaffManger(server_id, char_id).get_staff(staff_id)
+    staff = StaffManger(server_id, char_id).get_staff_object(staff_id)
     config_skill = ConfigSkill.get(ConfigSkill.BROADCAST_SKILL_ID)
 
     skill_level = SkillManager(server_id, char_id).get_staff_broadcast_skill_level(staff_id)

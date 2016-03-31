@@ -14,7 +14,7 @@ from core.signals import game_start_signal
 from core.character import Character
 from core.club import Club
 from core.staff import StaffRecruit, StaffManger
-from core.training import TrainingExp, TrainingProperty, TrainingBroadcast, TrainingShop, TrainingSponsor
+# from core.training import TrainingExp, TrainingProperty, TrainingBroadcast, TrainingShop, TrainingSponsor
 from core.item import ItemManager
 from core.bag import Bag
 from core.challenge import Challenge
@@ -52,6 +52,8 @@ def game_start_handler(server_id, char_id, **kwargs):
     c = Character(server_id, char_id)
     c.send_notify()
 
+    Bag(server_id, char_id).send_notify()
+
     StaffManger(server_id, char_id).send_notify()
 
     c.set_login()
@@ -62,11 +64,11 @@ def game_start_handler(server_id, char_id, **kwargs):
 
     StaffRecruit(server_id, char_id).send_notify()
 
-    TrainingExp(server_id, char_id).send_notify()
-    TrainingProperty(server_id, char_id).send_notify()
-    TrainingBroadcast(server_id, char_id).send_notify()
-    TrainingShop(server_id, char_id).send_notify()
-    TrainingSponsor(server_id, char_id).send_notify()
+    # TrainingExp(server_id, char_id).send_notify()
+    # TrainingProperty(server_id, char_id).send_notify()
+    # TrainingBroadcast(server_id, char_id).send_notify()
+    # TrainingShop(server_id, char_id).send_notify()
+    # TrainingSponsor(server_id, char_id).send_notify()
 
     ItemManager(server_id, char_id).send_notify()
 
@@ -112,4 +114,3 @@ def game_start_handler(server_id, char_id, **kwargs):
 
     send_broadcast_notify(char_id)
 
-    Bag(server_id, char_id).send_notify()

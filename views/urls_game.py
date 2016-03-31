@@ -59,9 +59,13 @@ urlpatterns = [
 
     url(r'^staff/recruit/refresh/$', views.staff.recruit_refresh),
     url(r'^staff/recruit/$', views.staff.recruit_staff),
-    url(r'^staff/fire/$', views.staff.fire),
-    url(r'^staff/equipon/$', views.staff.equip_on),
-    url(r'^staff/strengthen/$', views.staff.strengthen),
+
+    url(r'^staff/equipchange/$', views.staff.equipment_change),
+    url(r'^staff/levelup/$', views.staff.level_up),
+    url(r'^staff/stepup/$', views.staff.step_up),
+    url(r'^staff/starup/$', views.staff.star_up),
+    url(r'^staff/destroy/$', views.staff.destroy),
+
 
     url(r'^item/sell/$', views.item.sell),
     url(r'^item/use/$', views.item.use),
@@ -76,27 +80,27 @@ urlpatterns = [
     url(r'^building/levelup/$', views.building.levelup),
     url(r'^building/speedup/$', views.building.speedup),
 
-    url(r'^training/exp/start/$', views.training.exp_start),
-    url(r'^training/exp/cancel/$', views.training.exp_cancel),
-    url(r'^training/exp/speedup/$', views.training.exp_speedup),
-    url(r'^training/exp/getreward/$', views.training.exp_get_reward),
-
-    url(r'^training/property/start/$', views.training.property_start),
-    url(r'^training/property/cancel/$', views.training.property_cancel),
-    url(r'^training/property/speedup/$', views.training.property_speedup),
-    url(r'^training/property/getreward/$', views.training.property_get_reward),
-
-    url(r'^training/broadcast/start/$', views.training.broadcast_start),
-    url(r'^training/broadcast/detail/$', views.training.broadcast_detail),
-    url(r'^training/broadcast/cancel/$', views.training.broadcast_cancel),
-    url(r'^training/broadcast/speedup/$', views.training.broadcast_speedup),
-    url(r'^training/broadcast/getreward/$', views.training.broadcast_get_reward),
-
-    url(r'^training/shop/start/$', views.training.shop_start),
-    url(r'^training/shop/sell/$', views.training.shop_sell),
-    url(r'^training/shop/cancel/$', views.training.shop_cancel),
-
-    url(r'^training/sponsor/start/$', views.training.sponsor_start),
+    # url(r'^training/exp/start/$', views.training.exp_start),
+    # url(r'^training/exp/cancel/$', views.training.exp_cancel),
+    # url(r'^training/exp/speedup/$', views.training.exp_speedup),
+    # url(r'^training/exp/getreward/$', views.training.exp_get_reward),
+    #
+    # url(r'^training/property/start/$', views.training.property_start),
+    # url(r'^training/property/cancel/$', views.training.property_cancel),
+    # url(r'^training/property/speedup/$', views.training.property_speedup),
+    # url(r'^training/property/getreward/$', views.training.property_get_reward),
+    #
+    # url(r'^training/broadcast/start/$', views.training.broadcast_start),
+    # url(r'^training/broadcast/detail/$', views.training.broadcast_detail),
+    # url(r'^training/broadcast/cancel/$', views.training.broadcast_cancel),
+    # url(r'^training/broadcast/speedup/$', views.training.broadcast_speedup),
+    # url(r'^training/broadcast/getreward/$', views.training.broadcast_get_reward),
+    #
+    # url(r'^training/shop/start/$', views.training.shop_start),
+    # url(r'^training/shop/sell/$', views.training.shop_sell),
+    # url(r'^training/shop/cancel/$', views.training.shop_cancel),
+    #
+    # url(r'^training/sponsor/start/$', views.training.sponsor_start),
 
     #
     url(r'^league/challenge/$', views.league.challenge),

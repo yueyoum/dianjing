@@ -346,12 +346,12 @@ class TestStaffManager(object):
 
         exp += 1
 
-        assert StaffManger(self.server_id, self.char_id).get_staff(s.id).level == 1
-        assert StaffManger(self.server_id, self.char_id).get_staff(s.id).exp == 0
+        assert StaffManger(self.server_id, self.char_id).get_staff_object(s.id).level == 1
+        assert StaffManger(self.server_id, self.char_id).get_staff_object(s.id).exp == 0
 
         StaffManger(self.server_id, self.char_id).update(s.id, exp=exp)
-        assert StaffManger(self.server_id, self.char_id).get_staff(s.id).level == level
-        assert StaffManger(self.server_id, self.char_id).get_staff(s.id).exp == 1
+        assert StaffManger(self.server_id, self.char_id).get_staff_object(s.id).level == level
+        assert StaffManger(self.server_id, self.char_id).get_staff_object(s.id).exp == 1
 
     def test_level_up_to_max_level(self):
         def get_max_level():
@@ -369,10 +369,10 @@ class TestStaffManager(object):
         exp += 10000
         StaffManger(self.server_id, self.char_id).add(s.id)
 
-        assert StaffManger(self.server_id, self.char_id).get_staff(s.id).level == 1
-        assert StaffManger(self.server_id, self.char_id).get_staff(s.id).exp == 0
+        assert StaffManger(self.server_id, self.char_id).get_staff_object(s.id).level == 1
+        assert StaffManger(self.server_id, self.char_id).get_staff_object(s.id).exp == 0
 
         StaffManger(self.server_id, self.char_id).update(s.id, exp=exp)
-        assert StaffManger(self.server_id, self.char_id).get_staff(s.id).level == max_level
-        assert StaffManger(self.server_id, self.char_id).get_staff(s.id).exp == ConfigStaffLevel.get(max_level).exp[s.quality]-1
+        assert StaffManger(self.server_id, self.char_id).get_staff_object(s.id).level == max_level
+        assert StaffManger(self.server_id, self.char_id).get_staff_object(s.id).exp == ConfigStaffLevel.get(max_level).exp[s.quality] - 1
 

@@ -41,8 +41,10 @@ class RedisDB(object):
 class MongoDB(object):
     # 记录 host:port 和 db 之间的关系，为了去重复
     INSTANCES = {}
+    """:type: dict[str, MongoClient]"""
     # id: db
     DBS = {}
+    """:type: dict[int, pymongo.database.Database]"""
 
     @classmethod
     def connect(cls):

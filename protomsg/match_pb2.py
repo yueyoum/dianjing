@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='match.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0bmatch.proto\x12\x11\x44ianjing.protocol\x1a\nclub.proto\"\xf7\x01\n\tClubMatch\x12\x38\n\x08\x63lub_one\x18\x01 \x02(\x0b\x32&.Dianjing.protocol.ClubMatch.ClubTroop\x12\x38\n\x08\x63lub_two\x18\x02 \x02(\x0b\x32&.Dianjing.protocol.ClubMatch.ClubTroop\x12\x0c\n\x04seed\x18\x03 \x02(\x05\x12\x0b\n\x03key\x18\x04 \x02(\t\x1a[\n\tClubTroop\x12%\n\x04\x63lub\x18\x01 \x02(\x0b\x32\x17.Dianjing.protocol.Club\x12\'\n\x05troop\x18\x02 \x03(\x0b\x32\x18.Dianjing.protocol.Troop\"O\n\x10StaffMatchResult\x12\x11\n\tstaff_one\x18\x01 \x02(\x05\x12\x11\n\tstaff_two\x18\x02 \x02(\x05\x12\x15\n\rstaff_one_win\x18\x03 \x02(\x08\"\x88\x07\n\x05Troop\x12+\n\x04hero\x18\x01 \x02(\x0b\x32\x1d.Dianjing.protocol.Troop.Hero\x12+\n\x04\x61rmy\x18\x02 \x02(\x0b\x32\x1d.Dianjing.protocol.Troop.Army\x1a\xc8\x01\n\x04Hero\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x10\n\x08position\x18\x02 \x02(\x05\x12\x0e\n\x06\x61ttack\x18\x03 \x02(\x05\x12\x15\n\rattackPercent\x18\x04 \x02(\x02\x12\x0f\n\x07\x64\x65\x66\x65nse\x18\x05 \x02(\x05\x12\x16\n\x0e\x64\x65\x66\x65nsePercent\x18\x06 \x02(\x02\x12\x0e\n\x06manage\x18\x07 \x02(\x05\x12\x15\n\rmanagePercent\x18\x08 \x02(\x02\x12\x11\n\toperation\x18\t \x02(\x05\x12\x18\n\x10operationPercent\x18\n \x02(\x02\x1a\xd9\x04\n\x04\x41rmy\x12\n\n\x02id\x18\x01 \x02(\x05\x12\n\n\x02hp\x18\x02 \x02(\x05\x12\x11\n\thpPercent\x18\x03 \x02(\x02\x12\x0e\n\x06\x61ttack\x18\x04 \x02(\x05\x12\x15\n\rattackPercent\x18\x05 \x02(\x02\x12\x0f\n\x07\x64\x65\x66\x65nse\x18\x06 \x02(\x05\x12\x16\n\x0e\x64\x65\x66\x65nsePercent\x18\x07 \x02(\x02\x12\x13\n\x0b\x61ttackSpeed\x18\x08 \x02(\x02\x12\x1a\n\x12\x61ttackSpeedPercent\x18\t \x02(\x02\x12\x16\n\x0e\x61ttackDistance\x18\n \x02(\x02\x12\x1d\n\x15\x61ttackDistancePercent\x18\x0b \x02(\x02\x12\x11\n\tmoveSpeed\x18\x0c \x02(\x02\x12\x18\n\x10moveSpeedPercent\x18\r \x02(\x02\x12\x0f\n\x07hitRate\x18\x0e \x02(\x02\x12\x11\n\tdodgeRate\x18\x0f \x02(\x02\x12\x10\n\x08\x63ritRate\x18\x10 \x02(\x02\x12\x11\n\tcritMulti\x18\x11 \x02(\x02\x12\x14\n\x0c\x63ritAntiRate\x18\x12 \x02(\x02\x12\x1a\n\x12\x61ppendAttackTerran\x18\x13 \x02(\x02\x12\x1b\n\x13\x61ppendAttackProtoss\x18\x14 \x02(\x02\x12\x18\n\x10\x61ppendAttackZerg\x18\x15 \x02(\x02\x12\x1e\n\x16\x61ppendAttackedByTerran\x18\x16 \x02(\x02\x12\x1f\n\x17\x61ppendAttackedByProtoss\x18\x17 \x02(\x02\x12\x1c\n\x14\x61ppendAttackedByZerg\x18\x18 \x02(\x02\x12\x17\n\x0f\x66inalHurtAppend\x18\x19 \x02(\x05\x12\x17\n\x0f\x66inalHurtReduce\x18\x1a \x02(\x05')
+  serialized_pb=_b('\n\x0bmatch.proto\x12\x11\x44ianjing.protocol\x1a\nclub.proto\"\xf7\x01\n\tClubMatch\x12\x38\n\x08\x63lub_one\x18\x01 \x02(\x0b\x32&.Dianjing.protocol.ClubMatch.ClubTroop\x12\x38\n\x08\x63lub_two\x18\x02 \x02(\x0b\x32&.Dianjing.protocol.ClubMatch.ClubTroop\x12\x0c\n\x04seed\x18\x03 \x02(\x05\x12\x0b\n\x03key\x18\x04 \x02(\t\x1a[\n\tClubTroop\x12%\n\x04\x63lub\x18\x01 \x02(\x0b\x32\x17.Dianjing.protocol.Club\x12\'\n\x05troop\x18\x02 \x03(\x0b\x32\x18.Dianjing.protocol.Troop\"O\n\x10StaffMatchResult\x12\x11\n\tstaff_one\x18\x01 \x02(\x05\x12\x11\n\tstaff_two\x18\x02 \x02(\x05\x12\x15\n\rstaff_one_win\x18\x03 \x02(\x08\"\x95\x07\n\x05Troop\x12+\n\x04hero\x18\x01 \x02(\x0b\x32\x1d.Dianjing.protocol.Troop.Hero\x12+\n\x04\x61rmy\x18\x02 \x02(\x0b\x32\x1d.Dianjing.protocol.Troop.Army\x1a\xd5\x01\n\x04Hero\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0b\n\x03oid\x18\x02 \x02(\x05\x12\x10\n\x08position\x18\x03 \x02(\x05\x12\x0e\n\x06\x61ttack\x18\x04 \x02(\x05\x12\x15\n\rattackPercent\x18\x05 \x02(\x02\x12\x0f\n\x07\x64\x65\x66\x65nse\x18\x06 \x02(\x05\x12\x16\n\x0e\x64\x65\x66\x65nsePercent\x18\x07 \x02(\x02\x12\x0e\n\x06manage\x18\x08 \x02(\x05\x12\x15\n\rmanagePercent\x18\t \x02(\x02\x12\x11\n\toperation\x18\n \x02(\x05\x12\x18\n\x10operationPercent\x18\x0b \x02(\x02\x1a\xd9\x04\n\x04\x41rmy\x12\n\n\x02id\x18\x01 \x02(\x05\x12\n\n\x02hp\x18\x02 \x02(\x05\x12\x11\n\thpPercent\x18\x03 \x02(\x02\x12\x0e\n\x06\x61ttack\x18\x04 \x02(\x05\x12\x15\n\rattackPercent\x18\x05 \x02(\x02\x12\x0f\n\x07\x64\x65\x66\x65nse\x18\x06 \x02(\x05\x12\x16\n\x0e\x64\x65\x66\x65nsePercent\x18\x07 \x02(\x02\x12\x13\n\x0b\x61ttackSpeed\x18\x08 \x02(\x02\x12\x1a\n\x12\x61ttackSpeedPercent\x18\t \x02(\x02\x12\x16\n\x0e\x61ttackDistance\x18\n \x02(\x02\x12\x1d\n\x15\x61ttackDistancePercent\x18\x0b \x02(\x02\x12\x11\n\tmoveSpeed\x18\x0c \x02(\x02\x12\x18\n\x10moveSpeedPercent\x18\r \x02(\x02\x12\x0f\n\x07hitRate\x18\x0e \x02(\x02\x12\x11\n\tdodgeRate\x18\x0f \x02(\x02\x12\x10\n\x08\x63ritRate\x18\x10 \x02(\x02\x12\x11\n\tcritMulti\x18\x11 \x02(\x02\x12\x14\n\x0c\x63ritAntiRate\x18\x12 \x02(\x02\x12\x1a\n\x12\x61ppendAttackTerran\x18\x13 \x02(\x02\x12\x1b\n\x13\x61ppendAttackProtoss\x18\x14 \x02(\x02\x12\x18\n\x10\x61ppendAttackZerg\x18\x15 \x02(\x02\x12\x1e\n\x16\x61ppendAttackedByTerran\x18\x16 \x02(\x02\x12\x1f\n\x17\x61ppendAttackedByProtoss\x18\x17 \x02(\x02\x12\x1c\n\x14\x61ppendAttackedByZerg\x18\x18 \x02(\x02\x12\x17\n\x0f\x66inalHurtAppend\x18\x19 \x02(\x05\x12\x17\n\x0f\x66inalHurtReduce\x18\x1a \x02(\x05')
   ,
   dependencies=[club__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -171,70 +171,77 @@ _TROOP_HERO = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='id', full_name='Dianjing.protocol.Troop.Hero.id', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
+      number=1, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='position', full_name='Dianjing.protocol.Troop.Hero.position', index=1,
+      name='oid', full_name='Dianjing.protocol.Troop.Hero.oid', index=1,
       number=2, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='attack', full_name='Dianjing.protocol.Troop.Hero.attack', index=2,
+      name='position', full_name='Dianjing.protocol.Troop.Hero.position', index=2,
       number=3, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='attackPercent', full_name='Dianjing.protocol.Troop.Hero.attackPercent', index=3,
-      number=4, type=2, cpp_type=6, label=2,
+      name='attack', full_name='Dianjing.protocol.Troop.Hero.attack', index=3,
+      number=4, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='defense', full_name='Dianjing.protocol.Troop.Hero.defense', index=4,
-      number=5, type=5, cpp_type=1, label=2,
+      name='attackPercent', full_name='Dianjing.protocol.Troop.Hero.attackPercent', index=4,
+      number=5, type=2, cpp_type=6, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='defensePercent', full_name='Dianjing.protocol.Troop.Hero.defensePercent', index=5,
-      number=6, type=2, cpp_type=6, label=2,
+      name='defense', full_name='Dianjing.protocol.Troop.Hero.defense', index=5,
+      number=6, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='manage', full_name='Dianjing.protocol.Troop.Hero.manage', index=6,
-      number=7, type=5, cpp_type=1, label=2,
+      name='defensePercent', full_name='Dianjing.protocol.Troop.Hero.defensePercent', index=6,
+      number=7, type=2, cpp_type=6, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='managePercent', full_name='Dianjing.protocol.Troop.Hero.managePercent', index=7,
-      number=8, type=2, cpp_type=6, label=2,
+      name='manage', full_name='Dianjing.protocol.Troop.Hero.manage', index=7,
+      number=8, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='operation', full_name='Dianjing.protocol.Troop.Hero.operation', index=8,
-      number=9, type=5, cpp_type=1, label=2,
+      name='managePercent', full_name='Dianjing.protocol.Troop.Hero.managePercent', index=8,
+      number=9, type=2, cpp_type=6, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='operationPercent', full_name='Dianjing.protocol.Troop.Hero.operationPercent', index=9,
-      number=10, type=2, cpp_type=6, label=2,
+      name='operation', full_name='Dianjing.protocol.Troop.Hero.operation', index=9,
+      number=10, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='operationPercent', full_name='Dianjing.protocol.Troop.Hero.operationPercent', index=10,
+      number=11, type=2, cpp_type=6, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -252,7 +259,7 @@ _TROOP_HERO = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=478,
-  serialized_end=678,
+  serialized_end=691,
 )
 
 _TROOP_ARMY = _descriptor.Descriptor(
@@ -456,8 +463,8 @@ _TROOP_ARMY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=681,
-  serialized_end=1282,
+  serialized_start=694,
+  serialized_end=1295,
 )
 
 _TROOP = _descriptor.Descriptor(
@@ -494,7 +501,7 @@ _TROOP = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=378,
-  serialized_end=1282,
+  serialized_end=1295,
 )
 
 _CLUBMATCH_CLUBTROOP.fields_by_name['club'].message_type = club__pb2._CLUB

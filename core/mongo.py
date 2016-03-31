@@ -133,52 +133,33 @@ class MongoCommon(BaseDocument):
 class MongoStaff(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        # 员工， 定义见下面的 STAFF
+        # 员工， unique_id: data. 定义见下面的 STAFF
         'staffs': {},
-        'on_sell': {},
     }
 
     STAFF_DOCUMENT = {
-        'exp': 0,
+        'oid': null,
         'level': 1,
+        'step': 1,
         'star': 0,
-        'status': null,
-        'skills': {},
-        'winning_rate': {},
-        # equips 直接从 item 中移动过来
-        'equips': {},
+        'level_exp': 0,
+        'star_exp': 0,
+
+        # 四件装备
+        'equip_mouse': '',
+        'equip_keyboard': '',
+        'equip_monitor': '',
+        'equip_decoration': '',
+
         # 所带兵种
         'unit_id': 0,
         # 在阵型中的位置
-        'position': 0,
-
-        # 此外这里还有属性
-
-    }
-
-    # 嵌入staff中
-    STAFF_SKILL_DOCUMENT = {
-        'level': 1,
-        'locked': 0,
-        # 升级结束时间戳
-        'end_at': 0,
-        # timerd callback key
-        'key': ''
-    }
-
-    # 嵌入到staff中
-    STAFF_WINNING_RATE_DOCUMENT = {
-        'win': 0,
-        'total': 0,
+        'position': -1,
     }
 
     @classmethod
     def document_staff(cls):
         return cls.STAFF_DOCUMENT.copy()
-
-    @classmethod
-    def document_staff_skill(cls):
-        return cls.STAFF_SKILL_DOCUMENT.copy()
 
     COLLECTION = "staff"
 

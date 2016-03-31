@@ -10,7 +10,6 @@ Description:
 import json
 import random
 
-from core.abstract import STAFF_SECONDARY_ATTRS
 from config import ConfigPackage, ConfigItem
 
 from protomsg.package_pb2 import (
@@ -34,7 +33,11 @@ def set_package_value(obj, attr_name, values):
 
 # 这个对应编辑器中的 Package
 class PackageBase(object):
-    FIELDS = STAFF_SECONDARY_ATTRS + [
+    # FIELDS = STAFF_SECONDARY_ATTRS + [
+    #     'gold', 'diamond', 'staff_exp', 'club_renown', 'training_match_score',
+    #     'ladder_score',
+    # ]
+    FIELDS = [
         'gold', 'diamond', 'staff_exp', 'club_renown', 'training_match_score',
         'ladder_score',
     ]
@@ -187,7 +190,7 @@ class Drop(PackageBase):
 
 
 class Property(PackageBase):
-    FIELDS = STAFF_SECONDARY_ATTRS + ['staff_exp']
+    FIELDS = ['staff_exp']
 
     @classmethod
     def generate(cls, pid):
@@ -223,14 +226,14 @@ class Property(PackageBase):
 
             return p
 
-        if config.attr_mode == 3:
-            # 完全随机
-            for i in range(config.attr_random_amount):
-                attr = random.choice(STAFF_SECONDARY_ATTRS)
-                value = random.choice(config.attr_random_value)
-                setattr(p, attr, value)
-
-            return p
+        # if config.attr_mode == 3:
+        #     # 完全随机
+        #     for i in range(config.attr_random_amount):
+        #         attr = random.choice(STAFF_SECONDARY_ATTRS)
+        #         value = random.choice(config.attr_random_value)
+        #         setattr(p, attr, value)
+        #
+        #     return p
 
     def make_protomsg(self):
         msg = MsgProperty()

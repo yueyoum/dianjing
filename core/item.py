@@ -13,7 +13,6 @@ from itertools import chain
 from dianjing.exception import GameException
 
 from core.mongo import MongoItem
-from core.abstract import STAFF_BASE_ATTRS, STAFF_SECONDARY_ATTRS
 from core.package import Drop
 from core.resource import Resource
 
@@ -335,8 +334,8 @@ class Equipment(BaseItem):
         self.biaoyan = 0
         self.yingxiao = 0
 
-        for attr in chain(STAFF_BASE_ATTRS, STAFF_SECONDARY_ATTRS):
-            setattr(self, attr, metadata.get(attr, 0))
+        # for attr in chain(STAFF_BASE_ATTRS, STAFF_SECONDARY_ATTRS):
+        #     setattr(self, attr, metadata.get(attr, 0))
 
     def make_protomsg(self):
         msg = MsgItem()
@@ -364,12 +363,13 @@ class Equipment(BaseItem):
     def _do_generate(cls, attrs, template, multiple=1.0):
         segment = random.choice(template)
         for name, value_range in segment:
-            if name == 'primary':
-                attr_names = STAFF_BASE_ATTRS
-            elif name == 'secondary':
-                attr_names = STAFF_SECONDARY_ATTRS
-            else:
-                attr_names = [name]
+            # if name == 'primary':
+            #     attr_names = STAFF_BASE_ATTRS
+            # elif name == 'secondary':
+            #     attr_names = STAFF_SECONDARY_ATTRS
+            # else:
+            #     attr_names = [name]
+            attr_names = [name]
 
             value = int(random.randint(value_range[0], value_range[1]) * multiple)
             for an in attr_names:

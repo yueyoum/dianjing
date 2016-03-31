@@ -46,18 +46,6 @@ class Staff(object):
         self.meili = 0
 
 
-class StaffNew(object):
-    __slots__ = [
-        'id', 'attack', 'defense', 'manage', 'cost'
-    ]
-
-    def __init__(self):
-        self.id = 0
-        self.attack = 0
-        self.defense = 0
-        self.manage = 0
-        self.cost = 0
-
 
 class StaffHot(object):
     __slots__ = ['id', 'cost']
@@ -151,19 +139,6 @@ class ConfigStaff(ConfigBase):
     def random_ids(cls, amount):
         return random.sample(cls.INSTANCES.keys(), amount)
 
-
-class ConfigStaffNew(ConfigBase):
-    EntityClass = StaffNew
-    INSTANCES = {}
-    FILTER_CACHE = {}
-
-    @classmethod
-    def get(cls, _id):
-        """
-
-        :rtype: StaffNew
-        """
-        return super(ConfigStaffNew, cls).get(_id)
 
 
 class ConfigStaffHot(ConfigBase):
@@ -259,3 +234,136 @@ class ConfigStaffStatus(ConfigBase):
         :rtype : StaffStatus
         """
         return super(ConfigStaffStatus, cls).get(_id)
+
+
+#####################################################
+
+class StaffStep(object):
+    __slots__ = [
+        'attack', 'attack_percent', 'defense', 'defense_percent',
+        'manage', 'manage_percent', 'operation', 'operation_percent',
+        'talent_skill', 'update_item_need', 'level_limit',
+    ]
+
+    def __init__(self):
+        self.attack = 0
+        self.attack_percent = 0
+        self.defense = 0
+        self.defense_percent = 0
+        self.manage = 0
+        self.manage_percent = 0
+        self.operation = 0
+        self.operation_percent = 0
+        self.talent_skill = 0
+        self.update_item_need = []
+        self.level_limit = 0
+
+    @classmethod
+    def create(cls, data):
+        # type: (dict) -> StaffStep
+        obj = cls()
+        for key in cls.__slots__:
+            setattr(obj, key, data[key])
+
+        return obj
+
+class StaffNew(object):
+    __slots__ = [
+        'id', 'race',
+        'attack', 'attack_grow', 'defense', 'defense_grow',
+        'manage', 'manage_grow', 'operation', 'operation_grow',
+        'skill', 'talent_skill',
+        'steps', 'max_step',
+        'crystal',
+    ]
+
+    def __init__(self):
+        self.id = 0
+        self.race = 0
+        self.attack = 0
+        self.attack_grow = 0
+        self.defense = 0
+        self.defense_grow = 0
+        self.manage = 0
+        self.manage_grow = 0
+        self.operation = 0
+        self.operation_grow = 0
+        self.skill = 0
+        self.talent_skill = []
+        self.steps = {}
+        """:type: dict[int, StaffStep]"""
+        self.max_step = 0
+
+
+class StaffLevelNew(object):
+    __slots__ = ['id', 'exp']
+
+    def __init__(self):
+        self.id = 0
+        self.exp = 0
+
+
+class StaffStar(object):
+    __slots__ = [
+        'id', 'exp', 'need_item_id', 'need_item_amount',
+        'attack', 'attack_percent', 'defense', 'defense_percent',
+        'manage', 'manage_percent', 'operation', 'operation_percent',
+    ]
+
+    def __init__(self):
+        self.id = 0
+        self.exp = 0
+        self.need_item_id = 0
+        self.need_item_amount = 0
+        self.attack = 0
+        self.attack_percent = 0
+        self.defense = 0
+        self.defense_percent = 0
+        self.manage = 0
+        self.manage_percent = 0
+        self.operation = 0
+        self.operation_percent = 0
+
+
+class ConfigStaffNew(ConfigBase):
+    EntityClass = StaffNew
+    INSTANCES = {}
+    """:type: dict[int, StaffNew]"""
+    FILTER_CACHE = {}
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigStaffNew, cls).initialize(fixture)
+        for _, obj in cls.INSTANCES.iteritems():
+            steps = obj.steps
+            obj.steps = {int(k): StaffStep.create(v) for k, v in steps.iteritems()}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: StaffNew
+        """
+        return super(ConfigStaffNew, cls).get(_id)
+
+
+class ConfigStaffLevelNew(ConfigBase):
+    EntityClass = StaffLevelNew
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        # type: (int) -> StaffLevelNew
+        return super(ConfigStaffLevelNew, cls).get(_id)
+
+
+class ConfigStaffStar(ConfigBase):
+    EntityClass = StaffStar
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        # type: (int) -> StaffStar
+        return super(ConfigStaffStar, cls).get(_id)

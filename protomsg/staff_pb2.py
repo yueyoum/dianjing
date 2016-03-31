@@ -15,16 +15,17 @@ _sym_db = _symbol_database.Default()
 
 
 import common_pb2 as common__pb2
-import item_define_pb2 as item__define__pb2
+import bag_pb2 as bag__pb2
+import package_pb2 as package__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='staff.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0bstaff.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\x11item_define.proto\"\xc9\x01\n\x12StaffRecruitNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x02tp\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.StaffRecruitType\x12?\n\x08recruits\x18\x03 \x03(\x0b\x32-.Dianjing.protocol.StaffRecruitNotify.Recruit\x1a\x30\n\x07Recruit\x12\x10\n\x08staff_id\x18\x01 \x02(\x05\x12\x13\n\x0bhas_recruit\x18\x02 \x02(\x08\"^\n\x1aStaffRecruitRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x02tp\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.StaffRecruitType\";\n\x1bStaffRecruitRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"8\n\x13StaffRecruitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\"4\n\x14StaffRecruitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"5\n\x10StaffFireRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\"1\n\x11StaffFireResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\xdc\x03\n\x05Staff\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0f\n\x07\x63ur_exp\x18\x03 \x02(\x05\x12\x0f\n\x07max_exp\x18\x04 \x02(\x05\x12\x0e\n\x06status\x18\x05 \x02(\x05\x12\r\n\x05luoji\x18\x06 \x02(\x05\x12\x0e\n\x06minjie\x18\x07 \x02(\x05\x12\r\n\x05lilun\x18\x08 \x02(\x05\x12\x0e\n\x06wuxing\x18\t \x02(\x05\x12\r\n\x05meili\x18\n \x02(\x05\x12\x0e\n\x06\x63\x61ozuo\x18\x0b \x02(\x05\x12\x10\n\x08jingying\x18\x0c \x02(\x05\x12\x0f\n\x07\x62\x61obing\x18\r \x02(\x05\x12\x0f\n\x07zhanshu\x18\x0e \x02(\x05\x12\x0f\n\x07\x62iaoyan\x18\x0f \x02(\x05\x12\x10\n\x08yingxiao\x18\x10 \x02(\x05\x12\x11\n\tzhimingdu\x18\x11 \x02(\x05\x12\x0c\n\x04star\x18\x12 \x02(\x05\x12\r\n\x05power\x18\x13 \x02(\x05\x12&\n\x05items\x18\x14 \x03(\x0b\x32\x17.Dianjing.protocol.Item\x12.\n\x06skills\x18\x15 \x03(\x0b\x32\x1e.Dianjing.protocol.Staff.Skill\x1aJ\n\x05Skill\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0e\n\x06locked\x18\x03 \x02(\x08\x12\x16\n\x0eupgrade_end_at\x18\x04 \x02(\x03\"p\n\x0bStaffNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12(\n\x06staffs\x18\x03 \x03(\x0b\x32\x18.Dianjing.protocol.Staff\"0\n\x11StaffRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x03(\x05\"I\n\x13StaffEquipOnRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\x12\x0f\n\x07item_id\x18\x03 \x02(\t\"4\n\x14StaffEquipOnResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\";\n\x16StaffStrengthenRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\"7\n\x17StaffStrengthenResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*^\n\x10StaffRecruitType\x12\x0f\n\x0bRECRUIT_HOT\x10\x01\x12\x12\n\x0eRECRUIT_NORMAL\x10\x02\x12\x10\n\x0cRECRUIT_GOLD\x10\x03\x12\x13\n\x0fRECRUIT_DIAMOND\x10\x04')
+  serialized_pb=_b('\n\x0bstaff.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\tbag.proto\x1a\rpackage.proto\"\xc9\x01\n\x12StaffRecruitNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x02tp\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.StaffRecruitType\x12?\n\x08recruits\x18\x03 \x03(\x0b\x32-.Dianjing.protocol.StaffRecruitNotify.Recruit\x1a\x30\n\x07Recruit\x12\x10\n\x08staff_id\x18\x01 \x02(\x05\x12\x13\n\x0bhas_recruit\x18\x02 \x02(\x08\"^\n\x1aStaffRecruitRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x02tp\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.StaffRecruitType\";\n\x1bStaffRecruitRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"8\n\x13StaffRecruitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\x05\"4\n\x14StaffRecruitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\xb2\x02\n\x05Staff\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0b\n\x03oid\x18\x02 \x02(\x05\x12\r\n\x05level\x18\x03 \x02(\x05\x12\x0c\n\x04step\x18\x04 \x02(\x05\x12\x0c\n\x04star\x18\x05 \x02(\x05\x12\x11\n\tlevel_exp\x18\x06 \x02(\x05\x12\x10\n\x08star_exp\x18\x07 \x02(\x05\x12\x0e\n\x06\x61ttack\x18\x08 \x02(\x05\x12\x0f\n\x07\x64\x65\x66\x65nse\x18\t \x02(\x05\x12\x0e\n\x06manage\x18\n \x02(\x05\x12\x11\n\toperation\x18\x0b \x02(\x05\x12\x1b\n\x13\x65quip_mouse_slot_id\x18\x0c \x02(\t\x12\x1e\n\x16\x65quip_keyboard_slot_id\x18\r \x02(\t\x12\x1d\n\x15\x65quip_monitor_slot_id\x18\x0e \x02(\t\x12 \n\x18\x65quip_decoration_slot_id\x18\x0f \x02(\t\"p\n\x0bStaffNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12(\n\x06staffs\x18\x03 \x03(\x0b\x32\x18.Dianjing.protocol.Staff\"1\n\x11StaffRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t\"{\n\x17StaffEquipChangeRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\t\x12\x0f\n\x07slot_id\x18\x03 \x02(\t\x12,\n\x02tp\x18\x04 \x02(\x0e\x32 .Dianjing.protocol.EquipmentType\"8\n\x18StaffEquipChangeResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\x97\x01\n\x13StaffLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\t\x12\x39\n\x04item\x18\x03 \x03(\x0b\x32+.Dianjing.protocol.StaffLevelUpRequest.Item\x1a\"\n\x04Item\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0e\n\x06\x61mount\x18\x02 \x02(\x05\"4\n\x14StaffLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"7\n\x12staffStepUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\t\"3\n\x13StaffStepUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"7\n\x12StaffStarUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\t\"3\n\x13StaffStarUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"8\n\x13StaffDestroyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\t\"[\n\x14StaffDestroyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*^\n\x10StaffRecruitType\x12\x0f\n\x0bRECRUIT_HOT\x10\x01\x12\x12\n\x0eRECRUIT_NORMAL\x10\x02\x12\x10\n\x0cRECRUIT_GOLD\x10\x03\x12\x13\n\x0fRECRUIT_DIAMOND\x10\x04')
   ,
-  dependencies=[common__pb2.DESCRIPTOR,item__define__pb2.DESCRIPTOR,])
+  dependencies=[common__pb2.DESCRIPTOR,bag__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 _STAFFRECRUITTYPE = _descriptor.EnumDescriptor(
@@ -52,8 +53,8 @@ _STAFFRECRUITTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1536,
-  serialized_end=1630,
+  serialized_start=1783,
+  serialized_end=1877,
 )
 _sym_db.RegisterEnumDescriptor(_STAFFRECRUITTYPE)
 
@@ -98,8 +99,8 @@ _STAFFRECRUITNOTIFY_RECRUIT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=221,
-  serialized_end=269,
+  serialized_start=228,
+  serialized_end=276,
 )
 
 _STAFFRECRUITNOTIFY = _descriptor.Descriptor(
@@ -142,8 +143,8 @@ _STAFFRECRUITNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=68,
-  serialized_end=269,
+  serialized_start=75,
+  serialized_end=276,
 )
 
 
@@ -180,8 +181,8 @@ _STAFFRECRUITREFRESHREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=271,
-  serialized_end=365,
+  serialized_start=278,
+  serialized_end=372,
 )
 
 
@@ -218,8 +219,8 @@ _STAFFRECRUITREFRESHRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=367,
-  serialized_end=426,
+  serialized_start=374,
+  serialized_end=433,
 )
 
 
@@ -256,8 +257,8 @@ _STAFFRECRUITREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=428,
-  serialized_end=484,
+  serialized_start=435,
+  serialized_end=491,
 )
 
 
@@ -294,137 +295,10 @@ _STAFFRECRUITRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=486,
-  serialized_end=538,
+  serialized_start=493,
+  serialized_end=545,
 )
 
-
-_STAFFFIREREQUEST = _descriptor.Descriptor(
-  name='StaffFireRequest',
-  full_name='Dianjing.protocol.StaffFireRequest',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.StaffFireRequest.session', index=0,
-      number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b(""),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='staff_id', full_name='Dianjing.protocol.StaffFireRequest.staff_id', index=1,
-      number=2, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=540,
-  serialized_end=593,
-)
-
-
-_STAFFFIRERESPONSE = _descriptor.Descriptor(
-  name='StaffFireResponse',
-  full_name='Dianjing.protocol.StaffFireResponse',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='ret', full_name='Dianjing.protocol.StaffFireResponse.ret', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.StaffFireResponse.session', index=1,
-      number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b(""),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=595,
-  serialized_end=644,
-)
-
-
-_STAFF_SKILL = _descriptor.Descriptor(
-  name='Skill',
-  full_name='Dianjing.protocol.Staff.Skill',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='id', full_name='Dianjing.protocol.Staff.Skill.id', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='level', full_name='Dianjing.protocol.Staff.Skill.level', index=1,
-      number=2, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='locked', full_name='Dianjing.protocol.Staff.Skill.locked', index=2,
-      number=3, type=8, cpp_type=7, label=2,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='upgrade_end_at', full_name='Dianjing.protocol.Staff.Skill.upgrade_end_at', index=3,
-      number=4, type=3, cpp_type=2, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1049,
-  serialized_end=1123,
-)
 
 _STAFF = _descriptor.Descriptor(
   name='Staff',
@@ -435,155 +309,113 @@ _STAFF = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='id', full_name='Dianjing.protocol.Staff.id', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
+      number=1, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='level', full_name='Dianjing.protocol.Staff.level', index=1,
+      name='oid', full_name='Dianjing.protocol.Staff.oid', index=1,
       number=2, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='cur_exp', full_name='Dianjing.protocol.Staff.cur_exp', index=2,
+      name='level', full_name='Dianjing.protocol.Staff.level', index=2,
       number=3, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='max_exp', full_name='Dianjing.protocol.Staff.max_exp', index=3,
+      name='step', full_name='Dianjing.protocol.Staff.step', index=3,
       number=4, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='status', full_name='Dianjing.protocol.Staff.status', index=4,
+      name='star', full_name='Dianjing.protocol.Staff.star', index=4,
       number=5, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='luoji', full_name='Dianjing.protocol.Staff.luoji', index=5,
+      name='level_exp', full_name='Dianjing.protocol.Staff.level_exp', index=5,
       number=6, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='minjie', full_name='Dianjing.protocol.Staff.minjie', index=6,
+      name='star_exp', full_name='Dianjing.protocol.Staff.star_exp', index=6,
       number=7, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='lilun', full_name='Dianjing.protocol.Staff.lilun', index=7,
+      name='attack', full_name='Dianjing.protocol.Staff.attack', index=7,
       number=8, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='wuxing', full_name='Dianjing.protocol.Staff.wuxing', index=8,
+      name='defense', full_name='Dianjing.protocol.Staff.defense', index=8,
       number=9, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='meili', full_name='Dianjing.protocol.Staff.meili', index=9,
+      name='manage', full_name='Dianjing.protocol.Staff.manage', index=9,
       number=10, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='caozuo', full_name='Dianjing.protocol.Staff.caozuo', index=10,
+      name='operation', full_name='Dianjing.protocol.Staff.operation', index=10,
       number=11, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='jingying', full_name='Dianjing.protocol.Staff.jingying', index=11,
-      number=12, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
+      name='equip_mouse_slot_id', full_name='Dianjing.protocol.Staff.equip_mouse_slot_id', index=11,
+      number=12, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='baobing', full_name='Dianjing.protocol.Staff.baobing', index=12,
-      number=13, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
+      name='equip_keyboard_slot_id', full_name='Dianjing.protocol.Staff.equip_keyboard_slot_id', index=12,
+      number=13, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='zhanshu', full_name='Dianjing.protocol.Staff.zhanshu', index=13,
-      number=14, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
+      name='equip_monitor_slot_id', full_name='Dianjing.protocol.Staff.equip_monitor_slot_id', index=13,
+      number=14, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='biaoyan', full_name='Dianjing.protocol.Staff.biaoyan', index=14,
-      number=15, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='yingxiao', full_name='Dianjing.protocol.Staff.yingxiao', index=15,
-      number=16, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='zhimingdu', full_name='Dianjing.protocol.Staff.zhimingdu', index=16,
-      number=17, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='star', full_name='Dianjing.protocol.Staff.star', index=17,
-      number=18, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='power', full_name='Dianjing.protocol.Staff.power', index=18,
-      number=19, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='items', full_name='Dianjing.protocol.Staff.items', index=19,
-      number=20, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='skills', full_name='Dianjing.protocol.Staff.skills', index=20,
-      number=21, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
+      name='equip_decoration_slot_id', full_name='Dianjing.protocol.Staff.equip_decoration_slot_id', index=14,
+      number=15, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[_STAFF_SKILL, ],
+  nested_types=[],
   enum_types=[
   ],
   options=None,
@@ -592,8 +424,8 @@ _STAFF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=647,
-  serialized_end=1123,
+  serialized_start=548,
+  serialized_end=854,
 )
 
 
@@ -637,8 +469,8 @@ _STAFFNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1125,
-  serialized_end=1237,
+  serialized_start=856,
+  serialized_end=968,
 )
 
 
@@ -657,8 +489,8 @@ _STAFFREMOVENOTIFY = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='id', full_name='Dianjing.protocol.StaffRemoveNotify.id', index=1,
-      number=2, type=5, cpp_type=1, label=3,
+      name='ids', full_name='Dianjing.protocol.StaffRemoveNotify.ids', index=1,
+      number=2, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -675,35 +507,238 @@ _STAFFREMOVENOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1239,
-  serialized_end=1287,
+  serialized_start=970,
+  serialized_end=1019,
 )
 
 
-_STAFFEQUIPONREQUEST = _descriptor.Descriptor(
-  name='StaffEquipOnRequest',
-  full_name='Dianjing.protocol.StaffEquipOnRequest',
+_STAFFEQUIPCHANGEREQUEST = _descriptor.Descriptor(
+  name='StaffEquipChangeRequest',
+  full_name='Dianjing.protocol.StaffEquipChangeRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.StaffEquipOnRequest.session', index=0,
+      name='session', full_name='Dianjing.protocol.StaffEquipChangeRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='staff_id', full_name='Dianjing.protocol.StaffEquipOnRequest.staff_id', index=1,
-      number=2, type=5, cpp_type=1, label=2,
+      name='staff_id', full_name='Dianjing.protocol.StaffEquipChangeRequest.staff_id', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='slot_id', full_name='Dianjing.protocol.StaffEquipChangeRequest.slot_id', index=2,
+      number=3, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='tp', full_name='Dianjing.protocol.StaffEquipChangeRequest.tp', index=3,
+      number=4, type=14, cpp_type=8, label=2,
+      has_default_value=False, default_value=1,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1021,
+  serialized_end=1144,
+)
+
+
+_STAFFEQUIPCHANGERESPONSE = _descriptor.Descriptor(
+  name='StaffEquipChangeResponse',
+  full_name='Dianjing.protocol.StaffEquipChangeResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.StaffEquipChangeResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='item_id', full_name='Dianjing.protocol.StaffEquipOnRequest.item_id', index=2,
-      number=3, type=9, cpp_type=9, label=2,
+      name='session', full_name='Dianjing.protocol.StaffEquipChangeResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1146,
+  serialized_end=1202,
+)
+
+
+_STAFFLEVELUPREQUEST_ITEM = _descriptor.Descriptor(
+  name='Item',
+  full_name='Dianjing.protocol.StaffLevelUpRequest.Item',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.StaffLevelUpRequest.Item.id', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='amount', full_name='Dianjing.protocol.StaffLevelUpRequest.Item.amount', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1322,
+  serialized_end=1356,
+)
+
+_STAFFLEVELUPREQUEST = _descriptor.Descriptor(
+  name='StaffLevelUpRequest',
+  full_name='Dianjing.protocol.StaffLevelUpRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.StaffLevelUpRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='staff_id', full_name='Dianjing.protocol.StaffLevelUpRequest.staff_id', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='item', full_name='Dianjing.protocol.StaffLevelUpRequest.item', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[_STAFFLEVELUPREQUEST_ITEM, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1205,
+  serialized_end=1356,
+)
+
+
+_STAFFLEVELUPRESPONSE = _descriptor.Descriptor(
+  name='StaffLevelUpResponse',
+  full_name='Dianjing.protocol.StaffLevelUpResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.StaffLevelUpResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.StaffLevelUpResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1358,
+  serialized_end=1410,
+)
+
+
+_STAFFSTEPUPREQUEST = _descriptor.Descriptor(
+  name='staffStepUpRequest',
+  full_name='Dianjing.protocol.staffStepUpRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.staffStepUpRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='staff_id', full_name='Dianjing.protocol.staffStepUpRequest.staff_id', index=1,
+      number=2, type=9, cpp_type=9, label=2,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -720,27 +755,27 @@ _STAFFEQUIPONREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1289,
-  serialized_end=1362,
+  serialized_start=1412,
+  serialized_end=1467,
 )
 
 
-_STAFFEQUIPONRESPONSE = _descriptor.Descriptor(
-  name='StaffEquipOnResponse',
-  full_name='Dianjing.protocol.StaffEquipOnResponse',
+_STAFFSTEPUPRESPONSE = _descriptor.Descriptor(
+  name='StaffStepUpResponse',
+  full_name='Dianjing.protocol.StaffStepUpResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='ret', full_name='Dianjing.protocol.StaffEquipOnResponse.ret', index=0,
+      name='ret', full_name='Dianjing.protocol.StaffStepUpResponse.ret', index=0,
       number=1, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.StaffEquipOnResponse.session', index=1,
+      name='session', full_name='Dianjing.protocol.StaffStepUpResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
@@ -758,29 +793,29 @@ _STAFFEQUIPONRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1364,
-  serialized_end=1416,
+  serialized_start=1469,
+  serialized_end=1520,
 )
 
 
-_STAFFSTRENGTHENREQUEST = _descriptor.Descriptor(
-  name='StaffStrengthenRequest',
-  full_name='Dianjing.protocol.StaffStrengthenRequest',
+_STAFFSTARUPREQUEST = _descriptor.Descriptor(
+  name='StaffStarUpRequest',
+  full_name='Dianjing.protocol.StaffStarUpRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.StaffStrengthenRequest.session', index=0,
+      name='session', full_name='Dianjing.protocol.StaffStarUpRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='staff_id', full_name='Dianjing.protocol.StaffStrengthenRequest.staff_id', index=1,
-      number=2, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
+      name='staff_id', full_name='Dianjing.protocol.StaffStarUpRequest.staff_id', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -796,27 +831,27 @@ _STAFFSTRENGTHENREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1418,
-  serialized_end=1477,
+  serialized_start=1522,
+  serialized_end=1577,
 )
 
 
-_STAFFSTRENGTHENRESPONSE = _descriptor.Descriptor(
-  name='StaffStrengthenResponse',
-  full_name='Dianjing.protocol.StaffStrengthenResponse',
+_STAFFSTARUPRESPONSE = _descriptor.Descriptor(
+  name='StaffStarUpResponse',
+  full_name='Dianjing.protocol.StaffStarUpResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='ret', full_name='Dianjing.protocol.StaffStrengthenResponse.ret', index=0,
+      name='ret', full_name='Dianjing.protocol.StaffStarUpResponse.ret', index=0,
       number=1, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.StaffStrengthenResponse.session', index=1,
+      name='session', full_name='Dianjing.protocol.StaffStarUpResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
@@ -834,33 +869,121 @@ _STAFFSTRENGTHENRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1479,
-  serialized_end=1534,
+  serialized_start=1579,
+  serialized_end=1630,
+)
+
+
+_STAFFDESTROYREQUEST = _descriptor.Descriptor(
+  name='StaffDestroyRequest',
+  full_name='Dianjing.protocol.StaffDestroyRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.StaffDestroyRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='staff_id', full_name='Dianjing.protocol.StaffDestroyRequest.staff_id', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1632,
+  serialized_end=1688,
+)
+
+
+_STAFFDESTROYRESPONSE = _descriptor.Descriptor(
+  name='StaffDestroyResponse',
+  full_name='Dianjing.protocol.StaffDestroyResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.StaffDestroyResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.StaffDestroyResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='drop', full_name='Dianjing.protocol.StaffDestroyResponse.drop', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1690,
+  serialized_end=1781,
 )
 
 _STAFFRECRUITNOTIFY_RECRUIT.containing_type = _STAFFRECRUITNOTIFY
 _STAFFRECRUITNOTIFY.fields_by_name['tp'].enum_type = _STAFFRECRUITTYPE
 _STAFFRECRUITNOTIFY.fields_by_name['recruits'].message_type = _STAFFRECRUITNOTIFY_RECRUIT
 _STAFFRECRUITREFRESHREQUEST.fields_by_name['tp'].enum_type = _STAFFRECRUITTYPE
-_STAFF_SKILL.containing_type = _STAFF
-_STAFF.fields_by_name['items'].message_type = item__define__pb2._ITEM
-_STAFF.fields_by_name['skills'].message_type = _STAFF_SKILL
 _STAFFNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _STAFFNOTIFY.fields_by_name['staffs'].message_type = _STAFF
+_STAFFEQUIPCHANGEREQUEST.fields_by_name['tp'].enum_type = bag__pb2._EQUIPMENTTYPE
+_STAFFLEVELUPREQUEST_ITEM.containing_type = _STAFFLEVELUPREQUEST
+_STAFFLEVELUPREQUEST.fields_by_name['item'].message_type = _STAFFLEVELUPREQUEST_ITEM
+_STAFFDESTROYRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 DESCRIPTOR.message_types_by_name['StaffRecruitNotify'] = _STAFFRECRUITNOTIFY
 DESCRIPTOR.message_types_by_name['StaffRecruitRefreshRequest'] = _STAFFRECRUITREFRESHREQUEST
 DESCRIPTOR.message_types_by_name['StaffRecruitRefreshResponse'] = _STAFFRECRUITREFRESHRESPONSE
 DESCRIPTOR.message_types_by_name['StaffRecruitRequest'] = _STAFFRECRUITREQUEST
 DESCRIPTOR.message_types_by_name['StaffRecruitResponse'] = _STAFFRECRUITRESPONSE
-DESCRIPTOR.message_types_by_name['StaffFireRequest'] = _STAFFFIREREQUEST
-DESCRIPTOR.message_types_by_name['StaffFireResponse'] = _STAFFFIRERESPONSE
 DESCRIPTOR.message_types_by_name['Staff'] = _STAFF
 DESCRIPTOR.message_types_by_name['StaffNotify'] = _STAFFNOTIFY
 DESCRIPTOR.message_types_by_name['StaffRemoveNotify'] = _STAFFREMOVENOTIFY
-DESCRIPTOR.message_types_by_name['StaffEquipOnRequest'] = _STAFFEQUIPONREQUEST
-DESCRIPTOR.message_types_by_name['StaffEquipOnResponse'] = _STAFFEQUIPONRESPONSE
-DESCRIPTOR.message_types_by_name['StaffStrengthenRequest'] = _STAFFSTRENGTHENREQUEST
-DESCRIPTOR.message_types_by_name['StaffStrengthenResponse'] = _STAFFSTRENGTHENRESPONSE
+DESCRIPTOR.message_types_by_name['StaffEquipChangeRequest'] = _STAFFEQUIPCHANGEREQUEST
+DESCRIPTOR.message_types_by_name['StaffEquipChangeResponse'] = _STAFFEQUIPCHANGERESPONSE
+DESCRIPTOR.message_types_by_name['StaffLevelUpRequest'] = _STAFFLEVELUPREQUEST
+DESCRIPTOR.message_types_by_name['StaffLevelUpResponse'] = _STAFFLEVELUPRESPONSE
+DESCRIPTOR.message_types_by_name['staffStepUpRequest'] = _STAFFSTEPUPREQUEST
+DESCRIPTOR.message_types_by_name['StaffStepUpResponse'] = _STAFFSTEPUPRESPONSE
+DESCRIPTOR.message_types_by_name['StaffStarUpRequest'] = _STAFFSTARUPREQUEST
+DESCRIPTOR.message_types_by_name['StaffStarUpResponse'] = _STAFFSTARUPRESPONSE
+DESCRIPTOR.message_types_by_name['StaffDestroyRequest'] = _STAFFDESTROYREQUEST
+DESCRIPTOR.message_types_by_name['StaffDestroyResponse'] = _STAFFDESTROYRESPONSE
 DESCRIPTOR.enum_types_by_name['StaffRecruitType'] = _STAFFRECRUITTYPE
 
 StaffRecruitNotify = _reflection.GeneratedProtocolMessageType('StaffRecruitNotify', (_message.Message,), dict(
@@ -906,34 +1029,12 @@ StaffRecruitResponse = _reflection.GeneratedProtocolMessageType('StaffRecruitRes
   ))
 _sym_db.RegisterMessage(StaffRecruitResponse)
 
-StaffFireRequest = _reflection.GeneratedProtocolMessageType('StaffFireRequest', (_message.Message,), dict(
-  DESCRIPTOR = _STAFFFIREREQUEST,
-  __module__ = 'staff_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffFireRequest)
-  ))
-_sym_db.RegisterMessage(StaffFireRequest)
-
-StaffFireResponse = _reflection.GeneratedProtocolMessageType('StaffFireResponse', (_message.Message,), dict(
-  DESCRIPTOR = _STAFFFIRERESPONSE,
-  __module__ = 'staff_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffFireResponse)
-  ))
-_sym_db.RegisterMessage(StaffFireResponse)
-
 Staff = _reflection.GeneratedProtocolMessageType('Staff', (_message.Message,), dict(
-
-  Skill = _reflection.GeneratedProtocolMessageType('Skill', (_message.Message,), dict(
-    DESCRIPTOR = _STAFF_SKILL,
-    __module__ = 'staff_pb2'
-    # @@protoc_insertion_point(class_scope:Dianjing.protocol.Staff.Skill)
-    ))
-  ,
   DESCRIPTOR = _STAFF,
   __module__ = 'staff_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.Staff)
   ))
 _sym_db.RegisterMessage(Staff)
-_sym_db.RegisterMessage(Staff.Skill)
 
 StaffNotify = _reflection.GeneratedProtocolMessageType('StaffNotify', (_message.Message,), dict(
   DESCRIPTOR = _STAFFNOTIFY,
@@ -949,33 +1050,83 @@ StaffRemoveNotify = _reflection.GeneratedProtocolMessageType('StaffRemoveNotify'
   ))
 _sym_db.RegisterMessage(StaffRemoveNotify)
 
-StaffEquipOnRequest = _reflection.GeneratedProtocolMessageType('StaffEquipOnRequest', (_message.Message,), dict(
-  DESCRIPTOR = _STAFFEQUIPONREQUEST,
+StaffEquipChangeRequest = _reflection.GeneratedProtocolMessageType('StaffEquipChangeRequest', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFEQUIPCHANGEREQUEST,
   __module__ = 'staff_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffEquipOnRequest)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffEquipChangeRequest)
   ))
-_sym_db.RegisterMessage(StaffEquipOnRequest)
+_sym_db.RegisterMessage(StaffEquipChangeRequest)
 
-StaffEquipOnResponse = _reflection.GeneratedProtocolMessageType('StaffEquipOnResponse', (_message.Message,), dict(
-  DESCRIPTOR = _STAFFEQUIPONRESPONSE,
+StaffEquipChangeResponse = _reflection.GeneratedProtocolMessageType('StaffEquipChangeResponse', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFEQUIPCHANGERESPONSE,
   __module__ = 'staff_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffEquipOnResponse)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffEquipChangeResponse)
   ))
-_sym_db.RegisterMessage(StaffEquipOnResponse)
+_sym_db.RegisterMessage(StaffEquipChangeResponse)
 
-StaffStrengthenRequest = _reflection.GeneratedProtocolMessageType('StaffStrengthenRequest', (_message.Message,), dict(
-  DESCRIPTOR = _STAFFSTRENGTHENREQUEST,
-  __module__ = 'staff_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffStrengthenRequest)
-  ))
-_sym_db.RegisterMessage(StaffStrengthenRequest)
+StaffLevelUpRequest = _reflection.GeneratedProtocolMessageType('StaffLevelUpRequest', (_message.Message,), dict(
 
-StaffStrengthenResponse = _reflection.GeneratedProtocolMessageType('StaffStrengthenResponse', (_message.Message,), dict(
-  DESCRIPTOR = _STAFFSTRENGTHENRESPONSE,
+  Item = _reflection.GeneratedProtocolMessageType('Item', (_message.Message,), dict(
+    DESCRIPTOR = _STAFFLEVELUPREQUEST_ITEM,
+    __module__ = 'staff_pb2'
+    # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffLevelUpRequest.Item)
+    ))
+  ,
+  DESCRIPTOR = _STAFFLEVELUPREQUEST,
   __module__ = 'staff_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffStrengthenResponse)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffLevelUpRequest)
   ))
-_sym_db.RegisterMessage(StaffStrengthenResponse)
+_sym_db.RegisterMessage(StaffLevelUpRequest)
+_sym_db.RegisterMessage(StaffLevelUpRequest.Item)
+
+StaffLevelUpResponse = _reflection.GeneratedProtocolMessageType('StaffLevelUpResponse', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFLEVELUPRESPONSE,
+  __module__ = 'staff_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffLevelUpResponse)
+  ))
+_sym_db.RegisterMessage(StaffLevelUpResponse)
+
+staffStepUpRequest = _reflection.GeneratedProtocolMessageType('staffStepUpRequest', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFSTEPUPREQUEST,
+  __module__ = 'staff_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.staffStepUpRequest)
+  ))
+_sym_db.RegisterMessage(staffStepUpRequest)
+
+StaffStepUpResponse = _reflection.GeneratedProtocolMessageType('StaffStepUpResponse', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFSTEPUPRESPONSE,
+  __module__ = 'staff_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffStepUpResponse)
+  ))
+_sym_db.RegisterMessage(StaffStepUpResponse)
+
+StaffStarUpRequest = _reflection.GeneratedProtocolMessageType('StaffStarUpRequest', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFSTARUPREQUEST,
+  __module__ = 'staff_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffStarUpRequest)
+  ))
+_sym_db.RegisterMessage(StaffStarUpRequest)
+
+StaffStarUpResponse = _reflection.GeneratedProtocolMessageType('StaffStarUpResponse', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFSTARUPRESPONSE,
+  __module__ = 'staff_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffStarUpResponse)
+  ))
+_sym_db.RegisterMessage(StaffStarUpResponse)
+
+StaffDestroyRequest = _reflection.GeneratedProtocolMessageType('StaffDestroyRequest', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFDESTROYREQUEST,
+  __module__ = 'staff_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffDestroyRequest)
+  ))
+_sym_db.RegisterMessage(StaffDestroyRequest)
+
+StaffDestroyResponse = _reflection.GeneratedProtocolMessageType('StaffDestroyResponse', (_message.Message,), dict(
+  DESCRIPTOR = _STAFFDESTROYRESPONSE,
+  __module__ = 'staff_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffDestroyResponse)
+  ))
+_sym_db.RegisterMessage(StaffDestroyResponse)
 
 
 # @@protoc_insertion_point(module_scope)
