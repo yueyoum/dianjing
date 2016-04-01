@@ -13,7 +13,7 @@ from dianjing.exception import GameException
 
 from core.abstract import AbstractStaff
 from core.mongo import MongoStaff, MongoRecruit, MongoAuctionStaff
-from core.resource import Resource, money_text_to_item_id
+from core.resource import Resource, money_text_to_item_id, ResourceClassification
 from core.common import CommonRecruitHot
 from core.item import get_item_object, ItemManager, ItemId, ITEM_EQUIPMENT, ITEM_STAFF_CARD, BaseItem
 from core.bag import Bag, TYPE_EQUIPMENT, get_item_type
@@ -22,7 +22,7 @@ from core.signals import recruit_staff_signal, staff_level_up_signal
 from config import (
     ConfigStaff, ConfigStaffHot, ConfigStaffRecruit,
     ConfigStaffLevel, ConfigErrorMessage, ConfigStaffStatus,
-    ConfigItem,
+    ConfigItemNew,
     ConfigStaffNew,
     ConfigStaffStar,
     ConfigStaffLevelNew,
@@ -38,8 +38,6 @@ from protomsg.staff_pb2 import StaffRecruitNotify, StaffNotify, StaffRemoveNotif
 from protomsg.staff_pb2 import RECRUIT_DIAMOND, RECRUIT_GOLD, RECRUIT_HOT, RECRUIT_NORMAL
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
-
-
 RECRUIT_ENUM_TO_CONFIG_ID = {
     RECRUIT_NORMAL: 1,
     RECRUIT_GOLD: 2,
@@ -48,7 +46,6 @@ RECRUIT_ENUM_TO_CONFIG_ID = {
 
 
 class StaffRecruit(object):
-
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
@@ -91,8 +88,8 @@ class StaffRecruit(object):
                 check['diamond'] = -config.cost_value
 
             doc = MongoRecruit.db(self.server_id).find_one(
-                    {'_id': self.char_id},
-                    {'times.{0}'.format(tp): 1}
+                {'_id': self.char_id},
+                {'times.{0}'.format(tp): 1}
             )
 
             times = doc['times'].get(str(tp), 0)
@@ -117,15 +114,15 @@ class StaffRecruit(object):
                     staffs.append(11)
 
         MongoRecruit.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {
-                    '$set': {
-                        'tp': tp,
-                        'staffs': staffs,
-                        'recruited': [],
-                    },
-                    '$inc': {'times.{0}'.format(tp): 1}
-                }
+            {'_id': self.char_id},
+            {
+                '$set': {
+                    'tp': tp,
+                    'staffs': staffs,
+                    'recruited': [],
+                },
+                '$inc': {'times.{0}'.format(tp): 1}
+            }
         )
 
         self.send_notify(staffs=staffs, tp=tp)
@@ -136,8 +133,8 @@ class StaffRecruit(object):
             raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
 
         doc = MongoRecruit.db(self.server_id).find_one(
-                {'_id': self.char_id},
-                {'recruited': 1}
+            {'_id': self.char_id},
+            {'recruited': 1}
         )
         recruited = doc.get('recruited', [])
 
@@ -169,16 +166,16 @@ class StaffRecruit(object):
                 StaffManger(self.server_id, self.char_id).add(staff_id)
 
         MongoRecruit.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {'$push': {'recruited': staff_id}}
+            {'_id': self.char_id},
+            {'$push': {'recruited': staff_id}}
         )
 
         self.send_notify()
         recruit_staff_signal.send(
-                sender=None,
-                server_id=self.server_id,
-                char_id=self.char_id,
-                staff_id=staff_id
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            staff_id=staff_id
         )
 
     def send_notify(self, staffs=None, tp=None):
@@ -192,8 +189,8 @@ class StaffRecruit(object):
                 tp = MongoRecruit.db(self.server_id).find_one({'_id': self.char_id}, {'tp': 1})['tp']
 
         doc = MongoRecruit.db(self.server_id).find_one(
-                {'_id': self.char_id},
-                {'recruited': 1}
+            {'_id': self.char_id},
+            {'recruited': 1}
         )
         recruited = doc.get('recruited', [])
 
@@ -205,8 +202,6 @@ class StaffRecruit(object):
             r.has_recruit = s in recruited
 
         MessagePipe(self.char_id).put(msg=notify)
-
-
 
 
 ###################################
@@ -240,14 +235,16 @@ class Staff(AbstractStaff):
         self.position = data['position']
 
         self.config = ConfigStaffNew.get(self.oid)
+        self.quality = ConfigItemNew.get(self.oid).quality
+
         self.calculate_property()
 
     def calculate_property(self):
-        self.attack = self.config.attack + (self.level-1) * self.config.attack_grow
-        self.defense = self.config.defense + (self.level-1) * self.config.defense_grow
-        self.manage = self.config.manage + (self.level-1) * self.config.manage_grow
-        self.operation = self.config.operation + (self.level-1) * self.config.operation_grow
-        
+        self.attack = self.config.attack + (self.level - 1) * self.config.attack_grow
+        self.defense = self.config.defense + (self.level - 1) * self.config.defense_grow
+        self.manage = self.config.manage + (self.level - 1) * self.config.manage_grow
+        self.operation = self.config.operation + (self.level - 1) * self.config.operation_grow
+
         step_config = self.config.steps[self.step]
         self.attack += step_config.attack
         self.defense += step_config.defense
@@ -257,7 +254,7 @@ class Staff(AbstractStaff):
         self.defense_percent += step_config.defense_percent
         self.manage_percent += step_config.manage_percent
         self.operation_percent += step_config.operation_percent
-        
+
         star_config = ConfigStaffStar.get(self.star)
         self.attack += star_config.attack
         self.defense += star_config.defense
@@ -270,9 +267,10 @@ class Staff(AbstractStaff):
 
         # TODO 装备加成， 天赋加成
 
-
     def level_up(self, using_items):
         # using_items: [(id, amount)...]
+        # TODO 发来的物品能提供的经验可能超过了等级上限
+        # 这时候只扣除升级到上限所需的物品
         if self.level >= STAFF_MAX_LEVEL:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_ALREADY_MAX_LEVEL"))
 
@@ -324,13 +322,10 @@ class Staff(AbstractStaff):
         if self.level < self.config.steps[self.step].level_limit:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_LEVEL_NOT_ENOUGH"))
 
-        # TODO using items
-        # using_items = self.config.steps[self.step].update_item_need
-        # bag = Bag(self.server_id, self.char_id)
-        # bag.check_items(using_items)
-        #
-        # for _id, _amount in using_items:
-        #     bag.remove_by_item_id(_id, _amount)
+        using_items = self.config.steps[self.step].update_item_need
+        resource_classified = ResourceClassification.classify(using_items)
+        resource_classified.check_exist(self.server_id, self.char_id)
+        resource_classified.remove(self.server_id, self.char_id)
 
         self.step += 1
         MongoStaff.db(self.server_id).update_one(
@@ -348,11 +343,12 @@ class Staff(AbstractStaff):
         if self.star >= STAFF_MAX_STAR:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_ALREADY_MAX_STAR"))
 
-        # TODO using items
-        # star_config = ConfigStaffStar.get(self.star)
-        # bag = Bag(self.server_id, self.char_id)
-        # bag.check_items([(star_config.need_item_id, star_config.need_item_amount)])
-        # bag.remove_by_item_id(star_config.need_item_id, star_config.need_item_amount)
+        star_config = ConfigStaffStar.get(self.star)
+        using_items = [(star_config.need_item_id, star_config.need_item_amount)]
+
+        resource_classified = ResourceClassification.classify(using_items)
+        resource_classified.check_exist(self.server_id, self.char_id)
+        resource_classified.remove(self.server_id, self.char_id)
 
         if random.randint(1, 100) <= 30:
             inc_exp = 6
@@ -385,7 +381,6 @@ class Staff(AbstractStaff):
 
         self.calculate_property()
         self.send_notify()
-
 
     def equipment_change(self, bag_slot_id, tp):
         if not bag_slot_id:
@@ -428,7 +423,6 @@ class Staff(AbstractStaff):
         self.calculate_property()
         self.send_notify()
 
-
     def send_notify(self):
         notify = StaffNotify()
         notify.act = ACT_UPDATE
@@ -459,6 +453,11 @@ class StaffManger(object):
         doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1})
         return doc['staffs']
 
+    def get_all_staff_object(self):
+        # type: () -> dict[str, Staff]
+        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1})
+        return {k: Staff(self.server_id, self.char_id, k, v) for k, v in doc['staffs'].iteritems()}
+
     def get_staff_object(self, _id):
         # type: (str) -> Staff | None
         doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs.{0}'.format(_id): 1})
@@ -471,8 +470,8 @@ class StaffManger(object):
         # type: (list[str]) -> dict[str, Staff]
         projection = {'staffs.{0}'.format(i): 1 for i in ids}
         doc = MongoStaff.db(self.server_id).find_one(
-                {'_id': self.char_id},
-                projection
+            {'_id': self.char_id},
+            projection
         )
 
         staffs = {}
@@ -483,6 +482,7 @@ class StaffManger(object):
 
     def has_staff(self, ids):
         # type: (list[str]) -> bool
+        # unique id
         projection = {'staffs.{0}'.format(i): 1 for i in ids}
         doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, projection)
         if not doc:
@@ -491,6 +491,23 @@ class StaffManger(object):
         staffs = doc.get('staffs', {})
         return len(ids) == len(staffs)
 
+    def check_original_staff_is_initial_state(self, originals):
+        # 原始ID， 并且匹配原始属性
+        # originals: [(oid, amount)...]
+        oids = []
+        for _oid, _amount in originals:
+            oids.extend([_oid] * _amount)
+
+        staffs = self.get_all_staff_object().values()
+        """:type: list[Staff]"""
+        for s in staffs:
+            for i in oids:
+                if s.oid == i and s.is_initial_state():
+                    oids.remove(i)
+                    break
+
+        if oids:
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
     def add(self, staff_original_id, send_notify=True):
         from core.club import Club
@@ -507,8 +524,8 @@ class StaffManger(object):
         doc['oid'] = staff_original_id
 
         MongoStaff.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {'$set': {'staffs.{0}'.format(unique_id): doc}},
+            {'_id': self.char_id},
+            {'$set': {'staffs.{0}'.format(unique_id): doc}},
         )
 
         if send_notify:
@@ -555,6 +572,13 @@ class StaffManger(object):
         notify.ids.append(staff_id)
         MessagePipe(self.char_id).put(msg=notify)
 
+    def remove_initial_state_staff(self, oid):
+        staffs = self.get_all_staff_object().values()
+        """:type: list[Staff]"""
+        for s in staffs:
+            if s.oid == oid and s.is_initial_state():
+                self.remove(s.id)
+                return
 
     def find_staff_id_by_equipment_slot_id(self, slot_id):
         # type: (str) -> str|None
@@ -567,9 +591,9 @@ class StaffManger(object):
 
         for k, v in doc['staffs'].iteritems():
             if v['equip_mouse'] == slot_id or \
-                v['equip_keyboard'] == slot_id or \
-                v['equip_monitor'] == slot_id or \
-                v['equip_decoration'] == slot_id:
+                            v['equip_keyboard'] == slot_id or \
+                            v['equip_monitor'] == slot_id or \
+                            v['equip_decoration'] == slot_id:
                 return k
 
         return None
@@ -584,7 +608,6 @@ class StaffManger(object):
 
         staff.equipment_change(slot_id, tp)
 
-
     def level_up(self, staff_id, items):
         staff = self.get_staff_object(staff_id)
         if not staff:
@@ -598,7 +621,6 @@ class StaffManger(object):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
         staff.step_up()
-
 
     def star_up(self, staff_id):
         staff = self.get_staff_object(staff_id)

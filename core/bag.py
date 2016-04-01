@@ -10,7 +10,7 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoBag
 from core.club import Club
-from core.resource import MONEY, filter_bag_item, filter_money
+from core.resource import MONEY, ResourceClassification
 
 from utils.functional import make_string_id
 from utils.message import MessagePipe
@@ -306,15 +306,8 @@ class Bag(object):
 
         result = config.using_result()
 
-        result_money = filter_money(result)
-        result_items = filter_bag_item(result)
-
-        if result_money:
-            result_money['message'] = "item use: {0}".format(this_slot['item_id'])
-            Club(self.server_id, self.char_id).update(**result_money)
-
-        for item_id, amount in result_items:
-            self.add(item_id, amount=amount)
+        resource_classified = ResourceClassification.classify(result)
+        resource_classified.add(self.server_id, self.char_id)
 
         return result
 
@@ -375,15 +368,8 @@ class Bag(object):
         else:
             self.remove_by_slot_id(slot_id, 1)
 
-        result_money = filter_money(results)
-        result_items = filter_bag_item(results)
-
-        if result_money:
-            result_money['message'] = 'Equipment Destroy: {0}'.format(item_id)
-            Club(self.server_id, self.char_id).update(**result_money)
-
-        for _id, _amount in result_items:
-            self.add(_id, amount=_amount)
+        resource_classified = ResourceClassification.classify(results)
+        resource_classified.add(self.server_id, self.char_id)
 
         return results
 
@@ -419,22 +405,10 @@ class Bag(object):
                 raise EquipmentMaxLevel(0)
 
             item_needs = config.levels[_level].update_item_need
-            need_money = filter_money(item_needs)
-            need_items = filter_bag_item(item_needs)
 
-            club = Club(self.server_id, self.char_id)
-            if need_money:
-                club.check_money(**need_money)
-            if need_items:
-                self.check_items(need_items)
-
-            # check passed
-            if need_money:
-                need_money = {k: -v for k, v in need_money.iteritems()}
-                club.update(**need_money)
-            if need_items:
-                for _id, _amount in need_items:
-                    self.remove_by_item_id(_id, _amount)
+            resource_classified = ResourceClassification.classify(item_needs)
+            resource_classified.check_exist(self.server_id, self.char_id)
+            resource_classified.remove(self.server_id, self.char_id)
 
             return _level + 1
 

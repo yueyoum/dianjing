@@ -99,13 +99,61 @@ class ResourceClassification(object):
 
         return obj
 
+    def money_as_text_dict(self):
+        # type: () -> dict[str, int]
+        res = {}
+        for _id, _amount in self.money:
+            res[MONEY[_id]] = _amount
 
-    def check_exist(self):
+        return res
+
+
+    def check_exist(self, server_id, char_id):
         from core.club import Club
         from core.bag import Bag
         from core.staff import StaffManger
 
-        pass
+        money_text = self.money_as_text_dict()
+        Club(server_id, char_id).check_money(**money_text)
+        Bag(server_id, char_id).check_items(self.bag)
+        StaffManger(server_id, char_id).check_original_staff_is_initial_state(self.staff)
+
+    def remove(self, server_id, char_id):
+        from core.club import Club
+        from core.bag import Bag
+        from core.staff import StaffManger
+
+        money_text = self.money_as_text_dict()
+        money_text = {k: -v for k, v in money_text.iteritems()}
+        Club(server_id, char_id).update(**money_text)
+
+        bag = Bag(server_id, char_id)
+        for _id, _amount in self.bag:
+            bag.remove_by_item_id(_id, _amount)
+
+        sm = StaffManger(server_id, char_id)
+        for _id, _amount in self.staff:
+            for _ in range(_amount):
+                sm.remove_initial_state_staff(_id)
+
+    def add(self, server_id, char_id):
+        from core.club import Club
+        from core.bag import Bag
+        from core.staff import StaffManger
+
+        money_text = self.money_as_text_dict()
+        Club(server_id, char_id).update(**money_text)
+
+        bag = Bag(server_id, char_id)
+        for _id, _amount in self.bag:
+            bag.add(_id, amount=_amount)
+
+        sm = StaffManger(server_id, char_id)
+        for _id, _amount in self.staff:
+            for _ in range(_amount):
+                sm.add(_id)
+
+
 
 
 class Resource(object):

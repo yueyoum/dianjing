@@ -26,6 +26,8 @@ class AbstractStaff(object):
 
         'unit_id',
         'position',
+
+        'quality',
     ]
 
     def __init__(self, *args, **kwargs):
@@ -57,10 +59,28 @@ class AbstractStaff(object):
         self.unit_id = 0
         self.position = -1
 
+        self.quality = 0
+
     @property
     def power(self):
         # TODO
         return 0
+
+    def is_initial_state(self):
+        # type: () -> bool
+        if self.level != 1:
+            return False
+
+        if self.step != 0:
+            return False
+
+        if self.star != (self.quality-1) * 10:
+            return False
+
+        if self.level_exp > 0 or self.star_exp > 0:
+            return False
+
+        return True
 
     def make_protomsg(self):
         msg = MessageStaff()

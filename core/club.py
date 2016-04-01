@@ -65,7 +65,6 @@ class Club(AbstractClub):
         self.policy = club.get('policy', 1)  # 战术
 
         self.match_staffs = club.get('match_staffs', [])  # 出战员工
-        # self.tibu_staffs = club.get('tibu_staffs', [])  # 替补员工
 
         self.buy_slots = doc.get('buy_slots', 0)
 
