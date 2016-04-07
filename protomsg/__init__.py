@@ -261,6 +261,11 @@ MESSAGE_TO_ID = {
     "BagEquipmentDestroyResponse": 3013,
     "BagEquipmentLevelupConfirmRequest": 3014,
     "BagEquipmentLevelupConfirmResponse": 3015,
+    "UnitNotify": 3100,
+    "UnitLevelUpRequest": 3101,
+    "UnitLevelUpResponse": 3102,
+    "UnitStepUpRequest": 3103,
+    "UnitStepUpResponse": 3104,
 }
 
 ID_TO_MESSAGE = {
@@ -525,6 +530,11 @@ ID_TO_MESSAGE = {
     3013: "BagEquipmentDestroyResponse",
     3014: "BagEquipmentLevelupConfirmRequest",
     3015: "BagEquipmentLevelupConfirmResponse",
+    3100: "UnitNotify",
+    3101: "UnitLevelUpRequest",
+    3102: "UnitLevelUpResponse",
+    3103: "UnitStepUpRequest",
+    3104: "UnitStepUpResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -634,6 +644,8 @@ PATH_TO_REQUEST = {
     "/game/bagequipment/levelup/": ["bag", "BagEquipmentLevelupRequest"],
     "/game/bagequipment/destroy/": ["bag", "BagEquipmentDestroyRequest"],
     "/game/bagequipment/levelup/confirm/": ["bag", "BagEquipmentLevelupConfirmRequest"],
+    "/game/unit/levelup/": ["unit", "UnitLevelUpRequest"],
+    "/game/unit/stepup/": ["unit", "UnitStepUpRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -743,4 +755,6 @@ PATH_TO_RESPONSE = {
     "/game/bagequipment/levelup/": ["bag", "BagEquipmentLevelupResponse"],
     "/game/bagequipment/destroy/": ["bag", "BagEquipmentDestroyResponse"],
     "/game/bagequipment/levelup/confirm/": ["bag", "BagEquipmentLevelupConfirmResponse"],
+    "/game/unit/levelup/": ["unit", "UnitLevelUpResponse"],
+    "/game/unit/stepup/": ["unit", "UnitStepUpResponse"],
 }
