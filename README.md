@@ -1,5 +1,3 @@
-    git 安装 
-
     nginx 安装 
         从官网 http://nginx.org/  下载stable version(稳定版本)
         解压     tar -xzf nginx-1.8.0.tar.gz
@@ -21,6 +19,12 @@
             cd ../
             vim nginx.conf
             
+    install mongodb
+
+    install mysql 
+    
+    install redis
+
     下载文件
         git clone https://said696@bitbucket.org/muzhi/dianjing-server.git  需要bitbucket账号
 
@@ -49,19 +53,19 @@
         mysql -u username -p 
      
     构建数据库表 
-        python manage.py migrate
+        DIANJING_TEST=1 python manage.py migrate
     
     进入数据库
-        python manage.py dbshell
+        DIANJING_TEST=1 python manage.py dbshell
 
     收集静态文件 
-        python manage.py collectstatic
+        DIANJING_TEST=1 python manage.py collectstatic
 
     创建后台用户
-        python manage.py createsuperuser
+        DIANJING_TEST=1 python manage.py createsuperuser
     
     启动服务器
-        uwsgi dianjing-uwsgi.ini
+        DIANJING_TEST=1 uwsgi dianjing-uwsgi.ini
 
     登陆admin 
         服务器地址:8000/admin/
