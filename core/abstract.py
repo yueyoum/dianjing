@@ -187,20 +187,30 @@ class AbstractClub(object):
 
 class AbstractUnit(object):
     __slots__ = [
-        'id', 'oid', 'step', 'level',
+        'uid', 'oid', 'step', 'level',
+        'tp', 'race', 'attack_tp', 'defense_tp', 'range_tp', 'skill_1', 'skill_2',
         'hp', 'hp_percent', 'attack', 'attack_percent', 'defense', 'defense_percent',
         'attack_speed', 'attack_speed_percent', 'attack_distance', 'attack_distance_percent',
-        'move_speed', 'move_speed_percent', 'hit_rate', 'dodge_rate', 'crit_rate', 'crit_multi',
+        'move_speed', 'hit_rate', 'dodge_rate', 'crit_rate', 'crit_multi',
         'crit_anti_rate', 'append_attack_terran', 'append_attack_protoss', 'append_attack_zerg',
         'append_attacked_by_terran', 'append_attacked_by_protoss', 'append_attacked_by_zerg',
         'final_hurt_append', 'final_hurt_reduce',
     ]
 
     def __init__(self):
-        self.id = ""
+        self.uid = ""
         self.oid = 0
         self.step = 0
         self.level = 0
+
+        self.tp = 0
+        self.race = 0
+        self.attack_tp = 0
+        self.defense_tp = 0
+        self.range_tp = 0
+        self.skill_1 = 0
+        self.skill_2 = 0
+
         self.hp = 0
         self.hp_percent = 0.0
         self.attack = 0
@@ -212,7 +222,6 @@ class AbstractUnit(object):
         self.attack_distance = 0
         self.attack_distance_percent = 0.0
         self.move_speed = 0
-        self.move_speed_percent = 0.0
         self.hit_rate = 0.0
         self.dodge_rate = 0.0
         self.crit_rate = 0.0

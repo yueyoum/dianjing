@@ -16,6 +16,8 @@ from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 
 class Unit(AbstractUnit):
+    __slots__ = ['conf_unit', 'conf_step', 'conf_level']
+
     def __init__(self, uid, data):
         super(Unit, self).__init__()
         self.uid = uid
@@ -23,36 +25,45 @@ class Unit(AbstractUnit):
         self.step = data['step']
         self.level = data['level']
 
-        self.conf_unit = ConfigUnitNew.get(self.oid)\
+        self.conf_unit = ConfigUnitNew.get(self.oid)
+        self.conf_step = self.conf_unit.steps.get(self.step)
+        self.conf_level = self.conf_unit.levels.get(self.level)
+
+        self.tp = self.conf_unit.tp
+        self.race = self.conf_unit.race
+        self.attack_tp = self.conf_unit.attack_tp
+        self.defense_tp = self.conf_unit.defense_tp
+        self.skill_1 = self.conf_unit.skill_1
+        self.skill_2 = self.conf_unit.skill_2
 
         self.calculate()
 
     def calculate(self):
-        self.hp = self.conf_unit.hp_max_base
-        self.hp_percent = 0.0
-        self.attack = 0
-        self.attack_percent = 0.0
-        self.defense = 0
-        self.defense_percent = 0.0
-        self.attack_speed = 0
-        self.attack_speed_percent = 0.0
-        self.attack_distance = 0
-        self.attack_distance_percent = 0.0
-        self.move_speed = 0
-        self.move_speed_percent = 0.0
-        self.hit_rate = 0.0
-        self.dodge_rate = 0.0
-        self.crit_rate = 0.0
-        self.crit_multi = 0.0
-        self.crit_anti_rate = 0.0
-        self.append_attack_terran = 0.0
-        self.append_attack_protoss = 0.0
-        self.append_attack_zerg = 0.0
-        self.append_attacked_by_terran = 0.0
-        self.append_attacked_by_protoss = 0.0
-        self.append_attacked_by_zerg = 0.0
-        self.final_hurt_append = 0
-        self.final_hurt_reduce = 0
+        self.hp_percent = self.conf_step.hp_percent
+        self.hp = (self.conf_unit.hp_max_base + self.conf_level.hp) * (1 + self.hp_percent)
+
+        self.attack_percent = self.conf_step.attack_percent
+        self.attack = (self.conf_unit.attack_base + self.conf_level.attack) * (1 + self.attack_percent)
+
+        self.defense_percent = self.conf_step.defense_percent
+        self.defense = (self.conf_unit.defense_base + self.conf_level.defense) * (1 + self.defense_percent)
+
+        self.attack_speed = self.conf_unit.attack_speed_base
+        self.attack_distance = self.conf_unit.attack_range_base
+        self.move_speed = self.conf_unit.move_speed_base
+        self.hit_rate = self.conf_step.hit_rate + self.conf_unit.hit_rate
+        self.dodge_rate = self.conf_unit.dodge_rate + self.conf_step.dodge_rate
+        self.crit_rate = self.conf_unit.crit_rate + self.conf_step.crit_rate
+        self.crit_multi = self.conf_unit.crit_multiple + self.conf_step.crit_multiple
+        self.crit_anti_rate = self.conf_unit.toughness_rate + self.conf_step.toughness_rate
+        self.append_attack_terran = self.conf_step.hurt_addition_to_terran + self.conf_step.hurt_addition_to_terran
+        self.append_attack_protoss = self.conf_step.hurt_addition_to_protoss + self.conf_step.hurt_addition_to_protoss
+        self.append_attack_zerg = self.conf_step.hurt_addition_to_zerg + self.conf_step.hurt_addition_to_zerg
+        self.append_attacked_by_terran = self.conf_step.hurt_addition_by_terran + self.conf_step.hurt_addition_by_terran
+        self.append_attacked_by_protoss = self.conf_step.hurt_addition_by_protoss + self.conf_step.hurt_addition_by_protoss
+        self.append_attacked_by_zerg = self.conf_step.hurt_addition_by_zerg + self.conf_step.hurt_addition_by_zerg
+        self.final_hurt_append = self.conf_unit.final_hurt_addition
+        self.final_hurt_reduce = self.conf_unit.final_hurt_reduce
 
 
 def get_init_units():
@@ -104,7 +115,8 @@ class UnitManager(object):
         )
 
     def level_up(self, uid):
-        if not self.get_unit(uid):
+        unit_data = self.get_unit(uid)
+        if not unit_data:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         # check item
@@ -118,7 +130,8 @@ class UnitManager(object):
         return 0
 
     def step_up(self, uid):
-        if not self.get_unit(uid):
+        unit_data = self.get_unit(uid)
+        if not unit_data:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         # check item
