@@ -64,11 +64,13 @@ class Unit(AbstractUnit):
         self.crit_rate = self.conf_unit.crit_rate + conf_step.crit_rate
         self.crit_multi = self.conf_unit.crit_multiple + conf_step.crit_multiple
         self.crit_anti_rate = self.conf_unit.toughness_rate + conf_step.toughness_rate
-        self.append_attack_terran = conf_step.hurt_addition_to_terran + conf_step.hurt_addition_to_terran
-        self.append_attack_protoss = conf_step.hurt_addition_to_protoss + conf_step.hurt_addition_to_protoss
-        self.append_attack_zerg = conf_step.hurt_addition_to_zerg + conf_step.hurt_addition_to_zerg
-        self.append_attacked_by_terran = conf_step.hurt_addition_by_terran + conf_step.hurt_addition_by_terran
-        self.append_attacked_by_protoss = conf_step.hurt_addition_by_protoss + conf_step.hurt_addition_by_protoss
+
+        self.append_attack_terran = self.conf_unit.hurt_addition_to_terran + conf_step.hurt_addition_to_terran
+        self.append_attack_protoss = self.conf_unit.hurt_addition_to_protoss + conf_step.hurt_addition_to_protoss
+        self.append_attack_zerg = self.conf_unit.hurt_addition_to_zerg + conf_step.hurt_addition_to_zerg
+
+        self.append_attacked_by_terran = self.conf_unit.hurt_addition_by_terran + conf_step.hurt_addition_by_terran
+        self.append_attacked_by_protoss = self.conf_unit.hurt_addition_by_protoss + conf_step.hurt_addition_by_protoss
         self.append_attacked_by_zerg = conf_step.hurt_addition_by_zerg + conf_step.hurt_addition_by_zerg
         self.final_hurt_append = self.conf_unit.final_hurt_addition
         self.final_hurt_reduce = self.conf_unit.final_hurt_reduce
@@ -78,7 +80,6 @@ class Unit(AbstractUnit):
         self.hp = (self.conf_unit.hp_max_base + conf_level.hp) * (1 + self.hp_percent)
         self.attack = (self.conf_unit.attack_base + conf_level.attack) * (1 + self.attack_percent)
         self.defense = (self.conf_unit.defense_base + conf_level.defense) * (1 + self.defense_percent)
-
 
     def level_up(self):
         if self.level >= self.conf_unit.max_level:
@@ -127,7 +128,6 @@ class Unit(AbstractUnit):
         self.calculate_property()
         self.send_notify()
 
-
     def send_notify(self):
         notify = UnitNotify()
         notify.act = ACT_UPDATE
@@ -135,7 +135,6 @@ class Unit(AbstractUnit):
         notify_unit.MergeFrom(self.make_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)
-
 
 
 def get_init_units():
@@ -166,7 +165,6 @@ class UnitManager(object):
 
             MongoUnit.db(self.server_id).insert_one(doc)
 
-
     def unlock_club_level_up_listener(self, club_level):
         pass
 
@@ -179,18 +177,18 @@ class UnitManager(object):
             {'units': 1}
         )
 
-        if str(_id) in doc['units']:
+        if _id in doc['units']:
             # already unlocked
             return
 
         unlock_conf = ConfigUnitUnLock.get(_id)
         club_lv = Club(self.server_id, self.char_id).level
         if club_lv < unlock_conf.need_club_level:
-            # TODO error message
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+            raise GameException(ConfigErrorMessage.get_error_id("UNIT_UNLOCK_CLUB_LEVEL_NOT_ENOUGH"))
 
-        # TODO: unlock unit lv check
-        # for unlock_conf.need_unit_level.
+        for k, v in unlock_conf.need_unit_level:
+            if doc['units'].get(k, {}).get('level', 0) < v:
+                raise GameException(ConfigErrorMessage.get_error_id("UNIT_UNLOCK_UNIT_LEVEL_NOT_ENOUGH"))
 
         unit_doc = MongoUnit.document_unit()
         MongoUnit.db(self.server_id).update_one(
@@ -226,7 +224,6 @@ class UnitManager(object):
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         unit.step_up()
-
 
     def send_notify(self, uids=None):
         if not uids:
