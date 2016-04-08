@@ -13,6 +13,7 @@ from utils.protocol import get_protocol_field_names
 
 from protomsg.club_pb2 import Club as MessageClub
 from protomsg.staff_pb2 import Staff as MessageStaff
+from protomsg.unit_pb2 import Unit as MessageUnit
 
 
 class AbstractStaff(object):
@@ -187,7 +188,7 @@ class AbstractClub(object):
 
 class AbstractUnit(object):
     __slots__ = [
-        'uid', 'oid', 'step', 'level',
+        'id', 'oid', 'step', 'level',
         'tp', 'race', 'attack_tp', 'defense_tp', 'range_tp', 'skill_1', 'skill_2',
         'hp', 'hp_percent', 'attack', 'attack_percent', 'defense', 'defense_percent',
         'attack_speed', 'attack_speed_percent', 'attack_distance', 'attack_distance_percent',
@@ -198,7 +199,7 @@ class AbstractUnit(object):
     ]
 
     def __init__(self):
-        self.uid = ""
+        self.id = ""
         self.oid = 0
         self.step = 0
         self.level = 0
@@ -236,3 +237,14 @@ class AbstractUnit(object):
         self.final_hurt_append = 0
         self.final_hurt_reduce = 0
 
+    def make_protomsg(self):
+        # type: () -> MessageUnit
+        msg = MessageUnit()
+        msg.id = self.id
+        msg.oid = self.oid
+        msg.level = self.level
+        msg.step = self.step
+        msg.hp = self.hp
+        msg.attack = self.attack
+        msg.defense = self.defense
+        return msg

@@ -16,7 +16,7 @@ from config.global_config import GlobalConfig
 from config.errormsg import ConfigErrorMessage
 from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigStaffLevel, ConfigStaffStatus, ConfigStaffNew, ConfigStaffStar, ConfigStaffLevelNew
 from config.challenge import ConfigChallengeMatch, ConfigChapter
-from config.unit import ConfigUnit, ConfigPolicy, ConfigUnitNew
+from config.unit import ConfigUnit, ConfigPolicy, ConfigUnitNew, ConfigUnitUnLock
 from config.building import ConfigBuilding
 from config.package import ConfigPackage
 from config.training import ConfigTrainingProperty
@@ -109,6 +109,8 @@ def load_config():
             ConfigUnit.initialize(data)
         elif item == 'unit_new.json':
             ConfigUnitNew.initialize(data)
+        elif item == 'unit_unlock.json':
+            ConfigUnitUnLock.initialize(data)
         elif item == 'building.json':
             ConfigBuilding.initialize(data)
         elif item == 'package.json':
