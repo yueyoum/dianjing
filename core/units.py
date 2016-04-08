@@ -57,12 +57,12 @@ class Unit(AbstractUnit):
         self.crit_rate = self.conf_unit.crit_rate + self.conf_step.crit_rate
         self.crit_multi = self.conf_unit.crit_multiple + self.conf_step.crit_multiple
         self.crit_anti_rate = self.conf_unit.toughness_rate + self.conf_step.toughness_rate
-        self.append_attack_terran = self.conf_step.hurt_addition_to_terran + self.conf_step.hurt_addition_to_terran
-        self.append_attack_protoss = self.conf_step.hurt_addition_to_protoss + self.conf_step.hurt_addition_to_protoss
-        self.append_attack_zerg = self.conf_step.hurt_addition_to_zerg + self.conf_step.hurt_addition_to_zerg
-        self.append_attacked_by_terran = self.conf_step.hurt_addition_by_terran + self.conf_step.hurt_addition_by_terran
-        self.append_attacked_by_protoss = self.conf_step.hurt_addition_by_protoss + self.conf_step.hurt_addition_by_protoss
-        self.append_attacked_by_zerg = self.conf_step.hurt_addition_by_zerg + self.conf_step.hurt_addition_by_zerg
+        self.append_attack_terran = self.conf_unit.hurt_addition_to_terran + self.conf_step.hurt_addition_to_terran
+        self.append_attack_protoss = self.conf_unit.hurt_addition_to_protoss + self.conf_step.hurt_addition_to_protoss
+        self.append_attack_zerg = self.conf_unit.hurt_addition_to_zerg + self.conf_step.hurt_addition_to_zerg
+        self.append_attacked_by_terran = self.conf_unit.hurt_addition_by_terran + self.conf_step.hurt_addition_by_terran
+        self.append_attacked_by_protoss = self.conf_unit.hurt_addition_by_protoss + self.conf_step.hurt_addition_by_protoss
+        self.append_attacked_by_zerg = self.conf_unit.hurt_addition_by_zerg + self.conf_step.hurt_addition_by_zerg
         self.final_hurt_append = self.conf_unit.final_hurt_addition
         self.final_hurt_reduce = self.conf_unit.final_hurt_reduce
 
