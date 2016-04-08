@@ -10,7 +10,7 @@ def level_up(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
-    uid = not request._proto.id
+    uid = request._proto.id
 
     ret = UnitManager(server_id, char_id).level_up(uid)
 
@@ -24,7 +24,7 @@ def step_up(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
-    uid = not request._proto.id
+    uid = request._proto.id
 
     ret = UnitManager(server_id, char_id).step_up(uid)
 

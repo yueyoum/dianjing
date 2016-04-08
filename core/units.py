@@ -5,6 +5,7 @@ from config.errormsg import ConfigErrorMessage
 from core.abstract import AbstractUnit
 from core.mongo import MongoUnit
 from core.club import Club
+from core.resource import ResourceClassification
 
 from dianjing.exception import GameException
 
@@ -99,7 +100,7 @@ class UnitManager(object):
         # for unlock_conf.need_unit_level.
 
         unit = MongoUnit.UNIT_DOCUMENT.copy()
-        unit.oid = unlock_conf.id
+        unit['oid'] = unlock_conf.id
         uid = make_string_id()
 
         MongoUnit.db(self.server_id).update_one(
@@ -109,24 +110,37 @@ class UnitManager(object):
         )
 
     def get_unit(self, uid):
-        return MongoUnit.db(self.server_id).find_one(
+        unit = MongoUnit.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'units.{0}'.format(uid): 1}
         )
+
+        return unit['units'].get(uid, {})
+
+    def item_check(self, using_items):
+        resource_classified = ResourceClassification.classify(using_items)
+        resource_classified.check_exist(self.server_id, self.char_id)
+        resource_classified.remove(self.server_id, self.char_id)
 
     def level_up(self, uid):
         unit_data = self.get_unit(uid)
         if not unit_data:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-        # check item
+        unit_conf = ConfigUnitNew.get(unit_data['oid'])
+        if unit_data['level'] >= unit_conf.max_level:
+            raise GameException(ConfigErrorMessage.get_error_id("UNIT_REACH_MAX_LEVEL"))
+
+        level_conf = unit_conf.levels.get(unit_data['level'])
+        using_items = [(i, j) for i, j in level_conf.update_item_need]
+        self.item_check(using_items)
 
         MongoUnit.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$inc': {'units.{0}.level': 1}}
         )
 
-        self.send_notify(uid)
+        self.send_notify([uid])
         return 0
 
     def step_up(self, uid):
@@ -134,32 +148,46 @@ class UnitManager(object):
         if not unit_data:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-        # check item
+        unit_conf = ConfigUnitNew.get(unit_data['oid'])
+        if unit_data['step'] >= unit_conf.max_step:
+            raise GameException(ConfigErrorMessage.get_error_id("UNIT_REACH_MAX_STEP"))
+
+        step_conf = unit_conf.steps.get(unit_data['step'])
+        if unit_data['level'] < step_conf.level_limit:
+            raise GameException(ConfigErrorMessage.get_error_id("UNIT_LEVEL_NOT_ENOUGH"))
+
+        using_items = [(i, k) for i, k in step_conf.update_item_need]
+        self.item_check(using_items)
 
         MongoUnit.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$inc': {'units.{0}.step': 1}}
         )
 
-        self.send_notify(uid)
+        self.send_notify([uid])
         return 0
 
     def send_notify(self, uid=None):
         if not uid:
             act = ACT_INIT
+            projection = {'units': 1}
         else:
             act = ACT_UPDATE
+            projection = {'units.{0}'.format(i): 1 for i in uid}
+
+        data = MongoUnit.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            projection
+        )
 
         notify = UnitNotify()
         notify.act = act
-        for k in uid:
+        for k, v in data['units'].iteritems():
             unit_info = notify.units.add()
-            unit_data = self.get_unit(k)
-            if not unit_data:
+            if not v:
                 continue
 
-            unit = Unit(k, unit_data)
-
+            unit = Unit(k, v)
             unit_info.id = unit.uid
             unit_info.oid = unit.oid
             unit_info.level = unit.level
