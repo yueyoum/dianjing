@@ -26,7 +26,7 @@ server {
     }
 
     location /upload/ {
-        alias %s/;
+        alias %s/upload/;
     }
 
     location / {

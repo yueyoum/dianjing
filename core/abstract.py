@@ -183,3 +183,50 @@ class AbstractClub(object):
             msg_match_staff.position = self.staffs[i].position
 
         return msg
+
+
+class AbstractUnit(object):
+    __slots__ = [
+        'id', 'oid', 'step', 'lv',
+        'hp', 'hp_percent', 'attack', 'attack_percent', 'defense', 'defense_percent',
+        'attack_speed', 'attack_speed_percent', 'attack_distance', 'attack_distance_percent',
+        'move_speed', 'move_speed_percent', 'hit_rate', 'dodge_rate', 'crit_rate', 'crit_multi',
+        'crit_anti_rate', 'append_attack_terran', 'append_attack_protoss', 'append_attack_zerg',
+        'append_attacked_by_terran', 'append_attacked_by_protoss', 'append_attacked_by_zerg',
+        'final_hurt_append', 'final_hurt_reduce',
+    ]
+
+    def __init__(self):
+        self.id = ""
+        self.oid = 0
+        self.step = 0
+        self.lv = 0
+        self.hp = 0
+        self.hp_percent = 0.0
+        self.attack = 0
+        self.attack_percent = 0.0
+        self.defense = 0
+        self.defense_percent = 0.0
+        self.attack_speed = 0
+        self.attack_speed_percent = 0.0
+        self.attack_distance = 0
+        self.attack_distance_percent = 0.0
+        self.move_speed = 0
+        self.move_speed_percent = 0.0
+        self.hit_rate = 0.0
+        self.dodge_rate = 0.0
+        self.crit_rate = 0.0
+        self.crit_multi = 0.0
+        self.crit_anti_rate = 0.0
+        self.append_attack_terran = 0.0
+        self.append_attack_protoss = 0.0
+        self.append_attack_zerg = 0.0
+        self.append_attacked_by_terran = 0.0
+        self.append_attacked_by_protoss = 0.0
+        self.append_attacked_by_zerg = 0.0
+        self.final_hurt_append = 0
+        self.final_hurt_reduce = 0
+
+    def make_protomsg(self):
+        pass
+
