@@ -139,7 +139,7 @@ class MongoStaff(BaseDocument):
     STAFF_DOCUMENT = {
         'oid': null,
         'level': 1,
-        'step': 1,
+        'step': 0,
         'star': 0,
         'level_exp': 0,
         'star_exp': 0,
@@ -682,10 +682,16 @@ class MongoUnit(BaseDocument):
         '_id': 0,
         # unit_uid: unit
         'units': {},
+        # 已经解锁的
+        'unlocked': [],
     }
 
     UNIT_DOCUMENT = {
         'oid': 0,
-        'step': 1,
+        'step': 0,
         'level': 1,
     }
+
+    @classmethod
+    def document_unit(cls):
+        return cls.UNIT_DOCUMENT.copy()

@@ -17,6 +17,7 @@ from core.staff import StaffRecruit, StaffManger
 # from core.training import TrainingExp, TrainingProperty, TrainingBroadcast, TrainingShop, TrainingSponsor
 from core.item import ItemManager
 from core.bag import Bag
+from core.unit import UnitManager
 from core.challenge import Challenge
 from core.building import BuildingManager
 from core.league.league import LeagueManger
@@ -51,6 +52,8 @@ def game_start_handler(server_id, char_id, **kwargs):
 
     c = Character(server_id, char_id)
     c.send_notify()
+
+    UnitManager(server_id, char_id).send_notify()
 
     Bag(server_id, char_id).send_notify()
 
