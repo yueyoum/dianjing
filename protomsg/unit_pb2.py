@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='unit.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\nunit.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"i\n\x04Unit\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0b\n\x03oid\x18\x02 \x02(\x05\x12\r\n\x05level\x18\x03 \x02(\x05\x12\x0c\n\x04step\x18\x04 \x02(\x05\x12\n\n\x02hp\x18\x05 \x02(\x05\x12\x0e\n\x06\x61ttack\x18\x06 \x02(\x05\x12\x0f\n\x07\x64\x65\x66\x65nse\x18\x07 \x02(\x05\"m\n\nUnitNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12&\n\x05units\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Unit\"1\n\x12UnitLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"3\n\x13UnitLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"0\n\x11UnitStepUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"2\n\x12UnitStepUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+  serialized_pb=_b('\n\nunit.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\\\n\x04Unit\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0c\n\x04step\x18\x03 \x02(\x05\x12\n\n\x02hp\x18\x04 \x02(\x05\x12\x0e\n\x06\x61ttack\x18\x05 \x02(\x05\x12\x0f\n\x07\x64\x65\x66\x65nse\x18\x06 \x02(\x05\"m\n\nUnitNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12&\n\x05units\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Unit\"1\n\x12UnitLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"3\n\x13UnitLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"0\n\x11UnitStepUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"2\n\x12UnitStepUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
   ,
   dependencies=[common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -37,49 +37,42 @@ _UNIT = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='id', full_name='Dianjing.protocol.Unit.id', index=0,
-      number=1, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='oid', full_name='Dianjing.protocol.Unit.oid', index=1,
+      name='level', full_name='Dianjing.protocol.Unit.level', index=1,
       number=2, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='level', full_name='Dianjing.protocol.Unit.level', index=2,
+      name='step', full_name='Dianjing.protocol.Unit.step', index=2,
       number=3, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='step', full_name='Dianjing.protocol.Unit.step', index=3,
+      name='hp', full_name='Dianjing.protocol.Unit.hp', index=3,
       number=4, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='hp', full_name='Dianjing.protocol.Unit.hp', index=4,
+      name='attack', full_name='Dianjing.protocol.Unit.attack', index=4,
       number=5, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='attack', full_name='Dianjing.protocol.Unit.attack', index=5,
+      name='defense', full_name='Dianjing.protocol.Unit.defense', index=5,
       number=6, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='defense', full_name='Dianjing.protocol.Unit.defense', index=6,
-      number=7, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -97,7 +90,7 @@ _UNIT = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=47,
-  serialized_end=152,
+  serialized_end=139,
 )
 
 
@@ -141,8 +134,8 @@ _UNITNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=154,
-  serialized_end=263,
+  serialized_start=141,
+  serialized_end=250,
 )
 
 
@@ -162,8 +155,8 @@ _UNITLEVELUPREQUEST = _descriptor.Descriptor(
       options=None),
     _descriptor.FieldDescriptor(
       name='id', full_name='Dianjing.protocol.UnitLevelUpRequest.id', index=1,
-      number=2, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -179,8 +172,8 @@ _UNITLEVELUPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=265,
-  serialized_end=314,
+  serialized_start=252,
+  serialized_end=301,
 )
 
 
@@ -217,8 +210,8 @@ _UNITLEVELUPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=316,
-  serialized_end=367,
+  serialized_start=303,
+  serialized_end=354,
 )
 
 
@@ -238,8 +231,8 @@ _UNITSTEPUPREQUEST = _descriptor.Descriptor(
       options=None),
     _descriptor.FieldDescriptor(
       name='id', full_name='Dianjing.protocol.UnitStepUpRequest.id', index=1,
-      number=2, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -255,8 +248,8 @@ _UNITSTEPUPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=369,
-  serialized_end=417,
+  serialized_start=356,
+  serialized_end=404,
 )
 
 
@@ -293,8 +286,8 @@ _UNITSTEPUPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=419,
-  serialized_end=469,
+  serialized_start=406,
+  serialized_end=456,
 )
 
 _UNITNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION

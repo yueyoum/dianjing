@@ -188,7 +188,7 @@ class AbstractClub(object):
 
 class AbstractUnit(object):
     __slots__ = [
-        'id', 'oid', 'step', 'level',
+        'id', 'step', 'level',
         'tp', 'race', 'attack_tp', 'defense_tp', 'range_tp', 'skill_1', 'skill_2',
         'hp', 'hp_percent', 'attack', 'attack_percent', 'defense', 'defense_percent',
         'attack_speed', 'attack_speed_percent', 'attack_distance', 'attack_distance_percent',
@@ -199,8 +199,7 @@ class AbstractUnit(object):
     ]
 
     def __init__(self):
-        self.id = ""
-        self.oid = 0
+        self.id = 0 # NOTE: 就是本身的ID
         self.step = 0
         self.level = 0
 
@@ -241,7 +240,6 @@ class AbstractUnit(object):
         # type: () -> MessageUnit
         msg = MessageUnit()
         msg.id = self.id
-        msg.oid = self.oid
         msg.level = self.level
         msg.step = self.step
         msg.hp = self.hp
