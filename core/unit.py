@@ -15,7 +15,6 @@ from core.mongo import MongoUnit
 from core.club import Club
 from core.resource import ResourceClassification
 
-from utils.functional import make_string_id
 from utils.message import MessagePipe
 
 from config import ConfigErrorMessage, ConfigUnitNew, ConfigUnitUnLock
@@ -27,16 +26,15 @@ from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 class Unit(AbstractUnit):
     __slots__ = ['conf_unit', 'server_id', 'char_id']
 
-    def __init__(self, server_id, char_id, uid, data):
+    def __init__(self, server_id, char_id, _id, data):
         super(Unit, self).__init__()
         self.server_id = server_id
         self.char_id = char_id
-        self.id = uid
-        self.oid = data['oid']
+        self.id = _id
         self.step = data['step']
         self.level = data['level']
 
-        self.conf_unit = ConfigUnitNew.get(self.oid)
+        self.conf_unit = ConfigUnitNew.get(self.id)
 
         self.tp = self.conf_unit.tp
         self.race = self.conf_unit.race
@@ -162,34 +160,30 @@ class UnitManager(object):
 
             init_ids = get_init_units()
 
-            for oid in init_ids:
-                unique_id = make_string_id()
-
+            for _id in init_ids:
                 unit_doc = MongoUnit.document_unit()
-                unit_doc['oid'] = oid
+                doc['units'][_id] = unit_doc
 
-                doc['units'][unique_id] = unit_doc
-
-            doc['unlocked'] = init_ids
             MongoUnit.db(self.server_id).insert_one(doc)
 
 
     def unlock_club_level_up_listener(self, club_level):
         pass
 
-    def unlock_unit_level_up_listener(self, club_level):
+    def unlock_unit_level_up_listener(self, unit_id, unit_level):
         pass
 
-    def _unlock(self, oid):
+    def _unlock(self, _id):
         doc = MongoUnit.db(self.server_id).find_one(
             {'_id': self.char_id},
-            {'unlocked': 1}
+            {'units': 1}
         )
 
-        if oid in doc['unlocked']:
+        if str(_id) in doc['units']:
+            # already unlocked
             return
 
-        unlock_conf = ConfigUnitUnLock.get(oid)
+        unlock_conf = ConfigUnitUnLock.get(_id)
         club_lv = Club(self.server_id, self.char_id).level
         if club_lv < unlock_conf.need_club_level:
             # TODO error message
@@ -198,30 +192,26 @@ class UnitManager(object):
         # TODO: unlock unit lv check
         # for unlock_conf.need_unit_level.
 
-        unit = MongoUnit.document_unit()
-        unit['oid'] = oid
-        unique_id = make_string_id()
-
+        unit_doc = MongoUnit.document_unit()
         MongoUnit.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': {'units.{0}'.format(unique_id): unit}},
-            upsert=True,
+            {'$set': {'units.{0}'.format(_id): unit_doc}},
         )
 
-        self.send_notify(uids=[unique_id])
+        self.send_notify(uids=[_id])
 
-    def get_unit_object(self, unique_id):
-        # type: (str) -> Unit|None
+    def get_unit_object(self, _id):
+        # type: (int) -> Unit|None
         doc = MongoUnit.db(self.server_id).find_one(
             {'_id': self.char_id},
-            {'units.{0}'.format(unique_id): 1}
+            {'units.{0}'.format(_id): 1}
         )
 
-        data = doc['units'].get(unique_id, None)
+        data = doc['units'].get(str(_id), None)
         if not data:
             return None
 
-        return Unit(self.server_id, self.char_id, unique_id, data)
+        return Unit(self.server_id, self.char_id, _id, data)
 
     def level_up(self, uid):
         unit = self.get_unit_object(uid)
@@ -256,7 +246,7 @@ class UnitManager(object):
 
         for k, v in doc['units'].iteritems():
             notify_unit = notify.units.add()
-            unit = Unit(self.server_id, self.char_id, k, v)
+            unit = Unit(self.server_id, self.char_id, int(k), v)
             notify_unit.MergeFrom(unit.make_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)

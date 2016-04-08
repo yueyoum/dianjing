@@ -680,14 +680,12 @@ class MongoLeague(BaseDocument):
 class MongoUnit(BaseDocument):
     DOCUMENT = {
         '_id': 0,
-        # unit_uid: unit
+        # unit_id: unit
+        # 只保存已解锁的
         'units': {},
-        # 已经解锁的
-        'unlocked': [],
     }
 
     UNIT_DOCUMENT = {
-        'oid': 0,
         'step': 0,
         'level': 1,
     }
