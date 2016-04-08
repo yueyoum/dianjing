@@ -373,7 +373,7 @@ class Staff(AbstractStaff):
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'set': {
+            {'$set': {
                 'staffs.{0}.star'.format(self.id): self.star,
                 'staffs.{0}.star_exp'.format(self.id): self.star_exp
             }}

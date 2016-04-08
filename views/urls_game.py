@@ -36,6 +36,7 @@ import views.training_match
 import views.elite_match
 import views.auction
 import views.bag
+import views.unit
 
 urlpatterns = [
     url(r'^sync/$', views.common.sync),
@@ -178,4 +179,7 @@ urlpatterns = [
     url(r'^bagequipment/destroy/$', views.bag.equipment_destroy),
     url(r'^bagequipment/levelup/$', views.bag.equipment_level_up_preview),
     url(r'^bagequipment/levelup/confirm/$', views.bag.equipment_level_up_confirm),
+
+    url(r'^unit/levelup/$', views.unit.level_up),
+    url(r'^unit/stepup/$', views.unit.step_up),
 ]

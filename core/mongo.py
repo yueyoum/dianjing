@@ -675,3 +675,17 @@ class MongoLeague(BaseDocument):
 
     COLLECTION = 'league'
     INDEXES = ['level']
+
+
+class MongoUnit(BaseDocument):
+    DOCUMENT = {
+        '_id': 0,
+        # unit_uid: unit
+        'units': {},
+    }
+
+    UNIT_DOCUMENT = {
+        'oid': 0,
+        'step': 1,
+        'level': 1,
+    }

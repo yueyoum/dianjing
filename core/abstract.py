@@ -187,7 +187,7 @@ class AbstractClub(object):
 
 class AbstractUnit(object):
     __slots__ = [
-        'id', 'oid', 'step', 'lv',
+        'id', 'oid', 'step', 'level',
         'hp', 'hp_percent', 'attack', 'attack_percent', 'defense', 'defense_percent',
         'attack_speed', 'attack_speed_percent', 'attack_distance', 'attack_distance_percent',
         'move_speed', 'move_speed_percent', 'hit_rate', 'dodge_rate', 'crit_rate', 'crit_multi',
@@ -200,7 +200,7 @@ class AbstractUnit(object):
         self.id = ""
         self.oid = 0
         self.step = 0
-        self.lv = 0
+        self.level = 0
         self.hp = 0
         self.hp_percent = 0.0
         self.attack = 0
@@ -226,7 +226,4 @@ class AbstractUnit(object):
         self.append_attacked_by_zerg = 0.0
         self.final_hurt_append = 0
         self.final_hurt_reduce = 0
-
-    def make_protomsg(self):
-        pass
 
