@@ -20,9 +20,10 @@ def send(request):
 
     channel = request._proto.channel
     msg = request._proto.msg
+    tp = request._proto.tp
 
     chat = Chat(server_id, char_id)
-    chat.send(channel, msg)
+    chat.send(tp, channel, msg)
 
     response = ChatSendResponse()
     response.ret = 0
