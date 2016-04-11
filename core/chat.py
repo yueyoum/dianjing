@@ -14,11 +14,13 @@ from dianjing.exception import GameException
 from core.mongo import MongoCommon, MongoCharacter
 from core.common import CommonChat
 from core.signals import chat_signal
+from core.resource import ResourceClassification, item_id_to_money_text
+from core.club import Club
 
 from config import ConfigErrorMessage
 from utils.message import MessagePipe, MessageFactory
 
-from protomsg.chat_pb2 import CHAT_CHANNEL_PUBLIC, CHAT_CHANNEL_UNION, ChatNotify, ChatMessage
+from protomsg.chat_pb2 import CHAT_CHANNEL_PUBLIC, CHAT_CHANNEL_UNION, ChatNotify, ChatMessage, ChatSendRequest
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
 
@@ -27,8 +29,12 @@ class Chat(object):
         self.server_id = server_id
         self.char_id = char_id
 
-    def send(self, channel, text):
+    def send(self, tp, channel, text):
         from tasks import world
+
+        if tp != ChatSendRequest.NORMAL:
+            self.command(tp, text)
+            return
 
         if channel not in [CHAT_CHANNEL_PUBLIC, CHAT_CHANNEL_UNION]:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
@@ -80,6 +86,45 @@ class Chat(object):
             server_id=self.server_id,
             char_id=self.char_id
         )
+
+    def command(self, tp, data):
+        if tp == ChatSendRequest.ADD_ITEM:
+            items = []
+            for x in data.split(';'):
+                _id, _amount = x.split(',')
+                items.append((int(_id), int(_amount)))
+
+                resource_classified = ResourceClassification.classify(items)
+                resource_classified.add(self.server_id, self.char_id)
+
+        elif tp == ChatSendRequest.SET_MONEY:
+            setter = {}
+            for x in data.split(";"):
+                _id, _amount = x.split(',')
+                name = item_id_to_money_text(int(_id))
+
+                setter['club.{0}'.format(name)] = int(_amount)
+
+            MongoCharacter.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': setter}
+            )
+
+            Club(self.server_id, self.char_id).send_notify()
+
+        elif tp == ChatSendRequest.SET_CLUB_LEVEL:
+            level = int(data)
+            MongoCharacter.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {
+                    'club.level': level
+                }}
+            )
+
+            Club(self.server_id, self.char_id).send_notify()
+        else:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
 
     def send_notify(self):
         notify = ChatNotify()

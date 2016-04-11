@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='chat.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\nchat.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"1\n\x08\x43hatClub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0b\n\x03vip\x18\x03 \x02(\x05\"v\n\x0b\x43hatMessage\x12/\n\x07\x63hannel\x18\x01 \x02(\x0e\x32\x1e.Dianjing.protocol.ChatChannel\x12)\n\x04\x63lub\x18\x02 \x02(\x0b\x32\x1b.Dianjing.protocol.ChatClub\x12\x0b\n\x03msg\x18\x03 \x02(\t\"s\n\nChatNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12,\n\x04msgs\x18\x03 \x03(\x0b\x32\x1e.Dianjing.protocol.ChatMessage\"`\n\x0f\x43hatSendRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x07\x63hannel\x18\x02 \x02(\x0e\x32\x1e.Dianjing.protocol.ChatChannel\x12\x0b\n\x03msg\x18\x03 \x02(\t\"0\n\x10\x43hatSendResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*W\n\x0b\x43hatChannel\x12\x17\n\x13\x43HAT_CHANNEL_SYSTEM\x10\x01\x12\x17\n\x13\x43HAT_CHANNEL_PUBLIC\x10\x02\x12\x16\n\x12\x43HAT_CHANNEL_UNION\x10\x03')
+  serialized_pb=_b('\n\nchat.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"1\n\x08\x43hatClub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0b\n\x03vip\x18\x03 \x02(\x05\"v\n\x0b\x43hatMessage\x12/\n\x07\x63hannel\x18\x01 \x02(\x0e\x32\x1e.Dianjing.protocol.ChatChannel\x12)\n\x04\x63lub\x18\x02 \x02(\x0b\x32\x1b.Dianjing.protocol.ChatClub\x12\x0b\n\x03msg\x18\x03 \x02(\t\"s\n\nChatNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12,\n\x04msgs\x18\x03 \x03(\x0b\x32\x1e.Dianjing.protocol.ChatMessage\"\xf4\x01\n\x0f\x43hatSendRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x07\x63hannel\x18\x02 \x02(\x0e\x32\x1e.Dianjing.protocol.ChatChannel\x12\x0b\n\x03msg\x18\x03 \x02(\t\x12\x36\n\x02tp\x18\x04 \x02(\x0e\x32*.Dianjing.protocol.ChatSendRequest.MsgType\"Z\n\x07MsgType\x12\n\n\x06NORMAL\x10\x00\x12\x0c\n\x08\x41\x44\x44_ITEM\x10\x01\x12\x12\n\x0e\x41\x44\x44_CLUB_LEVEL\x10\x02\x12\r\n\tSET_MONEY\x10\x03\x12\x12\n\x0eSET_CLUB_LEVEL\x10\x04\"0\n\x10\x43hatSendResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*W\n\x0b\x43hatChannel\x12\x17\n\x13\x43HAT_CHANNEL_SYSTEM\x10\x01\x12\x17\n\x13\x43HAT_CHANNEL_PUBLIC\x10\x02\x12\x16\n\x12\x43HAT_CHANNEL_UNION\x10\x03')
   ,
   dependencies=[common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -47,8 +47,8 @@ _CHATCHANNEL = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=483,
-  serialized_end=570,
+  serialized_start=632,
+  serialized_end=719,
 )
 _sym_db.RegisterEnumDescriptor(_CHATCHANNEL)
 
@@ -57,6 +57,40 @@ CHAT_CHANNEL_SYSTEM = 1
 CHAT_CHANNEL_PUBLIC = 2
 CHAT_CHANNEL_UNION = 3
 
+
+_CHATSENDREQUEST_MSGTYPE = _descriptor.EnumDescriptor(
+  name='MsgType',
+  full_name='Dianjing.protocol.ChatSendRequest.MsgType',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='NORMAL', index=0, number=0,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='ADD_ITEM', index=1, number=1,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='ADD_CLUB_LEVEL', index=2, number=2,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='SET_MONEY', index=3, number=3,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='SET_CLUB_LEVEL', index=4, number=4,
+      options=None,
+      type=None),
+  ],
+  containing_type=None,
+  options=None,
+  serialized_start=490,
+  serialized_end=580,
+)
+_sym_db.RegisterEnumDescriptor(_CHATSENDREQUEST_MSGTYPE)
 
 
 _CHATCLUB = _descriptor.Descriptor(
@@ -222,11 +256,19 @@ _CHATSENDREQUEST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='tp', full_name='Dianjing.protocol.ChatSendRequest.tp', index=3,
+      number=4, type=14, cpp_type=8, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
+    _CHATSENDREQUEST_MSGTYPE,
   ],
   options=None,
   is_extendable=False,
@@ -234,8 +276,8 @@ _CHATSENDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=335,
-  serialized_end=431,
+  serialized_start=336,
+  serialized_end=580,
 )
 
 
@@ -272,8 +314,8 @@ _CHATSENDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=433,
-  serialized_end=481,
+  serialized_start=582,
+  serialized_end=630,
 )
 
 _CHATMESSAGE.fields_by_name['channel'].enum_type = _CHATCHANNEL
@@ -281,6 +323,8 @@ _CHATMESSAGE.fields_by_name['club'].message_type = _CHATCLUB
 _CHATNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _CHATNOTIFY.fields_by_name['msgs'].message_type = _CHATMESSAGE
 _CHATSENDREQUEST.fields_by_name['channel'].enum_type = _CHATCHANNEL
+_CHATSENDREQUEST.fields_by_name['tp'].enum_type = _CHATSENDREQUEST_MSGTYPE
+_CHATSENDREQUEST_MSGTYPE.containing_type = _CHATSENDREQUEST
 DESCRIPTOR.message_types_by_name['ChatClub'] = _CHATCLUB
 DESCRIPTOR.message_types_by_name['ChatMessage'] = _CHATMESSAGE
 DESCRIPTOR.message_types_by_name['ChatNotify'] = _CHATNOTIFY

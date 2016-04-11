@@ -25,6 +25,9 @@ MONEY = {
 
 _MONEY_REVERSE = {v: k for k, v in MONEY.iteritems()}
 
+def item_id_to_money_text(_id):
+    return MONEY[_id]
+
 def money_text_to_item_id(text):
     return _MONEY_REVERSE[text]
 
