@@ -75,9 +75,9 @@ class Unit(AbstractUnit):
 
     def calculate_property(self):
         conf_level = self.conf_unit.levels[self.level]
-        self.hp = (self.conf_unit.hp_max_base + conf_level.hp) * (1 + self.hp_percent)
-        self.attack = (self.conf_unit.attack_base + conf_level.attack) * (1 + self.attack_percent)
-        self.defense = (self.conf_unit.defense_base + conf_level.defense) * (1 + self.defense_percent)
+        self.hp = int( (self.conf_unit.hp_max_base + conf_level.hp) * (1 + self.hp_percent) )
+        self.attack = int( (self.conf_unit.attack_base + conf_level.attack) * (1 + self.attack_percent) )
+        self.defense = int( (self.conf_unit.defense_base + conf_level.defense) * (1 + self.defense_percent) )
 
 
     def level_up(self):
@@ -162,7 +162,7 @@ class UnitManager(object):
 
             for _id in init_ids:
                 unit_doc = MongoUnit.document_unit()
-                doc['units'][_id] = unit_doc
+                doc['units'][str(_id)] = unit_doc
 
             MongoUnit.db(self.server_id).insert_one(doc)
 

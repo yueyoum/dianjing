@@ -690,6 +690,8 @@ class MongoUnit(BaseDocument):
         'level': 1,
     }
 
+    COLLECTION = 'unit'
+
     @classmethod
     def document_unit(cls):
         return cls.UNIT_DOCUMENT.copy()
