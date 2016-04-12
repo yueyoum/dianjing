@@ -7,14 +7,12 @@ Description:
 
 """
 
-import random
 import base64
 import dill
 
-from core.mongo import MongoCharacter, MongoStaff
+from core.mongo import MongoCharacter
 from core.abstract import AbstractClub
-from core.signals import match_staffs_set_done_signal, club_level_up_signal, match_staffs_set_change_signal
-from core.resource import Resource
+from core.signals import club_level_up_signal
 from core.statistics import FinanceStatistics
 
 from dianjing.exception import GameException
@@ -23,13 +21,10 @@ from utils.message import MessagePipe
 
 from config import (
     ConfigClubLevel,
-    ConfigPolicy,
     ConfigErrorMessage
 )
 
-from config.settings import BUY_STAFF_SLOT_COST
-
-from protomsg.club_pb2 import ClubNotify, ClubStaffSlotsAmountNotify
+from protomsg.club_pb2 import ClubNotify
 
 
 def club_level_up_need_renown(level):
@@ -38,10 +33,10 @@ def club_level_up_need_renown(level):
 
 class Club(AbstractClub):
     __slots__ = [
-        'server_id', 'char_id', 'buy_slots'
+        'server_id', 'char_id',
     ]
 
-    def __init__(self, server_id, char_id, load_staff=True):
+    def __init__(self, server_id, char_id):
         super(Club, self).__init__()
 
         self.server_id = server_id
@@ -62,16 +57,13 @@ class Club(AbstractClub):
 
         self.crystal = club.get('crystal', 0)
         self.gas = club.get('gas', 0)
-        self.policy = club.get('policy', 1)  # 战术
 
-        self.match_staffs = club.get('match_staffs', [])  # 出战员工
+    def load_formation_staffs(self):
+        from core.formation import Formation
+        self.formation_staffs = Formation(self.server_id, self.char_id).get_formation_staffs()
 
-        self.buy_slots = doc.get('buy_slots', 0)
 
-        if load_staff:
-            self.load_match_staffs()
-
-    def check_money(self, diamond=0, gold=0, renown=0, crystal=0, gas=0):
+    def check_money(self, diamond=0, gold=0, crystal=0, gas=0):
         # TODO 其他货币
         if diamond > self.diamond:
             raise GameException(ConfigErrorMessage.get_error_id("DIAMOND_NOT_ENOUGH"))
@@ -82,7 +74,6 @@ class Club(AbstractClub):
         if gas > self.gas:
             raise GameException(ConfigErrorMessage.get_error_id("GAS_NOT_ENOUGH"))
 
-
     # 这些 current_* 接口是给 编辑器使用的
     # 比如需要俱乐部等级的任务 里面只要填写 core.club.Club.current_level
     # 那么代码就可以找到对应需要的值
@@ -92,134 +83,6 @@ class Club(AbstractClub):
     def current_vip(self):
         return self.vip
 
-    @property
-    def max_slots_amount(self):
-        config = ConfigClubLevel.get(self.level)
-        return config.max_staff_amount + self.buy_slots
-
-    def load_match_staffs(self):
-        from core.staff import StaffManger
-        all_match_staff_ids = self.all_match_staffs()
-        if not all_match_staff_ids:
-            return
-
-        self.staffs = StaffManger(self.server_id, self.char_id).get_dict_of_staff_object_by_ids(all_match_staff_ids)
-        # self.qianban_affect()
-
-    def is_staff_in_match(self, staff_id):
-        # return staff_id in self.match_staffs or staff_id in self.tibu_staffs
-        return staff_id in self.match_staffs
-
-    def set_policy(self, policy):
-        if not ConfigPolicy.get(policy):
-            raise GameException(ConfigErrorMessage.get_error_id('POLICY_NOT_EXIST'))
-
-        MongoCharacter.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': {'club.policy': policy}}
-        )
-
-        self.policy = policy
-        self.send_notify()
-
-
-    def set_unit(self, index, staff_id, unit_id):
-        from core.staff import StaffManger
-        # if not StaffManger(self.server_id, self.char_id).has_staff(staff_id):
-        #     raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
-
-        assert index >=0 and index <= 5
-
-        all_staffs = StaffManger(self.server_id, self.char_id).get_all_staff_data()
-        positions = []
-        for v in all_staffs.values():
-            _pos = v.get('position', -1)
-            if _pos != -1:
-                positions.append(_pos)
-
-        updater = {}
-
-        if not staff_id:
-            # 设置兵种. 如果本来没有位置， 就设定位置
-            staff_id = self.match_staffs[index]
-            assert staff_id
-
-            updater['staffs.{0}.unit_id'.format(staff_id)] = unit_id
-
-            pos = all_staffs[staff_id].get('position', -1)
-            if pos == -1:
-                while True:
-                    pos = random.randint(0, 29)
-                    if pos not in positions:
-                        updater['staffs.{0}.position'.format(staff_id)] = pos
-                        break
-
-            # TODO 检测unit是否存在， 与staff种族是否匹配
-        else:
-            # 设置员工
-            unit_id = 0
-            MongoCharacter.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {'$set': {
-                    'club.match_staffs.{0}'.format(index): staff_id
-                }}
-            )
-
-            old_staff_id = self.match_staffs[index]
-            assert old_staff_id
-            pos = all_staffs[staff_id].get('position', -1)
-            if pos == -1:
-                while True:
-                    pos = random.randint(0, 29)
-                    if pos not in positions:
-                        break
-
-            # 撤下的队员 位置清除
-            updater['staffs.{0}.position'.format(old_staff_id)] = -1
-            # 设置新上场的
-            updater['staffs.{0}.position'.format(staff_id)] = pos
-
-
-        MongoStaff.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': updater}
-        )
-
-        # self.load_match_staffs()
-        # self.send_notify()
-        Club(self.server_id, self.char_id).send_notify()
-
-    def set_formation(self, info):
-        # info: [(staff_id, position),...]
-        doc = MongoStaff.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {'staffs': 1}
-        )
-
-        for staff_id, position in info:
-            if position < 0 or position > 29:
-                raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
-
-            if staff_id not in self.match_staffs:
-                # TODO error code
-                raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
-
-            this_staff = doc['staffs'][staff_id]
-            if not this_staff.get('unit_id', 0):
-                raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
-
-        updater = {}
-        for staff_id, position in info:
-            updater['staffs.{0}.position'.format(staff_id)] = position
-
-        MongoStaff.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': updater}
-        )
-
-        # self.load_match_staffs()
-        # self.send_notify()
-        Club(self.server_id, self.char_id).send_notify()
 
     def update(self, **kwargs):
         renown = kwargs.get('renown', 0)
@@ -281,40 +144,14 @@ class Club(AbstractClub):
                 new_level=self.level
             )
 
-            self.send_staff_slots_notify()
-
         self.send_notify()
 
         if gold or diamond:
             FinanceStatistics(self.server_id, self.char_id).add_log(
-                    gold=gold,
-                    diamond=diamond,
-                    message=message
+                gold=gold,
+                diamond=diamond,
+                message=message
             )
-
-
-    def buy_slot(self):
-        with Resource(self.server_id, self.char_id).check(diamond=-BUY_STAFF_SLOT_COST, message=u"Club Buy Slot"):
-            MongoCharacter.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {'$inc': {'buy_slots': 1}}
-            )
-
-        self.send_staff_slots_notify()
-
-    def batch_add_zhimingdu_for_match_staffs(self, zhimingdu=1):
-        from core.staff import StaffManger
-        # 降低IO，批量操作
-        updater = {}
-        for s in self.match_staffs:
-            updater['staffs.{0}.zhimingdu'.format(s)] = zhimingdu
-
-        MongoStaff.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$inc': updater}
-        )
-
-        StaffManger(self.server_id, self.char_id).send_notify(staff_ids=self.match_staffs)
 
     def dumps(self):
         """
@@ -336,9 +173,3 @@ class Club(AbstractClub):
         notify = ClubNotify()
         notify.club.MergeFrom(msg)
         MessagePipe(self.char_id).put(notify)
-
-    def send_staff_slots_notify(self):
-        notify = ClubStaffSlotsAmountNotify()
-        notify.amount = self.max_slots_amount
-        notify.cost_diamond = BUY_STAFF_SLOT_COST
-        MessagePipe(self.char_id).put(msg=notify)

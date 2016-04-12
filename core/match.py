@@ -8,8 +8,6 @@ Description:
 """
 
 import random
-from dianjing.exception import GameException
-from config import ConfigErrorMessage, ConfigStaffNew, ConfigUnitNew
 
 from protomsg.match_pb2 import ClubMatch as MessageClubMatch
 
@@ -25,9 +23,6 @@ class ClubMatch(object):
         self.club_one = club_one
         self.club_two = club_two
         self.seed = random.randint(1, 10000)
-
-        # if not self.club_one.match_staffs_ready() or not self.club_two.match_staffs_ready():
-        #     raise GameException(ConfigErrorMessage.get_error_id("MATCH_STAFF_NOT_READY"))
 
         self.club_one_fight_info = {}
         self.club_two_fight_info = {}
@@ -54,62 +49,49 @@ class ClubMatch(object):
             :type club_obj: core.abstract.AbstractClub
             """
             club_msg.club.MergeFrom(club_obj.make_protomsg())
-            for i in club_obj.match_staffs:
-                # TODO 现在是直接从config获取 staff, unit的数据
-                # 需要改成 Staff, Unit 类，它们包含了这些数据
-                if not i:
-                    continue
-
-                staff_obj = club_obj.staffs[i]
-
-                if not staff_obj.unit_id:
-                    continue
-
-                config_unit_new = ConfigUnitNew.get(staff_obj.unit_id)
-
-                # TODO id, oid
+            for fs in club_obj.formation_staffs:
                 msg_troop = club_msg.troop.add()
-                msg_troop.hero.id = staff_obj.id
-                msg_troop.hero.oid = staff_obj.oid
-                msg_troop.hero.position = staff_obj.position
-                msg_troop.hero.attack = staff_obj.attack
-                msg_troop.hero.attackPercent = 0
-                msg_troop.hero.defense = staff_obj.defense
-                msg_troop.hero.defensePercent = 0
-                msg_troop.hero.manage = staff_obj.manage
-                msg_troop.hero.managePercent = 0
-                msg_troop.hero.operation = staff_obj.operation
-                msg_troop.hero.operationPercent = 0
+                msg_troop.hero.id = fs.id
+                msg_troop.hero.oid = fs.oid
+                msg_troop.hero.position = fs.formation_position
+                msg_troop.hero.attack = fs.attack
+                msg_troop.hero.attackPercent = fs.attack_percent
+                msg_troop.hero.defense = fs.defense
+                msg_troop.hero.defensePercent = fs.defense_percent
+                msg_troop.hero.manage = fs.manage
+                msg_troop.hero.managePercent = fs.manage_percent
+                msg_troop.hero.operation = fs.operation
+                msg_troop.hero.operationPercent = fs.operation_percent
 
-                msg_troop.army.id = staff_obj.unit_id
-                msg_troop.army.hp = config_unit_new.hp_max_base
-                msg_troop.army.hpPercent = 0
-                msg_troop.army.attack = config_unit_new.attack_base
-                msg_troop.army.attackPercent = 0
-                msg_troop.army.defense = config_unit_new.defense_base
-                msg_troop.army.defensePercent = 0
-                msg_troop.army.attackSpeed = config_unit_new.attack_speed_base
-                msg_troop.army.attackSpeedPercent = 0
-                msg_troop.army.attackDistance = config_unit_new.attack_range_base
-                msg_troop.army.attackDistancePercent = 0
-                msg_troop.army.moveSpeed = config_unit_new.move_speed_base
-                msg_troop.army.moveSpeedPercent = 0
-                msg_troop.army.hitRate = config_unit_new.hit_rate
-                msg_troop.army.dodgeRate = config_unit_new.dodge_rate
-                msg_troop.army.critRate = config_unit_new.crit_rate
-                msg_troop.army.critMulti = config_unit_new.crit_multiple
-                msg_troop.army.critAntiRate = config_unit_new.toughness_rate
+                msg_troop.army.id = fs.unit.id
+                msg_troop.army.hp = fs.unit.hp
+                msg_troop.army.hpPercent = fs.unit.hp_percent
+                msg_troop.army.attack = fs.unit.attack
+                msg_troop.army.attackPercent = fs.unit.attack_percent
+                msg_troop.army.defense = fs.unit.defense
+                msg_troop.army.defensePercent = fs.unit.defense_percent
+                msg_troop.army.attackSpeed = fs.unit.attack_speed
+                msg_troop.army.attackSpeedPercent = fs.unit.attack_speed_percent
+                msg_troop.army.attackDistance = fs.unit.attack_range
+                msg_troop.army.attackDistancePercent = fs.unit.attack_range_percent
+                msg_troop.army.moveSpeed = fs.unit.move_speed
+                msg_troop.army.moveSpeedPercent = fs.unit.move_speed_percent
+                msg_troop.army.hitRate = fs.unit.hit_rate
+                msg_troop.army.dodgeRate = fs.unit.dodge_rate
+                msg_troop.army.critRate = fs.unit.crit_rate
+                msg_troop.army.critMulti = fs.unit.crit_multi
+                msg_troop.army.critAntiRate = fs.unit.toughness_rate
 
-                msg_troop.army.appendAttackTerran = config_unit_new.hurt_addition_to_terran
-                msg_troop.army.appendAttackProtoss = config_unit_new.hurt_addition_to_protoss
-                msg_troop.army.appendAttackZerg = config_unit_new.hurt_addition_to_zerg
+                msg_troop.army.appendAttackTerran = fs.unit.hurt_addition_to_terran
+                msg_troop.army.appendAttackProtoss = fs.unit.hurt_addition_to_protoss
+                msg_troop.army.appendAttackZerg = fs.unit.hurt_addition_to_zerg
 
-                msg_troop.army.appendAttackedByTerran = config_unit_new.hurt_addition_by_terran
-                msg_troop.army.appendAttackedByProtoss = config_unit_new.hurt_addition_by_protoss
-                msg_troop.army.appendAttackedByZerg = config_unit_new.hurt_addition_by_zerg
+                msg_troop.army.appendAttackedByTerran = fs.unit.hurt_addition_by_terran
+                msg_troop.army.appendAttackedByProtoss = fs.unit.hurt_addition_by_protoss
+                msg_troop.army.appendAttackedByZerg = fs.unit.hurt_addition_by_zerg
 
-                msg_troop.army.finalHurtAppend = config_unit_new.final_hurt_addition
-                msg_troop.army.finalHurtReduce = config_unit_new.final_hurt_reduce
+                msg_troop.army.finalHurtAppend = fs.unit.final_hurt_addition
+                msg_troop.army.finalHurtReduce = fs.unit.final_hurt_reduce
 
         fill_club_msg(msg.club_one, self.club_one)
         fill_club_msg(msg.club_two, self.club_two)

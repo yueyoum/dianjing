@@ -14,16 +14,14 @@ import zipfile
 
 from config.global_config import GlobalConfig
 from config.errormsg import ConfigErrorMessage
-from config.staff import ConfigStaff, ConfigStaffHot, ConfigStaffRecruit, ConfigStaffLevel, ConfigStaffStatus, ConfigStaffNew, ConfigStaffStar, ConfigStaffLevelNew
+from config.staff import ConfigStaffHot, ConfigStaffRecruit, ConfigStaffNew, ConfigStaffStar, ConfigStaffLevelNew
 from config.challenge import ConfigChallengeMatch, ConfigChapter
-from config.unit import ConfigUnit, ConfigPolicy, ConfigUnitNew, ConfigUnitUnLock
+from config.unit import ConfigUnitNew, ConfigUnitUnLock
 from config.building import ConfigBuilding
 from config.package import ConfigPackage
-from config.training import ConfigTrainingProperty
-from config.business import ConfigBusinessSponsor, ConfigBusinessShop
-from config.item import ConfigItem, ConfigEquipment, ConfigItemNew, ConfigItemUse, ConfigItemMerge, ConfigEquipmentNew, ConfigItemExp
+from config.item import ConfigItemNew, ConfigItemUse, ConfigItemMerge, ConfigEquipmentNew, ConfigItemExp
 from config.npc import ConfigNPC
-from config.skill import ConfigSkill, ConfigSkillWashCost, ConfigTalentSkill
+from config.skill import ConfigTalentSkill
 from config.task import ConfigTask, ConfigRandomEvent, ConfigTaskTargetType
 from config.club import ConfigClubLevel, ConfigClubFlag
 from config.ladder import ConfigLadderRankReward, ConfigLadderScoreStore
@@ -34,8 +32,6 @@ from config.signin import ConfigSignIn
 from config.activity_login_reward import ConfigLoginReward
 from config.active_value import ConfigActiveFunction, ConfigActiveReward
 from config.training_match import ConfigTrainingMatchReward, ConfigTrainingMatchStore
-from config.elite_match import ConfigEliteArea, ConfigEliteMatch
-from config.business_broadcast_reward import ConfigBusinessBroadCastReward
 
 _has_configed = False
 
@@ -71,10 +67,6 @@ def load_config():
             GlobalConfig.initialize(data)
         elif item == 'errormsg.json':
             ConfigErrorMessage.initialize(data)
-        elif item == 'item.json':
-            ConfigItem.initialize(data)
-        elif item == 'equipment.json':
-            ConfigEquipment.initialize(data)
         elif item == 'item_new.json':
             ConfigItemNew.initialize(data)
         elif item == 'item_use.json':
@@ -85,8 +77,6 @@ def load_config():
             ConfigEquipmentNew.initialize(data)
         elif item == 'item_exp.json':
             ConfigItemExp.initialize(data)
-        elif item == 'staff.json':
-            ConfigStaff.initialize(data)
         elif item == 'staff_new.json':
             ConfigStaffNew.initialize(data)
         elif item == 'staff_level_new.json':
@@ -97,16 +87,10 @@ def load_config():
             ConfigStaffHot.initialize(data)
         elif item == 'staff_recruit.json':
             ConfigStaffRecruit.initialize(data)
-        elif item == 'staff_level.json':
-            ConfigStaffLevel.initialize(data)
-        elif item == 'staff_status.json':
-            ConfigStaffStatus.initialize(data)
         elif item == 'challenge_chapter.json':
             ConfigChapter.initialize(data)
         elif item == 'challenge_match.json':
             ConfigChallengeMatch.initialize(data)
-        elif item == 'unit.json':
-            ConfigUnit.initialize(data)
         elif item == 'unit_new.json':
             ConfigUnitNew.initialize(data)
         elif item == 'unit_unlock.json':
@@ -115,26 +99,14 @@ def load_config():
             ConfigBuilding.initialize(data)
         elif item == 'package.json':
             ConfigPackage.initialize(data)
-        elif item == 'training_property.json':
-            ConfigTrainingProperty.initialize(data)
-        elif item == 'business_shop.json':
-            ConfigBusinessShop.initialize(data)
-        elif item == 'business_sponsor.json':
-            ConfigBusinessSponsor.initialize(data)
         elif item == 'npc_club.json':
             ConfigNPC.initialize(data)
         elif item == 'npc_club_name.json':
             ConfigNPC.initialize_club_names(data)
         elif item == 'npc_manager_name.json':
             ConfigNPC.initialize_manager_name(data)
-        elif item == 'skill.json':
-            ConfigSkill.initialize(data)
         elif item == 'talent_skill.json':
             ConfigTalentSkill.initialize(data)
-        elif item == 'skill_wash_cost.json':
-            ConfigSkillWashCost.initialize(data)
-        elif item == 'policy.json':
-            ConfigPolicy.initialize(data)
         elif item == 'task.json':
             ConfigTask.initialize(data)
         elif item == 'random_event.json':
@@ -167,13 +139,6 @@ def load_config():
             ConfigTrainingMatchReward.initialize(data)
         elif item == 'training_match_store.json':
             ConfigTrainingMatchStore.initialize(data)
-        elif item == 'elite_match.json':
-            ConfigEliteMatch.initialize(data)
-        elif item == 'elite_area.json':
-            ConfigEliteArea.initialize(data)
-        elif item == 'business_broadcast_reward.json':
-            ConfigBusinessBroadCastReward.initialize(data)
 
-    ConfigEliteArea.post_fix()
 
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))

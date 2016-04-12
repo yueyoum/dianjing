@@ -75,9 +75,8 @@ class MongoCharacter(BaseDocument):
             'vip': 0,
             'gold': 0,
             'diamond': 0,
-
-            'policy': 1,
-            'match_staffs': [],
+            'crystal': 0,
+            'gas': 0,
         },
 
         # 所属联赛小组
@@ -85,8 +84,7 @@ class MongoCharacter(BaseDocument):
         'league_level': 1,
         # 是否报名参加了杯赛
         'in_cup': 0,
-        # 购买的员工格子数
-        'buy_slots': 0,
+
         # 体力
         'energy': {
             'key': "",              # 充能回调key
@@ -97,6 +95,57 @@ class MongoCharacter(BaseDocument):
 
     COLLECTION = "character"
     INDEXES = ['name', 'last_login', 'league_level', 'in_cup', 'club.level']
+
+class MongoStaff(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # 员工， unique_id: data. 定义见下面的 STAFF
+        'staffs': {},
+    }
+
+    STAFF_DOCUMENT = {
+        'oid': null,
+        'level': 1,
+        'step': 0,
+        'star': 0,
+        'level_exp': 0,
+        'star_exp': 0,
+
+        # 四件装备
+        'equip_mouse': '',
+        'equip_keyboard': '',
+        'equip_monitor': '',
+        'equip_decoration': '',
+    }
+
+    @classmethod
+    def document_staff(cls):
+        return cls.STAFF_DOCUMENT.copy()
+
+    COLLECTION = "staff"
+
+
+# 阵型
+class MongoFormation(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # slot_id: data
+        # 只保存开了的， slot_id 从1 递增
+        'slots': {},
+        # slot_id 序列， 0 表示这个位置（index）的 slot 没有开启
+        'position': []
+    }
+
+    DOCUMENT_SLOT = {
+        'staff_id': "",
+        'unit_id': 0,
+    }
+
+    @classmethod
+    def document_slot(cls):
+        return cls.DOCUMENT_SLOT.copy()
+
+    COLLECTION = 'formation'
 
 
 # 挑战赛
@@ -127,40 +176,6 @@ class MongoCommon(BaseDocument):
     }
 
     COLLECTION = "common"
-
-
-class MongoStaff(BaseDocument):
-    DOCUMENT = {
-        '_id': null,
-        # 员工， unique_id: data. 定义见下面的 STAFF
-        'staffs': {},
-    }
-
-    STAFF_DOCUMENT = {
-        'oid': null,
-        'level': 1,
-        'step': 0,
-        'star': 0,
-        'level_exp': 0,
-        'star_exp': 0,
-
-        # 四件装备
-        'equip_mouse': '',
-        'equip_keyboard': '',
-        'equip_monitor': '',
-        'equip_decoration': '',
-
-        # 所带兵种
-        'unit_id': 0,
-        # 在阵型中的位置
-        'position': -1,
-    }
-
-    @classmethod
-    def document_staff(cls):
-        return cls.STAFF_DOCUMENT.copy()
-
-    COLLECTION = "staff"
 
 
 # 背包

@@ -7,7 +7,6 @@ Description:
 
 """
 
-
 from dianjing.exception import GameException
 
 from core.abstract import AbstractUnit
@@ -24,7 +23,7 @@ from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 
 class Unit(AbstractUnit):
-    __slots__ = ['conf_unit', 'server_id', 'char_id']
+    __slots__ = ['server_id', 'char_id']
 
     def __init__(self, server_id, char_id, _id, data):
         super(Unit, self).__init__()
@@ -36,49 +35,11 @@ class Unit(AbstractUnit):
 
         self.conf_unit = ConfigUnitNew.get(self.id)
 
-        self.tp = self.conf_unit.tp
-        self.race = self.conf_unit.race
-        self.attack_tp = self.conf_unit.attack_tp
-        self.defense_tp = self.conf_unit.defense_tp
-        self.skill_1 = self.conf_unit.skill_1
-        self.skill_2 = self.conf_unit.skill_2
-
         # 分成两阶段计算是因为：
         # 1, 改变了等级，等阶，直接调用以下这两个方法
         # 2, 外部效果对兵种有加成，就先把加成加上去，然后再调用第二步计算
         self.pre_calculate_property()
         self.calculate_property()
-
-    def pre_calculate_property(self):
-        conf_step = self.conf_unit.steps[self.step]
-        
-        self.hp_percent = conf_step.hp_percent
-        self.attack_percent = conf_step.attack_percent
-        self.defense_percent = conf_step.defense_percent
-
-        self.attack_speed = self.conf_unit.attack_speed_base
-        self.attack_distance = self.conf_unit.attack_range_base
-        self.move_speed = self.conf_unit.move_speed_base
-        self.hit_rate = conf_step.hit_rate + self.conf_unit.hit_rate
-        self.dodge_rate = self.conf_unit.dodge_rate + conf_step.dodge_rate
-        self.crit_rate = self.conf_unit.crit_rate + conf_step.crit_rate
-        self.crit_multi = self.conf_unit.crit_multiple + conf_step.crit_multiple
-        self.crit_anti_rate = self.conf_unit.toughness_rate + conf_step.toughness_rate
-        self.append_attack_terran = conf_step.hurt_addition_to_terran + conf_step.hurt_addition_to_terran
-        self.append_attack_protoss = conf_step.hurt_addition_to_protoss + conf_step.hurt_addition_to_protoss
-        self.append_attack_zerg = conf_step.hurt_addition_to_zerg + conf_step.hurt_addition_to_zerg
-        self.append_attacked_by_terran = conf_step.hurt_addition_by_terran + conf_step.hurt_addition_by_terran
-        self.append_attacked_by_protoss = conf_step.hurt_addition_by_protoss + conf_step.hurt_addition_by_protoss
-        self.append_attacked_by_zerg = conf_step.hurt_addition_by_zerg + conf_step.hurt_addition_by_zerg
-        self.final_hurt_append = self.conf_unit.final_hurt_addition
-        self.final_hurt_reduce = self.conf_unit.final_hurt_reduce
-
-    def calculate_property(self):
-        conf_level = self.conf_unit.levels[self.level]
-        self.hp = int( (self.conf_unit.hp_max_base + conf_level.hp) * (1 + self.hp_percent) )
-        self.attack = int( (self.conf_unit.attack_base + conf_level.attack) * (1 + self.attack_percent) )
-        self.defense = int( (self.conf_unit.defense_base + conf_level.defense) * (1 + self.defense_percent) )
-
 
     def level_up(self):
         if self.level >= self.conf_unit.max_level:
@@ -127,7 +88,6 @@ class Unit(AbstractUnit):
         self.calculate_property()
         self.send_notify()
 
-
     def send_notify(self):
         notify = UnitNotify()
         notify.act = ACT_UPDATE
@@ -135,7 +95,6 @@ class Unit(AbstractUnit):
         notify_unit.MergeFrom(self.make_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)
-
 
 
 def get_init_units():
@@ -165,7 +124,6 @@ class UnitManager(object):
                 doc['units'][str(_id)] = unit_doc
 
             MongoUnit.db(self.server_id).insert_one(doc)
-
 
     def unlock_club_level_up_listener(self, club_level):
         pass
@@ -200,6 +158,18 @@ class UnitManager(object):
 
         self.send_notify(uids=[_id])
 
+    def is_unit_unlocked(self, _id):
+        doc = MongoUnit.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'units.{0}'.format(_id): 1}
+        )
+
+        return str(_id) in doc['units']
+
+    def check_unit_unlocked(self, _id):
+        if not self.is_unit_unlocked(_id):
+            raise GameException(ConfigErrorMessage.get_error_id("UNIT_IS_UNLOCKED"))
+
     def get_unit_object(self, _id):
         # type: (int) -> Unit|None
         doc = MongoUnit.db(self.server_id).find_one(
@@ -226,7 +196,6 @@ class UnitManager(object):
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         unit.step_up()
-
 
     def send_notify(self, uids=None):
         if not uids:

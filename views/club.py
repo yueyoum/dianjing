@@ -17,14 +17,9 @@ from config import ConfigErrorMessage
 
 from core.signals import game_start_signal
 from core.character import Character
-from core.club import Club
 
 from protomsg.club_pb2 import (
     CreateClubResponse,
-    ClubSetPolicyResponse,
-    ClubStaffSlotBuyResponse,
-    ClubSetUnitResponse,
-    ClubSetFormationResponse,
 )
 
 
@@ -59,57 +54,3 @@ def create(request):
     response.session = session.serialize()
     return ProtobufResponse(response)
 
-
-def set_policy(request):
-    server_id = request._game_session.server_id
-    char_id = request._game_session.char_id
-    policy = request._proto.policy_id
-
-    club = Club(server_id, char_id)
-    club.set_policy(policy)
-
-    response = ClubSetPolicyResponse()
-    response.ret = 0
-    return ProtobufResponse(response)
-
-def set_unit(request):
-    server_id = request._game_session.server_id
-    char_id = request._game_session.char_id
-    index = request._proto.index
-    staff_id = request._proto.staff_id
-    unit_id = request._proto.unit_id
-
-    club = Club(server_id, char_id)
-    club.set_unit(index, staff_id, unit_id)
-
-    response = ClubSetUnitResponse()
-    response.ret = 0
-    return ProtobufResponse(response)
-
-
-def set_formation(request):
-    server_id = request._game_session.server_id
-    char_id = request._game_session.char_id
-
-    formation = []
-    for info in request._proto.position:
-        formation.append((info.staff_id, info.position))
-
-    club = Club(server_id, char_id)
-    club.set_formation(formation)
-
-    response = ClubSetFormationResponse()
-    response.ret = 0
-    return ProtobufResponse(response)
-
-
-def buy_slots(request):
-    server_id = request._game_session.server_id
-    char_id = request._game_session.char_id
-
-    club = Club(server_id, char_id)
-    club.buy_slot()
-
-    response = ClubStaffSlotBuyResponse()
-    response.ret = 0
-    return ProtobufResponse(response)

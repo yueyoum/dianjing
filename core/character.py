@@ -21,6 +21,8 @@ from protomsg.common_pb2 import UPLOAD_DONE, UPLOAD_NONE, UPLOAD_VERIFY
 from config.settings import (
     CHAR_INIT_DIAMOND,
     CHAR_INIT_GOLD,
+    CHAR_INIT_CRYSTAL,
+    CHAR_INIT_GAS,
     CHAR_INIT_STAFFS,
 )
 
@@ -42,6 +44,7 @@ class Character(object):
     def create(cls, server_id, char_id, char_name, club_name, club_flag):
         # 这里是club创建完毕后再调用的
         from core.staff import StaffManger
+        from core.formation import Formation
         from core.club import Club
 
         doc = MongoCharacter.document()
@@ -52,13 +55,16 @@ class Character(object):
         doc['club']['flag'] = club_flag
         doc['club']['gold'] = CHAR_INIT_GOLD
         doc['club']['diamond'] = CHAR_INIT_DIAMOND
+        doc['club']['crystal'] = CHAR_INIT_CRYSTAL
+        doc['club']['gas'] = CHAR_INIT_GAS
         doc['energy']['power'] = NORMAL_MAX_ENERGY
 
-
         sm = StaffManger(server_id, char_id)
+        f = Formation(server_id, char_id)
         unique_ids = []
         for i in CHAR_INIT_STAFFS:
             uid = sm.add(i, send_notify=False)
+            f.random_set_staff(uid)
             unique_ids.append(uid)
 
         doc['club']['match_staffs'] = unique_ids

@@ -115,7 +115,7 @@ class AuctionItem(object):
         obj.id = make_string_id()
         obj.server_id = staff.server_id
         obj.char_id = staff.char_id
-        obj.club_name = Club(staff.server_id, staff.char_id, load_staff=False).name
+        obj.club_name = Club(staff.server_id, staff.char_id).name
 
         obj.staff_id = staff.id
         obj.exp = staff.exp

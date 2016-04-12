@@ -15,12 +15,9 @@ import views.server
 import views.character
 import views.club
 import views.staff
-import views.item
 import views.challenge
 import views.building
-import views.training
 import views.league
-import views.skill
 import views.friend
 import views.mail
 import views.task
@@ -33,10 +30,10 @@ import views.activity
 import views.active_value
 import views.shop
 import views.training_match
-import views.elite_match
 import views.auction
 import views.bag
 import views.unit
+import views.formation
 
 urlpatterns = [
     url(r'^sync/$', views.common.sync),
@@ -52,11 +49,10 @@ urlpatterns = [
     url(r'^character/avatar/upload/$', views.character.save_avatar_handler),
 
     url(r'^club/create/$', views.club.create),
-    url(r'^club/policy/$', views.club.set_policy),
-    # url(r'^club/matchstaff/$', views.club.set_match_staffs),
-    url(r'^club/staffslots/buy/$', views.club.buy_slots),
-    url(r'^club/setunit/$', views.club.set_unit),
-    url(r'^club/setformation/$', views.club.set_formation),
+
+    url(r'^formation/setstaff/$', views.formation.set_staff),
+    url(r'^formation/setunit/$', views.formation.set_unit),
+    url(r'^formation/moveslot/$', views.formation.move_slot),
 
     url(r'^staff/recruit/refresh/$', views.staff.recruit_refresh),
     url(r'^staff/recruit/$', views.staff.recruit_staff),
@@ -68,9 +64,6 @@ urlpatterns = [
     url(r'^staff/destroy/$', views.staff.destroy),
 
 
-    url(r'^item/sell/$', views.item.sell),
-    url(r'^item/use/$', views.item.use),
-    url(r'^item/merge/$', views.item.merge),
 
     url(r'^challenge/start/$', views.challenge.start),
     url(r'^challenge/sweep/$', views.challenge.sweep),
@@ -81,39 +74,12 @@ urlpatterns = [
     url(r'^building/levelup/$', views.building.levelup),
     url(r'^building/speedup/$', views.building.speedup),
 
-    # url(r'^training/exp/start/$', views.training.exp_start),
-    # url(r'^training/exp/cancel/$', views.training.exp_cancel),
-    # url(r'^training/exp/speedup/$', views.training.exp_speedup),
-    # url(r'^training/exp/getreward/$', views.training.exp_get_reward),
-    #
-    # url(r'^training/property/start/$', views.training.property_start),
-    # url(r'^training/property/cancel/$', views.training.property_cancel),
-    # url(r'^training/property/speedup/$', views.training.property_speedup),
-    # url(r'^training/property/getreward/$', views.training.property_get_reward),
-    #
-    # url(r'^training/broadcast/start/$', views.training.broadcast_start),
-    # url(r'^training/broadcast/detail/$', views.training.broadcast_detail),
-    # url(r'^training/broadcast/cancel/$', views.training.broadcast_cancel),
-    # url(r'^training/broadcast/speedup/$', views.training.broadcast_speedup),
-    # url(r'^training/broadcast/getreward/$', views.training.broadcast_get_reward),
-    #
-    # url(r'^training/shop/start/$', views.training.shop_start),
-    # url(r'^training/shop/sell/$', views.training.shop_sell),
-    # url(r'^training/shop/cancel/$', views.training.shop_cancel),
-    #
-    # url(r'^training/sponsor/start/$', views.training.sponsor_start),
-
-    #
     url(r'^league/challenge/$', views.league.challenge),
     url(r'^league/report/$', views.league.report),
     url(r'^league/refresh/$', views.league.refresh),
     url(r'^league/reward/$', views.league.get_reward),
     url(r'^league/detail/$', views.league.get_detail),
 
-    url(r'^skill/locktoggle/$', views.skill.lock_toggle),
-    url(r'^skill/wash/$', views.skill.wash),
-    url(r'^skill/upgrade/$', views.skill.upgrade),
-    url(r'^skill/upgrade/speedup/$', views.skill.upgrade_speedup),
 
     url(r'^friend/info/$', views.friend.get_info),
     url(r'^friend/add/$', views.friend.add),
@@ -163,10 +129,6 @@ urlpatterns = [
     url(r'^trainingmatch/detail/$', views.training_match.match_detail),
     url(r'^trainingmatch/store/buy/$', views.training_match.store_buy),
     url(r'^trainingmatch/store/refresh/$', views.training_match.store_refresh),
-
-    url(r'^elite/start/$', views.elite_match.start),
-    url(r'^elite/reward/$', views.elite_match.reward),
-    url(r'^elite/report/$', views.elite_match.report),
 
     url(r'^auction/search/$', views.auction.search),
     url(r'^auction/sell/$', views.auction.sell),

@@ -13,57 +13,17 @@ from google.protobuf import descriptor_pb2
 _sym_db = _symbol_database.Default()
 
 
-import item_define_pb2 as item__define__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='package.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\rpackage.proto\x12\x11\x44ianjing.protocol\x1a\x11item_define.proto\".\n\x08Resource\x12\x13\n\x0bresource_id\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\x05\"\xb0\x01\n\x04\x44rop\x12.\n\tresources\x18\x01 \x03(\x0b\x32\x1b.Dianjing.protocol.Resource\x12+\n\x05items\x18\x02 \x03(\x0b\x32\x1c.Dianjing.protocol.Drop.Item\x1aK\n\x04Item\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0e\n\x06\x61mount\x18\x02 \x02(\x05\x12\'\n\x02tp\x18\x03 \x02(\x0e\x32\x1b.Dianjing.protocol.ItemType\":\n\x08Property\x12.\n\tresources\x18\x01 \x03(\x0b\x32\x1b.Dianjing.protocol.Resource')
-  ,
-  dependencies=[item__define__pb2.DESCRIPTOR,])
+  serialized_pb=_b('\n\rpackage.proto\x12\x11\x44ianjing.protocol\"W\n\x04\x44rop\x12+\n\x05items\x18\x02 \x03(\x0b\x32\x1c.Dianjing.protocol.Drop.Item\x1a\"\n\x04Item\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0e\n\x06\x61mount\x18\x02 \x02(\x05')
+)
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
-
-
-_RESOURCE = _descriptor.Descriptor(
-  name='Resource',
-  full_name='Dianjing.protocol.Resource',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='resource_id', full_name='Dianjing.protocol.Resource.resource_id', index=0,
-      number=1, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='value', full_name='Dianjing.protocol.Resource.value', index=1,
-      number=2, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=55,
-  serialized_end=101,
-)
 
 
 _DROP_ITEM = _descriptor.Descriptor(
@@ -87,13 +47,6 @@ _DROP_ITEM = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
-    _descriptor.FieldDescriptor(
-      name='tp', full_name='Dianjing.protocol.Drop.Item.tp', index=2,
-      number=3, type=14, cpp_type=8, label=2,
-      has_default_value=False, default_value=100,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
   ],
   extensions=[
   ],
@@ -106,8 +59,8 @@ _DROP_ITEM = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=205,
-  serialized_end=280,
+  serialized_start=89,
+  serialized_end=123,
 )
 
 _DROP = _descriptor.Descriptor(
@@ -118,14 +71,7 @@ _DROP = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='resources', full_name='Dianjing.protocol.Drop.resources', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='items', full_name='Dianjing.protocol.Drop.items', index=1,
+      name='items', full_name='Dianjing.protocol.Drop.items', index=0,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -143,56 +89,13 @@ _DROP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=104,
-  serialized_end=280,
+  serialized_start=36,
+  serialized_end=123,
 )
 
-
-_PROPERTY = _descriptor.Descriptor(
-  name='Property',
-  full_name='Dianjing.protocol.Property',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='resources', full_name='Dianjing.protocol.Property.resources', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=282,
-  serialized_end=340,
-)
-
-_DROP_ITEM.fields_by_name['tp'].enum_type = item__define__pb2._ITEMTYPE
 _DROP_ITEM.containing_type = _DROP
-_DROP.fields_by_name['resources'].message_type = _RESOURCE
 _DROP.fields_by_name['items'].message_type = _DROP_ITEM
-_PROPERTY.fields_by_name['resources'].message_type = _RESOURCE
-DESCRIPTOR.message_types_by_name['Resource'] = _RESOURCE
 DESCRIPTOR.message_types_by_name['Drop'] = _DROP
-DESCRIPTOR.message_types_by_name['Property'] = _PROPERTY
-
-Resource = _reflection.GeneratedProtocolMessageType('Resource', (_message.Message,), dict(
-  DESCRIPTOR = _RESOURCE,
-  __module__ = 'package_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.Resource)
-  ))
-_sym_db.RegisterMessage(Resource)
 
 Drop = _reflection.GeneratedProtocolMessageType('Drop', (_message.Message,), dict(
 
@@ -208,13 +111,6 @@ Drop = _reflection.GeneratedProtocolMessageType('Drop', (_message.Message,), dic
   ))
 _sym_db.RegisterMessage(Drop)
 _sym_db.RegisterMessage(Drop.Item)
-
-Property = _reflection.GeneratedProtocolMessageType('Property', (_message.Message,), dict(
-  DESCRIPTOR = _PROPERTY,
-  __module__ = 'package_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.Property)
-  ))
-_sym_db.RegisterMessage(Property)
 
 
 # @@protoc_insertion_point(module_scope)

@@ -13,9 +13,8 @@ from django.dispatch import receiver
 from core.signals import game_start_signal
 from core.character import Character
 from core.club import Club
-from core.staff import StaffRecruit, StaffManger
-# from core.training import TrainingExp, TrainingProperty, TrainingBroadcast, TrainingShop, TrainingSponsor
-from core.item import ItemManager
+from core.staff import StaffManger
+from core.formation import Formation
 from core.bag import Bag
 from core.unit import UnitManager
 from core.challenge import Challenge
@@ -26,15 +25,14 @@ from core.mail import MailManager
 from core.task import TaskManager, RandomEvent
 from core.chat import Chat
 from core.notification import Notification
-from core.ladder import Ladder, LadderStore
+# from core.ladder import Ladder, LadderStore
 from core.statistics import FinanceStatistics
 from core.sponsor import SponsorManager
 from core.activity import ActivityCategory
 from core.activity.login_reward import ActivityLoginReward
 from core.activity.signin import SignIn
 from core.active_value import ActiveValue
-from core.training_match import TrainingMatch, TrainingMatchStore
-# from core.elite_match import EliteMatch
+# from core.training_match import TrainingMatch, TrainingMatchStore
 from core.auction import AuctionManager
 from core.system import send_broadcast_notify
 
@@ -58,28 +56,19 @@ def game_start_handler(server_id, char_id, **kwargs):
     Bag(server_id, char_id).send_notify()
 
     StaffManger(server_id, char_id).send_notify()
+    Formation(server_id, char_id).send_notify()
 
     c.set_login()
 
     club = Club(server_id, char_id)
     club.send_notify()
-    club.send_staff_slots_notify()
 
-    StaffRecruit(server_id, char_id).send_notify()
-
-    # TrainingExp(server_id, char_id).send_notify()
-    # TrainingProperty(server_id, char_id).send_notify()
-    # TrainingBroadcast(server_id, char_id).send_notify()
-    # TrainingShop(server_id, char_id).send_notify()
-    # TrainingSponsor(server_id, char_id).send_notify()
-
-    ItemManager(server_id, char_id).send_notify()
+    # StaffRecruit(server_id, char_id).send_notify()
 
     chall = Challenge(server_id, char_id)
     chall.send_chapter_notify()
     chall.send_challenge_notify()
     chall.energy_notify()
-
 
     BuildingManager(server_id, char_id).send_notify()
     LeagueManger(server_id, char_id).send_notify()
@@ -112,8 +101,4 @@ def game_start_handler(server_id, char_id, **kwargs):
     # TrainingMatch(server_id, char_id).send_notify()
     # TrainingMatchStore(server_id, char_id).send_notify()
 
-    # em = EliteMatch(server_id, char_id)
-    # em.elite_notify()
-
     send_broadcast_notify(char_id)
-

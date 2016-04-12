@@ -16,14 +16,13 @@ from core.mongo import MongoChallenge, MongoCharacter
 from core.club import Club
 from core.match import ClubMatch
 from core.character import NORMAL_MAX_ENERGY, VIP_MAX_ENERGY
+from core.unit import Unit
 
 from core.resource import Resource
 
-from core.signals import challenge_match_signal
-
 from utils.message import MessagePipe
 
-from config import ConfigChapter, ConfigChallengeMatch, ConfigStaffNew, ConfigErrorMessage
+from config import ConfigChapter, ConfigChallengeMatch, ConfigErrorMessage
 
 from protomsg.challenge_pb2 import (
     ChallengeNotify,
@@ -63,27 +62,10 @@ class ChallengeNPCStaff(AbstractStaff):
 
         self.id = str(_id)
         self.oid = _id
-        self.level = 1
 
-        # config = ConfigStaffNew.get(_id)
-        # self.race =
-        # self.skills = {i: 1 for i in config.skill_ids}
-        #
-        # self.luoji = config.luoji
-        # self.minjie = config.minjie
-        # self.lilun = config.lilun
-        # self.wuxing = config.wuxing
-        # self.meili = config.meili
-
-        self.unit_id = unit_id
-        self.position = position
-
-        config = ConfigStaffNew.get(_id)
-        self.attack = config.attack
-        self.defense = config.defense
-        self.manage = config.manage
-        self.operation = config.operation
-
+        self.formation_position = position
+        self.unit = Unit(None, None, unit_id, {'level': 1, 'step': 0})
+        self.calculate_property()
 
 class ChallengeNPCClub(AbstractClub):
     __slots__ = []
@@ -96,16 +78,11 @@ class ChallengeNPCClub(AbstractClub):
         self.id = challenge_match_id
 
         # TODO
-        self.policy = 1
         self.name = config.name
         self.flag = 1
 
         for position, _id, unit_id in config.staffs:
-            self.match_staffs.append(str(_id))
-            self.staffs[str(_id)] = ChallengeNPCStaff(_id, unit_id, position)
-
-            # self.qianban_affect()
-
+            self.formation_staffs.append(ChallengeNPCStaff(_id, unit_id, position))
 
 class Challenge(object):
     __slots__ = ['server_id', 'char_id']
@@ -242,6 +219,7 @@ class Challenge(object):
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
         club_one = Club(self.server_id, self.char_id)
+        club_one.load_formation_staffs()
         club_two = ChallengeNPCClub(challenge_id)
         match = ClubMatch(club_one, club_two)
         msg = match.start()
