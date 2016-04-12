@@ -17,13 +17,11 @@ from dianjing.exception import GameException
 from core.mongo import MongoTrainingMatch
 from core.character import Character
 from core.club import Club
-from core.package import Drop
 from core.resource import Resource
 from core.match import ClubMatch
 from core.staff import StaffManger
 from core.common import CommonTrainingMatchStore
 from core.lock import TrainingMatchStoreLock
-from core.item import ItemManager
 
 from utils.message import MessagePipe, MessageFactory
 
@@ -135,39 +133,39 @@ class TrainingMatch(object):
         updater = {}
         updated_ids = []
 
-        if is_win:
-            index = int(index)
-            updated_ids = [index]
-            config_id = index + 1
-
-            if not ConfigTrainingMatchReward.get(config_id):
-                raise GameException(ConfigErrorMessage.get_error_id("TRAINING_MATCH_NOT_EXIST"))
-
-            reward_config = ConfigTrainingMatchReward.get(config_id)
-            tmp_drop = Drop.generate(reward_config.reward)
-            tmp_drop.training_match_score = reward_config.score
-
-            message = "Training Match {0} drop".format(index)
-            Resource(self.server_id, self.char_id).save_drop(tmp_drop, message=message)
-
-            updater['status.{0}'.format(index)] = TRAINING_MATCH_CLUB_PASS
-
-            if index < MAX_MATCH_CLUB_INDEX:
-                next_index = index + 1
-                updated_ids.append(next_index)
-                updater['status.{0}'.format(next_index)] = TRAINING_MATCH_CLUB_OPEN
-        else:
-            updater['status.{0}'.format(index)] = TRAINING_MATCH_CLUB_FAIL
-
-        MongoTrainingMatch.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': updater}
-        )
-
-        self.send_notify(ids=updated_ids)
-
-        if tmp_drop:
-            return tmp_drop.make_protomsg()
+        # if is_win:
+        #     index = int(index)
+        #     updated_ids = [index]
+        #     config_id = index + 1
+        #
+        #     if not ConfigTrainingMatchReward.get(config_id):
+        #         raise GameException(ConfigErrorMessage.get_error_id("TRAINING_MATCH_NOT_EXIST"))
+        #
+        #     reward_config = ConfigTrainingMatchReward.get(config_id)
+        #     tmp_drop = Drop.generate(reward_config.reward)
+        #     tmp_drop.training_match_score = reward_config.score
+        #
+        #     message = "Training Match {0} drop".format(index)
+        #     Resource(self.server_id, self.char_id).save_drop(tmp_drop, message=message)
+        #
+        #     updater['status.{0}'.format(index)] = TRAINING_MATCH_CLUB_PASS
+        #
+        #     if index < MAX_MATCH_CLUB_INDEX:
+        #         next_index = index + 1
+        #         updated_ids.append(next_index)
+        #         updater['status.{0}'.format(next_index)] = TRAINING_MATCH_CLUB_OPEN
+        # else:
+        #     updater['status.{0}'.format(index)] = TRAINING_MATCH_CLUB_FAIL
+        #
+        # MongoTrainingMatch.db(self.server_id).update_one(
+        #     {'_id': self.char_id},
+        #     {'$set': updater}
+        # )
+        #
+        # self.send_notify(ids=updated_ids)
+        #
+        # if tmp_drop:
+        #     return tmp_drop.make_protomsg()
 
     def get_match_detail(self, index):
         doc = self.get_training_match_data()
@@ -307,7 +305,7 @@ class TrainingMatchStore(object):
             }
         )
 
-        ItemManager(self.server_id, self.char_id).add_item(config.item, amount=config.item_amount)
+        # ItemManager(self.server_id, self.char_id).add_item(config.item, amount=config.item_amount)
         TrainingMatch(self.server_id, self.char_id).send_notify()
 
     def send_notify(self):

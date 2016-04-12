@@ -11,7 +11,6 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoActiveValue
 from core.character import Character
-from core.package import Drop
 from core.resource import Resource
 
 from utils.message import MessagePipe
@@ -99,17 +98,17 @@ class ActiveValue(object):
         if doc['value'] < config.value:
             raise GameException(ConfigErrorMessage.get_error_id("ACTIVE_REWARD_CAN_NOT_GET"))
 
-        drop = Drop.generate(config.package)
-        message = "From Active Reward. {0}".format(reward_id)
-        Resource(self.server_id, self.char_id).save_drop(drop, message)
-
-        MongoActiveValue.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$push': {'rewards': reward_id}}
-        )
-
-        self.send_value_notify()
-        return drop.make_protomsg()
+        # drop = Drop.generate(config.package)
+        # message = "From Active Reward. {0}".format(reward_id)
+        # Resource(self.server_id, self.char_id).save_drop(drop, message)
+        #
+        # MongoActiveValue.db(self.server_id).update_one(
+        #     {'_id': self.char_id},
+        #     {'$push': {'rewards': reward_id}}
+        # )
+        #
+        # self.send_value_notify()
+        # return drop.make_protomsg()
 
     def send_value_notify(self):
         doc = MongoActiveValue.db(self.server_id).find_one(

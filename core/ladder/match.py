@@ -17,7 +17,6 @@ from core.signals import ladder_match_signal
 
 from config import (
     ConfigLadderRankReward,
-    ConfigStaff,
 )
 
 LADDER_MATCH_LOG_TEMPLATE_ONE = 1

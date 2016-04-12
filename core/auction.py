@@ -16,14 +16,13 @@ from core.mongo import MongoAuctionStaff, MongoBidding
 from core.club import Club
 from core.resource import Resource
 from core.mail import MailManager
-from core.package import Drop
-from core.training import TrainingBroadcast, TrainingExp, TrainingProperty, TrainingShop
+
 from core.lock import Lock, LockTimeOut
 
 from utils.api import Timerd
 from utils.functional import make_string_id
 
-from config import ConfigErrorMessage, ConfigStaff
+from config import ConfigErrorMessage
 
 from protomsg.auction_pb2 import (
     AUCTION_HOURS_16,

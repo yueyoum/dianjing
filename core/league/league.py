@@ -14,7 +14,6 @@ from dianjing.exception import GameException
 from core.character import Character
 from core.resource import Resource
 from core.mongo import MongoLeague, MongoCharacter
-from core.package import Drop
 from core.match import ClubMatch
 from core.club import Club
 from core.staff import StaffManger
@@ -23,7 +22,6 @@ from core.abstract import AbstractStaff, AbstractClub
 from config.league import ConfigLeague
 from config.errormsg import ConfigErrorMessage
 from config.npc import ConfigNPC
-from config.staff import ConfigStaff
 from config.settings import (
     LEAGUE_REFRESH_TIME_TWO,
     LEAGUE_REFRESH_TIME_THREE,
@@ -70,20 +68,20 @@ class LeagueNpcStaff(AbstractStaff):
         super(LeagueNpcStaff, self).__init__()
 
         self.id = data['id']
-        config = ConfigStaff.get(self.id)
-
-        self.level = 1
-        self.race = config.race
-        skill_level = data.get('skill_level', 1)
-        self.skills = {i: skill_level for i in config.skill_ids}
-
-        self.luoji = config.luoji
-        self.minjie = config.minjie
-        self.lilun = config.lilun
-        self.wuxing = config.wuxing
-        self.meili = config.meili
-
-        self.calculate_secondary_property()
+        # config = ConfigStaff.get(self.id)
+        #
+        # self.level = 1
+        # self.race = config.race
+        # skill_level = data.get('skill_level', 1)
+        # self.skills = {i: skill_level for i in config.skill_ids}
+        #
+        # self.luoji = config.luoji
+        # self.minjie = config.minjie
+        # self.lilun = config.lilun
+        # self.wuxing = config.wuxing
+        # self.meili = config.meili
+        #
+        # self.calculate_secondary_property()
 
 
 class LeagueNpcClub(AbstractClub):
@@ -443,16 +441,16 @@ class LeagueManger(object):
         if not conf:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-        drop = Drop.generate(conf.daily_reward)
-        # 发放奖励
-        Resource(self.server_id, self.char_id).save_drop(drop, message="Add League Daily Reward")
-        MongoLeague.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': {"daily_reward": str(arrow.now().date())}}
-        )
-        # 同步玩家信息
-        self.notify_user_info()
-        return drop.make_protomsg()
+        # drop = Drop.generate(conf.daily_reward)
+        # # 发放奖励
+        # Resource(self.server_id, self.char_id).save_drop(drop, message="Add League Daily Reward")
+        # MongoLeague.db(self.server_id).update_one(
+        #     {'_id': self.char_id},
+        #     {'$set': {"daily_reward": str(arrow.now().date())}}
+        # )
+        # # 同步玩家信息
+        # self.notify_user_info()
+        # return drop.make_protomsg()
 
     def start(self, club_id):
         """

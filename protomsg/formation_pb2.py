@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='formation.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0f\x66ormation.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\x8d\x01\n\rFormationSlot\x12\x0f\n\x07slot_id\x18\x01 \x02(\x05\x12\x10\n\x08position\x18\x02 \x02(\x05\x12\x36\n\x06status\x18\x03 \x02(\x0e\x32&.Dianjing.protocol.FormationSlotStatus\x12\x10\n\x08staff_id\x18\x04 \x01(\t\x12\x0f\n\x07unit_id\x18\x05 \x01(\x05\"\x7f\n\x0f\x46ormationNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x33\n\tformation\x18\x03 \x03(\x0b\x32 .Dianjing.protocol.FormationSlot\"N\n\x18\x46ormationSetStaffRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x10\n\x08staff_id\x18\x03 \x02(\t\"9\n\x19\x46ormationSetStaffResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"L\n\x17\x46ormationSetUnitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x0f\n\x07unit_id\x18\x03 \x02(\x05\"8\n\x18\x46ormationSetUnitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"N\n\x18\x46ormationMoveSlotRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x10\n\x08to_index\x18\x03 \x02(\x05\"9\n\x19\x46ormationMoveSlotResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*d\n\x13\x46ormationSlotStatus\x12\x1b\n\x17\x46ORMATION_SLOT_NOT_OPEN\x10\x00\x12\x18\n\x14\x46ORMATION_SLOT_EMPTY\x10\x01\x12\x16\n\x12\x46ORMATION_SLOT_USE\x10\x02')
+  serialized_pb=_b('\n\x0f\x66ormation.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\x8d\x01\n\rFormationSlot\x12\x0f\n\x07slot_id\x18\x01 \x02(\x05\x12\x36\n\x06status\x18\x02 \x02(\x0e\x32&.Dianjing.protocol.FormationSlotStatus\x12\x10\n\x08position\x18\x03 \x01(\x05\x12\x10\n\x08staff_id\x18\x04 \x01(\t\x12\x0f\n\x07unit_id\x18\x05 \x01(\x05\"\x7f\n\x0f\x46ormationNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x33\n\tformation\x18\x03 \x03(\x0b\x32 .Dianjing.protocol.FormationSlot\"N\n\x18\x46ormationSetStaffRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x10\n\x08staff_id\x18\x03 \x02(\t\"9\n\x19\x46ormationSetStaffResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"L\n\x17\x46ormationSetUnitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x0f\n\x07unit_id\x18\x03 \x02(\x05\"8\n\x18\x46ormationSetUnitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"N\n\x18\x46ormationMoveSlotRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x10\n\x08to_index\x18\x03 \x02(\x05\"9\n\x19\x46ormationMoveSlotResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*d\n\x13\x46ormationSlotStatus\x12\x1b\n\x17\x46ORMATION_SLOT_NOT_OPEN\x10\x00\x12\x18\n\x14\x46ORMATION_SLOT_EMPTY\x10\x01\x12\x16\n\x12\x46ORMATION_SLOT_USE\x10\x02')
   ,
   dependencies=[common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -74,15 +74,15 @@ _FORMATIONSLOT = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='position', full_name='Dianjing.protocol.FormationSlot.position', index=1,
-      number=2, type=5, cpp_type=1, label=2,
+      name='status', full_name='Dianjing.protocol.FormationSlot.status', index=1,
+      number=2, type=14, cpp_type=8, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='status', full_name='Dianjing.protocol.FormationSlot.status', index=2,
-      number=3, type=14, cpp_type=8, label=2,
+      name='position', full_name='Dianjing.protocol.FormationSlot.position', index=2,
+      number=3, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,

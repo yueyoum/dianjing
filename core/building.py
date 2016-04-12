@@ -13,7 +13,6 @@ from dianjing.exception import GameException
 from core.mongo import MongoBuilding
 from core.club import Club
 from core.resource import Resource
-from core.item import ItemManager
 from core.signals import building_level_up_done_signal, building_level_up_start_signal
 from config import ConfigBuilding, ConfigErrorMessage
 
@@ -108,8 +107,8 @@ class BuildingManager(object):
                     self.char_id).current_level() < config_building_level.up_condition_value:
                 raise GameException(ConfigErrorMessage.get_error_id("BUILDING_CLUB_CENTER_LEVEL_NOT_ENOUGH"))
 
-        im = ItemManager(self.server_id, self.char_id)
-        im.check_exists(config_building_level.up_need_items, is_oid=True)
+        # im = ItemManager(self.server_id, self.char_id)
+        # im.check_exists(config_building_level.up_need_items, is_oid=True)
 
         check = {
             "gold": -config_building_level.up_need_gold,
@@ -127,7 +126,7 @@ class BuildingManager(object):
 
             key = Timerd.register(end_at, TIMERD_CALLBACK_PATH, data)
 
-            im.remove_items_by_oid(config_building_level.up_need_items)
+            # im.remove_items_by_oid(config_building_level.up_need_items)
 
             MongoBuilding.db(self.server_id).update_one(
                 {'_id': self.char_id},

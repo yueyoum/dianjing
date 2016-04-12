@@ -5,7 +5,6 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoTask, MongoRecord
 from core.character import Character
-from core.package import Drop
 from core.resource import Resource
 from core.signals import random_event_done_signal, daily_task_finish_signal
 
@@ -142,29 +141,29 @@ class TaskManager(object):
         if task_id not in doc['finish']:
             raise GameException(ConfigErrorMessage.get_error_id("TASK_NOT_DONE"))
 
-        drop = Drop.generate(config.package)
-        message = u"Reward from task {0}".format(task_id)
-        Resource(self.server_id, self.char_id).save_drop(drop, message=message)
-
-        if not config.is_daily_task():
-            MongoTask.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {
-                    '$push': {'history': task_id},
-                    '$pull': {'finish': task_id}
-                }
-            )
-        else:
-            MongoTask.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {'$pull': {'finish': task_id}}
-            )
-
-        self.send_remove_notify(task_id)
-        if config.next_task:
-            self.add_task(config.next_task)
-
-        return drop.make_protomsg()
+        # drop = Drop.generate(config.package)
+        # message = u"Reward from task {0}".format(task_id)
+        # Resource(self.server_id, self.char_id).save_drop(drop, message=message)
+        #
+        # if not config.is_daily_task():
+        #     MongoTask.db(self.server_id).update_one(
+        #         {'_id': self.char_id},
+        #         {
+        #             '$push': {'history': task_id},
+        #             '$pull': {'finish': task_id}
+        #         }
+        #     )
+        # else:
+        #     MongoTask.db(self.server_id).update_one(
+        #         {'_id': self.char_id},
+        #         {'$pull': {'finish': task_id}}
+        #     )
+        #
+        # self.send_remove_notify(task_id)
+        # if config.next_task:
+        #     self.add_task(config.next_task)
+        #
+        # return drop.make_protomsg()
 
     def trigger(self, trigger, num):
         task_ids = ConfigTask.filter(trigger=trigger).keys()
@@ -360,19 +359,19 @@ class RandomEvent(object):
             event_id=event_id
         )
 
-        drop = Drop.generate(config.package)
-        message = u"RandomEvent Done. {0}".format(event_id)
-        Resource(self.server_id, self.char_id).save_drop(drop, message)
-
-        MongoRecord.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$inc': {
-                'records.{0}'.format(self.KEY): 1
-            }}
-        )
-
-        self.send_notify()
-        return drop.make_protomsg()
+        # drop = Drop.generate(config.package)
+        # message = u"RandomEvent Done. {0}".format(event_id)
+        # Resource(self.server_id, self.char_id).save_drop(drop, message)
+        #
+        # MongoRecord.db(self.server_id).update_one(
+        #     {'_id': self.char_id},
+        #     {'$inc': {
+        #         'records.{0}'.format(self.KEY): 1
+        #     }}
+        # )
+        #
+        # self.send_notify()
+        # return drop.make_protomsg()
 
     def send_notify(self):
         doc = MongoRecord.db(self.server_id).find_one(

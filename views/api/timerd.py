@@ -10,8 +10,7 @@ import json
 from django.http import HttpResponse
 
 from core.building import BuildingManager
-from core.training import TrainingExp, TrainingProperty, TrainingBroadcast, TrainingShop
-from core.skill import SkillManager
+
 from core.auction import AuctionManager
 from core.challenge import Challenge
 

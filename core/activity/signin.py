@@ -12,7 +12,6 @@ from django.conf import settings
 
 from dianjing.exception import GameException
 from core.mongo import MongoSignIn
-from core.package import Drop
 from core.resource import Resource
 from core.mail import MailManager
 
@@ -260,21 +259,21 @@ class SignIn(object):
                 }}
             )
 
-        if ss.is_big_reward:
-            big_reward = Drop.generate(config.circle_package).to_json()
-            mail = MailManager(self.server_id, self.char_id)
-            mail.add(
-                title=config.mail_title,
-                content=config.mail_content,
-                attachment=big_reward
-            )
-
-        drop = Drop.generate(package_id)
-        message = u"From SignIn {0}, Day {1}".format(sign_id, sign_day)
-        Resource(self.server_id, self.char_id).save_drop(drop, message)
-
-        self.send_notify(ids=[sign_id])
-        return drop.make_protomsg()
+        # if ss.is_big_reward:
+        #     big_reward = Drop.generate(config.circle_package).to_json()
+        #     mail = MailManager(self.server_id, self.char_id)
+        #     mail.add(
+        #         title=config.mail_title,
+        #         content=config.mail_content,
+        #         attachment=big_reward
+        #     )
+        #
+        # drop = Drop.generate(package_id)
+        # message = u"From SignIn {0}, Day {1}".format(sign_id, sign_day)
+        # Resource(self.server_id, self.char_id).save_drop(drop, message)
+        #
+        # self.send_notify(ids=[sign_id])
+        # return drop.make_protomsg()
 
     def send_notify(self, ids=None):
         from core.activity import ActivityCategory
@@ -293,17 +292,17 @@ class SignIn(object):
         notify.act = act
         doc = MongoSignIn.db(self.server_id).find_one({'_id': self.char_id})
 
-        for i in ids:
-            if not ConfigSignIn.get(i).display:
-                continue
-
-            sign_sequence = doc['sign'].get(str(i), [])
-            se = SignEntry(i)
-            ss = se.get_sign_status(sign_sequence)
-
-            notify_signin = notify.signins.add()
-            notify_signin.id = i
-            notify_signin.next_get_time = ss.sign_timestamp
-            notify_signin.drop.MergeFrom(Drop.generate(ss.package_id).make_protomsg())
+        # for i in ids:
+        #     if not ConfigSignIn.get(i).display:
+        #         continue
+        #
+        #     sign_sequence = doc['sign'].get(str(i), [])
+        #     se = SignEntry(i)
+        #     ss = se.get_sign_status(sign_sequence)
+        #
+        #     notify_signin = notify.signins.add()
+        #     notify_signin.id = i
+        #     notify_signin.next_get_time = ss.sign_timestamp
+        #     notify_signin.drop.MergeFrom(Drop.generate(ss.package_id).make_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)

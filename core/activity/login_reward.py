@@ -13,7 +13,6 @@ from django.conf import settings
 from dianjing.exception import GameException
 from core.mongo import MongoActivity
 from core.character import Character
-from core.package import Drop
 from core.resource import Resource
 
 from utils.message import MessagePipe
@@ -42,12 +41,12 @@ class ActivityLoginReward(object):
             {'$set': {'done.{0}'.format(_id): 1}}
         )
 
-        drop = Drop.generate(ConfigLoginReward.get(_id).package)
-        message = u"LoginReward: {0}".format(_id)
-        Resource(self.server_id, self.char_id).save_drop(drop, message)
+        # drop = Drop.generate(ConfigLoginReward.get(_id).package)
+        # message = u"LoginReward: {0}".format(_id)
+        # Resource(self.server_id, self.char_id).save_drop(drop, message)
 
-        self.send_notify(ids=[_id])
-        return drop.make_protomsg()
+        # self.send_notify(ids=[_id])
+        # return drop.make_protomsg()
 
     def reward_time(self, _id):
         config = ConfigLoginReward.get(_id)
@@ -83,11 +82,11 @@ class ActivityLoginReward(object):
         ids.sort()
         notify.act = act
 
-        for i in ids:
-            config = ConfigLoginReward.get(i)
-            notify_reward = notify.rewards.add()
-            notify_reward.id = i
-            notify_reward.reward_time = self.reward_time(i)
-            notify_reward.drop.MergeFrom(Drop.generate(config.package).make_protomsg())
+        # for i in ids:
+        #     config = ConfigLoginReward.get(i)
+        #     notify_reward = notify.rewards.add()
+        #     notify_reward.id = i
+        #     notify_reward.reward_time = self.reward_time(i)
+        #     notify_reward.drop.MergeFrom(Drop.generate(config.package).make_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)

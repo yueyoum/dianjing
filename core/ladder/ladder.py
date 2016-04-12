@@ -14,7 +14,6 @@ import arrow
 from dianjing.exception import GameException
 from core.mongo import MongoLadder
 from core.character import Character
-from core.package import Drop
 from core.mail import MailManager
 from core.lock import Lock, LadderLock, LadderNPCLock, LockTimeOut
 from core.ladder.match import LadderClub, LadderMatch
@@ -56,25 +55,25 @@ class Ladder(object):
     def cronjob(cls, server_id):
         # 每天按照排名发送奖励
         char_ids = Character.get_recent_login_char_ids(server_id)
-        for cid in char_ids:
-            doc = MongoLadder.db(server_id).find_one({'_id': str(cid)}, {'order': 1})
-            if not doc:
-                continue
-
-            order = doc['order']
-
-            config = ConfigLadderRankReward.get_reward_object(order)
-            drop = Drop()
-            drop.gold = config.reward_gold
-
-            m = MailManager(server_id, cid)
-            m.add(
-                title=config.mail_title,
-                content=config.mail_content.format(order),
-                attachment=drop.to_json(),
-            )
-
-            Ladder(server_id, cid).add_score(config.reward_score)
+        # for cid in char_ids:
+        #     doc = MongoLadder.db(server_id).find_one({'_id': str(cid)}, {'order': 1})
+        #     if not doc:
+        #         continue
+        #
+        #     order = doc['order']
+        #
+        #     config = ConfigLadderRankReward.get_reward_object(order)
+        #     drop = Drop()
+        #     drop.gold = config.reward_gold
+        #
+        #     m = MailManager(server_id, cid)
+        #     m.add(
+        #         title=config.mail_title,
+        #         content=config.mail_content.format(order),
+        #         attachment=drop.to_json(),
+        #     )
+        #
+        #     Ladder(server_id, cid).add_score(config.reward_score)
 
     @classmethod
     def cronjob_refresh_remained_times(cls, server_id):
@@ -248,10 +247,10 @@ class Ladder(object):
 
         self.refresh_match_club()
         self.send_notify()
-
-        drop = Drop()
-        drop.ladder_score = match.club_one_add_score
-        return drop.make_protomsg()
+        #
+        # drop = Drop()
+        # drop.ladder_score = match.club_one_add_score
+        # return drop.make_protomsg()
 
     def add_match_video(self, video):
         MailManager(self.server_id, self.char_id).add(

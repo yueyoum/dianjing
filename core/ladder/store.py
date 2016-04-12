@@ -16,7 +16,6 @@ from dianjing.exception import GameException
 from core.mongo import MongoLadder
 from core.common import CommonLadderStore
 from core.character import Character
-from core.item import ItemManager
 from core.lock import LadderStoreLock
 from utils.message import MessagePipe, MessageFactory
 from config import (
@@ -129,7 +128,7 @@ class LadderStore(object):
             }
         )
 
-        ItemManager(self.server_id, self.char_id).add_item(config.item, amount=config.item_amount)
+        # ItemManager(self.server_id, self.char_id).add_item(config.item, amount=config.item_amount)
         ladder.send_notify()
 
     def send_notify(self):

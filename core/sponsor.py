@@ -10,7 +10,6 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoSponsor, MongoCharacter
 from core.friend import FriendManager
-from core.package import Drop
 from core.resource import Resource
 from core.building import BuildingSponsorCenter
 
@@ -71,10 +70,10 @@ class SponsorManager(object):
         if not doc['income']:
             return
 
-        drop = Drop()
-        drop.diamond = doc['income']
-        message = u"Sponsor income"
-        Resource(self.server_id, self.char_id).save_drop(drop, message)
+        # drop = Drop()
+        # drop.diamond = doc['income']
+        # message = u"Sponsor income"
+        # Resource(self.server_id, self.char_id).save_drop(drop, message)
 
         MongoSponsor.db(self.server_id).update_one(
             {'_id': self.char_id},

@@ -33,7 +33,7 @@ from core.activity.login_reward import ActivityLoginReward
 from core.activity.signin import SignIn
 from core.active_value import ActiveValue
 # from core.training_match import TrainingMatch, TrainingMatchStore
-from core.auction import AuctionManager
+# from core.auction import AuctionManager
 from core.system import send_broadcast_notify
 
 from utils.message import MessagePipe
@@ -90,9 +90,9 @@ def game_start_handler(server_id, char_id, **kwargs):
     ActivityCategory(server_id, char_id).send_notify()
     ActivityLoginReward(server_id, char_id).send_notify()
     SignIn(server_id, char_id).send_notify()
-
-    AuctionManager(server_id, char_id).send_bidding_list_notify()
-    AuctionManager(server_id, char_id).send_sell_list_notify()
+    #
+    # AuctionManager(server_id, char_id).send_bidding_list_notify()
+    # AuctionManager(server_id, char_id).send_sell_list_notify()
 
     av = ActiveValue(server_id, char_id)
     av.send_function_notify()

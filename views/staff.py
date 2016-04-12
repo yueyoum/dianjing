@@ -8,7 +8,7 @@ Description:
 """
 
 from utils.http import ProtobufResponse
-from core.staff import StaffRecruit, StaffManger
+from core.staff import StaffManger
 
 from protomsg.staff_pb2 import (
     StaffRecruitRefreshResponse,

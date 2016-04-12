@@ -10,7 +10,6 @@ from django.dispatch import receiver
 from core.mongo import MongoCharacter
 from core.signals import match_staffs_set_done_signal, club_level_up_signal
 # from core.league import LeagueGame
-from core.training import TrainingShop
 
 @receiver(match_staffs_set_done_signal, dispatch_uid='signals.club.match_staffs_set_done_handler')
 def match_staffs_set_done_handler(server_id, char_id, match_staffs, **kwargs):
@@ -19,6 +18,3 @@ def match_staffs_set_done_handler(server_id, char_id, match_staffs, **kwargs):
     # if not group_id:
     #     LeagueGame.join_already_started_league(server_id, char_id)
 
-@receiver(club_level_up_signal, dispatch_uid='signals.club.club_level_up_handler')
-def club_level_up_handler(server_id, char_id, new_level, **kwargs):
-    TrainingShop(server_id, char_id).trig_open_by_club_level(new_level)

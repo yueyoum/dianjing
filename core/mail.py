@@ -15,7 +15,6 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoMail, MongoCharacter
 from core.character import Character
-from core.package import Drop
 from core.resource import Resource
 
 from config import ConfigErrorMessage
@@ -154,17 +153,17 @@ class MailManager(object):
         if not attachment:
             raise GameException(ConfigErrorMessage.get_error_id("MAIL_HAS_NO_ATTACHMENT"))
 
-        drop = Drop.loads_from_json(attachment)
-        message = u"Attachment from mail: {0}".format(this_mail['title'])
-        Resource(self.server_id, self.char_id).save_drop(drop, message=message)
-
-        MongoMail.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': {'mails.{0}.attachment'.format(mail_id): ""}}
-        )
-
-        self.send_notify(ids=[mail_id])
-        return drop
+        # drop = Drop.loads_from_json(attachment)
+        # message = u"Attachment from mail: {0}".format(this_mail['title'])
+        # Resource(self.server_id, self.char_id).save_drop(drop, message=message)
+        #
+        # MongoMail.db(self.server_id).update_one(
+        #     {'_id': self.char_id},
+        #     {'$set': {'mails.{0}.attachment'.format(mail_id): ""}}
+        # )
+        #
+        # self.send_notify(ids=[mail_id])
+        # return drop
 
     def clean_expired(self):
         limit_timestamp = get_mail_clean_time().timestamp
@@ -236,8 +235,8 @@ class MailManager(object):
 
             notify_mail.remained_seconds = remained_seconds
 
-            if v['attachment']:
-                notify_mail.attachment.MergeFrom(Drop.loads_from_json(v['attachment']).make_protomsg())
+            # if v['attachment']:
+            #     notify_mail.attachment.MergeFrom(Drop.loads_from_json(v['attachment']).make_protomsg())
 
             function = v.get('function', 0)
             if function:
