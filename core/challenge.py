@@ -86,6 +86,8 @@ class ChallengeNPCClub(AbstractClub):
         for position, _id, unit_id in self.config.staffs:
             self.formation_staffs.append(ChallengeNPCStaff(_id, unit_id, position))
 
+        self.after_load_formation_staffs()
+
 class Challenge(object):
     __slots__ = ['server_id', 'char_id']
 

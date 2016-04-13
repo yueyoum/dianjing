@@ -409,6 +409,7 @@ class AbstractStaff(object):
 
 class AbstractClub(object):
     __slots__ = [
+        '__weakref__',
         'server_id', 'char_id',
         'id', 'name', 'manager_name', 'flag', 'level',
         'renown', 'vip', 'gold', 'diamond', 'crystal', 'gas',
