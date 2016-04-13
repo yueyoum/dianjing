@@ -20,6 +20,7 @@ from config import ConfigStaffStar, ConfigStaffNew, ConfigUnitNew, ConfigItemNew
 class AbstractUnit(object):
     __slots__ = [
         'config',
+        'server_id', 'char_id',
         'id', 'step', 'level',
 
         'hp', 'hp_percent', 'attack', 'attack_percent', 'defense', 'defense_percent',
@@ -37,6 +38,9 @@ class AbstractUnit(object):
     def __init__(self):
         self.config = None
         """:type: config.unit.UnitNew"""
+
+        self.server_id = None
+        self.char_id = None
 
         self.id = 0  # NOTE: 就是本身的ID
         self.step = 0

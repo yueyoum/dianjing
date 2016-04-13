@@ -36,7 +36,7 @@ class NPCUnit(AbstractUnit):
 
 # 用于玩家的
 class Unit(AbstractUnit):
-    __slots__ = ['server_id', 'char_id']
+    __slots__ = []
 
     def __init__(self, server_id, char_id, _id, data):
         super(Unit, self).__init__()
