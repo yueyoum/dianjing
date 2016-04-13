@@ -68,7 +68,7 @@ class Formation(object):
             staff_obj.unit = unit_obj
             staff_obj.formation_position = self.doc['position'].index(int(slot_id))
 
-            staffs.append(staffs)
+            staffs.append(staff_obj)
 
         return staffs
 

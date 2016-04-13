@@ -22,7 +22,7 @@ from core.resource import Resource
 
 from utils.message import MessagePipe
 
-from config import ConfigChapter, ConfigChallengeMatch, ConfigErrorMessage
+from config import ConfigChapter, ConfigChallengeMatch, ConfigErrorMessage, ConfigStaffNew
 
 from protomsg.challenge_pb2 import (
     ChallengeNotify,
@@ -62,6 +62,7 @@ class ChallengeNPCStaff(AbstractStaff):
 
         self.id = str(_id)
         self.oid = _id
+        self.config = ConfigStaffNew.get(_id)
 
         self.formation_position = position
         self.unit = Unit(None, None, unit_id, {'level': 1, 'step': 0})

@@ -248,6 +248,8 @@ class AbstractClub(object):
         self.vip = 0
         self.gold = 0
         self.diamond = 0
+        self.crystal = 0
+        self.gas = 0
         self.formation_staffs = []
         """:type: list[AbstractStaff]"""
 
