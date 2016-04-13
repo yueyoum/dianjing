@@ -142,7 +142,7 @@ class AbstractStaff(object):
         'quality',
 
         'formation_position',
-        '__unit',
+        '_unit',
 
         'talent_skills',
 
@@ -181,7 +181,7 @@ class AbstractStaff(object):
         self.quality = 0
 
         self.formation_position = None
-        self.__unit = None
+        self._unit = None
         """:type: AbstractUnit"""
 
         self.talent_skills = []
@@ -258,7 +258,7 @@ class AbstractStaff(object):
 
     def set_unit(self, unit):
         # type: (AbstractUnit) -> None
-        self.__unit = unit.clone()
+        self._unit = unit.clone()
 
     def get_all_equipment_quality(self):
         return 0
@@ -287,19 +287,19 @@ class AbstractStaff(object):
                 self._add_talent_effect_to_staff(config_talent, self.club_weakref.get_formation_protoss_staffs())
             elif config_talent.target == 6:
                 # 选手自身携带的任意兵种
-                self._add_talent_effect_to_unit(config_talent, [self.__unit])
+                self._add_talent_effect_to_unit(config_talent, [self._unit])
             elif config_talent.target == 7:
                 # 选手自身携带的人族兵种
-                if self.__unit.config.race == 1:
-                    self._add_talent_effect_to_unit(config_talent, [self.__unit])
+                if self._unit.config.race == 1:
+                    self._add_talent_effect_to_unit(config_talent, [self._unit])
             elif config_talent.target == 8:
                 # 选手自身携带的虫族并种
-                if self.__unit.config.race == 3:
-                    self._add_talent_effect_to_unit(config_talent, [self.__unit])
+                if self._unit.config.race == 3:
+                    self._add_talent_effect_to_unit(config_talent, [self._unit])
             elif config_talent.target == 9:
                 # 选手自身携带的神族并种
-                if self.__unit.config.race == 2:
-                    self._add_talent_effect_to_unit(config_talent, [self.__unit])
+                if self._unit.config.race == 2:
+                    self._add_talent_effect_to_unit(config_talent, [self._unit])
             elif config_talent.target == 10:
                 # 所有选手所有任意兵种
                 self._add_talent_effect_to_unit(config_talent, self.club_weakref.get_formation_all_units())

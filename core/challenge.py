@@ -64,7 +64,7 @@ class ChallengeNPCStaff(AbstractStaff):
         self.oid = _id
 
         self.formation_position = position
-        self.__unit = NPCUnit(unit_id, 0, 1)
+        self._unit = NPCUnit(unit_id, 0, 1)
 
         self.after_init()
 

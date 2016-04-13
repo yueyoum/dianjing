@@ -68,35 +68,35 @@ class ClubMatch(object):
                 msg_troop.hero.operation = fs.operation
                 msg_troop.hero.operationPercent = fs.operation_percent
 
-                msg_troop.army.id = fs.__unit.id
-                msg_troop.army.hp = fs.__unit.hp
-                msg_troop.army.hpPercent = fs.__unit.hp_percent
-                msg_troop.army.attack = fs.__unit.attack
-                msg_troop.army.attackPercent = fs.__unit.attack_percent
-                msg_troop.army.defense = fs.__unit.defense
-                msg_troop.army.defensePercent = fs.__unit.defense_percent
-                msg_troop.army.attackSpeed = fs.__unit.attack_speed
-                msg_troop.army.attackSpeedPercent = fs.__unit.attack_speed_percent
-                msg_troop.army.attackDistance = fs.__unit.attack_range
-                msg_troop.army.attackDistancePercent = fs.__unit.attack_range_percent
-                msg_troop.army.moveSpeed = fs.__unit.move_speed
-                msg_troop.army.moveSpeedPercent = fs.__unit.move_speed_percent
-                msg_troop.army.hitRate = fs.__unit.hit_rate
-                msg_troop.army.dodgeRate = fs.__unit.dodge_rate
-                msg_troop.army.critRate = fs.__unit.crit_rate
-                msg_troop.army.critMulti = fs.__unit.crit_multi
-                msg_troop.army.critAntiRate = fs.__unit.toughness_rate
+                msg_troop.army.id = fs._unit.id
+                msg_troop.army.hp = fs._unit.hp
+                msg_troop.army.hpPercent = fs._unit.hp_percent
+                msg_troop.army.attack = fs._unit.attack
+                msg_troop.army.attackPercent = fs._unit.attack_percent
+                msg_troop.army.defense = fs._unit.defense
+                msg_troop.army.defensePercent = fs._unit.defense_percent
+                msg_troop.army.attackSpeed = fs._unit.attack_speed
+                msg_troop.army.attackSpeedPercent = fs._unit.attack_speed_percent
+                msg_troop.army.attackDistance = fs._unit.attack_range
+                msg_troop.army.attackDistancePercent = fs._unit.attack_range_percent
+                msg_troop.army.moveSpeed = fs._unit.move_speed
+                msg_troop.army.moveSpeedPercent = fs._unit.move_speed_percent
+                msg_troop.army.hitRate = fs._unit.hit_rate
+                msg_troop.army.dodgeRate = fs._unit.dodge_rate
+                msg_troop.army.critRate = fs._unit.crit_rate
+                msg_troop.army.critMulti = fs._unit.crit_multi
+                msg_troop.army.critAntiRate = fs._unit.toughness_rate
 
-                msg_troop.army.appendAttackTerran = fs.__unit.hurt_addition_to_terran
-                msg_troop.army.appendAttackProtoss = fs.__unit.hurt_addition_to_protoss
-                msg_troop.army.appendAttackZerg = fs.__unit.hurt_addition_to_zerg
+                msg_troop.army.appendAttackTerran = fs._unit.hurt_addition_to_terran
+                msg_troop.army.appendAttackProtoss = fs._unit.hurt_addition_to_protoss
+                msg_troop.army.appendAttackZerg = fs._unit.hurt_addition_to_zerg
 
-                msg_troop.army.appendAttackedByTerran = fs.__unit.hurt_addition_by_terran
-                msg_troop.army.appendAttackedByProtoss = fs.__unit.hurt_addition_by_protoss
-                msg_troop.army.appendAttackedByZerg = fs.__unit.hurt_addition_by_zerg
+                msg_troop.army.appendAttackedByTerran = fs._unit.hurt_addition_by_terran
+                msg_troop.army.appendAttackedByProtoss = fs._unit.hurt_addition_by_protoss
+                msg_troop.army.appendAttackedByZerg = fs._unit.hurt_addition_by_zerg
 
-                msg_troop.army.finalHurtAppend = fs.__unit.final_hurt_addition
-                msg_troop.army.finalHurtReduce = fs.__unit.final_hurt_reduce
+                msg_troop.army.finalHurtAppend = fs._unit.final_hurt_addition
+                msg_troop.army.finalHurtReduce = fs._unit.final_hurt_reduce
 
         fill_club_msg(msg.club_one, self.club_one)
         fill_club_msg(msg.club_two, self.club_two)
