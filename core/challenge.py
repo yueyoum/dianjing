@@ -16,13 +16,13 @@ from core.mongo import MongoChallenge, MongoCharacter
 from core.club import Club
 from core.match import ClubMatch
 from core.character import NORMAL_MAX_ENERGY, VIP_MAX_ENERGY
-from core.unit import Unit
+from core.unit import NPCUnit
 
 from core.resource import Resource
 
 from utils.message import MessagePipe
 
-from config import ConfigChapter, ConfigChallengeMatch, ConfigErrorMessage, ConfigStaffNew
+from config import ConfigChapter, ConfigChallengeMatch, ConfigErrorMessage
 
 from protomsg.challenge_pb2 import (
     ChallengeNotify,
@@ -62,27 +62,28 @@ class ChallengeNPCStaff(AbstractStaff):
 
         self.id = str(_id)
         self.oid = _id
-        self.config = ConfigStaffNew.get(_id)
 
         self.formation_position = position
-        self.unit = Unit(None, None, unit_id, {'level': 1, 'step': 0})
-        self.calculate_property()
+        self.__unit = NPCUnit(unit_id, 0, 1)
+
+        self.after_init()
 
 class ChallengeNPCClub(AbstractClub):
-    __slots__ = []
+    __slots__ = ['config']
 
     def __init__(self, challenge_match_id):
         super(ChallengeNPCClub, self).__init__()
 
-        config = ConfigChallengeMatch.get(challenge_match_id)
-
+        self.config = ConfigChallengeMatch.get(challenge_match_id)
         self.id = challenge_match_id
 
+        self.name = self.config.name
         # TODO
-        self.name = config.name
         self.flag = 1
 
-        for position, _id, unit_id in config.staffs:
+    def load_formation_staffs(self):
+        self.formation_staffs = []
+        for position, _id, unit_id in self.config.staffs:
             self.formation_staffs.append(ChallengeNPCStaff(_id, unit_id, position))
 
 class Challenge(object):
@@ -220,7 +221,6 @@ class Challenge(object):
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
         club_one = Club(self.server_id, self.char_id)
-        club_one.load_formation_staffs()
         club_two = ChallengeNPCClub(challenge_id)
         match = ClubMatch(club_one, club_two)
         msg = match.start()

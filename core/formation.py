@@ -65,7 +65,7 @@ class Formation(object):
             staff_obj = sm.get_staff_object(v['staff_id'])
             unit_obj = um.get_unit_object(v['unit_id'])
 
-            staff_obj.unit = unit_obj
+            staff_obj.set_unit(unit_obj)
             staff_obj.formation_position = self.doc['position'].index(int(slot_id))
 
             staffs.append(staff_obj)

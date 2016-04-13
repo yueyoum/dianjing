@@ -231,3 +231,102 @@ class ConfigStaffStar(ConfigBase):
     def get(cls, _id):
         # type: (int) -> StaffStar
         return super(ConfigStaffStar, cls).get(_id)
+
+
+class StaffEquipmentQualityAddition(object):
+    __slots__ = [
+        'id',
+        'attack', 'attack_percent',
+        'defense', 'defense_percent',
+        'manage', 'manage_percent',
+        'operation', 'operation_percent'
+    ]
+
+    def __init__(self):
+        self.id = 0
+        self.attack = 0
+        self.attack_percent = 0
+        self.defense = 0
+        self.defense_percent = 0
+        self.manage = 0
+        self.manage_percent = 0
+        self.operation = 0
+        self.operation_percent = 0
+
+
+class StaffEquipmentLevelAddition(object):
+    __slots__ = [
+        'id',
+        'attack', 'attack_percent',
+        'defense', 'defense_percent',
+        'manage', 'manage_percent',
+        'operation', 'operation_percent'
+    ]
+
+    def __init__(self):
+        self.id = 0
+        self.attack = 0
+        self.attack_percent = 0
+        self.defense = 0
+        self.defense_percent = 0
+        self.manage = 0
+        self.manage_percent = 0
+        self.operation = 0
+        self.operation_percent = 0
+
+
+class ConfigStaffEquipmentQualityAddition(ConfigBase):
+    EntityClass = StaffEquipmentQualityAddition
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    QUALITIES = []
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigStaffEquipmentQualityAddition, cls).initialize(fixture)
+        cls.QUALITIES = cls.INSTANCES.keys()
+        cls.QUALITIES.sort(reverse=True)
+
+    @classmethod
+    def get(cls, _id):
+        # type: (int) -> StaffEquipmentQualityAddition
+        return super(ConfigStaffEquipmentQualityAddition, cls).get(_id)
+
+class ConfigStaffEquipmentLevelAddition(ConfigBase):
+    EntityClass = StaffEquipmentLevelAddition
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    LEVELS = []
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigStaffEquipmentLevelAddition, cls).initialize(fixture)
+        cls.LEVELS = cls.INSTANCES.keys()
+        cls.LEVELS.sort(reverse=True)
+
+    @classmethod
+    def get(cls, _id):
+        # type: (int) -> StaffEquipmentLevelAddition
+        return super(ConfigStaffEquipmentLevelAddition, cls).get(_id)
+
+
+class ConfigStaffEquipmentAddition(object):
+    @classmethod
+    def get_by_quality(cls, quality):
+        # type: (int) -> StaffEquipmentQualityAddition | None
+        for i in ConfigStaffEquipmentQualityAddition.QUALITIES:
+            if quality >= i:
+                return ConfigStaffEquipmentQualityAddition.get(i)
+
+        return None
+
+    @classmethod
+    def get_by_level(cls, level):
+        # type: (int) -> StaffEquipmentLevelAddition | None
+        for i in ConfigStaffEquipmentLevelAddition.LEVELS:
+            if level >= i:
+                return ConfigStaffEquipmentLevelAddition.get(i)
+
+        return None

@@ -16,12 +16,25 @@ from core.resource import ResourceClassification
 
 from utils.message import MessagePipe
 
-from config import ConfigErrorMessage, ConfigUnitNew, ConfigUnitUnLock
+from config import ConfigErrorMessage, ConfigUnitUnLock
 
 from protomsg.unit_pb2 import UnitNotify
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 
+# 用于NPC的
+class NPCUnit(AbstractUnit):
+    __slots__ = []
+
+    def __init__(self, _id, step, level):
+        super(NPCUnit, self).__init__()
+        self.id = _id
+        self.step = step
+        self.level = level
+        self.after_init()
+
+
+# 用于玩家的
 class Unit(AbstractUnit):
     __slots__ = ['server_id', 'char_id']
 
@@ -33,19 +46,13 @@ class Unit(AbstractUnit):
         self.step = data['step']
         self.level = data['level']
 
-        self.conf_unit = ConfigUnitNew.get(self.id)
-
-        # 分成两阶段计算是因为：
-        # 1, 改变了等级，等阶，直接调用以下这两个方法
-        # 2, 外部效果对兵种有加成，就先把加成加上去，然后再调用第二步计算
-        self.pre_calculate_property()
-        self.calculate_property()
+        self.after_init()
 
     def level_up(self):
-        if self.level >= self.conf_unit.max_level:
+        if self.level >= self.config.max_level:
             raise GameException(ConfigErrorMessage.get_error_id("UNIT_REACH_MAX_LEVEL"))
 
-        using_items = self.conf_unit.levels[self.level].update_item_need
+        using_items = self.config.levels[self.level].update_item_need
         resource_classified = ResourceClassification.classify(using_items)
         resource_classified.check_exist(self.server_id, self.char_id)
         resource_classified.remove(self.server_id, self.char_id)
@@ -59,18 +66,18 @@ class Unit(AbstractUnit):
             }}
         )
 
-        self.pre_calculate_property()
-        self.calculate_property()
+        self.pre_calculate()
+        self.calculate()
         self.send_notify()
 
     def step_up(self):
-        if self.step >= self.conf_unit.max_step:
+        if self.step >= self.config.max_step:
             raise GameException(ConfigErrorMessage.get_error_id("UNIT_REACH_MAX_STEP"))
 
-        if self.level < self.conf_unit.steps[self.step].level_limit:
+        if self.level < self.config.steps[self.step].level_limit:
             raise GameException(ConfigErrorMessage.get_error_id("UNIT_LEVEL_NOT_ENOUGH"))
 
-        using_items = self.conf_unit.steps[self.step].update_item_need
+        using_items = self.config.steps[self.step].update_item_need
         resource_classified = ResourceClassification.classify(using_items)
         resource_classified.check_exist(self.server_id, self.char_id)
         resource_classified.remove(self.server_id, self.char_id)
@@ -84,8 +91,8 @@ class Unit(AbstractUnit):
             }}
         )
 
-        self.pre_calculate_property()
-        self.calculate_property()
+        self.pre_calculate()
+        self.calculate()
         self.send_notify()
 
     def send_notify(self):

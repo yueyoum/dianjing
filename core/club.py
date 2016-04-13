@@ -32,9 +32,7 @@ def club_level_up_need_renown(level):
 
 
 class Club(AbstractClub):
-    __slots__ = [
-        'server_id', 'char_id',
-    ]
+    __slots__ = []
 
     def __init__(self, server_id, char_id):
         super(Club, self).__init__()
@@ -42,7 +40,7 @@ class Club(AbstractClub):
         self.server_id = server_id
         self.char_id = char_id
 
-        doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'club': 1, 'name': 1, 'buy_slots': 1})
+        doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'club': 1, 'name': 1})
         club = doc['club']
 
         self.id = self.char_id  # 玩家ID
@@ -62,6 +60,7 @@ class Club(AbstractClub):
         from core.formation import Formation
         self.formation_staffs = Formation(self.server_id, self.char_id).get_formation_staffs()
 
+        self.after_load_formation_staffs()
 
     def check_money(self, diamond=0, gold=0, crystal=0, gas=0):
         # TODO 其他货币

@@ -231,10 +231,8 @@ class Staff(AbstractStaff):
         self.equip_monitor = data['equip_monitor']
         self.equip_decoration = data['equip_decoration']
 
-        self.config = ConfigStaffNew.get(self.oid)
-        self.quality = ConfigItemNew.get(self.oid).quality
+        self.after_init()
 
-        self.calculate_property()
 
     def level_up(self, using_items):
         # using_items: [(id, amount)...]
@@ -281,7 +279,7 @@ class Staff(AbstractStaff):
             }}
         )
 
-        self.calculate_property()
+        self.calculate()
         self.send_notify()
 
     def step_up(self):
@@ -304,7 +302,7 @@ class Staff(AbstractStaff):
             }}
         )
 
-        self.calculate_property()
+        self.calculate()
         # TODO 天赋技能
         self.send_notify()
 
@@ -348,7 +346,7 @@ class Staff(AbstractStaff):
             }}
         )
 
-        self.calculate_property()
+        self.calculate()
         self.send_notify()
 
     def equipment_change(self, bag_slot_id, tp):
@@ -389,7 +387,7 @@ class Staff(AbstractStaff):
             }}
         )
 
-        self.calculate_property()
+        self.calculate()
         self.send_notify()
 
     def send_notify(self):
@@ -506,35 +504,7 @@ class StaffManger(object):
 
         return unique_id
 
-    def is_free(self, staff_id):
-        # from core.club import Club
-        # from core.training import TrainingShop, TrainingBroadcast, TrainingExp, TrainingProperty
-        # from core.skill import SkillManager
-        #
-        # if not self.has_staff(staff_id):
-        #     raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
-        #
-        # if Club(self.server_id, self.char_id).is_staff_in_match(staff_id):
-        #     raise GameException(ConfigErrorMessage.get_error_id("STAFF_CAN_NOT_REMOVE_IN_MATCH"))
-        #
-        # if TrainingShop(self.server_id, self.char_id).staff_is_training(staff_id):
-        #     raise GameException(ConfigErrorMessage.get_error_id("STAFF_FIRE_TRAINING_SHOP"))
-        #
-        # if TrainingBroadcast(self.server_id, self.char_id).staff_is_training(staff_id):
-        #     raise GameException(ConfigErrorMessage.get_error_id("STAFF_FIRE_TRAINING_BROADCAST"))
-        #
-        # if TrainingExp(self.server_id, self.char_id).staff_is_training(staff_id):
-        #     raise GameException(ConfigErrorMessage.get_error_id("STAFF_FIRE_TRAINING_EXP"))
-        #
-        # if TrainingProperty(self.server_id, self.char_id).staff_is_training(staff_id):
-        #     raise GameException(ConfigErrorMessage.get_error_id("STAFF_FIRE_TRAINING_PROPERTY"))
-        #
-        # if SkillManager(self.server_id, self.char_id).staff_is_training(staff_id):
-        #     raise GameException(ConfigErrorMessage.get_error_id("STAFF_FIRE_TRAINING_SKILL"))
-        pass
-
     def remove(self, staff_id):
-        self.is_free(staff_id)
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
