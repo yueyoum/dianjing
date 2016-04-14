@@ -56,11 +56,39 @@ class Club(AbstractClub):
         self.crystal = club.get('crystal', 0)
         self.gas = club.get('gas', 0)
 
-    def load_formation_staffs(self):
+    def load_staffs(self):
+        from core.staff import StaffManger, Staff
         from core.formation import Formation
-        self.formation_staffs = Formation(self.server_id, self.char_id).get_formation_staffs()
+        from core.unit import UnitManager
 
-        self.after_load_formation_staffs()
+        sm = StaffManger(self.server_id, self.char_id)
+        fm = Formation(self.server_id, self.char_id)
+        um = UnitManager(self.server_id, self.char_id)
+
+        staffs = sm.get_all_staff_data()
+        in_formation_staffs = fm.in_formation_staffs()
+
+        staff_objs = {}
+        """:type: dict[str, core.staff.Staff]"""
+        for k, v in staffs.items():
+            staff_objs[k] = Staff(self.server_id, self.char_id, k, v)
+
+        for k, v in staff_objs.iteritems():
+            if k in in_formation_staffs:
+                self.formation_staffs.append(v)
+
+                v.formation_position = in_formation_staffs[k]['position']
+
+                unit_id = in_formation_staffs[k]['unit_id']
+                if unit_id:
+                    v.set_unit(um.get_unit_object(unit_id))
+
+        for k in in_formation_staffs:
+            staff_objs[k].talent_effect(self)
+
+        for _, v in staff_objs.iteritems():
+            v.calculate()
+            v.make_cache()
 
     def check_money(self, diamond=0, gold=0, crystal=0, gas=0):
         # TODO 其他货币
@@ -81,7 +109,6 @@ class Club(AbstractClub):
 
     def current_vip(self):
         return self.vip
-
 
     def update(self, **kwargs):
         renown = kwargs.get('renown', 0)

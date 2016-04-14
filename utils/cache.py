@@ -9,10 +9,9 @@ Description:
 import cPickle
 from cPickle import HIGHEST_PROTOCOL
 
-from django.conf import settings
 from core.db import RedisDB
 
-CACHE_SECONDS = settings.REDIS_CACHE_SECONDS
+CACHE_SECONDS = 3600 * 6    # 6 hours
 
 def set(key, obj, expire=CACHE_SECONDS):
     data = cPickle.dumps(obj, HIGHEST_PROTOCOL)

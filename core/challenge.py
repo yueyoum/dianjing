@@ -57,15 +57,11 @@ STAR_REWARD_MAX_INDEX = 3
 class ChallengeNPCStaff(AbstractStaff):
     __slots__ = []
 
-    def __init__(self, _id, unit_id, position):
+    def __init__(self, _id):
         super(ChallengeNPCStaff, self).__init__()
 
         self.id = str(_id)
         self.oid = _id
-
-        self.formation_position = position
-        self._unit = NPCUnit(unit_id, 0, 1)
-
         self.after_init()
 
 class ChallengeNPCClub(AbstractClub):
@@ -81,12 +77,17 @@ class ChallengeNPCClub(AbstractClub):
         # TODO
         self.flag = 1
 
-    def load_formation_staffs(self):
-        self.formation_staffs = []
+    def load_staffs(self):
         for position, _id, unit_id in self.config.staffs:
-            self.formation_staffs.append(ChallengeNPCStaff(_id, unit_id, position))
+            s = ChallengeNPCStaff(_id)
+            s.formation_position = position
+            u = NPCUnit(unit_id, 0, 1)
+            u.calculate()
 
-        self.after_load_formation_staffs()
+            s.set_unit(u)
+            s.calculate()
+            self.formation_staffs.append(s)
+
 
 class Challenge(object):
     __slots__ = ['server_id', 'char_id']

@@ -302,9 +302,9 @@ class Staff(AbstractStaff):
             }}
         )
 
-        self.calculate()
-        # TODO 天赋技能
-        self.send_notify()
+        # NOTE 升阶可能会导致 天赋技能 改变
+        # 不仅会影响自己，也会影响到其他选手
+        # 所以这里不自己 calculate， 而是先让 club 重新 load staffs
 
     def star_up(self):
         if self.star >= STAFF_MAX_STAR:
@@ -416,7 +416,10 @@ class StaffManger(object):
         return len(self.get_all_staff_data())
 
     def get_all_staff_data(self):
-        # type: () -> dict[str, dict]
+        """
+
+        :rtype: dict[str, dict]
+        """
         doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1})
         return doc['staffs']
 
@@ -426,26 +429,20 @@ class StaffManger(object):
         return {k: Staff(self.server_id, self.char_id, k, v) for k, v in doc['staffs'].iteritems()}
 
     def get_staff_object(self, _id):
-        # type: (str) -> Staff | None
-        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs.{0}'.format(_id): 1})
-        data = doc['staffs'].get(_id, None)
-        if not data:
-            return None
-        return Staff(self.server_id, self.char_id, _id, data)
+        """
 
-    def get_dict_of_staff_object_by_ids(self, ids):
-        # type: (list[str]) -> dict[str, Staff]
-        projection = {'staffs.{0}'.format(i): 1 for i in ids}
-        doc = MongoStaff.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            projection
-        )
+        :param _id:
+        :rtype : Staff | None
+        """
+        from core.club import Club
 
-        staffs = {}
-        for i in ids:
-            staffs[i] = Staff(self.server_id, self.char_id, i, doc['staffs'][i])
+        obj = Staff.get(_id)
+        if obj:
+            return obj
 
-        return staffs
+        Club(self.server_id, self.char_id).load_staffs()
+        return Staff.get(_id)
+
 
     def has_staff(self, ids):
         # type: (list[str]) -> bool
@@ -559,11 +556,17 @@ class StaffManger(object):
         staff.level_up(items)
 
     def step_up(self, staff_id):
+        from core.club import Club
+        from core.formation import Formation
         staff = self.get_staff_object(staff_id)
         if not staff:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
         staff.step_up()
+        Club(self.server_id, self.char_id).load_staffs()
+        in_formation_staff_ids = Formation(self.server_id, self.char_id).in_formation_staffs().keys()
+        self.send_notify(ids=in_formation_staff_ids)
+
 
     def star_up(self, staff_id):
         staff = self.get_staff_object(staff_id)
@@ -599,9 +602,9 @@ class StaffManger(object):
 
         notify = StaffNotify()
         notify.act = act
-        for k, v in staffs.iteritems():
+        for k, _ in staffs.iteritems():
             notify_staff = notify.staffs.add()
-            staff = Staff(self.server_id, self.char_id, k, v)
+            staff = self.get_staff_object(k)
             notify_staff.MergeFrom(staff.make_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)

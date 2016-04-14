@@ -66,7 +66,6 @@ class Unit(AbstractUnit):
             }}
         )
 
-        self.pre_calculate()
         self.calculate()
         self.send_notify()
 
@@ -91,7 +90,6 @@ class Unit(AbstractUnit):
             }}
         )
 
-        self.pre_calculate()
         self.calculate()
         self.send_notify()
 

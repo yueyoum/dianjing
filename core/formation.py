@@ -43,32 +43,15 @@ class Formation(object):
             MongoFormation.db(self.server_id).insert_one(self.doc)
 
     def in_formation_staffs(self):
-        # type: () -> list[str]
-        staffs = []
-        for _, v in self.doc['slots'].iteritems():
-            if v['staff_id']:
-                staffs.append(v['staff_id'])
-
-        return staffs
-
-    def get_formation_staffs(self):
-        # type: () -> list[core.abstract.AbstractStaff]
-        staffs = []
-
-        sm = StaffManger(self.server_id, self.char_id)
-        um = UnitManager(self.server_id, self.char_id)
-
+        # type: () -> dict[str, dict[str, int]]
+        staffs = {}
         for slot_id, v in self.doc['slots'].iteritems():
-            if not v['staff_id'] or not v['unit_id']:
-                continue
-
-            staff_obj = sm.get_staff_object(v['staff_id'])
-            unit_obj = um.get_unit_object(v['unit_id'])
-
-            staff_obj.set_unit(unit_obj)
-            staff_obj.formation_position = self.doc['position'].index(int(slot_id))
-
-            staffs.append(staff_obj)
+            if v['staff_id']:
+                position = self.doc['position'].index(int(slot_id))
+                staffs[v['staff_id']] = {
+                    'unit_id': v['unit_id'],
+                    'position': position
+                }
 
         return staffs
 
