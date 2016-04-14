@@ -142,7 +142,7 @@ class Formation(object):
             }}
         )
 
-        self.send_notify(slot_ids=[to_index, this_slot_index])
+        self.send_notify(slot_ids=[slot_id, target_index_slot_id])
 
     def send_notify(self, slot_ids=None):
         if slot_ids:

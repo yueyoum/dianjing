@@ -77,6 +77,7 @@ class AbstractUnit(object):
 
     def after_init(self):
         self.config = ConfigUnitNew.get(self.id)
+        self.calculate()
 
     def calculate(self):
         # 等级
@@ -115,7 +116,7 @@ class AbstractUnit(object):
     def clone(self):
         # type: () -> AbstractUnit
         obj = AbstractUnit()
-        for attr in self.__class__.__slots__:
+        for attr in AbstractUnit.__slots__:
             setattr(obj, attr, getattr(self, attr))
 
         return obj

@@ -82,7 +82,6 @@ class ChallengeNPCClub(AbstractClub):
             s = ChallengeNPCStaff(_id)
             s.formation_position = position
             u = NPCUnit(unit_id, 0, 1)
-            u.calculate()
 
             s.set_unit(u)
             s.calculate()
