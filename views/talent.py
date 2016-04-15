@@ -10,17 +10,20 @@ from core.talent import TalentManager
 
 from utils.http import ProtobufResponse
 
-# from protomsg.unit_pb2 impor
+from protomsg.talent_pb2 import TalentLevelUpResponse, TalentResetTalentResponse
 
 
 def level_up(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
-    tp = request._proto.tp
-    position = request._proto.position
+    talent_id = request._proto.talent_id
 
-    ret = TalentManager(server_id, char_id).level_up(tp, position)
+    ret = TalentManager(server_id, char_id).level_up(talent_id)
+    response = TalentLevelUpResponse()
+    response.ret = ret
+
+    ProtobufResponse(response)
 
 
 def reset(request):
@@ -28,3 +31,7 @@ def reset(request):
     char_id = request._game_session.char_id
 
     ret = TalentManager(server_id, char_id).reset()
+    response = TalentResetTalentResponse()
+    response.ret = ret
+
+    ProtobufResponse(response)

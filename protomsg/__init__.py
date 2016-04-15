@@ -200,6 +200,11 @@ MESSAGE_TO_ID = {
     "FormationSetUnitResponse": 3204,
     "FormationMoveSlotRequest": 3205,
     "FormationMoveSlotResponse": 3206,
+    "TalentNotify": 3300,
+    "TalentLevelUpRequest": 3301,
+    "TalentLevelUpResponse": 3302,
+    "TalentResetTalentRequest": 3303,
+    "TalentResetTalentResponse": 3304,
 }
 
 ID_TO_MESSAGE = {
@@ -403,6 +408,11 @@ ID_TO_MESSAGE = {
     3204: "FormationSetUnitResponse",
     3205: "FormationMoveSlotRequest",
     3206: "FormationMoveSlotResponse",
+    3300: "TalentNotify",
+    3301: "TalentLevelUpRequest",
+    3302: "TalentLevelUpResponse",
+    3303: "TalentResetTalentRequest",
+    3304: "TalentResetTalentResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -485,6 +495,8 @@ PATH_TO_REQUEST = {
     "/game/formation/setstaff/": ["formation", "FormationSetStaffRequest"],
     "/game/formation/setunit/": ["formation", "FormationSetUnitRequest"],
     "/game/formation/moveslot/": ["formation", "FormationMoveSlotRequest"],
+    "/game/talent/levelup/": ["talent", "TalentLevelUpRequest"],
+    "/game/talent/reset/": ["talent", "TalentResetTalentRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -567,4 +579,6 @@ PATH_TO_RESPONSE = {
     "/game/formation/setstaff/": ["formation", "FormationSetStaffResponse"],
     "/game/formation/setunit/": ["formation", "FormationSetUnitResponse"],
     "/game/formation/moveslot/": ["formation", "FormationMoveSlotResponse"],
+    "/game/talent/levelup/": ["talent", "TalentLevelUpResponse"],
+    "/game/talent/reset/": ["talent", "TalentResetTalentResponse"],
 }

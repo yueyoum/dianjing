@@ -18,7 +18,7 @@ class Talent(object):
         self.tp = 0
         self.effect_id = 0
         self.unlock = 0
-        self.up_need = []
+        self.up_need = 0
 
 
 class ConfigTalent(ConfigBase):
@@ -26,10 +26,6 @@ class ConfigTalent(ConfigBase):
     INSTANCES = {}
     """:type: dict[int, UnitNew]"""
     FILTER_CACHE = {}
-
-    @classmethod
-    def initialize(cls, fixture):
-        pass
 
     @classmethod
     def get(cls, _id):
