@@ -715,20 +715,10 @@ class MongoUnit(BaseDocument):
 class MongoTalent(BaseDocument):
     DOCUMENT = {
         '_id': 0,
-        'points': 0,
+        'total': 0,
         'cost': 0,
         'talent': [],
     }
 
-    # # example: '1': {position': effect_id}
-    # TALENT_DOCUMENT = {
-    #     '1': {},        # 人族
-    #     '2': {},        # 神族
-    #     '3': {},        # 虫族
-    # }
-
     COLLECTION = 'talent'
 
-    # @classmethod
-    # def document_talent(cls):
-    #     return cls.TALENT_DOCUMENT.copy()

@@ -10,7 +10,6 @@ from dianjing.exception import GameException
 from config import ConfigErrorMessage, ConfigTalent
 
 from core.mongo import MongoTalent
-# from core.resource import ResourceClassification
 
 from utils.message import MessagePipe
 
@@ -33,42 +32,30 @@ class TalentManager(object):
 
         if not MongoTalent.exist(self.server_id, self.char_id):
             init_doc = get_init_talent_doc()
-            MongoTalent.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {'$set': {
-                    'talent': init_doc
-                    }
-                },
-                upsert=True,
-            )
+            doc = MongoTalent.document()
+            doc['_id'] = self.char_id
+            doc['talent'] = init_doc
+
+            MongoTalent.db(self.server_id).insert_one(doc)
 
     def reset(self):
-        doc = MongoTalent.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {'points': 1, 'cost': 1}
-        )
-
         init_doc = get_init_talent_doc()
         MongoTalent.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
                 'talent': init_doc,
-                'points': doc['points'] + doc['cost'],
-                'cost': 0}},
-            upsert=True,
+                'cost': 0,
+            }},
         )
 
     def add_points(self, num):
         MongoTalent.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$inc': {'points': num}}
+            {'$inc': {'total': num}}
         )
 
     def level_up(self, talent_id):
-        doc = MongoTalent.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {'talent': 1, 'points': 1}
-        )
+        doc = MongoTalent.db(self.server_id).find_one({'_id': self.char_id})
 
         if talent_id not in doc['talent']:
             raise GameException(ConfigErrorMessage.get_error_id("TALENT_LOCKED"))
@@ -77,13 +64,17 @@ class TalentManager(object):
         if not conf.next_id:
             raise GameException(ConfigErrorMessage.get_error_id("TALENT_LEVEL_REACH_MAX"))
 
-        if conf.up_need > doc['points']:
+        if conf.up_need > (doc['total'] - doc['cost']):
             raise GameException(ConfigErrorMessage.get_error_id("TALENT_POINTS_NOT_ENOUGH"))
+
+        new_talent = doc['talent']
+        new_talent.remove(talent_id)
+        new_talent.append(conf.next_id)
 
         MongoTalent.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
-                'talent': conf.next_id,
+                'talent': new_talent,
                 'cost': doc['cost'] + conf.up_need,
             }}
         )
@@ -110,19 +101,11 @@ class TalentManager(object):
 
         return doc['talent']
 
-    def send_notify(self, tp=None, position=None):
-        if tp and position:
-            projection = {'points': 1, 'talent.{0}.{1}'.format(tp, position): 1}
-        else:
-            projection = {'points': 1, 'talent': 1}
-
-        doc = MongoTalent.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            projection
-        )
+    def send_notify(self):
+        doc = MongoTalent.db(self.server_id).find_one({'_id': self.char_id})
 
         notify = TalentNotify()
-        notify.points = doc['points']
+        notify.points = doc['total'] - doc['cost']
         notify.reset_cost = 0
 
         for d in doc['talent']:
