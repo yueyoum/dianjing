@@ -14,6 +14,7 @@ from dianjing.exception import GameException
 from core.mongo import MongoFormation
 from core.staff import StaffManger
 from core.unit import UnitManager
+from core.club import Club
 
 from utils.message import MessagePipe
 
@@ -26,7 +27,6 @@ from protomsg.formation_pb2 import (
     FORMATION_SLOT_USE,
     FormationNotify,
 )
-
 
 class Formation(object):
     __slots__ = ['server_id', 'char_id', 'doc']
@@ -88,6 +88,8 @@ class Formation(object):
         if staff_id in self.in_formation_staffs():
             raise GameException(ConfigErrorMessage.get_error_id("FORMATION_STAFF_ALREADY_IN"))
 
+        old_staff_id = self.doc['slots'][str(slot_id)]['staff_id']
+
         self.doc['slots'][str(slot_id)]['staff_id'] = staff_id
         self.doc['slots'][str(slot_id)]['unit_id'] = 0
 
@@ -101,13 +103,23 @@ class Formation(object):
 
         self.send_notify(slot_ids=[slot_id])
 
+        # NOTE 阵型改变，重新load staffs
+        changed_staff_ids = self.in_formation_staffs().keys()
+        if old_staff_id:
+            changed_staff_ids.append(old_staff_id)
+
+        Club(self.server_id, self.char_id).load_staffs(ids=changed_staff_ids)
+        StaffManger(self.server_id, self.char_id).send_notify(ids=changed_staff_ids)
+
+
     def set_unit(self, slot_id, unit_id):
         if str(slot_id) not in self.doc['slots']:
             raise GameException(ConfigErrorMessage.get_error_id("FORMATION_SLOT_NOT_OPEN"))
 
         UnitManager(self.server_id, self.char_id).check_unit_unlocked(unit_id)
 
-        if not self.doc['slots'][str(slot_id)]['staff_id']:
+        staff_id = self.doc['slots'][str(slot_id)]['staff_id']
+        if not staff_id:
             raise GameException(ConfigErrorMessage.get_error_id("FORMATION_SLOT_NO_STAFF"))
 
         self.doc['slots'][str(slot_id)]['unit_id'] = unit_id
@@ -120,6 +132,12 @@ class Formation(object):
         )
 
         self.send_notify(slot_ids=[slot_id])
+
+        u = UnitManager(self.server_id, self.char_id).get_unit_object(unit_id)
+        s = StaffManger(self.server_id, self.char_id).get_staff_object(staff_id)
+        s.set_unit(u)
+        s.calculate()
+        s.make_cache()
 
     def move_slot(self, slot_id, to_index):
         if str(slot_id) not in self.doc['slots']:

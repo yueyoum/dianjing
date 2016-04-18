@@ -16,10 +16,35 @@ from core.resource import ResourceClassification
 
 from utils.message import MessagePipe
 
-from config import ConfigErrorMessage, ConfigUnitUnLock
+from config import ConfigErrorMessage, ConfigUnitUnLock, ConfigUnitAddition
 
 from protomsg.unit_pb2 import UnitNotify
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
+
+
+class UnitAddition(object):
+    __slots__ = [
+        'hp_percent', 'attack_percent', 'defense_percent',
+        'hit_rate', 'dodge_rate', 'crit_rate', 'toughness_rate', 'crit_multiple',
+        'hurt_addition_to_terran', 'hurt_addition_to_protoss', 'hurt_addition_to_zerg',
+        'hurt_addition_by_terran', 'hurt_addition_by_protoss', 'hurt_addition_by_zerg',
+    ]
+
+    def __init__(self):
+        self.hp_percent = 0
+        self.attack_percent = 0
+        self.defense_percent = 0
+        self.hit_rate = 0
+        self.dodge_rate = 0
+        self.crit_rate = 0
+        self.toughness_rate = 0
+        self.crit_multiple = 0
+        self.hurt_addition_to_terran = 0
+        self.hurt_addition_to_protoss = 0
+        self.hurt_addition_to_zerg = 0
+        self.hurt_addition_by_terran = 0
+        self.hurt_addition_by_protoss = 0
+        self.hurt_addition_by_zerg = 0
 
 
 # 用于NPC的
@@ -32,6 +57,7 @@ class NPCUnit(AbstractUnit):
         self.step = step
         self.level = level
         self.after_init()
+        self.calculate()
 
 
 # 用于玩家的
@@ -66,8 +92,9 @@ class Unit(AbstractUnit):
             }}
         )
 
-        self.calculate()
-        self.send_notify()
+        # 升级可能会导致其他的unit属性改变（加成）
+        # 所以在UnitManage 里统一load一次unit
+        # 是否要优化？
 
     def step_up(self):
         if self.step >= self.config.max_step:
@@ -89,9 +116,6 @@ class Unit(AbstractUnit):
                 'units.{0}.step'.format(self.id): 1
             }}
         )
-
-        self.calculate()
-        self.send_notify()
 
     def send_notify(self):
         notify = UnitNotify()
@@ -161,7 +185,7 @@ class UnitManager(object):
             {'$set': {'units.{0}'.format(_id): unit_doc}},
         )
 
-        self.send_notify(uids=[_id])
+        self.send_notify(ids=[_id])
 
     def is_unit_unlocked(self, _id):
         doc = MongoUnit.db(self.server_id).find_one(
@@ -175,18 +199,70 @@ class UnitManager(object):
         if not self.is_unit_unlocked(_id):
             raise GameException(ConfigErrorMessage.get_error_id("UNIT_IS_UNLOCKED"))
 
-    def get_unit_object(self, _id):
-        # type: (int) -> Unit|None
+    def get_units_data(self):
         doc = MongoUnit.db(self.server_id).find_one(
             {'_id': self.char_id},
-            {'units.{0}'.format(_id): 1}
+            {'units': 1}
         )
 
-        data = doc['units'].get(str(_id), None)
-        if not data:
-            return None
+        return {int(k): v for k, v in doc['units'].iteritems()}
 
-        return Unit(self.server_id, self.char_id, _id, data)
+    def load_units(self):
+        units = []
+        """:type: list[Unit]"""
+
+        doc = MongoUnit.db(self.server_id).find_one({'_id': self.char_id})
+        for _id, _data in doc['units'].iteritems():
+            u = Unit(self.server_id, self.char_id, _id, _data)
+            units.append(u)
+
+        race = {
+            1: {'level': 0, 'step': 0},
+            2: {'level': 0, 'step': 0},
+            3: {'level': 0, 'step': 0},
+        }
+
+        for u in units:
+            race[u.config.race]['level'] += u.level
+            race[u.config.race]['step'] += u.step
+
+        additions = {
+            1: UnitAddition(),
+            2: UnitAddition(),
+            3: UnitAddition(),
+        }
+
+        for k, v in additions.iteritems():
+            _level_addition = ConfigUnitAddition.get_level_addition(k, race[k]['level'])
+            _step_addition = ConfigUnitAddition.get_step_addition(k, race[k]['step'])
+            if _level_addition:
+                for attr in UnitAddition.__slots__:
+                    setattr(v, attr, getattr(_level_addition, attr))
+
+            if _step_addition:
+                for attr in UnitAddition.__slots__:
+                    setattr(v, attr, getattr(_step_addition, attr))
+
+        for u in units:
+            _add = additions[u.config.race]
+            for attr in UnitAddition.__slots__:
+                setattr(u, attr, getattr(_add, attr))
+
+            u.calculate()
+            u.make_cache()
+
+    def get_unit_object(self, _id):
+        """
+
+        :param _id:
+        :rtype: Unit | None
+        """
+        unit = Unit.get(self.char_id, _id)
+        if unit:
+            return unit
+
+        self.load_units()
+        return Unit.get(self.char_id, _id)
 
     def level_up(self, uid):
         unit = self.get_unit_object(uid)
@@ -194,6 +270,7 @@ class UnitManager(object):
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         unit.level_up()
+        self.after_change(uid)
 
     def step_up(self, uid):
         unit = self.get_unit_object(uid)
@@ -201,26 +278,39 @@ class UnitManager(object):
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         unit.step_up()
+        self.after_change(uid)
 
-    def send_notify(self, uids=None):
-        if not uids:
+    def after_change(self, uid):
+        self.load_units()
+        unit = self.get_unit_object(uid)
+        all_units = self.get_units_data()
+
+        all_units_object = [self.get_unit_object(k) for k, _ in all_units.iteritems()]
+
+        changed_unit_ids = []
+        for u in all_units_object:
+            if u.config.race == unit.config.race:
+                u.calculate()
+                u.make_cache()
+                changed_unit_ids.append(u.id)
+
+        self.send_notify(ids=changed_unit_ids)
+
+
+    def send_notify(self, ids=None):
+        if not ids:
             act = ACT_INIT
-            projection = {'units': 1}
+            ids = self.get_units_data().keys()
         else:
             act = ACT_UPDATE
-            projection = {'units.{0}'.format(i): 1 for i in uids}
 
-        doc = MongoUnit.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            projection
-        )
 
         notify = UnitNotify()
         notify.act = act
 
-        for k, v in doc['units'].iteritems():
+        for _id in ids:
             notify_unit = notify.units.add()
-            unit = Unit(self.server_id, self.char_id, int(k), v)
+            unit = self.get_unit_object(_id)
             notify_unit.MergeFrom(unit.make_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)

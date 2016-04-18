@@ -75,9 +75,19 @@ class AbstractUnit(object):
         self.final_hurt_addition = 0
         self.final_hurt_reduce = 0
 
+    @classmethod
+    def get(cls, char_id, _id):
+        # type: (str) -> AbstractUnit | None
+        key = 'unit:{0}:{1}'.format(char_id, _id)
+        return cache.get(key)
+
+    def make_cache(self):
+        key = 'unit:{0}:{1}'.format(self.char_id, self.id)
+        cache.set(key, self)
+
+
     def after_init(self):
         self.config = ConfigUnitNew.get(self.id)
-        self.calculate()
 
     def calculate(self):
         # 等级
@@ -115,7 +125,7 @@ class AbstractUnit(object):
 
     def clone(self):
         # type: () -> AbstractUnit
-        obj = AbstractUnit()
+        obj = self.__class__()
         for attr in AbstractUnit.__slots__:
             setattr(obj, attr, getattr(self, attr))
 
@@ -475,7 +485,7 @@ class AbstractClub(object):
         self.formation_staffs = []
         """:type: list[AbstractStaff]"""
 
-    def load_staffs(self):
+    def load_staffs(self, **kwargs):
         raise NotImplementedError()
 
     def get_formation_terran_staffs(self):

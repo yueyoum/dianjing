@@ -280,6 +280,7 @@ class Staff(AbstractStaff):
         )
 
         self.calculate()
+        self.make_cache()
         self.send_notify()
 
     def step_up(self):
@@ -303,7 +304,7 @@ class Staff(AbstractStaff):
         )
 
         # NOTE 升阶可能会导致 天赋技能 改变
-        # 不仅会影响自己，也会影响到其他选手
+        # 不仅会影响自己，可能（如果在阵型中）也会影响到其他选手
         # 所以这里不自己 calculate， 而是先让 club 重新 load staffs
 
     def star_up(self):
@@ -347,6 +348,7 @@ class Staff(AbstractStaff):
         )
 
         self.calculate()
+        self.make_cache()
         self.send_notify()
 
     def equipment_change(self, bag_slot_id, tp):
@@ -388,6 +390,7 @@ class Staff(AbstractStaff):
         )
 
         self.calculate()
+        self.make_cache()
         self.send_notify()
 
     def send_notify(self):
@@ -413,20 +416,25 @@ class StaffManger(object):
     @property
     def staffs_amount(self):
         # type: () -> int
-        return len(self.get_all_staff_data())
+        return len(self.get_staffs_data())
 
-    def get_all_staff_data(self):
+    def get_staffs_data(self, ids=None):
         """
 
         :rtype: dict[str, dict]
         """
-        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1})
+        if ids:
+            projection = {'staffs.{0}'.format(i) for i in ids}
+        else:
+            projection = {'staffs': 1}
+
+        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, projection)
         return doc['staffs']
 
     def get_all_staff_object(self):
         # type: () -> dict[str, Staff]
         doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1})
-        return {k: Staff(self.server_id, self.char_id, k, v) for k, v in doc['staffs'].iteritems()}
+        return {k: self.get_staff_object(k) for k, _ in doc['staffs'].iteritems()}
 
     def get_staff_object(self, _id):
         """
@@ -563,9 +571,14 @@ class StaffManger(object):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
         staff.step_up()
-        Club(self.server_id, self.char_id).load_staffs()
         in_formation_staff_ids = Formation(self.server_id, self.char_id).in_formation_staffs().keys()
-        self.send_notify(ids=in_formation_staff_ids)
+        if staff.id in in_formation_staff_ids:
+            Club(self.server_id, self.char_id).load_staffs()
+            self.send_notify(ids=in_formation_staff_ids)
+        else:
+            staff.calculate()
+            staff.make_cache()
+            staff.send_notify()
 
 
     def star_up(self, staff_id):

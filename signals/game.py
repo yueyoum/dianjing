@@ -19,7 +19,7 @@ from core.bag import Bag
 from core.unit import UnitManager
 from core.challenge import Challenge
 from core.building import BuildingManager
-from core.league.league import LeagueManger
+# from core.league.league import LeagueManger
 from core.friend import FriendManager
 from core.mail import MailManager
 from core.task import TaskManager, RandomEvent
@@ -71,7 +71,7 @@ def game_start_handler(server_id, char_id, **kwargs):
     chall.energy_notify()
 
     BuildingManager(server_id, char_id).send_notify()
-    LeagueManger(server_id, char_id).send_notify()
+    # LeagueManger(server_id, char_id).send_notify()
     FriendManager(server_id, char_id).send_notify()
     MailManager(server_id, char_id).send_notify()
     TaskManager(server_id, char_id).send_notify()

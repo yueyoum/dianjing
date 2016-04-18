@@ -77,7 +77,7 @@ class ChallengeNPCClub(AbstractClub):
         # TODO
         self.flag = 1
 
-    def load_staffs(self):
+    def load_staffs(self, **kwargs):
         for position, _id, unit_id in self.config.staffs:
             s = ChallengeNPCStaff(_id)
             s.formation_position = position

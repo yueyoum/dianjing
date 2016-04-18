@@ -16,7 +16,7 @@ from config.global_config import GlobalConfig
 from config.errormsg import ConfigErrorMessage
 from config.staff import ConfigStaffHot, ConfigStaffRecruit, ConfigStaffNew, ConfigStaffStar, ConfigStaffLevelNew, ConfigStaffEquipmentLevelAddition, ConfigStaffEquipmentQualityAddition, ConfigStaffEquipmentAddition
 from config.challenge import ConfigChallengeMatch, ConfigChapter
-from config.unit import ConfigUnitNew, ConfigUnitUnLock
+from config.unit import ConfigUnitNew, ConfigUnitUnLock, ConfigUnitStepAddition, ConfigUnitLevelAddition, ConfigUnitAddition
 from config.building import ConfigBuilding
 from config.package import ConfigPackage
 from config.item import ConfigItemNew, ConfigItemUse, ConfigItemMerge, ConfigEquipmentNew, ConfigItemExp
@@ -99,6 +99,10 @@ def load_config():
             ConfigUnitNew.initialize(data)
         elif item == 'unit_unlock.json':
             ConfigUnitUnLock.initialize(data)
+        elif item == 'unit_level_addition.json':
+            ConfigUnitLevelAddition.initialize(data)
+        elif item == 'unit_step_addition.json':
+            ConfigUnitStepAddition.initialize(data)
         elif item == 'building.json':
             ConfigBuilding.initialize(data)
         elif item == 'package.json':

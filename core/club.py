@@ -56,7 +56,7 @@ class Club(AbstractClub):
         self.crystal = club.get('crystal', 0)
         self.gas = club.get('gas', 0)
 
-    def load_staffs(self):
+    def load_staffs(self, ids=None):
         from core.staff import StaffManger, Staff
         from core.formation import Formation
         from core.unit import UnitManager
@@ -65,7 +65,7 @@ class Club(AbstractClub):
         fm = Formation(self.server_id, self.char_id)
         um = UnitManager(self.server_id, self.char_id)
 
-        staffs = sm.get_all_staff_data()
+        staffs = sm.get_staffs_data(ids=ids)
         in_formation_staffs = fm.in_formation_staffs()
 
         staff_objs = {}
