@@ -46,6 +46,11 @@ class UnitAddition(object):
         self.hurt_addition_by_protoss = 0
         self.hurt_addition_by_zerg = 0
 
+    def add_property(self, attr, value):
+        v = getattr(self, attr)
+        v += value
+        setattr(self, attr, v)
+
 
 # 用于NPC的
 class NPCUnit(AbstractUnit):
@@ -237,11 +242,11 @@ class UnitManager(object):
             _step_addition = ConfigUnitAddition.get_step_addition(k, race[k]['step'])
             if _level_addition:
                 for attr in UnitAddition.__slots__:
-                    setattr(v, attr, getattr(_level_addition, attr))
+                    v.add_property(attr, getattr(_level_addition, attr))
 
             if _step_addition:
                 for attr in UnitAddition.__slots__:
-                    setattr(v, attr, getattr(_step_addition, attr))
+                    v.add_property(attr, getattr(_level_addition, attr))
 
         for u in units:
             _add = additions[u.config.race]

@@ -85,7 +85,6 @@ class AbstractUnit(object):
         key = 'unit:{0}:{1}'.format(self.char_id, self.id)
         cache.set(key, self)
 
-
     def after_init(self):
         self.config = ConfigUnitNew.get(self.id)
 
@@ -125,7 +124,7 @@ class AbstractUnit(object):
 
     def clone(self):
         # type: () -> AbstractUnit
-        obj = self.__class__()
+        obj = AbstractUnit()
         for attr in AbstractUnit.__slots__:
             setattr(obj, attr, getattr(self, attr))
 
