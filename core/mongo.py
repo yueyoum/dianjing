@@ -6,6 +6,8 @@ Date Created:   2015-07-08 02:13
 Description:
 
 """
+
+import copy
 from core.db import MongoDB
 
 
@@ -27,7 +29,7 @@ class BaseDocument(object):
 
         :rtype : dict
         """
-        return cls.DOCUMENT.copy()
+        return copy.deepcopy(cls.DOCUMENT)
 
     @classmethod
     def db(cls, server_id):
@@ -120,7 +122,7 @@ class MongoStaff(BaseDocument):
 
     @classmethod
     def document_staff(cls):
-        return cls.STAFF_DOCUMENT.copy()
+        return copy.deepcopy(cls.STAFF_DOCUMENT)
 
     COLLECTION = "staff"
 
@@ -143,7 +145,7 @@ class MongoFormation(BaseDocument):
 
     @classmethod
     def document_slot(cls):
-        return cls.DOCUMENT_SLOT.copy()
+        return copy.deepcopy(cls.DOCUMENT_SLOT)
 
     COLLECTION = 'formation'
 
@@ -229,7 +231,7 @@ class MongoTrainingExp(BaseDocument):
 
     @classmethod
     def document_training(cls):
-        return cls.TRAINING_DOCUMENT.copy()
+        return copy.deepcopy(cls.TRAINING_DOCUMENT)
 
     COLLECTION = 'training_exp'
 
@@ -252,7 +254,7 @@ class MongoTrainingProperty(BaseDocument):
 
     @classmethod
     def document_training(cls):
-        return cls.TRAINING_DOCUMENT.copy()
+        return copy.deepcopy(cls.TRAINING_DOCUMENT)
 
     COLLECTION = 'training_property'
 
@@ -277,7 +279,7 @@ class MongoTrainingBroadcast(BaseDocument):
 
     @classmethod
     def document_slot(cls):
-        return cls.SLOT_DOCUMENT.copy()
+        return copy.deepcopy(cls.SLOT_DOCUMENT)
 
     COLLECTION = 'training_broadcast'
 
@@ -350,7 +352,7 @@ class MongoBuilding(BaseDocument):
 
     @classmethod
     def document_building(cls):
-        return cls.BUILDING_DOCUMENT.copy()
+        return copy.deepcopy(cls.BUILDING_DOCUMENT)
 
 
 # 好友
@@ -387,7 +389,7 @@ class MongoMail(BaseDocument):
 
     @classmethod
     def document_mail(cls):
-        return cls.MAIL_DOCUMENT.copy()
+        return copy.deepcopy(cls.MAIL_DOCUMENT)
 
 
 # 任务
@@ -494,7 +496,7 @@ class MongoNotification(BaseDocument):
 
     @classmethod
     def document_notification(cls):
-        return cls.NOTIFICATION_DOCUMENT.copy()
+        return copy.deepcopy(cls.NOTIFICATION_DOCUMENT)
 
 
 # 赞助
@@ -709,4 +711,4 @@ class MongoUnit(BaseDocument):
 
     @classmethod
     def document_unit(cls):
-        return cls.UNIT_DOCUMENT.copy()
+        return copy.deepcopy(cls.UNIT_DOCUMENT)
