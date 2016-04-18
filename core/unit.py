@@ -213,7 +213,7 @@ class UnitManager(object):
 
         doc = MongoUnit.db(self.server_id).find_one({'_id': self.char_id})
         for _id, _data in doc['units'].iteritems():
-            u = Unit(self.server_id, self.char_id, _id, _data)
+            u = Unit(self.server_id, self.char_id, int(_id), _data)
             units.append(u)
 
         race = {

@@ -187,7 +187,7 @@ class _LevelAddition(object):
         # type: (dict) -> _LevelAddition
         obj = cls()
         for attr in cls.__slots__:
-            getattr(obj, attr, data[attr])
+            setattr(obj, attr, data[attr])
 
         return obj
 
@@ -205,7 +205,7 @@ class _StepAddition(object):
         # type: (dict) -> _StepAddition
         obj = cls()
         for attr in cls.__slots__:
-            getattr(obj, attr, data[attr])
+            setattr(obj, attr, data[attr])
 
         return obj
 

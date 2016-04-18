@@ -28,7 +28,7 @@ class AbstractUnit(object):
         'attack_speed', 'attack_speed_percent',
         'attack_range', 'attack_range_percent',
         'move_speed', 'move_speed_percent',
-        'hit_rate', 'dodge_rate', 'crit_rate', 'toughness_rate', 'crit_multi',
+        'hit_rate', 'dodge_rate', 'crit_rate', 'toughness_rate', 'crit_multiple',
 
         'hurt_addition_to_terran', 'hurt_addition_to_protoss', 'hurt_addition_to_zerg',
         'hurt_addition_by_terran', 'hurt_addition_by_protoss', 'hurt_addition_by_zerg',
@@ -63,7 +63,7 @@ class AbstractUnit(object):
         self.dodge_rate = 0.0
         self.crit_rate = 0.0
         self.toughness_rate = 0.0
-        self.crit_multi = 0.0
+        self.crit_multiple = 0.0
 
         self.hurt_addition_to_terran = 0.0
         self.hurt_addition_to_protoss = 0.0
@@ -107,7 +107,7 @@ class AbstractUnit(object):
         self.hit_rate += self.config.hit_rate + config_step.hit_rate
         self.dodge_rate += self.config.dodge_rate + config_step.dodge_rate
         self.crit_rate += self.config.crit_rate + config_step.crit_rate
-        self.crit_multi += self.config.crit_multiple + config_step.crit_multiple
+        self.crit_multiple += self.config.crit_multiple + config_step.crit_multiple
         self.toughness_rate += self.config.toughness_rate + config_step.toughness_rate
         self.hurt_addition_to_terran += self.config.hurt_addition_to_terran + config_step.hurt_addition_to_terran
         self.hurt_addition_to_protoss += self.config.hurt_addition_to_protoss + config_step.hurt_addition_to_protoss
@@ -403,7 +403,7 @@ class AbstractStaff(object):
         self.__unit.dodge_rate += config.unit_dodge_rate
         self.__unit.crit_rate += config.unit_crit_rate
         self.__unit.toughness_rate += config.unit_toughness_rate
-        self.__unit.crit_multi += config.unit_crit_multiple
+        self.__unit.crit_multiple += config.unit_crit_multiple
         self.__unit.hurt_addition_to_terran += config.unit_hurt_addition_to_terran
         self.__unit.hurt_addition_to_protoss += config.unit_hurt_addition_to_protoss
         self.__unit.hurt_addition_to_zerg += config.unit_hurt_addition_to_zerg

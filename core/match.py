@@ -87,7 +87,7 @@ class ClubMatch(object):
                 msg_troop.army.hitRate = fs.unit.hit_rate
                 msg_troop.army.dodgeRate = fs.unit.dodge_rate
                 msg_troop.army.critRate = fs.unit.crit_rate
-                msg_troop.army.critMulti = fs.unit.crit_multi
+                msg_troop.army.critMulti = fs.unit.crit_multiple
                 msg_troop.army.critAntiRate = fs.unit.toughness_rate
 
                 msg_troop.army.appendAttackTerran = fs.unit.hurt_addition_to_terran
