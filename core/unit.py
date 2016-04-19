@@ -152,8 +152,8 @@ class UnitManager(object):
         if club_lv < unlock_conf.need_club_level:
             raise GameException(ConfigErrorMessage.get_error_id("UNIT_UNLOCK_CLUB_LEVEL_NOT_ENOUGH"))
 
-        for pair in unlock_conf.need_unit_level:
-            if doc['units'][str(pair[0])] < pair[1]:
+        for _id, level in unlock_conf.need_unit_level:
+            if doc['units'][str(_id)] < level:
                 raise GameException(ConfigErrorMessage.get_error_id("UNIT_UNLOCK_UNIT_LEVEL_NOT_ENOUGH"))
 
         unit_doc = MongoUnit.document_unit()
