@@ -715,7 +715,7 @@ class MongoUnit(BaseDocument):
 class MongoTalent(BaseDocument):
     DOCUMENT = {
         '_id': 0,
-        'total': 0,
+        'items': {},
         'cost': {},
         'talent': [],
     }
