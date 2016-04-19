@@ -45,7 +45,6 @@ class Unit(AbstractUnit):
         self.id = _id
         self.step = data['step']
         self.level = data['level']
-
         self.after_init()
 
     def level_up(self):
@@ -144,7 +143,7 @@ class UnitManager(object):
             {'units': 1}
         )
 
-        if str(_id) in doc['units']:
+        if _id in doc['units']:
             # already unlocked
             return
 
