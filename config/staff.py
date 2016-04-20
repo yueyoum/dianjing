@@ -12,83 +12,95 @@ import random
 from config.base import ConfigBase
 
 
-class StaffHot(object):
-    __slots__ = ['id', 'cost']
+class RecruitResult(object):
+    __slots__ = [
+        'point', 'item', 'score',
+    ]
 
     def __init__(self):
-        self.id = 0
-        self.cost = 0
-
+        self.point = 0
+        self.item = []
+        self.score = 0
 
 class StaffRecruit(object):
     __slots__ = [
-        'id', 'lucky_times', 'cost_type', 'cost_value',
-        'staff_settings'
+        'id', 'points', 'cost_type', 'cost_value_1', 'cost_value_10',
+        'items_10',
+        'reward_score_times', 'reward_score', 'reward_score_day_limit'
     ]
-
-    KEY_FIRST = "first_amount"
-    KEY_LUCKY = "lucky_amount"
-    KEY_NORMAL = "normal_amount"
 
     def __init__(self):
         self.id = 0
-        self.lucky_times = 0
+        self.points = []
         self.cost_type = 0
-        self.cost_value = 0
-        self.staff_settings = {}
+        self.cost_value_1 = 0
+        self.cost_value_10 = 0
+        self.items_10 = []
+        self.reward_score_times = 0
+        self.reward_score = 0
+        self.reward_score_day_limit = 0
 
-    def get_refreshed_staffs(self, first=False, lucky=False):
+    def get_item(self, current_point, items=None):
+        def _get():
+            for point, items in self.points:
+                if current_point >= point:
+                    return items
+            return None
+
+        if not items:
+            items = _get()
+            if not items:
+                return []
+
+        prob = random.randint(1, 10000)
+        for _id, _amount, _prob in items:
+            if _prob >= prob:
+                return [(_id, _amount)]
+
+        return []
+
+    def recruit(self, current_point, current_times):
         """
 
-        :rtype : list
+        :rtype: RecruitResult
         """
-        if first:
-            key = self.KEY_FIRST
-        elif lucky:
-            key = self.KEY_LUCKY
+        result = RecruitResult()
+
+        # 积分
+        if current_times % self.reward_score_times == 0:
+            result.score = self.reward_score
+
+        # 点数
+        if current_times % 10 == 0:
+            result.point = 0
+            result.item = self.get_item(current_point, items=self.items_10)
         else:
-            key = self.KEY_NORMAL
+            result.point = 1
+            result.item = self.get_item(current_point)
 
-        staffs = []
-        for s in self.staff_settings:
-            value = s[key]
-            if not value:
-                continue
+        return result
 
-            staffs.append((s['quality'], value))
-
-        return staffs
-
-
-class ConfigStaffHot(ConfigBase):
-    EntityClass = StaffHot
-
-    INSTANCES = {}
-    FILTER_CACHE = {}
-
-    @classmethod
-    def get(cls, _id):
-        """
-
-        :rtype : StaffHot
-        """
-        return super(ConfigStaffHot, cls).get(_id)
-
-    @classmethod
-    def random_three(cls):
-        """
-
-        :rtype : list[int]
-        """
-        ids = cls.INSTANCES.keys()
-        return random.sample(ids, 3)
 
 
 class ConfigStaffRecruit(ConfigBase):
     EntityClass = StaffRecruit
 
     INSTANCES = {}
+    """:type: dict[int, StaffRecruit]"""
     FILTER_CACHE = {}
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigStaffRecruit, cls).initialize(fixture)
+        for _, v in cls.INSTANCES.iteritems():
+            v.points = [[int(_k), _v] for _k, _v in v.points.iteritems()]
+            v.points.sort(key=lambda x: x[0], reverse=True)
+            for _, items in v.points:
+                for i in range(1, len(items)):
+                    items[i][2] += items[i-1][2]
+
+            for i in range(1, len(v.items_10)):
+                v.items_10[i][2] += v.items_10[i-1][2]
 
     @classmethod
     def get(cls, _id):
