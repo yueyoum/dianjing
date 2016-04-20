@@ -19,7 +19,7 @@ class Talent(object):
         self.tp = 0
         self.effect_id = 0
         self.unlock = 0
-        self.up_need = []
+        self.up_need = 0
         self.trigger_unlock = []
 
 

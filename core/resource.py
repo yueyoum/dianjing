@@ -110,7 +110,6 @@ class ResourceClassification(object):
 
         return res
 
-
     def check_exist(self, server_id, char_id):
         from core.club import Club
         from core.bag import Bag

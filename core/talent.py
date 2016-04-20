@@ -18,6 +18,7 @@ from protomsg.talent_pb2 import TalentNotify
 
 
 RESET_TALENT_TREE_COST = 100
+TALENT_ITEM_ID = 30006
 
 
 def get_init_talent_doc():
@@ -51,74 +52,42 @@ class TalentManager(object):
         return doc['talent']
 
     def reset(self):
-        doc = MongoTalent.db(self.server_id).find_one({'_id': self.char_id})
-        new_items = doc['items']
-        for k, v in doc['cost'].iteritems():
-            if k in new_items.keys():
-                new_items[k] = new_items[k] + doc['cost'][k]
-            else:
-                new_items[k] = doc['cost'][k]
-
         init_doc = get_init_talent_doc()
         MongoTalent.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
                 'talent': init_doc,
-                'cost': {},
-                'items': new_items,
+                'cost': 0,
             }},
         )
 
-    def check_talent_item(self, items):
-        doc = MongoTalent.db(self.server_id).find_one({'_id': self.char_id}, {'items': 1})
-        for _id, amount in items:
-            if str(_id) not in doc['items'].keys():
-                return False
+    def check_talent_item(self, _id, amount):
+        if _id != TALENT_ITEM_ID:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-            if doc['items'][str(_id)] < amount:
-                return False
-
-        return True
-
-    def deduct_items(self, items):
         doc = MongoTalent.db(self.server_id).find_one(
             {'_id': self.char_id},
-            {'items': 1}
+            {'total': 1, 'cost': 1}
         )
 
-        new_items = doc['items']
-        for _id, amount in items:
-            if str(_id) not in new_items.keys():
-                return False
+        if doc['total'] - doc['cost'] < amount:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-            if new_items[str(_id)] < amount:
-                return False
-
-            new_items[str(_id)] = new_items[str(_id)] = amount
+    def deduct_items(self, _id, amount):
+        self.check_talent_item(_id, amount)
 
         MongoTalent.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': {'items': new_items}}
+            {'$inc': {'cost': amount}}
         )
 
-        return True
-
-    def add_talent_items(self, items):
-        doc = MongoTalent.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {'items': 1}
-        )
-
-        talent_items = doc['items']
-        for _id, amount in items:
-            if talent_items.get(str(_id), 0):
-                talent_items[str(_id)] += amount
-            else:
-                talent_items[str(_id)] = amount
+    def add_talent_items(self, _id, amount):
+        if _id != TALENT_ITEM_ID:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         MongoTalent.db(self.server_id).update_one(
             {'_id': self.server_id},
-            {'$set': {'items': talent_items}}
+            {'$inc': {'total': amount}}
         )
 
     def level_up(self, talent_id):
@@ -141,18 +110,11 @@ class TalentManager(object):
         new_talent.remove(talent_id)
         new_talent.append(conf.next_id)
 
-        cost = doc['cost']
-        for _id, num in using_items:
-            if cost.get(str(_id), 0):
-                cost[str(_id)] = cost[str(_id)] + num
-            else:
-                cost[str(_id)] = num
-
         MongoTalent.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
                 'talent': new_talent,
-                'cost': cost,
+                'cost': doc['cost'] + conf.up_need,
             }}
         )
 
@@ -168,13 +130,14 @@ class TalentManager(object):
             {'talent': 1}
         )
 
-        for k in doc['talent']:
-            if k not in talent_ids:
-                talent_ids.append(k)
+        new_talents = talent_ids
+        for k in talent_ids:
+            if k not in doc['talent']:
+                new_talents.append(k)
 
         MongoTalent.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': {'talent': talent_ids}},
+            {'$set': {'talent': new_talents}},
         )
 
     def get_talent_effect(self):
