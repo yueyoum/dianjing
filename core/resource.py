@@ -61,24 +61,31 @@ def filter_bag_item(items):
 
 
 class ResourceClassification(object):
-    __slots__ = ['money', 'bag', 'staff']
+    __slots__ = ['money', 'bag', 'staff', 'talent_point']
 
     def __init__(self):
         self.money = []
         self.bag = []
         self.staff = []
+        self.talent_point = 0
 
     @classmethod
     def classify(cls, items):
         # type: (list) -> ResourceClassification
         # items: [(id, amount)...]
+        from core.talent import TALENT_ITEM_ID
 
         money = {}
         bag = {}
         staff = {}
+        talent_point = 0
 
         for _id, _amount in items:
             tp = ConfigItemNew.get(_id).tp
+            if _id == TALENT_ITEM_ID:
+                talent_point += _amount
+                continue
+
             if tp == 3:
                 if _id in money:
                     money[_id] += _amount
@@ -99,6 +106,7 @@ class ResourceClassification(object):
         obj.money = money.items()
         obj.bag = bag.items()
         obj.staff = staff.items()
+        obj.talent_point = talent_point
 
         return obj
 
@@ -114,16 +122,19 @@ class ResourceClassification(object):
         from core.club import Club
         from core.bag import Bag
         from core.staff import StaffManger
+        from core.talent import TalentManager
 
         money_text = self.money_as_text_dict()
         Club(server_id, char_id).check_money(**money_text)
         Bag(server_id, char_id).check_items(self.bag)
         StaffManger(server_id, char_id).check_original_staff_is_initial_state(self.staff)
+        TalentManager(server_id, char_id).check_talent_points(self.talent_point)
 
     def remove(self, server_id, char_id):
         from core.club import Club
         from core.bag import Bag
         from core.staff import StaffManger
+        from core.talent import TalentManager
 
         money_text = self.money_as_text_dict()
         money_text = {k: -v for k, v in money_text.iteritems()}
@@ -138,10 +149,13 @@ class ResourceClassification(object):
             for _ in range(_amount):
                 sm.remove_initial_state_staff(_id)
 
+        TalentManager(server_id, char_id).deduct_talent_points(self.talent_point)
+
     def add(self, server_id, char_id):
         from core.club import Club
         from core.bag import Bag
         from core.staff import StaffManger
+        from core.talent import TalentManager
 
         money_text = self.money_as_text_dict()
         Club(server_id, char_id).update(**money_text)
@@ -154,6 +168,8 @@ class ResourceClassification(object):
         for _id, _amount in self.staff:
             for _ in range(_amount):
                 sm.add(_id)
+
+        TalentManager(server_id, char_id).add_talent_points(self.talent_point)
 
 
 

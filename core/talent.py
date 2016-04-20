@@ -61,10 +61,7 @@ class TalentManager(object):
             }},
         )
 
-    def check_talent_item(self, _id, amount):
-        if _id != TALENT_ITEM_ID:
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
-
+    def check_talent_points(self, amount):
         doc = MongoTalent.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'total': 1, 'cost': 1}
@@ -73,22 +70,20 @@ class TalentManager(object):
         if doc['total'] - doc['cost'] < amount:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-    def deduct_items(self, _id, amount):
-        self.check_talent_item(_id, amount)
-
+    def deduct_talent_points(self, amount):
         MongoTalent.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$inc': {'cost': amount}}
         )
 
-    def add_talent_items(self, _id, amount):
-        if _id != TALENT_ITEM_ID:
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+        self.send_notify()
 
+    def add_talent_points(self, amount):
         MongoTalent.db(self.server_id).update_one(
-            {'_id': self.server_id},
+            {'_id': self.char_id},
             {'$inc': {'total': amount}}
         )
+        self.send_notify()
 
     def level_up(self, talent_id):
         doc = MongoTalent.db(self.server_id).find_one({'_id': self.char_id})
@@ -100,11 +95,10 @@ class TalentManager(object):
         if not conf.next_id:
             raise GameException(ConfigErrorMessage.get_error_id("TALENT_LEVEL_REACH_MAX"))
 
-        using_items = conf.up_need
-        # TODO: item deduct
-        # resource_classified = ResourceClassification.classify(using_items)
-        # resource_classified.check_exist(self.server_id, self.char_id)
-        # resource_classified.remove(self.server_id, self.char_id)
+        using_items = [(TALENT_ITEM_ID, conf.up_need)]
+        resource_classified = ResourceClassification.classify(using_items)
+        resource_classified.check_exist(self.server_id, self.char_id)
+        resource_classified.remove(self.server_id, self.char_id)
 
         new_talent = doc['talent']
         new_talent.remove(talent_id)
@@ -121,6 +115,9 @@ class TalentManager(object):
         if conf.trigger_unlock:
             self.unlock(conf.trigger_unlock)
 
+        self.send_notify()
+        return 0
+
     def unlock(self, talent_ids):
         if not isinstance(talent_ids, list):
             talent_ids = [talent_ids]
@@ -130,7 +127,7 @@ class TalentManager(object):
             {'talent': 1}
         )
 
-        new_talents = talent_ids
+        new_talents = doc['talent']
         for k in talent_ids:
             if k not in doc['talent']:
                 new_talents.append(k)
@@ -157,5 +154,4 @@ class TalentManager(object):
 
         for d in doc['talent']:
             notify.talent_id.append(d)
-
         MessagePipe(self.char_id).put(msg=notify)
