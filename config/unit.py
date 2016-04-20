@@ -151,7 +151,6 @@ class ConfigUnitNew(ConfigBase):
         return super(ConfigUnitNew, cls).get(_id)
 
 
-
 class UnitUnLock(object):
     __slots__ = [
         'id', 'need_club_level', 'need_unit_level'
@@ -173,8 +172,104 @@ class ConfigUnitUnLock(ConfigBase):
         # type: (int) -> UnitUnLock
         return super(ConfigUnitUnLock, cls).get(_id)
 
-# TODO
-# class UnitLevelAddition(object):
-#     __slots__ = [
-#         'id', 'race'
-#     ]
+
+class _LevelAddition(object):
+    __slots__ = [
+        'level',
+        'hp_percent', 'attack_percent', 'defense_percent',
+        'hit_rate', 'dodge_rate', 'crit_rate', 'toughness_rate', 'crit_multiple',
+        'hurt_addition_to_terran', 'hurt_addition_to_protoss', 'hurt_addition_to_zerg',
+        'hurt_addition_by_terran', 'hurt_addition_by_protoss', 'hurt_addition_by_zerg',
+    ]
+
+    @classmethod
+    def create(cls, data):
+        # type: (dict) -> _LevelAddition
+        obj = cls()
+        for attr in cls.__slots__:
+            setattr(obj, attr, data[attr])
+
+        return obj
+
+class _StepAddition(object):
+    __slots__ = [
+        'step',
+        'hp_percent', 'attack_percent', 'defense_percent',
+        'hit_rate', 'dodge_rate', 'crit_rate', 'toughness_rate', 'crit_multiple',
+        'hurt_addition_to_terran', 'hurt_addition_to_protoss', 'hurt_addition_to_zerg',
+        'hurt_addition_by_terran', 'hurt_addition_by_protoss', 'hurt_addition_by_zerg',
+    ]
+
+    @classmethod
+    def create(cls, data):
+        # type: (dict) -> _StepAddition
+        obj = cls()
+        for attr in cls.__slots__:
+            setattr(obj, attr, data[attr])
+
+        return obj
+
+
+class UnitLevelAddition(object):
+    __slots__ = ['id', 'addition']
+
+    def __init__(self):
+        self.id = 0
+        self.addition = []
+        """:type: list[_LevelAddition]"""
+
+class UnitStepAddition(object):
+    __slots__ = ['id', 'addition']
+
+    def __init__(self):
+        self.id = 0
+        self.addition = []
+        """:type: list[_StepAddition]"""
+
+
+class ConfigUnitLevelAddition(ConfigBase):
+    EntityClass = UnitLevelAddition
+    INSTANCES = {}
+    """:type: dict[int, UnitLevelAddition]"""
+    FILTER_CACHE = {}
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigUnitLevelAddition, cls).initialize(fixture)
+        for _, v in cls.INSTANCES.iteritems():
+            v.addition = [_LevelAddition.create(x) for x in v.addition]
+            v.addition.sort(key=lambda item: item.level, reverse=True)
+
+
+class ConfigUnitStepAddition(ConfigBase):
+    EntityClass = UnitStepAddition
+    INSTANCES = {}
+    """:type: dict[int, UnitStepAddition]"""
+    FILTER_CACHE = {}
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigUnitStepAddition, cls).initialize(fixture)
+        for _, v in cls.INSTANCES.iteritems():
+            v.addition = [_StepAddition.create(x) for x in v.addition]
+            v.addition.sort(key=lambda item: item.step, reverse=True)
+
+
+class ConfigUnitAddition(object):
+    @classmethod
+    def get_level_addition(cls, race, level):
+        # type: (int, int) -> _LevelAddition|None
+        for a in ConfigUnitLevelAddition.INSTANCES[race].addition:
+            if level >= a.level:
+                return a
+
+        return None
+
+    @classmethod
+    def get_step_addition(cls, race, step):
+        # type: (int, int) -> _StepAddition|None
+        for a in ConfigUnitStepAddition.INSTANCES[race].addition:
+            if step >= a.step:
+                return a
+
+        return None

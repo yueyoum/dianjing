@@ -7,7 +7,7 @@ Description:
 
 """
 
-import weakref
+from utils import cache
 
 from protomsg.club_pb2 import Club as MessageClub
 from protomsg.staff_pb2 import Staff as MessageStaff
@@ -24,10 +24,11 @@ class AbstractUnit(object):
         'id', 'step', 'level',
 
         'hp', 'hp_percent', 'attack', 'attack_percent', 'defense', 'defense_percent',
+
         'attack_speed', 'attack_speed_percent',
         'attack_range', 'attack_range_percent',
         'move_speed', 'move_speed_percent',
-        'hit_rate', 'dodge_rate', 'crit_rate', 'toughness_rate', 'crit_multi',
+        'hit_rate', 'dodge_rate', 'crit_rate', 'toughness_rate', 'crit_multiple',
 
         'hurt_addition_to_terran', 'hurt_addition_to_protoss', 'hurt_addition_to_zerg',
         'hurt_addition_by_terran', 'hurt_addition_by_protoss', 'hurt_addition_by_zerg',
@@ -62,7 +63,7 @@ class AbstractUnit(object):
         self.dodge_rate = 0.0
         self.crit_rate = 0.0
         self.toughness_rate = 0.0
-        self.crit_multi = 0.0
+        self.crit_multiple = 0.0
 
         self.hurt_addition_to_terran = 0.0
         self.hurt_addition_to_protoss = 0.0
@@ -74,45 +75,57 @@ class AbstractUnit(object):
         self.final_hurt_addition = 0
         self.final_hurt_reduce = 0
 
+    @classmethod
+    def get(cls, char_id, _id):
+        # type: (str) -> AbstractUnit | None
+        key = 'unit:{0}:{1}'.format(char_id, _id)
+        return cache.get(key)
+
+    def make_cache(self):
+        key = 'unit:{0}:{1}'.format(self.char_id, self.id)
+        cache.set(key, self)
+
     def after_init(self):
         self.config = ConfigUnitNew.get(self.id)
-        self.pre_calculate()
-        self.calculate()
-
-    def pre_calculate(self):
-        config_step = self.config.steps[self.step]
-
-        self.hp_percent = config_step.hp_percent
-        self.attack_percent = config_step.attack_percent
-        self.defense_percent = config_step.defense_percent
-
-        self.attack_speed = self.config.attack_speed_base
-        self.attack_range = self.config.attack_range_base
-        self.move_speed = self.config.move_speed_base
-        self.hit_rate = self.config.hit_rate + config_step.hit_rate
-        self.dodge_rate = self.config.dodge_rate + config_step.dodge_rate
-        self.crit_rate = self.config.crit_rate + config_step.crit_rate
-        self.crit_multi = self.config.crit_multiple + config_step.crit_multiple
-        self.toughness_rate = self.config.toughness_rate + config_step.toughness_rate
-        self.hurt_addition_to_terran = self.config.hurt_addition_to_terran + config_step.hurt_addition_to_terran
-        self.hurt_addition_to_protoss = self.config.hurt_addition_to_protoss + config_step.hurt_addition_to_protoss
-        self.hurt_addition_to_zerg = self.config.hurt_addition_to_zerg + config_step.hurt_addition_to_zerg
-        self.hurt_addition_by_terran = self.config.hurt_addition_by_terran + config_step.hurt_addition_by_terran
-        self.hurt_addition_by_protoss = self.config.hurt_addition_by_protoss + config_step.hurt_addition_by_protoss
-        self.hurt_addition_by_zerg = self.config.hurt_addition_by_zerg + config_step.hurt_addition_by_zerg
-        self.final_hurt_addition = self.config.final_hurt_addition
-        self.final_hurt_reduce = self.config.final_hurt_reduce
 
     def calculate(self):
+        # 等级
         config_level = self.config.levels[self.level]
-        self.hp = int((self.config.hp_max_base + config_level.hp) * (1 + self.hp_percent))
-        self.attack = int((self.config.attack_base + config_level.attack) * (1 + self.attack_percent))
-        self.defense = int((self.config.defense_base + config_level.defense) * (1 + self.defense_percent))
+        self.hp = self.config.hp_max_base + config_level.hp
+        self.attack = self.config.attack_base + config_level.attack
+        self.defense = self.config.defense_base + config_level.defense
+
+        # 阶
+        config_step = self.config.steps[self.step]
+        self.hp_percent += config_step.hp_percent
+        self.attack_percent += config_step.attack_percent
+        self.defense_percent += config_step.defense_percent
+        self.attack_speed += self.config.attack_speed_base
+        self.attack_range += self.config.attack_range_base
+        self.move_speed += self.config.move_speed_base
+        self.hit_rate += self.config.hit_rate + config_step.hit_rate
+        self.dodge_rate += self.config.dodge_rate + config_step.dodge_rate
+        self.crit_rate += self.config.crit_rate + config_step.crit_rate
+        self.crit_multiple += self.config.crit_multiple + config_step.crit_multiple
+        self.toughness_rate += self.config.toughness_rate + config_step.toughness_rate
+        self.hurt_addition_to_terran += self.config.hurt_addition_to_terran + config_step.hurt_addition_to_terran
+        self.hurt_addition_to_protoss += self.config.hurt_addition_to_protoss + config_step.hurt_addition_to_protoss
+        self.hurt_addition_to_zerg += self.config.hurt_addition_to_zerg + config_step.hurt_addition_to_zerg
+        self.hurt_addition_by_terran += self.config.hurt_addition_by_terran + config_step.hurt_addition_by_terran
+        self.hurt_addition_by_protoss += self.config.hurt_addition_by_protoss + config_step.hurt_addition_by_protoss
+        self.hurt_addition_by_zerg += self.config.hurt_addition_by_zerg + config_step.hurt_addition_by_zerg
+        self.final_hurt_addition += self.config.final_hurt_addition
+        self.final_hurt_reduce += self.config.final_hurt_reduce
+
+        # 最终属性
+        self.hp = int(self.hp * (1 + self.hp_percent))
+        self.attack = int(self.attack * (1 + self.attack_percent))
+        self.defense = int(self.defense * (1 + self.defense_percent))
 
     def clone(self):
         # type: () -> AbstractUnit
         obj = AbstractUnit()
-        for attr in self.__class__.__slots__:
+        for attr in AbstractUnit.__slots__:
             setattr(obj, attr, getattr(self, attr))
 
         return obj
@@ -142,33 +155,30 @@ class AbstractStaff(object):
         'quality',
 
         'formation_position',
-        '_unit',
+        # 不同的staff可以带同一个兵种，
+        # 兵种在外面显示的属性 只是兵种自己的，
+        # 但进入战斗后，就需要对这些unit做一个clone操作，
+        # 这样不同staff带的unit就有不一样的表现
+        '__unit',
 
-        'talent_skills',
-
-        'club_weakref',
+        'active_talent_ids',
     ]
 
     def __init__(self):
         self.config = None
         """:type: config.staff.StaffNew"""
 
-        self.server_id = 0
-        self.char_id = 0
+        self.server_id = None
+        self.char_id = None
 
         self.id = ''
         self.oid = 0
         self.level = 1
-        self.step = 1
+        self.step = 0
         self.star = 0
         self.level_exp = 0
         self.star_exp = 0
-        self.active_qianban_ids = []
 
-        self.equip_mouse = ''
-        self.equip_keyboard = ''
-        self.equip_monitor = ''
-        self.equip_decoration = ''
         self.attack = 0
         self.defense = 0
         self.manage = 0
@@ -179,29 +189,38 @@ class AbstractStaff(object):
         self.operation_percent = 0
 
         self.quality = 0
+        self.equip_mouse = ''
+        self.equip_keyboard = ''
+        self.equip_monitor = ''
+        self.equip_decoration = ''
+        self.active_qianban_ids = []
 
         self.formation_position = None
-        self._unit = None
+
+        self.__unit = None
         """:type: AbstractUnit"""
 
-        self.talent_skills = []
-        """:type: list[int]"""
+        self.active_talent_ids = []
 
-        self.club_weakref = None
-        """:type: AbstractClub"""
+    @classmethod
+    def get(cls, _id):
+        # type: (str) -> AbstractStaff | None
+        key = 'staff:{0}'.format(_id)
+        return cache.get(key)
+
+    def make_cache(self):
+        key = 'staff:{0}'.format(self.id)
+        cache.set(key, self)
 
     def after_init(self):
         self.config = ConfigStaffNew.get(self.oid)
         self.quality = ConfigItemNew.get(self.oid).quality
 
-        self.talent_skills.extend(self.config.talent_skill)
-        for i in range(0, self.step + 1):
-            if self.config.steps[i].talent_skill:
-                self.talent_skills.append(self.config.steps[i].talent_skill)
+    @property
+    def unit(self):
+        return self.__unit
 
-        self.pre_calculate()
-
-    def pre_calculate(self):
+    def calculate(self):
         # 等级
         self.attack = self.config.attack + (self.level - 1) * self.config.attack_grow
         self.defense = self.config.defense + (self.level - 1) * self.config.defense_grow
@@ -249,16 +268,33 @@ class AbstractStaff(object):
             self.manage += equip_quality_addition.manage
             self.manage_percent += equip_quality_addition.manage_percent
 
-    def calculate(self):
-        # 最终属性， 处理完天赋的
-        self.attack *= 1 + self.attack_percent
-        self.defense *= 1 + self.defense_percent
-        self.manage *= 1 + self.manage_percent
-        self.operation *= 1 + self.operation_percent
+        # 天赋
+        for tid in self.active_talent_ids:
+            config_talent = ConfigTalentSkill.get(tid)
+            if config_talent.target <= 5:
+                # 对选手的
+                self._add_talent_effect_to_staff(config_talent)
+            else:
+                # 对兵的
+                if self.__unit:
+                    if config_talent.target in [6, 10]:
+                        self._add_talent_effect_to_unit(config_talent)
+                    elif config_talent.target in [7, 11] and self.__unit.config.race == 1:
+                        self._add_talent_effect_to_unit(config_talent)
+                    elif config_talent.target in [8, 12] and self.__unit.config.race == 3:
+                        self._add_talent_effect_to_unit(config_talent)
+                    elif config_talent.target in [9, 13] and self.__unit.config.race == 2:
+                        self._add_talent_effect_to_unit(config_talent)
+
+        # 最终属性
+        self.attack = int(self.attack * (1 + self.attack_percent))
+        self.defense = int(self.attack * (1 + self.defense_percent))
+        self.manage = int(self.attack * (1 + self.manage_percent))
+        self.operation = int(self.attack * (1 + self.operation_percent))
 
     def set_unit(self, unit):
         # type: (AbstractUnit) -> None
-        self._unit = unit.clone()
+        self.__unit = unit.clone()
 
     def get_all_equipment_quality(self):
         return 0
@@ -266,104 +302,119 @@ class AbstractStaff(object):
     def get_all_equipment_level(self):
         return 0
 
-    def talent_effect(self):
+    def get_self_talent_skill_ids(self):
+        ids = []
+        ids.extend(self.config.talent_skill)
+        for i in range(0, self.step + 1):
+            if self.config.steps[i].talent_skill:
+                ids.append(self.config.steps[i].talent_skill)
+
+        return ids
+
+    def talent_effect(self, club):
+        """
+
+        :param club:
+        :type club: AbstractClub
+        """
         # 天赋影响
-        for tid in self.talent_skills:
+        for tid in self.get_self_talent_skill_ids():
             config_talent = ConfigTalentSkill.get(tid)
             if config_talent.target == 1:
                 # 选手自身
-                self._add_talent_effect_to_staff(config_talent, [self])
+                self.active_talent_ids.append(tid)
             elif config_talent.target == 2:
                 # 上阵所有选手
-                self._add_talent_effect_to_staff(config_talent, self.club_weakref.formation_staffs)
+                for s in club.formation_staffs:
+                    s.active_talent_ids.append(tid)
             elif config_talent.target == 3:
                 # 上阵所有人族选手
-                self._add_talent_effect_to_staff(config_talent, self.club_weakref.get_formation_terran_staffs())
+                for s in club.get_formation_terran_staffs():
+                    s.active_talent_ids.append(tid)
             elif config_talent.target == 4:
                 # 上阵所有虫族选手
-                self._add_talent_effect_to_staff(config_talent, self.club_weakref.get_formation_zerg_staffs())
+                for s in club.get_formation_zerg_staffs():
+                    s.active_talent_ids.append(tid)
             elif config_talent.target == 5:
                 # 上阵所有神族选手
-                self._add_talent_effect_to_staff(config_talent, self.club_weakref.get_formation_protoss_staffs())
+                for s in club.get_formation_protoss_staffs():
+                    s.active_talent_ids.append(tid)
+
+            # 因为选手的带的兵也会随时变化，所以这里就直接把和兵相关的 天赋 记录下来
+            # 这样就不用更换了兵种后再来判断天赋影响
             elif config_talent.target == 6:
                 # 选手自身携带的任意兵种
-                self._add_talent_effect_to_unit(config_talent, [self._unit])
+                self.active_talent_ids.append(tid)
             elif config_talent.target == 7:
                 # 选手自身携带的人族兵种
-                if self._unit.config.race == 1:
-                    self._add_talent_effect_to_unit(config_talent, [self._unit])
+                self.active_talent_ids.append(tid)
             elif config_talent.target == 8:
                 # 选手自身携带的虫族并种
-                if self._unit.config.race == 3:
-                    self._add_talent_effect_to_unit(config_talent, [self._unit])
+                self.active_talent_ids.append(tid)
             elif config_talent.target == 9:
                 # 选手自身携带的神族并种
-                if self._unit.config.race == 2:
-                    self._add_talent_effect_to_unit(config_talent, [self._unit])
+                self.active_talent_ids.append(tid)
+
             elif config_talent.target == 10:
                 # 所有选手所有任意兵种
-                self._add_talent_effect_to_unit(config_talent, self.club_weakref.get_formation_all_units())
+                for s in club.formation_staffs:
+                    s.active_talent_ids.append(tid)
             elif config_talent.target == 11:
                 # 所有选手所有人族兵种
-                self._add_talent_effect_to_unit(config_talent, self.club_weakref.get_formation_terran_units())
+                for s in club.formation_staffs:
+                    s.active_talent_ids.append(tid)
             elif config_talent.target == 12:
                 # 所有选手所有虫族兵种
-                self._add_talent_effect_to_unit(config_talent, self.club_weakref.get_formation_zerg_units())
+                for s in club.formation_staffs:
+                    s.active_talent_ids.append(tid)
             elif config_talent.target == 13:
                 # 所有选手所有神族兵种
-                self._add_talent_effect_to_unit(config_talent, self.club_weakref.get_formation_protoss_units())
+                for s in club.formation_staffs:
+                    s.active_talent_ids.append(tid)
 
-    def _add_talent_effect_to_staff(self, config, staff_list):
+    def _add_talent_effect_to_staff(self, config):
         """
 
         :param config:
-        :param staff_list:
         :type config: config.skill.TalentSkill
-        :type staff_list: list[AbstractStaff]
         :return:
         """
+        self.attack += config.staff_attack
+        self.attack_percent += config.staff_attack_percent
+        self.defense += config.staff_defense
+        self.defense_percent += config.staff_defense_percent
+        self.manage += config.staff_manage
+        self.manage_percent += config.staff_manage_percent
+        self.operation += config.staff_operation
+        self.operation_percent += config.staff_operation_percent
 
-        for s in staff_list:
-            s.attack += config.staff_attack
-            s.attack_percent += config.staff_attack_percent
-            s.defense += config.staff_defense
-            s.defense_percent += config.staff_defense_percent
-            s.manage += config.staff_manage
-            s.manage_percent += config.staff_manage_percent
-            s.operation += config.staff_operation
-            s.operation_percent += config.staff_operation_percent
-            s.calculate()
-
-    def _add_talent_effect_to_unit(self, config, unit_list):
+    def _add_talent_effect_to_unit(self, config):
         """
 
         :param config:
-        :param unit_list:
         :type config: config.skill.TalentSkill
-        :type unit_list: list[AbstractUnit]
         :return:
         """
-        for u in unit_list:
-            u.hp_percent += config.unit_hp_percent
-            u.attack_percent += config.unit_attack_percent
-            u.defense_percent += config.unit_defense_percent
-            u.hit_rate += config.unit_hit_rate
-            u.dodge_rate += config.unit_dodge_rate
-            u.crit_rate += config.unit_crit_rate
-            u.toughness_rate += config.unit_toughness_rate
-            u.crit_multi += config.unit_crit_multiple
-            u.hurt_addition_to_terran += config.unit_hurt_addition_to_terran
-            u.hurt_addition_to_protoss += config.unit_hurt_addition_to_protoss
-            u.hurt_addition_to_zerg += config.unit_hurt_addition_to_zerg
+        self.__unit.hp_percent += config.unit_hp_percent
+        self.__unit.attack_percent += config.unit_attack_percent
+        self.__unit.defense_percent += config.unit_defense_percent
+        self.__unit.hit_rate += config.unit_hit_rate
+        self.__unit.dodge_rate += config.unit_dodge_rate
+        self.__unit.crit_rate += config.unit_crit_rate
+        self.__unit.toughness_rate += config.unit_toughness_rate
+        self.__unit.crit_multiple += config.unit_crit_multiple
+        self.__unit.hurt_addition_to_terran += config.unit_hurt_addition_to_terran
+        self.__unit.hurt_addition_to_protoss += config.unit_hurt_addition_to_protoss
+        self.__unit.hurt_addition_to_zerg += config.unit_hurt_addition_to_zerg
 
-            u.hurt_addition_by_terran += config.unit_hurt_addition_by_terran
-            u.hurt_addition_by_protoss += config.unit_hurt_addition_by_protoss
-            u.hurt_addition_by_zerg += config.unit_hurt_addition_by_zerg
+        self.__unit.hurt_addition_by_terran += config.unit_hurt_addition_by_terran
+        self.__unit.hurt_addition_by_protoss += config.unit_hurt_addition_by_protoss
+        self.__unit.hurt_addition_by_zerg += config.unit_hurt_addition_by_zerg
 
-            u.final_hurt_addition += config.unit_final_hurt_addition
-            u.final_hurt_reduce += config.unit_final_hurt_reduce
+        self.__unit.final_hurt_addition += config.unit_final_hurt_addition
+        self.__unit.final_hurt_reduce += config.unit_final_hurt_reduce
 
-            u.calculate()
+        self.__unit.calculate()
 
     @property
     def power(self):
@@ -409,7 +460,6 @@ class AbstractStaff(object):
 
 class AbstractClub(object):
     __slots__ = [
-        '__weakref__',
         'server_id', 'char_id',
         'id', 'name', 'manager_name', 'flag', 'level',
         'renown', 'vip', 'gold', 'diamond', 'crystal', 'gas',
@@ -434,14 +484,8 @@ class AbstractClub(object):
         self.formation_staffs = []
         """:type: list[AbstractStaff]"""
 
-    def load_formation_staffs(self):
-        # 设置 self.formation_staffs
+    def load_staffs(self, **kwargs):
         raise NotImplementedError()
-
-    def after_load_formation_staffs(self):
-        ref = weakref.proxy(self)
-        for s in self.formation_staffs:
-            s.club_weakref = ref
 
     def get_formation_terran_staffs(self):
         return [s for s in self.formation_staffs if s.config.race == 1]
@@ -460,37 +504,6 @@ class AbstractClub(object):
                 units.append(s.__unit)
 
         return units
-
-    def get_formation_terran_units(self):
-        # type: () -> list[AbstractUnit]
-        units = []
-        for s in self.formation_staffs:
-            if s.__unit and s.__unit.config.race == 1:
-                units.append(s.__unit)
-
-        return units
-
-    def get_formation_protoss_units(self):
-        # type: () -> list[AbstractUnit]
-        units = []
-        for s in self.formation_staffs:
-            if s.__unit and s.__unit.config.race == 2:
-                units.append(s.__unit)
-
-        return units
-
-    def get_formation_zerg_units(self):
-        # type: () -> list[AbstractUnit]
-        units = []
-        for s in self.formation_staffs:
-            if s.__unit and s.__unit.config.race == 3:
-                units.append(s.__unit)
-
-        return units
-
-    def talent_effect(self):
-        for s in self.formation_staffs:
-            s.talent_effect()
 
     def qianban_affect(self):
         pass

@@ -30,6 +30,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options['cmd'] == 'reset':
             self._reset()
+        elif options['cmd'] == 'empty_cache':
+            self._empty_cache()
         else:
             self.stderr.write("unknown command!")
 
@@ -57,3 +59,7 @@ class Command(BaseCommand):
         for mc in MongoDB.INSTANCES.values():
             for name in db_names:
                 mc.drop_database(name)
+
+    def _empty_cache(self):
+        RedisDB.connect()
+        RedisDB.get().flushall()

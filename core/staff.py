@@ -280,6 +280,7 @@ class Staff(AbstractStaff):
         )
 
         self.calculate()
+        self.make_cache()
         self.send_notify()
 
     def step_up(self):
@@ -302,9 +303,9 @@ class Staff(AbstractStaff):
             }}
         )
 
-        self.calculate()
-        # TODO 天赋技能
-        self.send_notify()
+        # NOTE 升阶可能会导致 天赋技能 改变
+        # 不仅会影响自己，可能（如果在阵型中）也会影响到其他选手
+        # 所以这里不自己 calculate， 而是先让 club 重新 load staffs
 
     def star_up(self):
         if self.star >= STAFF_MAX_STAR:
@@ -347,6 +348,7 @@ class Staff(AbstractStaff):
         )
 
         self.calculate()
+        self.make_cache()
         self.send_notify()
 
     def equipment_change(self, bag_slot_id, tp):
@@ -388,6 +390,7 @@ class Staff(AbstractStaff):
         )
 
         self.calculate()
+        self.make_cache()
         self.send_notify()
 
     def send_notify(self):
@@ -413,39 +416,41 @@ class StaffManger(object):
     @property
     def staffs_amount(self):
         # type: () -> int
-        return len(self.get_all_staff_data())
+        return len(self.get_staffs_data())
 
-    def get_all_staff_data(self):
-        # type: () -> dict[str, dict]
-        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1})
+    def get_staffs_data(self, ids=None):
+        """
+
+        :rtype: dict[str, dict]
+        """
+        if ids:
+            projection = {'staffs.{0}'.format(i) for i in ids}
+        else:
+            projection = {'staffs': 1}
+
+        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, projection)
         return doc['staffs']
 
     def get_all_staff_object(self):
         # type: () -> dict[str, Staff]
         doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1})
-        return {k: Staff(self.server_id, self.char_id, k, v) for k, v in doc['staffs'].iteritems()}
+        return {k: self.get_staff_object(k) for k, _ in doc['staffs'].iteritems()}
 
     def get_staff_object(self, _id):
-        # type: (str) -> Staff | None
-        doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs.{0}'.format(_id): 1})
-        data = doc['staffs'].get(_id, None)
-        if not data:
-            return None
-        return Staff(self.server_id, self.char_id, _id, data)
+        """
 
-    def get_dict_of_staff_object_by_ids(self, ids):
-        # type: (list[str]) -> dict[str, Staff]
-        projection = {'staffs.{0}'.format(i): 1 for i in ids}
-        doc = MongoStaff.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            projection
-        )
+        :param _id:
+        :rtype : Staff | None
+        """
+        from core.club import Club
 
-        staffs = {}
-        for i in ids:
-            staffs[i] = Staff(self.server_id, self.char_id, i, doc['staffs'][i])
+        obj = Staff.get(_id)
+        if obj:
+            return obj
 
-        return staffs
+        Club(self.server_id, self.char_id).load_staffs()
+        return Staff.get(_id)
+
 
     def has_staff(self, ids):
         # type: (list[str]) -> bool
@@ -559,11 +564,22 @@ class StaffManger(object):
         staff.level_up(items)
 
     def step_up(self, staff_id):
+        from core.club import Club
+        from core.formation import Formation
         staff = self.get_staff_object(staff_id)
         if not staff:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
         staff.step_up()
+        in_formation_staff_ids = Formation(self.server_id, self.char_id).in_formation_staffs().keys()
+        if staff.id in in_formation_staff_ids:
+            Club(self.server_id, self.char_id).load_staffs()
+            self.send_notify(ids=in_formation_staff_ids)
+        else:
+            staff.calculate()
+            staff.make_cache()
+            staff.send_notify()
+
 
     def star_up(self, staff_id):
         staff = self.get_staff_object(staff_id)
@@ -599,9 +615,9 @@ class StaffManger(object):
 
         notify = StaffNotify()
         notify.act = act
-        for k, v in staffs.iteritems():
+        for k, _ in staffs.iteritems():
             notify_staff = notify.staffs.add()
-            staff = Staff(self.server_id, self.char_id, k, v)
+            staff = self.get_staff_object(k)
             notify_staff.MergeFrom(staff.make_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)
