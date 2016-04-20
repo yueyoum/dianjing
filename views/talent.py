@@ -19,19 +19,19 @@ def level_up(request):
 
     talent_id = request._proto.talent_id
 
-    ret = TalentManager(server_id, char_id).level_up(talent_id)
+    TalentManager(server_id, char_id).level_up(talent_id)
     response = TalentLevelUpResponse()
-    response.ret = ret
+    response.ret = 0
 
-    ProtobufResponse(response)
+    return ProtobufResponse(response)
 
 
 def reset(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
-    ret = TalentManager(server_id, char_id).reset()
+    TalentManager(server_id, char_id).reset()
     response = TalentResetTalentResponse()
-    response.ret = ret
+    response.ret = 0
 
-    ProtobufResponse(response)
+    return ProtobufResponse(response)

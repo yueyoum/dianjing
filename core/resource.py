@@ -172,8 +172,6 @@ class ResourceClassification(object):
         TalentManager(server_id, char_id).add_talent_points(self.talent_point)
 
 
-
-
 class Resource(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id

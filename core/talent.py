@@ -52,6 +52,18 @@ class TalentManager(object):
         return doc['talent']
 
     def reset(self):
+        doc = MongoTalent.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'cost': 1}
+        )
+        if doc['cost'] == 0:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
+        using_items = [(30000, RESET_TALENT_TREE_COST)]
+        resource_classified = ResourceClassification.classify(using_items)
+        resource_classified.check_exist(self.server_id, self.char_id)
+        resource_classified.remove(self.server_id, self.char_id)
+
         init_doc = get_init_talent_doc()
         MongoTalent.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -60,6 +72,8 @@ class TalentManager(object):
                 'cost': 0,
             }},
         )
+
+        self.send_notify()
 
     def check_talent_points(self, amount):
         doc = MongoTalent.db(self.server_id).find_one(
@@ -116,7 +130,6 @@ class TalentManager(object):
             self.unlock(conf.trigger_unlock)
 
         self.send_notify()
-        return 0
 
     def unlock(self, talent_ids):
         if not isinstance(talent_ids, list):
