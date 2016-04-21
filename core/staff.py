@@ -53,7 +53,7 @@ class RecruitResult(object):
     def __init__(self, point, score):
         self.point = point
         self.score = score
-        self.items = {}
+        self.items = []
 
     def add(self, res):
         """
@@ -66,11 +66,18 @@ class RecruitResult(object):
         if self.point < 0:
             self.point = 0
 
-        for _id, _amount in res.item:
-            if _id in self.items:
-                self.items[_id] += _amount
+        for item in res.item:
+            self.items.append(item)
+
+    def items_for_save(self):
+        result = {}
+        for _id, _amount in self.items:
+            if _id in result:
+                result[_id] += _amount
             else:
-                self.items[_id] = _amount
+                result[_id] = _amount
+
+        return result.items()
 
 
 class StaffRecruit(object):
@@ -152,11 +159,11 @@ class StaffRecruit(object):
             }}
         )
 
-        resource_classify = ResourceClassification.classify(result.items.items())
+        resource_classify = ResourceClassification.classify(result.items_for_save())
         resource_classify.add(self.server_id, self.char_id)
 
         self.send_notify()
-        return result.items.items()
+        return result.items
 
 
     def _recruit_tp_1_mode_1(self):
@@ -243,7 +250,6 @@ class StaffRecruit(object):
 
         return 10
 
-
     def send_notify(self):
         notify = StaffRecruitNotify()
         notify.score = self.doc['score']
@@ -251,6 +257,7 @@ class StaffRecruit(object):
             notify_info = notify.info.add()
             notify_info.tp = tp
             notify_info.cd = self.get_cd_seconds(tp)
+            notify_info.next_times = 10  # TODO
             if tp == RECRUIT_GOLD:
                 notify_info.cur_free_times = self.gold_free_times
                 notify_info.max_free_times = GOLD_MAX_FREE_TIMES
