@@ -17,6 +17,10 @@ from config import ConfigStaffStar, ConfigStaffNew, ConfigUnitNew, ConfigItemNew
     ConfigTalentSkill
 
 
+class DummyConfig(object):
+    def __getattr__(self, item):
+        return 0
+
 class AbstractUnit(object):
     __slots__ = [
         'config',
@@ -90,13 +94,21 @@ class AbstractUnit(object):
 
     def calculate(self):
         # 等级
-        config_level = self.config.levels[self.level]
+        if self.config.max_level:
+            config_level = self.config.levels[self.level]
+        else:
+            config_level = DummyConfig()
+
         self.hp = self.config.hp_max_base + config_level.hp
         self.attack = self.config.attack_base + config_level.attack
         self.defense = self.config.defense_base + config_level.defense
 
         # 阶
-        config_step = self.config.steps[self.step]
+        if self.config.max_step:
+            config_step = self.config.steps[self.step]
+        else:
+            config_step = DummyConfig()
+
         self.hp_percent += config_step.hp_percent
         self.attack_percent += config_step.attack_percent
         self.defense_percent += config_step.defense_percent
@@ -228,7 +240,11 @@ class AbstractStaff(object):
         self.operation = self.config.operation + (self.level - 1) * self.config.operation_grow
 
         # 阶
-        step_config = self.config.steps[self.step]
+        if self.config.max_step:
+            step_config = self.config.steps[self.step]
+        else:
+            step_config = DummyConfig()
+
         self.attack += step_config.attack
         self.defense += step_config.defense
         self.manage += step_config.manage
