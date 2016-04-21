@@ -35,10 +35,6 @@ class CommonChat(BaseCommon):
     ID = 'chat'
 
 
-class CommonRecruitHot(BaseCommon):
-    ID = 'recruit_hot'
-
-
 class CommonTask(BaseCommon):
     ID = 'task'
 

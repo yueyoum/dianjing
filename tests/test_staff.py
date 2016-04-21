@@ -10,7 +10,7 @@ import random
 
 from dianjing.exception import GameException
 
-from core.mongo import MongoCharacter, MongoRecruit, MongoStaff
+from core.mongo import MongoCharacter, MongoStaffRecruit, MongoStaff
 from core.staff import StaffManger, StaffRecruit, RECRUIT_ENUM_TO_CONFIG_ID
 from core.club import Club
 from config import ConfigErrorMessage, ConfigStaffRecruit, ConfigStaff, ConfigStaffLevel
@@ -37,7 +37,7 @@ class TestStaffRecruit(object):
 
     def teardown(self):
         self.update()
-        MongoRecruit.db(1).delete_one({'_id': self.char_id})
+        MongoStaffRecruit.db(1).delete_one({'_id': self.char_id})
 
     def test_send_notify(self):
         StaffRecruit(self.server_id, self.char_id).send_notify()

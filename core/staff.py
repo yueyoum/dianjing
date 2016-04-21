@@ -8,18 +8,18 @@ Description:
 """
 
 import random
+import arrow
 
 from dianjing.exception import GameException
 
 from core.abstract import AbstractStaff
-from core.mongo import MongoStaff, MongoRecruit
+from core.mongo import MongoStaff, MongoStaffRecruit
 from core.resource import money_text_to_item_id, ResourceClassification
-from core.common import CommonRecruitHot
 from core.bag import Bag, TYPE_EQUIPMENT, get_item_type
 from core.signals import recruit_staff_signal, staff_level_up_signal
 
 from config import (
-    ConfigStaffHot, ConfigStaffRecruit,
+    ConfigStaffRecruit,
     ConfigErrorMessage,
     ConfigItemNew,
     ConfigStaffNew,
@@ -34,174 +34,223 @@ from utils.message import MessagePipe
 
 from protomsg.bag_pb2 import EQUIP_DECORATION, EQUIP_KEYBOARD, EQUIP_MONITOR, EQUIP_MOUSE
 from protomsg.staff_pb2 import StaffRecruitNotify, StaffNotify, StaffRemoveNotify
-from protomsg.staff_pb2 import RECRUIT_DIAMOND, RECRUIT_GOLD, RECRUIT_HOT, RECRUIT_NORMAL
+from protomsg.staff_pb2 import RECRUIT_DIAMOND, RECRUIT_GOLD, RECRUIT_MODE_1, RECRUIT_MODE_2
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
-#
-# RECRUIT_ENUM_TO_CONFIG_ID = {
-#     RECRUIT_NORMAL: 1,
-#     RECRUIT_GOLD: 2,
-#     RECRUIT_DIAMOND: 3,
-# }
-#
-#
-# class StaffRecruit(object):
-#     def __init__(self, server_id, char_id):
-#         self.server_id = server_id
-#         self.char_id = char_id
-#
-#         doc = MongoRecruit.db(server_id).find_one({'_id': self.char_id}, {'_id': 1})
-#         if not doc:
-#             doc = MongoRecruit.document()
-#             doc['_id'] = self.char_id
-#             doc['tp'] = RECRUIT_HOT
-#             MongoRecruit.db(server_id).insert_one(doc)
-#
-#     def get_self_refreshed_staffs(self):
-#         doc = MongoRecruit.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1, 'tp': 1})
-#         tp = doc.get('tp', RECRUIT_HOT)
-#         if tp == RECRUIT_HOT:
-#             return []
-#
-#         return doc['staffs']
-#
-#     def get_hot_staffs(self):
-#         value = CommonRecruitHot.get(self.server_id)
-#         if not value:
-#             value = ConfigStaffHot.random_three()
-#             CommonRecruitHot.set(self.server_id, value)
-#
-#         return value
-#
-#     def refresh(self, tp):
-#         if tp not in [RECRUIT_HOT, RECRUIT_NORMAL, RECRUIT_GOLD, RECRUIT_DIAMOND]:
-#             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
-#
-#         if tp == RECRUIT_HOT:
-#             staffs = self.get_hot_staffs()
-#         else:
-#             check = {'message': u'Recruit refresh. type {0}'.format(tp)}
-#             config = ConfigStaffRecruit.get(RECRUIT_ENUM_TO_CONFIG_ID[tp])
-#             if config.cost_type == 1:
-#                 check['gold'] = -config.cost_value
-#             else:
-#                 check['diamond'] = -config.cost_value
-#
-#             doc = MongoRecruit.db(self.server_id).find_one(
-#                 {'_id': self.char_id},
-#                 {'times.{0}'.format(tp): 1}
-#             )
-#
-#             times = doc['times'].get(str(tp), 0)
-#             is_first = False
-#             is_lucky = False
-#             if times == 0:
-#                 is_first = True
-#             else:
-#                 if (times + 1) % config.lucky_times == 0:
-#                     is_lucky = True
-#
-#             with Resource(self.server_id, self.char_id).check(**check):
-#                 result = config.get_refreshed_staffs(first=is_first, lucky=is_lucky)
-#                 staffs = []
-#
-#                 for quality, amount in result:
-#                     staffs.extend(ConfigStaff.get_random_ids_by_condition(amount, quality=quality, can_recruit=True))
-#
-#                 # TODO: 更合理的方式
-#                 if is_first and tp == RECRUIT_NORMAL:
-#                     staffs = staffs[:7]
-#                     staffs.append(11)
-#
-#         MongoRecruit.db(self.server_id).update_one(
-#             {'_id': self.char_id},
-#             {
-#                 '$set': {
-#                     'tp': tp,
-#                     'staffs': staffs,
-#                     'recruited': [],
-#                 },
-#                 '$inc': {'times.{0}'.format(tp): 1}
-#             }
-#         )
-#
-#         self.send_notify(staffs=staffs, tp=tp)
-#         return staffs
-#
-#     def recruit(self, staff_id):
-#         if not ConfigStaff.get(staff_id):
-#             raise GameException(ConfigErrorMessage.get_error_id('STAFF_NOT_EXIST'))
-#
-#         doc = MongoRecruit.db(self.server_id).find_one(
-#             {'_id': self.char_id},
-#             {'recruited': 1}
-#         )
-#         recruited = doc.get('recruited', [])
-#
-#         if staff_id in recruited:
-#             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
-#
-#         if StaffManger(self.server_id, self.char_id).has_staff(staff_id):
-#             # raise GameException(ConfigErrorMessage.get_error_id('STAFF_ALREADY_HAVE'))
-#             ItemManager(self.server_id, self.char_id).add_staff_card(staff_id, 0)
-#         else:
-#             recruit_list = self.get_self_refreshed_staffs()
-#             if not recruit_list:
-#                 recruit_list = self.get_hot_staffs()
-#
-#             if staff_id not in recruit_list:
-#                 raise GameException(ConfigErrorMessage.get_error_id("STAFF_RECRUIT_NOT_IN_LIST"))
-#
-#             from core.building import BuildingStaffCenter
-#             discount = BuildingStaffCenter(self.server_id, self.char_id).recruit_discount()
-#
-#             check = {"message": u"Recruit staff {0}".format(staff_id)}
-#             config = ConfigStaff.get(staff_id)
-#             if config.buy_type == 1:
-#                 check['gold'] = -config.buy_cost * (100 + discount) / 100
-#             else:
-#                 check['diamond'] = -config.buy_cost * (100 + discount) / 100
-#
-#             with Resource(self.server_id, self.char_id).check(**check):
-#                 StaffManger(self.server_id, self.char_id).add(staff_id)
-#
-#         MongoRecruit.db(self.server_id).update_one(
-#             {'_id': self.char_id},
-#             {'$push': {'recruited': staff_id}}
-#         )
-#
-#         self.send_notify()
-#         recruit_staff_signal.send(
-#             sender=None,
-#             server_id=self.server_id,
-#             char_id=self.char_id,
-#             staff_id=staff_id
-#         )
-#
-#     def send_notify(self, staffs=None, tp=None):
-#         if not staffs:
-#             staffs = self.get_self_refreshed_staffs()
-#             if not staffs:
-#                 # 取common中的人气推荐
-#                 staffs = self.get_hot_staffs()
-#                 tp = RECRUIT_HOT
-#             else:
-#                 tp = MongoRecruit.db(self.server_id).find_one({'_id': self.char_id}, {'tp': 1})['tp']
-#
-#         doc = MongoRecruit.db(self.server_id).find_one(
-#             {'_id': self.char_id},
-#             {'recruited': 1}
-#         )
-#         recruited = doc.get('recruited', [])
-#
-#         notify = StaffRecruitNotify()
-#         notify.tp = tp
-#         for s in staffs:
-#             r = notify.recruits.add()
-#             r.staff_id = s
-#             r.has_recruit = s in recruited
-#
-#         MessagePipe(self.char_id).put(msg=notify)
+
+GOLD_MAX_FREE_TIMES = 5
+GOLD_CD_SECONDS = 600
+DIAMOND_CD_SECONDS = 3600 * 24 * 2
+
+RECRUIT_CD_SECONDS = {
+    1: 600,
+    2: 3600 * 24 * 2
+}
+
+
+class RecruitResult(object):
+    __slots__ = ['point', 'score', 'items']
+    def __init__(self, point, score):
+        self.point = point
+        self.score = score
+        self.items = {}
+
+    def add(self, res):
+        """
+
+        :param res:
+        :type res: config.staff.RecruitResult
+        """
+        self.score += res.score
+        self.point += res.point
+        if self.point < 0:
+            self.point = 0
+
+        for _id, _amount in res.item:
+            if _id in self.items:
+                self.items[_id] += _amount
+            else:
+                self.items[_id] = _amount
+
+
+class StaffRecruit(object):
+    __slots__ = ['server_id', 'char_id', 'doc']
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+
+        self.doc = MongoStaffRecruit.db(self.server_id).find_one({'_id': self.char_id})
+        if not self.doc:
+            self.doc = MongoStaffRecruit.document()
+            self.doc['_id'] = self.char_id
+            MongoStaffRecruit.db(self.server_id).insert_one(self.doc)
+
+
+    @property
+    def gold_free_times(self):
+        return GOLD_MAX_FREE_TIMES - self.doc['used_free_times']
+
+    def get_cd_seconds(self, tp):
+        now = arrow.utcnow().timestamp
+        passed = now - self.doc['recruit_at'].get(str(tp), 0)
+        cd = RECRUIT_CD_SECONDS[tp] - passed
+
+        if cd < 0:
+            return 0
+
+        return cd
+
+    def get_point(self, tp):
+        return self.doc['point'].get(str(tp), 0)
+
+    def recruit(self, tp, mode):
+        if tp not in [RECRUIT_GOLD, RECRUIT_DIAMOND]:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
+        if mode not in [RECRUIT_MODE_1, RECRUIT_MODE_2]:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
+        if tp == RECRUIT_GOLD:
+            if mode == RECRUIT_MODE_1:
+                recruit_times = self._recruit_tp_1_mode_1()
+            else:
+                recruit_times = self._recruit_tp_1_mode_2()
+        else:
+            if mode == RECRUIT_MODE_1:
+                recruit_times = self._recruit_tp_2_mode_1()
+            else:
+                recruit_times = self._recruit_tp_2_mode_2()
+
+
+        config = ConfigStaffRecruit.get(tp)
+        current_times = self.doc['times'].get(str(tp), 0) + 1
+
+        result = RecruitResult(self.get_point(tp), self.doc['score'])
+
+        for i in range(current_times, current_times+recruit_times):
+            res = config.recruit(result.point, i)
+            result.add(res)
+
+        self.doc['point'][str(tp)] = result.point
+        self.doc['score'] = result.score
+
+        if str(tp) in self.doc['times']:
+            self.doc['times'][str(tp)] += recruit_times
+        else:
+            self.doc['times'][str(tp)] = recruit_times
+
+        MongoStaffRecruit.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'point.{0}'.format(tp): result.point,
+                'score': result.score,
+                'times.{0}'.format(tp): self.doc['times'][str(tp)]
+            }}
+        )
+
+        resource_classify = ResourceClassification.classify(result.items.items())
+        resource_classify.add(self.server_id, self.char_id)
+
+        self.send_notify()
+        return result.items.items()
+
+
+    def _recruit_tp_1_mode_1(self):
+        # 金币单抽
+        config = ConfigStaffRecruit.get(1)
+
+        def _remove_money():
+            cost = [(money_text_to_item_id('gold'), config.cost_value_1)]
+
+            resource_classify = ResourceClassification.classify(cost)
+            resource_classify.check_exist(self.server_id, self.char_id)
+            resource_classify.remove(self.server_id, self.char_id)
+
+
+        if not self.gold_free_times:
+            # 没有免费次数了， 就不判断CD，直接扣钱
+            _remove_money()
+        else:
+            # 有免费次数，先判断是否在CD中，
+            cd_seconds = self.get_cd_seconds(1)
+            if cd_seconds:
+                # 在CD中，扣钱
+                _remove_money()
+            else:
+                # 免费的
+                # 设置免费次数， 和时间戳
+                self.doc['used_free_times'] += 1
+                self.doc['recruit_at']['1'] = arrow.utcnow().timestamp
+
+                MongoStaffRecruit.db(self.server_id).update_one(
+                    {'_id': self.char_id},
+                    {'$set': {
+                        'used_free_times': self.doc['used_free_times'],
+                        'recruit_at.1': self.doc['recruit_at']['1']
+                    }}
+                )
+
+        return 1
+
+    def _recruit_tp_1_mode_2(self):
+        # 金币十连抽
+        config = ConfigStaffRecruit.get(1)
+
+        cost = [(money_text_to_item_id('gold'), config.cost_value_1)]
+
+        resource_classify = ResourceClassification.classify(cost)
+        resource_classify.check_exist(self.server_id, self.char_id)
+        resource_classify.remove(self.server_id, self.char_id)
+
+        return 10
+
+    def _recruit_tp_2_mode_1(self):
+        # 钻石单抽
+        config = ConfigStaffRecruit.get(2)
+
+        cd_seconds = self.get_cd_seconds(2)
+        if cd_seconds:
+            cost = [(money_text_to_item_id('diamond'), config.cost_value_10)]
+
+            resource_classify = ResourceClassification.classify(cost)
+            resource_classify.check_exist(self.server_id, self.char_id)
+            resource_classify.remove(self.server_id, self.char_id)
+        else:
+            self.doc['recruit_at']['2'] = arrow.utcnow().timestamp
+
+            MongoStaffRecruit.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {
+                    'recruit_at.2': self.doc['recruit_at']['2']
+                }}
+            )
+
+        return 1
+
+    def _recruit_tp_2_mode_2(self):
+        # 钻石十连抽
+        config = ConfigStaffRecruit.get(2)
+
+        cost = [(money_text_to_item_id('diamond'), config.cost_value_10)]
+
+        resource_classify = ResourceClassification.classify(cost)
+        resource_classify.check_exist(self.server_id, self.char_id)
+        resource_classify.remove(self.server_id, self.char_id)
+
+        return 10
+
+
+    def send_notify(self):
+        notify = StaffRecruitNotify()
+        notify.score = self.doc['score']
+        for tp in [RECRUIT_GOLD, RECRUIT_DIAMOND]:
+            notify_info = notify.info.add()
+            notify_info.tp = tp
+            notify_info.cd = self.get_cd_seconds(tp)
+            if tp == RECRUIT_GOLD:
+                notify_info.cur_free_times = self.gold_free_times
+                notify_info.max_free_times = GOLD_MAX_FREE_TIMES
+
 
 
 ###################################

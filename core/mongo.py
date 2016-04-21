@@ -319,19 +319,26 @@ class MongoTrainingSponsor(BaseDocument):
 
 
 # 招募刷新
-class MongoRecruit(BaseDocument):
+class MongoStaffRecruit(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        'tp': null,
-        # staffs 记录刷新出来的员工
-        'staffs': [],
-        # times 记录刷新次数 tp: times
+        'score': 0,
+        # 上面那个是总积分
+        # 然后金币 和 钻石自己分别可能有每日积分上限
+        # 所以这里要单独记录，并且每日清理
+        # tp: amount
+        'score_log': {},
+        'point': {},
+        # times 记录招募次数 tp: times
         'times': {},
-        # 记录本次刷新中的 已经招募过的
-        'recruited': [],
+        # 只有金币有每日免费次数
+        # 每天清理这个
+        'used_free_times': 0,
+        # 上次招募时间，用这个来算CD时间
+        'recruit_at': {},
     }
 
-    COLLECTION = "recruit"
+    COLLECTION = "staff_recruit"
 
 
 # 建筑

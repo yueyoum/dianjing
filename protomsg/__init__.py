@@ -24,8 +24,6 @@ MESSAGE_TO_ID = {
     "StaffNotify": 500,
     "StaffRemoveNotify": 501,
     "StaffRecruitNotify": 520,
-    "StaffRecruitRefreshRequest": 521,
-    "StaffRecruitRefreshResponse": 522,
     "StaffRecruitRequest": 523,
     "StaffRecruitResponse": 524,
     "StaffEquipChangeRequest": 530,
@@ -200,6 +198,11 @@ MESSAGE_TO_ID = {
     "FormationSetUnitResponse": 3204,
     "FormationMoveSlotRequest": 3205,
     "FormationMoveSlotResponse": 3206,
+    "TalentNotify": 3300,
+    "TalentLevelUpRequest": 3301,
+    "TalentLevelUpResponse": 3302,
+    "TalentResetTalentRequest": 3303,
+    "TalentResetTalentResponse": 3304,
 }
 
 ID_TO_MESSAGE = {
@@ -227,8 +230,6 @@ ID_TO_MESSAGE = {
     500: "StaffNotify",
     501: "StaffRemoveNotify",
     520: "StaffRecruitNotify",
-    521: "StaffRecruitRefreshRequest",
-    522: "StaffRecruitRefreshResponse",
     523: "StaffRecruitRequest",
     524: "StaffRecruitResponse",
     530: "StaffEquipChangeRequest",
@@ -403,6 +404,11 @@ ID_TO_MESSAGE = {
     3204: "FormationSetUnitResponse",
     3205: "FormationMoveSlotRequest",
     3206: "FormationMoveSlotResponse",
+    3300: "TalentNotify",
+    3301: "TalentLevelUpRequest",
+    3302: "TalentLevelUpResponse",
+    3303: "TalentResetTalentRequest",
+    3304: "TalentResetTalentResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -415,7 +421,6 @@ PATH_TO_REQUEST = {
     "/game/character/create/": ["character", "CreateCharacterRequest"],
     "/game/character/avatar/upload/": ["character", "CharacterUploadAvatarRequest"],
     "/game/club/create/": ["club", "CreateClubRequest"],
-    "/game/staff/recruit/refresh/": ["staff", "StaffRecruitRefreshRequest"],
     "/game/staff/recruit/": ["staff", "StaffRecruitRequest"],
     "/game/staff/equipchange/": ["staff", "StaffEquipChangeRequest"],
     "/game/staff/levelup/": ["staff", "StaffLevelUpRequest"],
@@ -485,6 +490,8 @@ PATH_TO_REQUEST = {
     "/game/formation/setstaff/": ["formation", "FormationSetStaffRequest"],
     "/game/formation/setunit/": ["formation", "FormationSetUnitRequest"],
     "/game/formation/moveslot/": ["formation", "FormationMoveSlotRequest"],
+    "/game/talent/levelup/": ["talent", "TalentLevelUpRequest"],
+    "/game/talent/reset/": ["talent", "TalentResetTalentRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -497,7 +504,6 @@ PATH_TO_RESPONSE = {
     "/game/character/create/": ["character", "CreateCharacterResponse"],
     "/game/character/avatar/upload/": ["character", "CharacterUploadAvatarResponse"],
     "/game/club/create/": ["club", "CreateClubResponse"],
-    "/game/staff/recruit/refresh/": ["staff", "StaffRecruitRefreshResponse"],
     "/game/staff/recruit/": ["staff", "StaffRecruitResponse"],
     "/game/staff/equipchange/": ["staff", "StaffEquipChangeResponse"],
     "/game/staff/levelup/": ["staff", "StaffLevelUpResponse"],
@@ -567,4 +573,6 @@ PATH_TO_RESPONSE = {
     "/game/formation/setstaff/": ["formation", "FormationSetStaffResponse"],
     "/game/formation/setunit/": ["formation", "FormationSetUnitResponse"],
     "/game/formation/moveslot/": ["formation", "FormationMoveSlotResponse"],
+    "/game/talent/levelup/": ["talent", "TalentLevelUpResponse"],
+    "/game/talent/reset/": ["talent", "TalentResetTalentResponse"],
 }

@@ -40,7 +40,6 @@ def item_use(request):
         d_item = d.items.add()
         d_item.id = item_id
         d_item.amount = amount
-        d_item.tp = 100
 
     response.drop.MergeFrom(d)
 
@@ -91,7 +90,6 @@ def equipment_destroy(request):
         response_item = response.drop.items.add()
         response_item.id = a
         response_item.amount = b
-        response_item.tp = 100
 
     return ProtobufResponse(response)
 

@@ -13,7 +13,7 @@ from django.dispatch import receiver
 from core.signals import game_start_signal
 from core.character import Character
 from core.club import Club
-from core.staff import StaffManger
+from core.staff import StaffManger, StaffRecruit
 from core.formation import Formation
 from core.bag import Bag
 from core.unit import UnitManager
@@ -56,6 +56,7 @@ def game_start_handler(server_id, char_id, **kwargs):
     Bag(server_id, char_id).send_notify()
 
     StaffManger(server_id, char_id).send_notify()
+    StaffRecruit(server_id, char_id).send_notify()
     Formation(server_id, char_id).send_notify()
 
     c.set_login()

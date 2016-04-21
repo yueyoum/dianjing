@@ -54,8 +54,7 @@ urlpatterns = [
     url(r'^formation/setunit/$', views.formation.set_unit),
     url(r'^formation/moveslot/$', views.formation.move_slot),
 
-    url(r'^staff/recruit/refresh/$', views.staff.recruit_refresh),
-    url(r'^staff/recruit/$', views.staff.recruit_staff),
+    url(r'^staff/recruit/$', views.staff.recruit),
 
     url(r'^staff/equipchange/$', views.staff.equipment_change),
     url(r'^staff/levelup/$', views.staff.level_up),

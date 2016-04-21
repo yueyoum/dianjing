@@ -8,10 +8,9 @@ Description:
 """
 
 from utils.http import ProtobufResponse
-from core.staff import StaffManger
+from core.staff import StaffManger, StaffRecruit
 
 from protomsg.staff_pb2 import (
-    StaffRecruitRefreshResponse,
     StaffRecruitResponse,
 
     StaffDestroyResponse,
@@ -22,31 +21,24 @@ from protomsg.staff_pb2 import (
 )
 
 
-def recruit_refresh(request):
+def recruit(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
     tp = request._proto.tp
-
-    server_id = request._game_session.server_id
-    char_id = request._game_session.char_id
+    mode = request._proto.mode
 
     recruit = StaffRecruit(server_id, char_id)
-    recruit.refresh(tp)
-
-    response = StaffRecruitRefreshResponse()
-    response.ret = 0
-    return ProtobufResponse(response)
-
-
-def recruit_staff(request):
-    staff_id = request._proto.staff_id
-
-    server_id = request._game_session.server_id
-    char_id = request._game_session.char_id
-
-    recruit = StaffRecruit(server_id, char_id)
-    recruit.recruit(staff_id)
+    items = recruit.recruit(tp, mode)
 
     response = StaffRecruitResponse()
     response.ret = 0
+
+    for a, b in items:
+        response_item = response.drop.items.add()
+        response_item.id = a
+        response_item.amount = b
+
     return ProtobufResponse(response)
 
 
@@ -119,6 +111,5 @@ def destroy(request):
         response_drop_item = response.drop.items.add()
         response_drop_item.id = _id
         response_drop_item.amount = _amount
-        response_drop_item.tp = 100
 
     return ProtobufResponse(response)

@@ -26,7 +26,8 @@ class StaffRecruit(object):
     __slots__ = [
         'id', 'points', 'cost_type', 'cost_value_1', 'cost_value_10',
         'items_10',
-        'reward_score_times', 'reward_score', 'reward_score_day_limit'
+        'reward_score_times', 'reward_score', 'reward_score_day_limit',
+        'SPECIAL_ITEM_TP'
     ]
 
     def __init__(self):
@@ -39,6 +40,8 @@ class StaffRecruit(object):
         self.reward_score_times = 0
         self.reward_score = 0
         self.reward_score_day_limit = 0
+
+        self.SPECIAL_ITEM_TP = 0
 
     def get_item(self, current_point, items=None):
         def _get():
@@ -64,6 +67,8 @@ class StaffRecruit(object):
 
         :rtype: RecruitResult
         """
+        from config import ConfigItemNew
+
         result = RecruitResult()
 
         # 积分
@@ -78,8 +83,11 @@ class StaffRecruit(object):
             result.point = 1
             result.item = self.get_item(current_point)
 
-        return result
+        if result.item:
+            if ConfigItemNew.get(result.item[0][0]).tp == self.SPECIAL_ITEM_TP:
+                result.point = -100
 
+        return result
 
 
 class ConfigStaffRecruit(ConfigBase):
@@ -101,6 +109,11 @@ class ConfigStaffRecruit(ConfigBase):
 
             for i in range(1, len(v.items_10)):
                 v.items_10[i][2] += v.items_10[i-1][2]
+
+            if v.id == 1:
+                v.SPECIAL_ITEM_TP = 5
+            else:
+                v.SPECIAL_ITEM_TP = 6
 
     @classmethod
     def get(cls, _id):
