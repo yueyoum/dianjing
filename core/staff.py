@@ -16,6 +16,7 @@ from core.abstract import AbstractStaff
 from core.mongo import MongoStaff, MongoStaffRecruit
 from core.resource import money_text_to_item_id, ResourceClassification
 from core.bag import Bag, TYPE_EQUIPMENT, get_item_type
+from core.times_log import RecordLogStaffRecruitTimes, RecordLogStaffRecruitScore, RecordLogStaffRecruitGoldFreeTimes
 from core.signals import recruit_staff_signal, staff_level_up_signal
 
 from config import (
@@ -49,10 +50,10 @@ RECRUIT_CD_SECONDS = {
 
 
 class RecruitResult(object):
-    __slots__ = ['point', 'score', 'items']
-    def __init__(self, point, score):
+    __slots__ = ['point', 'add_score', 'items']
+    def __init__(self, point):
         self.point = point
-        self.score = score
+        self.add_score = 0
         self.items = []
 
     def add(self, res):
@@ -61,7 +62,7 @@ class RecruitResult(object):
         :param res:
         :type res: config.staff.RecruitResult
         """
-        self.score += res.score
+        self.add_score += res.score
         self.point += res.point
         if self.point < 0:
             self.point = 0
@@ -92,13 +93,17 @@ class StaffRecruit(object):
             self.doc['_id'] = self.char_id
             self.doc['score'] = 0
             self.doc['point'] = {'1': 0, '2': 0}
-            self.doc['used_free_times'] = 0
             self.doc['recruit_at'] = {'1': 0, '2': 0}
             MongoStaffRecruit.db(self.server_id).insert_one(self.doc)
 
     @property
     def gold_free_times(self):
-        return GOLD_MAX_FREE_TIMES - self.doc['used_free_times']
+        today_times = RecordLogStaffRecruitGoldFreeTimes(self.server_id, self.char_id).count_of_today()
+        free_times = GOLD_MAX_FREE_TIMES - today_times
+        if free_times < 0:
+            free_times = 0
+
+        return free_times
 
     def get_cd_seconds(self, tp):
         now = arrow.utcnow().timestamp
@@ -112,6 +117,9 @@ class StaffRecruit(object):
 
     def get_point(self, tp):
         return self.doc['point'].get(str(tp), 0)
+
+    def get_times(self, tp):
+        return RecordLogStaffRecruitTimes(self.server_id, self.char_id, tp).count()
 
     def recruit(self, tp, mode):
         if tp not in [RECRUIT_GOLD, RECRUIT_DIAMOND]:
@@ -133,29 +141,38 @@ class StaffRecruit(object):
 
 
         config = ConfigStaffRecruit.get(tp)
-        # current_times = self.doc['times'].get(str(tp), 0) + 1
-        # TODO times log
-        current_times = 1
+        current_times = self.get_times(tp) + 1
 
-        result = RecruitResult(self.get_point(tp), self.doc['score'])
+        result = RecruitResult(self.get_point(tp))
 
         for i in range(current_times, current_times+recruit_times):
             res = config.recruit(result.point, i)
             result.add(res)
 
         self.doc['point'][str(tp)] = result.point
-        self.doc['score'] = result.score
-        #
-        # if str(tp) in self.doc['times']:
-        #     self.doc['times'][str(tp)] += recruit_times
-        # else:
-        #     self.doc['times'][str(tp)] = recruit_times
+
+        # 记录次数
+        RecordLogStaffRecruitTimes(self.server_id, self.char_id, tp).record(recruit_times)
+
+        # 处理积分
+        today_score = RecordLogStaffRecruitScore(self.server_id, self.char_id, tp).count_of_today()
+        can_add_score = config.reward_score_day_limit - today_score
+        if can_add_score <= 0:
+            # 今天获得的积分已经达到上限
+            result.add_score = 0
+        else:
+            if result.add_score > can_add_score:
+                # 要添加的，大于了 能添加的
+                result.add_score = can_add_score
+
+        self.doc['score'] += result.add_score
+        RecordLogStaffRecruitScore(self.server_id, self.char_id, tp).record(can_add_score)
 
         MongoStaffRecruit.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
                 'point.{0}'.format(tp): result.point,
-                'score': result.score,
+                'score': self.doc['score']
             }}
         )
 
@@ -190,16 +207,16 @@ class StaffRecruit(object):
             else:
                 # 免费的
                 # 设置免费次数， 和时间戳
-                self.doc['used_free_times'] += 1
                 self.doc['recruit_at']['1'] = arrow.utcnow().timestamp
 
                 MongoStaffRecruit.db(self.server_id).update_one(
                     {'_id': self.char_id},
                     {'$set': {
-                        'used_free_times': self.doc['used_free_times'],
                         'recruit_at.1': self.doc['recruit_at']['1']
                     }}
                 )
+
+                RecordLogStaffRecruitGoldFreeTimes(self.server_id, self.char_id).record()
 
         return 1
 
@@ -257,10 +274,11 @@ class StaffRecruit(object):
             notify_info = notify.info.add()
             notify_info.tp = tp
             notify_info.cd = self.get_cd_seconds(tp)
-            notify_info.next_times = 10  # TODO
             if tp == RECRUIT_GOLD:
                 notify_info.cur_free_times = self.gold_free_times
                 notify_info.max_free_times = GOLD_MAX_FREE_TIMES
+            else:
+                notify_info.next_times = 10 - (self.get_times(tp) % 10)
 
         MessagePipe(self.char_id).put(msg=notify)
 

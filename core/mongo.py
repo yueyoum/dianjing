@@ -323,14 +323,12 @@ class MongoStaffRecruit(BaseDocument):
     DOCUMENT = {
         '_id': null,
         'score': 0,
-
         'point': {},
-        # times 招募次数 记录在 TimesLog 中
-        # 只有金币有每日免费次数
-        # 每天清理这个
-        'used_free_times': 0,
+
         # 上次招募时间，用这个来算CD时间
         'recruit_at': {},
+
+        # 其他记录在 RecordLog中
     }
 
     COLLECTION = "staff_recruit"
@@ -727,7 +725,7 @@ class MongoTalent(BaseDocument):
     COLLECTION = 'talent'
 
 
-class MongoTimesLog(BaseDocument):
+class MongoRecordLog(BaseDocument):
     # 所有和次数相关的都记录在这里
     # 方便后面做活动
     DOCUMENT = {
@@ -737,5 +735,5 @@ class MongoTimesLog(BaseDocument):
         'value': 1, # 次数， 默认一次
     }
 
-    COLLECTION = 'times_log'
-
+    COLLECTION = 'record_log'
+    INDEXES = ['timestamp',]
