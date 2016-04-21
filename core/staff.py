@@ -83,8 +83,11 @@ class StaffRecruit(object):
         if not self.doc:
             self.doc = MongoStaffRecruit.document()
             self.doc['_id'] = self.char_id
+            self.doc['score'] = 0
+            self.doc['point'] = {'1': 0, '2': 0}
+            self.doc['used_free_times'] = 0
+            self.doc['recruit_at'] = {'1': 0, '2': 0}
             MongoStaffRecruit.db(self.server_id).insert_one(self.doc)
-
 
     @property
     def gold_free_times(self):
@@ -123,7 +126,9 @@ class StaffRecruit(object):
 
 
         config = ConfigStaffRecruit.get(tp)
-        current_times = self.doc['times'].get(str(tp), 0) + 1
+        # current_times = self.doc['times'].get(str(tp), 0) + 1
+        # TODO times log
+        current_times = 1
 
         result = RecruitResult(self.get_point(tp), self.doc['score'])
 
@@ -133,18 +138,17 @@ class StaffRecruit(object):
 
         self.doc['point'][str(tp)] = result.point
         self.doc['score'] = result.score
-
-        if str(tp) in self.doc['times']:
-            self.doc['times'][str(tp)] += recruit_times
-        else:
-            self.doc['times'][str(tp)] = recruit_times
+        #
+        # if str(tp) in self.doc['times']:
+        #     self.doc['times'][str(tp)] += recruit_times
+        # else:
+        #     self.doc['times'][str(tp)] = recruit_times
 
         MongoStaffRecruit.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
                 'point.{0}'.format(tp): result.point,
                 'score': result.score,
-                'times.{0}'.format(tp): self.doc['times'][str(tp)]
             }}
         )
 
@@ -251,6 +255,7 @@ class StaffRecruit(object):
                 notify_info.cur_free_times = self.gold_free_times
                 notify_info.max_free_times = GOLD_MAX_FREE_TIMES
 
+        MessagePipe(self.char_id).put(msg=notify)
 
 
 ###################################

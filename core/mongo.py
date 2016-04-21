@@ -323,14 +323,9 @@ class MongoStaffRecruit(BaseDocument):
     DOCUMENT = {
         '_id': null,
         'score': 0,
-        # 上面那个是总积分
-        # 然后金币 和 钻石自己分别可能有每日积分上限
-        # 所以这里要单独记录，并且每日清理
-        # tp: amount
-        'score_log': {},
+
         'point': {},
-        # times 记录招募次数 tp: times
-        'times': {},
+        # times 招募次数 记录在 TimesLog 中
         # 只有金币有每日免费次数
         # 每天清理这个
         'used_free_times': 0,
@@ -730,3 +725,17 @@ class MongoTalent(BaseDocument):
     }
 
     COLLECTION = 'talent'
+
+
+class MongoTimesLog(BaseDocument):
+    # 所有和次数相关的都记录在这里
+    # 方便后面做活动
+    DOCUMENT = {
+        '_id': '',
+        'key': '',  # 这个是 功能标识， 可以是 chat_id+function_name
+        'timestamp': 0, # UTC
+        'value': 1, # 次数， 默认一次
+    }
+
+    COLLECTION = 'times_log'
+
