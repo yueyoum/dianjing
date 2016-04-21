@@ -34,6 +34,7 @@ import views.auction
 import views.bag
 import views.unit
 import views.formation
+import views.talent
 
 urlpatterns = [
     url(r'^sync/$', views.common.sync),
@@ -143,4 +144,7 @@ urlpatterns = [
 
     url(r'^unit/levelup/$', views.unit.level_up),
     url(r'^unit/stepup/$', views.unit.step_up),
+
+    url(r'talent/levelup/$', views.talent.level_up),
+    url(r'talent/reset/$', views.talent.reset),
 ]

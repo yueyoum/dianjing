@@ -32,6 +32,7 @@ from config.signin import ConfigSignIn
 from config.activity_login_reward import ConfigLoginReward
 from config.active_value import ConfigActiveFunction, ConfigActiveReward
 from config.training_match import ConfigTrainingMatchReward, ConfigTrainingMatchStore
+from config.talent import ConfigTalent
 
 _has_configed = False
 
@@ -145,6 +146,8 @@ def load_config():
             ConfigTrainingMatchReward.initialize(data)
         elif item == 'training_match_store.json':
             ConfigTrainingMatchStore.initialize(data)
+        elif item == 'talent.json':
+            ConfigTalent.initialize(data)
 
 
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))

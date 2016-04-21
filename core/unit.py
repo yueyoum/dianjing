@@ -76,7 +76,6 @@ class Unit(AbstractUnit):
         self.id = _id
         self.step = data['step']
         self.level = data['level']
-
         self.after_init()
 
     def level_up(self):
@@ -171,18 +170,18 @@ class UnitManager(object):
             {'units': 1}
         )
 
-        if str(_id) in doc['units']:
+        if _id in doc['units']:
             # already unlocked
             return
 
         unlock_conf = ConfigUnitUnLock.get(_id)
         club_lv = Club(self.server_id, self.char_id).level
         if club_lv < unlock_conf.need_club_level:
-            # TODO error message
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+            raise GameException(ConfigErrorMessage.get_error_id("UNIT_UNLOCK_CLUB_LEVEL_NOT_ENOUGH"))
 
-        # TODO: unlock unit lv check
-        # for unlock_conf.need_unit_level.
+        for _id, level in unlock_conf.need_unit_level:
+            if doc['units'][str(_id)] < level:
+                raise GameException(ConfigErrorMessage.get_error_id("UNIT_UNLOCK_UNIT_LEVEL_NOT_ENOUGH"))
 
         unit_doc = MongoUnit.document_unit()
         MongoUnit.db(self.server_id).update_one(

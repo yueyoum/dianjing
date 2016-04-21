@@ -719,3 +719,14 @@ class MongoUnit(BaseDocument):
     @classmethod
     def document_unit(cls):
         return copy.deepcopy(cls.UNIT_DOCUMENT)
+
+
+class MongoTalent(BaseDocument):
+    DOCUMENT = {
+        '_id': 0,
+        'total': 0,
+        'cost': 0,
+        'talent': [],
+    }
+
+    COLLECTION = 'talent'
