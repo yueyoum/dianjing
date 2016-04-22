@@ -19,9 +19,6 @@ from protomsg.bag_pb2 import (
     BagItemUseResponse,
 )
 
-# TODO package.Drop
-from protomsg.package_pb2 import Drop
-
 
 def item_use(request):
     server_id = request._game_session.server_id
@@ -30,18 +27,11 @@ def item_use(request):
     slot_id = request._proto.slot_id
 
     bag = Bag(server_id, char_id)
-    result = bag.item_use(slot_id)
+    resource_classified = bag.item_use(slot_id)
 
     response = BagItemUseResponse()
     response.ret = 0
-
-    d = Drop()
-    for item_id, amount in result:
-        d_item = d.items.add()
-        d_item.id = item_id
-        d_item.amount = amount
-
-    response.drop.MergeFrom(d)
+    response.drop.MergeFrom(resource_classified.make_protomsg())
 
     return ProtobufResponse(response)
 
@@ -82,14 +72,11 @@ def equipment_destroy(request):
     use_sycee = request._proto.use_sycee
 
     bag = Bag(server_id, char_id)
-    items = bag.equipment_destroy(slot_id, use_sycee)
+    resource_classified = bag.equipment_destroy(slot_id, use_sycee)
 
     response = BagEquipmentDestroyResponse()
     response.ret = 0
-    for a, b in items:
-        response_item = response.drop.items.add()
-        response_item.id = a
-        response_item.amount = b
+    response.drop.MergeFrom(resource_classified.make_protomsg())
 
     return ProtobufResponse(response)
 
@@ -107,6 +94,7 @@ def equipment_level_up_preview(request):
     response.ret = 0
     response.equipment.MergeFrom(msg_equip)
     return ProtobufResponse(response)
+
 
 def equipment_level_up_confirm(request):
     server_id = request._game_session.server_id

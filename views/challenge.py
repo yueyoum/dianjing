@@ -52,7 +52,6 @@ def sweep(request):
             response_drop_item = response_drop.items.add()
             response_drop_item.id = _id
             response_drop_item.amount = _amount
-            response_drop_item.tp = 100
 
     return ProtobufResponse(response)
 
@@ -72,7 +71,6 @@ def report(request):
         drop_item = response.drop.items.add()
         drop_item.id = _id
         drop_item.amount = _amount
-        drop_item.tp = 100
 
     return ProtobufResponse(response)
 
@@ -91,7 +89,6 @@ def chapter_reward(request):
     response_drop = response.drop.items.add()
     response_drop.id = item_id
     response_drop.amount = item_amount
-    response_drop.tp = 100
     return ProtobufResponse(response)
 
 

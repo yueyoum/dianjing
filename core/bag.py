@@ -289,6 +289,10 @@ class Bag(object):
     def item_use(self, slot_id):
         # 道具使用
         # TODO error handle
+        """
+
+        :rtype: ResourceClassification
+        """
         this_slot = self.doc['slots'][slot_id]
         config = ConfigItemUse.get(this_slot['item_id'])
 
@@ -309,7 +313,7 @@ class Bag(object):
         resource_classified = ResourceClassification.classify(result)
         resource_classified.add(self.server_id, self.char_id)
 
-        return result
+        return resource_classified
 
     def item_merge(self, slot_id):
         # 碎片合成
@@ -343,6 +347,10 @@ class Bag(object):
 
     def equipment_destroy(self, slot_id, use_sycee):
         # 装备销毁
+        """
+
+        :rtype: ResourceClassification
+        """
         this_slot = self.doc['slots'][slot_id]
         item_id = this_slot['item_id']
 
@@ -370,8 +378,8 @@ class Bag(object):
 
         resource_classified = ResourceClassification.classify(results)
         resource_classified.add(self.server_id, self.char_id)
+        return resource_classified
 
-        return results
 
     def equipment_level_up_preview(self, slot_id):
         # 装备升级准备

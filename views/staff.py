@@ -29,16 +29,11 @@ def recruit(request):
     mode = request._proto.mode
 
     recruit = StaffRecruit(server_id, char_id)
-    items = recruit.recruit(tp, mode)
+    resource_classified = recruit.recruit(tp, mode)
 
     response = StaffRecruitResponse()
     response.ret = 0
-
-    for a, b in items:
-        response_item = response.drop.items.add()
-        response_item.id = a
-        response_item.amount = b
-
+    response.drop.MergeFrom(resource_classified.make_protomsg())
     return ProtobufResponse(response)
 
 
@@ -102,14 +97,9 @@ def destroy(request):
 
     staff_id = request._proto.staff_id
 
-    drop = StaffManger(server_id, char_id).destroy(staff_id)
+    resource_classified = StaffManger(server_id, char_id).destroy(staff_id)
 
-    # FIXME
     response = StaffDestroyResponse()
     response.ret = 0
-    for _id, _amount in drop:
-        response_drop_item = response.drop.items.add()
-        response_drop_item.id = _id
-        response_drop_item.amount = _amount
-
+    response.drop.MergeFrom(resource_classified.make_protomsg())
     return ProtobufResponse(response)

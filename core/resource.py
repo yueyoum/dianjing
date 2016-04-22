@@ -14,6 +14,7 @@ from core.statistics import FinanceStatistics
 
 from config import ConfigErrorMessage, ConfigItemNew
 
+from protomsg.package_pb2 import Drop as MsgDrop
 
 MONEY = {
     30000: 'diamond', # 钻石
@@ -24,6 +25,9 @@ MONEY = {
 }
 
 _MONEY_REVERSE = {v: k for k, v in MONEY.iteritems()}
+
+TALENT_ITEM_ID = 30006
+
 
 def item_id_to_money_text(_id):
     return MONEY[_id]
@@ -73,19 +77,17 @@ class ResourceClassification(object):
     def classify(cls, items):
         # type: (list) -> ResourceClassification
         # items: [(id, amount)...]
-        from core.talent import TALENT_ITEM_ID
-
         money = {}
         bag = {}
         staff = {}
         talent_point = 0
 
         for _id, _amount in items:
-            tp = ConfigItemNew.get(_id).tp
             if _id == TALENT_ITEM_ID:
                 talent_point += _amount
                 continue
 
+            tp = ConfigItemNew.get(_id).tp
             if tp == 3:
                 if _id in money:
                     money[_id] += _amount
@@ -170,6 +172,30 @@ class ResourceClassification(object):
                 sm.add(_id)
 
         TalentManager(server_id, char_id).add_talent_points(self.talent_point)
+
+    def make_protomsg(self):
+        msg = MsgDrop()
+        for _id, _amount in self.money:
+            msg_item = msg.items.add()
+            msg_item.id = _id
+            msg_item.amount = _amount
+
+        for _id, _amount in self.bag:
+            msg_item = msg.items.add()
+            msg_item.id = _id
+            msg_item.amount = _amount
+
+        for _id, _amount in self.staff:
+            msg_item = msg.items.add()
+            msg_item.id = _id
+            msg_item.amount = _amount
+
+        if self.talent_point:
+            msg_item = msg.items.add()
+            msg_item.id = TALENT_ITEM_ID
+            msg_item.amount = self.talent_point
+
+        return msg
 
 
 class Resource(object):

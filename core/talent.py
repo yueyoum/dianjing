@@ -10,7 +10,7 @@ from dianjing.exception import GameException
 from config import ConfigErrorMessage, ConfigTalent
 
 from core.mongo import MongoTalent
-from core.resource import ResourceClassification
+from core.resource import ResourceClassification, TALENT_ITEM_ID
 
 from utils.message import MessagePipe
 
@@ -18,7 +18,6 @@ from protomsg.talent_pb2 import TalentNotify
 
 
 RESET_TALENT_TREE_COST = 100
-TALENT_ITEM_ID = 30006
 
 
 def get_init_talent_doc():

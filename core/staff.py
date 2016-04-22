@@ -122,6 +122,10 @@ class StaffRecruit(object):
         return RecordLogStaffRecruitTimes(self.server_id, self.char_id, tp).count()
 
     def recruit(self, tp, mode):
+        """
+
+        :rtype: ResourceClassification
+        """
         if tp not in [RECRUIT_GOLD, RECRUIT_DIAMOND]:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
@@ -180,7 +184,7 @@ class StaffRecruit(object):
         resource_classify.add(self.server_id, self.char_id)
 
         self.send_notify()
-        return result.items
+        return resource_classify
 
 
     def _recruit_tp_1_mode_1(self):
@@ -669,6 +673,10 @@ class StaffManger(object):
 
     def destroy(self, staff_id):
         # TODO 返还
+        """
+
+        :rtype: ResourceClassification
+        """
         self.remove(staff_id)
         doc = MongoStaff.db(self.server_id).find_one(
             {'_id': self.char_id},
@@ -679,7 +687,10 @@ class StaffManger(object):
         crystal = ConfigStaffNew.get(oid).crystal
 
         drop = [(money_text_to_item_id('crystal'), crystal)]
-        return drop
+
+        resource_classified = ResourceClassification.classify(drop)
+        resource_classified.add(self.server_id, self.char_id)
+        return resource_classified
 
     def send_notify(self, ids=None):
         if not ids:
