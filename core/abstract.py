@@ -304,9 +304,9 @@ class AbstractStaff(object):
 
         # 最终属性
         self.attack = int(self.attack * (1 + self.attack_percent))
-        self.defense = int(self.attack * (1 + self.defense_percent))
-        self.manage = int(self.attack * (1 + self.manage_percent))
-        self.operation = int(self.attack * (1 + self.operation_percent))
+        self.defense = int(self.defense * (1 + self.defense_percent))
+        self.manage = int(self.manage * (1 + self.manage_percent))
+        self.operation = int(self.operation * (1 + self.operation_percent))
 
     def set_unit(self, unit):
         # type: (AbstractUnit) -> None
