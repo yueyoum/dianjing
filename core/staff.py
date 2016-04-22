@@ -28,6 +28,7 @@ from config import (
     ConfigStaffLevelNew,
     ConfigItemExp,
     ConfigEquipmentNew,
+    ConfigStaffEquipmentAddition,
 )
 
 from utils.functional import make_string_id
@@ -476,44 +477,57 @@ class Staff(AbstractStaff):
         self.make_cache()
         self.send_notify()
 
-    def get_all_equipment_level(self):
+
+    def add_equipment_property(self):
         bag = Bag(self.server_id, self.char_id)
 
-        value = 0
-        if self.equip_keyboard:
-            data = bag.get_slot(self.equip_keyboard)
-            value += data['level']
+        level = 0
+        qualities = []
 
-        if self.equip_monitor:
-            data = bag.get_slot(self.equip_monitor)
-            value += data['level']
+        # 装备本身属性
+        for slot_id in [self.equip_keyboard, self.equip_monitor, self.equip_mouse, self.equip_decoration]:
+            if not slot_id:
+                continue
 
-        if self.equip_mouse:
-            data = bag.get_slot(self.equip_mouse)
-            value += data['level']
-
-        return value
-
-    def get_all_equipment_quality(self):
-        bag = Bag(self.server_id, self.char_id)
-
-        value = 0
-        if self.equip_keyboard:
-            data = bag.get_slot(self.equip_keyboard)
+            data = bag.get_slot(slot_id)
             config = ConfigItemNew.get(data['item_id'])
-            value += config.quality
 
-        if self.equip_monitor:
-            data = bag.get_slot(self.equip_monitor)
-            config = ConfigItemNew.get(data['item_id'])
-            value += config.quality
+            equip_config = ConfigEquipmentNew.get(data['item_id'])
+            this_level = equip_config.levels[data['level']]
 
-        if self.equip_mouse:
-            data = bag.get_slot(self.equip_mouse)
-            config = ConfigItemNew.get(data['item_id'])
-            value += config.quality
+            self.attack += this_level.attack
+            self.attack_percent += this_level.attack_percent
+            self.defense += this_level.defense
+            self.defense_percent += this_level.defense_percent
+            self.manage += this_level.manage
+            self.manage_percent += this_level.manage_percent
+            self.operation += this_level.operation
+            self.operation_percent += this_level.operation_percent
 
-        return value
+            if slot_id != self.equip_decoration:
+                # 装备加成不算 饰品
+                level += data['level']
+                qualities.append(config.quality)
+
+        # 装备加成
+        equip_level_addition = ConfigStaffEquipmentAddition.get_by_level(level)
+        if equip_level_addition:
+            self.attack += equip_level_addition.attack
+            self.attack_percent += equip_level_addition.attack_percent
+            self.defense += equip_level_addition.defense
+            self.defense_percent += equip_level_addition.defense_percent
+            self.manage += equip_level_addition.manage
+            self.manage_percent += equip_level_addition.manage_percent
+
+        if len(qualities) == 3:
+            equip_quality_addition = ConfigStaffEquipmentAddition.get_by_quality(min(qualities))
+            if equip_quality_addition:
+                self.attack += equip_quality_addition.attack
+                self.attack_percent += equip_quality_addition.attack_percent
+                self.defense += equip_quality_addition.defense
+                self.defense_percent += equip_quality_addition.defense_percent
+                self.manage += equip_quality_addition.manage
+                self.manage_percent += equip_quality_addition.manage_percent
 
 
     def send_notify(self):

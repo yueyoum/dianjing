@@ -13,13 +13,19 @@ from protomsg.club_pb2 import Club as MessageClub
 from protomsg.staff_pb2 import Staff as MessageStaff
 from protomsg.unit_pb2 import Unit as MessageUnit
 
-from config import ConfigStaffStar, ConfigStaffNew, ConfigUnitNew, ConfigItemNew, ConfigStaffEquipmentAddition, \
-    ConfigTalentSkill
+from config import (
+    ConfigStaffStar,
+    ConfigStaffNew,
+    ConfigUnitNew,
+    ConfigItemNew,
+    ConfigTalentSkill,
+)
 
 
 class DummyConfig(object):
-    def __getattr__(self, item):
+    def __getattr__(self, _):
         return 0
+
 
 class AbstractUnit(object):
     __slots__ = [
@@ -266,23 +272,7 @@ class AbstractStaff(object):
         self.operation_percent += star_config.operation_percent
 
         # 装备
-        equip_level_addition = ConfigStaffEquipmentAddition.get_by_level(self.get_all_equipment_level())
-        if equip_level_addition:
-            self.attack += equip_level_addition.attack
-            self.attack_percent += equip_level_addition.attack_percent
-            self.defense += equip_level_addition.defense
-            self.defense_percent += equip_level_addition.defense_percent
-            self.manage += equip_level_addition.manage
-            self.manage_percent += equip_level_addition.manage_percent
-
-        equip_quality_addition = ConfigStaffEquipmentAddition.get_by_quality(self.get_all_equipment_quality())
-        if equip_quality_addition:
-            self.attack += equip_quality_addition.attack
-            self.attack_percent += equip_quality_addition.attack_percent
-            self.defense += equip_quality_addition.defense
-            self.defense_percent += equip_quality_addition.defense_percent
-            self.manage += equip_quality_addition.manage
-            self.manage_percent += equip_quality_addition.manage_percent
+        self.add_equipment_property()
 
         # 天赋
         for tid in self.active_talent_ids:
@@ -312,11 +302,9 @@ class AbstractStaff(object):
         # type: (AbstractUnit) -> None
         self.__unit = unit.clone()
 
-    def get_all_equipment_quality(self):
-        return 0
-
-    def get_all_equipment_level(self):
-        return 0
+    def add_equipment_property(self):
+        # 加上装备属性
+        pass
 
     def get_self_talent_skill_ids(self):
         ids = []
