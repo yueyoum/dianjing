@@ -476,6 +476,46 @@ class Staff(AbstractStaff):
         self.make_cache()
         self.send_notify()
 
+    def get_all_equipment_level(self):
+        bag = Bag(self.server_id, self.char_id)
+
+        value = 0
+        if self.equip_keyboard:
+            data = bag.get_slot(self.equip_keyboard)
+            value += data['level']
+
+        if self.equip_monitor:
+            data = bag.get_slot(self.equip_monitor)
+            value += data['level']
+
+        if self.equip_mouse:
+            data = bag.get_slot(self.equip_mouse)
+            value += data['level']
+
+        return value
+
+    def get_all_equipment_quality(self):
+        bag = Bag(self.server_id, self.char_id)
+
+        value = 0
+        if self.equip_keyboard:
+            data = bag.get_slot(self.equip_keyboard)
+            config = ConfigItemNew.get(data['item_id'])
+            value += config.quality
+
+        if self.equip_monitor:
+            data = bag.get_slot(self.equip_monitor)
+            config = ConfigItemNew.get(data['item_id'])
+            value += config.quality
+
+        if self.equip_mouse:
+            data = bag.get_slot(self.equip_mouse)
+            config = ConfigItemNew.get(data['item_id'])
+            value += config.quality
+
+        return value
+
+
     def send_notify(self):
         notify = StaffNotify()
         notify.act = ACT_UPDATE
