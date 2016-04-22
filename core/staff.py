@@ -123,10 +123,6 @@ class StaffRecruit(object):
         return RecordLogStaffRecruitTimes(self.server_id, self.char_id, tp).count()
 
     def recruit(self, tp, mode):
-        """
-
-        :rtype: ResourceClassification
-        """
         if tp not in [RECRUIT_GOLD, RECRUIT_DIAMOND]:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
@@ -185,7 +181,8 @@ class StaffRecruit(object):
         resource_classify.add(self.server_id, self.char_id)
 
         self.send_notify()
-        return resource_classify
+        # NOTE: 结果不能堆叠
+        return result.items
 
 
     def _recruit_tp_1_mode_1(self):
@@ -289,7 +286,7 @@ class StaffRecruit(object):
 
 
 ###################################
-STAFF_MAX_LEVEL = max(ConfigStaffNew.INSTANCES.keys())
+STAFF_MAX_LEVEL = max(ConfigStaffLevelNew.INSTANCES.keys())
 STAFF_MAX_STAR = max(ConfigStaffStar.INSTANCES.keys())
 
 
@@ -357,7 +354,7 @@ class Staff(AbstractStaff):
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'set': {
+            {'$set': {
                 'staffs.{0}.level'.format(self.id): self.level,
                 'staffs.{0}.level_exp'.format(self.id): self.level_exp
             }}

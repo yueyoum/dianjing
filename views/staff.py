@@ -29,11 +29,15 @@ def recruit(request):
     mode = request._proto.mode
 
     recruit = StaffRecruit(server_id, char_id)
-    resource_classified = recruit.recruit(tp, mode)
+    items = recruit.recruit(tp, mode)
 
     response = StaffRecruitResponse()
     response.ret = 0
-    response.drop.MergeFrom(resource_classified.make_protomsg())
+    for _id, _amount in items:
+        _item = response.drop.items.add()
+        _item.id = _id
+        _item.amount = _amount
+
     return ProtobufResponse(response)
 
 
