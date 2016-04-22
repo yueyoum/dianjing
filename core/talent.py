@@ -81,7 +81,7 @@ class TalentManager(object):
         )
 
         if doc['total'] - doc['cost'] < amount:
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+            raise GameException(ConfigErrorMessage.get_error_id("TALENT_POINTS_NOT_ENOUGH"))
 
     def deduct_talent_points(self, amount):
         MongoTalent.db(self.server_id).update_one(
