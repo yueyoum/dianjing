@@ -6,7 +6,7 @@ Date Created:   2015-07-15 10:36
 Description:
 
 """
-
+import random
 from config.base import ConfigBase
 
 
@@ -34,11 +34,33 @@ class ChallengeMatch(object):
         self.club_flag = ""
         self.energy = 0
         self.club_exp = 0
-        self.staffs = 0
-        self.drop = 0
+        self.staffs = ""
+        self.drop = ""
         self.condition_challenge = 0
         self.times_limit = 0
         self.next = []
+
+    def get_drop(self, drop_times):
+        drop = {}
+        for _id, _amount, _p0, _p1 in self.drop:
+            str_id = str(_id)
+
+            prob = _p0 + drop_times.get(str_id, 0) * _p1
+            if prob >= random.randint(1, 100):
+
+                if _id in drop:
+                    drop[_id] += _amount
+                else:
+                    drop[_id] = _amount
+
+                drop_times[str_id] = 0
+            else:
+                if str(_id) in drop_times:
+                    drop_times[str_id] += 1
+                else:
+                    drop_times[str_id] = 1
+
+        return drop.items()
 
 
 class ConfigChapter(ConfigBase):
@@ -60,9 +82,9 @@ class ConfigChallengeMatch(ConfigBase):
     FILTER_CACHE = {}
 
     @classmethod
-    def get(cls, id):
+    def get(cls, _id):
         """
 
         :rtype : ChallengeMatch
         """
-        return super(ConfigChallengeMatch, cls).get(id)
+        return super(ConfigChallengeMatch, cls).get(_id)

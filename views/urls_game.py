@@ -63,13 +63,10 @@ urlpatterns = [
     url(r'^staff/starup/$', views.staff.star_up),
     url(r'^staff/destroy/$', views.staff.destroy),
 
-
-
     url(r'^challenge/start/$', views.challenge.start),
     url(r'^challenge/sweep/$', views.challenge.sweep),
     url(r'^challenge/chapter/reward/$', views.challenge.chapter_reward),
     url(r'^challenge/report/$', views.challenge.report),
-    # url(r'^challenge/buy/$', views.challenge.buy),
 
     url(r'^building/levelup/$', views.building.levelup),
     url(r'^building/speedup/$', views.building.speedup),

@@ -158,8 +158,9 @@ class MongoChallenge(BaseDocument):
         'chapters': {},
         # id: star
         'challenge_star': {},
-        # id: times,  已经打过的次数
-        'challenge_times': {}
+        # 关卡次数记录在 TimesLog 里
+        # 每个关卡对应的物品掉落次数
+        'challenge_drop': {},
     }
 
     CHAPTER_DOCUMENT = {
@@ -180,18 +181,6 @@ class MongoCommon(BaseDocument):
     COLLECTION = "common"
 
 
-# 背包
-class MongoItem(BaseDocument):
-    DOCUMENT = {
-        '_id': null,
-        # id: meta_data
-        # id 是物品的唯一ID， meta data 就是其数据
-        # 不同类型的物品，记录的数据不一样
-    }
-
-    COLLECTION = 'item'
-
-
 # 新背包
 class MongoBag(BaseDocument):
     DOCUMENT = {
@@ -209,113 +198,6 @@ class MongoBag(BaseDocument):
     }
 
     COLLECTION = 'bag'
-
-
-# 经验训练
-class MongoTrainingExp(BaseDocument):
-    DOCUMENT = {
-        '_id': null,
-        'slots': {}
-    }
-
-    TRAINING_DOCUMENT = {
-        'staff_id': 0,
-        'start_at': 0,
-        'exp': -1,
-        # exp 是完成时的经验值，领奖就领的是这个
-        # 只有在完成时（加速或者正常完成），才设置这个值
-        # 所以只要exp > -1，就表示训练完成了
-        'key': '',
-        # timer key
-    }
-
-    @classmethod
-    def document_training(cls):
-        return copy.deepcopy(cls.TRAINING_DOCUMENT)
-
-    COLLECTION = 'training_exp'
-
-
-# 属性训练
-class MongoTrainingProperty(BaseDocument):
-    DOCUMENT = {
-        '_id': null,
-        'staffs': {},
-        'keys': {},  # 定时器key, staff_id: key
-    }
-
-    TRAINING_DOCUMENT = {
-        'id': null,
-        'end_at': 0,
-        # 加速会改变这个end_at
-        # 属性训练只和使用的id训练有关，所以这里直接记录完成的end_at，
-        # 不用考虑其他变量
-    }
-
-    @classmethod
-    def document_training(cls):
-        return copy.deepcopy(cls.TRAINING_DOCUMENT)
-
-    COLLECTION = 'training_property'
-
-
-# 直播训练
-class MongoTrainingBroadcast(BaseDocument):
-    DOCUMENT = {
-        '_id': null,
-        'slots': {}
-    }
-
-    SLOT_DOCUMENT = {
-        'staff_id': 0,
-        'start_at': 0,
-        'gold': -1,
-        # 只要 gold > -1，肯定就是训练时间满了，不管是加速还是正常结束
-        'key': '',
-        # 随机种子，给这个slot计算获得物品用的
-        # 因为每次计算并不保存，所以为了领奖时最终结果和先前计算的一样，需要相同的随机种子
-        'seed': 0,
-    }
-
-    @classmethod
-    def document_slot(cls):
-        return copy.deepcopy(cls.SLOT_DOCUMENT)
-
-    COLLECTION = 'training_broadcast'
-
-
-# 网店训练
-class MongoTrainingShop(BaseDocument):
-    DOCUMENT = {
-        '_id': null,
-        # shop_id: staff_id. staff_id 0 表示这个网店没人
-        'shops': {},
-    }
-
-    SHOP_DOCUMENT = {
-        'staff_id': 0,
-        'sells_per_hour': 0,
-        'start_at': 0,
-        'end_at': 0,
-        'key': '',
-
-        'goods': 0,
-    }
-
-    COLLECTION = 'training_shop'
-
-
-# 赞助训练
-class MongoTrainingSponsor(BaseDocument):
-    DOCUMENT = {
-        '_id': null,
-        # sponsor_id: start_at_timestamp.  timestamp 0 表示没有签约
-        'has_sponsors': False,
-        'sponsors': {}
-    }
-
-    COLLECTION = 'training_sponsor'
-    INDEXES = ['has_sponsors']
 
 
 # 招募刷新
@@ -417,66 +299,6 @@ class MongoTask(BaseDocument):
     COLLECTION = "task"
 
 
-# 天梯
-class MongoLadder(BaseDocument):
-    DOCUMENT = {
-        # id: 真实玩家就是str(char_id)，npc是 uuid
-        '_id': null,
-        'score': 0,
-        'order': 0,
-
-        'match_timestamp': 0,
-        # 刷新结果 _id: order
-        'refreshed': {},
-        # 剩余次数
-        'remained_times': 0,
-        # 战报 [(template_id, args) ...]
-        'logs': [],
-
-        'buy_match_times': {},
-        # 天梯商店购买次数，每天清空
-        'buy_times': {},
-
-        # 以下几项只有NPC才有
-        'club_name': "",
-        'club_flag': 0,
-        'manager_name': "",
-        'staffs': [],
-    }
-
-    COLLECTION = "ladder"
-    INDEXES = ['order']
-
-
-# 杯赛
-class MongoCup(BaseDocument):
-    DOCUMENT = {
-        # 这里的 _id 是定死的：1, 因为一个服务器只有一个杯赛
-        '_id': 1,
-        # 第几届杯赛
-        'order': 1,
-        # 上一届冠军
-        'last_champion': "",
-        # level 的 key 表示多少强
-        # values [club_id, club_id...] 列表
-        'levels': {},
-    }
-
-    COLLECTION = "cup"
-
-
-class MongoCupClub(BaseDocument):
-    DOCUMENT = {
-        # club id
-        '_id': null,
-        # 开始前一小时把玩家的阵容拷贝过来
-        'is_npc': False,
-        'data': '',
-    }
-
-    COLLECTION = "cup_club"
-
-
 # 通知
 class MongoNotification(BaseDocument):
     DOCUMENT = {
@@ -575,31 +397,6 @@ class MongoTrainingMatch(BaseDocument):
     COLLECTION = 'training_match'
 
 
-# 精英赛
-class MongoEliteMatch(BaseDocument):
-    DOCUMENT = {
-        '_id': null,
-        # 大区， {area_id: {'challenge_id': {'star': 0}},
-        'areas': {}
-    }
-
-    AREA_DOCUMENT = {
-        'challenges': {
-            '1': {
-                'stars': 0,     # 历史最佳记录 0为未通过
-                'times': 0,     # 当天挑战次数， 每天刷新
-            }
-        },
-        'packages': {
-            '1': True,
-            '2': True,
-            '3': True,
-        }
-    }
-
-    COLLECTION = 'elite_match'
-
-
 # 员工拍卖
 class MongoAuctionStaff(BaseDocument):
     DOCUMENT = {
@@ -655,45 +452,6 @@ class MongoBidding(BaseDocument):
     INDEXES = ['items']
 
 
-# 用户联赛mongo
-class MongoLeague(BaseDocument):
-    """
-    联赛表
-    """
-    DOCUMENT = {
-        '_id': 0,
-        'score': 1,
-        'level': 1,
-        'daily_reward': "",
-        'challenge_times': 0,
-        'win_rate': {
-            'total': 0,
-            'win': 0,
-        },
-        'in_rise': False,
-        'refresh_time': 0,
-        'match_club': {},  # club_id: MATCH_CLUB_DOCUMENT
-    }
-
-    MATCH_CLUB_DOCUMENT = {
-        'status': 0,
-        'npc_club': False,
-        ################
-        'flag': 0,
-        'name': "",
-        'win_rate': {
-            'total': 0,
-            'win': 0,
-        },
-        'score': 0,
-        'manager_name': "",
-        'staffs': {}
-    }
-
-    COLLECTION = 'league'
-    INDEXES = ['level']
-
-
 class MongoUnit(BaseDocument):
     DOCUMENT = {
         '_id': 0,
@@ -725,7 +483,7 @@ class MongoTalent(BaseDocument):
     COLLECTION = 'talent'
 
 
-class MongoRecordLog(BaseDocument):
+class MongoTimesLog(BaseDocument):
     # 所有和次数相关的都记录在这里
     # 方便后面做活动
     DOCUMENT = {
@@ -735,5 +493,5 @@ class MongoRecordLog(BaseDocument):
         'value': 1, # 次数， 默认一次
     }
 
-    COLLECTION = 'record_log'
-    INDEXES = ['timestamp',]
+    COLLECTION = 'times_log'
+    INDEXES = ['key', 'timestamp',]

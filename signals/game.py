@@ -19,13 +19,11 @@ from core.bag import Bag
 from core.unit import UnitManager
 from core.challenge import Challenge
 from core.building import BuildingManager
-# from core.league.league import LeagueManger
 from core.friend import FriendManager
 from core.mail import MailManager
 from core.task import TaskManager, RandomEvent
 from core.chat import Chat
 from core.notification import Notification
-# from core.ladder import Ladder, LadderStore
 from core.statistics import FinanceStatistics
 from core.sponsor import SponsorManager
 from core.activity import ActivityCategory
@@ -33,7 +31,6 @@ from core.activity.login_reward import ActivityLoginReward
 from core.activity.signin import SignIn
 from core.active_value import ActiveValue
 from core.talent import TalentManager
-# from core.training_match import TrainingMatch, TrainingMatchStore
 # from core.auction import AuctionManager
 from core.system import send_broadcast_notify
 
@@ -65,15 +62,11 @@ def game_start_handler(server_id, char_id, **kwargs):
     club = Club(server_id, char_id)
     club.send_notify()
 
-    # StaffRecruit(server_id, char_id).send_notify()
-
     chall = Challenge(server_id, char_id)
     chall.send_chapter_notify()
     chall.send_challenge_notify()
-    chall.energy_notify()
 
     BuildingManager(server_id, char_id).send_notify()
-    # LeagueManger(server_id, char_id).send_notify()
     FriendManager(server_id, char_id).send_notify()
     MailManager(server_id, char_id).send_notify()
     TaskManager(server_id, char_id).send_notify()
@@ -82,9 +75,6 @@ def game_start_handler(server_id, char_id, **kwargs):
     Chat(server_id, char_id).send_notify()
 
     Notification(server_id, char_id).send_notify()
-
-    # Ladder(server_id, char_id).send_notify()
-    # LadderStore(server_id, char_id).send_notify()
 
     FinanceStatistics(server_id, char_id).send_notify()
     SponsorManager(server_id, char_id).send_notify()
@@ -100,8 +90,5 @@ def game_start_handler(server_id, char_id, **kwargs):
     av = ActiveValue(server_id, char_id)
     av.send_function_notify()
     av.send_value_notify()
-
-    # TrainingMatch(server_id, char_id).send_notify()
-    # TrainingMatchStore(server_id, char_id).send_notify()
 
     send_broadcast_notify(char_id)

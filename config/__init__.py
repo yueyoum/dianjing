@@ -18,20 +18,15 @@ from config.staff import ConfigStaffRecruit, ConfigStaffNew, ConfigStaffStar, Co
 from config.challenge import ConfigChallengeMatch, ConfigChapter
 from config.unit import ConfigUnitNew, ConfigUnitUnLock, ConfigUnitStepAddition, ConfigUnitLevelAddition, ConfigUnitAddition
 from config.building import ConfigBuilding
-from config.package import ConfigPackage
 from config.item import ConfigItemNew, ConfigItemUse, ConfigItemMerge, ConfigEquipmentNew, ConfigItemExp
-from config.npc import ConfigNPC
 from config.skill import ConfigTalentSkill
 from config.task import ConfigTask, ConfigRandomEvent, ConfigTaskTargetType
 from config.club import ConfigClubLevel, ConfigClubFlag
-from config.ladder import ConfigLadderRankReward, ConfigLadderScoreStore
 from config.qianban import ConfigQianBan
-from config.league import ConfigLeague
 from config.activity import ConfigActivityCategory
 from config.signin import ConfigSignIn
 from config.activity_login_reward import ConfigLoginReward
 from config.active_value import ConfigActiveFunction, ConfigActiveReward
-from config.training_match import ConfigTrainingMatchReward, ConfigTrainingMatchStore
 from config.talent import ConfigTalent
 
 _has_configed = False
@@ -104,14 +99,7 @@ def load_config():
             ConfigUnitStepAddition.initialize(data)
         elif item == 'building.json':
             ConfigBuilding.initialize(data)
-        elif item == 'package.json':
-            ConfigPackage.initialize(data)
-        elif item == 'npc_club.json':
-            ConfigNPC.initialize(data)
-        elif item == 'npc_club_name.json':
-            ConfigNPC.initialize_club_names(data)
-        elif item == 'npc_manager_name.json':
-            ConfigNPC.initialize_manager_name(data)
+
         elif item == 'talent_skill.json':
             ConfigTalentSkill.initialize(data)
         elif item == 'task.json':
@@ -122,14 +110,10 @@ def load_config():
             ConfigClubLevel.initialize(data)
         elif item == 'club_flag.json':
             ConfigClubFlag.initialize(data)
-        elif item == 'ladder_rank_reward.json':
-            ConfigLadderRankReward.initialize(data)
-        elif item == 'ladder_score_store.json':
-            ConfigLadderScoreStore.initialize(data)
+
         elif item == 'qianban.json':
             ConfigQianBan.initialize(data)
-        elif item == 'league.json':
-            ConfigLeague.initialize(data)
+
         elif item == 'activity_category.json':
             ConfigActivityCategory.initialize(data)
         elif item == 'activity_signin.json':
@@ -142,10 +126,7 @@ def load_config():
             ConfigActiveReward.initialize(data)
         elif item == 'task_target.json':
             ConfigTaskTargetType.initialize(data)
-        elif item == 'training_match_reward.json':
-            ConfigTrainingMatchReward.initialize(data)
-        elif item == 'training_match_store.json':
-            ConfigTrainingMatchStore.initialize(data)
+
         elif item == 'talent.json':
             ConfigTalent.initialize(data)
 

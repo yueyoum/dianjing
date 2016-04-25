@@ -26,9 +26,7 @@ from config import (
 
 from protomsg.club_pb2 import ClubNotify
 
-
-def club_level_up_need_renown(level):
-    return ConfigClubLevel.get(level).renown
+MAX_CLUB_LEVEL = max(ConfigClubLevel.INSTANCES.keys())
 
 
 class Club(AbstractClub):
@@ -48,7 +46,7 @@ class Club(AbstractClub):
         self.manager_name = doc['name']  # 角色名
         self.flag = club['flag']  # 俱乐部旗帜
         self.level = club['level']  # 俱乐部等级
-        self.renown = club['renown']  # 俱乐部声望
+        self.exp = club.get('exp', 0)
         self.vip = club['vip']  # vip等级
         self.gold = club['gold']  # 游戏币
         self.diamond = club['diamond']  # 钻石
@@ -111,7 +109,7 @@ class Club(AbstractClub):
         return self.vip
 
     def update(self, **kwargs):
-        renown = kwargs.get('renown', 0)
+        exp = kwargs.get('exp', 0)
         gold = kwargs.get('gold', 0)
         diamond = kwargs.get('diamond', 0)
         crystal = kwargs.get('crystal', 0)
@@ -120,7 +118,7 @@ class Club(AbstractClub):
 
         self.gold += gold
         self.diamond += diamond
-        self.renown += renown
+        self.exp += exp
         self.crystal += crystal
         self.gas += gas
 
@@ -136,17 +134,15 @@ class Club(AbstractClub):
         # update
         level_changed = False
         while True:
-            need_renown = club_level_up_need_renown(self.level)
-            next_level_id = ConfigClubLevel.get(self.level).next_level_id
-            if not next_level_id:
-                if self.renown >= need_renown:
-                    self.renown = need_renown - 1
+            if self.level >= MAX_CLUB_LEVEL:
+                self.exp = 0
                 break
 
-            if self.renown < need_renown:
+            need_exp = ConfigClubLevel.get(self.level).exp
+            if self.exp < need_exp:
                 break
 
-            self.renown -= need_renown
+            self.exp -= need_exp
             self.level += 1
             level_changed = True
 
@@ -154,7 +150,7 @@ class Club(AbstractClub):
             {'_id': self.char_id},
             {'$set': {
                 'club.level': self.level,
-                'club.renown': self.renown,
+                'club.exp': self.exp,
                 'club.gold': self.gold,
                 'club.diamond': self.diamond,
                 'club.crystal': self.crystal,

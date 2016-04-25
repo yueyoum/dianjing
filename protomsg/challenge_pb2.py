@@ -17,16 +17,15 @@ _sym_db = _symbol_database.Default()
 import match_pb2 as match__pb2
 import package_pb2 as package__pb2
 import common_pb2 as common__pb2
-import training_match_pb2 as training__match__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='challenge.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0f\x63hallenge.proto\x12\x11\x44ianjing.protocol\x1a\x0bmatch.proto\x1a\rpackage.proto\x1a\x0c\x63ommon.proto\x1a\x14training_match.proto\"\x12\n\x04\x41rea\x12\n\n\x02id\x18\x01 \x02(\x05\"\xaf\x02\n\rChapterNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12:\n\x08\x63hapters\x18\x03 \x03(\x0b\x32(.Dianjing.protocol.ChapterNotify.Chapter\x1a\xa8\x01\n\x07\x43hapter\x12\n\n\x02id\x18\x01 \x02(\x05\x12@\n\x07rewards\x18\x02 \x03(\x0b\x32/.Dianjing.protocol.ChapterNotify.Chapter.Reward\x1aO\n\x06Reward\x12\r\n\x05index\x18\x01 \x02(\x05\x12\x36\n\x06status\x18\x02 \x02(\x0e\x32&.Dianjing.protocol.ChapterRewardStatus\"\xca\x01\n\x0f\x43hallengeNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12?\n\tchallenge\x18\x03 \x03(\x0b\x32,.Dianjing.protocol.ChallengeNotify.Challenge\x1a=\n\tChallenge\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04star\x18\x02 \x02(\x05\x12\x16\n\x0eremained_times\x18\x03 \x02(\x05\"f\n\x15\x43hallengeEnergyNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x12\n\ncur_energy\x18\x02 \x02(\x05\x12\x12\n\nmax_energy\x18\x03 \x02(\x05\x12\x14\n\x0crefresh_time\x18\x04 \x02(\x03\"4\n\x15\x43hallengeStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"c\n\x16\x43hallengeStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"4\n\x15\x43hallengeSweepRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"]\n\x16\x43hallengeSweepResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Drop\"I\n\x1b\x43hapterGetStarRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\x12\r\n\x05index\x18\x03 \x02(\x05\"c\n\x1c\x43hapterGetStarRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"I\n\x1b\x43hallengeMatchReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x0c\n\x04star\x18\x03 \x02(\x05\"c\n\x1c\x43hallengeMatchReportResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\",\n\x19\x43hallengeBuyEnergyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\":\n\x1a\x43hallengeBuyEnergyResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05*]\n\x13\x43hapterRewardStatus\x12\x16\n\x12\x43HAPTER_REWARD_NOT\x10\x00\x12\x15\n\x11\x43HAPTER_REWARD_OK\x10\x01\x12\x17\n\x13\x43HAPTER_REWARD_DONE\x10\x02')
+  serialized_pb=_b('\n\x0f\x63hallenge.proto\x12\x11\x44ianjing.protocol\x1a\x0bmatch.proto\x1a\rpackage.proto\x1a\x0c\x63ommon.proto\"\xaf\x02\n\rChapterNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12:\n\x08\x63hapters\x18\x03 \x03(\x0b\x32(.Dianjing.protocol.ChapterNotify.Chapter\x1a\xa8\x01\n\x07\x43hapter\x12\n\n\x02id\x18\x01 \x02(\x05\x12@\n\x07rewards\x18\x02 \x03(\x0b\x32/.Dianjing.protocol.ChapterNotify.Chapter.Reward\x1aO\n\x06Reward\x12\r\n\x05index\x18\x01 \x02(\x05\x12\x36\n\x06status\x18\x02 \x02(\x0e\x32&.Dianjing.protocol.ChapterRewardStatus\"\xca\x01\n\x0f\x43hallengeNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12?\n\tchallenge\x18\x03 \x03(\x0b\x32,.Dianjing.protocol.ChallengeNotify.Challenge\x1a=\n\tChallenge\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04star\x18\x02 \x02(\x05\x12\x16\n\x0eremained_times\x18\x03 \x02(\x05\"4\n\x15\x43hallengeStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"c\n\x16\x43hallengeStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"I\n\x1b\x43hallengeMatchReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x0c\n\x04star\x18\x03 \x02(\x05\"c\n\x1c\x43hallengeMatchReportResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"4\n\x15\x43hallengeSweepRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"]\n\x16\x43hallengeSweepResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Drop\"I\n\x1b\x43hapterGetStarRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\x12\r\n\x05index\x18\x03 \x02(\x05\"c\n\x1c\x43hapterGetStarRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*]\n\x13\x43hapterRewardStatus\x12\x16\n\x12\x43HAPTER_REWARD_NOT\x10\x00\x12\x15\n\x11\x43HAPTER_REWARD_OK\x10\x01\x12\x17\n\x13\x43HAPTER_REWARD_DONE\x10\x02')
   ,
-  dependencies=[match__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,common__pb2.DESCRIPTOR,training__match__pb2.DESCRIPTOR,])
+  dependencies=[match__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 _CHAPTERREWARDSTATUS = _descriptor.EnumDescriptor(
@@ -50,8 +49,8 @@ _CHAPTERREWARDSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1499,
-  serialized_end=1592,
+  serialized_start=1247,
+  serialized_end=1340,
 )
 _sym_db.RegisterEnumDescriptor(_CHAPTERREWARDSTATUS)
 
@@ -60,37 +59,6 @@ CHAPTER_REWARD_NOT = 0
 CHAPTER_REWARD_OK = 1
 CHAPTER_REWARD_DONE = 2
 
-
-
-_AREA = _descriptor.Descriptor(
-  name='Area',
-  full_name='Dianjing.protocol.Area',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='id', full_name='Dianjing.protocol.Area.id', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=102,
-  serialized_end=120,
-)
 
 
 _CHAPTERNOTIFY_CHAPTER_REWARD = _descriptor.Descriptor(
@@ -126,8 +94,8 @@ _CHAPTERNOTIFY_CHAPTER_REWARD = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=347,
-  serialized_end=426,
+  serialized_start=305,
+  serialized_end=384,
 )
 
 _CHAPTERNOTIFY_CHAPTER = _descriptor.Descriptor(
@@ -163,8 +131,8 @@ _CHAPTERNOTIFY_CHAPTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=258,
-  serialized_end=426,
+  serialized_start=216,
+  serialized_end=384,
 )
 
 _CHAPTERNOTIFY = _descriptor.Descriptor(
@@ -207,8 +175,8 @@ _CHAPTERNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=123,
-  serialized_end=426,
+  serialized_start=81,
+  serialized_end=384,
 )
 
 
@@ -252,8 +220,8 @@ _CHALLENGENOTIFY_CHALLENGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=570,
-  serialized_end=631,
+  serialized_start=528,
+  serialized_end=589,
 )
 
 _CHALLENGENOTIFY = _descriptor.Descriptor(
@@ -296,60 +264,8 @@ _CHALLENGENOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=429,
-  serialized_end=631,
-)
-
-
-_CHALLENGEENERGYNOTIFY = _descriptor.Descriptor(
-  name='ChallengeEnergyNotify',
-  full_name='Dianjing.protocol.ChallengeEnergyNotify',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.ChallengeEnergyNotify.session', index=0,
-      number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b(""),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='cur_energy', full_name='Dianjing.protocol.ChallengeEnergyNotify.cur_energy', index=1,
-      number=2, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='max_energy', full_name='Dianjing.protocol.ChallengeEnergyNotify.max_energy', index=2,
-      number=3, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='refresh_time', full_name='Dianjing.protocol.ChallengeEnergyNotify.refresh_time', index=3,
-      number=4, type=3, cpp_type=2, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=633,
-  serialized_end=735,
+  serialized_start=387,
+  serialized_end=589,
 )
 
 
@@ -386,8 +302,8 @@ _CHALLENGESTARTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=737,
-  serialized_end=789,
+  serialized_start=591,
+  serialized_end=643,
 )
 
 
@@ -431,181 +347,8 @@ _CHALLENGESTARTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=791,
-  serialized_end=890,
-)
-
-
-_CHALLENGESWEEPREQUEST = _descriptor.Descriptor(
-  name='ChallengeSweepRequest',
-  full_name='Dianjing.protocol.ChallengeSweepRequest',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.ChallengeSweepRequest.session', index=0,
-      number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b(""),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='id', full_name='Dianjing.protocol.ChallengeSweepRequest.id', index=1,
-      number=2, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=892,
-  serialized_end=944,
-)
-
-
-_CHALLENGESWEEPRESPONSE = _descriptor.Descriptor(
-  name='ChallengeSweepResponse',
-  full_name='Dianjing.protocol.ChallengeSweepResponse',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='ret', full_name='Dianjing.protocol.ChallengeSweepResponse.ret', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.ChallengeSweepResponse.session', index=1,
-      number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b(""),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='drop', full_name='Dianjing.protocol.ChallengeSweepResponse.drop', index=2,
-      number=3, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=946,
-  serialized_end=1039,
-)
-
-
-_CHAPTERGETSTARREWARDREQUEST = _descriptor.Descriptor(
-  name='ChapterGetStarRewardRequest',
-  full_name='Dianjing.protocol.ChapterGetStarRewardRequest',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.ChapterGetStarRewardRequest.session', index=0,
-      number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b(""),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='id', full_name='Dianjing.protocol.ChapterGetStarRewardRequest.id', index=1,
-      number=2, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='index', full_name='Dianjing.protocol.ChapterGetStarRewardRequest.index', index=2,
-      number=3, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1041,
-  serialized_end=1114,
-)
-
-
-_CHAPTERGETSTARREWARDRESPONSE = _descriptor.Descriptor(
-  name='ChapterGetStarRewardResponse',
-  full_name='Dianjing.protocol.ChapterGetStarRewardResponse',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='ret', full_name='Dianjing.protocol.ChapterGetStarRewardResponse.ret', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.ChapterGetStarRewardResponse.session', index=1,
-      number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b(""),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='drop', full_name='Dianjing.protocol.ChapterGetStarRewardResponse.drop', index=2,
-      number=3, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1116,
-  serialized_end=1215,
+  serialized_start=645,
+  serialized_end=744,
 )
 
 
@@ -649,8 +392,8 @@ _CHALLENGEMATCHREPORTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1217,
-  serialized_end=1290,
+  serialized_start=746,
+  serialized_end=819,
 )
 
 
@@ -694,58 +437,27 @@ _CHALLENGEMATCHREPORTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1292,
-  serialized_end=1391,
+  serialized_start=821,
+  serialized_end=920,
 )
 
 
-_CHALLENGEBUYENERGYREQUEST = _descriptor.Descriptor(
-  name='ChallengeBuyEnergyRequest',
-  full_name='Dianjing.protocol.ChallengeBuyEnergyRequest',
+_CHALLENGESWEEPREQUEST = _descriptor.Descriptor(
+  name='ChallengeSweepRequest',
+  full_name='Dianjing.protocol.ChallengeSweepRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.ChallengeBuyEnergyRequest.session', index=0,
-      number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b(""),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1393,
-  serialized_end=1437,
-)
-
-
-_CHALLENGEBUYENERGYRESPONSE = _descriptor.Descriptor(
-  name='ChallengeBuyEnergyResponse',
-  full_name='Dianjing.protocol.ChallengeBuyEnergyResponse',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.ChallengeBuyEnergyResponse.session', index=0,
+      name='session', full_name='Dianjing.protocol.ChallengeSweepRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='ret', full_name='Dianjing.protocol.ChallengeBuyEnergyResponse.ret', index=1,
+      name='id', full_name='Dianjing.protocol.ChallengeSweepRequest.id', index=1,
       number=2, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -763,8 +475,143 @@ _CHALLENGEBUYENERGYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1439,
-  serialized_end=1497,
+  serialized_start=922,
+  serialized_end=974,
+)
+
+
+_CHALLENGESWEEPRESPONSE = _descriptor.Descriptor(
+  name='ChallengeSweepResponse',
+  full_name='Dianjing.protocol.ChallengeSweepResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.ChallengeSweepResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ChallengeSweepResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='drop', full_name='Dianjing.protocol.ChallengeSweepResponse.drop', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=976,
+  serialized_end=1069,
+)
+
+
+_CHAPTERGETSTARREWARDREQUEST = _descriptor.Descriptor(
+  name='ChapterGetStarRewardRequest',
+  full_name='Dianjing.protocol.ChapterGetStarRewardRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ChapterGetStarRewardRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.ChapterGetStarRewardRequest.id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='index', full_name='Dianjing.protocol.ChapterGetStarRewardRequest.index', index=2,
+      number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1071,
+  serialized_end=1144,
+)
+
+
+_CHAPTERGETSTARREWARDRESPONSE = _descriptor.Descriptor(
+  name='ChapterGetStarRewardResponse',
+  full_name='Dianjing.protocol.ChapterGetStarRewardResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.ChapterGetStarRewardResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ChapterGetStarRewardResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='drop', full_name='Dianjing.protocol.ChapterGetStarRewardResponse.drop', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1146,
+  serialized_end=1245,
 )
 
 _CHAPTERNOTIFY_CHAPTER_REWARD.fields_by_name['status'].enum_type = _CHAPTERREWARDSTATUS
@@ -777,31 +624,20 @@ _CHALLENGENOTIFY_CHALLENGE.containing_type = _CHALLENGENOTIFY
 _CHALLENGENOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _CHALLENGENOTIFY.fields_by_name['challenge'].message_type = _CHALLENGENOTIFY_CHALLENGE
 _CHALLENGESTARTRESPONSE.fields_by_name['match'].message_type = match__pb2._CLUBMATCH
+_CHALLENGEMATCHREPORTRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 _CHALLENGESWEEPRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 _CHAPTERGETSTARREWARDRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
-_CHALLENGEMATCHREPORTRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
-DESCRIPTOR.message_types_by_name['Area'] = _AREA
 DESCRIPTOR.message_types_by_name['ChapterNotify'] = _CHAPTERNOTIFY
 DESCRIPTOR.message_types_by_name['ChallengeNotify'] = _CHALLENGENOTIFY
-DESCRIPTOR.message_types_by_name['ChallengeEnergyNotify'] = _CHALLENGEENERGYNOTIFY
 DESCRIPTOR.message_types_by_name['ChallengeStartRequest'] = _CHALLENGESTARTREQUEST
 DESCRIPTOR.message_types_by_name['ChallengeStartResponse'] = _CHALLENGESTARTRESPONSE
+DESCRIPTOR.message_types_by_name['ChallengeMatchReportRequest'] = _CHALLENGEMATCHREPORTREQUEST
+DESCRIPTOR.message_types_by_name['ChallengeMatchReportResponse'] = _CHALLENGEMATCHREPORTRESPONSE
 DESCRIPTOR.message_types_by_name['ChallengeSweepRequest'] = _CHALLENGESWEEPREQUEST
 DESCRIPTOR.message_types_by_name['ChallengeSweepResponse'] = _CHALLENGESWEEPRESPONSE
 DESCRIPTOR.message_types_by_name['ChapterGetStarRewardRequest'] = _CHAPTERGETSTARREWARDREQUEST
 DESCRIPTOR.message_types_by_name['ChapterGetStarRewardResponse'] = _CHAPTERGETSTARREWARDRESPONSE
-DESCRIPTOR.message_types_by_name['ChallengeMatchReportRequest'] = _CHALLENGEMATCHREPORTREQUEST
-DESCRIPTOR.message_types_by_name['ChallengeMatchReportResponse'] = _CHALLENGEMATCHREPORTRESPONSE
-DESCRIPTOR.message_types_by_name['ChallengeBuyEnergyRequest'] = _CHALLENGEBUYENERGYREQUEST
-DESCRIPTOR.message_types_by_name['ChallengeBuyEnergyResponse'] = _CHALLENGEBUYENERGYRESPONSE
 DESCRIPTOR.enum_types_by_name['ChapterRewardStatus'] = _CHAPTERREWARDSTATUS
-
-Area = _reflection.GeneratedProtocolMessageType('Area', (_message.Message,), dict(
-  DESCRIPTOR = _AREA,
-  __module__ = 'challenge_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.Area)
-  ))
-_sym_db.RegisterMessage(Area)
 
 ChapterNotify = _reflection.GeneratedProtocolMessageType('ChapterNotify', (_message.Message,), dict(
 
@@ -841,13 +677,6 @@ ChallengeNotify = _reflection.GeneratedProtocolMessageType('ChallengeNotify', (_
 _sym_db.RegisterMessage(ChallengeNotify)
 _sym_db.RegisterMessage(ChallengeNotify.Challenge)
 
-ChallengeEnergyNotify = _reflection.GeneratedProtocolMessageType('ChallengeEnergyNotify', (_message.Message,), dict(
-  DESCRIPTOR = _CHALLENGEENERGYNOTIFY,
-  __module__ = 'challenge_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChallengeEnergyNotify)
-  ))
-_sym_db.RegisterMessage(ChallengeEnergyNotify)
-
 ChallengeStartRequest = _reflection.GeneratedProtocolMessageType('ChallengeStartRequest', (_message.Message,), dict(
   DESCRIPTOR = _CHALLENGESTARTREQUEST,
   __module__ = 'challenge_pb2'
@@ -861,6 +690,20 @@ ChallengeStartResponse = _reflection.GeneratedProtocolMessageType('ChallengeStar
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChallengeStartResponse)
   ))
 _sym_db.RegisterMessage(ChallengeStartResponse)
+
+ChallengeMatchReportRequest = _reflection.GeneratedProtocolMessageType('ChallengeMatchReportRequest', (_message.Message,), dict(
+  DESCRIPTOR = _CHALLENGEMATCHREPORTREQUEST,
+  __module__ = 'challenge_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChallengeMatchReportRequest)
+  ))
+_sym_db.RegisterMessage(ChallengeMatchReportRequest)
+
+ChallengeMatchReportResponse = _reflection.GeneratedProtocolMessageType('ChallengeMatchReportResponse', (_message.Message,), dict(
+  DESCRIPTOR = _CHALLENGEMATCHREPORTRESPONSE,
+  __module__ = 'challenge_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChallengeMatchReportResponse)
+  ))
+_sym_db.RegisterMessage(ChallengeMatchReportResponse)
 
 ChallengeSweepRequest = _reflection.GeneratedProtocolMessageType('ChallengeSweepRequest', (_message.Message,), dict(
   DESCRIPTOR = _CHALLENGESWEEPREQUEST,
@@ -889,34 +732,6 @@ ChapterGetStarRewardResponse = _reflection.GeneratedProtocolMessageType('Chapter
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChapterGetStarRewardResponse)
   ))
 _sym_db.RegisterMessage(ChapterGetStarRewardResponse)
-
-ChallengeMatchReportRequest = _reflection.GeneratedProtocolMessageType('ChallengeMatchReportRequest', (_message.Message,), dict(
-  DESCRIPTOR = _CHALLENGEMATCHREPORTREQUEST,
-  __module__ = 'challenge_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChallengeMatchReportRequest)
-  ))
-_sym_db.RegisterMessage(ChallengeMatchReportRequest)
-
-ChallengeMatchReportResponse = _reflection.GeneratedProtocolMessageType('ChallengeMatchReportResponse', (_message.Message,), dict(
-  DESCRIPTOR = _CHALLENGEMATCHREPORTRESPONSE,
-  __module__ = 'challenge_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChallengeMatchReportResponse)
-  ))
-_sym_db.RegisterMessage(ChallengeMatchReportResponse)
-
-ChallengeBuyEnergyRequest = _reflection.GeneratedProtocolMessageType('ChallengeBuyEnergyRequest', (_message.Message,), dict(
-  DESCRIPTOR = _CHALLENGEBUYENERGYREQUEST,
-  __module__ = 'challenge_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChallengeBuyEnergyRequest)
-  ))
-_sym_db.RegisterMessage(ChallengeBuyEnergyRequest)
-
-ChallengeBuyEnergyResponse = _reflection.GeneratedProtocolMessageType('ChallengeBuyEnergyResponse', (_message.Message,), dict(
-  DESCRIPTOR = _CHALLENGEBUYENERGYRESPONSE,
-  __module__ = 'challenge_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChallengeBuyEnergyResponse)
-  ))
-_sym_db.RegisterMessage(ChallengeBuyEnergyResponse)
 
 
 # @@protoc_insertion_point(module_scope)
