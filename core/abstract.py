@@ -283,9 +283,10 @@ class AbstractStaff(object):
         self.manage = int(self.manage * (1 + self.manage_percent))
         self.operation = int(self.operation * (1 + self.operation_percent))
 
-    def _calculate_talent_effect_for_unit(self):
-        if not self.__unit:
-            return
+
+    def set_unit(self, unit):
+        # type: (AbstractUnit) -> None
+        self.__unit = unit.clone()
 
         for tid in self.active_talent_ids:
             config_talent = ConfigTalentSkill.get(tid)
@@ -301,10 +302,8 @@ class AbstractStaff(object):
             elif config_talent.target in [9, 13] and self.__unit.config.race == 2:
                 self._add_talent_effect_to_unit(config_talent)
 
-    def set_unit(self, unit):
-        # type: (AbstractUnit) -> None
-        self.__unit = unit.clone()
-        self._calculate_talent_effect_for_unit()
+        self.__unit.calculate()
+
 
     def add_equipment_property(self):
         # 加上装备属性
@@ -422,7 +421,9 @@ class AbstractStaff(object):
         self.__unit.final_hurt_addition += config.unit_final_hurt_addition
         self.__unit.final_hurt_reduce += config.unit_final_hurt_reduce
 
-        self.__unit.calculate()
+        # 不能在这里 calculate
+        # 如果是多个效果要加到unit上，这儿就会重复增加属性
+        # self.__unit.calculate()
 
     @property
     def power(self):
