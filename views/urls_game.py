@@ -17,19 +17,15 @@ import views.club
 import views.staff
 import views.challenge
 import views.building
-import views.league
 import views.friend
 import views.mail
 import views.task
 import views.chat
 import views.notification
-import views.ladder
-import views.cup
 import views.sponsor
 import views.activity
 import views.active_value
 import views.shop
-import views.training_match
 import views.auction
 import views.bag
 import views.unit
@@ -71,13 +67,6 @@ urlpatterns = [
     url(r'^building/levelup/$', views.building.levelup),
     url(r'^building/speedup/$', views.building.speedup),
 
-    url(r'^league/challenge/$', views.league.challenge),
-    url(r'^league/report/$', views.league.report),
-    url(r'^league/refresh/$', views.league.refresh),
-    url(r'^league/reward/$', views.league.get_reward),
-    url(r'^league/detail/$', views.league.get_detail),
-
-
     url(r'^friend/info/$', views.friend.get_info),
     url(r'^friend/add/$', views.friend.add),
     url(r'^friend/remove/$', views.friend.remove),
@@ -100,17 +89,6 @@ urlpatterns = [
     url(r'^notification/open/$', views.notification.open),
     url(r'^notification/delete/$', views.notification.delete),
 
-    # url(r'^ladder/refresh/$', views.ladder.refresh),
-    url(r'^ladder/match/$', views.ladder.match),
-    url(r'^ladder/leaderboard/$', views.ladder.get_leader_board),
-    url(r'^ladder/store/buy/$', views.ladder.store_buy),
-    url(r'^ladder/store/refresh/$', views.ladder.store_refresh),
-    url(r'^ladder/store/report/$', views.ladder.match_report),
-    url(r'^ladder/buy/$', views.ladder.buy_times),
-
-    url(r'^cup/join/$', views.cup.join),
-    url(r'^cup/infomation/$', views.cup.information),
-
     url(r'^sponsor/$', views.sponsor.sponsor),
     url(r'^sponsor/getincome/$', views.sponsor.get_income),
 
@@ -120,12 +98,6 @@ urlpatterns = [
     url(r'^activevalue/getreward/$', views.active_value.get_reward),
 
     url(r'^itemshop/buy/$', views.shop.item_shop_buy),
-
-    url(r'^trainingmatch/start/$', views.training_match.start),
-    url(r'^trainingmatch/report/$', views.training_match.match_report),
-    url(r'^trainingmatch/detail/$', views.training_match.match_detail),
-    url(r'^trainingmatch/store/buy/$', views.training_match.store_buy),
-    url(r'^trainingmatch/store/refresh/$', views.training_match.store_refresh),
 
     url(r'^auction/search/$', views.auction.search),
     url(r'^auction/sell/$', views.auction.sell),

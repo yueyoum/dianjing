@@ -27,6 +27,7 @@ MONEY = {
 _MONEY_REVERSE = {v: k for k, v in MONEY.iteritems()}
 
 TALENT_ITEM_ID = 30006
+CLUB_EXP_ITEM_ID = 30011
 
 
 def item_id_to_money_text(_id):
@@ -65,13 +66,15 @@ def filter_bag_item(items):
 
 
 class ResourceClassification(object):
-    __slots__ = ['money', 'bag', 'staff', 'talent_point']
+    __slots__ = ['money', 'bag', 'staff', 'talent_point', 'club_exp']
 
     def __init__(self):
         self.money = []
         self.bag = []
         self.staff = []
         self.talent_point = 0
+        # club_exp 并不会 check_exist 和 remove
+        self.club_exp = 0
 
     @classmethod
     def classify(cls, items):
@@ -81,10 +84,15 @@ class ResourceClassification(object):
         bag = {}
         staff = {}
         talent_point = 0
+        club_exp = 0
 
         for _id, _amount in items:
             if _id == TALENT_ITEM_ID:
                 talent_point += _amount
+                continue
+
+            if _id == CLUB_EXP_ITEM_ID:
+                club_exp += _amount
                 continue
 
             tp = ConfigItemNew.get(_id).tp
@@ -109,6 +117,7 @@ class ResourceClassification(object):
         obj.bag = bag.items()
         obj.staff = staff.items()
         obj.talent_point = talent_point
+        obj.club_exp = club_exp
 
         return obj
 
@@ -116,7 +125,7 @@ class ResourceClassification(object):
         # type: () -> dict[str, int]
         res = {}
         for _id, _amount in self.money:
-            res[MONEY[_id]] = _amount
+            res[item_id_to_money_text(_id)] = _amount
 
         return res
 
@@ -159,8 +168,10 @@ class ResourceClassification(object):
         from core.staff import StaffManger
         from core.talent import TalentManager
 
-        money_text = self.money_as_text_dict()
-        Club(server_id, char_id).update(**money_text)
+        club_property = self.money_as_text_dict()
+        if self.club_exp:
+            club_property['exp'] = self.club_exp
+        Club(server_id, char_id).update(**club_property)
 
         bag = Bag(server_id, char_id)
         for _id, _amount in self.bag:
@@ -194,6 +205,11 @@ class ResourceClassification(object):
             msg_item = msg.items.add()
             msg_item.id = TALENT_ITEM_ID
             msg_item.amount = self.talent_point
+
+        if self.club_exp:
+            msg_item = msg.items.add()
+            msg_item.id = CLUB_EXP_ITEM_ID
+            msg_item.amount = self.club_exp
 
         return msg
 

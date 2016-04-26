@@ -68,7 +68,7 @@ def chapter_reward(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
-    chapter_id = request._proto.area_id
+    chapter_id = request._proto.id
     index = request._proto.index
 
     resource_classified = Challenge(server_id, char_id).get_chapter_reward(chapter_id, index)

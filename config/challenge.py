@@ -41,7 +41,12 @@ class ChallengeMatch(object):
         self.next = []
 
     def get_drop(self, drop_times):
-        drop = {}
+        from core.resource import CLUB_EXP_ITEM_ID
+
+        # 配置表里 club_exp 是分开的
+        # 这里把它统一到 drop 里
+        drop = {CLUB_EXP_ITEM_ID: self.club_exp}
+
         for _id, _amount, _p0, _p1 in self.drop:
             str_id = str(_id)
 

@@ -167,7 +167,7 @@ class Challenge(object):
 
         MongoChallenge.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$inc': {
+            {'$set': {
                 'challenge_drop.{0}'.format(challenge_id): drop_times
             }}
         )
@@ -176,10 +176,6 @@ class Challenge(object):
 
         resource_classified = ResourceClassification.classify(drops.items())
         resource_classified.add(self.server_id, self.char_id)
-
-        # club exp
-        club_exp = config.club_exp * sweep_times
-        Club(self.server_id, self.char_id).update(exp=club_exp)
 
         self.send_challenge_notify(ids=[challenge_id])
         return resource_classified_list
@@ -272,8 +268,6 @@ class Challenge(object):
             }}
         )
 
-        # club exp
-        Club(self.server_id, self.char_id).update(exp=config.club_exp)
         return resource_classified
 
     def get_chapter_reward(self, chapter_id, index):
