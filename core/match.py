@@ -70,6 +70,7 @@ class ClubMatch(object):
                 msg_troop.hero.managePercent = fs.manage_percent
                 msg_troop.hero.operation = fs.operation
                 msg_troop.hero.operationPercent = fs.operation_percent
+                msg_troop.hero.star = fs.star
 
                 msg_troop.army.id = fs.unit.id
                 msg_troop.army.hp = fs.unit.hp

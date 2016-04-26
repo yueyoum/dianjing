@@ -170,8 +170,6 @@ class AbstractStaff(object):
         'attack', 'defense', 'manage', 'operation',
         'attack_percent', 'defense_percent', 'manage_percent', 'operation_percent',
 
-        'quality',
-
         'formation_position',
         # 不同的staff可以带同一个兵种，
         # 兵种在外面显示的属性 只是兵种自己的，
@@ -206,7 +204,6 @@ class AbstractStaff(object):
         self.manage_percent = 0
         self.operation_percent = 0
 
-        self.quality = 0
         self.equip_mouse = ''
         self.equip_keyboard = ''
         self.equip_monitor = ''
@@ -232,7 +229,6 @@ class AbstractStaff(object):
 
     def after_init(self):
         self.config = ConfigStaffNew.get(self.oid)
-        self.quality = ConfigItemNew.get(self.oid).quality
 
     @property
     def unit(self):
@@ -433,7 +429,7 @@ class AbstractStaff(object):
         if self.step != 0:
             return False
 
-        if self.star != (self.quality - 1) * 10:
+        if (ConfigItemNew.get(self.oid).quality -1) * 10 != self.star:
             return False
 
         if self.level_exp > 0 or self.star_exp > 0:
