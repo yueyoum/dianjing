@@ -46,7 +46,7 @@ class DungeonManager(object):
             doc = MongoDungeon.document()
             doc['_id'] = self.char_id
             for k in ConfigDungeon.INSTANCES.keys():
-                doc['times'][str(k)] = DungeonFreeTimes
+                doc['times'] = {str(k): DungeonFreeTimes}
 
             doc['open'] = get_init_open_dungeon()
             MongoDungeon.db(self.server_id).insert_one(doc)
@@ -74,6 +74,7 @@ class DungeonManager(object):
             {'_id': self.char_id},
             {'times.{0}'.format(conf.id): 1}
         )
+
         if doc['times'][str(conf.id)] <= 0:
             raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_NO_TIMES"))
 
@@ -97,7 +98,7 @@ class DungeonManager(object):
         drop = []
         if star > 0:
             for _id, _amount, _range in conf.drop:
-                probability = random.random(1, 100)
+                probability = random.randint(1, 100)
                 if probability < _range:
                     drop.append([_id, _amount])
 
@@ -109,7 +110,7 @@ class DungeonManager(object):
             act = ACT_UPDATE
             projection = {'times.{0}'.format(tp): 1, 'open.{0}'.format(tp): 1}
         else:
-            projection = {}
+            projection = {'times': 1, 'open': 1}
 
         doc = MongoDungeon.db(self.server_id).find_one(
             {'_id': self.char_id},
@@ -120,9 +121,10 @@ class DungeonManager(object):
         notify.act = act
         for k, v in doc['times'].iteritems():
             info = notify.info.add()
-            info.tp = k
+            info.tp = int(k)
             info.times = v
-            for _id in doc['open'][k]:
-                info.id.add(_id)
-        print notify    
+
+            for _id in doc['open'].get(k, []):
+                info.id.append(_id)
+
         MessagePipe(notify)
