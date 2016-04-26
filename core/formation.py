@@ -42,6 +42,13 @@ class Formation(object):
             self.doc['position'] = [0] * 30
             MongoFormation.db(self.server_id).insert_one(self.doc)
 
+    def is_staff_in_formation(self, staff_id):
+        for _, v in self.doc['slots'].iteritems():
+            if v['staff_id'] and v['staff_id'] == staff_id:
+                return True
+
+        return False
+
     def in_formation_staffs(self):
         # type: () -> dict[str, dict[str, int]]
         staffs = {}

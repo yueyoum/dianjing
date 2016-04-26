@@ -718,6 +718,10 @@ class StaffManger(object):
 
         :rtype: ResourceClassification
         """
+        from core.formation import Formation
+        if Formation(self.server_id, self.char_id).is_staff_in_formation(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_CANNOT_DESTROY_IN_FORMATION"))
+
         self.remove(staff_id)
         doc = MongoStaff.db(self.server_id).find_one(
             {'_id': self.char_id},
