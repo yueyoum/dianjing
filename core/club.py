@@ -50,6 +50,7 @@ class Club(AbstractClub):
         self.vip = club['vip']  # vip等级
         self.gold = club['gold']  # 游戏币
         self.diamond = club['diamond']  # 钻石
+        self.renown = club.get('renown', 0)
 
         self.crystal = club.get('crystal', 0)
         self.gas = club.get('gas', 0)
@@ -114,6 +115,7 @@ class Club(AbstractClub):
         diamond = kwargs.get('diamond', 0)
         crystal = kwargs.get('crystal', 0)
         gas = kwargs.get('gas', 0)
+        renown = kwargs.get('renown', 0)
         message = kwargs.get('message', "")
 
         self.gold += gold
@@ -121,6 +123,7 @@ class Club(AbstractClub):
         self.exp += exp
         self.crystal += crystal
         self.gas += gas
+        self.renown += renown
 
         if self.gold < 0:
             raise GameException(ConfigErrorMessage.get_error_id("GOLD_NOT_ENOUGH"))
@@ -155,6 +158,7 @@ class Club(AbstractClub):
                 'club.diamond': self.diamond,
                 'club.crystal': self.crystal,
                 'club.gas': self.gas,
+                'club.renown': self.renown
             }}
         )
 

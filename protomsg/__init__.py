@@ -172,6 +172,11 @@ MESSAGE_TO_ID = {
     "TalentLevelUpResponse": 3302,
     "TalentResetTalentRequest": 3303,
     "TalentResetTalentResponse": 3304,
+    "DungeonNotify": 3400,
+    "DungeonMathRequest": 3401,
+    "DungeonMathResponse": 3402,
+    "DungeonMathReport": 3403,
+    "DungeonMathReportResponse": 3404,
 }
 
 ID_TO_MESSAGE = {
@@ -347,6 +352,11 @@ ID_TO_MESSAGE = {
     3302: "TalentLevelUpResponse",
     3303: "TalentResetTalentRequest",
     3304: "TalentResetTalentResponse",
+    3400: "DungeonNotify",
+    3401: "DungeonMathRequest",
+    3402: "DungeonMathResponse",
+    3403: "DungeonMathReport",
+    3404: "DungeonMathReportResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -417,6 +427,8 @@ PATH_TO_REQUEST = {
     "/game/formation/moveslot/": ["formation", "FormationMoveSlotRequest"],
     "/game/talent/levelup/": ["talent", "TalentLevelUpRequest"],
     "/game/talent/reset/": ["talent", "TalentResetTalentRequest"],
+    "/game/dungeon/start/": ["dungeon", "DungeonMathRequest"],
+    "/game/dungeon/report/": ["dungeon", "DungeonMathReport"],
 }
 
 PATH_TO_RESPONSE = {
@@ -487,4 +499,6 @@ PATH_TO_RESPONSE = {
     "/game/formation/moveslot/": ["formation", "FormationMoveSlotResponse"],
     "/game/talent/levelup/": ["talent", "TalentLevelUpResponse"],
     "/game/talent/reset/": ["talent", "TalentResetTalentResponse"],
+    "/game/dungeon/start/": ["dungeon", "DungeonMathResponse"],
+    "/game/dungeon/report/": ["dungeon", "DungeonMathReportResponse"],
 }
