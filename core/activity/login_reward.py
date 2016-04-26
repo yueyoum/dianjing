@@ -13,7 +13,6 @@ from django.conf import settings
 from dianjing.exception import GameException
 from core.mongo import MongoActivity
 from core.character import Character
-from core.resource import Resource
 
 from utils.message import MessagePipe
 from config import ConfigLoginReward, ConfigErrorMessage

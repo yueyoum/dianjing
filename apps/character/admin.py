@@ -10,7 +10,6 @@ from apps.character.models import Character
 
 from core.mongo import MongoCharacter
 from core.character import Character as Char
-from core.resource import Resource
 from core.signals import purchase_done_signal
 
 

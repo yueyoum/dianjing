@@ -10,7 +10,6 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoSponsor, MongoCharacter
 from core.friend import FriendManager
-from core.resource import Resource
 from core.building import BuildingSponsorCenter
 
 from utils.message import MessagePipe

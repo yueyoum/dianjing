@@ -5,7 +5,6 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoTask, MongoRecord
 from core.character import Character
-from core.resource import Resource
 from core.signals import random_event_done_signal, daily_task_finish_signal
 
 from config import ConfigErrorMessage, ConfigTask, ConfigRandomEvent, ConfigTaskTargetType
