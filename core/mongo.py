@@ -737,3 +737,16 @@ class MongoRecordLog(BaseDocument):
 
     COLLECTION = 'record_log'
     INDEXES = ['timestamp',]
+
+
+class MongoDungeon(BaseDocument):
+    DOCUMENT = {
+        '_id': 0,
+        # tp: times
+        'times': {},
+        # tp: open_dungeon
+        'open': {},
+    }
+
+    COLLECTION = 'dungeon'
+

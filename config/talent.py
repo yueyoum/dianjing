@@ -26,7 +26,7 @@ class Talent(object):
 class ConfigTalent(ConfigBase):
     EntityClass = Talent
     INSTANCES = {}
-    """:type: dict[int, UnitNew]"""
+    """:type: dict[int, Talent]"""
     FILTER_CACHE = {}
 
     @classmethod
