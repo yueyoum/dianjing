@@ -11,9 +11,11 @@ from dianjing.exception import GameException
 
 from config import ConfigDungeon, ConfigDungeonGrade, ConfigErrorMessage
 
+from core.abstract import AbstractClub, AbstractStaff
 from core.mongo import MongoDungeon
 from core.match import ClubMatch
 from core.club import Club
+from core.unit import NPCUnit
 
 from protomsg.dungeon_pb2 import DungeonNotify
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
@@ -35,6 +37,41 @@ def get_init_open_dungeon():
             init_open[str(v.belong)].append(k)
 
     return init_open
+
+
+class DungeonNPCStaff(AbstractStaff):
+    __slots__ = []
+
+    def __init__(self, _id):
+        super(DungeonNPCStaff, self).__init__()
+
+        self.id = str(_id)
+        self.oid = _id
+        self.after_init()
+
+
+class DungeonNPCClub(AbstractClub):
+    __slots__ = ['config']
+
+    def __init__(self, dungeon_id):
+        super(DungeonNPCClub, self).__init__()
+
+        self.config = ConfigDungeonGrade.get(dungeon_id)
+        self.id = dungeon_id
+
+        self.name = self.config.name
+        # TODO
+        self.flag = 1
+
+    def load_staffs(self, **kwargs):
+        for position, _id, unit_id in self.config.npc_path:
+            s = DungeonNPCStaff(_id)
+            s.formation_position = position
+            u = NPCUnit(unit_id, 0, 1)
+
+            s.set_unit(u)
+            s.calculate()
+            self.formation_staffs.append(s)
 
 
 class DungeonManager(object):
@@ -63,12 +100,15 @@ class DungeonManager(object):
 
     def start(self, dungeon_id):
         grade_conf = ConfigDungeonGrade.get(dungeon_id)
-        if grade_conf.need_level:
+        club_one = Club(self.server_id, self.char_id)
+
+        if grade_conf.need_level > club_one.level:
             raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_CLUB_LEVEL_NOT_ENOUGH"))
 
         conf = ConfigDungeon.get(grade_conf.belong)
-        if conf.cost:
-            raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_ENERGY_NOT_ENOUGH"))
+        # TODO: energy check
+        # if conf.cost:
+        #     raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_ENERGY_NOT_ENOUGH"))
 
         doc = MongoDungeon.db(self.server_id).find_one(
             {'_id': self.char_id},
@@ -78,8 +118,7 @@ class DungeonManager(object):
         if doc['times'][str(conf.id)] <= 0:
             raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_NO_TIMES"))
 
-        club_one = Club(self.server_id, self.char_id)
-        club_two = club_one
+        club_two = DungeonNPCClub(dungeon_id)
         msg = ClubMatch(club_one, club_two).start()
         msg.key = str(dungeon_id)
 

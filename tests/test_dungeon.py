@@ -43,7 +43,7 @@ class TestDungeonManager(object):
         else:
             Exception('error')
 
-    def test_start_times_limit(self):
+    def test_start_energy_limit(self):
         try:
             DungeonManager(self.server_id, self.char_id).start(1)
         except GameException as e:
@@ -51,16 +51,19 @@ class TestDungeonManager(object):
         else:
             Exception('error')
 
-    def test_start_energy_limit(self):
+    def test_start_times_limit(self):
+        DungeonManager(self.server_id, self.char_id).report(1, 2)
         try:
             DungeonManager(self.server_id, self.char_id).start(1)
         except GameException as e:
+            print e.error_id
             assert e.error_id == ConfigErrorMessage.get_error_id("DUNGEON_NO_TIMES")
         else:
             Exception('error')
 
     def test_start(self):
-        pass
+        msg = DungeonManager(self.server_id, self.char_id).start(1)
+        assert msg.key == str(1)
 
     def test_report(self):
         drop = DungeonManager(self.server_id, self.char_id).report(1, 0)

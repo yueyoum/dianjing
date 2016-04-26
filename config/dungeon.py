@@ -33,13 +33,15 @@ class ConfigDungeon(ConfigBase):
 
 
 class DungeonGrade(object):
-    __slots__ = ['id', 'belong', 'need_level', 'drop']
+    __slots__ = ['id', 'name', 'belong', 'need_level', 'drop', 'npc_path']
 
     def __init__(self):
         self.id = 0
+        self.name = ""
         self.belong = 0
         self.need_level = 0
         self.drop = []
+        self.npc_path = []
 
 
 class ConfigDungeonGrade(ConfigBase):
