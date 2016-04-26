@@ -314,10 +314,12 @@ class Staff(AbstractStaff):
 
     def level_up(self, using_items):
         # using_items: [(id, amount)...]
-        # TODO 发来的物品能提供的经验可能超过了等级上限
-        # 这时候只扣除升级到上限所需的物品
         if self.level >= STAFF_MAX_LEVEL:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_ALREADY_MAX_LEVEL"))
+
+        for _id, _amount in using_items:
+            if _amount < 1:
+                raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         bag = Bag(self.server_id, self.char_id)
         bag.check_items(using_items)
@@ -336,9 +338,7 @@ class Staff(AbstractStaff):
         exp = self.level_exp + increase_level_exp
         while True:
             if self.level == STAFF_MAX_LEVEL:
-                if exp >= ConfigStaffLevelNew.get(self.level).exp:
-                    exp = ConfigStaffLevelNew.get(self.level).exp - 1
-
+                exp = 0
                 break
 
             if exp < ConfigStaffLevelNew.get(self.level).exp:

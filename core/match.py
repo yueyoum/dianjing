@@ -44,6 +44,9 @@ class ClubMatch(object):
         if not self.club_two.formation_staffs:
             self.club_two.load_staffs()
 
+        self.club_one.before_match()
+        self.club_two.before_match()
+
         msg = MessageClubMatch()
         msg.seed = self.seed
         msg.key = "this is key"

@@ -276,17 +276,6 @@ class AbstractStaff(object):
             if config_talent.target <= 5:
                 # 对选手的
                 self._add_talent_effect_to_staff(config_talent)
-            else:
-                # 对兵的
-                if self.__unit:
-                    if config_talent.target in [6, 10]:
-                        self._add_talent_effect_to_unit(config_talent)
-                    elif config_talent.target in [7, 11] and self.__unit.config.race == 1:
-                        self._add_talent_effect_to_unit(config_talent)
-                    elif config_talent.target in [8, 12] and self.__unit.config.race == 3:
-                        self._add_talent_effect_to_unit(config_talent)
-                    elif config_talent.target in [9, 13] and self.__unit.config.race == 2:
-                        self._add_talent_effect_to_unit(config_talent)
 
         # 最终属性
         self.attack = int(self.attack * (1 + self.attack_percent))
@@ -294,9 +283,28 @@ class AbstractStaff(object):
         self.manage = int(self.manage * (1 + self.manage_percent))
         self.operation = int(self.operation * (1 + self.operation_percent))
 
+    def _calculate_talent_effect_for_unit(self):
+        if not self.__unit:
+            return
+
+        for tid in self.active_talent_ids:
+            config_talent = ConfigTalentSkill.get(tid)
+            if config_talent.target <= 5:
+                continue
+
+            if config_talent.target in [6, 10]:
+                self._add_talent_effect_to_unit(config_talent)
+            elif config_talent.target in [7, 11] and self.__unit.config.race == 1:
+                self._add_talent_effect_to_unit(config_talent)
+            elif config_talent.target in [8, 12] and self.__unit.config.race == 3:
+                self._add_talent_effect_to_unit(config_talent)
+            elif config_talent.target in [9, 13] and self.__unit.config.race == 2:
+                self._add_talent_effect_to_unit(config_talent)
+
     def set_unit(self, unit):
         # type: (AbstractUnit) -> None
         self.__unit = unit.clone()
+        self._calculate_talent_effect_for_unit()
 
     def add_equipment_property(self):
         # 加上装备属性
@@ -489,6 +497,19 @@ class AbstractClub(object):
 
     def load_staffs(self, **kwargs):
         raise NotImplementedError()
+
+    def before_match(self):
+        # 战斗开始前的设置， 比如加载unit
+        # 对于选手的club，load_staffs 和 before_match 需要分开来
+        # load_staffs 是对应一般情况的， 不需要装载unit的情况
+        # 比如在面板上看属性
+        # 但是选手会一直更换/升级兵种，如果兵种也在 load_staffs 里设置，
+        # 工作量比较大
+        # 其实战斗中需要的兵种属性，只要在进入战斗前计算就可以
+        # 所以选手分两部走
+        # NPC 直接load_staffs 全部设置完就行
+        # 所以 在基类里 before_match 是 pass 的
+        pass
 
     def get_formation_terran_staffs(self):
         return [s for s in self.formation_staffs if s.config.race == 1]

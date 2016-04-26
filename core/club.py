@@ -58,11 +58,9 @@ class Club(AbstractClub):
     def load_staffs(self, ids=None):
         from core.staff import StaffManger, Staff
         from core.formation import Formation
-        from core.unit import UnitManager
 
         sm = StaffManger(self.server_id, self.char_id)
         fm = Formation(self.server_id, self.char_id)
-        um = UnitManager(self.server_id, self.char_id)
 
         staffs = sm.get_staffs_data(ids=ids)
         in_formation_staffs = fm.in_formation_staffs()
@@ -76,11 +74,11 @@ class Club(AbstractClub):
             if k in in_formation_staffs:
                 self.formation_staffs.append(v)
 
-                v.formation_position = in_formation_staffs[k]['position']
-
-                unit_id = in_formation_staffs[k]['unit_id']
-                if unit_id:
-                    v.set_unit(um.get_unit_object(unit_id))
+                # 这里不用设置兵种， 进入战斗前，再设置，并计算兵种属性
+                # v.formation_position = in_formation_staffs[k]['position']
+                # unit_id = in_formation_staffs[k]['unit_id']
+                # if unit_id:
+                #     v.set_unit(um.get_unit_object(unit_id))
 
         for k in in_formation_staffs:
             staff_objs[k].talent_effect(self)
@@ -88,6 +86,21 @@ class Club(AbstractClub):
         for _, v in staff_objs.iteritems():
             v.calculate()
             v.make_cache()
+
+    def before_match(self):
+        from core.formation import Formation
+        from core.unit import UnitManager
+
+        fm = Formation(self.server_id, self.char_id)
+        in_formation_staffs = fm.in_formation_staffs()
+
+        um = UnitManager(self.server_id, self.char_id)
+
+        for s in self.formation_staffs:
+            s.formation_position = in_formation_staffs[s.id]['position']
+            unit_id = in_formation_staffs[s.id]['unit_id']
+            if unit_id:
+                s.set_unit(um.get_unit_object(unit_id))
 
     def check_money(self, diamond=0, gold=0, crystal=0, gas=0):
         # TODO 其他货币

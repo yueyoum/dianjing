@@ -133,11 +133,14 @@ class Formation(object):
 
         self.send_notify(slot_ids=[slot_id])
 
-        u = UnitManager(self.server_id, self.char_id).get_unit_object(unit_id)
-        s = StaffManger(self.server_id, self.char_id).get_staff_object(staff_id)
-        s.set_unit(u)
-        s.calculate()
-        s.make_cache()
+        # 不用这么处理了
+        # 现在是在战斗前才 给staff set_unit
+        # 那时候肯定会获取到新的unit数据的
+        # u = UnitManager(self.server_id, self.char_id).get_unit_object(unit_id)
+        # s = StaffManger(self.server_id, self.char_id).get_staff_object(staff_id)
+        # s.set_unit(u)
+        # s.calculate()
+        # s.make_cache()
 
     def move_slot(self, slot_id, to_index):
         if str(slot_id) not in self.doc['slots']:
