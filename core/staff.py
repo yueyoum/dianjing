@@ -553,7 +553,7 @@ class StaffManger(object):
         :rtype: dict[str, dict]
         """
         if ids:
-            projection = {'staffs.{0}'.format(i) for i in ids}
+            projection = {'staffs.{0}'.format(i): 1 for i in ids}
         else:
             projection = {'staffs': 1}
 
@@ -722,15 +722,14 @@ class StaffManger(object):
         if Formation(self.server_id, self.char_id).is_staff_in_formation(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_CANNOT_DESTROY_IN_FORMATION"))
 
-        self.remove(staff_id)
         doc = MongoStaff.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'staffs.{0}.oid'.format(staff_id): 1}
         )
-
         oid = doc['staffs'][staff_id]['oid']
         crystal = ConfigStaffNew.get(oid).crystal
 
+        self.remove(staff_id)
         drop = [(money_text_to_item_id('crystal'), crystal)]
 
         resource_classified = ResourceClassification.classify(drop)
