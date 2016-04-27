@@ -96,7 +96,6 @@ class CategoryTimesLog(TimesLog):
         return counts
 
 
-
 # 抽卡次数
 class TimesLogStaffRecruitTimes(CategoryTimesLog):
     KEY = 'staff_recruit_times'
@@ -116,4 +115,9 @@ class TimesLogStaffRecruitGoldFreeTimes(TimesLog):
 # 挑战赛关卡次数
 class TimesLogChallengeMatchTimes(CategoryTimesLog):
     KEY = 'challenge_match'
+    __slots__ = []
+
+
+class TimesLogDungeonMatchTimes(TimesLog):
+    KEY = 'dungeon_match'
     __slots__ = []

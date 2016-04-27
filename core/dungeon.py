@@ -19,6 +19,7 @@ from core.mongo import MongoDungeon
 from core.match import ClubMatch
 from core.club import Club
 from core.unit import NPCUnit
+from core.times_log import TimesLog
 
 from protomsg.dungeon_pb2 import DungeonNotify
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
@@ -26,7 +27,7 @@ from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 from utils.message import MessagePipe
 
 
-DungeonFreeTimes = 1
+DUNGEON_FREE_TIMES = 1
 
 
 def get_init_open_dungeon():
@@ -78,6 +79,8 @@ class DungeonNPCClub(AbstractClub):
 
 
 class DungeonManager(object):
+    # TODO: vip times add
+    # TODO: vip TimesLog
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
@@ -86,20 +89,13 @@ class DungeonManager(object):
             doc = MongoDungeon.document()
             doc['_id'] = self.char_id
             for k in ConfigDungeon.INSTANCES.keys():
-                doc['times'] = {str(k): DungeonFreeTimes}
+                doc['times'] = {str(k): DUNGEON_FREE_TIMES}
 
             doc['open'] = get_init_open_dungeon()
             MongoDungeon.db(self.server_id).insert_one(doc)
 
-    def refresh(self):
-        updater = {}
-        for k in ConfigDungeon.INSTANCES.keys():
-            updater['times'] = {str(k): DungeonFreeTimes}
-
-        MongoDungeon.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': updater},
-        )
+    def get_dungeon_today_times(self, tp):
+        return TimesLog(self.server_id, self.char_id).count_of_today(tp)
 
     def start(self, dungeon_id):
         grade_conf = ConfigDungeonGrade.get(dungeon_id)
@@ -118,7 +114,7 @@ class DungeonManager(object):
             {'times.{0}'.format(conf.id): 1}
         )
 
-        if doc['times'][str(conf.id)] <= 0:
+        if doc['times'][str(conf.id)] - self.get_dungeon_today_times(conf.id) <= 0:
             raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_NO_TIMES"))
 
         club_two = DungeonNPCClub(dungeon_id)
@@ -131,28 +127,26 @@ class DungeonManager(object):
         grade_id = int(key)
         conf = ConfigDungeonGrade.get(grade_id)
 
+        TimesLog(self.server_id, self.char_id).record(sub_id=conf.belong, value=1)
         # TODO: remove energy
-        MongoDungeon.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$inc': {'times.{0}'.format(conf.belong): -1}}
-        )
 
         drop = []
         if star > 0:
             for _id, _amount, _range in conf.drop:
-                probability = random.randint(1, 100)
+                probability = random.randint(1, 101)
                 if probability < _range:
                     drop.append([_id, _amount])
 
         self.send_notify(conf.belong)
         return drop
 
-    def send_notify(self, act=ACT_INIT, tp=None):
+    def send_notify(self, tp=None):
         if tp:
             act = ACT_UPDATE
             projection = {'times.{0}'.format(tp): 1, 'open.{0}'.format(tp): 1}
         else:
             projection = {'times': 1, 'open': 1}
+            act = ACT_INIT
 
         doc = MongoDungeon.db(self.server_id).find_one(
             {'_id': self.char_id},
@@ -169,9 +163,10 @@ class DungeonManager(object):
 
             info = notify.info.add()
             info.tp = int(k)
-            info.times = v
+
+            info.times = v - self.get_dungeon_today_times(int(k))
 
             for _id in doc['open'].get(k, []):
                 info.id.append(_id)
 
-        MessagePipe(notify)
+        MessagePipe(self.char_id).put(msg=notify)
