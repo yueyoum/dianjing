@@ -560,6 +560,8 @@ class Staff(AbstractStaff):
         for i in range(self.level - 1, 0, -1):
             exp += ConfigStaffLevelNew.get(i).exp
 
+        exp *= prob
+
         # 经验道具
         for i in [5, 4, 3, 2, 1]:
             if not exp:
