@@ -414,12 +414,10 @@ class Bag(object):
 
         config = ConfigEquipmentNew.get(item_id)
         max_level = min(config.max_level, get_club_property(self.server_id, self.char_id, 'level') * 2)
-        if level >= max_level:
-            raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_REACH_MAX_LEVEL"))
 
         def do_level_up(_level):
             if _level >= max_level:
-                raise EquipmentMaxLevel(0)
+                raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_REACH_MAX_LEVEL"))
 
             item_needs = config.levels[_level].update_item_need
 
@@ -429,14 +427,18 @@ class Bag(object):
 
             return _level + 1
 
+        error_code = 0
         old_level = level
         for i in range(times):
             try:
                 level = do_level_up(level)
-            except GameException:
+            except GameException as e:
+                error_code = e.error_id
                 break
 
+        levelup = False
         if level > old_level:
+            levelup = True
             self.doc['slots'][slot_id]['level'] = level
 
             MongoBag.db(self.server_id).update_one(
@@ -447,7 +449,7 @@ class Bag(object):
             )
 
         self.send_notify(slot_ids=[slot_id])
-        return make_equipment_msg(item_id, level)
+        return error_code, levelup, make_equipment_msg(item_id, level)
 
     def send_remove_notify(self, slots_ids):
         notify = BagSlotsRemoveNotify()

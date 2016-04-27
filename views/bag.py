@@ -111,9 +111,10 @@ def equipment_level_up_confirm(request):
         times = 5
 
     bag = Bag(server_id, char_id)
-    msg_equip = bag.equipment_level_up_confirm(slot_id, times)
+    error_code, levelup, msg_equip = bag.equipment_level_up_confirm(slot_id, times)
 
     response = BagEquipmentLevelupConfirmResponse()
-    response.ret = 0
+    response.ret = error_code
     response.equipment.MergeFrom(msg_equip)
+    response.levelup = levelup
     return ProtobufResponse(response)

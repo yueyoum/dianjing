@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='dungeon.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\rdungeon.proto\x12\x11\x44ianjing.protocol\x1a\x0bmatch.proto\x1a\rpackage.proto\x1a\x0c\x63ommon.proto\"4\n\x0b\x44ungeonInfo\x12\n\n\x02tp\x18\x01 \x02(\x05\x12\r\n\x05times\x18\x02 \x02(\x05\x12\n\n\x02id\x18\x03 \x03(\x05\"v\n\rDungeonNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12,\n\x04info\x18\x03 \x03(\x0b\x32\x1e.Dianjing.protocol.DungeonInfo\"1\n\x12\x44ungeonMathRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"`\n\x13\x44ungeonMathResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"?\n\x11\x44ungeonMathReport\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04star\x18\x02 \x02(\x05\x12\x0b\n\x03key\x18\x03 \x02(\t\"`\n\x19\x44ungeonMathReportResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop')
+  serialized_pb=_b('\n\rdungeon.proto\x12\x11\x44ianjing.protocol\x1a\x0bmatch.proto\x1a\rpackage.proto\x1a\x0c\x63ommon.proto\"4\n\x0b\x44ungeonInfo\x12\n\n\x02tp\x18\x01 \x02(\x05\x12\r\n\x05times\x18\x02 \x02(\x05\x12\n\n\x02id\x18\x03 \x03(\x05\"v\n\rDungeonNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12,\n\x04info\x18\x03 \x03(\x0b\x32\x1e.Dianjing.protocol.DungeonInfo\"2\n\x13\x44ungeonMatchRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"a\n\x14\x44ungeonMatchResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"G\n\x19\x44ungeonMatchReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04star\x18\x02 \x02(\x05\x12\x0b\n\x03key\x18\x03 \x02(\t\"a\n\x1a\x44ungeonMatchReportResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop')
   ,
   dependencies=[match__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -120,22 +120,22 @@ _DUNGEONNOTIFY = _descriptor.Descriptor(
 )
 
 
-_DUNGEONMATHREQUEST = _descriptor.Descriptor(
-  name='DungeonMathRequest',
-  full_name='Dianjing.protocol.DungeonMathRequest',
+_DUNGEONMATCHREQUEST = _descriptor.Descriptor(
+  name='DungeonMatchRequest',
+  full_name='Dianjing.protocol.DungeonMatchRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.DungeonMathRequest.session', index=0,
+      name='session', full_name='Dianjing.protocol.DungeonMatchRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='id', full_name='Dianjing.protocol.DungeonMathRequest.id', index=1,
+      name='id', full_name='Dianjing.protocol.DungeonMatchRequest.id', index=1,
       number=2, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -154,33 +154,33 @@ _DUNGEONMATHREQUEST = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=252,
-  serialized_end=301,
+  serialized_end=302,
 )
 
 
-_DUNGEONMATHRESPONSE = _descriptor.Descriptor(
-  name='DungeonMathResponse',
-  full_name='Dianjing.protocol.DungeonMathResponse',
+_DUNGEONMATCHRESPONSE = _descriptor.Descriptor(
+  name='DungeonMatchResponse',
+  full_name='Dianjing.protocol.DungeonMatchResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.DungeonMathResponse.session', index=0,
+      name='session', full_name='Dianjing.protocol.DungeonMatchResponse.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='ret', full_name='Dianjing.protocol.DungeonMathResponse.ret', index=1,
+      name='ret', full_name='Dianjing.protocol.DungeonMatchResponse.ret', index=1,
       number=2, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='match', full_name='Dianjing.protocol.DungeonMathResponse.match', index=2,
+      name='match', full_name='Dianjing.protocol.DungeonMatchResponse.match', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -198,34 +198,34 @@ _DUNGEONMATHRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=303,
-  serialized_end=399,
+  serialized_start=304,
+  serialized_end=401,
 )
 
 
-_DUNGEONMATHREPORT = _descriptor.Descriptor(
-  name='DungeonMathReport',
-  full_name='Dianjing.protocol.DungeonMathReport',
+_DUNGEONMATCHREPORTREQUEST = _descriptor.Descriptor(
+  name='DungeonMatchReportRequest',
+  full_name='Dianjing.protocol.DungeonMatchReportRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.DungeonMathReport.session', index=0,
+      name='session', full_name='Dianjing.protocol.DungeonMatchReportRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='star', full_name='Dianjing.protocol.DungeonMathReport.star', index=1,
+      name='star', full_name='Dianjing.protocol.DungeonMatchReportRequest.star', index=1,
       number=2, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='key', full_name='Dianjing.protocol.DungeonMathReport.key', index=2,
+      name='key', full_name='Dianjing.protocol.DungeonMatchReportRequest.key', index=2,
       number=3, type=9, cpp_type=9, label=2,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -243,34 +243,34 @@ _DUNGEONMATHREPORT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=401,
-  serialized_end=464,
+  serialized_start=403,
+  serialized_end=474,
 )
 
 
-_DUNGEONMATHREPORTRESPONSE = _descriptor.Descriptor(
-  name='DungeonMathReportResponse',
-  full_name='Dianjing.protocol.DungeonMathReportResponse',
+_DUNGEONMATCHREPORTRESPONSE = _descriptor.Descriptor(
+  name='DungeonMatchReportResponse',
+  full_name='Dianjing.protocol.DungeonMatchReportResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.DungeonMathReportResponse.session', index=0,
+      name='session', full_name='Dianjing.protocol.DungeonMatchReportResponse.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='ret', full_name='Dianjing.protocol.DungeonMathReportResponse.ret', index=1,
+      name='ret', full_name='Dianjing.protocol.DungeonMatchReportResponse.ret', index=1,
       number=2, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='drop', full_name='Dianjing.protocol.DungeonMathReportResponse.drop', index=2,
+      name='drop', full_name='Dianjing.protocol.DungeonMatchReportResponse.drop', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -288,20 +288,20 @@ _DUNGEONMATHREPORTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=466,
-  serialized_end=562,
+  serialized_start=476,
+  serialized_end=573,
 )
 
 _DUNGEONNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _DUNGEONNOTIFY.fields_by_name['info'].message_type = _DUNGEONINFO
-_DUNGEONMATHRESPONSE.fields_by_name['match'].message_type = match__pb2._CLUBMATCH
-_DUNGEONMATHREPORTRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
+_DUNGEONMATCHRESPONSE.fields_by_name['match'].message_type = match__pb2._CLUBMATCH
+_DUNGEONMATCHREPORTRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 DESCRIPTOR.message_types_by_name['DungeonInfo'] = _DUNGEONINFO
 DESCRIPTOR.message_types_by_name['DungeonNotify'] = _DUNGEONNOTIFY
-DESCRIPTOR.message_types_by_name['DungeonMathRequest'] = _DUNGEONMATHREQUEST
-DESCRIPTOR.message_types_by_name['DungeonMathResponse'] = _DUNGEONMATHRESPONSE
-DESCRIPTOR.message_types_by_name['DungeonMathReport'] = _DUNGEONMATHREPORT
-DESCRIPTOR.message_types_by_name['DungeonMathReportResponse'] = _DUNGEONMATHREPORTRESPONSE
+DESCRIPTOR.message_types_by_name['DungeonMatchRequest'] = _DUNGEONMATCHREQUEST
+DESCRIPTOR.message_types_by_name['DungeonMatchResponse'] = _DUNGEONMATCHRESPONSE
+DESCRIPTOR.message_types_by_name['DungeonMatchReportRequest'] = _DUNGEONMATCHREPORTREQUEST
+DESCRIPTOR.message_types_by_name['DungeonMatchReportResponse'] = _DUNGEONMATCHREPORTRESPONSE
 
 DungeonInfo = _reflection.GeneratedProtocolMessageType('DungeonInfo', (_message.Message,), dict(
   DESCRIPTOR = _DUNGEONINFO,
@@ -317,33 +317,33 @@ DungeonNotify = _reflection.GeneratedProtocolMessageType('DungeonNotify', (_mess
   ))
 _sym_db.RegisterMessage(DungeonNotify)
 
-DungeonMathRequest = _reflection.GeneratedProtocolMessageType('DungeonMathRequest', (_message.Message,), dict(
-  DESCRIPTOR = _DUNGEONMATHREQUEST,
+DungeonMatchRequest = _reflection.GeneratedProtocolMessageType('DungeonMatchRequest', (_message.Message,), dict(
+  DESCRIPTOR = _DUNGEONMATCHREQUEST,
   __module__ = 'dungeon_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.DungeonMathRequest)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.DungeonMatchRequest)
   ))
-_sym_db.RegisterMessage(DungeonMathRequest)
+_sym_db.RegisterMessage(DungeonMatchRequest)
 
-DungeonMathResponse = _reflection.GeneratedProtocolMessageType('DungeonMathResponse', (_message.Message,), dict(
-  DESCRIPTOR = _DUNGEONMATHRESPONSE,
+DungeonMatchResponse = _reflection.GeneratedProtocolMessageType('DungeonMatchResponse', (_message.Message,), dict(
+  DESCRIPTOR = _DUNGEONMATCHRESPONSE,
   __module__ = 'dungeon_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.DungeonMathResponse)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.DungeonMatchResponse)
   ))
-_sym_db.RegisterMessage(DungeonMathResponse)
+_sym_db.RegisterMessage(DungeonMatchResponse)
 
-DungeonMathReport = _reflection.GeneratedProtocolMessageType('DungeonMathReport', (_message.Message,), dict(
-  DESCRIPTOR = _DUNGEONMATHREPORT,
+DungeonMatchReportRequest = _reflection.GeneratedProtocolMessageType('DungeonMatchReportRequest', (_message.Message,), dict(
+  DESCRIPTOR = _DUNGEONMATCHREPORTREQUEST,
   __module__ = 'dungeon_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.DungeonMathReport)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.DungeonMatchReportRequest)
   ))
-_sym_db.RegisterMessage(DungeonMathReport)
+_sym_db.RegisterMessage(DungeonMatchReportRequest)
 
-DungeonMathReportResponse = _reflection.GeneratedProtocolMessageType('DungeonMathReportResponse', (_message.Message,), dict(
-  DESCRIPTOR = _DUNGEONMATHREPORTRESPONSE,
+DungeonMatchReportResponse = _reflection.GeneratedProtocolMessageType('DungeonMatchReportResponse', (_message.Message,), dict(
+  DESCRIPTOR = _DUNGEONMATCHREPORTRESPONSE,
   __module__ = 'dungeon_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.DungeonMathReportResponse)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.DungeonMatchReportResponse)
   ))
-_sym_db.RegisterMessage(DungeonMathReportResponse)
+_sym_db.RegisterMessage(DungeonMatchReportResponse)
 
 
 # @@protoc_insertion_point(module_scope)
