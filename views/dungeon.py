@@ -10,7 +10,7 @@ from core.dungeon import DungeonManager
 
 from utils.http import ProtobufResponse
 
-from protomsg.dungeon_pb2 import DungeonMathResponse, DungeonMathReportResponse
+from protomsg.dungeon_pb2 import DungeonMatchResponse, DungeonMathReportResponse
 
 
 def start(request):
@@ -20,7 +20,7 @@ def start(request):
     dungeon_id = request._proto.id
 
     match = DungeonManager(server_id, char_id).start(dungeon_id)
-    response = DungeonMathResponse()
+    response = DungeonMatchResponse()
     response.ret = 0
     response.match = match
 
