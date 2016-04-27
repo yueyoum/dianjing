@@ -6,6 +6,9 @@ Description:
 
 """
 import random
+import arrow
+
+from django.conf import settings
 
 from dianjing.exception import GameException
 
@@ -103,8 +106,7 @@ class DungeonManager(object):
         club_one = Club(self.server_id, self.char_id)
 
         if grade_conf.need_level > club_one.level:
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
-            # raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_CLUB_LEVEL_NOT_ENOUGH"))
+            raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_CLUB_LEVEL_NOT_ENOUGH"))
 
         conf = ConfigDungeon.get(grade_conf.belong)
         # TODO: energy check
@@ -117,8 +119,7 @@ class DungeonManager(object):
         )
 
         if doc['times'][str(conf.id)] <= 0:
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
-            # raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_NO_TIMES"))
+            raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_NO_TIMES"))
 
         club_two = DungeonNPCClub(dungeon_id)
         msg = ClubMatch(club_one, club_two).start()
@@ -157,12 +158,15 @@ class DungeonManager(object):
             {'_id': self.char_id},
             projection
         )
+        today = arrow.utcnow().to(settings.TIME_ZONE).weekday()
 
         notify = DungeonNotify()
         notify.act = act
         for k, v in doc['times'].iteritems():
-            # conf = ConfigDungeon.get(int(k))
-            # if conf.open_time
+            conf = ConfigDungeon.get(int(k))
+            if (today+1) not in conf.open_time:
+                continue
+
             info = notify.info.add()
             info.tp = int(k)
             info.times = v

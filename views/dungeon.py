@@ -10,7 +10,7 @@ from core.dungeon import DungeonManager
 
 from utils.http import ProtobufResponse
 
-from protomsg.dungeon_pb2 import DungeonMatchResponse, DungeonMathReportResponse
+from protomsg.dungeon_pb2 import DungeonMatchResponse, DungeonMatchReportResponse
 
 
 def start(request):
@@ -35,7 +35,7 @@ def report(request):
     star = request._proto.star
 
     drop = DungeonManager(server_id, char_id).report(key, star)
-    response = DungeonMathReportResponse()
+    response = DungeonMatchReportResponse()
     response.ret = 0
 
     for _id, _amount in drop:
