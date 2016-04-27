@@ -579,7 +579,7 @@ class Staff(AbstractStaff):
                     _add_to_items(i, amount)
 
         # 升星道具
-        for i in range(self.star - 1, -1, -1):
+        for i in range(self.star - 1, self.get_initial_star(), -1):
             config = ConfigStaffStar.get(i)
             amount = config.exp * prob / 100.0 / AVG_STAR_EXP * config.need_item_amount
             if amount:
