@@ -28,6 +28,8 @@ from protomsg.formation_pb2 import (
     FormationNotify,
 )
 
+MAX_SLOT_AMOUNT = 6
+
 class Formation(object):
     __slots__ = ['server_id', 'char_id', 'doc']
 
@@ -62,12 +64,18 @@ class Formation(object):
 
         return staffs
 
-    def random_set_staff(self, staff_unique_id):
-        # 随机的把一个 staff_id 放到阵型中
-        assert staff_unique_id not in self.in_formation_staffs()
+    def open_slot(self, staff_unique_id="", send_notify=True):
+        if staff_unique_id:
+            # TODO error code
+            StaffManger(self.server_id, self.char_id).check_staff(ids=[staff_unique_id])
+
+            if staff_unique_id in self.in_formation_staffs():
+                raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         slot_id = len(self.doc['slots']) + 1
-        assert slot_id <= 30
+        if slot_id > MAX_SLOT_AMOUNT:
+            # TODO error code
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         data = MongoFormation.document_slot()
         data['staff_id'] = staff_unique_id
@@ -85,6 +93,11 @@ class Formation(object):
                 'position.{0}'.format(pos): slot_id
             }}
         )
+
+        if send_notify:
+            self.send_notify(slot_ids=[slot_id])
+
+        return slot_id
 
     def set_staff(self, slot_id, staff_id):
         if str(slot_id) not in self.doc['slots']:
@@ -177,7 +190,7 @@ class Formation(object):
             act = ACT_UPDATE
         else:
             act = ACT_INIT
-            slot_ids = range(1, 31)
+            slot_ids = range(1, MAX_SLOT_AMOUNT+1)
 
         notify = FormationNotify()
         notify.act = act

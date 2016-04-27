@@ -44,8 +44,7 @@ class Character(object):
     def create(cls, server_id, char_id, char_name, club_name, club_flag):
         # 这里是club创建完毕后再调用的
         from core.staff import StaffManger
-        from core.formation import Formation
-        from core.club import Club
+        from core.formation import Formation, MAX_SLOT_AMOUNT
 
         doc = MongoCharacter.document()
         doc['_id'] = char_id
@@ -64,8 +63,12 @@ class Character(object):
         unique_ids = []
         for i in CHAR_INIT_STAFFS:
             uid = sm.add(i, send_notify=False)
-            f.random_set_staff(uid)
+            f.open_slot(staff_unique_id=uid, send_notify=False)
             unique_ids.append(uid)
+
+        more_open_slots_amount = MAX_SLOT_AMOUNT - len(CHAR_INIT_STAFFS)
+        for i in range(more_open_slots_amount):
+            f.open_slot(send_notify=False)
 
         doc['club']['match_staffs'] = unique_ids
         MongoCharacter.db(server_id).insert_one(doc)
