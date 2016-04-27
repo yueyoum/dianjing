@@ -31,6 +31,7 @@ import views.bag
 import views.unit
 import views.formation
 import views.talent
+import views.dungeon
 
 urlpatterns = [
     url(r'^sync/$', views.common.sync),
@@ -116,4 +117,7 @@ urlpatterns = [
 
     url(r'talent/levelup/$', views.talent.level_up),
     url(r'talent/reset/$', views.talent.reset),
+
+    url(r'dungeon/start/$', views.dungeon.start),
+    url(r'dungeon/report/$', views.dungeon.report),
 ]

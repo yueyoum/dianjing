@@ -28,6 +28,7 @@ from config.signin import ConfigSignIn
 from config.activity_login_reward import ConfigLoginReward
 from config.active_value import ConfigActiveFunction, ConfigActiveReward
 from config.talent import ConfigTalent
+from config.dungeon import ConfigDungeon, ConfigDungeonGrade
 
 _has_configed = False
 
@@ -129,6 +130,10 @@ def load_config():
 
         elif item == 'talent.json':
             ConfigTalent.initialize(data)
+        elif item == 'dungeon.json':
+            ConfigDungeon.initialize(data)
+        elif item == 'dungeon_grade.json':
+            ConfigDungeonGrade.initialize(data)
 
 
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))
