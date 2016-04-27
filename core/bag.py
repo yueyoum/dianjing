@@ -10,7 +10,7 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoBag
 from core.club import Club
-from core.resource import MONEY, ResourceClassification
+from core.resource import MONEY, ResourceClassification, money_text_to_item_id, item_id_to_money_text
 
 from utils.functional import make_string_id
 from utils.message import MessagePipe
@@ -328,11 +328,9 @@ class Bag(object):
 
         self.remove_by_slot_id(slot_id, config.amount)
 
-        if config.to_id in MONEY:
-            money = {MONEY[config.to_id]: 1}
-            Club(self.server_id, self.char_id).update(**money)
-        else:
-            self.add(config.to_id, amount=1)
+        resource_classified = ResourceClassification.classify([(config.to_id, 1)])
+        resource_classified.add(self.server_id, self.char_id)
+        return resource_classified
 
     def item_destroy(self, slot_id):
         # 碎片销毁
@@ -343,7 +341,17 @@ class Bag(object):
         assert tp == TYPE_FRAGMENT
         self.remove_by_slot_id(slot_id, amount)
 
-        # TODO reward
+        config = ConfigItemMerge.get(item_id)
+        drop = []
+        if config.renown:
+            drop.append((money_text_to_item_id('renown'), config.renown))
+        if config.crystal:
+            drop.append((money_text_to_item_id('crystal'), config.crystal))
+
+        resource_classified = ResourceClassification.classify(drop)
+        resource_classified.add(self.server_id, self.char_id)
+        return resource_classified
+
 
     def equipment_destroy(self, slot_id, use_sycee):
         # 装备销毁

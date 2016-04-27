@@ -12,7 +12,6 @@ from django.conf import settings
 
 from dianjing.exception import GameException
 from core.mongo import MongoSignIn
-from core.resource import Resource
 from core.mail import MailManager
 
 from utils.message import MessagePipe

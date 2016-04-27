@@ -11,7 +11,6 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoActiveValue
 from core.character import Character
-from core.resource import Resource
 
 from utils.message import MessagePipe
 

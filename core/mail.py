@@ -15,7 +15,6 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoMail, MongoCharacter
 from core.character import Character
-from core.resource import Resource
 
 from config import ConfigErrorMessage
 from config.settings import MAIL_KEEP_DAYS, MAIL_CLEAN_AT

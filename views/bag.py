@@ -43,10 +43,11 @@ def item_merge(request):
     slot_id = request._proto.slot_id
 
     bag = Bag(server_id, char_id)
-    bag.item_merge(slot_id)
+    resource_classified = bag.item_merge(slot_id)
 
     response = BagItemMergeResponse()
     response.ret = 0
+    response.drop.MergeFrom(resource_classified.make_protomsg())
     return ProtobufResponse(response)
 
 
@@ -57,10 +58,11 @@ def item_destroy(request):
     slot_id = request._proto.slot_id
 
     bag = Bag(server_id, char_id)
-    bag.item_destroy(slot_id)
+    resource_classified = bag.item_destroy(slot_id)
 
     response = BagItemDestroyResponse()
     response.ret = 0
+    response.drop.MergeFrom(resource_classified.make_protomsg())
     return ProtobufResponse(response)
 
 

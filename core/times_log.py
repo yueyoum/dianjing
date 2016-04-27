@@ -7,58 +7,51 @@ Description:
 
 """
 
-import uuid
 import arrow
 
-from django.conf import settings
+from core.mongo import MongoTimesLog
+from utils.functional import make_string_id, get_arrow_time_of_today
 
-from core.mongo import MongoRecordLog
 
 # TODO 定时清理
-class RecordLog(object):
+class TimesLog(object):
     KEY = None
-    __slots__ = ['server_id', 'char_id', 'key']
+    __slots__ = ['server_id', 'char_id']
 
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
-        self.key = "{0}:{1}".format(self.KEY, self.char_id)
 
-    def record(self, value=1):
-        doc = MongoRecordLog.document()
-        doc['_id'] = uuid.uuid4()
-        doc['key'] = self.key
+    def make_key(self, sub_id=None):
+        # sub_id 是给大类用的， 比如关卡ID
+        if not sub_id:
+            return "{0}:{1}".format(self.KEY, self.char_id)
+        return "{0}:{1}:{2}".format(self.KEY, self.char_id, sub_id)
+
+    def record(self, sub_id=None, value=1):
+        doc = MongoTimesLog.document()
+        doc['_id'] = make_string_id()
+        doc['key'] = self.make_key(sub_id=sub_id)
         doc['timestamp'] = arrow.utcnow().timestamp
         doc['value'] = value
 
-        MongoRecordLog.db(self.server_id).insert_one(doc)
+        MongoTimesLog.db(self.server_id).insert_one(doc)
 
-    def count_of_today(self):
-        # 今天一共多少次
-        now = arrow.utcnow().to(settings.TIME_ZONE)
-        start_day = arrow.Arrow(
-            year=now.year,
-            month=now.month,
-            day=now.day,
-            hour=0,
-            minute=0,
-            second=0,
-            microsecond=0,
-            tzinfo=now.tzinfo
-        )
+    def count_of_today(self, sub_id=None):
+        # 今天多少次
+        today = get_arrow_time_of_today()
+        tomorrow = today.replace(days=1)
+        return self.count(sub_id=sub_id, start_at=today.timestamp, end_at=tomorrow.timestamp)
 
-        end_day = start_day.replace(days=1)
-        return self.count(start_at=start_day.timestamp, end_at=end_day.timestamp)
-
-    def count(self, start_at=None, end_at=None):
+    def count(self, sub_id=None, start_at=None, end_at=None):
         # 一共多少次
-        condition = [{'key': self.key}]
+        condition = [{'key': self.make_key(sub_id=sub_id)}]
         if start_at:
             condition.append({'timestamp': {'$gte': start_at}})
         if end_at:
             condition.append({'timestamp': {'$lte': end_at}})
 
-        docs = MongoRecordLog.db(self.server_id).find({'$and': condition}, {'value': 1})
+        docs = MongoTimesLog.db(self.server_id).find({'$and': condition}, {'value': 1})
 
         value = 0
         for d in docs:
@@ -66,42 +59,61 @@ class RecordLog(object):
 
         return value
 
-    def days(self, start_at, end_at):
-        # 一共多少天
-        condition = [
-            {'key': self.key},
-            {'timestamp': {'$gte': start_at}},
-            {'timestamp': {'$lte': end_at}},
-        ]
 
-        docs = MongoRecordLog.db(self.server_id).find({'$and': condition})
+class CategoryTimesLog(TimesLog):
+    __slots__ = []
+    def batch_count_of_today(self):
+        """
 
-        dates = set()
+        :rtype: dict[str, int]
+        """
+        today = get_arrow_time_of_today()
+        tomorrow = today.replace(days=1)
+        return self.batch_count(start_at=today.timestamp, end_at=tomorrow.timestamp)
+
+    def batch_count(self, start_at=None, end_at=None):
+        """
+
+        :rtype: dict[str, int]
+        """
+        key_pattern = '^{0}:'.format(self.make_key())
+        condition = [{'key': {'$regex': key_pattern}}]
+
+        if start_at:
+            condition.append({'timestamp': {'$gte': start_at}})
+        if end_at:
+            condition.append({'timestamp': {'$lte': end_at}})
+
+        docs = MongoTimesLog.db(self.server_id).find({'$and': condition})
+        counts = {}
         for d in docs:
-            date = arrow.get(d['timestamp']).to(settings.TIME_ZONE).format("YYYY-MM-DD")
-            dates.add(date)
+            _, _id = d['key'].rsplit(':', 1)
+            if _id in counts:
+                counts[_id] += d['value']
+            else:
+                counts[_id] = d['value']
 
-        return len(dates)
+        return counts
+
+
 
 # 抽卡次数
-class RecordLogStaffRecruitTimes(RecordLog):
+class TimesLogStaffRecruitTimes(CategoryTimesLog):
     KEY = 'staff_recruit_times'
     __slots__ = []
 
-    def __init__(self, server_id, char_id, tp):
-        super(RecordLogStaffRecruitTimes, self).__init__(server_id, char_id)
-        self.key = "{0}:{1}".format(self.key, tp)
-
 # 抽卡获得积分
-class RecordLogStaffRecruitScore(RecordLog):
+class TimesLogStaffRecruitScore(CategoryTimesLog):
     KEY = 'staff_recruit_score'
     __slots__ = []
 
-    def __init__(self, server_id, char_id, tp):
-        super(RecordLogStaffRecruitScore, self).__init__(server_id, char_id)
-        self.key = "{0}:{1}".format(self.key, tp)
-
 # 抽卡金币免费次数
-class RecordLogStaffRecruitGoldFreeTimes(RecordLog):
+class TimesLogStaffRecruitGoldFreeTimes(TimesLog):
     KEY = 'staff_recruit_gold_free_times'
+    __slots__ = []
+
+
+# 挑战赛关卡次数
+class TimesLogChallengeMatchTimes(CategoryTimesLog):
+    KEY = 'challenge_match'
     __slots__ = []

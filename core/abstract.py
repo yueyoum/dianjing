@@ -99,46 +99,51 @@ class AbstractUnit(object):
         self.config = ConfigUnitNew.get(self.id)
 
     def calculate(self):
-        # 等级
-        if self.config.max_level:
-            config_level = self.config.levels[self.level]
-        else:
-            config_level = DummyConfig()
-
-        self.hp = self.config.hp_max_base + config_level.hp
-        self.attack = self.config.attack_base + config_level.attack
-        self.defense = self.config.defense_base + config_level.defense
-
         # 阶
         if self.config.max_step:
             config_step = self.config.steps[self.step]
         else:
             config_step = DummyConfig()
 
-        self.hp_percent += config_step.hp_percent
-        self.attack_percent += config_step.attack_percent
-        self.defense_percent += config_step.defense_percent
-        self.attack_speed += self.config.attack_speed_base
-        self.attack_range += self.config.attack_range_base
-        self.move_speed += self.config.move_speed_base
-        self.hit_rate += self.config.hit_rate + config_step.hit_rate
-        self.dodge_rate += self.config.dodge_rate + config_step.dodge_rate
-        self.crit_rate += self.config.crit_rate + config_step.crit_rate
-        self.crit_multiple += self.config.crit_multiple + config_step.crit_multiple
-        self.toughness_rate += self.config.toughness_rate + config_step.toughness_rate
-        self.hurt_addition_to_terran += self.config.hurt_addition_to_terran + config_step.hurt_addition_to_terran
-        self.hurt_addition_to_protoss += self.config.hurt_addition_to_protoss + config_step.hurt_addition_to_protoss
-        self.hurt_addition_to_zerg += self.config.hurt_addition_to_zerg + config_step.hurt_addition_to_zerg
-        self.hurt_addition_by_terran += self.config.hurt_addition_by_terran + config_step.hurt_addition_by_terran
-        self.hurt_addition_by_protoss += self.config.hurt_addition_by_protoss + config_step.hurt_addition_by_protoss
-        self.hurt_addition_by_zerg += self.config.hurt_addition_by_zerg + config_step.hurt_addition_by_zerg
-        self.final_hurt_addition += self.config.final_hurt_addition
-        self.final_hurt_reduce += self.config.final_hurt_reduce
+        self.hp_percent = config_step.hp_percent
+        self.attack_percent = config_step.attack_percent
+        self.defense_percent = config_step.defense_percent
+        self.attack_speed = self.config.attack_speed_base
+        self.attack_range = self.config.attack_range_base
+        self.move_speed = self.config.move_speed_base
+        self.hit_rate = self.config.hit_rate + config_step.hit_rate
+        self.dodge_rate = self.config.dodge_rate + config_step.dodge_rate
+        self.crit_rate = self.config.crit_rate + config_step.crit_rate
+        self.crit_multiple = self.config.crit_multiple + config_step.crit_multiple
+        self.toughness_rate = self.config.toughness_rate + config_step.toughness_rate
+        self.hurt_addition_to_terran = self.config.hurt_addition_to_terran + config_step.hurt_addition_to_terran
+        self.hurt_addition_to_protoss = self.config.hurt_addition_to_protoss + config_step.hurt_addition_to_protoss
+        self.hurt_addition_to_zerg = self.config.hurt_addition_to_zerg + config_step.hurt_addition_to_zerg
+        self.hurt_addition_by_terran = self.config.hurt_addition_by_terran + config_step.hurt_addition_by_terran
+        self.hurt_addition_by_protoss = self.config.hurt_addition_by_protoss + config_step.hurt_addition_by_protoss
+        self.hurt_addition_by_zerg = self.config.hurt_addition_by_zerg + config_step.hurt_addition_by_zerg
+        self.final_hurt_addition = self.config.final_hurt_addition
+        self.final_hurt_reduce = self.config.final_hurt_reduce
 
+        # 对于在外部展示unit属性的， 这里直接调用calculate就行了.
+        # 要进入战斗的unit，会有各种buff加成，
+        # 这时候就把各种加成先加上， 然后再调用一次 final_calculate
+        self.final_calculate()
+
+    def final_calculate(self):
         # 最终属性
-        self.hp = int(self.hp * (1 + self.hp_percent))
-        self.attack = int(self.attack * (1 + self.attack_percent))
-        self.defense = int(self.defense * (1 + self.defense_percent))
+        if self.config.max_level:
+            config_level = self.config.levels[self.level]
+        else:
+            config_level = DummyConfig()
+
+        hp = self.config.hp_max_base + config_level.hp
+        attack = self.config.attack_base + config_level.attack
+        defense = self.config.defense_base + config_level.defense
+
+        self.hp = int(hp * (1 + self.hp_percent))
+        self.attack = int(attack * (1 + self.attack_percent))
+        self.defense = int(defense * (1 + self.defense_percent))
 
     def clone(self):
         # type: () -> AbstractUnit
@@ -169,8 +174,6 @@ class AbstractStaff(object):
         'equip_mouse', 'equip_keyboard', 'equip_monitor', 'equip_decoration',
         'attack', 'defense', 'manage', 'operation',
         'attack_percent', 'defense_percent', 'manage_percent', 'operation_percent',
-
-        'quality',
 
         'formation_position',
         # 不同的staff可以带同一个兵种，
@@ -206,7 +209,6 @@ class AbstractStaff(object):
         self.manage_percent = 0
         self.operation_percent = 0
 
-        self.quality = 0
         self.equip_mouse = ''
         self.equip_keyboard = ''
         self.equip_monitor = ''
@@ -232,7 +234,6 @@ class AbstractStaff(object):
 
     def after_init(self):
         self.config = ConfigStaffNew.get(self.oid)
-        self.quality = ConfigItemNew.get(self.oid).quality
 
     @property
     def unit(self):
@@ -280,17 +281,6 @@ class AbstractStaff(object):
             if config_talent.target <= 5:
                 # 对选手的
                 self._add_talent_effect_to_staff(config_talent)
-            else:
-                # 对兵的
-                if self.__unit:
-                    if config_talent.target in [6, 10]:
-                        self._add_talent_effect_to_unit(config_talent)
-                    elif config_talent.target in [7, 11] and self.__unit.config.race == 1:
-                        self._add_talent_effect_to_unit(config_talent)
-                    elif config_talent.target in [8, 12] and self.__unit.config.race == 3:
-                        self._add_talent_effect_to_unit(config_talent)
-                    elif config_talent.target in [9, 13] and self.__unit.config.race == 2:
-                        self._add_talent_effect_to_unit(config_talent)
 
         # 最终属性
         self.attack = int(self.attack * (1 + self.attack_percent))
@@ -298,9 +288,27 @@ class AbstractStaff(object):
         self.manage = int(self.manage * (1 + self.manage_percent))
         self.operation = int(self.operation * (1 + self.operation_percent))
 
+
     def set_unit(self, unit):
         # type: (AbstractUnit) -> None
         self.__unit = unit.clone()
+
+        for tid in self.active_talent_ids:
+            config_talent = ConfigTalentSkill.get(tid)
+            if config_talent.target <= 5:
+                continue
+
+            if config_talent.target in [6, 10]:
+                self._add_talent_effect_to_unit(config_talent)
+            elif config_talent.target in [7, 11] and self.__unit.config.race == 1:
+                self._add_talent_effect_to_unit(config_talent)
+            elif config_talent.target in [8, 12] and self.__unit.config.race == 3:
+                self._add_talent_effect_to_unit(config_talent)
+            elif config_talent.target in [9, 13] and self.__unit.config.race == 2:
+                self._add_talent_effect_to_unit(config_talent)
+
+        self.__unit.final_calculate()
+
 
     def add_equipment_property(self):
         # 加上装备属性
@@ -418,7 +426,9 @@ class AbstractStaff(object):
         self.__unit.final_hurt_addition += config.unit_final_hurt_addition
         self.__unit.final_hurt_reduce += config.unit_final_hurt_reduce
 
-        self.__unit.calculate()
+        # 不能在这里 calculate
+        # 如果是多个效果要加到unit上，这儿就会重复增加属性
+        # self.__unit.calculate()
 
     @property
     def power(self):
@@ -433,7 +443,7 @@ class AbstractStaff(object):
         if self.step != 0:
             return False
 
-        if self.star != (self.quality - 1) * 10:
+        if (ConfigItemNew.get(self.oid).quality -1) * 10 != self.star:
             return False
 
         if self.level_exp > 0 or self.star_exp > 0:
@@ -466,7 +476,8 @@ class AbstractClub(object):
     __slots__ = [
         'server_id', 'char_id',
         'id', 'name', 'manager_name', 'flag', 'level',
-        'renown', 'vip', 'gold', 'diamond', 'crystal', 'gas',
+        'exp', 'vip', 'gold', 'diamond', 'crystal', 'gas', 'renown',
+        'energy',
         'formation_staffs',
     ]
 
@@ -479,17 +490,32 @@ class AbstractClub(object):
         self.manager_name = ""
         self.flag = 0
         self.level = 1
-        self.renown = 0
+        self.exp = 0
         self.vip = 0
         self.gold = 0
         self.diamond = 0
         self.crystal = 0
         self.gas = 0
+        self.renown = 0
+        self.energy = 0
         self.formation_staffs = []
         """:type: list[AbstractStaff]"""
 
     def load_staffs(self, **kwargs):
         raise NotImplementedError()
+
+    def before_match(self):
+        # 战斗开始前的设置， 比如加载unit
+        # 对于选手的club，load_staffs 和 before_match 需要分开来
+        # load_staffs 是对应一般情况的， 不需要装载unit的情况
+        # 比如在面板上看属性
+        # 但是选手会一直更换/升级兵种，如果兵种也在 load_staffs 里设置，
+        # 工作量比较大
+        # 其实战斗中需要的兵种属性，只要在进入战斗前计算就可以
+        # 所以选手分两部走
+        # NPC 直接load_staffs 全部设置完就行
+        # 所以 在基类里 before_match 是 pass 的
+        pass
 
     def get_formation_terran_staffs(self):
         return [s for s in self.formation_staffs if s.config.race == 1]
@@ -525,11 +551,13 @@ class AbstractClub(object):
         msg.manager = self.manager_name
         msg.flag = self.flag
         msg.level = self.level
-        msg.renown = self.renown
+        msg.exp = self.exp
         msg.vip = self.vip
         msg.gold = self.gold
         msg.diamond = self.diamond
         msg.crystal = self.crystal
         msg.gas = self.gas
+        msg.renown = self.renown
+        msg.energy = self.energy
 
         return msg

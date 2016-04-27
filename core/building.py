@@ -12,7 +12,6 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoBuilding
 from core.club import Club
-from core.resource import Resource
 from core.signals import building_level_up_done_signal, building_level_up_start_signal
 from config import ConfigBuilding, ConfigErrorMessage
 

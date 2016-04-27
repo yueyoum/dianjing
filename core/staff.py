@@ -16,8 +16,8 @@ from core.abstract import AbstractStaff
 from core.mongo import MongoStaff, MongoStaffRecruit
 from core.resource import money_text_to_item_id, ResourceClassification
 from core.bag import Bag, TYPE_EQUIPMENT, get_item_type
-from core.times_log import RecordLogStaffRecruitTimes, RecordLogStaffRecruitScore, RecordLogStaffRecruitGoldFreeTimes
-from core.signals import recruit_staff_signal, staff_level_up_signal
+from core.times_log import TimesLogStaffRecruitTimes, TimesLogStaffRecruitScore, TimesLogStaffRecruitGoldFreeTimes
+# from core.signals import recruit_staff_signal, staff_level_up_signal
 
 from config import (
     ConfigStaffRecruit,
@@ -39,7 +39,6 @@ from protomsg.staff_pb2 import StaffRecruitNotify, StaffNotify, StaffRemoveNotif
 from protomsg.staff_pb2 import RECRUIT_DIAMOND, RECRUIT_GOLD, RECRUIT_MODE_1, RECRUIT_MODE_2
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
-
 GOLD_MAX_FREE_TIMES = 5
 GOLD_CD_SECONDS = 600
 DIAMOND_CD_SECONDS = 3600 * 24 * 2
@@ -52,6 +51,7 @@ RECRUIT_CD_SECONDS = {
 
 class RecruitResult(object):
     __slots__ = ['point', 'add_score', 'items']
+
     def __init__(self, point):
         self.point = point
         self.add_score = 0
@@ -84,6 +84,7 @@ class RecruitResult(object):
 
 class StaffRecruit(object):
     __slots__ = ['server_id', 'char_id', 'doc']
+
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
@@ -99,7 +100,7 @@ class StaffRecruit(object):
 
     @property
     def gold_free_times(self):
-        today_times = RecordLogStaffRecruitGoldFreeTimes(self.server_id, self.char_id).count_of_today()
+        today_times = TimesLogStaffRecruitGoldFreeTimes(self.server_id, self.char_id).count_of_today()
         free_times = GOLD_MAX_FREE_TIMES - today_times
         if free_times < 0:
             free_times = 0
@@ -120,13 +121,9 @@ class StaffRecruit(object):
         return self.doc['point'].get(str(tp), 0)
 
     def get_times(self, tp):
-        return RecordLogStaffRecruitTimes(self.server_id, self.char_id, tp).count()
+        return TimesLogStaffRecruitTimes(self.server_id, self.char_id).count(sub_id=tp)
 
     def recruit(self, tp, mode):
-        """
-
-        :rtype: ResourceClassification
-        """
         if tp not in [RECRUIT_GOLD, RECRUIT_DIAMOND]:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
@@ -144,23 +141,22 @@ class StaffRecruit(object):
             else:
                 recruit_times = self._recruit_tp_2_mode_2()
 
-
         config = ConfigStaffRecruit.get(tp)
         current_times = self.get_times(tp) + 1
 
         result = RecruitResult(self.get_point(tp))
 
-        for i in range(current_times, current_times+recruit_times):
+        for i in range(current_times, current_times + recruit_times):
             res = config.recruit(result.point, i)
             result.add(res)
 
         self.doc['point'][str(tp)] = result.point
 
         # 记录次数
-        RecordLogStaffRecruitTimes(self.server_id, self.char_id, tp).record(recruit_times)
+        TimesLogStaffRecruitTimes(self.server_id, self.char_id).record(sub_id=tp, value=recruit_times)
 
         # 处理积分
-        today_score = RecordLogStaffRecruitScore(self.server_id, self.char_id, tp).count_of_today()
+        today_score = TimesLogStaffRecruitScore(self.server_id, self.char_id).count_of_today(sub_id=tp)
         can_add_score = config.reward_score_day_limit - today_score
         if can_add_score <= 0:
             # 今天获得的积分已经达到上限
@@ -171,7 +167,7 @@ class StaffRecruit(object):
                 result.add_score = can_add_score
 
         self.doc['score'] += result.add_score
-        RecordLogStaffRecruitScore(self.server_id, self.char_id, tp).record(can_add_score)
+        TimesLogStaffRecruitScore(self.server_id, self.char_id).record(sub_id=tp, value=can_add_score)
 
         MongoStaffRecruit.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -185,8 +181,8 @@ class StaffRecruit(object):
         resource_classify.add(self.server_id, self.char_id)
 
         self.send_notify()
-        return resource_classify
-
+        # NOTE: 结果不能堆叠
+        return result.items
 
     def _recruit_tp_1_mode_1(self):
         # 金币单抽
@@ -198,7 +194,6 @@ class StaffRecruit(object):
             resource_classify = ResourceClassification.classify(cost)
             resource_classify.check_exist(self.server_id, self.char_id)
             resource_classify.remove(self.server_id, self.char_id)
-
 
         if not self.gold_free_times:
             # 没有免费次数了， 就不判断CD，直接扣钱
@@ -221,7 +216,7 @@ class StaffRecruit(object):
                     }}
                 )
 
-                RecordLogStaffRecruitGoldFreeTimes(self.server_id, self.char_id).record()
+                TimesLogStaffRecruitGoldFreeTimes(self.server_id, self.char_id).record()
 
         return 1
 
@@ -289,7 +284,7 @@ class StaffRecruit(object):
 
 
 ###################################
-STAFF_MAX_LEVEL = max(ConfigStaffNew.INSTANCES.keys())
+STAFF_MAX_LEVEL = max(ConfigStaffLevelNew.INSTANCES.keys())
 STAFF_MAX_STAR = max(ConfigStaffStar.INSTANCES.keys())
 
 
@@ -317,13 +312,14 @@ class Staff(AbstractStaff):
 
         self.after_init()
 
-
     def level_up(self, using_items):
         # using_items: [(id, amount)...]
-        # TODO 发来的物品能提供的经验可能超过了等级上限
-        # 这时候只扣除升级到上限所需的物品
         if self.level >= STAFF_MAX_LEVEL:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_ALREADY_MAX_LEVEL"))
+
+        for _id, _amount in using_items:
+            if _amount < 1:
+                raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         bag = Bag(self.server_id, self.char_id)
         bag.check_items(using_items)
@@ -342,9 +338,7 @@ class Staff(AbstractStaff):
         exp = self.level_exp + increase_level_exp
         while True:
             if self.level == STAFF_MAX_LEVEL:
-                if exp >= ConfigStaffLevelNew.get(self.level).exp:
-                    exp = ConfigStaffLevelNew.get(self.level).exp - 1
-
+                exp = 0
                 break
 
             if exp < ConfigStaffLevelNew.get(self.level).exp:
@@ -357,7 +351,7 @@ class Staff(AbstractStaff):
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'set': {
+            {'$set': {
                 'staffs.{0}.level'.format(self.id): self.level,
                 'staffs.{0}.level_exp'.format(self.id): self.level_exp
             }}
@@ -477,7 +471,6 @@ class Staff(AbstractStaff):
         self.make_cache()
         self.send_notify()
 
-
     def add_equipment_property(self):
         bag = Bag(self.server_id, self.char_id)
 
@@ -529,7 +522,6 @@ class Staff(AbstractStaff):
                 self.manage += equip_quality_addition.manage
                 self.manage_percent += equip_quality_addition.manage_percent
 
-
     def send_notify(self):
         notify = StaffNotify()
         notify.act = ACT_UPDATE
@@ -561,7 +553,7 @@ class StaffManger(object):
         :rtype: dict[str, dict]
         """
         if ids:
-            projection = {'staffs.{0}'.format(i) for i in ids}
+            projection = {'staffs.{0}'.format(i): 1 for i in ids}
         else:
             projection = {'staffs': 1}
 
@@ -587,7 +579,6 @@ class StaffManger(object):
 
         Club(self.server_id, self.char_id).load_staffs()
         return Staff.get(_id)
-
 
     def has_staff(self, ids):
         # type: (list[str]) -> bool
@@ -623,18 +614,15 @@ class StaffManger(object):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
     def add(self, staff_original_id, send_notify=True):
-        from core.club import Club
-
         if not ConfigStaffNew.get(staff_original_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
-        # club = Club(self.server_id, self.char_id, load_staff=False)
-        # if self.staffs_amount >= club.max_slots_amount:
-        #     raise GameException(ConfigErrorMessage.get_error_id("STAFF_AMOUNT_REACH_MAX_LIMIT"))
+        quality = ConfigItemNew.get(staff_original_id).quality
 
         unique_id = make_string_id()
         doc = MongoStaff.document_staff()
         doc['oid'] = staff_original_id
+        doc['star'] = (quality-1) * 10
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -717,7 +705,6 @@ class StaffManger(object):
             staff.make_cache()
             staff.send_notify()
 
-
     def star_up(self, staff_id):
         staff = self.get_staff_object(staff_id)
         if not staff:
@@ -731,15 +718,18 @@ class StaffManger(object):
 
         :rtype: ResourceClassification
         """
-        self.remove(staff_id)
+        from core.formation import Formation
+        if Formation(self.server_id, self.char_id).is_staff_in_formation(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_CANNOT_DESTROY_IN_FORMATION"))
+
         doc = MongoStaff.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'staffs.{0}.oid'.format(staff_id): 1}
         )
-
         oid = doc['staffs'][staff_id]['oid']
         crystal = ConfigStaffNew.get(oid).crystal
 
+        self.remove(staff_id)
         drop = [(money_text_to_item_id('crystal'), crystal)]
 
         resource_classified = ResourceClassification.classify(drop)

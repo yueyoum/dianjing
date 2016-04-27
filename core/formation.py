@@ -42,6 +42,13 @@ class Formation(object):
             self.doc['position'] = [0] * 30
             MongoFormation.db(self.server_id).insert_one(self.doc)
 
+    def is_staff_in_formation(self, staff_id):
+        for _, v in self.doc['slots'].iteritems():
+            if v['staff_id'] and v['staff_id'] == staff_id:
+                return True
+
+        return False
+
     def in_formation_staffs(self):
         # type: () -> dict[str, dict[str, int]]
         staffs = {}
@@ -133,11 +140,14 @@ class Formation(object):
 
         self.send_notify(slot_ids=[slot_id])
 
-        u = UnitManager(self.server_id, self.char_id).get_unit_object(unit_id)
-        s = StaffManger(self.server_id, self.char_id).get_staff_object(staff_id)
-        s.set_unit(u)
-        s.calculate()
-        s.make_cache()
+        # 不用这么处理了
+        # 现在是在战斗前才 给staff set_unit
+        # 那时候肯定会获取到新的unit数据的
+        # u = UnitManager(self.server_id, self.char_id).get_unit_object(unit_id)
+        # s = StaffManger(self.server_id, self.char_id).get_staff_object(staff_id)
+        # s.set_unit(u)
+        # s.calculate()
+        # s.make_cache()
 
     def move_slot(self, slot_id, to_index):
         if str(slot_id) not in self.doc['slots']:

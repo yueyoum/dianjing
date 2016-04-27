@@ -14,7 +14,6 @@ from dianjing.exception import GameException
 from core.staff import StaffManger
 from core.mongo import MongoAuctionStaff, MongoBidding
 from core.club import Club
-from core.resource import Resource
 from core.mail import MailManager
 
 from core.lock import Lock, LockTimeOut

@@ -9,7 +9,6 @@ Description:
 
 from dianjing.exception import GameException
 
-from core.resource import Resource
 from config import ConfigErrorMessage
 
 

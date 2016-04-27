@@ -7,17 +7,31 @@ Description:
 
 """
 
-import os
 import uuid
-import base64
-import random
-import string
+
+import arrow
+
+from django.conf import settings
 
 def make_string_id():
     return str(uuid.uuid4())
 
-def make_short_string_id():
-    text = base64.b64encode(os.urandom(6))
-    text = text.replace('+', random.choice(string.letters))
-    text = text.replace('/', random.choice(string.letters))
-    return text
+def get_arrow_time_of_today():
+    # 今天的起始时间
+    """
+
+    :rtype: arrow.Arrow
+    """
+    now = arrow.utcnow().to(settings.TIME_ZONE)
+    start_day = arrow.Arrow(
+        year=now.year,
+        month=now.month,
+        day=now.day,
+        hour=0,
+        minute=0,
+        second=0,
+        microsecond=0,
+        tzinfo=now.tzinfo
+    )
+
+    return start_day

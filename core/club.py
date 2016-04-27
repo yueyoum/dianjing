@@ -26,9 +26,7 @@ from config import (
 
 from protomsg.club_pb2 import ClubNotify
 
-
-def club_level_up_need_renown(level):
-    return ConfigClubLevel.get(level).renown
+MAX_CLUB_LEVEL = max(ConfigClubLevel.INSTANCES.keys())
 
 
 class Club(AbstractClub):
@@ -48,10 +46,11 @@ class Club(AbstractClub):
         self.manager_name = doc['name']  # 角色名
         self.flag = club['flag']  # 俱乐部旗帜
         self.level = club['level']  # 俱乐部等级
-        self.renown = club['renown']  # 俱乐部声望
+        self.exp = club.get('exp', 0)
         self.vip = club['vip']  # vip等级
         self.gold = club['gold']  # 游戏币
         self.diamond = club['diamond']  # 钻石
+        self.renown = club.get('renown', 0)
 
         self.crystal = club.get('crystal', 0)
         self.gas = club.get('gas', 0)
@@ -59,11 +58,9 @@ class Club(AbstractClub):
     def load_staffs(self, ids=None):
         from core.staff import StaffManger, Staff
         from core.formation import Formation
-        from core.unit import UnitManager
 
         sm = StaffManger(self.server_id, self.char_id)
         fm = Formation(self.server_id, self.char_id)
-        um = UnitManager(self.server_id, self.char_id)
 
         staffs = sm.get_staffs_data(ids=ids)
         in_formation_staffs = fm.in_formation_staffs()
@@ -77,11 +74,11 @@ class Club(AbstractClub):
             if k in in_formation_staffs:
                 self.formation_staffs.append(v)
 
-                v.formation_position = in_formation_staffs[k]['position']
-
-                unit_id = in_formation_staffs[k]['unit_id']
-                if unit_id:
-                    v.set_unit(um.get_unit_object(unit_id))
+                # 这里不用设置兵种， 进入战斗前，再设置，并计算兵种属性
+                # v.formation_position = in_formation_staffs[k]['position']
+                # unit_id = in_formation_staffs[k]['unit_id']
+                # if unit_id:
+                #     v.set_unit(um.get_unit_object(unit_id))
 
         for k in in_formation_staffs:
             staff_objs[k].talent_effect(self)
@@ -89,6 +86,21 @@ class Club(AbstractClub):
         for _, v in staff_objs.iteritems():
             v.calculate()
             v.make_cache()
+
+    def before_match(self):
+        from core.formation import Formation
+        from core.unit import UnitManager
+
+        fm = Formation(self.server_id, self.char_id)
+        in_formation_staffs = fm.in_formation_staffs()
+
+        um = UnitManager(self.server_id, self.char_id)
+
+        for s in self.formation_staffs:
+            s.formation_position = in_formation_staffs[s.id]['position']
+            unit_id = in_formation_staffs[s.id]['unit_id']
+            if unit_id:
+                s.set_unit(um.get_unit_object(unit_id))
 
     def check_money(self, diamond=0, gold=0, crystal=0, gas=0):
         # TODO 其他货币
@@ -111,18 +123,20 @@ class Club(AbstractClub):
         return self.vip
 
     def update(self, **kwargs):
-        renown = kwargs.get('renown', 0)
+        exp = kwargs.get('exp', 0)
         gold = kwargs.get('gold', 0)
         diamond = kwargs.get('diamond', 0)
         crystal = kwargs.get('crystal', 0)
         gas = kwargs.get('gas', 0)
+        renown = kwargs.get('renown', 0)
         message = kwargs.get('message', "")
 
         self.gold += gold
         self.diamond += diamond
-        self.renown += renown
+        self.exp += exp
         self.crystal += crystal
         self.gas += gas
+        self.renown += renown
 
         if self.gold < 0:
             raise GameException(ConfigErrorMessage.get_error_id("GOLD_NOT_ENOUGH"))
@@ -136,17 +150,15 @@ class Club(AbstractClub):
         # update
         level_changed = False
         while True:
-            need_renown = club_level_up_need_renown(self.level)
-            next_level_id = ConfigClubLevel.get(self.level).next_level_id
-            if not next_level_id:
-                if self.renown >= need_renown:
-                    self.renown = need_renown - 1
+            if self.level >= MAX_CLUB_LEVEL:
+                self.exp = 0
                 break
 
-            if self.renown < need_renown:
+            need_exp = ConfigClubLevel.get(self.level).exp
+            if self.exp < need_exp:
                 break
 
-            self.renown -= need_renown
+            self.exp -= need_exp
             self.level += 1
             level_changed = True
 
@@ -154,11 +166,12 @@ class Club(AbstractClub):
             {'_id': self.char_id},
             {'$set': {
                 'club.level': self.level,
-                'club.renown': self.renown,
+                'club.exp': self.exp,
                 'club.gold': self.gold,
                 'club.diamond': self.diamond,
                 'club.crystal': self.crystal,
                 'club.gas': self.gas,
+                'club.renown': self.renown
             }}
         )
 
