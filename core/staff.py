@@ -286,7 +286,9 @@ class StaffRecruit(object):
 ###################################
 STAFF_MAX_LEVEL = max(ConfigStaffLevelNew.INSTANCES.keys())
 STAFF_MAX_STAR = max(ConfigStaffStar.INSTANCES.keys())
-
+MIN_STAR_EXP = 1
+MAX_STAR_EXP = 3
+AVG_STAR_EXP = (MIN_STAR_EXP+MAX_STAR_EXP) / 2
 
 class Staff(AbstractStaff):
     __slots__ = []
@@ -311,6 +313,26 @@ class Staff(AbstractStaff):
         self.equip_decoration = data['equip_decoration']
 
         self.after_init()
+
+    def reset(self):
+        # 重置到初始状态
+        self.level = 1
+        self.step = 0
+        self.star = (ConfigItemNew.get(self.oid).quality - 1) * 10
+        self.level_exp = 0
+        self.star_exp = 0
+
+        MongoStaff.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'staffs.{0}.level'.format(self.id): self.level,
+                'staffs.{0}.step'.format(self.id): self.step,
+                'staffs.{0}.star'.format(self.id): self.star,
+                'staffs.{0}.level_exp'.format(self.id): self.level_exp,
+                'staffs.{0}.star_exp'.format(self.id): self.star_exp,
+            }}
+        )
+
 
     def level_up(self, using_items):
         # using_items: [(id, amount)...]
@@ -524,6 +546,56 @@ class Staff(AbstractStaff):
                 self.manage += equip_quality_addition.manage
                 self.manage_percent += equip_quality_addition.manage_percent
 
+    def get_cost_items(self, prob=100):
+        # 得到一路升级过来所消耗的物品
+        items = {}
+        def _add_to_items(__id, __amount):
+            if __id in items:
+                items[__id] += __amount
+            else:
+                items[__id] = __amount
+
+
+        exp = self.level_exp
+        for i in range(self.level-1, 0, -1):
+            exp += ConfigStaffLevelNew.get(i).exp
+
+        # 经验道具
+        for i in [5, 4, 3, 2, 1]:
+            if not exp:
+                break
+
+            config_item_exp = ConfigItemExp.get(i).exp
+            amount, exp = divmod(exp, config_item_exp)
+
+            if i == 1:
+                if exp:
+                    amount += 1
+                _add_to_items(i, amount)
+            else:
+                if amount:
+                    _add_to_items(i, amount)
+
+        # 升星道具
+        for i in range(self.star-1, -1, -1):
+            config = ConfigStaffStar.get(i)
+            amount = config.exp * prob / 100.0 / AVG_STAR_EXP * config.need_item_amount
+            if amount:
+                _add_to_items(config.need_item_id, amount)
+
+        # 升阶道具
+        for i in range(self.step-1, -1, -1):
+            config = self.config.steps[i]
+            for _id, _amount in config.update_item_need:
+                _amount = _amount * prob / 100.0
+                _add_to_items(_id, _amount)
+
+        for k, v in items.iteritems():
+            items[k] = int(round(v))
+
+        return items.items()
+
+
     def send_notify(self):
         notify = StaffNotify()
         notify.act = ACT_UPDATE
@@ -714,28 +786,49 @@ class StaffManger(object):
 
         staff.star_up()
 
-    def destroy(self, staff_id):
-        # TODO 返还
-        """
-
-        :rtype: ResourceClassification
-        """
+    def destroy(self, staff_id, tp):
+        from core.club import Club
         from core.formation import Formation
+
         if Formation(self.server_id, self.char_id).is_staff_in_formation(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_CANNOT_DESTROY_IN_FORMATION"))
 
-        doc = MongoStaff.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {'staffs.{0}.oid'.format(staff_id): 1}
-        )
-        oid = doc['staffs'][staff_id]['oid']
-        crystal = ConfigStaffNew.get(oid).crystal
+        staff = self.get_staff_object(staff_id)
+        if not staff:
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
-        self.remove(staff_id)
-        drop = [(money_text_to_item_id('crystal'), crystal)]
+        if tp == 0:
+            prob = 70
+        else:
+            prob = 100
 
-        resource_classified = ResourceClassification.classify(drop)
+            # TODO diamond count
+            resource_classified = ResourceClassification.classify([(money_text_to_item_id('diamond'), 50)])
+            resource_classified.check_exist(self.server_id, self.char_id)
+            resource_classified.remove(self.server_id, self.char_id)
+
+        items = staff.get_cost_items(prob)
+
+        crystal = ConfigStaffNew.get(staff.oid).crystal
+
+        items.append((money_text_to_item_id('crystal'), crystal))
+
+        resource_classified = ResourceClassification.classify(items)
         resource_classified.add(self.server_id, self.char_id)
+
+        if tp == 0:
+            self.remove(staff_id)
+        else:
+            staff.reset()
+            in_formation_staff_ids = Formation(self.server_id, self.char_id).in_formation_staffs().keys()
+            if staff.id in in_formation_staff_ids:
+                Club(self.server_id, self.char_id).load_staffs()
+                self.send_notify(ids=in_formation_staff_ids)
+            else:
+                staff.calculate()
+                staff.make_cache()
+                staff.send_notify()
+
         return resource_classified
 
     def send_notify(self, ids=None):

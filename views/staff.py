@@ -100,8 +100,9 @@ def destroy(request):
     char_id = request._game_session.char_id
 
     staff_id = request._proto.staff_id
+    tp = request._proto.tp
 
-    resource_classified = StaffManger(server_id, char_id).destroy(staff_id)
+    resource_classified = StaffManger(server_id, char_id).destroy(staff_id, tp)
 
     response = StaffDestroyResponse()
     response.ret = 0
