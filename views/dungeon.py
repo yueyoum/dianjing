@@ -22,7 +22,7 @@ def start(request):
     match = DungeonManager(server_id, char_id).start(dungeon_id)
     response = DungeonMatchResponse()
     response.ret = 0
-    response.match = match
+    response.match.MergeFrom(match)
 
     return ProtobufResponse(response)
 
