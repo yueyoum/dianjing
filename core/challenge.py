@@ -189,7 +189,7 @@ class Challenge(object):
         TimesLogChallengeMatchTimes(self.server_id, self.char_id).record(sub_id=challenge_id)
 
         if star <= 0:
-            return []
+            return None
 
         projection = {
             'challenge_star.{0}'.format(challenge_id): 1,

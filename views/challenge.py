@@ -60,7 +60,8 @@ def report(request):
     resource_classified = Challenge(server_id, char_id).report(key, star)
     response = ChallengeMatchReportResponse()
     response.ret = 0
-    response.drop.MergeFrom(resource_classified.make_protomsg())
+    if resource_classified:
+        response.drop.MergeFrom(resource_classified.make_protomsg())
 
     return ProtobufResponse(response)
 
