@@ -359,11 +359,16 @@ class Bag(object):
 
         :rtype: ResourceClassification
         """
+        from core.staff import StaffManger
+
         this_slot = self.doc['slots'][slot_id]
         item_id = this_slot['item_id']
 
         if get_item_type(item_id) != TYPE_EQUIPMENT:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        if StaffManger(self.server_id, self.char_id).is_equip_on_staff(slot_id):
+            raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_CANNOT_DESTROY_ON_STAFF"))
 
         level = this_slot['level']
         results = get_equipment_level_up_needs_to_level(item_id, level)
