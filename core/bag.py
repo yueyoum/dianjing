@@ -56,7 +56,7 @@ def get_item_type(item_id):
     return ConfigItemNew.get(item_id).tp
 
 
-def get_equipment_level_up_needs_to_level(item_id, level):
+def get_equipment_level_up_needs_to_level(item_id, level, prob=100):
     config = ConfigEquipmentNew.get(item_id)
 
     items = {}
@@ -68,7 +68,13 @@ def get_equipment_level_up_needs_to_level(item_id, level):
             else:
                 items[_id] = _amount
 
-    return items.items()
+    results = []
+    for k, v in items.iteritems():
+        v = v * prob / 100
+        if v:
+            results.append((k, v))
+
+    return results
 
 
 def make_equipment_msg(item_id, level):
@@ -371,12 +377,12 @@ class Bag(object):
             raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_CANNOT_DESTROY_ON_STAFF"))
 
         level = this_slot['level']
-        results = get_equipment_level_up_needs_to_level(item_id, level)
 
         if use_sycee:
             diamond = GlobalConfig.value("EQUIPMENT_DESTROY_SYCEE")
-            Club(self.server_id, self.char_id).update(diamond=-diamond,
-                                                      message='Equipment Destroy: {0}'.format(item_id))
+            rf = ResourceClassification.classify([(money_text_to_item_id('diamond'), diamond)])
+            rf.check_exist(self.server_id, self.char_id)
+            rf.remove(self.server_id, self.char_id)
 
             MongoBag.db(self.server_id).update_one(
                 {'_id': self.char_id},
@@ -386,8 +392,14 @@ class Bag(object):
             )
             self.doc['slots'][slot_id]['level'] = 0
             self.send_notify(slot_ids=[slot_id])
+
+            results = get_equipment_level_up_needs_to_level(item_id, level, prob=100)
         else:
             self.remove_by_slot_id(slot_id, 1)
+            results = get_equipment_level_up_needs_to_level(item_id, level, prob=70)
+
+        config = ConfigEquipmentNew.get(item_id)
+        results.append((money_text_to_item_id('renown'), config.renown))
 
         resource_classified = ResourceClassification.classify(results)
         resource_classified.add(self.server_id, self.char_id)
