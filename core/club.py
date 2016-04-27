@@ -29,6 +29,15 @@ from protomsg.club_pb2 import ClubNotify
 MAX_CLUB_LEVEL = max(ConfigClubLevel.INSTANCES.keys())
 
 
+def get_club_property(server_id, char_id, key, default_value=0):
+    doc = MongoCharacter.db(server_id).find_one(
+        {'_id': char_id},
+        {'club.{0}'.format(key): 1}
+    )
+
+    return doc['club'].get(key, default_value)
+
+
 class Club(AbstractClub):
     __slots__ = []
 

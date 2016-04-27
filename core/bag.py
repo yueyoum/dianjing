@@ -9,8 +9,8 @@ Description:
 from dianjing.exception import GameException
 
 from core.mongo import MongoBag
-from core.club import Club
-from core.resource import MONEY, ResourceClassification, money_text_to_item_id, item_id_to_money_text
+from core.club import Club, get_club_property
+from core.resource import MONEY, ResourceClassification, money_text_to_item_id
 
 from utils.functional import make_string_id
 from utils.message import MessagePipe
@@ -399,8 +399,9 @@ class Bag(object):
         config = ConfigEquipmentNew.get(item_id)
         # TODO check exists
 
-        if level >= config.max_level:
-            raise GameException("max level")
+        max_level = min(config.max_level, get_club_property(self.server_id, self.char_id, 'level') * 2)
+        if level >= max_level:
+            raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_REACH_MAX_LEVEL"))
 
         return make_equipment_msg(item_id, level + 1)
 
@@ -412,12 +413,12 @@ class Bag(object):
         level = this_slot['level']
 
         config = ConfigEquipmentNew.get(item_id)
-        if not config.levels[level].update_item_need:
-            # TODO max level
-            raise Exception("max level")
+        max_level = min(config.max_level, get_club_property(self.server_id, self.char_id, 'level') * 2)
+        if level >= max_level:
+            raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_REACH_MAX_LEVEL"))
 
         def do_level_up(_level):
-            if _level >= config.max_level:
+            if _level >= max_level:
                 raise EquipmentMaxLevel(0)
 
             item_needs = config.levels[_level].update_item_need

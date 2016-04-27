@@ -314,7 +314,9 @@ class Staff(AbstractStaff):
 
     def level_up(self, using_items):
         # using_items: [(id, amount)...]
-        if self.level >= STAFF_MAX_LEVEL:
+        from core.club import get_club_property
+        max_level = min(STAFF_MAX_LEVEL, get_club_property(self.server_id, self.char_id, 'level') * 2)
+        if self.level >= max_level:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_ALREADY_MAX_LEVEL"))
 
         for _id, _amount in using_items:

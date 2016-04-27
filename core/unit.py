@@ -79,7 +79,9 @@ class Unit(AbstractUnit):
         self.after_init()
 
     def level_up(self):
-        if self.level >= self.config.max_level:
+        from core.club import get_club_property
+        max_level = min(self.config.max_level, get_club_property(self.server_id, self.char_id, 'level') * 2)
+        if self.level >= max_level:
             raise GameException(ConfigErrorMessage.get_error_id("UNIT_REACH_MAX_LEVEL"))
 
         using_items = self.config.levels[self.level].update_item_need
