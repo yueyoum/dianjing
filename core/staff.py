@@ -288,7 +288,8 @@ STAFF_MAX_LEVEL = max(ConfigStaffLevelNew.INSTANCES.keys())
 STAFF_MAX_STAR = max(ConfigStaffStar.INSTANCES.keys())
 MIN_STAR_EXP = 1
 MAX_STAR_EXP = 3
-AVG_STAR_EXP = (MIN_STAR_EXP+MAX_STAR_EXP) / 2
+AVG_STAR_EXP = (MIN_STAR_EXP + MAX_STAR_EXP) / 2
+
 
 class Staff(AbstractStaff):
     __slots__ = []
@@ -332,7 +333,6 @@ class Staff(AbstractStaff):
                 'staffs.{0}.star_exp'.format(self.id): self.star_exp,
             }}
         )
-
 
     def level_up(self, using_items):
         # using_items: [(id, amount)...]
@@ -549,15 +549,15 @@ class Staff(AbstractStaff):
     def get_cost_items(self, prob=100):
         # 得到一路升级过来所消耗的物品
         items = {}
+
         def _add_to_items(__id, __amount):
             if __id in items:
                 items[__id] += __amount
             else:
                 items[__id] = __amount
 
-
         exp = self.level_exp
-        for i in range(self.level-1, 0, -1):
+        for i in range(self.level - 1, 0, -1):
             exp += ConfigStaffLevelNew.get(i).exp
 
         # 经验道具
@@ -577,24 +577,26 @@ class Staff(AbstractStaff):
                     _add_to_items(i, amount)
 
         # 升星道具
-        for i in range(self.star-1, -1, -1):
+        for i in range(self.star - 1, -1, -1):
             config = ConfigStaffStar.get(i)
             amount = config.exp * prob / 100.0 / AVG_STAR_EXP * config.need_item_amount
             if amount:
                 _add_to_items(config.need_item_id, amount)
 
         # 升阶道具
-        for i in range(self.step-1, -1, -1):
+        for i in range(self.step - 1, -1, -1):
             config = self.config.steps[i]
             for _id, _amount in config.update_item_need:
                 _amount = _amount * prob / 100.0
                 _add_to_items(_id, _amount)
 
+        results = []
         for k, v in items.iteritems():
-            items[k] = int(round(v))
+            v = int(round(v))
+            if v:
+                results.append((k, v))
 
-        return items.items()
-
+        return results
 
     def send_notify(self):
         notify = StaffNotify()
@@ -696,7 +698,7 @@ class StaffManger(object):
         unique_id = make_string_id()
         doc = MongoStaff.document_staff()
         doc['oid'] = staff_original_id
-        doc['star'] = (quality-1) * 10
+        doc['star'] = (quality - 1) * 10
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
