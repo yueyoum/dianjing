@@ -376,9 +376,14 @@ class Bag(object):
         if StaffManger(self.server_id, self.char_id).is_equip_on_staff(slot_id):
             raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_CANNOT_DESTROY_ON_STAFF"))
 
+        config = ConfigEquipmentNew.get(item_id)
         level = this_slot['level']
 
         if use_sycee:
+            min_level = min(config.levels.keys())
+            if level == min_level:
+                raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_CANNOT_DESTROY_NO_LEVEL_UP"))
+
             diamond = GlobalConfig.value("EQUIPMENT_DESTROY_SYCEE")
             rf = ResourceClassification.classify([(money_text_to_item_id('diamond'), diamond)])
             rf.check_exist(self.server_id, self.char_id)
@@ -397,9 +402,7 @@ class Bag(object):
         else:
             self.remove_by_slot_id(slot_id, 1)
             results = get_equipment_level_up_needs_to_level(item_id, level, prob=70)
-
-        config = ConfigEquipmentNew.get(item_id)
-        results.append((money_text_to_item_id('renown'), config.renown))
+            results.append((money_text_to_item_id('renown'), config.renown))
 
         resource_classified = ResourceClassification.classify(results)
         resource_classified.add(self.server_id, self.char_id)

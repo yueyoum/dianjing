@@ -813,20 +813,20 @@ class StaffManger(object):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
         if tp == 0:
-            prob = 70
+            # 普通分解
+            items = staff.get_cost_items(70)
+            crystal = ConfigStaffNew.get(staff.oid).crystal
+            items.append((money_text_to_item_id('crystal'), crystal))
         else:
-            prob = 100
+            if staff.is_initial_state():
+                raise GameException(ConfigErrorMessage.get_error_id("STAFF_CANNOT_DESTROY_INITIAL_STATE"))
 
             # TODO diamond count
             resource_classified = ResourceClassification.classify([(money_text_to_item_id('diamond'), 50)])
             resource_classified.check_exist(self.server_id, self.char_id)
             resource_classified.remove(self.server_id, self.char_id)
 
-        items = staff.get_cost_items(prob)
-
-        crystal = ConfigStaffNew.get(staff.oid).crystal
-
-        items.append((money_text_to_item_id('crystal'), crystal))
+            items = staff.get_cost_items(100)
 
         resource_classified = ResourceClassification.classify(items)
         resource_classified.add(self.server_id, self.char_id)
