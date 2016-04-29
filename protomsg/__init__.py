@@ -177,6 +177,18 @@ MESSAGE_TO_ID = {
     "DungeonMatchResponse": 3402,
     "DungeonMatchReportRequest": 3403,
     "DungeonMatchReportResponse": 3404,
+    "ArenaNotify": 3500,
+    "ArenaRefreshRequest": 3501,
+    "ArenaRefreshResponse": 3502,
+    "ArenaLeaderBoardRequest": 3503,
+    "ArenaLeaderBoardResponse": 3504,
+    "ArenaHonorStatusNotify": 3505,
+    "ArenaHonorGetRewardRequest": 3507,
+    "ArenaHonorGetRewardResponse": 3508,
+    "ArenaMatchStartReqeust": 3509,
+    "ArenaMatchStartResponse": 3510,
+    "ArenaMatchReportReqeust": 3511,
+    "ArenaMatchReportResponse": 3512,
 }
 
 ID_TO_MESSAGE = {
@@ -357,6 +369,18 @@ ID_TO_MESSAGE = {
     3402: "DungeonMatchResponse",
     3403: "DungeonMatchReportRequest",
     3404: "DungeonMatchReportResponse",
+    3500: "ArenaNotify",
+    3501: "ArenaRefreshRequest",
+    3502: "ArenaRefreshResponse",
+    3503: "ArenaLeaderBoardRequest",
+    3504: "ArenaLeaderBoardResponse",
+    3505: "ArenaHonorStatusNotify",
+    3507: "ArenaHonorGetRewardRequest",
+    3508: "ArenaHonorGetRewardResponse",
+    3509: "ArenaMatchStartReqeust",
+    3510: "ArenaMatchStartResponse",
+    3511: "ArenaMatchReportReqeust",
+    3512: "ArenaMatchReportResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -429,6 +453,11 @@ PATH_TO_REQUEST = {
     "/game/talent/reset/": ["talent", "TalentResetTalentRequest"],
     "/game/dungeon/start/": ["dungeon", "DungeonMatchRequest"],
     "/game/dungeon/report/": ["dungeon", "DungeonMatchReportRequest"],
+    "/game/arena/refresh/": ["arena", "ArenaRefreshRequest"],
+    "/game/arena/leaderboard/": ["arena", "ArenaLeaderBoardRequest"],
+    "/game/arena/honorreward/": ["arena", "ArenaHonorGetRewardRequest"],
+    "/game/arena/matchstart/": ["arena", "ArenaMatchStartReqeust"],
+    "/game/arena/matchreport/": ["arena", "ArenaMatchReportReqeust"],
 }
 
 PATH_TO_RESPONSE = {
@@ -501,4 +530,9 @@ PATH_TO_RESPONSE = {
     "/game/talent/reset/": ["talent", "TalentResetTalentResponse"],
     "/game/dungeon/start/": ["dungeon", "DungeonMatchResponse"],
     "/game/dungeon/report/": ["dungeon", "DungeonMatchReportResponse"],
+    "/game/arena/refresh/": ["arena", "ArenaRefreshResponse"],
+    "/game/arena/leaderboard/": ["arena", "ArenaLeaderBoardResponse"],
+    "/game/arena/honorreward/": ["arena", "ArenaHonorGetRewardResponse"],
+    "/game/arena/matchstart/": ["arena", "ArenaMatchStartResponse"],
+    "/game/arena/matchreport/": ["arena", "ArenaMatchReportResponse"],
 }

@@ -34,6 +34,7 @@ from core.talent import TalentManager
 # from core.auction import AuctionManager
 from core.system import send_broadcast_notify
 from core.dungeon import DungeonManager
+from core.arena import Arena
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
@@ -93,5 +94,9 @@ def game_start_handler(server_id, char_id, **kwargs):
     av = ActiveValue(server_id, char_id)
     av.send_function_notify()
     av.send_value_notify()
+
+    a = Arena(server_id, char_id)
+    a.send_notify()
+    a.send_honor_notify()
 
     send_broadcast_notify(char_id)

@@ -32,6 +32,7 @@ import views.unit
 import views.formation
 import views.talent
 import views.dungeon
+import views.arena
 
 urlpatterns = [
     url(r'^sync/$', views.common.sync),
@@ -120,4 +121,9 @@ urlpatterns = [
 
     url(r'dungeon/start/$', views.dungeon.start),
     url(r'dungeon/report/$', views.dungeon.report),
+
+    url(r'^arena/refresh/$', views.arena.refresh),
+    url(r'^arena/leaderboard/$', views.arena.leader_board),
+    url(r'^arena/matchstar/$', views.arena.match_start),
+    url(r'^arena/matchreport/$', views.arena.match_report),
 ]

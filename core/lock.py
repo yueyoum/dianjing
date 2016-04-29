@@ -18,28 +18,35 @@ class LockTimeOut(Exception):
 
 
 class RedisLock(object):
-    INTERVAL = 0.1
-    KEY = None
+    __slots__ = ['server_id', 'char_id']
 
-    def __init__(self, server_id):
+    INTERVAL = 0.1
+
+    def __init__(self, server_id, char_id):
         self.server_id = server_id
+        self.char_id = char_id
+
+    def make_key(self):
+        raise NotImplementedError()
 
     @contextmanager
-    def lock(self, timeout=5, key=None):
-        key = "{0}:{1}".format(key or self.KEY, self.server_id)
+    def lock(self, wait_timeout=5, hold_seconds=5):
+        """
+
+        :param wait_timeout: 等待获取锁的超时时间，超过这个时间没有获取到锁，将抛出LockTimeOut异常
+        :param hold_seconds: 获取到锁以后，要保持的最长时间。
+                             程序在可以在这个时间点前可以主动放弃锁。
+                             如果超过hold_seconds后，还没有主动放弃，那么锁将自动释放
+                             以此来应对程序获得锁以后出错没有主动释放形成死锁的问题
+        """
+        key = self.make_key()
 
         t = 0
         while True:
-            if t > timeout:
+            if t > wait_timeout:
                 raise LockTimeOut()
 
-            # 程序期望获取到锁的等待时间是timeout
-            # 那么这个锁的过期时间就简单设置成 timeout+1
-            # 过期时间可以理解为程序期望获得锁以后，直到释放锁的运行时间
-            # 不太可能会有这样的需求： 我期望等待10秒，但获取到锁后，只运行1秒
-            # 或者 我期望等待1秒，但是获取到锁以后 要运行10秒
-            # 一般都是 等待时间，于期望运行时间差不多
-            result = RedisDB.get().set(key, 1, ex=timeout+1, nx=True)
+            result = RedisDB.get().set(key, 1, ex=hold_seconds, nx=True)
             if result:
                 # got the lock
                 break
@@ -52,19 +59,14 @@ class RedisLock(object):
         finally:
             RedisDB.get().delete(key)
 
-Lock = RedisLock
+
+# 锁住整个竞技场
+class ArenaLock(RedisLock):
+    def make_key(self):
+        return 'lock:arena:{0}'.format(self.server_id)
 
 
-class LadderNPCLock(Lock):
-    KEY = 'lock_ladder_npc'
-
-
-class LadderLock(Lock):
-    KEY = 'lock_ladder'
-
-
-class LadderStoreLock(Lock):
-    KEY = 'lock_ladder_store'
-
-class TrainingMatchStoreLock(Lock):
-    KEY = 'training_match_store'
+# 竞技场比赛
+class ArenaMatchLock(RedisLock):
+    def make_key(self):
+        return 'lock:arena_match:{0}:{1}'.format(self.server_id, self.char_id)

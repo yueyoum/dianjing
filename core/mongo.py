@@ -508,3 +508,21 @@ class MongoDungeon(BaseDocument):
     }
 
     COLLECTION = 'dungeon'
+
+
+# 竞技场
+class MongoArena(BaseDocument):
+    DOCUMENT = {
+        # string id, 既有玩家，也有NPC
+        '_id': null,
+        # 排名
+        'rank': 0,
+        # 刷出来的对手
+        'rivals': [],
+        # 荣耀领奖记录
+        'honor_rewards': [],
+
+    }
+
+    COLLECTION = 'arena'
+    INDEXES = ['rank']

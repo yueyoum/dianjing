@@ -121,3 +121,14 @@ class TimesLogChallengeMatchTimes(CategoryTimesLog):
 class TimesLogDungeonMatchTimes(TimesLog):
     KEY = 'dungeon_match'
     __slots__ = []
+
+
+# 竞技场挑战次数
+class TimesLogArenaMatchTimes(TimesLog):
+    KEY = 'arena_match'
+    __slots__ = []
+
+# 竞技场荣耀点
+class TimesLogArenaHonorPoints(TimesLog):
+    KEY = 'arena_honor'
+    __slots__ = []

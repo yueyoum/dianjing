@@ -1,0 +1,135 @@
+# -*- coding: utf-8 -*-
+"""
+Author:         Wang Chao <yueyoum@gmail.com>
+Filename:       arena
+Date Created:   2016-04-29 10-45
+Description:
+
+"""
+
+import random
+from config.base import ConfigBase
+
+class ArenaNPC(object):
+    __slots__ = ['id', 'npcs']
+
+    def __init__(self):
+        self.id = 0
+        self.npcs = []
+
+    def get_npc_id(self):
+        return random.choice(self.npcs)
+
+class HonorReward(object):
+    __slots__ = ['id', 'reward']
+    def __init__(self):
+        self.id = 0
+        self.reward = []
+
+class RankReward(object):
+    __slots__ = ['id', 'reward', 'mail_title', 'mail_content']
+    def __init__(self):
+        self.id = 0
+        self.reward = []
+        self.mail_title = ""
+        self.mail_content = ""
+
+class MatchReward(object):
+    __slots__ = ['id', 'honor', 'item_id', 'item_amount', 'random_items']
+    def __init__(self):
+        self.id = 0
+        self.honor = 0
+        self.item_id = 0
+        self.item_amount = 0
+        self.random_items = []
+
+    def get_drop(self):
+        items = {}
+        if self.item_id:
+            items[self.item_id] = self.item_amount
+
+        prob = random.randint(1, self.random_items[-1][2])
+        for _id, _amount, _prob in self.random_items:
+            if _prob >= prob:
+                if _id in items:
+                    items[_id] += _amount
+                else:
+                    items[_id] = _amount
+
+                break
+
+        return items.items()
+
+class BuyTimesCost(object):
+    __slots__ = ['id', 'diamond']
+    def __init__(self):
+        self.id = 0
+        self.diamond = 0
+
+
+
+class ConfigArenaNPC(ConfigBase):
+    EntityClass = ArenaNPC
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: ArenaNPC
+        """
+        return super(ConfigArenaNPC, cls).get(_id)
+
+class ConfigArenaHonorReward(ConfigBase):
+    EntityClass = HonorReward
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: HonorReward
+        """
+        return super(ConfigArenaHonorReward, cls).get(_id)
+
+class ConfigArenaRankReward(ConfigBase):
+    EntityClass = HonorReward
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: RankReward
+        """
+        return super(ConfigArenaRankReward, cls).get(_id)
+
+class ConfigArenaMatchReward(ConfigBase):
+    EntityClass = HonorReward
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: MatchReward
+        """
+        return super(ConfigArenaMatchReward, cls).get(_id)
+
+
+class ConfigArenaBuyTimesCost(ConfigBase):
+    EntityClass = HonorReward
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: BuyTimesCost
+        """
+        return super(ConfigArenaBuyTimesCost, cls).get(_id)
