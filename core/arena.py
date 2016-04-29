@@ -87,7 +87,7 @@ class Arena(object):
 
                 doc = MongoArena.document()
                 doc['_id'] = _id
-                doc['rank'] = i + 1
+                doc['rank'] = i
 
                 npcs.append(doc)
 

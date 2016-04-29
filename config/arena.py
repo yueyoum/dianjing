@@ -73,13 +73,25 @@ class ConfigArenaNPC(ConfigBase):
     INSTANCES = {}
     FILTER_CACHE = {}
 
+    ORDERED_INSTANCES = []
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigArenaNPC, cls).initialize(fixture)
+
+        cls.ORDERED_INSTANCES = cls.INSTANCES.items()
+        cls.ORDERED_INSTANCES.sort(key=lambda item: item[0], reverse=True)
+
     @classmethod
     def get(cls, _id):
         """
 
         :rtype: ArenaNPC
         """
-        return super(ConfigArenaNPC, cls).get(_id)
+        # 这个方法只会在 初始化竞技场的时候 调用
+        for a, b in cls.ORDERED_INSTANCES:
+            if _id >= a:
+                return b
 
 class ConfigArenaHonorReward(ConfigBase):
     EntityClass = HonorReward
