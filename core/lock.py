@@ -12,19 +12,24 @@ import time
 from contextlib import contextmanager
 from core.db import RedisDB
 
+def remove_lock_key(key):
+    RedisDB.get().delete(key)
+
 
 class LockTimeOut(Exception):
     pass
 
 
 class RedisLock(object):
-    __slots__ = ['server_id', 'char_id']
+    __slots__ = ['server_id', 'char_id', 'key']
 
     INTERVAL = 0.1
 
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
+
+        self.key = self.make_key()
 
     def make_key(self):
         raise NotImplementedError()
@@ -39,14 +44,13 @@ class RedisLock(object):
                              如果超过hold_seconds后，还没有主动放弃，那么锁将自动释放
                              以此来应对程序获得锁以后出错没有主动释放形成死锁的问题
         """
-        key = self.make_key()
 
         t = 0
         while True:
             if t > wait_timeout:
                 raise LockTimeOut()
 
-            result = RedisDB.get().set(key, 1, ex=hold_seconds, nx=True)
+            result = RedisDB.get().set(self.key, 1, ex=hold_seconds, nx=True)
             if result:
                 # got the lock
                 break
@@ -55,9 +59,12 @@ class RedisLock(object):
             t += self.INTERVAL
 
         try:
-            yield
+            yield self
         finally:
-            RedisDB.get().delete(key)
+            RedisDB.get().delete(self.key)
+
+    def release(self):
+        RedisDB.get().delete(self.key)
 
 
 # 锁住整个竞技场

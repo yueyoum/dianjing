@@ -54,11 +54,11 @@ def match_report(request):
     win = request._proto.win
 
     a = Arena(server_id, char_id)
-    a.report(key, win)
+    resource_classified = a.report(key, win)
 
-    # TODO drop
     response = ArenaMatchReportResponse()
     response.ret = 0
+    response.drop.MergeFrom(resource_classified.make_protomsg())
     return ProtobufResponse(response)
 
 

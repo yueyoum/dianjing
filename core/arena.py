@@ -14,12 +14,14 @@ from dianjing.exception import GameException
 from core.mongo import MongoArena
 
 from core.club import Club
-from core.lock import LockTimeOut, ArenaLock, ArenaMatchLock
+from core.lock import LockTimeOut, ArenaLock, ArenaMatchLock, remove_lock_key
 from core.cooldown import ArenaRefreshCD, ArenaMatchCD
 from core.times_log import TimesLogArenaMatchTimes, TimesLogArenaHonorPoints
 from core.match import ClubMatch
+from core.resource import ResourceClassification
 
-from config import ConfigErrorMessage, ConfigArenaNPC, ConfigNPCFormation, ConfigArenaHonorReward
+from config import ConfigErrorMessage, ConfigArenaNPC, ConfigNPCFormation, ConfigArenaHonorReward, \
+    ConfigArenaMatchReward
 
 from utils.functional import make_string_id
 from utils.message import MessagePipe
@@ -200,15 +202,17 @@ class Arena(object):
             raise GameException(ConfigErrorMessage.get_error_id("ARENA_RIVAL_RANK_CHANGED"))
 
         try:
-            with ArenaMatchLock(self.server_id, self.char_id).lock(hold_seconds=60):
+            with ArenaMatchLock(self.server_id, self.char_id).lock(hold_seconds=180) as my_lock:
                 try:
-                    with ArenaMatchLock(self.server_id, rival_id).lock(hold_seconds=60):
+                    with ArenaMatchLock(self.server_id, rival_id).lock(hold_seconds=180) as rival_lock:
                         club_one = Club(self.server_id, self.char_id)
                         club_two = ArenaClub(self.server_id, rival_id)
                         club_match = ClubMatch(club_one, club_two)
                         msg = club_match.start()
-                        # TODO set lock key here
-                        msg.key = "xxx"
+                        msg.key = "{0}:{1}:{2}".format(rival_id, my_lock.key, rival_lock.key)
+
+                        TimesLogArenaMatchTimes(self.server_id, self.char_id).record()
+
                         return msg
                 except LockTimeOut:
                     raise GameException(ConfigErrorMessage.get_error_id("ARENA_RIVAL_IN_MATCH"))
@@ -216,10 +220,46 @@ class Arena(object):
             raise GameException(ConfigErrorMessage.get_error_id("ARENA_SELF_IN_MATCH"))
 
     def report(self, key, win):
-        # TODO
+        # 这里self 和 rival 都应该处于 lock 状态
+        rival_id, my_lock_key, rival_lock_key = key.split(':')
+
+        if win:
+            doc = MongoArena.db(self.server_id).find_one({'_id': str(self.char_id)}, {'rank': 1})
+            my_rank = doc['rank']
+            doc = MongoArena.db(self.server_id).find_one({'_id': rival_id}, {'rank': 1})
+            rival_rank = doc['rank']
+
+            if my_rank < rival_rank:
+                # 交换排名
+                MongoArena.db(self.server_id).update_one(
+                    {'_id': str(self.char_id)},
+                    {'$set': {'rank': rival_rank}}
+                )
+
+                MongoArena.db(self.server_id).update_one(
+                    {'_id': rival_id},
+                    {'$set': {'rank': my_rank}}
+                )
+
+            config = ConfigArenaMatchReward.get(1)
+        else:
+            config = ConfigArenaMatchReward.get(2)
+
+        TimesLogArenaHonorPoints(self.server_id, self.char_id).record(value=config.honor)
+
+        drop = config.get_drop()
+        resource_classified = ResourceClassification.classify(drop)
+        resource_classified.add(self.server_id, self.char_id)
+
         self.refresh(ignore_cd=True)
         self.send_notify()
 
+        remove_lock_key(my_lock_key)
+        remove_lock_key(rival_lock_key)
+
+        # TODO， 这个CD是开始战斗就算， 还是战斗结束后才开始算？
+        ArenaMatchCD(self.server_id, self.char_id).set(120)
+        return resource_classified
 
     @classmethod
     def get_leader_board(cls, server_id, amount=5):
@@ -234,7 +274,6 @@ class Arena(object):
             clubs.append(ArenaClub(server_id, doc['_id']))
 
         return clubs
-
 
     def send_honor_notify(self):
         notify = ArenaHonorStatusNotify()
