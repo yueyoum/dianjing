@@ -223,7 +223,7 @@ class Arena(object):
 
     def report(self, key, win):
         # 这里self 和 rival 都应该处于 lock 状态
-        rival_id, my_lock_key, rival_lock_key = key.split(':')
+        rival_id, my_lock_key, rival_lock_key = key.split('#')
 
         if win:
             doc = MongoArena.db(self.server_id).find_one({'_id': str(self.char_id)}, {'rank': 1})

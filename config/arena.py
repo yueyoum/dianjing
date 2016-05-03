@@ -44,19 +44,21 @@ class MatchReward(object):
         self.random_items = []
 
     def get_drop(self):
-        items = {}
-        if self.item_id:
-            items[self.item_id] = self.item_amount
+        assert self.item_id
+        items = {
+            self.item_id: self.item_amount
+        }
 
-        prob = random.randint(1, self.random_items[-1][2])
-        for _id, _amount, _prob in self.random_items:
-            if _prob >= prob:
-                if _id in items:
-                    items[_id] += _amount
-                else:
-                    items[_id] = _amount
+        if self.random_items:
+            prob = random.randint(1, self.random_items[-1][2])
+            for _id, _amount, _prob in self.random_items:
+                if _prob >= prob:
+                    if _id in items:
+                        items[_id] += _amount
+                    else:
+                        items[_id] = _amount
 
-                break
+                    break
 
         return items.items()
 
@@ -65,7 +67,6 @@ class BuyTimesCost(object):
     def __init__(self):
         self.id = 0
         self.diamond = 0
-
 
 
 class ConfigArenaNPC(ConfigBase):
