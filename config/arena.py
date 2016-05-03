@@ -107,7 +107,7 @@ class ConfigArenaHonorReward(ConfigBase):
         return super(ConfigArenaHonorReward, cls).get(_id)
 
 class ConfigArenaRankReward(ConfigBase):
-    EntityClass = HonorReward
+    EntityClass = RankReward
     INSTANCES = {}
     FILTER_CACHE = {}
 
@@ -120,7 +120,7 @@ class ConfigArenaRankReward(ConfigBase):
         return super(ConfigArenaRankReward, cls).get(_id)
 
 class ConfigArenaMatchReward(ConfigBase):
-    EntityClass = HonorReward
+    EntityClass = MatchReward
     INSTANCES = {}
     FILTER_CACHE = {}
 
@@ -134,7 +134,7 @@ class ConfigArenaMatchReward(ConfigBase):
 
 
 class ConfigArenaBuyTimesCost(ConfigBase):
-    EntityClass = HonorReward
+    EntityClass = BuyTimesCost
     INSTANCES = {}
     FILTER_CACHE = {}
 

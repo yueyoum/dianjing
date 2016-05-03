@@ -45,6 +45,7 @@ class ArenaClub(object):
             _, npc_id, _ = arena_club_id.split(':')
             npc_club = ConfigNPCFormation.get(int(npc_id))
             # TODO
+            npc_club.id = arena_club_id
             npc_club.name = "NPC-{0}".format(npc_club.id)
 
             return npc_club
@@ -166,7 +167,7 @@ class Arena(object):
         rivals = self.get_rival_list(rank)
 
         MongoArena.db(self.server_id).update_one(
-            {'_id': self.char_id},
+            {'_id': str(self.char_id)},
             {'$set': {
                 'rivals': rivals
             }}
@@ -183,7 +184,7 @@ class Arena(object):
             raise GameException(ConfigErrorMessage.get_error_id("ARENA_MATCH_IN_CD"))
 
         doc = MongoArena.db(self.server_id).find_one(
-            {'_id': self.char_id},
+            {'_id': str(self.char_id)},
             {'rivals': 1}
         )
 
@@ -209,7 +210,8 @@ class Arena(object):
                         club_two = ArenaClub(self.server_id, rival_id)
                         club_match = ClubMatch(club_one, club_two)
                         msg = club_match.start()
-                        msg.key = "{0}:{1}:{2}".format(rival_id, my_lock.key, rival_lock.key)
+                        # NOTE: rival_id 如果是NPC的话， 本来里面就是:分割的。 这里不能再用:
+                        msg.key = "{0}#{1}#{2}".format(rival_id, my_lock.key, rival_lock.key)
 
                         TimesLogArenaMatchTimes(self.server_id, self.char_id).record()
 
