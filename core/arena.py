@@ -38,10 +38,11 @@ ARENA_FREE_TIMES = 10
 class ArenaClub(object):
     def __new__(cls, server_id, arena_club_id):
         """
-
+        :type server_id: int
+        :type arena_club_id: str
         :rtype: core.abstract.AbstractClub
         """
-        if arena_club_id.starswith('npc'):
+        if arena_club_id.startswith('npc'):
             _, npc_id, _ = arena_club_id.split(':')
             npc_club = ConfigNPCFormation.get(int(npc_id))
             # TODO
@@ -254,6 +255,7 @@ class Arena(object):
         resource_classified.add(self.server_id, self.char_id)
 
         self.refresh(ignore_cd=True)
+        self.send_honor_notify()
         self.send_notify()
 
         remove_lock_key(my_lock_key)
@@ -287,7 +289,7 @@ class Arena(object):
             # TODO
             notify_honor.status = 1
 
-        MessagePipe(self.server_id).put(msg=notify)
+        MessagePipe(self.char_id).put(msg=notify)
 
     def send_notify(self):
         doc = MongoArena.db(self.server_id).find_one(
@@ -311,4 +313,4 @@ class Arena(object):
             notify_rival.power = club.power
             notify_rival.rank = _rank
 
-        MessagePipe(self.server_id).put(msg=notify)
+        MessagePipe(self.char_id).put(msg=notify)

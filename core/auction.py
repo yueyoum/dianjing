@@ -16,7 +16,7 @@ from core.mongo import MongoAuctionStaff, MongoBidding
 from core.club import Club
 from core.mail import MailManager
 
-from core.lock import Lock, LockTimeOut
+from core.lock import LockTimeOut
 
 from utils.api import Timerd
 from utils.functional import make_string_id
