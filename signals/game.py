@@ -98,5 +98,6 @@ def game_start_handler(server_id, char_id, **kwargs):
     a = Arena(server_id, char_id)
     a.send_notify()
     a.send_honor_notify()
+    a.send_match_log_notify()
 
     send_broadcast_notify(char_id)

@@ -13,7 +13,7 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoArena
 
-from core.club import Club
+from core.club import Club, get_club_property
 from core.lock import LockTimeOut, ArenaLock, ArenaMatchLock, remove_lock_key
 from core.cooldown import ArenaRefreshCD, ArenaMatchCD
 from core.times_log import TimesLogArenaMatchTimes, TimesLogArenaHonorPoints
@@ -23,10 +23,18 @@ from core.resource import ResourceClassification
 from config import ConfigErrorMessage, ConfigArenaNPC, ConfigNPCFormation, ConfigArenaHonorReward, \
     ConfigArenaMatchReward
 
-from utils.functional import make_string_id
+from utils.functional import make_string_id, get_arrow_time_of_today
 from utils.message import MessagePipe
 
-from protomsg.arena_pb2 import ArenaNotify, ArenaHonorStatusNotify
+from protomsg.arena_pb2 import (
+    ArenaNotify,
+    ArenaHonorStatusNotify,
+    ArenaMatchLogNotify,
+
+    ARENA_HONOR_ALREADY_GOT,
+    ARENA_HONOR_CAN_GET,
+    ARENA_HONOR_CAN_NOT,
+)
 
 ARENA_FREE_TIMES = 10
 
@@ -35,6 +43,10 @@ ARENA_FREE_TIMES = 10
 # 并且如果是 npc 三个字母开头的 那么就是NPC， 格式是 npc:<npc_id>:<unique_id>
 # 从npc_id 就可以从 ConfigNPCFormation 中获取到 阵型
 
+def is_npc_club(arena_club_id):
+    return arena_club_id.startswith('npc')
+
+
 class ArenaClub(object):
     def __new__(cls, server_id, arena_club_id):
         """
@@ -42,12 +54,12 @@ class ArenaClub(object):
         :type arena_club_id: str
         :rtype: core.abstract.AbstractClub
         """
-        if arena_club_id.startswith('npc'):
+        if is_npc_club(arena_club_id):
             _, npc_id, _ = arena_club_id.split(':')
             npc_club = ConfigNPCFormation.get(int(npc_id))
             # TODO
             npc_club.id = arena_club_id
-            npc_club.name = "NPC-{0}".format(npc_club.id)
+            npc_club.name = "NPC-{0}".format(npc_id)
 
             return npc_club
 
@@ -98,10 +110,28 @@ class Arena(object):
     def try_add_self_in_arena(self):
         doc = MongoArena.db(self.server_id).find_one(
             {'_id': str(self.char_id)},
-            {'_id': 1}
+            {'honor_rewards': 1}
         )
 
         if doc:
+            # 清理过期的 honor_rewards 记录
+            honor_rewards = doc.get('honor_rewards', {})
+            if not honor_rewards:
+                return
+
+            today_key = str(get_arrow_time_of_today().timestamp)
+
+            unset = {}
+            for k in honor_rewards.keys():
+                if k != today_key:
+                    unset['honor_rewards.{0}'.format(k)] = 1
+
+            if unset:
+                MongoArena.db(self.server_id).update_one(
+                    {'_id': str(self.char_id)},
+                    {'$unset': unset}
+                )
+
             return
 
         with ArenaLock(self.server_id, self.char_id).lock():
@@ -226,6 +256,8 @@ class Arena(object):
         # 这里self 和 rival 都应该处于 lock 状态
         rival_id, my_lock_key, rival_lock_key = key.split('#')
 
+        my_club_name = get_club_property(self.server_id, self.char_id, 'name')
+
         if win:
             doc = MongoArena.db(self.server_id).find_one({'_id': str(self.char_id)}, {'rank': 1})
             my_rank = doc['rank']
@@ -244,9 +276,18 @@ class Arena(object):
                     {'$set': {'rank': my_rank}}
                 )
 
+                if not is_npc_club(rival_id):
+                    Arena(self.server_id, int(rival_id)).add_match_log(3, [my_club_name, str(rival_rank - my_rank)])
+
+            else:
+                if not is_npc_club(rival_id):
+                    Arena(self.server_id, int(rival_id)).add_match_log(2, [my_club_name])
+
             config = ConfigArenaMatchReward.get(1)
         else:
             config = ConfigArenaMatchReward.get(2)
+            if not is_npc_club(rival_id):
+                Arena(self.server_id, int(rival_id)).add_match_log(1, [my_club_name])
 
         TimesLogArenaHonorPoints(self.server_id, self.char_id).record(value=config.honor)
 
@@ -265,6 +306,61 @@ class Arena(object):
         ArenaMatchCD(self.server_id, self.char_id).set(120)
         return resource_classified
 
+    def get_today_honor_reward_info(self):
+        today_key = str(get_arrow_time_of_today().timestamp)
+        doc = MongoArena.db(self.server_id).find_one(
+            {'_id': str(self.char_id)},
+            {'honor_rewards.{0}'.format(today_key): 1}
+        )
+
+        return doc.get('honor_rewards', {}).get(today_key, [])
+
+    def get_honor_reward(self, honor_id):
+        config = ConfigArenaHonorReward.get(honor_id)
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
+        if honor_id > self.get_honor_points():
+            raise GameException(ConfigErrorMessage.get_error_id("ARENA_HONOR_REWARD_POINT_NOT_ENOUGH"))
+
+        reward_info = self.get_today_honor_reward_info()
+        if honor_id in reward_info:
+            raise GameException(ConfigErrorMessage.get_error_id("ARENA_HONOR_REWARD_ALREADY_GOT"))
+
+        resource_classified = ResourceClassification.classify(config.reward)
+        resource_classified.add(self.server_id, self.char_id)
+
+        today_key = str(get_arrow_time_of_today().timestamp)
+        MongoArena.db(self.server_id).update_one(
+            {'_id': str(self.char_id)},
+            {
+                '$push': {
+                    'honor_rewards.{0}'.format(today_key): honor_id
+                }
+            }
+        )
+
+        reward_info.append(honor_id)
+        self.send_honor_notify(reward_info=reward_info)
+        return resource_classified
+
+    def add_match_log(self, _id, _argument):
+        log = [_id, _argument]
+
+        MongoArena.db(self.server_id).update_one(
+            {'_id': str(self.char_id)},
+            {
+                '$push': {
+                    'logs': {
+                        '$each': [log],
+                        '$slice': -50,
+                    }
+                }
+            }
+        )
+
+        self.send_match_log_notify()
+
     @classmethod
     def get_leader_board(cls, server_id, amount=5):
         """
@@ -279,15 +375,40 @@ class Arena(object):
 
         return clubs
 
-    def send_honor_notify(self):
+    def send_honor_notify(self, reward_info=None):
+        if not reward_info:
+            reward_info = self.get_today_honor_reward_info()
+
+        my_honor = self.get_honor_points()
+
         notify = ArenaHonorStatusNotify()
-        notify.my_honor = self.get_honor_points()
+        notify.my_honor = my_honor
 
         for k in ConfigArenaHonorReward.INSTANCES.keys():
             notify_honor = notify.honors.add()
             notify_honor.honor = k
-            # TODO
-            notify_honor.status = 1
+
+            if k in reward_info:
+                notify_honor.status = ARENA_HONOR_ALREADY_GOT
+            elif k <= my_honor:
+                notify_honor.status = ARENA_HONOR_CAN_GET
+            else:
+                notify_honor.status = ARENA_HONOR_CAN_NOT
+
+        MessagePipe(self.char_id).put(msg=notify)
+
+    def send_match_log_notify(self):
+        doc = MongoArena.db(self.server_id).find_one(
+            {'_id': str(self.char_id)},
+            {'logs': []}
+        )
+
+        logs = doc.get('logs', [])
+        notify = ArenaMatchLogNotify()
+        for _id, _arguments in logs:
+            notify_template = notify.template.add()
+            notify_template.id = _id
+            notify_template.arguments.extend(_arguments)
 
         MessagePipe(self.char_id).put(msg=notify)
 

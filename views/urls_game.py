@@ -126,4 +126,5 @@ urlpatterns = [
     url(r'^arena/leaderboard/$', views.arena.leader_board),
     url(r'^arena/matchstart/$', views.arena.match_start),
     url(r'^arena/matchreport/$', views.arena.match_report),
+    url(r'^arena/honorreward/$', views.arena.get_honor_reward)
 ]

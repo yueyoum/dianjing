@@ -64,7 +64,7 @@ def match_report(request):
 
 def leader_board(request):
     server_id = request._game_session.server_id
-    char_id = request._game_session.char_id
+    # char_id = request._game_session.char_id
 
     clubs = Arena.get_leader_board(server_id)
 
@@ -80,3 +80,17 @@ def leader_board(request):
         response_rival.rank = index+1
 
     return ProtobufResponse(response)
+
+
+def get_honor_reward(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    honor = request._proto.honor
+
+    a = Arena(server_id, char_id)
+    resource_classified = a.get_honor_reward(honor)
+
+    response = ArenaHonorGetRewardResponse()
+    response.ret = 0
+    response.drop.MergeFrom(resource_classified.make_protomsg())

@@ -520,7 +520,11 @@ class MongoArena(BaseDocument):
         # 刷出来的对手
         'rivals': [],
         # 荣耀领奖记录
-        'honor_rewards': [],
+        # NOTE: 这里特殊处理，记录的是 当天日期: 领奖记录列表
+        # 玩家每次登陆时删除过期的日期
+        'honor_rewards': {},
+        # 被挑战日志
+        'logs': [],
 
     }
 

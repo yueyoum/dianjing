@@ -189,6 +189,7 @@ MESSAGE_TO_ID = {
     "ArenaMatchStartResponse": 3510,
     "ArenaMatchReportReqeust": 3511,
     "ArenaMatchReportResponse": 3512,
+    "ArenaMatchLogNotify": 3513,
 }
 
 ID_TO_MESSAGE = {
@@ -381,6 +382,7 @@ ID_TO_MESSAGE = {
     3510: "ArenaMatchStartResponse",
     3511: "ArenaMatchReportReqeust",
     3512: "ArenaMatchReportResponse",
+    3513: "ArenaMatchLogNotify",
 }
 
 PATH_TO_REQUEST = {
