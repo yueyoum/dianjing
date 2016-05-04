@@ -296,14 +296,13 @@ class Arena(object):
         resource_classified.add(self.server_id, self.char_id)
 
         self.refresh(ignore_cd=True)
+        ArenaMatchCD(self.server_id, self.char_id).set(120)
+
         self.send_honor_notify()
         self.send_notify()
 
         remove_lock_key(my_lock_key)
         remove_lock_key(rival_lock_key)
-
-        # TODO， 这个CD是开始战斗就算， 还是战斗结束后才开始算？
-        ArenaMatchCD(self.server_id, self.char_id).set(120)
         return resource_classified
 
     def get_today_honor_reward_info(self):

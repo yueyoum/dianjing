@@ -94,3 +94,5 @@ def get_honor_reward(request):
     response = ArenaHonorGetRewardResponse()
     response.ret = 0
     response.drop.MergeFrom(resource_classified.make_protomsg())
+
+    return ProtobufResponse(response)
