@@ -158,15 +158,12 @@ class DungeonManager(object):
         notify.act = act
         for k, v in doc['times'].iteritems():
             conf = ConfigDungeon.get(int(k))
-            if (today+1) not in conf.open_time:
-                continue
-
             info = notify.info.add()
             info.tp = int(k)
-
             info.times = v - self.get_dungeon_today_times(int(k))
 
-            for _id in doc['open'].get(k, []):
-                info.id.append(_id)
+            if (today+1) in conf.open_time:
+                for _id in doc['open'].get(k, []):
+                    info.id.append(_id)
 
         MessagePipe(self.char_id).put(msg=notify)

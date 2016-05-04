@@ -288,7 +288,6 @@ class AbstractStaff(object):
         self.manage = int(self.manage * (1 + self.manage_percent))
         self.operation = int(self.operation * (1 + self.operation_percent))
 
-
     def set_unit(self, unit):
         # type: (AbstractUnit) -> None
         self.__unit = unit.clone()
@@ -298,17 +297,13 @@ class AbstractStaff(object):
             if config_talent.target <= 5:
                 continue
 
-            if config_talent.target in [6, 10]:
-                self._add_talent_effect_to_unit(config_talent)
-            elif config_talent.target in [7, 11] and self.__unit.config.race == 1:
-                self._add_talent_effect_to_unit(config_talent)
-            elif config_talent.target in [8, 12] and self.__unit.config.race == 3:
-                self._add_talent_effect_to_unit(config_talent)
-            elif config_talent.target in [9, 13] and self.__unit.config.race == 2:
+            if config_talent.target in [6, 10] or \
+                    (config_talent.target in [7, 11] and self.__unit.config.race == 1) or \
+                    (config_talent.target in [8, 12] and self.__unit.config.race == 3) or \
+                    (config_talent.target in [9, 13] and self.__unit.config.race == 2):
                 self._add_talent_effect_to_unit(config_talent)
 
         self.__unit.final_calculate()
-
 
     def add_equipment_property(self):
         # 加上装备属性
@@ -383,6 +378,18 @@ class AbstractStaff(object):
                 # 所有选手所有神族兵种
                 for s in club.formation_staffs:
                     s.active_talent_ids.append(tid)
+
+    def talent_tree_effect(self, effect_ids):
+        if not isinstance(effect_ids, list):
+            effect_ids = [effect_ids]
+
+        for effect_id in effect_ids:
+            config_talent = ConfigTalentSkill.get(effect_id)
+            if config_talent.target in [2, 6, 7, 8, 9, 10, 11, 12, 13] or \
+                    (config_talent.target == 3 and self.config.race == 1) or \
+                    (config_talent.target == 4 and self.config.race == 3) or \
+                    (config_talent.target == 5 and self.config.race == 2):
+                self.active_qianban_ids.append(effect_id)
 
     def _add_talent_effect_to_staff(self, config):
         """

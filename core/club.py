@@ -14,6 +14,7 @@ from core.mongo import MongoCharacter
 from core.abstract import AbstractClub
 from core.signals import club_level_up_signal
 from core.statistics import FinanceStatistics
+from core.talent import TalentManager
 
 from dianjing.exception import GameException
 
@@ -89,8 +90,10 @@ class Club(AbstractClub):
                 # if unit_id:
                 #     v.set_unit(um.get_unit_object(unit_id))
 
+        talent_effect = TalentManager(self.server_id, self.char_id).get_talent_effect()
         for k in in_formation_staffs:
             staff_objs[k].talent_effect(self)
+            staff_objs[k].talent_tree_effect(talent_effect)
 
         for _, v in staff_objs.iteritems():
             v.calculate()
