@@ -20,7 +20,7 @@ from config.unit import ConfigUnitNew, ConfigUnitUnLock, ConfigUnitStepAddition,
 from config.building import ConfigBuilding
 from config.item import ConfigItemNew, ConfigItemUse, ConfigItemMerge, ConfigEquipmentNew, ConfigItemExp
 from config.skill import ConfigTalentSkill
-from config.task import ConfigTask, ConfigRandomEvent, ConfigTaskTargetType
+from config.task import ConfigTaskMain, ConfigRandomEvent
 from config.club import ConfigClubLevel, ConfigClubFlag
 from config.qianban import ConfigQianBan
 from config.activity import ConfigActivityCategory
@@ -107,8 +107,8 @@ def load_config():
 
         elif item == 'talent_skill.json':
             ConfigTalentSkill.initialize(data)
-        elif item == 'task.json':
-            ConfigTask.initialize(data)
+        elif item == 'task_main.json':
+            ConfigTaskMain.initialize(data)
         elif item == 'random_event.json':
             ConfigRandomEvent.initialize(data)
         elif item == 'club_level.json':
@@ -129,8 +129,6 @@ def load_config():
             ConfigActiveFunction.initialize(data)
         elif item == 'active_reward.json':
             ConfigActiveReward.initialize(data)
-        elif item == 'task_target.json':
-            ConfigTaskTargetType.initialize(data)
 
         elif item == 'talent.json':
             ConfigTalent.initialize(data)

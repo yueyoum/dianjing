@@ -276,28 +276,14 @@ class MongoMail(BaseDocument):
 
 
 # 任务
-class MongoTask(BaseDocument):
+class MongoTaskMain(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        # 只记录数值累加的，比较的 从 比较源 实时获取数据
-        # {
-        #     'task_id1': {
-        #         'target_id:param': current_value,
-        #         'target_id:param': current_value,
-        #     },
-        #     'task_id1': {
-        #         'target_id:param': current_value,
-        #         'target_id:param': current_value,
-        #     },
-        # }
-        'doing': {},
-        # 可以领奖
-        'finish': [],
-        # 彻底完成
-        'history': [],
+        # doing 从1开始， 0表示做完了
+        'doing': 1,
     }
 
-    COLLECTION = "task"
+    COLLECTION = "task_main"
 
 
 # 通知

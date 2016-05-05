@@ -11,25 +11,8 @@ import traceback
 
 import uwsgidecorators
 from apps.server.models import Server
-from core.task import TaskManager, RandomEvent
+from core.task import RandomEvent
 from cronjob.log import Logger
-
-
-@uwsgidecorators.cron(0, 0, -1, -1, -1, target='spooler')
-def task_refresh(*args):
-    logger = Logger("task_refresh")
-    logger.write("Start")
-
-    try:
-        for sid in Server.opened_server_ids():
-            TaskManager.cronjob(sid)
-            logger.write("Server {0} Finish".format(sid))
-    except:
-        logger.error(traceback.format_exc())
-    else:
-        logger.write("Done")
-    finally:
-        logger.close()
 
 
 @uwsgidecorators.cron(0, 0, -1, -1, -1, target="spooler")

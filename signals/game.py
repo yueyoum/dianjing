@@ -21,7 +21,7 @@ from core.challenge import Challenge
 from core.building import BuildingManager
 from core.friend import FriendManager
 from core.mail import MailManager
-from core.task import TaskManager, RandomEvent
+from core.task import RandomEvent, TaskMain
 from core.chat import Chat
 from core.notification import Notification
 from core.statistics import FinanceStatistics
@@ -71,8 +71,9 @@ def game_start_handler(server_id, char_id, **kwargs):
     BuildingManager(server_id, char_id).send_notify()
     FriendManager(server_id, char_id).send_notify()
     MailManager(server_id, char_id).send_notify()
-    TaskManager(server_id, char_id).send_notify()
+
     RandomEvent(server_id, char_id).send_notify()
+    TaskMain(server_id, char_id).send_notify()
 
     Chat(server_id, char_id).send_notify()
 

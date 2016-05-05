@@ -81,9 +81,6 @@ urlpatterns = [
     url(r'^mail/delete/$', views.mail.delete),
     url(r'^mail/getattachment/$', views.mail.get_attachment),
 
-    url(r'^task/getreward/$', views.task.reward),
-    url(r'^task/doing/$', views.task.doing),
-
     url(r'^randomevent/done/$', views.task.random_event_done),
 
     url(r'^chat/send/$', views.chat.send),

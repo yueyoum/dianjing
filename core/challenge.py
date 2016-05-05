@@ -14,6 +14,7 @@ from core.mongo import MongoChallenge
 from core.club import Club
 from core.match import ClubMatch
 from core.unit import NPCUnit
+from core.task import TaskMain
 
 from core.resource import ResourceClassification
 from core.times_log import TimesLogChallengeMatchTimes
@@ -267,6 +268,9 @@ class Challenge(object):
                 'challenge_drop.{0}'.format(challenge_id): drop_times
             }}
         )
+
+        # task
+        TaskMain(self.server_id, self.char_id).trig(challenge_id)
 
         return resource_classified
 
