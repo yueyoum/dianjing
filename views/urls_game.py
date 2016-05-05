@@ -33,6 +33,7 @@ import views.formation
 import views.talent
 import views.dungeon
 import views.arena
+import views.tower
 
 urlpatterns = [
     url(r'^sync/$', views.common.sync),
@@ -113,15 +114,20 @@ urlpatterns = [
     url(r'^unit/levelup/$', views.unit.level_up),
     url(r'^unit/stepup/$', views.unit.step_up),
 
-    url(r'talent/levelup/$', views.talent.level_up),
-    url(r'talent/reset/$', views.talent.reset),
+    url(r'^talent/levelup/$', views.talent.level_up),
+    url(r'^talent/reset/$', views.talent.reset),
 
-    url(r'dungeon/start/$', views.dungeon.start),
-    url(r'dungeon/report/$', views.dungeon.report),
+    url(r'^dungeon/start/$', views.dungeon.start),
+    url(r'^dungeon/report/$', views.dungeon.report),
 
     url(r'^arena/refresh/$', views.arena.refresh),
     url(r'^arena/leaderboard/$', views.arena.leader_board),
     url(r'^arena/matchstart/$', views.arena.match_start),
     url(r'^arena/matchreport/$', views.arena.match_report),
-    url(r'^arena/honorreward/$', views.arena.get_honor_reward)
+    url(r'^arena/honorreward/$', views.arena.get_honor_reward),
+
+    url(r'^tower/matchstart/$', views.tower.match_start),
+    url(r'^tower/matchreport/$', views.tower.match_report),
+    url(r'^tower/reset/$', views.tower.reset),
+    url(r'^tower/tomaxlevel/$', views.tower.to_max_star_level),
 ]

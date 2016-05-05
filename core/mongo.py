@@ -522,12 +522,15 @@ class MongoArena(BaseDocument):
 class MongoTower(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        # 记录打过的每一层的星级
+        # 记录打过的每一层的星级 lv: star, star -1 表示失败， 0 表示可以打， 1,2,3 表示对应星级
+        # 只记录打过的
         'levels': {},
         # 已经购买的talent id 列表
         'talents': [],
         # 当前获得的星数, 每天清零
         'star': 0,
+        # 最高三星
+        'max_star_level': 0,
     }
 
     COLLECTION = 'tower'

@@ -185,6 +185,15 @@ MESSAGE_TO_ID = {
     "ArenaMatchReportReqeust": 3511,
     "ArenaMatchReportResponse": 3512,
     "ArenaMatchLogNotify": 3513,
+    "TowerNotify": 3600,
+    "TowerMatchStartRequest": 3601,
+    "TowerMatchStartResponse": 3602,
+    "TowerMatchReportReqeust": 3603,
+    "TowerMatchReportResponse": 3604,
+    "TowerResetRequest": 3605,
+    "TowerResetResponse": 3606,
+    "TowerToMaxStarLevelRequest": 3607,
+    "TowerToMaxStarLevelResponse": 3608,
 }
 
 ID_TO_MESSAGE = {
@@ -373,6 +382,15 @@ ID_TO_MESSAGE = {
     3511: "ArenaMatchReportReqeust",
     3512: "ArenaMatchReportResponse",
     3513: "ArenaMatchLogNotify",
+    3600: "TowerNotify",
+    3601: "TowerMatchStartRequest",
+    3602: "TowerMatchStartResponse",
+    3603: "TowerMatchReportReqeust",
+    3604: "TowerMatchReportResponse",
+    3605: "TowerResetRequest",
+    3606: "TowerResetResponse",
+    3607: "TowerToMaxStarLevelRequest",
+    3608: "TowerToMaxStarLevelResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -448,6 +466,10 @@ PATH_TO_REQUEST = {
     "/game/arena/honorreward/": ["arena", "ArenaHonorGetRewardRequest"],
     "/game/arena/matchstart/": ["arena", "ArenaMatchStartReqeust"],
     "/game/arena/matchreport/": ["arena", "ArenaMatchReportReqeust"],
+    "/game/tower/matchstart/": ["tower", "TowerMatchStartRequest"],
+    "/game/tower/matchreport/": ["tower", "TowerMatchReportReqeust"],
+    "/game/tower/reset/": ["tower", "TowerResetRequest"],
+    "/game/tower/tomaxlevel/": ["tower", "TowerToMaxStarLevelRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -523,4 +545,8 @@ PATH_TO_RESPONSE = {
     "/game/arena/honorreward/": ["arena", "ArenaHonorGetRewardResponse"],
     "/game/arena/matchstart/": ["arena", "ArenaMatchStartResponse"],
     "/game/arena/matchreport/": ["arena", "ArenaMatchReportResponse"],
+    "/game/tower/matchstart/": ["tower", "TowerMatchStartResponse"],
+    "/game/tower/matchreport/": ["tower", "TowerMatchReportResponse"],
+    "/game/tower/reset/": ["tower", "TowerResetResponse"],
+    "/game/tower/tomaxlevel/": ["tower", "TowerToMaxStarLevelResponse"],
 }
