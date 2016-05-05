@@ -389,7 +389,7 @@ class AbstractStaff(object):
                     (config_talent.target == 3 and self.config.race == 1) or \
                     (config_talent.target == 4 and self.config.race == 3) or \
                     (config_talent.target == 5 and self.config.race == 2):
-                self.active_qianban_ids.append(effect_id)
+                self.active_talent_ids.append(effect_id)
 
     def _add_talent_effect_to_staff(self, config):
         """

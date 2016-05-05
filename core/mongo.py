@@ -530,3 +530,19 @@ class MongoArena(BaseDocument):
 
     COLLECTION = 'arena'
     INDEXES = ['rank']
+
+
+# 塔
+class MongoTower(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # 记录打过的每一层的星级
+        'levels': {},
+        # 已经购买的talent id 列表
+        'talents': [],
+        # 当前获得的星数, 每天清零
+        'star': 0,
+    }
+
+    COLLECTION = 'tower'
+    INDEXES = ['star',]
