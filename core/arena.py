@@ -405,9 +405,9 @@ class Arena(object):
         logs = doc.get('logs', [])
         notify = ArenaMatchLogNotify()
         for _id, _arguments in logs:
-            notify_template = notify.template.add()
-            notify_template.id = _id
-            notify_template.arguments.extend(_arguments)
+            notify_log = notify.logs.add()
+            notify_log.id = _id
+            notify_log.arguments.extend(_arguments)
 
         MessagePipe(self.char_id).put(msg=notify)
 
