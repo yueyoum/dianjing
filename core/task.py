@@ -5,6 +5,7 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoTaskMain, MongoRecord
 from core.character import Character
+from core.resource import ResourceClassification
 from core.signals import random_event_done_signal, daily_task_finish_signal
 
 from config import ConfigErrorMessage, ConfigRandomEvent, ConfigTaskMain
@@ -54,6 +55,9 @@ class TaskMain(object):
                 'doing': self.doing
             }}
         )
+
+        resource_classified = ResourceClassification.classify(config.items)
+        resource_classified.add(self.server_id, self.char_id)
 
         self.send_notify(update=True)
 
