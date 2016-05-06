@@ -148,11 +148,17 @@ class Tower(object):
 
         self.send_notify()
 
+        # TODO drop
+
     def send_notify(self, act=ACT_INIT, levels=None):
         notify = TowerNotify()
         notify.act = act
+        notify.star = self.doc['star']
         notify.rank = self.get_rank()
         notify.talent_ids.extend(self.doc['talents'])
+
+        # TODO
+        notify.reset_times = 10
 
         if levels is None:
             # 全部发送
