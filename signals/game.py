@@ -35,6 +35,7 @@ from core.talent import TalentManager
 from core.system import send_broadcast_notify
 from core.dungeon import DungeonManager
 from core.arena import Arena
+from core.tower import Tower
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
@@ -100,5 +101,7 @@ def game_start_handler(server_id, char_id, **kwargs):
     a.send_notify()
     a.send_honor_notify()
     a.send_match_log_notify()
+
+    Tower(server_id, char_id).send_notify()
 
     send_broadcast_notify(char_id)
