@@ -61,7 +61,7 @@ class TowerLevel(object):
         if not self.turntable['3']:
             return table
 
-        for k, v in self.turntable:
+        for k, v in self.turntable.iteritems():
             table[str(k)] = random.sample(v, 3)
         
         return table

@@ -82,5 +82,6 @@ def turntable_pick(request):
     index = t.turntable_pick(star)
 
     response = TowerTurnTableResponse()
+    response.ret = 0
     response.got_index = index
     return ProtobufResponse(response)

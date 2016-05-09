@@ -119,7 +119,7 @@ class Tower(object):
             update_levels.append(next_level)
             updater['levels.{0}'.format(next_level)] = 0
 
-        if star == 3 and level > self.doc['max_star_level']:
+        if star == 3 and level == self.doc['max_star_level']+1:
             self.doc['max_star_level'] = level
             updater['max_star_level'] = level
 
@@ -127,7 +127,7 @@ class Tower(object):
         turntable = config.get_turntable()
         if turntable:
             all_list = []
-            for _, v in turntable:
+            for _, v in turntable.iteritems():
                 all_list.extend(v)
 
             random.shuffle(all_list)

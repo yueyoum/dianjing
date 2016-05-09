@@ -529,7 +529,7 @@ class MongoTower(BaseDocument):
         'talents': [],
         # 当前获得的星数, 每天清零
         'star': 0,
-        # 最高三星
+        # 最高三星 (连续的，非连续的不记录)
         'max_star_level': 0,
         # 转盘信息
         'turntable': {}
