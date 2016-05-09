@@ -58,8 +58,11 @@ class TowerLevel(object):
     
     def get_turntable(self):
         table = {}
+        if not self.turntable['3']:
+            return table
+
         for k, v in self.turntable:
-            table[k] = random.sample(v, 4)
+            table[str(k)] = random.sample(v, 3)
         
         return table
 
@@ -70,6 +73,12 @@ class TowerLevel(object):
         """
         return _Club(self.id, self.staffs)
 
+
+class ResetCost(object):
+    __slots__ = ['id', 'cost']
+    def __init__(self):
+        self.id = 0
+        self.cost = 0
 
 
 class ConfigTowerLevel(ConfigBase):
@@ -84,3 +93,30 @@ class ConfigTowerLevel(ConfigBase):
         :rtype: TowerLevel
         """
         return super(ConfigTowerLevel, cls).get(_id)
+
+
+class ConfigTowerResetCost(ConfigBase):
+    EntityClass = ResetCost
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    MAX_KEY = 0
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigTowerResetCost, cls).initialize(fixture)
+        cls.MAX_KEY = max(cls.INSTANCES.keys())
+
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: ResetCost
+        """
+
+        x = super(ConfigTowerResetCost, cls).get(_id)
+        if not x:
+            x = cls.INSTANCES[cls.MAX_KEY]
+
+        return x

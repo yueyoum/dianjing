@@ -531,6 +531,8 @@ class MongoTower(BaseDocument):
         'star': 0,
         # 最高三星
         'max_star_level': 0,
+        # 转盘信息
+        'turntable': {}
     }
 
     COLLECTION = 'tower'

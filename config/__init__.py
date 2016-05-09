@@ -31,7 +31,7 @@ from config.talent import ConfigTalent
 from config.dungeon import ConfigDungeon, ConfigDungeonGrade
 from config.npc import ConfigNPCFormation
 from config.arena import ConfigArenaNPC, ConfigArenaHonorReward, ConfigArenaBuyTimesCost, ConfigArenaMatchReward, ConfigArenaRankReward
-from config.tower import ConfigTowerLevel
+from config.tower import ConfigTowerLevel, ConfigTowerResetCost
 
 
 _has_configed = False
@@ -153,5 +153,7 @@ def load_config():
 
         elif item == 'tower_level.json':
             ConfigTowerLevel.initialize(data)
+        elif item == 'tower_reset_cost.json':
+            ConfigTowerResetCost.initialize(data)
 
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))

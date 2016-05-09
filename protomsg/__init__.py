@@ -194,6 +194,8 @@ MESSAGE_TO_ID = {
     "TowerResetResponse": 3606,
     "TowerToMaxStarLevelRequest": 3607,
     "TowerToMaxStarLevelResponse": 3608,
+    "TowerTurnTableRequest": 3609,
+    "TowerTurnTableResponse": 3610,
 }
 
 ID_TO_MESSAGE = {
@@ -391,6 +393,8 @@ ID_TO_MESSAGE = {
     3606: "TowerResetResponse",
     3607: "TowerToMaxStarLevelRequest",
     3608: "TowerToMaxStarLevelResponse",
+    3609: "TowerTurnTableRequest",
+    3610: "TowerTurnTableResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -470,6 +474,7 @@ PATH_TO_REQUEST = {
     "/game/tower/matchreport/": ["tower", "TowerMatchReportReqeust"],
     "/game/tower/reset/": ["tower", "TowerResetRequest"],
     "/game/tower/tomaxlevel/": ["tower", "TowerToMaxStarLevelRequest"],
+    "/game/tower/turntable/": ["tower", "TowerTurnTableRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -549,4 +554,5 @@ PATH_TO_RESPONSE = {
     "/game/tower/matchreport/": ["tower", "TowerMatchReportResponse"],
     "/game/tower/reset/": ["tower", "TowerResetResponse"],
     "/game/tower/tomaxlevel/": ["tower", "TowerToMaxStarLevelResponse"],
+    "/game/tower/turntable/": ["tower", "TowerTurnTableResponse"],
 }

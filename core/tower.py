@@ -6,16 +6,19 @@ Date Created:   2016-05-05 15-46
 Description:
 
 """
+import random
+
 from dianjing.exception import GameException
 
 from core.mongo import MongoTower
 from core.club import Club
 from core.match import ClubMatch
-from core.resource import ResourceClassification
+from core.resource import ResourceClassification, money_text_to_item_id
+from core.times_log import TimesLogTowerResetTimes
 
 from utils.message import MessagePipe
 
-from config import ConfigTowerLevel, ConfigErrorMessage
+from config import ConfigTowerLevel, ConfigErrorMessage, ConfigTowerResetCost
 from protomsg.tower_pb2 import (
     TowerNotify,
     TOWER_LEVEL_CURRENT,
@@ -27,7 +30,6 @@ from protomsg.tower_pb2 import (
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
 MAX_LEVEL = max(ConfigTowerLevel.INSTANCES.keys())
-
 
 class Tower(object):
     __slots__ = ['server_id', 'char_id', 'doc']
@@ -48,17 +50,38 @@ class Tower(object):
         doc = MongoTower.db(self.server_id).find({'star': {'$gt': self.doc['star']}})
         return doc.count() + 1
 
-    def match(self, level):
+    def get_current_level(self):
+        for k, v in self.doc['levels'].iteritems():
+            if v == 0:
+                return int(k)
+
+        return 0
+
+    def is_all_complete(self):
+        # 0　表示可以打，　-1 表示失败，　不能打的没有记录，　这里就用-2表示
+        return self.doc['levels'].get(str(MAX_LEVEL), -2) > 0
+
+
+    def get_today_reset_times(self):
+        return TimesLogTowerResetTimes(self.server_id, self.char_id).count_of_today()
+
+    def get_total_reset_times(self):
+        # TODO vip reset times
+        return 10
+
+    def remained_reset_times(self):
+        remained = self.get_today_reset_times() - self.get_today_reset_times()
+        if remained < 0:
+            remained = 0
+
+        return remained
+
+    def match(self):
+        level = self.get_current_level()
+        if not level:
+            raise GameException(ConfigErrorMessage.get_error_id("TOWER_ALREADY_ALL_PASSED"))
+
         config = ConfigTowerLevel.get(level)
-        if not config:
-            raise GameException(ConfigErrorMessage.get_error_id("TOWER_LEVEL_NOT_EXISTS"))
-
-        star = self.doc['levels'].get(str(level), None)
-        if star is None:
-            raise GameException(ConfigErrorMessage.get_error_id("TOWER_LEVEL_NOT_OPENED"))
-
-        if star > 0:
-            raise GameException(ConfigErrorMessage.get_error_id("TOWER_LEVEL_ALREADY_MATCHED"))
 
         club_one = Club(self.server_id, self.char_id)
         club_two = config.make_club()
@@ -68,18 +91,26 @@ class Tower(object):
         return msg
 
     def report(self, key, star):
+        if star not in [1, 2, 3]:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
         level = int(key)
         config = ConfigTowerLevel.get(level)
         if not config:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-        if star == 0:
-            star = -1
-
         self.doc['levels'][str(level)] = star
 
         update_levels = [level]
-        updater = {'levels.{0}'.format(level): star}
+        self.doc['star'] += star
+
+        updater = {
+            'levels.{0}'.format(level): star,
+            'star': self.doc['star'],
+        }
+
+        if star == 0:
+            star = -1
 
         if star > 0 and level < MAX_LEVEL:
             next_level = level + 1
@@ -92,6 +123,21 @@ class Tower(object):
             self.doc['max_star_level'] = level
             updater['max_star_level'] = level
 
+        # 转盘信息
+        turntable = config.get_turntable()
+        if turntable:
+            all_list = []
+            for _, v in turntable:
+                all_list.extend(v)
+
+            random.shuffle(all_list)
+
+            turntable['all_list'] = all_list
+            updater['turntable'] = turntable
+        else:
+            all_list = []
+            updater['turntable'] = {}
+
         MongoTower.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': updater}
@@ -101,13 +147,24 @@ class Tower(object):
         resource_classified.add(self.server_id, self.char_id)
 
         self.send_notify(act=ACT_UPDATE, levels=update_levels)
-        # TODO
-        return resource_classified, False
+        return resource_classified, self.doc['star'], all_list
 
     def reset(self):
-        if -1 not in self.doc['levels'].values():
-            # 没有失败的不能重置
+        current_reset_times = self.get_today_reset_times()
+        if current_reset_times >= self.get_total_reset_times():
+            raise GameException(ConfigErrorMessage.get_error_id("TOWER_NO_RESET_TIMES"))
+
+        if -1 not in self.doc['levels'].values() or not self.is_all_complete():
+            # 没有失败的不能重置 或者没有打完
             raise GameException(ConfigErrorMessage.get_error_id("TOWER_CANNOT_RESET_NO_FAILURE"))
+
+        config = ConfigTowerResetCost.get(current_reset_times)
+        if config.cost:
+            cost = [(money_text_to_item_id('diamond'), config.cost)]
+
+            resource_classified = ResourceClassification.classify(cost)
+            resource_classified.check_exist(self.server_id, self.char_id)
+            resource_classified.remove(self.server_id, self.char_id)
 
         self.doc['levels'] = {'1': 0}
         self.doc['talents'] = []
@@ -119,9 +176,11 @@ class Tower(object):
                 'levels': self.doc['levels'],
                 'talents': self.doc['talents'],
                 'star': self.doc['star'],
+                'turntable': {},
             }}
         )
 
+        TimesLogTowerResetTimes(self.server_id, self.char_id).record()
         self.send_notify()
 
     def to_max_star_level(self):
@@ -131,24 +190,71 @@ class Tower(object):
         if -1 in self.doc['levels'].values():
             raise GameException(ConfigErrorMessage.get_error_id("TOWER_CANNOT_TO_MAX_LEVEL_HAS_FAILURE"))
 
+        drops = {}
+
         levels = {}
         for i in range(1, self.doc['max_star_level'] + 1):
             levels[str(i)] = 3
+
+            for _id, _amount in ConfigTowerLevel.get(i).get_star_reward(3):
+                if _id in drops:
+                    drops[_id] += _amount
+                else:
+                    drops[_id] = _amount
+
+        inc_star = len(levels) * 3
 
         if self.doc['max_star_level'] < MAX_LEVEL:
             levels[str(self.doc['max_star_level'] + 1)] = 0
 
         self.doc['levels'] = levels
+        self.doc['star'] += inc_star
         MongoTower.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
-                'levels': levels
+                'levels': levels,
+                'star': self.doc['star']
             }}
         )
 
         self.send_notify()
 
-        # TODO drop
+        resource_classified = ResourceClassification.classify(drops.items())
+        resource_classified.add(self.server_id, self.char_id)
+        return resource_classified
+
+
+    def turntable_pick(self, star):
+        if star not in [3, 6, 9]:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
+        if star < self.doc['star']:
+            raise GameException(ConfigErrorMessage.get_error_id("TOWER_STAR_NOT_ENOUGH"))
+
+        turntable = self.doc.get('turntable', {})
+        if not turntable:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        got = random.choice(turntable[str(star)])
+        index = turntable['all_list'].index(got)
+
+        self.doc['star'] -= star
+        self.doc['talents'].append(got)
+
+        MongoTower.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {
+                '$set': {
+                    'star': self.doc['star'],
+                    'talents': self.doc['talents'],
+                    'turntable': {},
+                }
+            }
+        )
+
+        self.send_notify(act=ACT_UPDATE, levels=[])
+        return index
+
 
     def send_notify(self, act=ACT_INIT, levels=None):
         notify = TowerNotify()
@@ -157,8 +263,7 @@ class Tower(object):
         notify.rank = self.get_rank()
         notify.talent_ids.extend(self.doc['talents'])
 
-        # TODO
-        notify.reset_times = 10
+        notify.reset_times = self.remained_reset_times()
 
         if levels is None:
             # 全部发送

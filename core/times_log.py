@@ -132,3 +132,8 @@ class TimesLogArenaMatchTimes(TimesLog):
 class TimesLogArenaHonorPoints(TimesLog):
     KEY = 'arena_honor'
     __slots__ = []
+
+# 训练塔重置次数
+class TimesLogTowerResetTimes(TimesLog):
+    KEY = 'tower_reset'
+    __slots__ = []
