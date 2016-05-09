@@ -25,7 +25,7 @@ class RecruitResult(object):
 class StaffRecruit(object):
     __slots__ = [
         'id', 'points', 'cost_type', 'cost_value_1', 'cost_value_10',
-        'items_10',
+        'items_1', 'items_10',
         'reward_score_times', 'reward_score', 'reward_score_day_limit',
         'SPECIAL_ITEM_TP'
     ]
@@ -36,6 +36,7 @@ class StaffRecruit(object):
         self.cost_type = 0
         self.cost_value_1 = 0
         self.cost_value_10 = 0
+        self.items_1 = []
         self.items_10 = []
         self.reward_score_times = 0
         self.reward_score = 0
@@ -76,7 +77,9 @@ class StaffRecruit(object):
             result.score = self.reward_score
 
         # 点数
-        if current_times % 10 == 0:
+        if current_times == 1:
+            result.item = self.get_item(current_point, items=self.items_1)
+        elif current_times % 10 == 0:
             result.point = 0
             result.item = self.get_item(current_point, items=self.items_10)
         else:
