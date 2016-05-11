@@ -559,4 +559,6 @@ PATH_TO_RESPONSE = {
     "/game/tower/matchreport/": ["tower", "TowerMatchReportResponse"],
     "/game/tower/reset/": ["tower", "TowerResetResponse"],
     "/game/tower/turntable/": ["tower", "TowerTurnTableResponse"],
+    "/game/tower/sweep/": ["tower", "TowerSweepResponse"],
+    "/game/tower/sweepfinish/": ["tower", "TowerSweepFinishResponse"],
 }

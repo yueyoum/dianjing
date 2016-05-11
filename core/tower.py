@@ -166,7 +166,7 @@ class Tower(object):
         current_reset_times = self.get_today_reset_times()
         if current_reset_times >= self.get_total_reset_times():
             raise GameException(ConfigErrorMessage.get_error_id("TOWER_NO_RESET_TIMES"))
-        
+
         if -1 not in self.doc['levels'].values():
             # 没有失败的， 看看是不是全部完成了
             if not self.is_all_complete():
