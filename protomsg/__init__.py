@@ -192,10 +192,12 @@ MESSAGE_TO_ID = {
     "TowerMatchReportResponse": 3604,
     "TowerResetRequest": 3605,
     "TowerResetResponse": 3606,
-    "TowerToMaxStarLevelRequest": 3607,
-    "TowerToMaxStarLevelResponse": 3608,
     "TowerTurnTableRequest": 3609,
     "TowerTurnTableResponse": 3610,
+    "TowerSweepRequest": 3611,
+    "TowerSweepResponse": 3612,
+    "TowerSweepFinishRequest": 3613,
+    "TowerSweepFinishResponse": 3614,
 }
 
 ID_TO_MESSAGE = {
@@ -391,10 +393,12 @@ ID_TO_MESSAGE = {
     3604: "TowerMatchReportResponse",
     3605: "TowerResetRequest",
     3606: "TowerResetResponse",
-    3607: "TowerToMaxStarLevelRequest",
-    3608: "TowerToMaxStarLevelResponse",
     3609: "TowerTurnTableRequest",
     3610: "TowerTurnTableResponse",
+    3611: "TowerSweepRequest",
+    3612: "TowerSweepResponse",
+    3613: "TowerSweepFinishRequest",
+    3614: "TowerSweepFinishResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -473,8 +477,9 @@ PATH_TO_REQUEST = {
     "/game/tower/matchstart/": ["tower", "TowerMatchStartRequest"],
     "/game/tower/matchreport/": ["tower", "TowerMatchReportReqeust"],
     "/game/tower/reset/": ["tower", "TowerResetRequest"],
-    "/game/tower/tomaxlevel/": ["tower", "TowerToMaxStarLevelRequest"],
     "/game/tower/turntable/": ["tower", "TowerTurnTableRequest"],
+    "/game/tower/sweep/": ["tower", "TowerSweepRequest"],
+    "/game/tower/sweepfinish/": ["tower", "TowerSweepFinishRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -553,6 +558,5 @@ PATH_TO_RESPONSE = {
     "/game/tower/matchstart/": ["tower", "TowerMatchStartResponse"],
     "/game/tower/matchreport/": ["tower", "TowerMatchReportResponse"],
     "/game/tower/reset/": ["tower", "TowerResetResponse"],
-    "/game/tower/tomaxlevel/": ["tower", "TowerToMaxStarLevelResponse"],
     "/game/tower/turntable/": ["tower", "TowerTurnTableResponse"],
 }

@@ -532,7 +532,9 @@ class MongoTower(BaseDocument):
         # 最高三星 (连续的，非连续的不记录)
         'max_star_level': 0,
         # 转盘信息
-        'turntable': {}
+        'turntable': {},
+        # 扫荡完成时间 0 没有扫荡
+        'sweep_end_at': 0,
     }
 
     COLLECTION = 'tower'

@@ -23,7 +23,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='tower.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0btower.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\x1a\x0bmatch.proto\"\x9c\x02\n\x0bTowerNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x34\n\x06levels\x18\x03 \x03(\x0b\x32$.Dianjing.protocol.TowerNotify.Level\x12\x0c\n\x04star\x18\x04 \x02(\x05\x12\x0c\n\x04rank\x18\x05 \x02(\x05\x12\x12\n\ntalent_ids\x18\x06 \x03(\x05\x12\x13\n\x0breset_times\x18\x07 \x02(\x05\x1aY\n\x05Level\x12\r\n\x05level\x18\x01 \x02(\x05\x12\x33\n\x06status\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.TowerLevelStatus\x12\x0c\n\x04star\x18\x03 \x01(\x05\")\n\x16TowerMatchStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"d\n\x17TowerMatchStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"E\n\x17TowerMatchReportReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x0c\n\x04star\x18\x03 \x02(\x05\"\x8b\x01\n\x18TowerMatchReportResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\x12\x0c\n\x04star\x18\x04 \x01(\x05\x12\x1c\n\x14turntable_talent_ids\x18\x05 \x03(\x05\"$\n\x11TowerResetRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"2\n\x12TowerResetResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"-\n\x1aTowerToMaxStarLevelRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"b\n\x1bTowerToMaxStarLevelResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"6\n\x15TowerTurnTableRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04star\x18\x02 \x02(\x05\"I\n\x16TowerTurnTableResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x11\n\tgot_index\x18\x03 \x01(\x05*v\n\x10TowerLevelStatus\x12\x16\n\x12TOWER_LEVEL_PASSED\x10\x01\x12\x17\n\x13TOWER_LEVEL_CURRENT\x10\x02\x12\x17\n\x13TOWER_LEVEL_FAILURE\x10\x03\x12\x18\n\x14TOWER_LEVEL_NOT_OPEN\x10\x04')
+  serialized_pb=_b('\n\x0btower.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\x1a\x0bmatch.proto\"\xca\x02\n\x0bTowerNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x34\n\x06levels\x18\x03 \x03(\x0b\x32$.Dianjing.protocol.TowerNotify.Level\x12\x0c\n\x04star\x18\x04 \x02(\x05\x12\x0c\n\x04rank\x18\x05 \x02(\x05\x12\x12\n\ntalent_ids\x18\x06 \x03(\x05\x12\x13\n\x0breset_times\x18\x07 \x02(\x05\x12\x16\n\x0emax_star_level\x18\x08 \x02(\x05\x12\x14\n\x0csweep_end_at\x18\t \x02(\x03\x1aY\n\x05Level\x12\r\n\x05level\x18\x01 \x02(\x05\x12\x33\n\x06status\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.TowerLevelStatus\x12\x0c\n\x04star\x18\x03 \x01(\x05\")\n\x16TowerMatchStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"d\n\x17TowerMatchStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"E\n\x17TowerMatchReportReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x0c\n\x04star\x18\x03 \x02(\x05\"\x8b\x01\n\x18TowerMatchReportResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\x12\x0c\n\x04star\x18\x04 \x01(\x05\x12\x1c\n\x14turntable_talent_ids\x18\x05 \x03(\x05\"$\n\x11TowerResetRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"2\n\x12TowerResetResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"$\n\x11TowerSweepRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"2\n\x12TowerSweepResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"*\n\x17TowerSweepFinishRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"_\n\x18TowerSweepFinishResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"6\n\x15TowerTurnTableRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04star\x18\x02 \x02(\x05\"I\n\x16TowerTurnTableResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x11\n\tgot_index\x18\x03 \x01(\x05*v\n\x10TowerLevelStatus\x12\x16\n\x12TOWER_LEVEL_PASSED\x10\x01\x12\x17\n\x13TOWER_LEVEL_CURRENT\x10\x02\x12\x17\n\x13TOWER_LEVEL_FAILURE\x10\x03\x12\x18\n\x14TOWER_LEVEL_NOT_OPEN\x10\x04')
   ,
   dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,match__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -53,8 +53,8 @@ _TOWERLEVELSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1089,
-  serialized_end=1207,
+  serialized_start=1219,
+  serialized_end=1337,
 )
 _sym_db.RegisterEnumDescriptor(_TOWERLEVELSTATUS)
 
@@ -106,8 +106,8 @@ _TOWERNOTIFY_LEVEL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=272,
-  serialized_end=361,
+  serialized_start=318,
+  serialized_end=407,
 )
 
 _TOWERNOTIFY = _descriptor.Descriptor(
@@ -166,6 +166,20 @@ _TOWERNOTIFY = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='max_star_level', full_name='Dianjing.protocol.TowerNotify.max_star_level', index=7,
+      number=8, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='sweep_end_at', full_name='Dianjing.protocol.TowerNotify.sweep_end_at', index=8,
+      number=9, type=3, cpp_type=2, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -179,7 +193,7 @@ _TOWERNOTIFY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=77,
-  serialized_end=361,
+  serialized_end=407,
 )
 
 
@@ -209,8 +223,8 @@ _TOWERMATCHSTARTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=363,
-  serialized_end=404,
+  serialized_start=409,
+  serialized_end=450,
 )
 
 
@@ -254,8 +268,8 @@ _TOWERMATCHSTARTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=406,
-  serialized_end=506,
+  serialized_start=452,
+  serialized_end=552,
 )
 
 
@@ -299,8 +313,8 @@ _TOWERMATCHREPORTREQEUST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=508,
-  serialized_end=577,
+  serialized_start=554,
+  serialized_end=623,
 )
 
 
@@ -358,8 +372,8 @@ _TOWERMATCHREPORTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=580,
-  serialized_end=719,
+  serialized_start=626,
+  serialized_end=765,
 )
 
 
@@ -389,8 +403,8 @@ _TOWERRESETREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=721,
-  serialized_end=757,
+  serialized_start=767,
+  serialized_end=803,
 )
 
 
@@ -427,20 +441,20 @@ _TOWERRESETRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=759,
-  serialized_end=809,
+  serialized_start=805,
+  serialized_end=855,
 )
 
 
-_TOWERTOMAXSTARLEVELREQUEST = _descriptor.Descriptor(
-  name='TowerToMaxStarLevelRequest',
-  full_name='Dianjing.protocol.TowerToMaxStarLevelRequest',
+_TOWERSWEEPREQUEST = _descriptor.Descriptor(
+  name='TowerSweepRequest',
+  full_name='Dianjing.protocol.TowerSweepRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.TowerToMaxStarLevelRequest.session', index=0,
+      name='session', full_name='Dianjing.protocol.TowerSweepRequest.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
@@ -458,34 +472,103 @@ _TOWERTOMAXSTARLEVELREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=811,
-  serialized_end=856,
+  serialized_start=857,
+  serialized_end=893,
 )
 
 
-_TOWERTOMAXSTARLEVELRESPONSE = _descriptor.Descriptor(
-  name='TowerToMaxStarLevelResponse',
-  full_name='Dianjing.protocol.TowerToMaxStarLevelResponse',
+_TOWERSWEEPRESPONSE = _descriptor.Descriptor(
+  name='TowerSweepResponse',
+  full_name='Dianjing.protocol.TowerSweepResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='ret', full_name='Dianjing.protocol.TowerToMaxStarLevelResponse.ret', index=0,
+      name='ret', full_name='Dianjing.protocol.TowerSweepResponse.ret', index=0,
       number=1, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.TowerToMaxStarLevelResponse.session', index=1,
+      name='session', full_name='Dianjing.protocol.TowerSweepResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=895,
+  serialized_end=945,
+)
+
+
+_TOWERSWEEPFINISHREQUEST = _descriptor.Descriptor(
+  name='TowerSweepFinishRequest',
+  full_name='Dianjing.protocol.TowerSweepFinishRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TowerSweepFinishRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=947,
+  serialized_end=989,
+)
+
+
+_TOWERSWEEPFINISHRESPONSE = _descriptor.Descriptor(
+  name='TowerSweepFinishResponse',
+  full_name='Dianjing.protocol.TowerSweepFinishResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.TowerSweepFinishResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TowerSweepFinishResponse.session', index=1,
       number=2, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='drop', full_name='Dianjing.protocol.TowerToMaxStarLevelResponse.drop', index=2,
+      name='drop', full_name='Dianjing.protocol.TowerSweepFinishResponse.drop', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -503,8 +586,8 @@ _TOWERTOMAXSTARLEVELRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=858,
-  serialized_end=956,
+  serialized_start=991,
+  serialized_end=1086,
 )
 
 
@@ -541,8 +624,8 @@ _TOWERTURNTABLEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=958,
-  serialized_end=1012,
+  serialized_start=1088,
+  serialized_end=1142,
 )
 
 
@@ -586,8 +669,8 @@ _TOWERTURNTABLERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1014,
-  serialized_end=1087,
+  serialized_start=1144,
+  serialized_end=1217,
 )
 
 _TOWERNOTIFY_LEVEL.fields_by_name['status'].enum_type = _TOWERLEVELSTATUS
@@ -596,7 +679,7 @@ _TOWERNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _TOWERNOTIFY.fields_by_name['levels'].message_type = _TOWERNOTIFY_LEVEL
 _TOWERMATCHSTARTRESPONSE.fields_by_name['match'].message_type = match__pb2._CLUBMATCH
 _TOWERMATCHREPORTRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
-_TOWERTOMAXSTARLEVELRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
+_TOWERSWEEPFINISHRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 DESCRIPTOR.message_types_by_name['TowerNotify'] = _TOWERNOTIFY
 DESCRIPTOR.message_types_by_name['TowerMatchStartRequest'] = _TOWERMATCHSTARTREQUEST
 DESCRIPTOR.message_types_by_name['TowerMatchStartResponse'] = _TOWERMATCHSTARTRESPONSE
@@ -604,8 +687,10 @@ DESCRIPTOR.message_types_by_name['TowerMatchReportReqeust'] = _TOWERMATCHREPORTR
 DESCRIPTOR.message_types_by_name['TowerMatchReportResponse'] = _TOWERMATCHREPORTRESPONSE
 DESCRIPTOR.message_types_by_name['TowerResetRequest'] = _TOWERRESETREQUEST
 DESCRIPTOR.message_types_by_name['TowerResetResponse'] = _TOWERRESETRESPONSE
-DESCRIPTOR.message_types_by_name['TowerToMaxStarLevelRequest'] = _TOWERTOMAXSTARLEVELREQUEST
-DESCRIPTOR.message_types_by_name['TowerToMaxStarLevelResponse'] = _TOWERTOMAXSTARLEVELRESPONSE
+DESCRIPTOR.message_types_by_name['TowerSweepRequest'] = _TOWERSWEEPREQUEST
+DESCRIPTOR.message_types_by_name['TowerSweepResponse'] = _TOWERSWEEPRESPONSE
+DESCRIPTOR.message_types_by_name['TowerSweepFinishRequest'] = _TOWERSWEEPFINISHREQUEST
+DESCRIPTOR.message_types_by_name['TowerSweepFinishResponse'] = _TOWERSWEEPFINISHRESPONSE
 DESCRIPTOR.message_types_by_name['TowerTurnTableRequest'] = _TOWERTURNTABLEREQUEST
 DESCRIPTOR.message_types_by_name['TowerTurnTableResponse'] = _TOWERTURNTABLERESPONSE
 DESCRIPTOR.enum_types_by_name['TowerLevelStatus'] = _TOWERLEVELSTATUS
@@ -667,19 +752,33 @@ TowerResetResponse = _reflection.GeneratedProtocolMessageType('TowerResetRespons
   ))
 _sym_db.RegisterMessage(TowerResetResponse)
 
-TowerToMaxStarLevelRequest = _reflection.GeneratedProtocolMessageType('TowerToMaxStarLevelRequest', (_message.Message,), dict(
-  DESCRIPTOR = _TOWERTOMAXSTARLEVELREQUEST,
+TowerSweepRequest = _reflection.GeneratedProtocolMessageType('TowerSweepRequest', (_message.Message,), dict(
+  DESCRIPTOR = _TOWERSWEEPREQUEST,
   __module__ = 'tower_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TowerToMaxStarLevelRequest)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TowerSweepRequest)
   ))
-_sym_db.RegisterMessage(TowerToMaxStarLevelRequest)
+_sym_db.RegisterMessage(TowerSweepRequest)
 
-TowerToMaxStarLevelResponse = _reflection.GeneratedProtocolMessageType('TowerToMaxStarLevelResponse', (_message.Message,), dict(
-  DESCRIPTOR = _TOWERTOMAXSTARLEVELRESPONSE,
+TowerSweepResponse = _reflection.GeneratedProtocolMessageType('TowerSweepResponse', (_message.Message,), dict(
+  DESCRIPTOR = _TOWERSWEEPRESPONSE,
   __module__ = 'tower_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TowerToMaxStarLevelResponse)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TowerSweepResponse)
   ))
-_sym_db.RegisterMessage(TowerToMaxStarLevelResponse)
+_sym_db.RegisterMessage(TowerSweepResponse)
+
+TowerSweepFinishRequest = _reflection.GeneratedProtocolMessageType('TowerSweepFinishRequest', (_message.Message,), dict(
+  DESCRIPTOR = _TOWERSWEEPFINISHREQUEST,
+  __module__ = 'tower_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TowerSweepFinishRequest)
+  ))
+_sym_db.RegisterMessage(TowerSweepFinishRequest)
+
+TowerSweepFinishResponse = _reflection.GeneratedProtocolMessageType('TowerSweepFinishResponse', (_message.Message,), dict(
+  DESCRIPTOR = _TOWERSWEEPFINISHRESPONSE,
+  __module__ = 'tower_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TowerSweepFinishResponse)
+  ))
+_sym_db.RegisterMessage(TowerSweepFinishResponse)
 
 TowerTurnTableRequest = _reflection.GeneratedProtocolMessageType('TowerTurnTableRequest', (_message.Message,), dict(
   DESCRIPTOR = _TOWERTURNTABLEREQUEST,

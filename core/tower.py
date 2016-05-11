@@ -7,6 +7,7 @@ Description:
 
 """
 import random
+import arrow
 
 from dianjing.exception import GameException
 
@@ -18,7 +19,7 @@ from core.times_log import TimesLogTowerResetTimes
 
 from utils.message import MessagePipe
 
-from config import ConfigTowerLevel, ConfigErrorMessage, ConfigTowerResetCost
+from config import ConfigTowerLevel, ConfigErrorMessage, ConfigTowerResetCost, GlobalConfig
 from protomsg.tower_pb2 import (
     TowerNotify,
     TOWER_LEVEL_CURRENT,
@@ -30,6 +31,7 @@ from protomsg.tower_pb2 import (
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
 MAX_LEVEL = max(ConfigTowerLevel.INSTANCES.keys())
+
 
 class Tower(object):
     __slots__ = ['server_id', 'char_id', 'doc']
@@ -61,7 +63,6 @@ class Tower(object):
         # 0　表示可以打，　-1 表示失败，　不能打的没有记录，　这里就用-2表示
         return self.doc['levels'].get(str(MAX_LEVEL), -2) > 0
 
-
     def get_today_reset_times(self):
         return TimesLogTowerResetTimes(self.server_id, self.char_id).count_of_today()
 
@@ -77,6 +78,10 @@ class Tower(object):
         return remained
 
     def match(self):
+        sweep_end_at = self.doc.get('sweep_end_at', 0)
+        if sweep_end_at:
+            raise GameException(ConfigErrorMessage.get_error_id("TOWER_IN_SWEEP_CANNOT_OPERATE"))
+
         level = self.get_current_level()
         if not level:
             raise GameException(ConfigErrorMessage.get_error_id("TOWER_ALREADY_ALL_PASSED"))
@@ -91,6 +96,10 @@ class Tower(object):
         return msg
 
     def report(self, key, star):
+        sweep_end_at = self.doc.get('sweep_end_at', 0)
+        if sweep_end_at:
+            raise GameException(ConfigErrorMessage.get_error_id("TOWER_IN_SWEEP_CANNOT_OPERATE"))
+
         if star not in [1, 2, 3]:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
@@ -119,7 +128,7 @@ class Tower(object):
             update_levels.append(next_level)
             updater['levels.{0}'.format(next_level)] = 0
 
-        if star == 3 and level == self.doc['max_star_level']+1:
+        if star == 3 and level == self.doc['max_star_level'] + 1:
             self.doc['max_star_level'] = level
             updater['max_star_level'] = level
 
@@ -150,6 +159,10 @@ class Tower(object):
         return resource_classified, self.doc['star'], all_list
 
     def reset(self):
+        sweep_end_at = self.doc.get('sweep_end_at', 0)
+        if sweep_end_at:
+            raise GameException(ConfigErrorMessage.get_error_id("TOWER_IN_SWEEP_CANNOT_OPERATE"))
+
         current_reset_times = self.get_today_reset_times()
         if current_reset_times >= self.get_total_reset_times():
             raise GameException(ConfigErrorMessage.get_error_id("TOWER_NO_RESET_TIMES"))
@@ -183,46 +196,101 @@ class Tower(object):
         TimesLogTowerResetTimes(self.server_id, self.char_id).record()
         self.send_notify()
 
-    def to_max_star_level(self):
+    def _sweep_check(self):
         if not self.doc['max_star_level']:
             raise GameException(ConfigErrorMessage.get_error_id("TOWER_NO_MAX_STAR_LEVEL"))
 
         if -1 in self.doc['levels'].values():
             raise GameException(ConfigErrorMessage.get_error_id("TOWER_CANNOT_TO_MAX_LEVEL_HAS_FAILURE"))
 
+        levels_amount = self.doc['max_star_level'] - self.get_current_level()
+        if levels_amount <= 0:
+            raise GameException(ConfigErrorMessage.get_error_id("TOWER_CURRENT_LEVEL_GREAT_THAN_MAX_STAR_LEVEL"))
+
+        return levels_amount
+
+    def sweep(self):
+        sweep_end_at = self.doc.get('sweep_end_at', 0)
+        if sweep_end_at:
+            raise GameException(ConfigErrorMessage.get_error_id("TOWER_ALREADY_IN_SWEEP"))
+
+        levels_amount = self._sweep_check()
+        end_at = arrow.utcnow().timestamp + levels_amount * GlobalConfig.value("TOWER_SWEEP_SECONDS_PER_LEVEL")
+
+        self.doc['sweep_end_at'] = end_at
+        MongoTower.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'sweep_end_at': end_at
+            }}
+        )
+
+        self.send_notify(act=ACT_UPDATE, levels=[])
+
+    def sweep_finish(self):
+        # 加速或者领奖 都是这一个协议
+
+        start_level = self.get_current_level()
+        sweep_end_at = self.doc.get('sweep_end_at', 0)
+        if sweep_end_at == 0:
+            # 没有扫荡过，直接 完成
+            levels_amount = self._sweep_check()
+        else:
+            # 已经扫荡了， 现在要加速完成
+            need_seconds = sweep_end_at - arrow.utcnow().timestamp
+            if need_seconds <= 0:
+                # 已经完成了， 直接领奖
+                levels_amount = 0
+            else:
+                levels_amount, _remained = divmod(need_seconds, GlobalConfig.value("TOWER_SWEEP_SECONDS_PER_LEVEL"))
+                if _remained:
+                    levels_amount += 1
+
+        if levels_amount:
+            need_diamond = levels_amount * GlobalConfig.value("TOWER_SWEEP_DIAMOND_PER_LEVEL")
+            resource_classified = ResourceClassification.classify([(money_text_to_item_id('diamond'), need_diamond)])
+            resource_classified.check_exist(self.server_id, self.char_id)
+            resource_classified.remove(self.server_id, self.char_id)
+
         drops = {}
+        updater = {}
+        for i in range(start_level, self.doc['max_star_level'] + 1):
+            updater['levels.{0}'.format(i)] = 3
+            self.doc['levels'][str(i)] = 3
+            self.doc['star'] += 3
 
-        levels = {}
-        for i in range(1, self.doc['max_star_level'] + 1):
-            levels[str(i)] = 3
-
-            for _id, _amount in ConfigTowerLevel.get(i).get_star_reward(3):
+            config = ConfigTowerLevel.get(i)
+            drop = config.get_star_reward(3)
+            for _id, _amount in drop:
                 if _id in drops:
                     drops[_id] += _amount
                 else:
                     drops[_id] = _amount
 
-        inc_star = len(levels) * 3
+            turntable = config.get_turntable()
+            if turntable:
+                got = random.choice(turntable['9'])
+                self.doc['talents'].append(got)
 
-        if self.doc['max_star_level'] < MAX_LEVEL:
-            levels[str(self.doc['max_star_level'] + 1)] = 0
+                self.doc['star'] -= 9
+                if self.doc['star'] < 0:
+                    self.doc['star'] = 0
 
-        self.doc['levels'] = levels
-        self.doc['star'] += inc_star
+        self.doc['sweep_end_at'] = 0
+        updater['sweep_end_at'] = 0
+        updater['star'] = self.doc['star']
+        updater['talents'] = self.doc['talents']
+
         MongoTower.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': {
-                'levels': levels,
-                'star': self.doc['star']
-            }}
+            {'$set': updater}
         )
-
-        self.send_notify()
 
         resource_classified = ResourceClassification.classify(drops.items())
         resource_classified.add(self.server_id, self.char_id)
-        return resource_classified
 
+        self.send_notify(act=ACT_UPDATE)
+        return resource_classified
 
     def turntable_pick(self, star):
         if star not in [3, 6, 9]:
@@ -255,7 +323,6 @@ class Tower(object):
         self.send_notify(act=ACT_UPDATE, levels=[])
         return index
 
-
     def send_notify(self, act=ACT_INIT, levels=None):
         notify = TowerNotify()
         notify.act = act
@@ -264,6 +331,8 @@ class Tower(object):
         notify.talent_ids.extend(self.doc['talents'])
 
         notify.reset_times = self.remained_reset_times()
+        notify.max_star_level = self.doc['max_star_level']
+        notify.sweep_end_at = self.doc.get('sweep_end_at', 0)
 
         if levels is None:
             # 全部发送
