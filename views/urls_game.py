@@ -129,6 +129,7 @@ urlpatterns = [
     url(r'^tower/matchstart/$', views.tower.match_start),
     url(r'^tower/matchreport/$', views.tower.match_report),
     url(r'^tower/reset/$', views.tower.reset),
-    url(r'^tower/tomaxlevel/$', views.tower.to_max_star_level),
+    url(r'^tower/sweep/$', views.tower.sweep),
+    url(r'^tower/sweepfinish/$', views.tower.sweep_finish),
     url(r'^tower/turntable/$', views.tower.turntable_pick),
 ]

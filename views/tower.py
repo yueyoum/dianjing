@@ -15,8 +15,9 @@ from protomsg.tower_pb2 import (
     TowerMatchReportResponse,
     TowerMatchStartResponse,
     TowerResetResponse,
-    TowerToMaxStarLevelResponse,
     TowerTurnTableResponse,
+    TowerSweepFinishResponse,
+    TowerSweepResponse,
 )
 
 
@@ -61,14 +62,25 @@ def reset(request):
     response.ret = 0
     return ProtobufResponse(response)
 
-def to_max_star_level(request):
+def sweep(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
     t = Tower(server_id, char_id)
-    resource_classified =  t.to_max_star_level()
+    t.sweep()
 
-    response = TowerToMaxStarLevelResponse()
+    response = TowerSweepResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+def sweep_finish(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    t = Tower(server_id, char_id)
+    resource_classified = t.sweep_finish()
+
+    response = TowerSweepFinishResponse()
     response.ret = 0
     response.drop.MergeFrom(resource_classified.make_protomsg())
     return ProtobufResponse(response)
