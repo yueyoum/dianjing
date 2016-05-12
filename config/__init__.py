@@ -17,7 +17,6 @@ from config.errormsg import ConfigErrorMessage
 from config.staff import ConfigStaffRecruit, ConfigStaffNew, ConfigStaffStar, ConfigStaffLevelNew, ConfigStaffEquipmentLevelAddition, ConfigStaffEquipmentQualityAddition, ConfigStaffEquipmentAddition
 from config.challenge import ConfigChallengeMatch, ConfigChapter
 from config.unit import ConfigUnitNew, ConfigUnitUnLock, ConfigUnitStepAddition, ConfigUnitLevelAddition, ConfigUnitAddition
-from config.building import ConfigBuilding
 from config.item import ConfigItemNew, ConfigItemUse, ConfigItemMerge, ConfigEquipmentNew, ConfigItemExp
 from config.skill import ConfigTalentSkill
 from config.task import ConfigTaskMain, ConfigRandomEvent
@@ -102,8 +101,6 @@ def load_config():
             ConfigUnitLevelAddition.initialize(data)
         elif item == 'unit_step_addition.json':
             ConfigUnitStepAddition.initialize(data)
-        elif item == 'building.json':
-            ConfigBuilding.initialize(data)
 
         elif item == 'talent_skill.json':
             ConfigTalentSkill.initialize(data)

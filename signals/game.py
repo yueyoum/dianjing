@@ -18,7 +18,6 @@ from core.formation import Formation
 from core.bag import Bag
 from core.unit import UnitManager
 from core.challenge import Challenge
-from core.building import BuildingManager
 from core.friend import FriendManager
 from core.mail import MailManager
 from core.task import RandomEvent, TaskMain
@@ -69,7 +68,6 @@ def game_start_handler(server_id, char_id, **kwargs):
     chall.send_chapter_notify()
     chall.send_challenge_notify()
 
-    BuildingManager(server_id, char_id).send_notify()
     FriendManager(server_id, char_id).send_notify()
     MailManager(server_id, char_id).send_notify()
 

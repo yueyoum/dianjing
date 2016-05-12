@@ -16,7 +16,6 @@ import views.character
 import views.club
 import views.staff
 import views.challenge
-import views.building
 import views.friend
 import views.mail
 import views.task
@@ -66,9 +65,6 @@ urlpatterns = [
     url(r'^challenge/sweep/$', views.challenge.sweep),
     url(r'^challenge/chapter/reward/$', views.challenge.chapter_reward),
     url(r'^challenge/report/$', views.challenge.report),
-
-    url(r'^building/levelup/$', views.building.levelup),
-    url(r'^building/speedup/$', views.building.speedup),
 
     url(r'^friend/info/$', views.friend.get_info),
     url(r'^friend/add/$', views.friend.add),
