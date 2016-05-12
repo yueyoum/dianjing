@@ -217,27 +217,6 @@ class MongoStaffRecruit(BaseDocument):
     COLLECTION = "staff_recruit"
 
 
-# 建筑
-class MongoBuilding(BaseDocument):
-    DOCUMENT = {
-        '_id': null,
-        # id: level
-        'buildings': {}
-    }
-
-    BUILDING_DOCUMENT = {
-        'level': 1,
-        'end_at': 0,
-        'key': '',  # 定时器key
-    }
-
-    COLLECTION = "building"
-
-    @classmethod
-    def document_building(cls):
-        return copy.deepcopy(cls.BUILDING_DOCUMENT)
-
-
 # 好友
 class MongoFriend(BaseDocument):
     DOCUMENT = {

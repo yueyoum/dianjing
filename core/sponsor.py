@@ -10,10 +10,9 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoSponsor, MongoCharacter
 from core.friend import FriendManager
-from core.building import BuildingSponsorCenter
 
 from utils.message import MessagePipe
-from config import ConfigErrorMessage, ConfigBuilding
+from config import ConfigErrorMessage
 
 from protomsg.spread_pb2 import SponsorNotify
 
@@ -85,10 +84,12 @@ class SponsorManager(object):
         if step > 2:
             return
 
-        level = BuildingSponsorCenter(self.server_id, self.char_id).current_level()
-        config = ConfigBuilding.get(BuildingSponsorCenter.BUILDING_ID).get_level(level)
-
-        value = config.effect.get('2', 1) if step == 1 else config.effect.get('2', 1)
+        # level = BuildingSponsorCenter(self.server_id, self.char_id).current_level()
+        # config = ConfigBuilding.get(BuildingSponsorCenter.BUILDING_ID).get_level(level)
+        #
+        # value = config.effect.get('2', 1) if step == 1 else config.effect.get('2', 1)
+        # TODO
+        value = 50
 
         got = int(purchase_got * value / 100.0)
         if not got:
