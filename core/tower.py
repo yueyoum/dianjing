@@ -100,7 +100,7 @@ class Tower(object):
         if sweep_end_at:
             raise GameException(ConfigErrorMessage.get_error_id("TOWER_IN_SWEEP_CANNOT_OPERATE"))
 
-        if star not in [1, 2, 3]:
+        if star not in [0, 1, 2, 3]:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         level = int(key)
@@ -114,46 +114,51 @@ class Tower(object):
         self.doc['star'] += star
 
         updater = {
-            'levels.{0}'.format(level): star,
-            'star': self.doc['star'],
+            'star': self.doc['star']
         }
 
         if star == 0:
-            star = -1
-
-        if star > 0 and level < MAX_LEVEL:
-            next_level = level + 1
-            self.doc['levels'][str(next_level)] = 0
-
-            update_levels.append(next_level)
-            updater['levels.{0}'.format(next_level)] = 0
-
-        if star == 3 and level == self.doc['max_star_level'] + 1:
-            self.doc['max_star_level'] = level
-            updater['max_star_level'] = level
-
-        # 转盘信息
-        turntable = config.get_turntable()
-        if turntable:
-            all_list = []
-            for _, v in turntable.iteritems():
-                all_list.extend(v)
-
-            random.shuffle(all_list)
-
-            turntable['all_list'] = all_list
-            updater['turntable'] = turntable
-        else:
-            all_list = []
+            updater['levels.{0}'.format(level)] = -1
             updater['turntable'] = {}
+            all_list = []
+
+            resource_classified = ResourceClassification.classify([])
+        else:
+            updater['levels.{0}'.format(level)] = star
+
+            if level < MAX_LEVEL:
+                next_level = level + 1
+                self.doc['levels'][str(next_level)] = 0
+
+                update_levels.append(next_level)
+                updater['levels.{0}'.format(next_level)] = 0
+
+            if star == 3 and level == self.doc['max_star_level'] + 1:
+                self.doc['max_star_level'] = level
+                updater['max_star_level'] = level
+
+            # 转盘信息
+            turntable = config.get_turntable()
+            if turntable:
+                all_list = []
+                for _, v in turntable.iteritems():
+                    all_list.extend(v)
+
+                random.shuffle(all_list)
+
+                turntable['all_list'] = all_list
+                updater['turntable'] = turntable
+            else:
+                all_list = []
+                updater['turntable'] = {}
+
+            resource_classified = ResourceClassification.classify(config.get_star_reward(star))
+            resource_classified.add(self.server_id, self.char_id)
 
         MongoTower.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': updater}
         )
-
-        resource_classified = ResourceClassification.classify(config.get_star_reward(star))
-        resource_classified.add(self.server_id, self.char_id)
 
         self.send_notify(act=ACT_UPDATE, levels=update_levels)
         return resource_classified, self.doc['star'], all_list
