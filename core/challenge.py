@@ -69,6 +69,12 @@ class ChallengeNPCClub(AbstractClub):
             self.formation_staffs.append(s)
 
 
+INIT_CHALLENGE_IDS = []
+for k, v in ConfigChallengeMatch.INSTANCES.iteritems():
+    if not v.condition_challenge:
+        INIT_CHALLENGE_IDS.append(k)
+
+
 class Challenge(object):
     __slots__ = ['server_id', 'char_id']
 
@@ -78,18 +84,19 @@ class Challenge(object):
 
         if not MongoChallenge.exist(self.server_id, self.char_id):
             doc = MongoChallenge.document()
-            # XXX 编辑器里面定死，不能胡乱填写
-            # 第一关默认开启 id 为 1
             doc['_id'] = self.char_id
-            doc['challenge_star'] = {'1': 0}
 
-            chapter_id = ConfigChallengeMatch.get(1).chapter
-            doc['chapters'] = {
-                str(chapter_id): {
+            challenge_star = {}
+            chapters = {}
+            for i in INIT_CHALLENGE_IDS:
+                challenge_star[str(i)] = 0
+                chapters[str(ConfigChallengeMatch.get(i).chapter)] = {
                     'star': 0,
-                    'rewards': []
+                    'rewards': [],
                 }
-            }
+
+            doc['challenge_star'] = challenge_star
+            doc['chapters'] = chapters
 
             MongoChallenge.db(self.server_id).insert_one(doc)
 
