@@ -11,7 +11,7 @@ import arrow
 
 from dianjing.exception import GameException
 
-from core.mongo import MongoTerritoryBuilding
+from core.mongo import MongoTerritory
 from core.times_log import TimesLogTerritoryBuildingInspireTimes
 from core.staff import StaffManger
 
@@ -172,23 +172,25 @@ class Territory(object):
         self.server_id = server_id
         self.char_id = char_id
 
-        self.doc = MongoTerritoryBuilding.db(self.server_id).find_one({'_id': self.char_id})
+        self.doc = MongoTerritory.db(self.server_id).find_one({'_id': self.char_id})
         if not self.doc:
-            self.doc = MongoTerritoryBuilding.document()
+            self.doc = MongoTerritory.document()
             self.doc['_id'] = self.char_id
+            # TODO
+            self.doc['work_card'] = 5000
 
             for i in INIT_TERRITORY_BUILDING_IDS:
-                building_doc = MongoTerritoryBuilding.document_building()
+                building_doc = MongoTerritory.document_building()
                 building_config = ConfigTerritoryBuilding.get(i)
 
                 for slot_id, slot_config in building_config.slots.iteritems():
                     if slot_config.need_building_level < 1:
                         # TODO VIP check
-                        building_doc['slots'][str(slot_id)] = MongoTerritoryBuilding.document_slot()
+                        building_doc['slots'][str(slot_id)] = MongoTerritory.document_slot()
 
                 self.doc['buildings'][str(i)] = building_doc
 
-            MongoTerritoryBuilding.db(self.server_id).insert_one(self.doc)
+                MongoTerritory.db(self.server_id).insert_one(self.doc)
 
     def training_check(self, building_id, slot_id, staff_id, hour):
         if hour not in TRAINING_HOURS:
@@ -231,13 +233,23 @@ class Territory(object):
         except:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
+        building_level = Building(self.server_id, self.char_id, building_id, self.doc['buildings'][str(building_id)]).level
+
+        config_slot = ConfigTerritoryBuilding.get(building_id).slots[slot_id]
+        cost_amount = config_slot.get_cost_amount(building_level, TRAINING_HOURS.index(hour))
+
+        if cost_amount > self.doc['work_card']:
+            raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_WORK_CARD_NOT_ENOUGH"))
+
+        self.doc['work_card'] -= cost_amount
+
         slot = self.training_check(building_id, slot_id, staff_id, hour)
         slot.staff_id = staff_id
         slot.hour = hour
 
         start_at = arrow.utcnow().timestamp
 
-        slot_doc = MongoTerritoryBuilding.document_slot()
+        slot_doc = MongoTerritory.document_slot()
         slot_doc['staff_id'] = staff_id
         slot_doc['start_at'] = start_at
         slot_doc['hour'] = hour
@@ -273,9 +285,10 @@ class Territory(object):
         slot_doc['report'] = report
 
         self.doc['buildings'][str(building_id)]['slots'][str(slot_id)] = slot_doc
-        MongoTerritoryBuilding.db(self.server_id).update_one(
+        MongoTerritory.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
+                'work_card': self.doc['work_card'],
                 'buildings.{0}.slots.{1}'.format(building_id, slot_id): slot_doc
             }}
         )
@@ -315,6 +328,8 @@ class Territory(object):
         notify = TerritoryNotify()
         notify.act = act
         notify.training_hours.extend(TRAINING_HOURS)
+        notify.work_card = self.doc['work_card']
+
         for bid in bids:
             b_data = self.doc['buildings'].get(str(bid), None)
             b_obj = Building(self.server_id, self.char_id, bid, b_data, slot_ids=_get_sids_of_bid(bid))
