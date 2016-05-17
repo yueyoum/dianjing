@@ -193,6 +193,13 @@ MESSAGE_TO_ID = {
     "TowerSweepResponse": 3612,
     "TowerSweepFinishRequest": 3613,
     "TowerSweepFinishResponse": 3614,
+    "TerritoryNotify": 3700,
+    "TerritoryTrainingPrepareRequest": 3701,
+    "TerritoryTrainingPrepareResponse": 3702,
+    "TerritoryTrainingStartReqeust": 3703,
+    "TerritoryTrainingStartResponse": 3704,
+    "TerritoryTrainingGetRewardReqeust": 3705,
+    "TerritoryTrainingGetRewardResponse": 3706,
 }
 
 ID_TO_MESSAGE = {
@@ -389,6 +396,13 @@ ID_TO_MESSAGE = {
     3612: "TowerSweepResponse",
     3613: "TowerSweepFinishRequest",
     3614: "TowerSweepFinishResponse",
+    3700: "TerritoryNotify",
+    3701: "TerritoryTrainingPrepareRequest",
+    3702: "TerritoryTrainingPrepareResponse",
+    3703: "TerritoryTrainingStartReqeust",
+    3704: "TerritoryTrainingStartResponse",
+    3705: "TerritoryTrainingGetRewardReqeust",
+    3706: "TerritoryTrainingGetRewardResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -468,6 +482,9 @@ PATH_TO_REQUEST = {
     "/game/tower/turntable/": ["tower", "TowerTurnTableRequest"],
     "/game/tower/sweep/": ["tower", "TowerSweepRequest"],
     "/game/tower/sweepfinish/": ["tower", "TowerSweepFinishRequest"],
+    "/game/territory/prepare/": ["territory.proto", "TerritoryTrainingPrepareRequest"],
+    "/game/territory/start/": ["territory.proto", "TerritoryTrainingStartReqeust"],
+    "/game/territory/getreward/": ["territory.proto", "TerritoryTrainingGetRewardReqeust"],
 }
 
 PATH_TO_RESPONSE = {
@@ -547,4 +564,7 @@ PATH_TO_RESPONSE = {
     "/game/tower/turntable/": ["tower", "TowerTurnTableResponse"],
     "/game/tower/sweep/": ["tower", "TowerSweepResponse"],
     "/game/tower/sweepfinish/": ["tower", "TowerSweepFinishResponse"],
+    "/game/territory/prepare/": ["territory.proto", "TerritoryTrainingPrepareResponse"],
+    "/game/territory/start/": ["territory.proto", "TerritoryTrainingStartResponse"],
+    "/game/territory/getreward/": ["territory.proto", "TerritoryTrainingGetRewardResponse"],
 }

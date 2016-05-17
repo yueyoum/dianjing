@@ -14,11 +14,12 @@ from config.base import ConfigBase
 
 class ItemNew(object):
     __slots__ = [
-        'id', 'tp', 'quality', 'stack_max'
+        'id', 'name', 'tp', 'quality', 'stack_max'
     ]
 
     def __init__(self):
         self.id = 0
+        self.name = ""
         self.tp = 0
         self.quality = 0
         self.stack_max = 0

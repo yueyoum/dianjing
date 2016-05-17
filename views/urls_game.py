@@ -33,6 +33,7 @@ import views.talent
 import views.dungeon
 import views.arena
 import views.tower
+import views.territory
 
 urlpatterns = [
     url(r'^sync/$', views.common.sync),
@@ -128,4 +129,7 @@ urlpatterns = [
     url(r'^tower/sweep/$', views.tower.sweep),
     url(r'^tower/sweepfinish/$', views.tower.sweep_finish),
     url(r'^tower/turntable/$', views.tower.turntable_pick),
+
+    url(r'^territory/prepare/$', views.territory.prepare),
+    url(r'^territory/start/$', views.territory.start),
 ]

@@ -137,3 +137,8 @@ class TimesLogArenaHonorPoints(TimesLog):
 class TimesLogTowerResetTimes(TimesLog):
     KEY = 'tower_reset'
     __slots__ = []
+
+# 领地建筑鼓舞次数
+class TimesLogTerritoryBuildingInspireTimes(TimesLog):
+    KEY = 'territory_building_inspire'
+    __slots__ = []

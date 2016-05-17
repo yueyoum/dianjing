@@ -31,6 +31,7 @@ from config.dungeon import ConfigDungeon, ConfigDungeonGrade
 from config.npc import ConfigNPCFormation
 from config.arena import ConfigArenaNPC, ConfigArenaHonorReward, ConfigArenaBuyTimesCost, ConfigArenaMatchReward, ConfigArenaRankReward
 from config.tower import ConfigTowerLevel, ConfigTowerResetCost
+from config.territory import ConfigTerritoryBuilding, ConfigInspireCost
 
 
 _has_configed = False
@@ -152,5 +153,10 @@ def load_config():
             ConfigTowerLevel.initialize(data)
         elif item == 'tower_reset_cost.json':
             ConfigTowerResetCost.initialize(data)
+
+        elif item == 'territory_building.json':
+            ConfigTerritoryBuilding.initialize(data)
+        elif item == 'territory_inspire_cost.json':
+            ConfigInspireCost.initialize(data)
 
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))

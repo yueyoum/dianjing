@@ -518,3 +518,39 @@ class MongoTower(BaseDocument):
 
     COLLECTION = 'tower'
     INDEXES = ['star',]
+
+# 领地建筑
+class MongoTerritoryBuilding(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'buildings': {},
+        # 是否产量变化标志， 建筑升级，获得产量，等等都会讲其设置为True
+        # 定时任务只获取 True 的进行处理
+        'product_flag': False,
+    }
+
+    BUILDING_DOCUMENT = {
+        'level': 1,
+        'exp': 0,
+        'product_amount': 0,
+        'slots': {},
+    }
+
+    SLOT_DOCUMENT = {
+        'staff_id': 0,
+        'start_at': 0,
+        'hour': 0,
+        'report': [],
+        'reward': [],
+    }
+
+    @classmethod
+    def document_building(cls):
+        return copy.deepcopy(cls.BUILDING_DOCUMENT)
+
+    @classmethod
+    def document_slot(cls):
+        return copy.deepcopy(cls.SLOT_DOCUMENT)
+
+    COLLECTION = 'territory_building'
+    INDEXES = ['product_flag',]
