@@ -64,7 +64,7 @@ class Formation(object):
 
         return staffs
 
-    def open_slot(self, staff_unique_id="", send_notify=True):
+    def open_slot(self, staff_unique_id="", unit_id=0, send_notify=True):
         if staff_unique_id:
             # TODO error code
             StaffManger(self.server_id, self.char_id).check_staff(ids=[staff_unique_id])
@@ -79,6 +79,7 @@ class Formation(object):
 
         data = MongoFormation.document_slot()
         data['staff_id'] = staff_unique_id
+        data['unit_id'] = unit_id
 
         empty_positions = [_index for _index, _slot_id in enumerate(self.doc['position']) if _slot_id == 0]
         pos = random.choice(empty_positions)

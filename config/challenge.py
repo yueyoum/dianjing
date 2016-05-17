@@ -84,6 +84,7 @@ class ConfigChapter(ConfigBase):
 class ConfigChallengeMatch(ConfigBase):
     EntityClass = ChallengeMatch
     INSTANCES = {}
+    """:type: dict[int, ChallengeMatch]"""
     FILTER_CACHE = {}
 
     @classmethod

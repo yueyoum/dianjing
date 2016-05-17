@@ -61,9 +61,9 @@ class Character(object):
         sm = StaffManger(server_id, char_id)
         f = Formation(server_id, char_id)
         unique_ids = []
-        for i in CHAR_INIT_STAFFS:
-            uid = sm.add(i, send_notify=False)
-            f.open_slot(staff_unique_id=uid, send_notify=False)
+        for staff_id, unit_id in CHAR_INIT_STAFFS:
+            uid = sm.add(staff_id, send_notify=False)
+            f.open_slot(staff_unique_id=uid, unit_id=unit_id, send_notify=False)
             unique_ids.append(uid)
 
         more_open_slots_amount = MAX_SLOT_AMOUNT - len(CHAR_INIT_STAFFS)
