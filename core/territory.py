@@ -60,7 +60,7 @@ class Slot(object):
     @classmethod
     def parse_key(cls, key):
         building_id, slot_id, staff_id, hour = key.split(':')
-        return int(building_id), int(slot_id), int(staff_id), int(hour)
+        return int(building_id), int(slot_id), staff_id, int(hour)
 
     @property
     def key(self):
