@@ -190,7 +190,7 @@ class Territory(object):
 
                 self.doc['buildings'][str(i)] = building_doc
 
-                MongoTerritory.db(self.server_id).insert_one(self.doc)
+            MongoTerritory.db(self.server_id).insert_one(self.doc)
 
     def training_check(self, building_id, slot_id, staff_id, hour):
         if hour not in TRAINING_HOURS:

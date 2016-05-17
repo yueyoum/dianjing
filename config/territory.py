@@ -48,9 +48,10 @@ class _Level(object):
         obj.product_limit = data['product_limit']
         obj.events = data['events']
 
-        for k in _Inspire.__slots__:
-            _ins = _Inspire()
-            setattr(_ins, k, data['inspire'][k])
+        obj.inspire = _Inspire()
+        obj.inspire.max_times = data['inspire']['max_times']
+        obj.inspire.reward = data['inspire']['reward']
+        obj.inspire.exp = data['inspire']['exp']
 
         return obj
 
