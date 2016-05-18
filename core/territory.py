@@ -63,13 +63,6 @@ class Slot(object):
         return int(building_id), int(slot_id), staff_id, int(hour)
 
     @property
-    def key(self):
-        if not self.open:
-            return ""
-
-        return "{0}:{1}:{2}:{3}".format(self.building_id, self.id, self.staff_id, self.hour)
-
-    @property
     def finished(self):
         return self.end_at >= arrow.utcnow().timestamp
 
@@ -89,7 +82,6 @@ class Slot(object):
             msg.staff_id = self.staff_id
             msg.hour = self.hour
             msg.end_at = self.end_at
-            msg.key = self.key
             for _id, _args, _timestamp in self.report:
                 msg_report = msg.report.add()
                 msg_report.id = _id
@@ -192,7 +184,7 @@ class Territory(object):
 
             MongoTerritory.db(self.server_id).insert_one(self.doc)
 
-    def training_check(self, building_id, slot_id, staff_id, hour):
+    def training_star(self, building_id, slot_id, staff_id, hour):
         if hour not in TRAINING_HOURS:
             raise GameException(ConfigErrorMessage.get_error_id('BAD_MESSAGE'))
 
@@ -217,23 +209,8 @@ class Territory(object):
 
         # TODO check whether this staff is in training
 
-        return slot
-
-    def training_prepare(self, building_id, slot_id, staff_id, hour):
-        slot = self.training_check(building_id, slot_id, staff_id, hour)
-
-        slot.staff_id = staff_id
-        slot.hour = hour
-
-        return slot
-
-    def training_star(self, key):
-        try:
-            building_id, slot_id, staff_id, hour = Slot.parse_key(key)
-        except:
-            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
-
-        building_level = Building(self.server_id, self.char_id, building_id, self.doc['buildings'][str(building_id)]).level
+        building_level = Building(self.server_id, self.char_id, building_id,
+                                  self.doc['buildings'][str(building_id)]).level
 
         config_slot = ConfigTerritoryBuilding.get(building_id).slots[slot_id]
         cost_amount = config_slot.get_cost_amount(building_level, TRAINING_HOURS.index(hour))
@@ -243,7 +220,6 @@ class Territory(object):
 
         self.doc['work_card'] -= cost_amount
 
-        slot = self.training_check(building_id, slot_id, staff_id, hour)
         slot.staff_id = staff_id
         slot.hour = hour
 

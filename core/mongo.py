@@ -538,7 +538,7 @@ class MongoTerritory(BaseDocument):
     }
 
     SLOT_DOCUMENT = {
-        'staff_id': 0,
+        'staff_id': "",
         'start_at': 0,
         'hour': 0,
         'report': [],

@@ -130,6 +130,5 @@ urlpatterns = [
     url(r'^tower/sweepfinish/$', views.tower.sweep_finish),
     url(r'^tower/turntable/$', views.tower.turntable_pick),
 
-    url(r'^territory/prepare/$', views.territory.prepare),
     url(r'^territory/start/$', views.territory.start),
 ]
