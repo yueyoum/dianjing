@@ -542,7 +542,7 @@ class MongoTerritory(BaseDocument):
         'start_at': 0,
         'hour': 0,
         'report': [],
-        'reward': [],
+        'reward': {},
     }
 
     @classmethod

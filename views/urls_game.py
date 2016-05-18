@@ -131,4 +131,5 @@ urlpatterns = [
     url(r'^tower/turntable/$', views.tower.turntable_pick),
 
     url(r'^territory/start/$', views.territory.start),
+    url(r'^territory/getreward/$', views.territory.get_reward),
 ]

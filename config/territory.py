@@ -180,3 +180,26 @@ class ConfigInspireCost(ConfigBase):
         raise RuntimeError("ConfigInspireCost cannot get {0}".format(_id))
 
 #########################
+
+class StaffProduct(object):
+    __slots__ = ['id', 'product']
+    def __init__(self):
+        self.id = 0
+        self.product = []
+
+    def get_product(self, hour_index):
+        a, b, c = random.choice(self.product[hour_index])
+        return [a, random.randint(b, c)]
+
+class ConfigTerritoryStaffProduct(ConfigBase):
+    EntityClass = StaffProduct
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: StaffProduct
+        """
+        super(ConfigTerritoryStaffProduct, cls).get(_id)

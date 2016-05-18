@@ -6,7 +6,7 @@ Date Created:   2016-05-16 10-02
 Description:
 
 """
-
+import math
 import arrow
 
 from dianjing.exception import GameException
@@ -14,10 +14,11 @@ from dianjing.exception import GameException
 from core.mongo import MongoTerritory
 from core.times_log import TimesLogTerritoryBuildingInspireTimes
 from core.staff import StaffManger
+from core.resource import ResourceClassification
 
 from utils.message import MessagePipe
 
-from config import ConfigErrorMessage, ConfigTerritoryBuilding, ConfigInspireCost, ConfigItemNew
+from config import ConfigErrorMessage, ConfigTerritoryBuilding, ConfigInspireCost, ConfigItemNew, ConfigTerritoryStaffProduct
 
 from protomsg.territory_pb2 import (
     TerritoryNotify,
@@ -40,11 +41,40 @@ BUILDING_PRODUCT_ID_TABLE = {
     103: 30014,
 }
 
+STAFF_QUALITY_MODULUS = {
+    1: 0.5,
+    2: 0.6,
+    3: 0.7,
+    4: 0.8,
+    5: 0.9,
+}
+
+
+class ResultItems(object):
+    __slots__ = ['items']
+    def __init__(self):
+        self.items = {}
+
+    def add(self, _id, _amount):
+        if _id not in self.items:
+            self.items[_id] = _amount
+        else:
+            self.items[_id] += _amount
+
+
 
 class Slot(object):
-    def __init__(self, building_id, slot_id, data):
+    __slots__ = [
+        'server_id', 'char_id', 'id', 'building_id', 'building_level', 'product_id',
+        'open', 'staff_id', 'start_at', 'hour', 'report', 'reward', 'end_at'
+    ]
+    def __init__(self, server_id, char_id, building_id, building_level, slot_id, data):
+        self.server_id = server_id
+        self.char_id = char_id
+
         self.id = slot_id
         self.building_id = building_id
+        self.building_level = building_level
         self.product_id = BUILDING_PRODUCT_ID_TABLE[building_id]
         if data:
             self.open = True
@@ -57,22 +87,29 @@ class Slot(object):
         else:
             self.open = False
 
-    @classmethod
-    def parse_key(cls, key):
-        building_id, slot_id, staff_id, hour = key.split(':')
-        return int(building_id), int(slot_id), staff_id, int(hour)
-
     @property
     def finished(self):
+        if not self.staff_id:
+            return False
+
         return self.end_at >= arrow.utcnow().timestamp
 
-    def reward_building_exp(self):
-        # TODO
-        return 10
+    def get_building_reward(self):
+        if not self.open:
+            return 0, 0
 
-    def reward_product_amount(self):
-        # TODO
-        return 20
+        if not self.staff_id:
+            return 0, 0
+
+        staff_obj = StaffManger(self.server_id, self.char_id).get_staff_object(self.staff_id)
+
+        quality_modulus = STAFF_QUALITY_MODULUS[ConfigItemNew.get(staff_obj.oid).quality]
+        slot_modulus = ConfigTerritoryBuilding.get(self.building_id).slots[self.id].exp_modulus
+        exp = (100 * math.pow(self.building_level, 0.9) + 100 * math.pow(self.hour, 0.5)) * quality_modulus * slot_modulus
+        product_amount = (150 * math.pow(self.building_level, 0.8) + 150 * math.pow(self.hour, 0.6)) * quality_modulus * slot_modulus
+
+        return int(exp), int(product_amount)
+
 
     def make_protomsg(self):
         msg = MsgSlot()
@@ -94,6 +131,12 @@ class Slot(object):
 
 
 class Building(object):
+    __slots__ = [
+        'server_id', 'char_id', 'id', 'product_id',
+        'open', 'level', 'exp', 'product_amount',
+        'slots'
+    ]
+
     def __init__(self, server_id, char_id, building_id, data, slot_ids=None):
         self.server_id = server_id
         self.char_id = char_id
@@ -113,9 +156,37 @@ class Building(object):
                 slot_ids = ConfigTerritoryBuilding.get(self.id).slots.keys()
             for slot_id in slot_ids:
                 slot_data = data['slots'].get(str(slot_id), None)
-                self.slots[slot_id] = Slot(self.id, slot_id, slot_data)
+                self.slots[slot_id] = Slot(self.server_id, self.char_id, self.id, self.level, slot_id, slot_data)
         else:
             self.open = False
+
+    def add_exp(self, exp):
+        config = ConfigTerritoryBuilding.get(self.id)
+        max_level = max(config.levels.keys())
+
+        self.exp += exp
+        while True:
+            if self.level >= max_level:
+                self.level = max_level
+                if self.exp >= config.levels[max_level].exp:
+                    self.exp = config.levels[max_level].exp - 1
+
+                break
+
+            update_need_exp = config.levels[self.level].exp
+            if self.exp < update_need_exp:
+                break
+
+            self.exp -= update_need_exp
+            self.level += 1
+
+    def add_product(self, amount):
+        self.product_amount += amount
+
+        limit = ConfigTerritoryBuilding.get(self.id).levels[self.level].product_limit
+        if self.product_amount >= limit:
+            self.product_amount = limit
+
 
     def current_inspire_times(self):
         if not self.open:
@@ -188,14 +259,15 @@ class Territory(object):
         if hour not in TRAINING_HOURS:
             raise GameException(ConfigErrorMessage.get_error_id('BAD_MESSAGE'))
 
-        StaffManger(self.server_id, self.char_id).check_staff([staff_id])
+        sm = StaffManger(self.server_id, self.char_id)
+        sm.check_staff([staff_id])
 
         try:
             b_data = self.doc['buildings'][str(building_id)]
         except KeyError:
             raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_BUILDING_LOCK"))
 
-        building = Building(self.server_id, self.char_id, building_id, b_data)
+        building = Building(self.server_id, self.char_id, building_id, b_data, slot_ids=[slot_id])
         try:
             slot = building.slots[slot_id]
         except KeyError:
@@ -230,35 +302,59 @@ class Territory(object):
         slot_doc['start_at'] = start_at
         slot_doc['hour'] = hour
 
+        building_exp, product_amount = slot.get_building_reward()
+        reward = {
+            'building_exp': building_exp,
+            'product_amount': product_amount,
+            'items': []
+        }
+
+        ri = ResultItems()
+
         # 固定奖励
         report = [
             (
                 1,
-                [str(slot.reward_building_exp()), ConfigItemNew.get(slot.product_id).name,
-                 str(slot.reward_product_amount())],
+                [str(building_exp), ConfigItemNew.get(slot.product_id).name,
+                 str(product_amount)],
                 start_at
             ),
         ]
 
         # 选手特产
+        config_staff_product = ConfigTerritoryStaffProduct.get(sm.get_staff_object(staff_id).oid)
+        if config_staff_product:
+            _id, _amount = config_staff_product.get_product(TRAINING_HOURS.index(hour))
+
+            report.append((
+                2,
+                [ConfigItemNew.get(_id).name, str(_amount)],
+                start_at + 600
+            ))
+
+            ri.add(_id, _amount)
+
 
         # 概率奖励
-
         end_at = start_at + hour * 3600
         extra_at = start_at + 1800
         while extra_at < end_at:
             # TODO building_level
-            _item_id, _item_amount = ConfigTerritoryBuilding.get(building_id).slots[slot_id].get_extra_product(1)
+            _id, _amount = ConfigTerritoryBuilding.get(building_id).slots[slot_id].get_extra_product(1)
 
             report.append((
                 3,
-                [ConfigItemNew.get(_item_id).name, str(_item_amount)],
+                [ConfigItemNew.get(_id).name, str(_amount)],
                 extra_at
             ))
 
+            ri.add(_id, _amount)
             extra_at += 1800
 
+        reward['items'] = ri.items.items()
+
         slot_doc['report'] = report
+        slot_doc['reward'] = reward
 
         self.doc['buildings'][str(building_id)]['slots'][str(slot_id)] = slot_doc
         MongoTerritory.db(self.server_id).update_one(
@@ -271,8 +367,54 @@ class Territory(object):
 
         self.send_notify(building_id=building_id, slot_id=slot_id)
 
-    def training_get_reward(self, key):
-        pass
+
+    def training_get_reward(self, building_id, slot_id):
+        try:
+            b_data = self.doc['buildings'][str(building_id)]
+        except KeyError:
+            raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_BUILDING_LOCK"))
+
+        building = Building(self.server_id, self.char_id, building_id, b_data, slot_ids=[slot_id])
+        try:
+            slot = building.slots[slot_id]
+        except KeyError:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        if not slot.open:
+            raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_SLOT_LOCK"))
+
+        if not slot.finished:
+            raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_SLOT_NOT_FINISH"))
+
+
+        reward = slot.reward
+
+        building.add_exp(reward['building_exp'])
+        building.add_product(reward['product_amount'])
+
+        self.doc['buildings'][str(building_id)]['level'] = building.level
+        self.doc['buildings'][str(building_id)]['exp'] = building.exp
+        self.doc['buildings'][str(building_id)]['product_amount'] = building.product_amount
+
+        MongoTerritory.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'buildings.{0}.level'.format(building_id): building.level,
+                'buildings.{0}.exp'.format(building_id): building.exp,
+                'buildings.{0}.product_amount'.format(building_id): building.product_amount,
+                'buildings.{0}.slots.{1}'.format(building_id, slot_id): MongoTerritory.document_slot()
+            }}
+        )
+
+        self.send_notify(building_id=building_id, slot_id=slot_id)
+
+        resource_classified = ResourceClassification.classify(reward['items'])
+        resource_classified.add(self.server_id, self.char_id)
+
+        # 把建筑产出也要发回到客户端
+        resource_classified.bag.append((BUILDING_PRODUCT_ID_TABLE[building_id], reward['product_amount']))
+        return resource_classified
+
 
     def send_notify(self, building_id=None, slot_id=None):
         # building_id 和 slot_id 都没有: 全部同步
