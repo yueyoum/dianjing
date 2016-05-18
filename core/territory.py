@@ -92,7 +92,7 @@ class Slot(object):
         if not self.staff_id:
             return False
 
-        return self.end_at >= arrow.utcnow().timestamp
+        return arrow.utcnow().timestamp >= self.end_at
 
     def get_building_reward(self):
         if not self.open:
@@ -392,9 +392,12 @@ class Territory(object):
         building.add_exp(reward['building_exp'])
         building.add_product(reward['product_amount'])
 
+        empty_slot_doc = MongoTerritory.document_slot()
+
         self.doc['buildings'][str(building_id)]['level'] = building.level
         self.doc['buildings'][str(building_id)]['exp'] = building.exp
         self.doc['buildings'][str(building_id)]['product_amount'] = building.product_amount
+        self.doc['buildings'][str(building_id)]['slots'][str(slot_id)] = empty_slot_doc
 
         MongoTerritory.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -402,7 +405,7 @@ class Territory(object):
                 'buildings.{0}.level'.format(building_id): building.level,
                 'buildings.{0}.exp'.format(building_id): building.exp,
                 'buildings.{0}.product_amount'.format(building_id): building.product_amount,
-                'buildings.{0}.slots.{1}'.format(building_id, slot_id): MongoTerritory.document_slot()
+                'buildings.{0}.slots.{1}'.format(building_id, slot_id): empty_slot_doc
             }}
         )
 
