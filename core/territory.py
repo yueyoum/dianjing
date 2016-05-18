@@ -32,12 +32,12 @@ from protomsg.territory_pb2 import (
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
 # TODO
-INIT_TERRITORY_BUILDING_IDS = [1, 2, 3]
+INIT_TERRITORY_BUILDING_IDS = [101, 102, 103]
 TRAINING_HOURS = [4, 8, 12]
 BUILDING_PRODUCT_ID_TABLE = {
-    1: 30012,
-    2: 30013,
-    3: 30014,
+    101: 30012,
+    102: 30013,
+    103: 30014,
 }
 
 

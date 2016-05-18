@@ -478,8 +478,8 @@ PATH_TO_REQUEST = {
     "/game/tower/turntable/": ["tower", "TowerTurnTableRequest"],
     "/game/tower/sweep/": ["tower", "TowerSweepRequest"],
     "/game/tower/sweepfinish/": ["tower", "TowerSweepFinishRequest"],
-    "/game/territory/start/": ["territory.proto", "TerritoryTrainingStartReqeust"],
-    "/game/territory/getreward/": ["territory.proto", "TerritoryTrainingGetRewardReqeust"],
+    "/game/territory/start/": ["territory", "TerritoryTrainingStartReqeust"],
+    "/game/territory/getreward/": ["territory", "TerritoryTrainingGetRewardReqeust"],
 }
 
 PATH_TO_RESPONSE = {
@@ -559,6 +559,6 @@ PATH_TO_RESPONSE = {
     "/game/tower/turntable/": ["tower", "TowerTurnTableResponse"],
     "/game/tower/sweep/": ["tower", "TowerSweepResponse"],
     "/game/tower/sweepfinish/": ["tower", "TowerSweepFinishResponse"],
-    "/game/territory/start/": ["territory.proto", "TerritoryTrainingStartResponse"],
-    "/game/territory/getreward/": ["territory.proto", "TerritoryTrainingGetRewardResponse"],
+    "/game/territory/start/": ["territory", "TerritoryTrainingStartResponse"],
+    "/game/territory/getreward/": ["territory", "TerritoryTrainingGetRewardResponse"],
 }
