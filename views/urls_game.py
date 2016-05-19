@@ -132,4 +132,5 @@ urlpatterns = [
 
     url(r'^territory/start/$', views.territory.start),
     url(r'^territory/getreward/$', views.territory.get_reward),
+    url(r'^territory/store/buy/$', views.territory.store_buy),
 ]

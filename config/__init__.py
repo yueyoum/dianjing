@@ -31,7 +31,7 @@ from config.dungeon import ConfigDungeon, ConfigDungeonGrade
 from config.npc import ConfigNPCFormation
 from config.arena import ConfigArenaNPC, ConfigArenaHonorReward, ConfigArenaBuyTimesCost, ConfigArenaMatchReward, ConfigArenaRankReward
 from config.tower import ConfigTowerLevel, ConfigTowerResetCost
-from config.territory import ConfigTerritoryBuilding, ConfigInspireCost, ConfigTerritoryStaffProduct
+from config.territory import ConfigTerritoryBuilding, ConfigInspireCost, ConfigTerritoryStaffProduct, ConfigTerritoryEvent, ConfigTerritoryStore
 
 
 _has_configed = False
@@ -160,5 +160,9 @@ def load_config():
             ConfigInspireCost.initialize(data)
         elif item == 'territory_staff_special_product.json':
             ConfigTerritoryStaffProduct.initialize(data)
+        elif item == 'territory_event.json':
+            ConfigTerritoryEvent.initialize(data)
+        elif item == 'territory_store.json':
+            ConfigTerritoryStore.initialize(data)
 
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))

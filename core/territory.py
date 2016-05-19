@@ -12,13 +12,21 @@ import arrow
 from dianjing.exception import GameException
 
 from core.mongo import MongoTerritory
-from core.times_log import TimesLogTerritoryBuildingInspireTimes
+from core.times_log import TimesLogTerritoryBuildingInspireTimes, TimesLogTerritoryStoreBuyTimes
 from core.staff import StaffManger
-from core.resource import ResourceClassification
+from core.resource import ResourceClassification, TERRITORY_PRODUCT_BUILDING_TABLE
 
 from utils.message import MessagePipe
 
-from config import ConfigErrorMessage, ConfigTerritoryBuilding, ConfigInspireCost, ConfigItemNew, ConfigTerritoryStaffProduct
+from config import (
+    ConfigErrorMessage,
+    ConfigTerritoryBuilding,
+    ConfigInspireCost,
+    ConfigItemNew,
+    ConfigTerritoryStaffProduct,
+    ConfigTerritoryStore,
+    ConfigTerritoryEvent
+)
 
 from protomsg.territory_pb2 import (
     TerritoryNotify,
@@ -28,6 +36,8 @@ from protomsg.territory_pb2 import (
     TERRITORY_BUILDING_LOCK,
     TERRITORY_SLOT_OPEN,
     TERRITORY_SLOT_LOCK,
+
+    TerritoryStoreNotify,
 )
 
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
@@ -35,11 +45,7 @@ from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 # TODO
 INIT_TERRITORY_BUILDING_IDS = [101, 102, 103]
 TRAINING_HOURS = [4, 8, 12]
-BUILDING_PRODUCT_ID_TABLE = {
-    101: 30012,
-    102: 30013,
-    103: 30014,
-}
+BUILDING_PRODUCT_ID_TABLE = {v: k for k, v in TERRITORY_PRODUCT_BUILDING_TABLE.iteritems()}
 
 STAFF_QUALITY_MODULUS = {
     1: 0.5,
@@ -52,6 +58,7 @@ STAFF_QUALITY_MODULUS = {
 
 class ResultItems(object):
     __slots__ = ['items']
+
     def __init__(self):
         self.items = {}
 
@@ -62,12 +69,12 @@ class ResultItems(object):
             self.items[_id] += _amount
 
 
-
 class Slot(object):
     __slots__ = [
         'server_id', 'char_id', 'id', 'building_id', 'building_level', 'product_id',
         'open', 'staff_id', 'start_at', 'hour', 'report', 'reward', 'end_at'
     ]
+
     def __init__(self, server_id, char_id, building_id, building_level, slot_id, data):
         self.server_id = server_id
         self.char_id = char_id
@@ -105,11 +112,12 @@ class Slot(object):
 
         quality_modulus = STAFF_QUALITY_MODULUS[ConfigItemNew.get(staff_obj.oid).quality]
         slot_modulus = ConfigTerritoryBuilding.get(self.building_id).slots[self.id].exp_modulus
-        exp = (100 * math.pow(self.building_level, 0.9) + 100 * math.pow(self.hour, 0.5)) * quality_modulus * slot_modulus
-        product_amount = (150 * math.pow(self.building_level, 0.8) + 150 * math.pow(self.hour, 0.6)) * quality_modulus * slot_modulus
+        exp = (100 * math.pow(self.building_level, 0.9) + 100 * math.pow(self.hour,
+                                                                         0.5)) * quality_modulus * slot_modulus
+        product_amount = (150 * math.pow(self.building_level, 0.8) + 150 * math.pow(self.hour,
+                                                                                    0.6)) * quality_modulus * slot_modulus
 
         return int(exp), int(product_amount)
-
 
     def make_protomsg(self):
         msg = MsgSlot()
@@ -152,7 +160,7 @@ class Building(object):
             self.slots = {}
             """:type: dict[int, Slot]"""
 
-            if not slot_ids:
+            if slot_ids is None:
                 slot_ids = ConfigTerritoryBuilding.get(self.id).slots.keys()
             for slot_id in slot_ids:
                 slot_data = data['slots'].get(str(slot_id), None)
@@ -255,6 +263,56 @@ class Territory(object):
 
             MongoTerritory.db(self.server_id).insert_one(self.doc)
 
+    def check_product(self, items):
+        # items: [(_id, amount),]
+        for _id, amount in items:
+            building_id = TERRITORY_PRODUCT_BUILDING_TABLE[_id]
+            if self.doc['buildings'][str(building_id)]['product_amount'] < amount:
+                raise GameException(ConfigErrorMessage.get_error_id("ITEM_{0}_NOT_ENOUGH".format(_id)))
+
+    def remove_product(self, items):
+        # items: [(_id, amount),]
+        updater = {}
+
+        for _id, amount in items:
+            building_id = TERRITORY_PRODUCT_BUILDING_TABLE[_id]
+
+            new_amount = self.doc['buildings'][str(building_id)]['product_amount'] - amount
+            if new_amount < 0:
+                new_amount = 0
+
+            self.doc['buildings'][str(building_id)]['product_amount'] = new_amount
+            updater['buildings.{0}.product_amount'.format(building_id)] = new_amount
+
+        MongoTerritory.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': updater}
+        )
+
+        self.send_notify()
+
+
+    def add_product(self, items):
+        # items: [(_id, amount),]
+        updater = {}
+
+        for _id, amount in items:
+            building_id = TERRITORY_PRODUCT_BUILDING_TABLE[_id]
+            b_data = self.doc['buildings'][str(building_id)]
+
+            building = Building(self.server_id, self.char_id, building_id, b_data, slot_ids=[])
+            building.add_product(amount)
+
+            self.doc['buildings'][str(building_id)]['product_amount'] = building.product_amount
+            updater['buildings.{0}.product_amount'.format(building_id)] = building.product_amount
+
+        MongoTerritory.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': updater}
+        )
+
+        self.send_notify()
+
     def training_star(self, building_id, slot_id, staff_id, hour):
         if hour not in TRAINING_HOURS:
             raise GameException(ConfigErrorMessage.get_error_id('BAD_MESSAGE'))
@@ -334,7 +392,6 @@ class Territory(object):
 
             ri.add(_id, _amount)
 
-
         # 概率奖励
         end_at = start_at + hour * 3600
         extra_at = start_at + 1800
@@ -367,7 +424,6 @@ class Territory(object):
 
         self.send_notify(building_id=building_id, slot_id=slot_id)
 
-
     def training_get_reward(self, building_id, slot_id):
         try:
             b_data = self.doc['buildings'][str(building_id)]
@@ -385,7 +441,6 @@ class Territory(object):
 
         if not slot.finished:
             raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_SLOT_NOT_FINISH"))
-
 
         reward = slot.reward
 
@@ -417,7 +472,6 @@ class Territory(object):
         # 把建筑产出也要发回到客户端
         resource_classified.bag.append((BUILDING_PRODUCT_ID_TABLE[building_id], reward['product_amount']))
         return resource_classified
-
 
     def send_notify(self, building_id=None, slot_id=None):
         # building_id 和 slot_id 都没有: 全部同步
@@ -457,5 +511,70 @@ class Territory(object):
 
             notify_building = notify.buildings.add()
             notify_building.MergeFrom(b_obj.make_protomsg())
+
+        MessagePipe(self.char_id).put(msg=notify)
+
+
+class TerritoryStore(object):
+    __slots__ = ['server_id', 'char_id', 'times']
+
+    def __init__(self, server_id, char_id):
+        self.server_id = 0
+        self.char_id = 0
+
+        self.times = TimesLogTerritoryStoreBuyTimes(self.server_id, self.char_id).batch_count_of_today()
+
+    def get_remained_times(self, _id):
+        t = self.times.get(str(_id), 0)
+        max_times = ConfigTerritoryStore.get(_id).max_times
+
+        remained = max_times - t
+        if remained < 0:
+            remained = 0
+
+        return remained
+
+    def buy(self, item_id):
+        config = ConfigTerritoryStore.get(item_id)
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_STORE_ITEM_NOT_EXIST"))
+
+        remained_times = self.get_remained_times(item_id)
+        if not remained_times:
+            raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_STORE_ITEM_NO_TIMES"))
+
+        resource_classified = ResourceClassification.classify(config.needs)
+        resource_classified.check_exist(self.server_id, self.char_id)
+        resource_classified.remove(self.server_id, self.char_id)
+
+        got = [(config.item_id, config.item_amount),]
+        resource_classified = ResourceClassification.classify(got)
+        resource_classified.add(self.server_id, self.char_id)
+
+        if str(item_id) in self.times:
+            self.times[str(item_id)] += 1
+        else:
+            self.times[str(item_id)] = 1
+
+        TimesLogTerritoryStoreBuyTimes(self.server_id, self.char_id).record(sub_id=item_id)
+
+        self.send_notify(item_id=item_id)
+        return resource_classified
+
+
+    def send_notify(self, item_id=None):
+        if item_id:
+            act = ACT_UPDATE
+            item_ids = [item_id]
+        else:
+            act = ACT_INIT
+            item_ids = ConfigTerritoryStore.INSTANCES.keys()
+
+        notify = TerritoryStoreNotify()
+        notify.act = act
+        for i in item_ids:
+            notify_item = notify.items.add()
+            notify_item.id = i
+            notify_item.remained_times = self.get_remained_times(i)
 
         MessagePipe(self.char_id).put(msg=notify)

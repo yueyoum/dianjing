@@ -202,4 +202,55 @@ class ConfigTerritoryStaffProduct(ConfigBase):
 
         :rtype: StaffProduct
         """
-        super(ConfigTerritoryStaffProduct, cls).get(_id)
+        return super(ConfigTerritoryStaffProduct, cls).get(_id)
+
+#################
+class Store(object):
+    __slots__ = ['id', 'max_times', 'needs', 'tp', 'item_id', 'item_amount',
+                 'condition_id', 'condition_value',
+                 ]
+
+    def __init__(self):
+        self.id = 0
+        self.max_times = 0
+        self.needs = 0
+        self.tp = 0
+        self.item_id = 0
+        self.item_amount = 0
+        self.condition_id = 0
+        self.condition_value = 0
+
+class ConfigTerritoryStore(ConfigBase):
+    EntityClass = Store
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: Store
+        """
+        return super(ConfigTerritoryStore, cls).get(_id)
+
+class Event(object):
+    __slots__ = ['id', 'reward_win', 'reward_lose', 'target_exp', 'npc']
+    def __init__(self):
+        self.id = 0
+        self.reward_win = []
+        self.reward_lose = []
+        self.target_exp = 0
+        self.npc = 0
+
+class ConfigTerritoryEvent(ConfigBase):
+    EntityClass = Event
+    INSTANCES = {}
+    FILTER_CACHE = {}
+    
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: Event
+        """
+        return super(ConfigTerritoryEvent, cls).get(_id)

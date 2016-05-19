@@ -198,6 +198,15 @@ MESSAGE_TO_ID = {
     "TerritoryTrainingStartResponse": 3704,
     "TerritoryTrainingGetRewardReqeust": 3705,
     "TerritoryTrainingGetRewardResponse": 3706,
+    "TerritoryStoreNotify": 3710,
+    "TerritoryStoreBuyRequest": 3711,
+    "TerritoryStoreBuyResponse": 3712,
+    "TerritoryFriendListRequest": 3713,
+    "TerritoryFriendListResponse": 3714,
+    "TerritoryFriendHelpRequest": 3717,
+    "TerritoryFriendHelpResponse": 3718,
+    "TerritoryMatchReportRequest": 3719,
+    "TerritoryMatchReportResponse": 3720,
 }
 
 ID_TO_MESSAGE = {
@@ -399,6 +408,15 @@ ID_TO_MESSAGE = {
     3704: "TerritoryTrainingStartResponse",
     3705: "TerritoryTrainingGetRewardReqeust",
     3706: "TerritoryTrainingGetRewardResponse",
+    3710: "TerritoryStoreNotify",
+    3711: "TerritoryStoreBuyRequest",
+    3712: "TerritoryStoreBuyResponse",
+    3713: "TerritoryFriendListRequest",
+    3714: "TerritoryFriendListResponse",
+    3717: "TerritoryFriendHelpRequest",
+    3718: "TerritoryFriendHelpResponse",
+    3719: "TerritoryMatchReportRequest",
+    3720: "TerritoryMatchReportResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -480,6 +498,10 @@ PATH_TO_REQUEST = {
     "/game/tower/sweepfinish/": ["tower", "TowerSweepFinishRequest"],
     "/game/territory/start/": ["territory", "TerritoryTrainingStartReqeust"],
     "/game/territory/getreward/": ["territory", "TerritoryTrainingGetRewardReqeust"],
+    "/game/territory/store/buy/": ["territory", "TerritoryStoreBuyRequest"],
+    "/game/territory/friend/list/": ["territory", "TerritoryFriendListRequest"],
+    "/game/territory/friend/help/": ["territory", "TerritoryFriendHelpRequest"],
+    "/game/territory/friend/report/": ["territory", "TerritoryMatchReportRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -561,4 +583,8 @@ PATH_TO_RESPONSE = {
     "/game/tower/sweepfinish/": ["tower", "TowerSweepFinishResponse"],
     "/game/territory/start/": ["territory", "TerritoryTrainingStartResponse"],
     "/game/territory/getreward/": ["territory", "TerritoryTrainingGetRewardResponse"],
+    "/game/territory/store/buy/": ["territory", "TerritoryStoreBuyResponse"],
+    "/game/territory/friend/list/": ["territory", "TerritoryFriendListResponse"],
+    "/game/territory/friend/help/": ["territory", "TerritoryFriendHelpResponse"],
+    "/game/territory/friend/report/": ["territory", "TerritoryMatchReportResponse"],
 }

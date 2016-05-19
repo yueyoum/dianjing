@@ -9,11 +9,15 @@ Description:
 
 from utils.http import ProtobufResponse
 
-from core.territory import Territory
+from core.territory import Territory, TerritoryStore
 
 from protomsg.territory_pb2 import (
     TerritoryTrainingGetRewardResponse,
     TerritoryTrainingStartResponse,
+    TerritoryFriendHelpResponse,
+    TerritoryFriendListResponse,
+    TerritoryMatchReportResponse,
+    TerritoryStoreBuyResponse,
 )
 
 def start(request):
@@ -44,6 +48,21 @@ def get_reward(request):
     resource_classified = t.training_get_reward(building_id, slot_id)
 
     response = TerritoryTrainingGetRewardResponse()
+    response.ret = 0
+    response.drop.MergeFrom(resource_classified.make_protomsg())
+    return ProtobufResponse(response)
+
+
+def store_buy(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    _id = request._proto.id
+
+    t = TerritoryStore(server_id, char_id)
+    resource_classified = t.buy(_id)
+
+    response = TerritoryStoreBuyResponse()
     response.ret = 0
     response.drop.MergeFrom(resource_classified.make_protomsg())
     return ProtobufResponse(response)

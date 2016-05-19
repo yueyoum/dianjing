@@ -24,6 +24,13 @@ _MONEY_REVERSE = {v: k for k, v in MONEY.iteritems()}
 TALENT_ITEM_ID = 30006
 CLUB_EXP_ITEM_ID = 30011
 
+# 领地建筑产出ID
+TERRITORY_PRODUCT_BUILDING_TABLE = {
+    30012: 101,
+    30013: 102,
+    30014: 103,
+}
+
 
 def item_id_to_money_text(_id):
     return MONEY[_id]
@@ -62,7 +69,7 @@ def filter_bag_item(items):
 
 
 class ResourceClassification(object):
-    __slots__ = ['money', 'bag', 'staff', 'talent_point', 'club_exp']
+    __slots__ = ['money', 'bag', 'staff', 'talent_point', 'club_exp', 'territory_product']
 
     def __init__(self):
         self.money = []
@@ -71,6 +78,8 @@ class ResourceClassification(object):
         self.talent_point = 0
         # club_exp 并不会 check_exist 和 remove
         self.club_exp = 0
+        # 领地资源
+        self.territory_product = []
 
     @classmethod
     def classify(cls, items):
@@ -81,6 +90,7 @@ class ResourceClassification(object):
         staff = {}
         talent_point = 0
         club_exp = 0
+        territory_product = {}
 
         for _id, _amount in items:
             if _id == TALENT_ITEM_ID:
@@ -90,6 +100,12 @@ class ResourceClassification(object):
             if _id == CLUB_EXP_ITEM_ID:
                 club_exp += _amount
                 continue
+
+            if _id in TERRITORY_PRODUCT_BUILDING_TABLE:
+                if _id in territory_product:
+                    territory_product[_id] += _amount
+                else:
+                    territory_product[_id] = _amount
 
             tp = ConfigItemNew.get(_id).tp
             if tp == 3:
@@ -114,6 +130,7 @@ class ResourceClassification(object):
         obj.staff = staff.items()
         obj.talent_point = talent_point
         obj.club_exp = club_exp
+        obj.territory_product = territory_product.items()
 
         return obj
 
@@ -130,18 +147,21 @@ class ResourceClassification(object):
         from core.bag import Bag
         from core.staff import StaffManger
         from core.talent import TalentManager
+        from core.territory import Territory
 
         money_text = self.money_as_text_dict()
         Club(server_id, char_id).check_money(**money_text)
         Bag(server_id, char_id).check_items(self.bag)
         StaffManger(server_id, char_id).check_original_staff_is_initial_state(self.staff)
         TalentManager(server_id, char_id).check_talent_points(self.talent_point)
+        Territory(server_id, char_id).check_product(self.territory_product)
 
     def remove(self, server_id, char_id):
         from core.club import Club
         from core.bag import Bag
         from core.staff import StaffManger
         from core.talent import TalentManager
+        from core.territory import Territory
 
         money_text = self.money_as_text_dict()
         money_text = {k: -v for k, v in money_text.iteritems()}
@@ -157,12 +177,14 @@ class ResourceClassification(object):
                 sm.remove_initial_state_staff(_id)
 
         TalentManager(server_id, char_id).deduct_talent_points(self.talent_point)
+        Territory(server_id, char_id).check_product(self.territory_product)
 
     def add(self, server_id, char_id):
         from core.club import Club
         from core.bag import Bag
         from core.staff import StaffManger
         from core.talent import TalentManager
+        from core.territory import Territory
 
         club_property = self.money_as_text_dict()
         if self.club_exp:
@@ -179,6 +201,7 @@ class ResourceClassification(object):
                 sm.add(_id)
 
         TalentManager(server_id, char_id).add_talent_points(self.talent_point)
+        Territory(server_id, char_id).add_product(self.territory_product)
 
     def make_protomsg(self):
         msg = MsgDrop()
@@ -206,5 +229,10 @@ class ResourceClassification(object):
             msg_item = msg.items.add()
             msg_item.id = CLUB_EXP_ITEM_ID
             msg_item.amount = self.club_exp
+
+        for _id, _amount in self.territory_product:
+            msg_item = msg.items.add()
+            msg_item.id = _id
+            msg_item.amount = _amount
 
         return msg
