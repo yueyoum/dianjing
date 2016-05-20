@@ -253,7 +253,7 @@ class Challenge(object):
                     {'_id': self.char_id},
                     {'$set': {
                         'chapters.{0}'.format(chapter_id): {
-                            'star': star,
+                            'star': 0,
                             'rewards': []
                         }
                     }}

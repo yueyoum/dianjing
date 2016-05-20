@@ -246,15 +246,16 @@ class Building(object):
         if not self.open:
             return
 
-        working_amount = self.get_working_slot_amount()
-        try:
-            i1, i2 = EVENT_INTERVAL[working_amount]
-        except KeyError:
-            return
+        # working_amount = self.get_working_slot_amount()
+        # try:
+        #     i1, i2 = EVENT_INTERVAL[working_amount]
+        # except KeyError:
+        #     return
 
-        interval = random.randint(i1, i2)
+        # interval = random.randint(i1, i2)
+        interval = 2
         now = arrow.utcnow().timestamp
-        if self.event_at + interval < now:
+        if self.event_at + interval > now:
             return
 
         event_id = random.choice(ConfigTerritoryBuilding.get(self.id).levels[self.level].events)

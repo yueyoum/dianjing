@@ -107,6 +107,10 @@ class ResourceClassification(object):
                 else:
                     territory_product[_id] = _amount
 
+                continue
+
+            # NOTE: 上面先处理特殊ID，下面再根据类型处理
+
             tp = ConfigItemNew.get(_id).tp
             if tp == 3:
                 if _id in money:
@@ -201,7 +205,8 @@ class ResourceClassification(object):
                 sm.add(_id)
 
         TalentManager(server_id, char_id).add_talent_points(self.talent_point)
-        Territory(server_id, char_id).add_product(self.territory_product)
+        if self.territory_product:
+            Territory(server_id, char_id).add_product(self.territory_product)
 
     def make_protomsg(self):
         msg = MsgDrop()
