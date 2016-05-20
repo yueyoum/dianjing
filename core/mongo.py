@@ -535,6 +535,10 @@ class MongoTerritory(BaseDocument):
         'exp': 0,
         'product_amount': 0,
         'slots': {},
+        # 随机事件
+        'event_id': 0,
+        # 上次发生随机事件的时间戳，用来控制下次生成时间
+        'event_at': 0,
     }
 
     SLOT_DOCUMENT = {

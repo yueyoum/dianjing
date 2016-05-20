@@ -7,14 +7,19 @@ Description:
 
 """
 import math
+import random
+
 import arrow
 
 from dianjing.exception import GameException
 
 from core.mongo import MongoTerritory
 from core.times_log import TimesLogTerritoryBuildingInspireTimes, TimesLogTerritoryStoreBuyTimes
+from core.club import Club
 from core.staff import StaffManger
+from core.friend import FriendManager
 from core.resource import ResourceClassification, TERRITORY_PRODUCT_BUILDING_TABLE
+from core.match import ClubMatch
 
 from utils.message import MessagePipe
 
@@ -25,7 +30,8 @@ from config import (
     ConfigItemNew,
     ConfigTerritoryStaffProduct,
     ConfigTerritoryStore,
-    ConfigTerritoryEvent
+    ConfigTerritoryEvent,
+    ConfigNPCFormation,
 )
 
 from protomsg.territory_pb2 import (
@@ -53,6 +59,14 @@ STAFF_QUALITY_MODULUS = {
     3: 0.7,
     4: 0.8,
     5: 0.9,
+}
+
+# TODO real time
+# 事件发生间隔分钟数
+EVENT_INTERVAL = {
+    1: [5, 6],
+    2: [3, 5],
+    3: [2, 3],
 }
 
 
@@ -112,10 +126,10 @@ class Slot(object):
 
         quality_modulus = STAFF_QUALITY_MODULUS[ConfigItemNew.get(staff_obj.oid).quality]
         slot_modulus = ConfigTerritoryBuilding.get(self.building_id).slots[self.id].exp_modulus
-        exp = (100 * math.pow(self.building_level, 0.9) + 100 * math.pow(self.hour,
-                                                                         0.5)) * quality_modulus * slot_modulus
-        product_amount = (150 * math.pow(self.building_level, 0.8) + 150 * math.pow(self.hour,
-                                                                                    0.6)) * quality_modulus * slot_modulus
+        exp = (100 * math.pow(self.building_level, 0.9) +
+               100 * math.pow(self.hour, 0.5)) * quality_modulus * slot_modulus
+        product_amount = (150 * math.pow(self.building_level, 0.8) +
+                          150 * math.pow(self.hour, 0.6)) * quality_modulus * slot_modulus
 
         return int(exp), int(product_amount)
 
@@ -142,7 +156,8 @@ class Building(object):
     __slots__ = [
         'server_id', 'char_id', 'id', 'product_id',
         'open', 'level', 'exp', 'product_amount',
-        'slots'
+        'slots',
+        'event_id', 'event_at',
     ]
 
     def __init__(self, server_id, char_id, building_id, data, slot_ids=None):
@@ -151,11 +166,17 @@ class Building(object):
 
         self.id = building_id
         self.product_id = BUILDING_PRODUCT_ID_TABLE[building_id]
+
+        self.event_id = 0
+
         if data:
             self.open = True
             self.level = data['level']
             self.exp = data['exp']
             self.product_amount = data['product_amount']
+
+            self.event_id = data.get('event_id', 0)
+            self.event_at = data.get('event_at', 0)
 
             self.slots = {}
             """:type: dict[int, Slot]"""
@@ -195,7 +216,6 @@ class Building(object):
         if self.product_amount >= limit:
             self.product_amount = limit
 
-
     def current_inspire_times(self):
         if not self.open:
             return 0
@@ -213,6 +233,42 @@ class Building(object):
 
         times = self.current_inspire_times() + 1
         return ConfigInspireCost.get(times)
+
+    def get_working_slot_amount(self):
+        working_slot_amount = 0
+        for _, s in self.slots.iteritems():
+            if s.open and s.staff_id:
+                working_slot_amount += 1
+
+        return working_slot_amount
+
+    def refresh_event_id(self):
+        if not self.open:
+            return
+
+        working_amount = self.get_working_slot_amount()
+        try:
+            i1, i2 = EVENT_INTERVAL[working_amount]
+        except KeyError:
+            return
+
+        interval = random.randint(i1, i2)
+        now = arrow.utcnow().timestamp
+        if self.event_at + interval < now:
+            return
+
+        event_id = random.choice(ConfigTerritoryBuilding.get(self.id).levels[self.level].events)
+        self.event_id = event_id
+        self.event_at = now
+
+        # NOTE 这里自己存盘
+        MongoTerritory.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'buildings.{0}.event_id'.format(self.id): self.event_id,
+                'buildings.{0}.event_at'.format(self.id): self.event_at,
+            }}
+        )
 
     def make_protomsg(self):
         msg = MsgBuilding()
@@ -291,16 +347,14 @@ class Territory(object):
 
         self.send_notify()
 
-
     def add_product(self, items):
         # items: [(_id, amount),]
         updater = {}
 
         for _id, amount in items:
             building_id = TERRITORY_PRODUCT_BUILDING_TABLE[_id]
-            b_data = self.doc['buildings'][str(building_id)]
 
-            building = Building(self.server_id, self.char_id, building_id, b_data, slot_ids=[])
+            building = self.get_building_object(building_id, slots_ids=[])
             building.add_product(amount)
 
             self.doc['buildings'][str(building_id)]['product_amount'] = building.product_amount
@@ -313,6 +367,29 @@ class Territory(object):
 
         self.send_notify()
 
+    def get_all_building_objects(self):
+        """
+
+        :rtype: dict[int, Building]
+        """
+        objects = {}
+        for k, v in self.doc['buildings'].iteritems():
+            objects[int(k)] = Building(self.server_id, self.char_id, int(k), v)
+
+        return objects
+
+    def get_building_object(self, bid, slots_ids=None):
+        """
+
+        :rtype: Building
+        """
+        try:
+            b_data = self.doc['buildings'][str(bid)]
+        except KeyError:
+            raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_BUILDING_LOCK"))
+
+        return Building(self.server_id, self.char_id, bid, b_data, slot_ids=slots_ids)
+
     def training_star(self, building_id, slot_id, staff_id, hour):
         if hour not in TRAINING_HOURS:
             raise GameException(ConfigErrorMessage.get_error_id('BAD_MESSAGE'))
@@ -320,12 +397,7 @@ class Territory(object):
         sm = StaffManger(self.server_id, self.char_id)
         sm.check_staff([staff_id])
 
-        try:
-            b_data = self.doc['buildings'][str(building_id)]
-        except KeyError:
-            raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_BUILDING_LOCK"))
-
-        building = Building(self.server_id, self.char_id, building_id, b_data, slot_ids=[slot_id])
+        building = self.get_building_object(building_id, slots_ids=[slot_id])
         try:
             slot = building.slots[slot_id]
         except KeyError:
@@ -338,9 +410,7 @@ class Territory(object):
             raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_SLOT_HAS_STAFF"))
 
         # TODO check whether this staff is in training
-
-        building_level = Building(self.server_id, self.char_id, building_id,
-                                  self.doc['buildings'][str(building_id)]).level
+        building_level = self.get_building_object(building_id, slots_ids=[]).level
 
         config_slot = ConfigTerritoryBuilding.get(building_id).slots[slot_id]
         cost_amount = config_slot.get_cost_amount(building_level, TRAINING_HOURS.index(hour))
@@ -425,12 +495,7 @@ class Territory(object):
         self.send_notify(building_id=building_id, slot_id=slot_id)
 
     def training_get_reward(self, building_id, slot_id):
-        try:
-            b_data = self.doc['buildings'][str(building_id)]
-        except KeyError:
-            raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_BUILDING_LOCK"))
-
-        building = Building(self.server_id, self.char_id, building_id, b_data, slot_ids=[slot_id])
+        building = self.get_building_object(building_id, slots_ids=[slot_id])
         try:
             slot = building.slots[slot_id]
         except KeyError:
@@ -472,6 +537,20 @@ class Territory(object):
         # 把建筑产出也要发回到客户端
         resource_classified.bag.append((BUILDING_PRODUCT_ID_TABLE[building_id], reward['product_amount']))
         return resource_classified
+
+    def add_building_exp(self, building_id, exp):
+        building = self.get_building_object(building_id, slots_ids=[])
+        building.add_exp(exp)
+
+        # TODO 格子解锁
+        MongoTerritory.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'buildings.{0}.level'.format(building_id): building.level,
+                'buildings.{0}.exp'.format(building_id): building.exp,
+            }}
+        )
+        self.send_notify(building_id=building_id)
 
     def send_notify(self, building_id=None, slot_id=None):
         # building_id 和 slot_id 都没有: 全部同步
@@ -519,8 +598,8 @@ class TerritoryStore(object):
     __slots__ = ['server_id', 'char_id', 'times']
 
     def __init__(self, server_id, char_id):
-        self.server_id = 0
-        self.char_id = 0
+        self.server_id = server_id
+        self.char_id = char_id
 
         self.times = TimesLogTerritoryStoreBuyTimes(self.server_id, self.char_id).batch_count_of_today()
 
@@ -547,7 +626,7 @@ class TerritoryStore(object):
         resource_classified.check_exist(self.server_id, self.char_id)
         resource_classified.remove(self.server_id, self.char_id)
 
-        got = [(config.item_id, config.item_amount),]
+        got = [(config.item_id, config.item_amount), ]
         resource_classified = ResourceClassification.classify(got)
         resource_classified.add(self.server_id, self.char_id)
 
@@ -560,7 +639,6 @@ class TerritoryStore(object):
 
         self.send_notify(item_id=item_id)
         return resource_classified
-
 
     def send_notify(self, item_id=None):
         if item_id:
@@ -578,3 +656,89 @@ class TerritoryStore(object):
             notify_item.remained_times = self.get_remained_times(i)
 
         MessagePipe(self.char_id).put(msg=notify)
+
+
+class TerritoryFriend(object):
+    __slots__ = ['server_id', 'char_id']
+
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+
+    def get_list(self):
+        friend_ids = FriendManager(self.server_id, self.char_id).get_real_friends_ids()
+        info = {}
+        """:type: dict[int, list[dict]]"""
+
+        for fid in friend_ids:
+            t = Territory(self.server_id, self.char_id)
+            buildings = t.get_all_building_objects()
+
+            b_list = []
+            for _, b_obj in buildings.iteritems():
+                b_obj.refresh_event_id()
+
+                b_list.append({
+                    'id': b_obj.id,
+                    'level': b_obj.level,
+                    'event_id': b_obj.event_id
+                })
+
+            info[fid] = b_list
+        return info
+
+    def help(self, friend_id, building_id):
+        if not FriendManager(self.server_id, self.char_id).check_friend_exist(friend_id):
+            raise GameException(ConfigErrorMessage.get_error_id("FRIEND_NOT_OK"))
+
+        t = Territory(self.server_id, self.char_id)
+        building = t.get_building_object(building_id, slots_ids=[])
+
+        event_id = building.event_id
+
+        if not event_id:
+            raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_BUILDING_NO_EVENT"))
+
+        MongoTerritory.db(self.server_id).update_one(
+            {'_id': friend_id},
+            {'$set': {
+                'buildings.{0}.event_id': 0
+            }}
+        )
+
+        config = ConfigTerritoryEvent.get(event_id)
+        if not config.npc:
+            resource_classified = ResourceClassification.classify(config.reward_win)
+            resource_classified.add(self.server_id, friend_id)
+
+            Territory(self.server_id, friend_id).add_building_exp(building_id, config.target_exp)
+            return None, resource_classified
+
+        npc_club = ConfigNPCFormation.get(config.npc)
+        my_club = Club(self.server_id, self.char_id)
+
+        match = ClubMatch(my_club, npc_club)
+        msg = match.start()
+        msg.key = "{0}:{1}:{2}".format(friend_id, building_id, event_id)
+        return msg, None
+
+    def match_report(self, key, win):
+        try:
+            friend_id, building_id, event_id = key.split(':')
+            friend_id = int(friend_id)
+            building_id = int(building_id)
+            event_id = int(event_id)
+        except:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
+        config = ConfigTerritoryEvent.get(event_id)
+        Territory(self.server_id, friend_id).add_building_exp(building_id, config.target_exp)
+
+        if win:
+            drop = config.reward_win
+        else:
+            drop = config.reward_lose
+
+        resource_classified = ResourceClassification.classify(drop)
+        resource_classified.add(self.server_id, self.char_id)
+        return resource_classified

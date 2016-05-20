@@ -63,6 +63,16 @@ class FriendManager(object):
         club = Club(self.server_id, friend_id)
         return char, club
 
+    def get_real_friends_ids(self):
+        doc = MongoFriend.db(self.server_id).find_one({'_id': self.char_id})
+        friend_ids = []
+        for k, v in doc['friends'].iteritems():
+            if v == FRIEND_STATUS_OK:
+                friend_ids.append(int(k))
+
+        return friend_ids
+
+
     def get_candidates(self):
         char_doc = MongoCharacter.db(self.server_id).find_one(
             {'_id': self.char_id},
