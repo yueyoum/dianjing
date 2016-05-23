@@ -207,6 +207,13 @@ MESSAGE_TO_ID = {
     "TerritoryFriendHelpResponse": 3718,
     "TerritoryMatchReportRequest": 3719,
     "TerritoryMatchReportResponse": 3720,
+    "StoreNotify": 3800,
+    "StoreBuyRequest": 3801,
+    "StoreBuyResponse": 3802,
+    "StoreRefreshRequest": 3803,
+    "StoreRefreshResponse": 3804,
+    "StoreAutoRefreshRequest": 3805,
+    "StoreAutoRefreshResponse": 3806,
 }
 
 ID_TO_MESSAGE = {
@@ -417,6 +424,13 @@ ID_TO_MESSAGE = {
     3718: "TerritoryFriendHelpResponse",
     3719: "TerritoryMatchReportRequest",
     3720: "TerritoryMatchReportResponse",
+    3800: "StoreNotify",
+    3801: "StoreBuyRequest",
+    3802: "StoreBuyResponse",
+    3803: "StoreRefreshRequest",
+    3804: "StoreRefreshResponse",
+    3805: "StoreAutoRefreshRequest",
+    3806: "StoreAutoRefreshResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -502,6 +516,9 @@ PATH_TO_REQUEST = {
     "/game/territory/friend/list/": ["territory", "TerritoryFriendListRequest"],
     "/game/territory/friend/help/": ["territory", "TerritoryFriendHelpRequest"],
     "/game/territory/friend/report/": ["territory", "TerritoryMatchReportRequest"],
+    "/game/store/buy/": ["store", "StoreBuyRequest"],
+    "/game/store/refresh/": ["store", "StoreRefreshRequest"],
+    "/game/store/autorefresh/": ["store", "StoreAutoRefreshRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -587,4 +604,7 @@ PATH_TO_RESPONSE = {
     "/game/territory/friend/list/": ["territory", "TerritoryFriendListResponse"],
     "/game/territory/friend/help/": ["territory", "TerritoryFriendHelpResponse"],
     "/game/territory/friend/report/": ["territory", "TerritoryMatchReportResponse"],
+    "/game/store/buy/": ["store", "StoreBuyResponse"],
+    "/game/store/refresh/": ["store", "StoreRefreshResponse"],
+    "/game/store/autorefresh/": ["store", "StoreAutoRefreshResponse"],
 }

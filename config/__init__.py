@@ -32,6 +32,7 @@ from config.npc import ConfigNPCFormation
 from config.arena import ConfigArenaNPC, ConfigArenaHonorReward, ConfigArenaBuyTimesCost, ConfigArenaMatchReward, ConfigArenaRankReward
 from config.tower import ConfigTowerLevel, ConfigTowerResetCost
 from config.territory import ConfigTerritoryBuilding, ConfigInspireCost, ConfigTerritoryStaffProduct, ConfigTerritoryEvent, ConfigTerritoryStore
+from config.store import ConfigStore, ConfigStoreRefreshCost, ConfigStoreType
 
 
 _has_configed = False
@@ -165,4 +166,12 @@ def load_config():
         elif item == 'territory_store.json':
             ConfigTerritoryStore.initialize(data)
 
+        elif item == 'store_type.json':
+            ConfigStoreType.initialize(data)
+        elif item == 'store.json':
+            ConfigStore.initialize(data)
+        elif item == 'store_refresh_cost.json':
+            ConfigStoreRefreshCost.initialize(data)
+
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))
+

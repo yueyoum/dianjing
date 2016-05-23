@@ -147,3 +147,8 @@ class TimesLogTerritoryBuildingInspireTimes(TimesLog):
 class TimesLogTerritoryStoreBuyTimes(CategoryTimesLog):
     KEY = 'territory_store'
     __slots__ = []
+
+# 商店刷新次数
+class TimesLogStoreRefreshTimes(CategoryTimesLog):
+    KEY = 'store_refresh'
+    __slots__ = []

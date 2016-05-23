@@ -34,6 +34,7 @@ import views.dungeon
 import views.arena
 import views.tower
 import views.territory
+import views.store
 
 urlpatterns = [
     url(r'^sync/$', views.common.sync),
@@ -136,4 +137,8 @@ urlpatterns = [
     url(r'^territory/friend/list/$', views.territory.friend_list),
     url(r'^territory/friend/help/$', views.territory.friend_help),
     url(r'^territory/friend/report/$', views.territory.friend_report),
+
+    url(r'^store/buy/$', views.store.buy),
+    url(r'^store/refresh/$', views.store.refresh),
+    url(r'^store/autorefresh/$', views.store.auto_refresh),
 ]

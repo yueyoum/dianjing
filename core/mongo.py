@@ -559,3 +559,33 @@ class MongoTerritory(BaseDocument):
 
     COLLECTION = 'territory'
     INDEXES = ['product_flag',]
+
+
+# 商店
+class MongoStore(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'tp': {},
+    }
+
+    TP_DOCUMENT = {
+        'refresh_at': 0,
+        'goods': {}
+    }
+
+    GOODS_DOCUMENT = {
+        # 每次随机出来的index
+        'index': 0,
+        # 已经兑换的次数，这个不随系统刷新，是由玩家刷新面板的时候 刷的
+        'times': 0,
+    }
+
+    @classmethod
+    def document_tp(cls):
+        return copy.deepcopy(cls.TP_DOCUMENT)
+
+    @classmethod
+    def document_goods(cls):
+        return copy.deepcopy(cls.GOODS_DOCUMENT)
+
+    COLLECTION = 'store'

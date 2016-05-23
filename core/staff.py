@@ -117,6 +117,9 @@ class StaffRecruit(object):
 
         return cd
 
+    def get_score(self):
+        return self.doc['score']
+
     def get_point(self, tp):
         return self.doc['point'].get(str(tp), 0)
 
