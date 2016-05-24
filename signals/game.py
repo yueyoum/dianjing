@@ -36,6 +36,8 @@ from core.dungeon import DungeonManager
 from core.arena import Arena
 from core.tower import Tower
 from core.territory import Territory, TerritoryStore
+from core.store import Store
+from core.vip import VIP
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
@@ -104,5 +106,8 @@ def game_start_handler(server_id, char_id, **kwargs):
     Tower(server_id, char_id).send_notify()
     Territory(server_id, char_id).send_notify()
     TerritoryStore(server_id, char_id).send_notify()
+
+    Store(server_id, char_id).send_notify()
+    # VIP(server_id, char_id).send_notify()
 
     send_broadcast_notify(char_id)

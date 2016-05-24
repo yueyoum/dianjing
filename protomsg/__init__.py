@@ -214,6 +214,9 @@ MESSAGE_TO_ID = {
     "StoreRefreshResponse": 3804,
     "StoreAutoRefreshRequest": 3805,
     "StoreAutoRefreshResponse": 3806,
+    "VIPNotify": 3900,
+    "VIPBuyRewardRequest": 3901,
+    "VIPBuyRewardResponse": 3902,
 }
 
 ID_TO_MESSAGE = {
@@ -431,6 +434,9 @@ ID_TO_MESSAGE = {
     3804: "StoreRefreshResponse",
     3805: "StoreAutoRefreshRequest",
     3806: "StoreAutoRefreshResponse",
+    3900: "VIPNotify",
+    3901: "VIPBuyRewardRequest",
+    3902: "VIPBuyRewardResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -519,6 +525,7 @@ PATH_TO_REQUEST = {
     "/game/store/buy/": ["store", "StoreBuyRequest"],
     "/game/store/refresh/": ["store", "StoreRefreshRequest"],
     "/game/store/autorefresh/": ["store", "StoreAutoRefreshRequest"],
+    "/game/vip/buyreward/": ["vip", "VIPBuyRewardRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -607,4 +614,5 @@ PATH_TO_RESPONSE = {
     "/game/store/buy/": ["store", "StoreBuyResponse"],
     "/game/store/refresh/": ["store", "StoreRefreshResponse"],
     "/game/store/autorefresh/": ["store", "StoreAutoRefreshResponse"],
+    "/game/vip/buyreward/": ["vip", "VIPBuyRewardResponse"],
 }

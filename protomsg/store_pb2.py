@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='store.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0bstore.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"B\n\x05Goods\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x15\n\rcontent_index\x18\x02 \x02(\x05\x12\x16\n\x0eremained_times\x18\x03 \x02(\x05\"\xac\x02\n\x0bStoreNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12=\n\x0bstore_types\x18\x03 \x03(\x0b\x32(.Dianjing.protocol.StoreNotify.StoreType\x1a\xa4\x01\n\tStoreType\x12\n\n\x02tp\x18\x01 \x02(\x05\x12\x17\n\x0f\x61uto_refresh_at\x18\x02 \x02(\x03\x12\x1e\n\x16remained_refresh_times\x18\x03 \x02(\x05\x12\x14\n\x0crefresh_cost\x18\x04 \x02(\x05\x12\x13\n\x0bmoney_value\x18\x05 \x02(\x05\x12\'\n\x05goods\x18\x06 \x03(\x0b\x32\x18.Dianjing.protocol.Goods\"@\n\x0fStoreBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02tp\x18\x02 \x02(\x05\x12\x10\n\x08goods_id\x18\x03 \x02(\x05\"0\n\x10StoreBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"2\n\x13StoreRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02tp\x18\x02 \x02(\x05\"4\n\x14StoreRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"6\n\x17StoreAutoRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02tp\x18\x02 \x02(\x05\"8\n\x18StoreAutoRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+  serialized_pb=_b('\n\x0bstore.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"B\n\x05Goods\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x15\n\rcontent_index\x18\x02 \x02(\x05\x12\x16\n\x0eremained_times\x18\x03 \x02(\x05\"\x97\x02\n\x0bStoreNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12=\n\x0bstore_types\x18\x03 \x03(\x0b\x32(.Dianjing.protocol.StoreNotify.StoreType\x1a\x8f\x01\n\tStoreType\x12\n\n\x02tp\x18\x01 \x02(\x05\x12\x17\n\x0f\x61uto_refresh_at\x18\x02 \x02(\x03\x12\x1e\n\x16remained_refresh_times\x18\x03 \x02(\x05\x12\x14\n\x0crefresh_cost\x18\x04 \x02(\x05\x12\'\n\x05goods\x18\x05 \x03(\x0b\x32\x18.Dianjing.protocol.Goods\"@\n\x0fStoreBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02tp\x18\x02 \x02(\x05\x12\x10\n\x08goods_id\x18\x03 \x02(\x05\"0\n\x10StoreBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"2\n\x13StoreRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02tp\x18\x02 \x02(\x05\"4\n\x14StoreRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"6\n\x17StoreAutoRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02tp\x18\x02 \x02(\x05\"8\n\x18StoreAutoRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
   ,
   dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -110,15 +110,8 @@ _STORENOTIFY_STORETYPE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='money_value', full_name='Dianjing.protocol.StoreNotify.StoreType.money_value', index=4,
-      number=5, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='goods', full_name='Dianjing.protocol.StoreNotify.StoreType.goods', index=5,
-      number=6, type=11, cpp_type=10, label=3,
+      name='goods', full_name='Dianjing.protocol.StoreNotify.StoreType.goods', index=4,
+      number=5, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -136,7 +129,7 @@ _STORENOTIFY_STORETYPE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=268,
-  serialized_end=432,
+  serialized_end=411,
 )
 
 _STORENOTIFY = _descriptor.Descriptor(
@@ -180,7 +173,7 @@ _STORENOTIFY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=132,
-  serialized_end=432,
+  serialized_end=411,
 )
 
 
@@ -224,8 +217,8 @@ _STOREBUYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=434,
-  serialized_end=498,
+  serialized_start=413,
+  serialized_end=477,
 )
 
 
@@ -262,8 +255,8 @@ _STOREBUYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=500,
-  serialized_end=548,
+  serialized_start=479,
+  serialized_end=527,
 )
 
 
@@ -300,8 +293,8 @@ _STOREREFRESHREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=550,
-  serialized_end=600,
+  serialized_start=529,
+  serialized_end=579,
 )
 
 
@@ -338,8 +331,8 @@ _STOREREFRESHRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=602,
-  serialized_end=654,
+  serialized_start=581,
+  serialized_end=633,
 )
 
 
@@ -376,8 +369,8 @@ _STOREAUTOREFRESHREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=656,
-  serialized_end=710,
+  serialized_start=635,
+  serialized_end=689,
 )
 
 
@@ -414,8 +407,8 @@ _STOREAUTOREFRESHRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=712,
-  serialized_end=768,
+  serialized_start=691,
+  serialized_end=747,
 )
 
 _STORENOTIFY_STORETYPE.fields_by_name['goods'].message_type = _GOODS

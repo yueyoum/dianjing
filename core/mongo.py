@@ -589,3 +589,17 @@ class MongoStore(BaseDocument):
         return copy.deepcopy(cls.GOODS_DOCUMENT)
 
     COLLECTION = 'store'
+
+
+# VIP
+class MongoVIP(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'vip': 0,
+        'exp': 0,
+        # 领奖情况
+        'rewards': []
+    }
+
+    COLLECTION = 'vip'
+    INDEXES = ['vip',]

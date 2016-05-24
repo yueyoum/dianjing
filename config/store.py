@@ -58,7 +58,7 @@ class StoreRefresh(object):
             if times >= k:
                 return v
 
-        raise RuntimeError("Error ConfigStoreRefreshCost, Invalid times: {0}".format(times))
+        return 0
 
 class ConfigStoreType(ConfigBase):
     EntityClass = StoreType

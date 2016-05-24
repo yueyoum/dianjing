@@ -35,6 +35,7 @@ import views.arena
 import views.tower
 import views.territory
 import views.store
+import views.vip
 
 urlpatterns = [
     url(r'^sync/$', views.common.sync),
@@ -141,4 +142,6 @@ urlpatterns = [
     url(r'^store/buy/$', views.store.buy),
     url(r'^store/refresh/$', views.store.refresh),
     url(r'^store/autorefresh/$', views.store.auto_refresh),
+
+    url(r'^vip/buyreward/$', views.vip.buy_reward),
 ]

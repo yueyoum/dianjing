@@ -14,7 +14,6 @@ from dianjing.exception import GameException
 from core.mongo import MongoStore
 from core.times_log import TimesLogStoreRefreshTimes
 from core.club import get_club_property
-from core.staff import StaffRecruit
 from core.resource import ResourceClassification, money_text_to_item_id
 
 from utils.message import MessagePipe
@@ -29,31 +28,9 @@ ALL_TYPES = ConfigStoreType.INSTANCES.keys()
 MAX_REFRESH_TIMES = 10
 
 
-def get_money_value(server_id, char_id, tp):
-    config = ConfigStoreType.get(tp)
-    if config.money_id == 30000:
-        return get_club_property(server_id, char_id, 'diamond')
-
-    if config.money_id == 30001:
-        return get_club_property(server_id, char_id, 'gold')
-
-    if config.money_id == 30002:
-        return get_club_property(server_id, char_id, 'renown')
-
-    if config.money_id == 30003:
-        return get_club_property(server_id, char_id, 'crystal')
-
-    if config.money_id == 30004:
-        return get_club_property(server_id, char_id, 'gas')
-
-    if config.money_id == 30005:
-        return StaffRecruit(server_id, char_id).get_score()
-
-    raise RuntimeError("Store get_money_value, unknown tp: {0}".format(tp))
-
-
 class Store(object):
     __slots__ = ['server_id', 'char_id', 'doc']
+
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
@@ -67,7 +44,6 @@ class Store(object):
 
             MongoStore.db(self.server_id).insert_one(self.doc)
 
-
     def make_refresh(self, tp, set_timestamp=False, save=True, send_notify=True):
         club_level = get_club_property(self.server_id, self.char_id, 'level')
         goods = ConfigStore.refresh(tp, club_level)
@@ -77,7 +53,7 @@ class Store(object):
             tp_doc['refresh_at'] = arrow.utcnow().timestamp
 
         tp_doc['goods'] = {str(_id): {'index': _index, 'times': 0} for _id, _index in goods}
-        self.doc['tp.{0}'.format(tp)] = tp_doc
+        self.doc['tp'][str(tp)] = tp_doc
 
         if save:
             MongoStore.db(self.server_id).update_one(
@@ -91,16 +67,19 @@ class Store(object):
             self.send_notify(tp=tp)
 
     def next_auto_refresh_timestamp(self, tp):
-        last_at = self.doc['tp'][str(tp)]['refresh_at']
-        if not last_at:
+        config = ConfigStoreType.get(tp)
+        if not config.refresh_hour_interval:
             return 0
 
-        config = ConfigStoreType.get(tp)
+        last_at = self.doc['tp'][str(tp)]['refresh_at']
+        if not last_at:
+            # 立即可刷
+            return arrow.utcnow().timestamp - 1
+
         return last_at + config.refresh_hour_interval * 3600
 
-
     def get_current_refresh_times(self, tp):
-        return TimesLogStoreRefreshTimes(self.server_id, self.char_id).count_of_today()
+        return TimesLogStoreRefreshTimes(self.server_id, self.char_id).count_of_today(sub_id=tp)
 
     def get_remained_refresh_times(self, tp):
         remained_times = MAX_REFRESH_TIMES - self.get_current_refresh_times(tp)
@@ -137,10 +116,16 @@ class Store(object):
         resource_classify.add(self.server_id, self.char_id)
 
         data['times'] += 1
+
+        MongoStore.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'tp.{0}.goods.{1}.times'.format(tp, goods_id): data['times']
+            }}
+        )
+
         self.send_notify(tp=tp, goods_id=goods_id)
-
         return resource_classify
-
 
     def refresh(self, tp):
         if tp not in ALL_TYPES:
@@ -156,7 +141,6 @@ class Store(object):
         resource_classified.remove(self.server_id, self.char_id)
 
         self.make_refresh(tp)
-
 
     def auto_refresh(self, tp):
         if tp not in ALL_TYPES:
@@ -174,6 +158,7 @@ class Store(object):
         # tp 没有， goods_id 有： 错误情况
 
         tp_goods_id_table = {}
+
         def _get_goods_id_of_tp(_tp):
             try:
                 return tp_goods_id_table[_tp]
@@ -200,7 +185,6 @@ class Store(object):
             notify_type.auto_refresh_at = self.next_auto_refresh_timestamp(_t)
             notify_type.remained_refresh_times = self.get_remained_refresh_times(_t)
             notify_type.refresh_cost = self.get_refresh_cost(_t)
-            notify_type.money_value = get_money_value(self.server_id, self.char_id, _t)
 
             for _g in _get_goods_id_of_tp(_t):
                 _g_data = self.doc['tp'][str(_t)]['goods'][str(_g)]

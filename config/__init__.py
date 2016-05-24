@@ -33,6 +33,7 @@ from config.arena import ConfigArenaNPC, ConfigArenaHonorReward, ConfigArenaBuyT
 from config.tower import ConfigTowerLevel, ConfigTowerResetCost
 from config.territory import ConfigTerritoryBuilding, ConfigInspireCost, ConfigTerritoryStaffProduct, ConfigTerritoryEvent, ConfigTerritoryStore
 from config.store import ConfigStore, ConfigStoreRefreshCost, ConfigStoreType
+from config.vip import ConfigVIP
 
 
 _has_configed = False
@@ -172,6 +173,9 @@ def load_config():
             ConfigStore.initialize(data)
         elif item == 'store_refresh_cost.json':
             ConfigStoreRefreshCost.initialize(data)
+
+        elif item == 'vip.json':
+            ConfigVIP.initialize(data)
 
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))
 
