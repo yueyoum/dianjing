@@ -20,6 +20,7 @@ from core.resource import ResourceClassification
 from core.times_log import TimesLogChallengeMatchTimes
 
 from utils.message import MessagePipe
+from utils.functional import make_string_id
 
 from config import ConfigChapter, ConfigChallengeMatch, ConfigErrorMessage
 
@@ -40,7 +41,7 @@ class ChallengeNPCStaff(AbstractStaff):
     def __init__(self, _id):
         super(ChallengeNPCStaff, self).__init__()
 
-        self.id = str(_id)
+        self.id = make_string_id()
         self.oid = _id
         self.after_init()
 
