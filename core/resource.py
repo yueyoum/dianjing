@@ -22,6 +22,7 @@ MONEY = {
 _MONEY_REVERSE = {v: k for k, v in MONEY.iteritems()}
 
 TALENT_ITEM_ID = 30006
+VIP_EXP_ITEM_ID = 30010
 CLUB_EXP_ITEM_ID = 30011
 
 # 领地建筑产出ID
@@ -69,7 +70,9 @@ def filter_bag_item(items):
 
 
 class ResourceClassification(object):
-    __slots__ = ['money', 'bag', 'staff', 'talent_point', 'club_exp', 'territory_product']
+    __slots__ = ['money', 'bag', 'staff', 'talent_point', 'club_exp', 'territory_product',
+                 'vip_exp',
+                 ]
 
     def __init__(self):
         self.money = []
@@ -80,6 +83,8 @@ class ResourceClassification(object):
         self.club_exp = 0
         # 领地资源
         self.territory_product = []
+        # vip exp
+        self.vip_exp = 0
 
     @classmethod
     def classify(cls, items):
@@ -91,6 +96,7 @@ class ResourceClassification(object):
         talent_point = 0
         club_exp = 0
         territory_product = {}
+        vip_exp = 0
 
         for _id, _amount in items:
             if _id == TALENT_ITEM_ID:
@@ -99,6 +105,10 @@ class ResourceClassification(object):
 
             if _id == CLUB_EXP_ITEM_ID:
                 club_exp += _amount
+                continue
+
+            if _id == VIP_EXP_ITEM_ID:
+                vip_exp += _amount
                 continue
 
             if _id in TERRITORY_PRODUCT_BUILDING_TABLE:
@@ -134,6 +144,7 @@ class ResourceClassification(object):
         obj.staff = staff.items()
         obj.talent_point = talent_point
         obj.club_exp = club_exp
+        obj.vip_exp = vip_exp
         obj.territory_product = territory_product.items()
 
         return obj
@@ -189,11 +200,15 @@ class ResourceClassification(object):
         from core.staff import StaffManger
         from core.talent import TalentManager
         from core.territory import Territory
+        from core.vip import VIP
 
         club_property = self.money_as_text_dict()
         if self.club_exp:
             club_property['exp'] = self.club_exp
         Club(server_id, char_id).update(**club_property)
+
+        if self.vip_exp:
+            VIP(server_id, char_id).add_exp(self.vip_exp)
 
         bag = Bag(server_id, char_id)
         for _id, _amount in self.bag:
@@ -234,6 +249,11 @@ class ResourceClassification(object):
             msg_item = msg.items.add()
             msg_item.id = CLUB_EXP_ITEM_ID
             msg_item.amount = self.club_exp
+
+        if self.vip_exp:
+            msg_item = msg.items.add()
+            msg_item.id = VIP_EXP_ITEM_ID
+            msg_item.amount = self.vip_exp
 
         for _id, _amount in self.territory_product:
             msg_item = msg.items.add()
