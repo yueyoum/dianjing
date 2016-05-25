@@ -486,7 +486,7 @@ class AbstractClub(object):
     __slots__ = [
         'server_id', 'char_id',
         'id', 'name', 'manager_name', 'flag', 'level',
-        'exp', 'vip', 'gold', 'diamond', 'crystal', 'gas', 'renown',
+        'exp', 'gold', 'diamond', 'crystal', 'gas', 'renown',
         'energy',
         'formation_staffs',
     ]
@@ -501,7 +501,6 @@ class AbstractClub(object):
         self.flag = 0
         self.level = 1
         self.exp = 0
-        self.vip = 0
         self.gold = 0
         self.diamond = 0
         self.crystal = 0
@@ -562,7 +561,6 @@ class AbstractClub(object):
         msg.flag = self.flag
         msg.level = self.level
         msg.exp = self.exp
-        msg.vip = self.vip
         msg.gold = self.gold
         msg.diamond = self.diamond
         msg.crystal = self.crystal

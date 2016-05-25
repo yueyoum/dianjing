@@ -14,7 +14,7 @@ from core.mongo import MongoCharacter
 from core.abstract import AbstractClub
 from core.signals import club_level_up_signal
 from core.statistics import FinanceStatistics
-from core.talent import TalentManager
+# from core.talent import TalentManager
 
 from dianjing.exception import GameException
 
@@ -57,7 +57,6 @@ class Club(AbstractClub):
         self.flag = club['flag']  # 俱乐部旗帜
         self.level = club['level']  # 俱乐部等级
         self.exp = club.get('exp', 0)
-        self.vip = club['vip']  # vip等级
         self.gold = club['gold']  # 游戏币
         self.diamond = club['diamond']  # 钻石
         self.renown = club.get('renown', 0)
@@ -125,15 +124,6 @@ class Club(AbstractClub):
             raise GameException(ConfigErrorMessage.get_error_id("CRYSTAL_NOT_ENOUGH"))
         if gas > self.gas:
             raise GameException(ConfigErrorMessage.get_error_id("GAS_NOT_ENOUGH"))
-
-    # 这些 current_* 接口是给 编辑器使用的
-    # 比如需要俱乐部等级的任务 里面只要填写 core.club.Club.current_level
-    # 那么代码就可以找到对应需要的值
-    def current_level(self):
-        return self.level
-
-    def current_vip(self):
-        return self.vip
 
     def update(self, **kwargs):
         exp = kwargs.get('exp', 0)

@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='club.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\nclub.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xc5\x01\n\x04\x43lub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0f\n\x07manager\x18\x03 \x02(\t\x12\x0c\n\x04\x66lag\x18\x04 \x02(\x05\x12\r\n\x05level\x18\x05 \x02(\x05\x12\x0b\n\x03\x65xp\x18\x06 \x02(\x05\x12\x0b\n\x03vip\x18\x07 \x02(\x05\x12\x0c\n\x04gold\x18\x08 \x02(\x05\x12\x0f\n\x07\x64iamond\x18\t \x02(\x05\x12\x0f\n\x07\x63rystal\x18\n \x02(\x05\x12\x0b\n\x03gas\x18\x0b \x02(\x05\x12\x0e\n\x06renown\x18\x0c \x02(\x05\x12\x0e\n\x06\x65nergy\x18\r \x02(\x05\"D\n\nClubNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12%\n\x04\x63lub\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\"@\n\x11\x43reateClubRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\"2\n\x12\x43reateClubResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+  serialized_pb=_b('\n\nclub.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xb8\x01\n\x04\x43lub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0f\n\x07manager\x18\x03 \x02(\t\x12\x0c\n\x04\x66lag\x18\x04 \x02(\x05\x12\r\n\x05level\x18\x05 \x02(\x05\x12\x0b\n\x03\x65xp\x18\x06 \x02(\x05\x12\x0c\n\x04gold\x18\x07 \x02(\x05\x12\x0f\n\x07\x64iamond\x18\x08 \x02(\x05\x12\x0f\n\x07\x63rystal\x18\t \x02(\x05\x12\x0b\n\x03gas\x18\n \x02(\x05\x12\x0e\n\x06renown\x18\x0b \x02(\x05\x12\x0e\n\x06\x65nergy\x18\x0c \x02(\x05\"D\n\nClubNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12%\n\x04\x63lub\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\"@\n\x11\x43reateClubRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\"2\n\x12\x43reateClubResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
   ,
   dependencies=[common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -78,50 +78,43 @@ _CLUB = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='vip', full_name='Dianjing.protocol.Club.vip', index=6,
+      name='gold', full_name='Dianjing.protocol.Club.gold', index=6,
       number=7, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='gold', full_name='Dianjing.protocol.Club.gold', index=7,
+      name='diamond', full_name='Dianjing.protocol.Club.diamond', index=7,
       number=8, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='diamond', full_name='Dianjing.protocol.Club.diamond', index=8,
+      name='crystal', full_name='Dianjing.protocol.Club.crystal', index=8,
       number=9, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='crystal', full_name='Dianjing.protocol.Club.crystal', index=9,
+      name='gas', full_name='Dianjing.protocol.Club.gas', index=9,
       number=10, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='gas', full_name='Dianjing.protocol.Club.gas', index=10,
+      name='renown', full_name='Dianjing.protocol.Club.renown', index=10,
       number=11, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='renown', full_name='Dianjing.protocol.Club.renown', index=11,
+      name='energy', full_name='Dianjing.protocol.Club.energy', index=11,
       number=12, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='energy', full_name='Dianjing.protocol.Club.energy', index=12,
-      number=13, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -139,7 +132,7 @@ _CLUB = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=48,
-  serialized_end=245,
+  serialized_end=232,
 )
 
 
@@ -176,8 +169,8 @@ _CLUBNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=247,
-  serialized_end=315,
+  serialized_start=234,
+  serialized_end=302,
 )
 
 
@@ -221,8 +214,8 @@ _CREATECLUBREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=317,
-  serialized_end=381,
+  serialized_start=304,
+  serialized_end=368,
 )
 
 
@@ -259,8 +252,8 @@ _CREATECLUBRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=383,
-  serialized_end=433,
+  serialized_start=370,
+  serialized_end=420,
 )
 
 _CLUBNOTIFY.fields_by_name['club'].message_type = _CLUB

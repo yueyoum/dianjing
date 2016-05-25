@@ -108,6 +108,6 @@ def game_start_handler(server_id, char_id, **kwargs):
     TerritoryStore(server_id, char_id).send_notify()
 
     Store(server_id, char_id).send_notify()
-    # VIP(server_id, char_id).send_notify()
+    VIP(server_id, char_id).send_notify()
 
     send_broadcast_notify(char_id)
