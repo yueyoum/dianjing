@@ -78,6 +78,16 @@ class VIP(object):
         got = [(config.item_id, 1)]
         rc = ResourceClassification.classify(got)
         rc.add(self.server_id, self.char_id)
+
+        self.doc['rewards'].append(vip_level)
+        MongoVIP.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'rewards': self.doc['rewards']
+            }}
+        )
+
+        self.send_notify()
         return rc
 
 
