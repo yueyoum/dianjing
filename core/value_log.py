@@ -103,12 +103,16 @@ class CategoryValueLog(ValueLog):
         return counts
 
     def count_of_today(self, sub_id=None):
-        assert sub_id is None
+        if sub_id is not None:
+            return super(CategoryValueLog, self).count_of_today(sub_id=sub_id)
+
         counts = self.batch_count_of_today()
         return sum(counts.values())
 
     def count(self, sub_id=None, start_at=None, end_at=None):
-        assert sub_id is None
+        if sub_id is not None:
+            return super(CategoryValueLog, self).count(sub_id=sub_id, start_at=start_at, end_at=end_at)
+
         counts = self.batch_count(start_at=start_at, end_at=end_at)
         return sum(counts.values())
 
