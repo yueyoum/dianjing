@@ -34,6 +34,7 @@ from config.tower import ConfigTowerLevel, ConfigTowerResetCost
 from config.territory import ConfigTerritoryBuilding, ConfigInspireCost, ConfigTerritoryStaffProduct, ConfigTerritoryEvent, ConfigTerritoryStore
 from config.store import ConfigStore, ConfigStoreRefreshCost, ConfigStoreType
 from config.vip import ConfigVIP
+from config.collection import ConfigCollection
 
 
 _has_configed = False
@@ -182,6 +183,9 @@ def load_config():
 
         elif item == 'vip.json':
             ConfigVIP.initialize(data)
+
+        elif item == 'connection.json':
+            ConfigCollection.initialize(data)
 
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))
 

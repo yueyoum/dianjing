@@ -615,3 +615,13 @@ class MongoVIP(BaseDocument):
 
     COLLECTION = 'vip'
     INDEXES = ['vip',]
+
+
+# 收集图鉴
+class MongoStaffCollection(BaseDocument):
+    DOCUMENT = {
+        'id': null,
+        'staffs': []
+    }
+
+    COLLECTION = ['staff_collection']

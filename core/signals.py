@@ -37,6 +37,8 @@ friend_ok_signal = Signal(providing_args=['server_id', 'char_id', 'friend_id'])
 club_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])
 # 升级了员工
 staff_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id', 'new_level'])
+# 获得新员工
+staff_new_add_signal = Signal(providing_args=['server_id', 'char_id', 'oid', 'unique_id'])
 
 # VIP
 vip_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])

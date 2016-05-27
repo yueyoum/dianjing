@@ -27,6 +27,7 @@ from core.value_log import (
 )
 
 # from core.signals import recruit_staff_signal, staff_level_up_signal
+from core.signals import staff_new_add_signal
 
 from config import (
     ConfigStaffRecruit,
@@ -736,6 +737,14 @@ class StaffManger(object):
 
         if send_notify:
             self.send_notify(ids=[unique_id])
+
+        staff_new_add_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            oid=staff_original_id,
+            unique_id=unique_id
+        )
 
         return unique_id
 

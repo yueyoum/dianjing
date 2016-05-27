@@ -220,6 +220,7 @@ MESSAGE_TO_ID = {
     "VIPNotify": 3900,
     "VIPBuyRewardRequest": 3901,
     "VIPBuyRewardResponse": 3902,
+    "CollectionNotify": 4000,
 }
 
 ID_TO_MESSAGE = {
@@ -443,6 +444,7 @@ ID_TO_MESSAGE = {
     3900: "VIPNotify",
     3901: "VIPBuyRewardRequest",
     3902: "VIPBuyRewardResponse",
+    4000: "CollectionNotify",
 }
 
 PATH_TO_REQUEST = {

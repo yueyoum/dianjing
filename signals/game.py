@@ -38,6 +38,7 @@ from core.tower import Tower
 from core.territory import Territory, TerritoryStore
 from core.store import Store
 from core.vip import VIP
+from core.collection import Collection
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
@@ -110,5 +111,6 @@ def game_start_handler(server_id, char_id, **kwargs):
 
     Store(server_id, char_id).send_notify()
     VIP(server_id, char_id).send_notify()
+    Collection(server_id, char_id).send_notify()
 
     send_broadcast_notify(char_id)
