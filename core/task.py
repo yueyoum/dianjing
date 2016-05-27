@@ -163,6 +163,10 @@ class TaskDaily(object):
         return current_value, TASK_DOING
 
     def get_reward(self, task_id):
+        config = ConfigTaskDaily.get(task_id)
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
         _, status = self.get_task_status(task_id)
         if status == TASK_DONE:
             raise GameException(ConfigErrorMessage.get_error_id("TASK_GET_REWARD_ALREADY_GOT"))
@@ -173,6 +177,9 @@ class TaskDaily(object):
         self.doc['tasks'].remove(task_id)
         self.doc['done'].append(task_id)
 
+        resource_classified = ResourceClassification.classify(config.rewards)
+        resource_classified.add(self.server_id, self.char_id)
+
         MongoTaskDaily.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
@@ -182,6 +189,8 @@ class TaskDaily(object):
         )
 
         self.send_notify(task_ids=[task_id])
+
+        return resource_classified
 
     def send_notify(self, task_ids=None):
         if task_ids:
