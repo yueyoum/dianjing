@@ -14,7 +14,13 @@ import arrow
 from dianjing.exception import GameException
 
 from core.mongo import MongoTerritory
-from core.times_log import TimesLogTerritoryBuildingInspireTimes, TimesLogTerritoryStoreBuyTimes
+from core.value_log import (
+    ValueLogTerritoryBuildingInspireTimes,
+    ValueLogTerritoryStoreBuyTimes,
+    ValueLogTerritoryHelpFriendTimes,
+    ValueLogTerritoryTrainingTimes,
+)
+
 from core.club import Club
 from core.staff import StaffManger
 from core.friend import FriendManager
@@ -219,7 +225,7 @@ class Building(object):
     def current_inspire_times(self):
         if not self.open:
             return 0
-        return TimesLogTerritoryBuildingInspireTimes(self.server_id, self.char_id).count_of_today(sub_id=self.id)
+        return ValueLogTerritoryBuildingInspireTimes(self.server_id, self.char_id).count_of_today(sub_id=self.id)
 
     def remained_inspire_times(self):
         if not self.open:
@@ -493,6 +499,8 @@ class Territory(object):
             }}
         )
 
+        ValueLogTerritoryTrainingTimes(self.server_id, self.char_id).record()
+
         self.send_notify(building_id=building_id, slot_id=slot_id)
 
     def training_get_reward(self, building_id, slot_id):
@@ -602,7 +610,7 @@ class TerritoryStore(object):
         self.server_id = server_id
         self.char_id = char_id
 
-        self.times = TimesLogTerritoryStoreBuyTimes(self.server_id, self.char_id).batch_count_of_today()
+        self.times = ValueLogTerritoryStoreBuyTimes(self.server_id, self.char_id).batch_count_of_today()
 
     def get_remained_times(self, _id):
         t = self.times.get(str(_id), 0)
@@ -636,7 +644,7 @@ class TerritoryStore(object):
         else:
             self.times[str(item_id)] = 1
 
-        TimesLogTerritoryStoreBuyTimes(self.server_id, self.char_id).record(sub_id=item_id)
+        ValueLogTerritoryStoreBuyTimes(self.server_id, self.char_id).record(sub_id=item_id)
 
         self.send_notify(item_id=item_id)
         return resource_classified
@@ -706,6 +714,8 @@ class TerritoryFriend(object):
                 'buildings.{0}.event_id': 0
             }}
         )
+
+        ValueLogTerritoryHelpFriendTimes(self.server_id, self.char_id).record()
 
         config = ConfigTerritoryEvent.get(event_id)
         if not config.npc:

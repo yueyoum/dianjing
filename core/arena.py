@@ -16,7 +16,7 @@ from core.mongo import MongoArena
 from core.club import Club, get_club_property
 from core.lock import LockTimeOut, ArenaLock, ArenaMatchLock, remove_lock_key
 from core.cooldown import ArenaRefreshCD, ArenaMatchCD
-from core.times_log import TimesLogArenaMatchTimes, TimesLogArenaHonorPoints
+from core.value_log import ValueLogArenaMatchTimes, ValueLogArenaHonorPoints
 from core.match import ClubMatch
 from core.resource import ResourceClassification
 
@@ -172,7 +172,7 @@ class Arena(object):
         return ArenaMatchCD(self.server_id, self.char_id).get_cd_seconds()
 
     def get_remained_match_times(self):
-        today_times = TimesLogArenaMatchTimes(self.server_id, self.char_id).count_of_today()
+        today_times = ValueLogArenaMatchTimes(self.server_id, self.char_id).count_of_today()
         # TODO vip
         remained = ARENA_FREE_TIMES - today_times
         if remained < 0:
@@ -181,7 +181,7 @@ class Arena(object):
         return remained
 
     def get_honor_points(self):
-        return TimesLogArenaHonorPoints(self.server_id, self.char_id).count_of_today()
+        return ValueLogArenaHonorPoints(self.server_id, self.char_id).count_of_today()
 
     def refresh(self, ignore_cd=False):
         if not ignore_cd:
@@ -244,7 +244,7 @@ class Arena(object):
                         # NOTE: rival_id 如果是NPC的话， 本来里面就是:分割的。 这里不能再用:
                         msg.key = "{0}#{1}#{2}".format(rival_id, my_lock.key, rival_lock.key)
 
-                        TimesLogArenaMatchTimes(self.server_id, self.char_id).record()
+                        ValueLogArenaMatchTimes(self.server_id, self.char_id).record()
 
                         return msg
                 except LockTimeOut:
@@ -289,7 +289,7 @@ class Arena(object):
             if not is_npc_club(rival_id):
                 Arena(self.server_id, int(rival_id)).add_match_log(1, [my_club_name])
 
-        TimesLogArenaHonorPoints(self.server_id, self.char_id).record(value=config.honor)
+        ValueLogArenaHonorPoints(self.server_id, self.char_id).record(value=config.honor)
 
         drop = config.get_drop()
         resource_classified = ResourceClassification.classify(drop)

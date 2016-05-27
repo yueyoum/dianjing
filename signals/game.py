@@ -20,7 +20,7 @@ from core.unit import UnitManager
 from core.challenge import Challenge
 from core.friend import FriendManager
 from core.mail import MailManager
-from core.task import RandomEvent, TaskMain
+from core.task import RandomEvent, TaskMain, TaskDaily
 from core.chat import Chat
 from core.notification import Notification
 from core.statistics import FinanceStatistics
@@ -76,6 +76,7 @@ def game_start_handler(server_id, char_id, **kwargs):
 
     RandomEvent(server_id, char_id).send_notify()
     TaskMain(server_id, char_id).send_notify()
+    TaskDaily(server_id, char_id).send_notify()
 
     Chat(server_id, char_id).send_notify()
 

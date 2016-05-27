@@ -3,6 +3,7 @@
 
 import sys
 _b=sys.version_info[0]<3 and (lambda x:x) or (lambda x:x.encode('latin1'))
+from google.protobuf.internal import enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
@@ -21,11 +22,41 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='task.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\ntask.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"T\n\nTaskNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\r\n\x05\x64oing\x18\x03 \x02(\x05\"3\n\x11RandomEventNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05times\x18\x02 \x02(\x05\"5\n\x16RandomEventDoneRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"^\n\x17RandomEventDoneResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop')
+  serialized_pb=_b('\n\ntask.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"T\n\nTaskNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\r\n\x05\x64oing\x18\x03 \x02(\x05\"\xd4\x01\n\x0fTaskDailyNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x36\n\x05tasks\x18\x03 \x03(\x0b\x32\'.Dianjing.protocol.TaskDailyNotify.Task\x1aP\n\x04Task\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05value\x18\x02 \x02(\x05\x12-\n\x06status\x18\x03 \x02(\x0e\x32\x1d.Dianjing.protocol.TaskStatus\"=\n\x19TaskDailyGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07task_id\x18\x02 \x02(\x05\"a\n\x1aTaskDailyGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"3\n\x11RandomEventNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05times\x18\x02 \x02(\x05\"5\n\x16RandomEventDoneRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"^\n\x17RandomEventDoneResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*<\n\nTaskStatus\x12\x0e\n\nTASK_DOING\x10\x00\x12\x0f\n\x0bTASK_FINISH\x10\x01\x12\r\n\tTASK_DONE\x10\x02')
   ,
   dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
+_TASKSTATUS = _descriptor.EnumDescriptor(
+  name='TaskStatus',
+  full_name='Dianjing.protocol.TaskStatus',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='TASK_DOING', index=0, number=0,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='TASK_FINISH', index=1, number=1,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='TASK_DONE', index=2, number=2,
+      options=None,
+      type=None),
+  ],
+  containing_type=None,
+  options=None,
+  serialized_start=729,
+  serialized_end=789,
+)
+_sym_db.RegisterEnumDescriptor(_TASKSTATUS)
+
+TaskStatus = enum_type_wrapper.EnumTypeWrapper(_TASKSTATUS)
+TASK_DOING = 0
+TASK_FINISH = 1
+TASK_DONE = 2
 
 
 
@@ -74,6 +105,178 @@ _TASKNOTIFY = _descriptor.Descriptor(
 )
 
 
+_TASKDAILYNOTIFY_TASK = _descriptor.Descriptor(
+  name='Task',
+  full_name='Dianjing.protocol.TaskDailyNotify.Task',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.TaskDailyNotify.Task.id', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='value', full_name='Dianjing.protocol.TaskDailyNotify.Task.value', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='status', full_name='Dianjing.protocol.TaskDailyNotify.Task.status', index=2,
+      number=3, type=14, cpp_type=8, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=281,
+  serialized_end=361,
+)
+
+_TASKDAILYNOTIFY = _descriptor.Descriptor(
+  name='TaskDailyNotify',
+  full_name='Dianjing.protocol.TaskDailyNotify',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TaskDailyNotify.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='act', full_name='Dianjing.protocol.TaskDailyNotify.act', index=1,
+      number=2, type=14, cpp_type=8, label=2,
+      has_default_value=False, default_value=1,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='tasks', full_name='Dianjing.protocol.TaskDailyNotify.tasks', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[_TASKDAILYNOTIFY_TASK, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=149,
+  serialized_end=361,
+)
+
+
+_TASKDAILYGETREWARDREQUEST = _descriptor.Descriptor(
+  name='TaskDailyGetRewardRequest',
+  full_name='Dianjing.protocol.TaskDailyGetRewardRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TaskDailyGetRewardRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='task_id', full_name='Dianjing.protocol.TaskDailyGetRewardRequest.task_id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=363,
+  serialized_end=424,
+)
+
+
+_TASKDAILYGETREWARDRESPONSE = _descriptor.Descriptor(
+  name='TaskDailyGetRewardResponse',
+  full_name='Dianjing.protocol.TaskDailyGetRewardResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.TaskDailyGetRewardResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TaskDailyGetRewardResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='drop', full_name='Dianjing.protocol.TaskDailyGetRewardResponse.drop', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=426,
+  serialized_end=523,
+)
+
+
 _RANDOMEVENTNOTIFY = _descriptor.Descriptor(
   name='RandomEventNotify',
   full_name='Dianjing.protocol.RandomEventNotify',
@@ -107,8 +310,8 @@ _RANDOMEVENTNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=148,
-  serialized_end=199,
+  serialized_start=525,
+  serialized_end=576,
 )
 
 
@@ -145,8 +348,8 @@ _RANDOMEVENTDONEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=201,
-  serialized_end=254,
+  serialized_start=578,
+  serialized_end=631,
 )
 
 
@@ -190,16 +393,25 @@ _RANDOMEVENTDONERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=256,
-  serialized_end=350,
+  serialized_start=633,
+  serialized_end=727,
 )
 
 _TASKNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
+_TASKDAILYNOTIFY_TASK.fields_by_name['status'].enum_type = _TASKSTATUS
+_TASKDAILYNOTIFY_TASK.containing_type = _TASKDAILYNOTIFY
+_TASKDAILYNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
+_TASKDAILYNOTIFY.fields_by_name['tasks'].message_type = _TASKDAILYNOTIFY_TASK
+_TASKDAILYGETREWARDRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 _RANDOMEVENTDONERESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 DESCRIPTOR.message_types_by_name['TaskNotify'] = _TASKNOTIFY
+DESCRIPTOR.message_types_by_name['TaskDailyNotify'] = _TASKDAILYNOTIFY
+DESCRIPTOR.message_types_by_name['TaskDailyGetRewardRequest'] = _TASKDAILYGETREWARDREQUEST
+DESCRIPTOR.message_types_by_name['TaskDailyGetRewardResponse'] = _TASKDAILYGETREWARDRESPONSE
 DESCRIPTOR.message_types_by_name['RandomEventNotify'] = _RANDOMEVENTNOTIFY
 DESCRIPTOR.message_types_by_name['RandomEventDoneRequest'] = _RANDOMEVENTDONEREQUEST
 DESCRIPTOR.message_types_by_name['RandomEventDoneResponse'] = _RANDOMEVENTDONERESPONSE
+DESCRIPTOR.enum_types_by_name['TaskStatus'] = _TASKSTATUS
 
 TaskNotify = _reflection.GeneratedProtocolMessageType('TaskNotify', (_message.Message,), dict(
   DESCRIPTOR = _TASKNOTIFY,
@@ -207,6 +419,35 @@ TaskNotify = _reflection.GeneratedProtocolMessageType('TaskNotify', (_message.Me
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.TaskNotify)
   ))
 _sym_db.RegisterMessage(TaskNotify)
+
+TaskDailyNotify = _reflection.GeneratedProtocolMessageType('TaskDailyNotify', (_message.Message,), dict(
+
+  Task = _reflection.GeneratedProtocolMessageType('Task', (_message.Message,), dict(
+    DESCRIPTOR = _TASKDAILYNOTIFY_TASK,
+    __module__ = 'task_pb2'
+    # @@protoc_insertion_point(class_scope:Dianjing.protocol.TaskDailyNotify.Task)
+    ))
+  ,
+  DESCRIPTOR = _TASKDAILYNOTIFY,
+  __module__ = 'task_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TaskDailyNotify)
+  ))
+_sym_db.RegisterMessage(TaskDailyNotify)
+_sym_db.RegisterMessage(TaskDailyNotify.Task)
+
+TaskDailyGetRewardRequest = _reflection.GeneratedProtocolMessageType('TaskDailyGetRewardRequest', (_message.Message,), dict(
+  DESCRIPTOR = _TASKDAILYGETREWARDREQUEST,
+  __module__ = 'task_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TaskDailyGetRewardRequest)
+  ))
+_sym_db.RegisterMessage(TaskDailyGetRewardRequest)
+
+TaskDailyGetRewardResponse = _reflection.GeneratedProtocolMessageType('TaskDailyGetRewardResponse', (_message.Message,), dict(
+  DESCRIPTOR = _TASKDAILYGETREWARDRESPONSE,
+  __module__ = 'task_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TaskDailyGetRewardResponse)
+  ))
+_sym_db.RegisterMessage(TaskDailyGetRewardResponse)
 
 RandomEventNotify = _reflection.GeneratedProtocolMessageType('RandomEventNotify', (_message.Message,), dict(
   DESCRIPTOR = _RANDOMEVENTNOTIFY,

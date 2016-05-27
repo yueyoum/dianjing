@@ -16,7 +16,16 @@ from core.abstract import AbstractStaff
 from core.mongo import MongoStaff, MongoStaffRecruit
 from core.resource import money_text_to_item_id, ResourceClassification
 from core.bag import Bag, TYPE_EQUIPMENT, get_item_type
-from core.times_log import TimesLogStaffRecruitTimes, TimesLogStaffRecruitScore, TimesLogStaffRecruitGoldFreeTimes
+from core.value_log import (
+    ValueLogStaffRecruitTimes,
+    ValueLogStaffRecruitScore,
+    ValueLogStaffRecruitGoldFreeTimes,
+    ValueLogStaffRecruitDiamondTimes,
+    ValueLogStaffRecruitGoldTimes,
+    ValueLogStaffStarUpTimes,
+    ValueLogStaffLevelUpTimes,
+)
+
 # from core.signals import recruit_staff_signal, staff_level_up_signal
 
 from config import (
@@ -100,7 +109,7 @@ class StaffRecruit(object):
 
     @property
     def gold_free_times(self):
-        today_times = TimesLogStaffRecruitGoldFreeTimes(self.server_id, self.char_id).count_of_today()
+        today_times = ValueLogStaffRecruitGoldFreeTimes(self.server_id, self.char_id).count_of_today()
         free_times = GOLD_MAX_FREE_TIMES - today_times
         if free_times < 0:
             free_times = 0
@@ -124,7 +133,7 @@ class StaffRecruit(object):
         return self.doc['point'].get(str(tp), 0)
 
     def get_times(self, tp):
-        return TimesLogStaffRecruitTimes(self.server_id, self.char_id).count(sub_id=tp)
+        return ValueLogStaffRecruitTimes(self.server_id, self.char_id).count(sub_id=tp)
 
     def recruit(self, tp, mode):
         if tp not in [RECRUIT_GOLD, RECRUIT_DIAMOND]:
@@ -138,11 +147,15 @@ class StaffRecruit(object):
                 recruit_times = self._recruit_tp_1_mode_1()
             else:
                 recruit_times = self._recruit_tp_1_mode_2()
+
+            ValueLogStaffRecruitGoldTimes(self.server_id, self.char_id).record(value=recruit_times)
         else:
             if mode == RECRUIT_MODE_1:
                 recruit_times = self._recruit_tp_2_mode_1()
             else:
                 recruit_times = self._recruit_tp_2_mode_2()
+
+            ValueLogStaffRecruitDiamondTimes(self.server_id, self.char_id).record(value=recruit_times)
 
         config = ConfigStaffRecruit.get(tp)
         current_times = self.get_times(tp) + 1
@@ -156,10 +169,10 @@ class StaffRecruit(object):
         self.doc['point'][str(tp)] = result.point
 
         # 记录次数
-        TimesLogStaffRecruitTimes(self.server_id, self.char_id).record(sub_id=tp, value=recruit_times)
+        ValueLogStaffRecruitTimes(self.server_id, self.char_id).record(sub_id=tp, value=recruit_times)
 
         # 处理积分
-        today_score = TimesLogStaffRecruitScore(self.server_id, self.char_id).count_of_today(sub_id=tp)
+        today_score = ValueLogStaffRecruitScore(self.server_id, self.char_id).count_of_today(sub_id=tp)
         can_add_score = config.reward_score_day_limit - today_score
         if can_add_score <= 0:
             # 今天获得的积分已经达到上限
@@ -170,7 +183,7 @@ class StaffRecruit(object):
                 result.add_score = can_add_score
 
         self.doc['score'] += result.add_score
-        TimesLogStaffRecruitScore(self.server_id, self.char_id).record(sub_id=tp, value=can_add_score)
+        ValueLogStaffRecruitScore(self.server_id, self.char_id).record(sub_id=tp, value=can_add_score)
 
         MongoStaffRecruit.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -219,7 +232,7 @@ class StaffRecruit(object):
                     }}
                 )
 
-                TimesLogStaffRecruitGoldFreeTimes(self.server_id, self.char_id).record()
+                ValueLogStaffRecruitGoldFreeTimes(self.server_id, self.char_id).record()
 
         return 1
 
@@ -779,6 +792,7 @@ class StaffManger(object):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
         staff.level_up(items)
+        ValueLogStaffLevelUpTimes(self.server_id, self.char_id).record()
 
     def step_up(self, staff_id):
         from core.club import Club
@@ -803,6 +817,8 @@ class StaffManger(object):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
         staff.star_up()
+        ValueLogStaffStarUpTimes(self.server_id, self.char_id).record()
+
 
     def destroy(self, staff_id, tp):
         from core.club import Club

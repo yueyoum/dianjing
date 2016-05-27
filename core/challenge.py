@@ -17,7 +17,7 @@ from core.unit import NPCUnit
 from core.task import TaskMain
 
 from core.resource import ResourceClassification
-from core.times_log import TimesLogChallengeMatchTimes
+from core.value_log import ValueLogChallengeMatchTimes, ValueLogAllChallengeWinTimes
 
 from utils.message import MessagePipe
 from utils.functional import make_string_id
@@ -106,7 +106,7 @@ class Challenge(object):
         return 0
 
     def get_today_times(self, challenge_id):
-        today_times = TimesLogChallengeMatchTimes(self.server_id, self.char_id).count_of_today(sub_id=challenge_id)
+        today_times = ValueLogChallengeMatchTimes(self.server_id, self.char_id).count_of_today(sub_id=challenge_id)
         return today_times
 
     def start(self, challenge_id):
@@ -153,7 +153,7 @@ class Challenge(object):
         if star != 3:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NOT_3_STAR"))
 
-        today_times = TimesLogChallengeMatchTimes(self.server_id, self.char_id).count_of_today(sub_id=challenge_id)
+        today_times = ValueLogChallengeMatchTimes(self.server_id, self.char_id).count_of_today(sub_id=challenge_id)
         remained_times = config.times_limit - today_times
 
         if remained_times > 5:
@@ -181,7 +181,8 @@ class Challenge(object):
             }}
         )
 
-        TimesLogChallengeMatchTimes(self.server_id, self.char_id).record(sub_id=challenge_id, value=sweep_times)
+        ValueLogChallengeMatchTimes(self.server_id, self.char_id).record(sub_id=challenge_id, value=sweep_times)
+        ValueLogAllChallengeWinTimes(self.server_id, self.char_id).record(value=sweep_times)
 
         resource_classified = ResourceClassification.classify(drops.items())
         resource_classified.add(self.server_id, self.char_id)
@@ -195,10 +196,12 @@ class Challenge(object):
         if not config:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NOT_EXIST"))
 
-        TimesLogChallengeMatchTimes(self.server_id, self.char_id).record(sub_id=challenge_id)
+        ValueLogChallengeMatchTimes(self.server_id, self.char_id).record(sub_id=challenge_id)
 
         if star <= 0:
             return None
+
+        ValueLogAllChallengeWinTimes(self.server_id, self.char_id).record()
 
         projection = {
             'challenge_star.{0}'.format(challenge_id): 1,
@@ -376,7 +379,7 @@ class Challenge(object):
 
         ids = doc['challenge_star'].keys()
 
-        times = TimesLogChallengeMatchTimes(self.server_id, self.char_id).batch_count_of_today()
+        times = ValueLogChallengeMatchTimes(self.server_id, self.char_id).batch_count_of_today()
 
         notify = ChallengeNotify()
         notify.act = act

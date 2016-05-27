@@ -15,7 +15,7 @@ from core.mongo import MongoTower
 from core.club import Club
 from core.match import ClubMatch
 from core.resource import ResourceClassification, money_text_to_item_id
-from core.times_log import TimesLogTowerResetTimes
+from core.value_log import ValueLogTowerResetTimes, ValueLogTowerWinTimes
 
 from utils.message import MessagePipe
 
@@ -64,7 +64,7 @@ class Tower(object):
         return self.doc['levels'].get(str(MAX_LEVEL), -2) > 0
 
     def get_today_reset_times(self):
-        return TimesLogTowerResetTimes(self.server_id, self.char_id).count_of_today()
+        return ValueLogTowerResetTimes(self.server_id, self.char_id).count_of_today()
 
     def get_total_reset_times(self):
         # TODO vip reset times
@@ -155,6 +155,8 @@ class Tower(object):
             resource_classified = ResourceClassification.classify(config.get_star_reward(star))
             resource_classified.add(self.server_id, self.char_id)
 
+            ValueLogTowerWinTimes(self.server_id, self.char_id).record()
+
         MongoTower.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': updater}
@@ -199,7 +201,7 @@ class Tower(object):
             }}
         )
 
-        TimesLogTowerResetTimes(self.server_id, self.char_id).record()
+        ValueLogTowerResetTimes(self.server_id, self.char_id).record()
         self.send_notify()
 
     def _sweep_check(self):
@@ -231,6 +233,7 @@ class Tower(object):
             }}
         )
 
+        ValueLogTowerWinTimes(self.server_id, self.char_id).record(value=levels_amount)
         self.send_notify(act=ACT_UPDATE, levels=[])
 
     def sweep_finish(self):

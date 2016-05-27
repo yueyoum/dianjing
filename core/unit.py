@@ -13,6 +13,7 @@ from core.abstract import AbstractUnit
 from core.mongo import MongoUnit
 from core.club import Club
 from core.resource import ResourceClassification
+from core.value_log import ValueLogUnitLevelUpTimes
 
 from utils.message import MessagePipe
 
@@ -277,6 +278,9 @@ class UnitManager(object):
 
         unit.level_up()
         self.after_change(uid)
+
+        ValueLogUnitLevelUpTimes(self.server_id, self.char_id).record()
+
 
     def step_up(self, uid):
         unit = self.get_unit_object(uid)

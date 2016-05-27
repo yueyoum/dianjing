@@ -38,6 +38,9 @@ club_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level
 # 升级了员工
 staff_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id', 'new_level'])
 
+# VIP
+vip_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])
+
 # 更换出阵队员
 match_staffs_set_change_signal = Signal(providing_args=['server_id', 'char_id'])
 # 员工强化培训

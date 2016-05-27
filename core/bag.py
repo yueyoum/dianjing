@@ -11,6 +11,7 @@ from dianjing.exception import GameException
 from core.mongo import MongoBag
 from core.club import Club, get_club_property
 from core.resource import MONEY, ResourceClassification, money_text_to_item_id
+from core.value_log import ValueLogEquipmentLevelUpTimes
 
 from utils.functional import make_string_id
 from utils.message import MessagePipe
@@ -467,6 +468,8 @@ class Bag(object):
                     'slots.{0}.level'.format(slot_id): level
                 }}
             )
+
+        ValueLogEquipmentLevelUpTimes(self.server_id, self.char_id).record()
 
         self.send_notify(slot_ids=[slot_id])
         return error_code, levelup, make_equipment_msg(item_id, level)

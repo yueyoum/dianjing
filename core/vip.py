@@ -11,6 +11,7 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoVIP
 from core.resource import ResourceClassification, money_text_to_item_id
+from core.signals import vip_level_up_signal
 
 from utils.message import MessagePipe
 
@@ -33,8 +34,12 @@ class VIP(object):
             self.doc['_id'] = self.char_id
             MongoVIP.db(self.server_id).insert_one(self.doc)
 
+    @property
+    def level(self):
+        return self.doc['vip']
 
     def add_exp(self, exp):
+        old_vip = self.doc['vip']
         self.doc['exp'] += exp
 
         while True:
@@ -62,6 +67,15 @@ class VIP(object):
 
         self.send_notify()
 
+        if self.doc['vip'] > old_vip:
+            vip_level_up_signal.send(
+                sender=None,
+                server_id=self.server_id,
+                char_id=self.char_id,
+                new_level=self.doc['vip']
+            )
+
+
     def buy_reward(self, vip_level):
         config = ConfigVIP.get(vip_level)
         if not config:
@@ -86,7 +100,9 @@ class VIP(object):
                 'rewards': self.doc['rewards']
             }}
         )
-
+        # TODO
+        # 这里还会触发 TalentNotify ， 需要查明原因
+        # ['VIPBuyRewardResponse', 'ClubNotify', 'FinanceStatisticsNotify', 'TalentNotify', 'ClubNotify', 'BagSlotsNotify', 'TalentNotify', 'VIPNotify']
         self.send_notify()
         return rc
 

@@ -264,6 +264,19 @@ class MongoTaskMain(BaseDocument):
     COLLECTION = "task_main"
 
 
+# 日常任务， 每天刷新的
+class MongoTaskDaily(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # 刷出来的 task id列表
+        'tasks': [],
+        # 已经完成的， 领完奖的
+        'done': [],
+    }
+
+    COLLECTION = 'task_daily'
+
+
 # 通知
 class MongoNotification(BaseDocument):
     DOCUMENT = {

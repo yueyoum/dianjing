@@ -11,10 +11,10 @@ import arrow
 
 from core.mongo import MongoTimesLog
 from utils.functional import make_string_id, get_arrow_time_of_today
-
+from config import ConfigTaskCondition
 
 # TODO 定时清理
-class TimesLog(object):
+class ValueLog(object):
     KEY = None
     __slots__ = ['server_id', 'char_id']
 
@@ -36,6 +36,12 @@ class TimesLog(object):
         doc['value'] = value
 
         MongoTimesLog.db(self.server_id).insert_one(doc)
+
+        # task trig
+        from core.task import TaskDaily
+        task_condition_id = ConfigTaskCondition.get_condition_id_by_server_module(self.__class__.__name__)
+        if task_condition_id:
+            TaskDaily(self.server_id, self.char_id).trig(task_condition_id)
 
     def count_of_today(self, sub_id=None):
         # 今天多少次
@@ -60,8 +66,9 @@ class TimesLog(object):
         return value
 
 
-class CategoryTimesLog(TimesLog):
+class CategoryValueLog(ValueLog):
     __slots__ = []
+
     def batch_count_of_today(self):
         """
 
@@ -95,60 +102,130 @@ class CategoryTimesLog(TimesLog):
 
         return counts
 
+    def count_of_today(self, sub_id=None):
+        assert sub_id is None
+        counts = self.batch_count_of_today()
+        return sum(counts.values())
+
+    def count(self, sub_id=None, start_at=None, end_at=None):
+        assert sub_id is None
+        counts = self.batch_count(start_at=start_at, end_at=end_at)
+        return sum(counts.values())
+
 
 # 抽卡次数
-class TimesLogStaffRecruitTimes(CategoryTimesLog):
+class ValueLogStaffRecruitTimes(CategoryValueLog):
     KEY = 'staff_recruit_times'
     __slots__ = []
 
+
 # 抽卡获得积分
-class TimesLogStaffRecruitScore(CategoryTimesLog):
+class ValueLogStaffRecruitScore(CategoryValueLog):
     KEY = 'staff_recruit_score'
     __slots__ = []
 
-# 抽卡金币免费次数
-class TimesLogStaffRecruitGoldFreeTimes(TimesLog):
+
+# 抽卡金币 免费 次数
+class ValueLogStaffRecruitGoldFreeTimes(ValueLog):
     KEY = 'staff_recruit_gold_free_times'
     __slots__ = []
 
+# 金币抽卡次数
+class ValueLogStaffRecruitGoldTimes(ValueLog):
+    KEY = 'staff_recruit_gold_times'
+    __slots__ = []
 
-# 挑战赛关卡次数
-class TimesLogChallengeMatchTimes(CategoryTimesLog):
+# 钻石抽卡次数
+class ValueLogStaffRecruitDiamondTimes(ValueLog):
+    KEY = 'staff_recruit_diamond_times'
+    __slots__ = []
+
+
+# 挑战赛关卡次数 (单个)
+class ValueLogChallengeMatchTimes(CategoryValueLog):
     KEY = 'challenge_match'
     __slots__ = []
 
 
-class TimesLogDungeonMatchTimes(TimesLog):
+# 所有挑战赛胜利次数
+class ValueLogAllChallengeWinTimes(ValueLog):
+    KEY = 'all_challenge_win'
+    __slots__ = []
+
+class ValueLogDungeonMatchTimes(ValueLog):
     KEY = 'dungeon_match'
     __slots__ = []
 
 
 # 竞技场挑战次数
-class TimesLogArenaMatchTimes(TimesLog):
+class ValueLogArenaMatchTimes(ValueLog):
     KEY = 'arena_match'
     __slots__ = []
 
+
 # 竞技场荣耀点
-class TimesLogArenaHonorPoints(TimesLog):
+class ValueLogArenaHonorPoints(ValueLog):
     KEY = 'arena_honor'
     __slots__ = []
 
+
+# 训练塔胜利次数
+class ValueLogTowerWinTimes(ValueLog):
+    KEY = 'tower_win'
+    __slots__ = []
+
 # 训练塔重置次数
-class TimesLogTowerResetTimes(TimesLog):
+class ValueLogTowerResetTimes(ValueLog):
     KEY = 'tower_reset'
     __slots__ = []
 
+# 领地训练次数
+class ValueLogTerritoryTrainingTimes(ValueLog):
+    KEY = 'territory_training'
+    __slots__ = []
+
+# 领地帮助好友次数
+class ValueLogTerritoryHelpFriendTimes(ValueLog):
+    KEY = 'territory_help_friend'
+    __slots__ = []
+
 # 领地建筑鼓舞次数
-class TimesLogTerritoryBuildingInspireTimes(TimesLog):
+class ValueLogTerritoryBuildingInspireTimes(ValueLog):
     KEY = 'territory_building_inspire'
     __slots__ = []
 
+
 # 领地商店购买次数
-class TimesLogTerritoryStoreBuyTimes(CategoryTimesLog):
+class ValueLogTerritoryStoreBuyTimes(CategoryValueLog):
     KEY = 'territory_store'
     __slots__ = []
 
+
 # 商店刷新次数
-class TimesLogStoreRefreshTimes(CategoryTimesLog):
+class ValueLogStoreRefreshTimes(CategoryValueLog):
     KEY = 'store_refresh'
+    __slots__ = []
+
+
+# 装备强化次数
+class ValueLogEquipmentLevelUpTimes(ValueLog):
+    KEY = 'equipment_level_up'
+    __slots__ = []
+
+
+# 选手升星次数
+class ValueLogStaffStarUpTimes(ValueLog):
+    KEY = 'staff_star_up'
+    __slots__ = []
+
+
+# 选手升级次数
+class ValueLogStaffLevelUpTimes(ValueLog):
+    KEY = 'staff_level_up'
+    __slots__ = []
+
+
+# 兵种升级次数
+class ValueLogUnitLevelUpTimes(ValueLog):
+    KEY = 'unit_level_up'
     __slots__ = []

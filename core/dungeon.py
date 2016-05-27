@@ -19,7 +19,7 @@ from core.mongo import MongoDungeon
 from core.match import ClubMatch
 from core.club import Club
 from core.unit import NPCUnit
-from core.times_log import TimesLogDungeonMatchTimes
+from core.value_log import ValueLogDungeonMatchTimes
 
 from protomsg.dungeon_pb2 import DungeonNotify
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
@@ -95,7 +95,7 @@ class DungeonManager(object):
             MongoDungeon.db(self.server_id).insert_one(doc)
 
     def get_dungeon_today_times(self, tp):
-        return TimesLogDungeonMatchTimes(self.server_id, self.char_id).count_of_today(tp)
+        return ValueLogDungeonMatchTimes(self.server_id, self.char_id).count_of_today(tp)
 
     def start(self, dungeon_id):
         grade_conf = ConfigDungeonGrade.get(dungeon_id)
@@ -127,7 +127,7 @@ class DungeonManager(object):
         grade_id = int(key)
         conf = ConfigDungeonGrade.get(grade_id)
 
-        TimesLogDungeonMatchTimes(self.server_id, self.char_id).record(sub_id=conf.belong, value=1)
+        ValueLogDungeonMatchTimes(self.server_id, self.char_id).record(sub_id=conf.belong, value=1)
         # TODO: remove energy
 
         drop = []

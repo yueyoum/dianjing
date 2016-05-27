@@ -12,7 +12,7 @@ import arrow
 from dianjing.exception import GameException
 
 from core.mongo import MongoStore
-from core.times_log import TimesLogStoreRefreshTimes
+from core.value_log import ValueLogStoreRefreshTimes
 from core.club import get_club_property
 from core.resource import ResourceClassification, money_text_to_item_id
 
@@ -79,7 +79,7 @@ class Store(object):
         return last_at + config.refresh_hour_interval * 3600
 
     def get_current_refresh_times(self, tp):
-        return TimesLogStoreRefreshTimes(self.server_id, self.char_id).count_of_today(sub_id=tp)
+        return ValueLogStoreRefreshTimes(self.server_id, self.char_id).count_of_today(sub_id=tp)
 
     def get_remained_refresh_times(self, tp):
         remained_times = MAX_REFRESH_TIMES - self.get_current_refresh_times(tp)
@@ -140,6 +140,7 @@ class Store(object):
         resource_classified.check_exist(self.server_id, self.char_id)
         resource_classified.remove(self.server_id, self.char_id)
 
+        ValueLogStoreRefreshTimes(self.server_id, self.char_id).record(sub_id=tp)
         self.make_refresh(tp)
 
     def auto_refresh(self, tp):
