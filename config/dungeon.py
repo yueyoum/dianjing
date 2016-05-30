@@ -5,6 +5,8 @@ Date Created:   2016-04-25 20:06
 Description:
 
 """
+
+import random
 from config.base import ConfigBase
 
 
@@ -33,7 +35,7 @@ class ConfigDungeon(ConfigBase):
 
 
 class DungeonGrade(object):
-    __slots__ = ['id', 'name', 'belong', 'need_level', 'drop', 'npc_path']
+    __slots__ = ['id', 'name', 'belong', 'need_level', 'drop', 'npc']
 
     def __init__(self):
         self.id = 0
@@ -41,7 +43,15 @@ class DungeonGrade(object):
         self.belong = 0
         self.need_level = 0
         self.drop = []
-        self.npc_path = []
+        self.npc = 0
+
+    def get_drop(self):
+        drop = []
+        for _id, _amount, _prob in self.drop:
+            if _prob >= random.randint(1, 100):
+                drop.append((_id, _amount))
+
+        return drop
 
 
 class ConfigDungeonGrade(ConfigBase):
@@ -57,3 +67,34 @@ class ConfigDungeonGrade(ConfigBase):
         :rtype: DungeonGrade
         """
         return super(ConfigDungeonGrade, cls).get(_id)
+
+
+class BuyCost(object):
+    __slots__ = ['id', 'diamond']
+    def __init__(self):
+        self.id = 0
+        self.diamond = 0
+
+
+class ConfigDungeonBuyCost(ConfigBase):
+    EntityClass = BuyCost
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    LIST = []
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigDungeonBuyCost, cls).initialize(fixture)
+        for k, v in cls.INSTANCES:
+            cls.LIST.append((k, v.diamond))
+
+        cls.LIST.sort(key=lambda item: item[0], reverse=True)
+
+    @classmethod
+    def get_cost(cls, times):
+        for t, cost in cls.LIST:
+            if times >= t:
+                return cost
+
+        raise RuntimeError("ConfigDungeonBuyCost Error times: {0}".format(times))

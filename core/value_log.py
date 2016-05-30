@@ -156,7 +156,9 @@ class ValueLogAllChallengeWinTimes(ValueLog):
     KEY = 'all_challenge_win'
     __slots__ = []
 
-class ValueLogDungeonMatchTimes(ValueLog):
+
+# 日常副本 (大类)
+class ValueLogDungeonMatchTimes(CategoryValueLog):
     KEY = 'dungeon_match'
     __slots__ = []
 

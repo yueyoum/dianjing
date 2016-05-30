@@ -27,7 +27,7 @@ from config.signin import ConfigSignIn
 from config.activity_login_reward import ConfigLoginReward
 from config.active_value import ConfigActiveFunction, ConfigActiveReward
 from config.talent import ConfigTalent
-from config.dungeon import ConfigDungeon, ConfigDungeonGrade
+from config.dungeon import ConfigDungeon, ConfigDungeonGrade, ConfigDungeonBuyCost
 from config.npc import ConfigNPCFormation
 from config.arena import ConfigArenaNPC, ConfigArenaHonorReward, ConfigArenaBuyTimesCost, ConfigArenaMatchReward, ConfigArenaRankReward
 from config.tower import ConfigTowerLevel, ConfigTowerResetCost
@@ -143,6 +143,8 @@ def load_config():
             ConfigDungeon.initialize(data)
         elif item == 'dungeon_grade.json':
             ConfigDungeonGrade.initialize(data)
+        elif item == 'dungeon_buy_cost.json':
+            ConfigDungeonBuyCost.initialize(data)
 
         elif item == 'npc_formation.json':
             ConfigNPCFormation.initialize(data)

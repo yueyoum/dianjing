@@ -6,7 +6,7 @@ Description:
 
 """
 
-from core.dungeon import DungeonManager
+from core.dungeon import Dungeon
 
 from utils.http import ProtobufResponse
 
@@ -19,11 +19,10 @@ def start(request):
 
     dungeon_id = request._proto.id
 
-    match = DungeonManager(server_id, char_id).start(dungeon_id)
+    msg = Dungeon(server_id, char_id).start(dungeon_id)
     response = DungeonMatchResponse()
     response.ret = 0
-    response.match.MergeFrom(match)
-
+    response.match.MergeFrom(msg)
     return ProtobufResponse(response)
 
 
@@ -34,13 +33,11 @@ def report(request):
     key = request._proto.key
     star = request._proto.star
 
-    drop = DungeonManager(server_id, char_id).report(key, star)
+    drop = Dungeon(server_id, char_id).report(key, star)
     response = DungeonMatchReportResponse()
     response.ret = 0
 
-    for _id, _amount in drop:
-        drop_item = response.drop.items.add()
-        drop_item.id = _id
-        drop_item.amount = _amount
+    if drop:
+        response.drop.MergeFrom(drop.make_protomsg())
 
     return ProtobufResponse(response)
