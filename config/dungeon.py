@@ -86,7 +86,7 @@ class ConfigDungeonBuyCost(ConfigBase):
     @classmethod
     def initialize(cls, fixture):
         super(ConfigDungeonBuyCost, cls).initialize(fixture)
-        for k, v in cls.INSTANCES:
+        for k, v in cls.INSTANCES.iteritems():
             cls.LIST.append((k, v.diamond))
 
         cls.LIST.sort(key=lambda item: item[0], reverse=True)

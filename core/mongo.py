@@ -608,7 +608,7 @@ class MongoVIP(BaseDocument):
 # 收集图鉴
 class MongoStaffCollection(BaseDocument):
     DOCUMENT = {
-        'id': null,
+        '_id': null,
         'staffs': []
     }
 

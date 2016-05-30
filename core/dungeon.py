@@ -16,8 +16,9 @@ from config import ConfigDungeon, ConfigDungeonGrade, ConfigErrorMessage, Config
 
 from core.match import ClubMatch
 from core.club import Club
-from core.value_log import ValueLogDungeonMatchTimes
-from core.resource import ResourceClassification
+from core.value_log import ValueLogDungeonMatchTimes, ValueLogDungeonBuyTimes
+from core.resource import ResourceClassification, money_text_to_item_id
+from core.vip import VIP
 
 from protomsg.dungeon_pb2 import DungeonNotify
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
@@ -28,7 +29,7 @@ DUNGEON_FREE_TIMES = 1
 
 
 def get_opened_category_ids():
-    today = arrow.utcnow().to(settings.TIME_ZONE).weekday()
+    today = arrow.utcnow().to(settings.TIME_ZONE).weekday() + 1
     ids = []
     for k, v in ConfigDungeon.INSTANCES.iteritems():
         if today in v.open_time:
@@ -65,9 +66,20 @@ class Dungeon(object):
         today_times = ValueLogDungeonMatchTimes(self.server_id, self.char_id).count_of_today(sub_id=grade_conf.belong)
         if today_times >= DUNGEON_FREE_TIMES:
             # TODO 购买
-            pass
-        else:
-            pass
+            vip = VIP(self.server_id, self.char_id)
+            buy_times = ValueLogDungeonBuyTimes(self.server_id, self.char_id).count_of_today(sub_id=grade_conf.belong)
+
+            if buy_times >= vip.dungeon_reset_times:
+                raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_NO_BUY_TIMES"))
+
+            cost = ConfigDungeonBuyCost.get_cost(buy_times + 1)
+            needs = [(money_text_to_item_id('diamond'), cost)]
+            rc = ResourceClassification.classify(needs)
+            rc.check_exist(self.server_id, self.char_id)
+            rc.remove(self.server_id, self.char_id)
+
+            ValueLogDungeonBuyTimes(self.server_id, self.char_id).record(sub_id=grade_conf.belong)
+
 
         club_two = ConfigNPCFormation.get(grade_conf.npc)
         msg = ClubMatch(club_one, club_two).start()
@@ -78,11 +90,12 @@ class Dungeon(object):
         grade_id = int(key)
         conf = ConfigDungeonGrade.get(grade_id)
 
-        ValueLogDungeonMatchTimes(self.server_id, self.char_id).record(sub_id=conf.belong, value=1)
         self.send_notify(conf.belong)
 
         if star > 0:
             # TODO: remove energy
+            ValueLogDungeonMatchTimes(self.server_id, self.char_id).record(sub_id=conf.belong, value=1)
+
             resource_classified = ResourceClassification.classify(conf.drop)
             resource_classified.add(self.server_id, self.char_id)
             return resource_classified
@@ -100,14 +113,16 @@ class Dungeon(object):
         notify = DungeonNotify()
         notify.act = act
 
-        all_times = ValueLogDungeonMatchTimes(self.server_id, self.char_id).batch_count_of_today()
+        all_free_times = ValueLogDungeonMatchTimes(self.server_id, self.char_id).batch_count_of_today()
+        all_buy_times = ValueLogDungeonBuyTimes(self.server_id, self.char_id).batch_count_of_today()
+
+        vip = VIP(self.server_id, self.char_id)
 
         for i in ids:
             notify_info = notify.info.add()
             notify_info.id = i
-            notify_info.free_times = DUNGEON_FREE_TIMES - all_times.get(str(i), 0)
-            # TODO
-            notify_info.buy_times = 10
-            notify_info.buy_cost = ConfigDungeonBuyCost.get_cost(10)
+            notify_info.free_times = DUNGEON_FREE_TIMES - all_free_times.get(str(i), 0)
+            notify_info.buy_times = vip.dungeon_reset_times - all_buy_times.get(str(i), 0)
+            notify_info.buy_cost = ConfigDungeonBuyCost.get_cost(all_buy_times.get(str(i), 0) + 1)
 
         MessagePipe(self.char_id).put(msg=notify)

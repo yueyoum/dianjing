@@ -156,12 +156,15 @@ class ValueLogAllChallengeWinTimes(ValueLog):
     KEY = 'all_challenge_win'
     __slots__ = []
 
-
 # 日常副本 (大类)
 class ValueLogDungeonMatchTimes(CategoryValueLog):
     KEY = 'dungeon_match'
     __slots__ = []
 
+# 日常副本购买次数 (大类)
+class ValueLogDungeonBuyTimes(CategoryValueLog):
+    KEY = 'dungeon_buy_times'
+    __slots__ = []
 
 # 竞技场挑战次数
 class ValueLogArenaMatchTimes(ValueLog):

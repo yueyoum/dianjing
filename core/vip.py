@@ -114,3 +114,20 @@ class VIP(object):
         notify.rewarded.extend(self.doc['rewards'])
 
         MessagePipe(self.char_id).put(msg=notify)
+
+
+    @property
+    def challenge_reset_times(self):
+        return ConfigVIP.get(self.doc['vip']).challenge_reset_times
+
+    @property
+    def dungeon_reset_times(self):
+        return ConfigVIP.get(self.doc['vip']).daily_dungeon_reset_times
+
+    @property
+    def tower_reset_times(self):
+        return ConfigVIP.get(self.doc['vip']).tower_reset_times
+
+    @property
+    def arena_buy_times(self):
+        return ConfigVIP.get(self.doc['vip']).arena_buy_times
