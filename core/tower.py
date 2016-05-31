@@ -16,6 +16,7 @@ from core.club import Club
 from core.match import ClubMatch
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.value_log import ValueLogTowerResetTimes, ValueLogTowerWinTimes
+from core.vip import VIP
 
 from utils.message import MessagePipe
 
@@ -31,6 +32,18 @@ from protomsg.tower_pb2 import (
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
 MAX_LEVEL = max(ConfigTowerLevel.INSTANCES.keys())
+
+
+class ResetInfo(object):
+    __slots__ = ['reset_times', 'remained_times', 'reset_cost']
+
+    def __init__(self, server_id, char_id):
+        self.reset_times = ValueLogTowerResetTimes(server_id, char_id).count_of_today()
+        self.remained_times = VIP(server_id, char_id).tower_reset_times - self.reset_times
+        if self.remained_times < 0:
+            self.remained_times = 0
+
+        self.reset_cost = ConfigTowerResetCost.get_cost(self.reset_times + 1)
 
 
 class Tower(object):
@@ -62,20 +75,6 @@ class Tower(object):
     def is_all_complete(self):
         # 0　表示可以打，　-1 表示失败，　不能打的没有记录，　这里就用-2表示
         return self.doc['levels'].get(str(MAX_LEVEL), -2) > 0
-
-    def get_today_reset_times(self):
-        return ValueLogTowerResetTimes(self.server_id, self.char_id).count_of_today()
-
-    def get_total_reset_times(self):
-        # TODO vip reset times
-        return 10
-
-    def remained_reset_times(self):
-        remained = self.get_today_reset_times() - self.get_today_reset_times()
-        if remained < 0:
-            remained = 0
-
-        return remained
 
     def match(self):
         sweep_end_at = self.doc.get('sweep_end_at', 0)
@@ -170,8 +169,8 @@ class Tower(object):
         if sweep_end_at:
             raise GameException(ConfigErrorMessage.get_error_id("TOWER_IN_SWEEP_CANNOT_OPERATE"))
 
-        current_reset_times = self.get_today_reset_times()
-        if current_reset_times >= self.get_total_reset_times():
+        ri = ResetInfo(self.server_id, self.char_id)
+        if not ri.remained_times:
             raise GameException(ConfigErrorMessage.get_error_id("TOWER_NO_RESET_TIMES"))
 
         if -1 not in self.doc['levels'].values():
@@ -179,10 +178,8 @@ class Tower(object):
             if not self.is_all_complete():
                 raise GameException(ConfigErrorMessage.get_error_id("TOWER_CANNOT_RESET_NO_FAILURE"))
 
-        config = ConfigTowerResetCost.get(current_reset_times)
-        if config.cost:
-            cost = [(money_text_to_item_id('diamond'), config.cost)]
-
+        if ri.reset_cost:
+            cost = [(money_text_to_item_id('diamond'), ri.reset_cost)]
             resource_classified = ResourceClassification.classify(cost)
             resource_classified.check_exist(self.server_id, self.char_id)
             resource_classified.remove(self.server_id, self.char_id)
@@ -339,9 +336,12 @@ class Tower(object):
         notify.rank = self.get_rank()
         notify.talent_ids.extend(self.doc['talents'])
 
-        notify.reset_times = self.remained_reset_times()
         notify.max_star_level = self.doc['max_star_level']
         notify.sweep_end_at = self.doc.get('sweep_end_at', 0)
+
+        ri = ResetInfo(self.server_id, self.char_id)
+        notify.reset_times = ri.remained_times
+        notify.reset_cost = ri.reset_cost
 
         if levels is None:
             # 全部发送

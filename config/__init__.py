@@ -147,7 +147,7 @@ def load_config():
             ConfigDungeon.initialize(data)
         elif item == 'dungeon_grade.json':
             ConfigDungeonGrade.initialize(data)
-        elif item == 'dungeon_buy_cost.json':
+        elif item == 'dungeon_reset_cost.json':
             ConfigDungeonBuyCost.initialize(data)
 
         elif item == 'npc_formation.json':

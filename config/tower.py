@@ -101,23 +101,22 @@ class ConfigTowerResetCost(ConfigBase):
     INSTANCES = {}
     FILTER_CACHE = {}
 
-    MAX_KEY = 0
+    LIST = []
+
 
     @classmethod
     def initialize(cls, fixture):
         super(ConfigTowerResetCost, cls).initialize(fixture)
-        cls.MAX_KEY = max(cls.INSTANCES.keys())
+        for k, v in cls.INSTANCES.iteritems():
+            cls.LIST.append((k, v.cost))
+
+        cls.LIST.sort(key=lambda item: item[0], reverse=True)
 
 
     @classmethod
-    def get(cls, _id):
-        """
+    def get_cost(cls, times):
+        for k, v in cls.LIST:
+            if times >= k:
+                return v
 
-        :rtype: ResetCost
-        """
-
-        x = super(ConfigTowerResetCost, cls).get(_id)
-        if not x:
-            x = cls.INSTANCES[cls.MAX_KEY]
-
-        return x
+        raise RuntimeError("ConfigTowerResetCost, Error times: {0}".format(times))
