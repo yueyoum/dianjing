@@ -193,6 +193,20 @@ class Arena(object):
     def get_honor_points(self):
         return ValueLogArenaHonorPoints(self.server_id, self.char_id).count_of_today()
 
+    def buy_times(self):
+        rt = MatchTimes(self.server_id, self.char_id)
+        if not rt.remained_buy_times:
+            raise GameException(ConfigErrorMessage.get_error_id("ARENA_NO_BUY_TIMES"))
+
+        cost = [(money_text_to_item_id('diamond'), rt.buy_cost), ]
+        rc = ResourceClassification.classify(cost)
+        rc.check_exist(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id)
+
+        ValueLogArenaBuyTimes(self.server_id, self.char_id).record()
+
+        self.send_notify()
+
     def refresh(self, ignore_cd=False):
         if not ignore_cd:
             cd = self.get_refresh_cd()

@@ -16,7 +16,18 @@ from protomsg.arena_pb2 import (
     ArenaMatchStartResponse,
     ArenaMatchReportResponse,
     ArenaRefreshResponse,
+    ArenaBuyTimesResponse,
 )
+
+def buy_times(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    Arena(server_id, char_id).buy_times()
+
+    response = ArenaBuyTimesResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
 
 
 def refresh(request):

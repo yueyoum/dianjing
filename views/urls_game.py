@@ -120,12 +120,14 @@ urlpatterns = [
 
     url(r'^dungeon/start/$', views.dungeon.start),
     url(r'^dungeon/report/$', views.dungeon.report),
+    url(r'^dungeon/buytimes/$', views.dungeon.buy_times),
 
     url(r'^arena/refresh/$', views.arena.refresh),
     url(r'^arena/leaderboard/$', views.arena.leader_board),
     url(r'^arena/matchstart/$', views.arena.match_start),
     url(r'^arena/matchreport/$', views.arena.match_report),
     url(r'^arena/honorreward/$', views.arena.get_honor_reward),
+    url(r'^arena/buytimes/$', views.arena.buy_times),
 
     url(r'^tower/matchstart/$', views.tower.match_start),
     url(r'^tower/matchreport/$', views.tower.match_report),

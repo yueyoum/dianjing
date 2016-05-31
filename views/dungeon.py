@@ -10,7 +10,21 @@ from core.dungeon import Dungeon
 
 from utils.http import ProtobufResponse
 
-from protomsg.dungeon_pb2 import DungeonMatchResponse, DungeonMatchReportResponse
+from protomsg.dungeon_pb2 import DungeonMatchResponse, DungeonMatchReportResponse, DungeonBuyTimesResponse
+
+
+
+def buy_times(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    category_id = request._proto.id
+
+    Dungeon(server_id, char_id).buy_times(category_id)
+
+    response = DungeonBuyTimesResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
 
 
 def start(request):
