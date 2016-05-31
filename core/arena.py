@@ -16,12 +16,13 @@ from core.mongo import MongoArena
 from core.club import Club, get_club_property
 from core.lock import LockTimeOut, ArenaLock, ArenaMatchLock, remove_lock_key
 from core.cooldown import ArenaRefreshCD, ArenaMatchCD
-from core.value_log import ValueLogArenaMatchTimes, ValueLogArenaHonorPoints
+from core.value_log import ValueLogArenaMatchTimes, ValueLogArenaHonorPoints, ValueLogArenaBuyTimes
 from core.match import ClubMatch
-from core.resource import ResourceClassification
+from core.resource import ResourceClassification, money_text_to_item_id
+from core.vip import VIP
 
 from config import ConfigErrorMessage, ConfigArenaNPC, ConfigNPCFormation, ConfigArenaHonorReward, \
-    ConfigArenaMatchReward
+    ConfigArenaMatchReward, ConfigArenaBuyTimesCost
 
 from utils.functional import make_string_id, get_arrow_time_of_today
 from utils.message import MessagePipe
@@ -36,7 +37,7 @@ from protomsg.arena_pb2 import (
     ARENA_HONOR_CAN_NOT,
 )
 
-ARENA_FREE_TIMES = 10
+ARENA_FREE_TIMES = 5
 
 
 # NOTE: mongo中的 _id 是 string
@@ -64,6 +65,24 @@ class ArenaClub(object):
             return npc_club
 
         return Club(server_id, int(arena_club_id))
+
+
+class MatchTimes(object):
+    __slots__ = ['match_times', 'buy_times', 'remained_match_times', 'remained_buy_times', 'buy_cost']
+
+    def __init__(self, server_id, char_id):
+        self.match_times = ValueLogArenaMatchTimes(server_id, char_id).count_of_today()
+        self.buy_times = ValueLogArenaBuyTimes(server_id, char_id).count_of_today()
+
+        self.remained_match_times = ARENA_FREE_TIMES + self.buy_times - self.match_times
+        if self.remained_match_times < 0:
+            self.remained_match_times = 0
+
+        self.remained_buy_times = VIP(server_id, char_id).arena_buy_times - self.buy_times
+        if self.remained_buy_times < 0:
+            self.remained_buy_times = 0
+
+        self.buy_cost = ConfigArenaBuyTimesCost.get_cost(self.buy_times + 1)
 
 
 class Arena(object):
@@ -171,15 +190,6 @@ class Arena(object):
     def get_match_cd(self):
         return ArenaMatchCD(self.server_id, self.char_id).get_cd_seconds()
 
-    def get_remained_match_times(self):
-        today_times = ValueLogArenaMatchTimes(self.server_id, self.char_id).count_of_today()
-        # TODO vip
-        remained = ARENA_FREE_TIMES - today_times
-        if remained < 0:
-            remained = 0
-
-        return remained
-
     def get_honor_points(self):
         return ValueLogArenaHonorPoints(self.server_id, self.char_id).count_of_today()
 
@@ -214,6 +224,18 @@ class Arena(object):
         if cd:
             raise GameException(ConfigErrorMessage.get_error_id("ARENA_MATCH_IN_CD"))
 
+        rt = MatchTimes(self.server_id, self.char_id)
+        cost = [(money_text_to_item_id('diamond'), rt.buy_cost), ]
+        rc = ResourceClassification.classify(cost)
+
+        _using_diamond = False
+        if not rt.remained_match_times:
+            if not rt.remained_buy_times:
+                raise GameException(ConfigErrorMessage.get_error_id("ARENA_NO_BUY_TIMES"))
+
+            _using_diamond = True
+            rc.check_exist(self.server_id, self.char_id)
+
         doc = MongoArena.db(self.server_id).find_one(
             {'_id': str(self.char_id)},
             {'rivals': 1}
@@ -245,6 +267,9 @@ class Arena(object):
                         msg.key = "{0}#{1}#{2}".format(rival_id, my_lock.key, rival_lock.key)
 
                         ValueLogArenaMatchTimes(self.server_id, self.char_id).record()
+                        if _using_diamond:
+                            rc.remove(self.server_id, self.char_id)
+                            ValueLogArenaBuyTimes(self.server_id, self.char_id).record()
 
                         return msg
                 except LockTimeOut:
@@ -416,11 +441,16 @@ class Arena(object):
             {'_id': str(self.char_id)}
         )
 
+        rt = MatchTimes(self.server_id, self.char_id)
+
         notify = ArenaNotify()
         notify.my_rank = doc['rank']
         notify.match_cd = self.get_match_cd()
-        notify.match_times = self.get_remained_match_times()
         notify.refresh_cd = self.get_refresh_cd()
+
+        notify.match_times = rt.remained_match_times
+        notify.buy_times = rt.remained_buy_times
+        notify.buy_cost = rt.buy_cost
 
         for _id, _rank in doc['rivals']:
             notify_rival = notify.rival.add()

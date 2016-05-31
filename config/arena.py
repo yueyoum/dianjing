@@ -139,10 +139,20 @@ class ConfigArenaBuyTimesCost(ConfigBase):
     INSTANCES = {}
     FILTER_CACHE = {}
 
-    @classmethod
-    def get(cls, _id):
-        """
+    LIST = []
 
-        :rtype: BuyTimesCost
-        """
-        return super(ConfigArenaBuyTimesCost, cls).get(_id)
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigArenaBuyTimesCost, cls).initialize(fixture)
+        for k, v in cls.INSTANCES.iteritems():
+            cls.LIST.append((k, v.diamond))
+
+        cls.LIST.sort(key=lambda item: item[0], reverse=True)
+
+    @classmethod
+    def get_cost(cls, times):
+        for k, v in cls.LIST:
+            if times >= k:
+                return v
+
+        raise RuntimeError("ConfigArenaBuyTimesCost, Error times: {0}".format(times))

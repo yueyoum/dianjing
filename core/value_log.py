@@ -183,6 +183,11 @@ class ValueLogArenaMatchTimes(ValueLog):
     KEY = 'arena_match'
     __slots__ = []
 
+# 竞技场购买次数
+class ValueLogArenaBuyTimes(ValueLog):
+    KEY = 'arena_buy'
+    __slots__ = []
+
 
 # 竞技场荣耀点
 class ValueLogArenaHonorPoints(ValueLog):
