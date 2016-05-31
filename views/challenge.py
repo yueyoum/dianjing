@@ -16,7 +16,22 @@ from protomsg.challenge_pb2 import (
     ChallengeMatchReportResponse,
     ChapterGetStarRewardResponse,
     ChallengeSweepResponse,
+    ChallengeResetResponse,
 )
+
+
+def reset(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    challenge_id = request._proto.id
+
+    c = Challenge(server_id, char_id)
+    c.reset(challenge_id)
+
+    response = ChallengeResetResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
 
 
 def start(request):

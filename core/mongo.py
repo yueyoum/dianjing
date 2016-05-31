@@ -158,7 +158,7 @@ class MongoChallenge(BaseDocument):
         'chapters': {},
         # id: star
         'challenge_star': {},
-        # 关卡次数记录在 TimesLog 里
+        # 关卡次数记录在 ValueLog 里
         # 每个关卡对应的物品掉落次数
         'challenge_drop': {},
     }

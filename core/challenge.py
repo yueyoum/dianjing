@@ -15,14 +15,15 @@ from core.club import Club
 from core.match import ClubMatch
 from core.unit import NPCUnit
 from core.task import TaskMain
+from core.vip import VIP
 
-from core.resource import ResourceClassification
-from core.value_log import ValueLogChallengeMatchTimes, ValueLogAllChallengeWinTimes
+from core.resource import ResourceClassification, money_text_to_item_id
+from core.value_log import ValueLogChallengeMatchTimes, ValueLogAllChallengeWinTimes, ValueLogChallengeResetTimes
 
 from utils.message import MessagePipe
 from utils.functional import make_string_id
 
-from config import ConfigChapter, ConfigChallengeMatch, ConfigErrorMessage
+from config import ConfigChapter, ConfigChallengeMatch, ConfigErrorMessage, ConfigChallengeResetCost
 
 from protomsg.challenge_pb2 import (
     ChallengeNotify,
@@ -76,6 +77,30 @@ for k, v in ConfigChallengeMatch.INSTANCES.iteritems():
         INIT_CHALLENGE_IDS.append(k)
 
 
+class RemainedTimes(object):
+    __slots__ = ['match_times', 'reset_times', 'remained_match_times', 'remained_reset_times', 'reset_cost']
+
+    def __init__(self, server_id, char_id, challenge_id):
+        # 已经打过的次数
+        self.match_times = ValueLogChallengeMatchTimes(server_id, char_id).count_of_today(sub_id=challenge_id)
+        # 已经重置过的次数
+        self.reset_times = ValueLogChallengeResetTimes(server_id, char_id).count_of_today(sub_id=challenge_id)
+
+        total_match_times = ConfigChallengeMatch.get(challenge_id).times_limit * (self.reset_times + 1)
+        # 剩余比赛次数
+        self.remained_match_times = total_match_times - self.match_times
+        if self.remained_match_times < 0:
+            self.remained_match_times = 0
+
+        # 剩余重置次数
+        self.remained_reset_times = VIP(server_id, char_id).challenge_reset_times - self.reset_times
+        if self.remained_reset_times < 0:
+            self.remained_reset_times = 0
+
+        # 重置花费
+        self.reset_cost = ConfigChallengeResetCost.get_cost(self.reset_times)
+
+
 class Challenge(object):
     __slots__ = ['server_id', 'char_id']
 
@@ -101,14 +126,10 @@ class Challenge(object):
 
             MongoChallenge.db(self.server_id).insert_one(doc)
 
-    def get_today_times(self, challenge_id):
-        today_times = ValueLogChallengeMatchTimes(self.server_id, self.char_id).count_of_today(sub_id=challenge_id)
-        return today_times
-
     def start(self, challenge_id):
         config = ConfigChallengeMatch.get(challenge_id)
         if not config:
-            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NOT_EXIST"))
 
         if config.condition_challenge:
             doc = MongoChallenge.db(self.server_id).find_one(
@@ -119,7 +140,8 @@ class Challenge(object):
             if str(config.condition_challenge) not in doc['challenge_star']:
                 raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NOT_OPEN"))
 
-        if self.get_today_times(challenge_id) >= config.times_limit:
+        rt = RemainedTimes(self.server_id, self.char_id, challenge_id)
+        if not rt.remained_match_times:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_WITHOUT_TIMES"))
 
         club_one = Club(self.server_id, self.char_id)
@@ -129,11 +151,32 @@ class Challenge(object):
         msg.key = str(challenge_id)
         return msg
 
+    def reset(self, challenge_id):
+        config = ConfigChallengeMatch.get(challenge_id)
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NOT_EXIST"))
+
+        rt = RemainedTimes(self.server_id, self.char_id, challenge_id)
+        if rt.remained_match_times:
+            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_CANNOT_RESET_HAS_FREE_TIMES"))
+
+        if not rt.remained_reset_times:
+            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NO_RESET_TIMES"))
+
+        cost = [(money_text_to_item_id('diamond'), rt.reset_cost), ]
+        rc = ResourceClassification.classify(cost)
+        rc.check_exist(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id)
+
+        ValueLogChallengeResetTimes(self.server_id, self.char_id).record(sub_id=challenge_id)
+
+        self.send_challenge_notify(ids=[challenge_id])
+
     def sweep(self, challenge_id):
         # 扫荡
         config = ConfigChallengeMatch.get(challenge_id)
         if not config:
-            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NOT_EXIST"))
 
         doc = MongoChallenge.db(self.server_id).find_one(
             {'_id': self.char_id},
@@ -149,13 +192,14 @@ class Challenge(object):
         if star != 3:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NOT_3_STAR"))
 
-        today_times = ValueLogChallengeMatchTimes(self.server_id, self.char_id).count_of_today(sub_id=challenge_id)
-        remained_times = config.times_limit - today_times
+        rt = RemainedTimes(self.server_id, self.char_id, challenge_id)
+        if not rt.remained_match_times:
+            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_WITHOUT_TIMES"))
 
-        if remained_times > 5:
+        if rt.remained_match_times > 5:
             sweep_times = 5
         else:
-            sweep_times = remained_times
+            sweep_times = rt.remained_match_times
 
         drop_times = doc['challenge_drop'].get(str(challenge_id), {})
         drops = {}
@@ -375,15 +419,17 @@ class Challenge(object):
 
         ids = doc['challenge_star'].keys()
 
-        times = ValueLogChallengeMatchTimes(self.server_id, self.char_id).batch_count_of_today()
-
         notify = ChallengeNotify()
         notify.act = act
 
         for i in ids:
+            rt = RemainedTimes(self.server_id, self.char_id, int(i))
+
             notify_challenge = notify.challenge.add()
             notify_challenge.id = int(i)
             notify_challenge.star = doc['challenge_star'][i]
-            notify_challenge.remained_times = ConfigChallengeMatch.get(int(i)).times_limit - times.get(i, 0)
+            notify_challenge.free_times = rt.remained_match_times
+            notify_challenge.buy_times = rt.remained_reset_times
+            notify_challenge.buy_cost = rt.reset_cost
 
         MessagePipe(self.char_id).put(msg=notify)

@@ -23,7 +23,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='challenge.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0f\x63hallenge.proto\x12\x11\x44ianjing.protocol\x1a\x0bmatch.proto\x1a\rpackage.proto\x1a\x0c\x63ommon.proto\"\xaf\x02\n\rChapterNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12:\n\x08\x63hapters\x18\x03 \x03(\x0b\x32(.Dianjing.protocol.ChapterNotify.Chapter\x1a\xa8\x01\n\x07\x43hapter\x12\n\n\x02id\x18\x01 \x02(\x05\x12@\n\x07rewards\x18\x02 \x03(\x0b\x32/.Dianjing.protocol.ChapterNotify.Chapter.Reward\x1aO\n\x06Reward\x12\r\n\x05index\x18\x01 \x02(\x05\x12\x36\n\x06status\x18\x02 \x02(\x0e\x32&.Dianjing.protocol.ChapterRewardStatus\"\xca\x01\n\x0f\x43hallengeNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12?\n\tchallenge\x18\x03 \x03(\x0b\x32,.Dianjing.protocol.ChallengeNotify.Challenge\x1a=\n\tChallenge\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04star\x18\x02 \x02(\x05\x12\x16\n\x0eremained_times\x18\x03 \x02(\x05\"4\n\x15\x43hallengeStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"c\n\x16\x43hallengeStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"I\n\x1b\x43hallengeMatchReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x0c\n\x04star\x18\x03 \x02(\x05\"c\n\x1c\x43hallengeMatchReportResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"4\n\x15\x43hallengeSweepRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"]\n\x16\x43hallengeSweepResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Drop\"I\n\x1b\x43hapterGetStarRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\x12\r\n\x05index\x18\x03 \x02(\x05\"c\n\x1c\x43hapterGetStarRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*]\n\x13\x43hapterRewardStatus\x12\x16\n\x12\x43HAPTER_REWARD_NOT\x10\x00\x12\x15\n\x11\x43HAPTER_REWARD_OK\x10\x01\x12\x17\n\x13\x43HAPTER_REWARD_DONE\x10\x02')
+  serialized_pb=_b('\n\x0f\x63hallenge.proto\x12\x11\x44ianjing.protocol\x1a\x0bmatch.proto\x1a\rpackage.proto\x1a\x0c\x63ommon.proto\"\xaf\x02\n\rChapterNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12:\n\x08\x63hapters\x18\x03 \x03(\x0b\x32(.Dianjing.protocol.ChapterNotify.Chapter\x1a\xa8\x01\n\x07\x43hapter\x12\n\n\x02id\x18\x01 \x02(\x05\x12@\n\x07rewards\x18\x02 \x03(\x0b\x32/.Dianjing.protocol.ChapterNotify.Chapter.Reward\x1aO\n\x06Reward\x12\r\n\x05index\x18\x01 \x02(\x05\x12\x36\n\x06status\x18\x02 \x02(\x0e\x32&.Dianjing.protocol.ChapterRewardStatus\"\xeb\x01\n\x0f\x43hallengeNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12?\n\tchallenge\x18\x03 \x03(\x0b\x32,.Dianjing.protocol.ChallengeNotify.Challenge\x1a^\n\tChallenge\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04star\x18\x02 \x02(\x05\x12\x12\n\nfree_times\x18\x03 \x02(\x05\x12\x11\n\tbuy_times\x18\x04 \x02(\x05\x12\x10\n\x08\x62uy_cost\x18\x05 \x02(\x05\"4\n\x15\x43hallengeResetRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"6\n\x16\x43hallengeResetResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"4\n\x15\x43hallengeStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"c\n\x16\x43hallengeStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"I\n\x1b\x43hallengeMatchReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x0c\n\x04star\x18\x03 \x02(\x05\"c\n\x1c\x43hallengeMatchReportResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"4\n\x15\x43hallengeSweepRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"]\n\x16\x43hallengeSweepResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Drop\"I\n\x1b\x43hapterGetStarRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\x12\r\n\x05index\x18\x03 \x02(\x05\"c\n\x1c\x43hapterGetStarRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*]\n\x13\x43hapterRewardStatus\x12\x16\n\x12\x43HAPTER_REWARD_NOT\x10\x00\x12\x15\n\x11\x43HAPTER_REWARD_OK\x10\x01\x12\x17\n\x13\x43HAPTER_REWARD_DONE\x10\x02')
   ,
   dependencies=[match__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -49,8 +49,8 @@ _CHAPTERREWARDSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1247,
-  serialized_end=1340,
+  serialized_start=1390,
+  serialized_end=1483,
 )
 _sym_db.RegisterEnumDescriptor(_CHAPTERREWARDSTATUS)
 
@@ -202,8 +202,22 @@ _CHALLENGENOTIFY_CHALLENGE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='remained_times', full_name='Dianjing.protocol.ChallengeNotify.Challenge.remained_times', index=2,
+      name='free_times', full_name='Dianjing.protocol.ChallengeNotify.Challenge.free_times', index=2,
       number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='buy_times', full_name='Dianjing.protocol.ChallengeNotify.Challenge.buy_times', index=3,
+      number=4, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='buy_cost', full_name='Dianjing.protocol.ChallengeNotify.Challenge.buy_cost', index=4,
+      number=5, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -221,7 +235,7 @@ _CHALLENGENOTIFY_CHALLENGE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=528,
-  serialized_end=589,
+  serialized_end=622,
 )
 
 _CHALLENGENOTIFY = _descriptor.Descriptor(
@@ -265,7 +279,83 @@ _CHALLENGENOTIFY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=387,
-  serialized_end=589,
+  serialized_end=622,
+)
+
+
+_CHALLENGERESETREQUEST = _descriptor.Descriptor(
+  name='ChallengeResetRequest',
+  full_name='Dianjing.protocol.ChallengeResetRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ChallengeResetRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.ChallengeResetRequest.id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=624,
+  serialized_end=676,
+)
+
+
+_CHALLENGERESETRESPONSE = _descriptor.Descriptor(
+  name='ChallengeResetResponse',
+  full_name='Dianjing.protocol.ChallengeResetResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.ChallengeResetResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ChallengeResetResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=678,
+  serialized_end=732,
 )
 
 
@@ -302,8 +392,8 @@ _CHALLENGESTARTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=591,
-  serialized_end=643,
+  serialized_start=734,
+  serialized_end=786,
 )
 
 
@@ -347,8 +437,8 @@ _CHALLENGESTARTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=645,
-  serialized_end=744,
+  serialized_start=788,
+  serialized_end=887,
 )
 
 
@@ -392,8 +482,8 @@ _CHALLENGEMATCHREPORTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=746,
-  serialized_end=819,
+  serialized_start=889,
+  serialized_end=962,
 )
 
 
@@ -437,8 +527,8 @@ _CHALLENGEMATCHREPORTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=821,
-  serialized_end=920,
+  serialized_start=964,
+  serialized_end=1063,
 )
 
 
@@ -475,8 +565,8 @@ _CHALLENGESWEEPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=922,
-  serialized_end=974,
+  serialized_start=1065,
+  serialized_end=1117,
 )
 
 
@@ -520,8 +610,8 @@ _CHALLENGESWEEPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=976,
-  serialized_end=1069,
+  serialized_start=1119,
+  serialized_end=1212,
 )
 
 
@@ -565,8 +655,8 @@ _CHAPTERGETSTARREWARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1071,
-  serialized_end=1144,
+  serialized_start=1214,
+  serialized_end=1287,
 )
 
 
@@ -610,8 +700,8 @@ _CHAPTERGETSTARREWARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1146,
-  serialized_end=1245,
+  serialized_start=1289,
+  serialized_end=1388,
 )
 
 _CHAPTERNOTIFY_CHAPTER_REWARD.fields_by_name['status'].enum_type = _CHAPTERREWARDSTATUS
@@ -629,6 +719,8 @@ _CHALLENGESWEEPRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 _CHAPTERGETSTARREWARDRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 DESCRIPTOR.message_types_by_name['ChapterNotify'] = _CHAPTERNOTIFY
 DESCRIPTOR.message_types_by_name['ChallengeNotify'] = _CHALLENGENOTIFY
+DESCRIPTOR.message_types_by_name['ChallengeResetRequest'] = _CHALLENGERESETREQUEST
+DESCRIPTOR.message_types_by_name['ChallengeResetResponse'] = _CHALLENGERESETRESPONSE
 DESCRIPTOR.message_types_by_name['ChallengeStartRequest'] = _CHALLENGESTARTREQUEST
 DESCRIPTOR.message_types_by_name['ChallengeStartResponse'] = _CHALLENGESTARTRESPONSE
 DESCRIPTOR.message_types_by_name['ChallengeMatchReportRequest'] = _CHALLENGEMATCHREPORTREQUEST
@@ -676,6 +768,20 @@ ChallengeNotify = _reflection.GeneratedProtocolMessageType('ChallengeNotify', (_
   ))
 _sym_db.RegisterMessage(ChallengeNotify)
 _sym_db.RegisterMessage(ChallengeNotify.Challenge)
+
+ChallengeResetRequest = _reflection.GeneratedProtocolMessageType('ChallengeResetRequest', (_message.Message,), dict(
+  DESCRIPTOR = _CHALLENGERESETREQUEST,
+  __module__ = 'challenge_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChallengeResetRequest)
+  ))
+_sym_db.RegisterMessage(ChallengeResetRequest)
+
+ChallengeResetResponse = _reflection.GeneratedProtocolMessageType('ChallengeResetResponse', (_message.Message,), dict(
+  DESCRIPTOR = _CHALLENGERESETRESPONSE,
+  __module__ = 'challenge_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChallengeResetResponse)
+  ))
+_sym_db.RegisterMessage(ChallengeResetResponse)
 
 ChallengeStartRequest = _reflection.GeneratedProtocolMessageType('ChallengeStartRequest', (_message.Message,), dict(
   DESCRIPTOR = _CHALLENGESTARTREQUEST,

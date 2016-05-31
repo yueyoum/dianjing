@@ -68,6 +68,13 @@ class ChallengeMatch(object):
         return drop.items()
 
 
+class ResetCost(object):
+    __slots__ = ['id', 'diamond']
+    def __init__(self):
+        self.id = 0
+        self.diamond  =0
+
+
 class ConfigChapter(ConfigBase):
     EntityClass = Chapter
     INSTANCES = {}
@@ -94,3 +101,28 @@ class ConfigChallengeMatch(ConfigBase):
         :rtype : ChallengeMatch
         """
         return super(ConfigChallengeMatch, cls).get(_id)
+
+
+class ConfigChallengeResetCost(ConfigBase):
+    EntityClass = ResetCost
+    INSTANCES = {}
+    """:type: dict[int, ResetCost]"""
+    FILTER_CACHE = {}
+
+    LIST = []
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigChallengeResetCost, cls).initialize(fixture)
+        for k, v in cls.INSTANCES.iteritems():
+            cls.LIST.append((k, v.diamond))
+
+        cls.LIST.sort(key=lambda item: item[0], reverse=True)
+
+    @classmethod
+    def get_cost(cls, times):
+        for k, v in cls.LIST:
+            if times >= k:
+                return v
+
+        raise RuntimeError("ConfigChallengeResetCost, Error times: {0}".format(times))

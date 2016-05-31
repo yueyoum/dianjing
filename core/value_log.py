@@ -13,6 +13,7 @@ from core.mongo import MongoTimesLog
 from utils.functional import make_string_id, get_arrow_time_of_today
 from config import ConfigTaskCondition
 
+
 # TODO 定时清理
 class ValueLog(object):
     KEY = None
@@ -134,10 +135,12 @@ class ValueLogStaffRecruitGoldFreeTimes(ValueLog):
     KEY = 'staff_recruit_gold_free_times'
     __slots__ = []
 
+
 # 金币抽卡次数
 class ValueLogStaffRecruitGoldTimes(ValueLog):
     KEY = 'staff_recruit_gold_times'
     __slots__ = []
+
 
 # 钻石抽卡次数
 class ValueLogStaffRecruitDiamondTimes(ValueLog):
@@ -151,20 +154,29 @@ class ValueLogChallengeMatchTimes(CategoryValueLog):
     __slots__ = []
 
 
+# 挑战赛关卡重置次数 (单个)
+class ValueLogChallengeResetTimes(CategoryValueLog):
+    KEY = 'challenge_reset'
+    __slots__ = []
+
+
 # 所有挑战赛胜利次数
 class ValueLogAllChallengeWinTimes(ValueLog):
     KEY = 'all_challenge_win'
     __slots__ = []
+
 
 # 日常副本 (大类)
 class ValueLogDungeonMatchTimes(CategoryValueLog):
     KEY = 'dungeon_match'
     __slots__ = []
 
+
 # 日常副本购买次数 (大类)
 class ValueLogDungeonBuyTimes(CategoryValueLog):
     KEY = 'dungeon_buy_times'
     __slots__ = []
+
 
 # 竞技场挑战次数
 class ValueLogArenaMatchTimes(ValueLog):
@@ -183,20 +195,24 @@ class ValueLogTowerWinTimes(ValueLog):
     KEY = 'tower_win'
     __slots__ = []
 
+
 # 训练塔重置次数
 class ValueLogTowerResetTimes(ValueLog):
     KEY = 'tower_reset'
     __slots__ = []
+
 
 # 领地训练次数
 class ValueLogTerritoryTrainingTimes(ValueLog):
     KEY = 'territory_training'
     __slots__ = []
 
+
 # 领地帮助好友次数
 class ValueLogTerritoryHelpFriendTimes(ValueLog):
     KEY = 'territory_help_friend'
     __slots__ = []
+
 
 # 领地建筑鼓舞次数
 class ValueLogTerritoryBuildingInspireTimes(ValueLog):
