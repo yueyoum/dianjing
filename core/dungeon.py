@@ -80,7 +80,6 @@ class Dungeon(object):
 
             ValueLogDungeonBuyTimes(self.server_id, self.char_id).record(sub_id=grade_conf.belong)
 
-
         club_two = ConfigNPCFormation.get(grade_conf.npc)
         msg = ClubMatch(club_one, club_two).start()
         msg.key = str(dungeon_id)
@@ -96,7 +95,7 @@ class Dungeon(object):
             # TODO: remove energy
             ValueLogDungeonMatchTimes(self.server_id, self.char_id).record(sub_id=conf.belong, value=1)
 
-            resource_classified = ResourceClassification.classify(conf.drop)
+            resource_classified = ResourceClassification.classify(conf.get_drop())
             resource_classified.add(self.server_id, self.char_id)
             return resource_classified
 

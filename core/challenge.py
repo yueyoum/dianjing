@@ -101,10 +101,6 @@ class Challenge(object):
 
             MongoChallenge.db(self.server_id).insert_one(doc)
 
-    def current_challenge_id(self):
-        # TODO
-        return 0
-
     def get_today_times(self, challenge_id):
         today_times = ValueLogChallengeMatchTimes(self.server_id, self.char_id).count_of_today(sub_id=challenge_id)
         return today_times
