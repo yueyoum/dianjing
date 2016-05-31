@@ -69,32 +69,25 @@ class ConfigDungeonGrade(ConfigBase):
         return super(ConfigDungeonGrade, cls).get(_id)
 
 
-class BuyCost(object):
-    __slots__ = ['id', 'diamond']
+class ResetCost(object):
+    __slots__ = ['id', 'times']
     def __init__(self):
         self.id = 0
-        self.diamond = 0
+        self.times = []
 
-
-class ConfigDungeonBuyCost(ConfigBase):
-    EntityClass = BuyCost
-    INSTANCES = {}
-    FILTER_CACHE = {}
-
-    LIST = []
-
-    @classmethod
-    def initialize(cls, fixture):
-        super(ConfigDungeonBuyCost, cls).initialize(fixture)
-        for k, v in cls.INSTANCES.iteritems():
-            cls.LIST.append((k, v.diamond))
-
-        cls.LIST.sort(key=lambda item: item[0], reverse=True)
-
-    @classmethod
-    def get_cost(cls, times):
-        for t, cost in cls.LIST:
+    def get_cost(self, times):
+        for t, cost in self.times:
             if times >= t:
                 return cost
 
         raise RuntimeError("ConfigDungeonBuyCost Error times: {0}".format(times))
+
+
+class ConfigDungeonBuyCost(ConfigBase):
+    EntityClass = ResetCost
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get_cost(cls, dungeon_id, times):
+        return cls.INSTANCES[dungeon_id].get_cost(times)

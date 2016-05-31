@@ -16,6 +16,7 @@ from core.common import CommonChat
 from core.signals import chat_signal
 from core.resource import ResourceClassification, item_id_to_money_text
 from core.club import Club
+from core.vip import VIP
 
 from config import ConfigErrorMessage
 from utils.message import MessagePipe, MessageFactory
@@ -48,7 +49,7 @@ class Chat(object):
         msg.channel = channel
         msg.club.id = str(self.char_id)
         msg.club.name = char_doc['club']['name']
-        msg.club.vip = char_doc['club']['vip']
+        msg.club.vip = VIP(self.server_id, self.char_id).level
         msg.msg = text
 
         data = base64.b64encode(msg.SerializeToString())

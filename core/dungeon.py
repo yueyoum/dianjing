@@ -72,7 +72,7 @@ class Dungeon(object):
             if buy_times >= vip.dungeon_reset_times:
                 raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_NO_BUY_TIMES"))
 
-            cost = ConfigDungeonBuyCost.get_cost(buy_times + 1)
+            cost = ConfigDungeonBuyCost.get_cost(dungeon_id, buy_times+1)
             needs = [(money_text_to_item_id('diamond'), cost)]
             rc = ResourceClassification.classify(needs)
             rc.check_exist(self.server_id, self.char_id)
@@ -122,6 +122,6 @@ class Dungeon(object):
             notify_info.id = i
             notify_info.free_times = DUNGEON_FREE_TIMES - all_free_times.get(str(i), 0)
             notify_info.buy_times = vip.dungeon_reset_times - all_buy_times.get(str(i), 0)
-            notify_info.buy_cost = ConfigDungeonBuyCost.get_cost(all_buy_times.get(str(i), 0) + 1)
+            notify_info.buy_cost = ConfigDungeonBuyCost.get_cost(i, all_buy_times.get(str(i), 0) + 1)
 
         MessagePipe(self.char_id).put(msg=notify)

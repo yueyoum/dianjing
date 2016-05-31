@@ -98,7 +98,7 @@ class RemainedTimes(object):
             self.remained_reset_times = 0
 
         # 重置花费
-        self.reset_cost = ConfigChallengeResetCost.get_cost(self.reset_times)
+        self.reset_cost = ConfigChallengeResetCost.get_cost(self.reset_times + 1)
 
 
 class Challenge(object):
