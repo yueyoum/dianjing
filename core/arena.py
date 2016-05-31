@@ -335,7 +335,8 @@ class Arena(object):
         resource_classified.add(self.server_id, self.char_id)
 
         self.refresh(ignore_cd=True)
-        ArenaMatchCD(self.server_id, self.char_id).set(120)
+        # TODO cd
+        ArenaMatchCD(self.server_id, self.char_id).set(0)
 
         self.send_honor_notify()
         self.send_notify()
