@@ -581,5 +581,6 @@ class AbstractClub(object):
         msg.gas = self.gas
         msg.renown = self.renown
         msg.energy = self.energy
+        msg.power = self.power
 
         return msg
