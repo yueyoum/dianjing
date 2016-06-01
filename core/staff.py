@@ -381,8 +381,6 @@ class Staff(AbstractStaff):
 
         self.calculate()
         self.make_cache()
-        self.send_notify()
-
         return exp_pool
 
     def step_up(self):
@@ -451,7 +449,6 @@ class Staff(AbstractStaff):
 
         self.calculate()
         self.make_cache()
-        self.send_notify()
 
     def equipment_change(self, bag_slot_id, tp):
         if not bag_slot_id:
@@ -763,7 +760,7 @@ class StaffManger(object):
             }}
         )
 
-        self.send_notify(ids=[])
+        self.send_notify(ids=[staff_id])
         ValueLogStaffLevelUpTimes(self.server_id, self.char_id).record()
 
     def step_up(self, staff_id):
@@ -781,7 +778,7 @@ class StaffManger(object):
         else:
             staff.calculate()
             staff.make_cache()
-            staff.send_notify()
+            self.send_notify(ids=[staff_id])
 
     def star_up(self, staff_id):
         staff = self.get_staff_object(staff_id)
@@ -790,6 +787,7 @@ class StaffManger(object):
 
         staff.star_up()
         ValueLogStaffStarUpTimes(self.server_id, self.char_id).record()
+        self.send_notify(ids=[staff_id])
 
     def destroy(self, staff_id, tp):
         from core.club import Club
@@ -835,7 +833,7 @@ class StaffManger(object):
             else:
                 staff.calculate()
                 staff.make_cache()
-                staff.send_notify()
+                self.send_notify(ids=[staff_id])
 
         return resource_classified
 

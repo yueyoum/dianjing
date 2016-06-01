@@ -298,6 +298,9 @@ class AbstractStaff(object):
         self.__unit = unit.clone()
 
     def calculate_unit(self):
+        if not self.server_id:
+            return
+
         from core.unit import UnitManager
         if not self.__unit:
             return
