@@ -537,19 +537,6 @@ class AbstractClub(object):
     def load_staffs(self, **kwargs):
         raise NotImplementedError()
 
-    def before_match(self):
-        # 战斗开始前的设置， 比如加载unit
-        # 对于选手的club，load_staffs 和 before_match 需要分开来
-        # load_staffs 是对应一般情况的， 不需要装载unit的情况
-        # 比如在面板上看属性
-        # 但是选手会一直更换/升级兵种，如果兵种也在 load_staffs 里设置，
-        # 工作量比较大
-        # 其实战斗中需要的兵种属性，只要在进入战斗前计算就可以
-        # 所以选手分两部走
-        # NPC 直接load_staffs 全部设置完就行
-        # 所以 在基类里 before_match 是 pass 的
-        pass
-
     def get_formation_terran_staffs(self):
         return [s for s in self.formation_staffs if s.config.race == 1]
 

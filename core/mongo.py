@@ -452,10 +452,10 @@ class MongoUnit(BaseDocument):
 
 class MongoTalent(BaseDocument):
     DOCUMENT = {
-        '_id': 0,
-        'total': 0,
-        'cost': 0,
-        'talent': [],
+        '_id': null,
+        'total_point': 0,
+        'cost_point': 0,
+        'talents': [],
     }
 
     COLLECTION = 'talent'

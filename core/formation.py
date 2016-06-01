@@ -30,6 +30,7 @@ from protomsg.formation_pb2 import (
 
 MAX_SLOT_AMOUNT = 6
 
+
 class Formation(object):
     __slots__ = ['server_id', 'char_id', 'doc']
 
@@ -129,9 +130,10 @@ class Formation(object):
         if old_staff_id:
             changed_staff_ids.append(old_staff_id)
 
-        Club(self.server_id, self.char_id).load_staffs(ids=changed_staff_ids)
+        club = Club(self.server_id, self.char_id)
+        club.force_load_staffs()
+        club.send_notify()
         StaffManger(self.server_id, self.char_id).send_notify(ids=changed_staff_ids)
-
 
     def set_unit(self, slot_id, unit_id):
         if str(slot_id) not in self.doc['slots']:
@@ -154,14 +156,13 @@ class Formation(object):
 
         self.send_notify(slot_ids=[slot_id])
 
-        # 不用这么处理了
-        # 现在是在战斗前才 给staff set_unit
-        # 那时候肯定会获取到新的unit数据的
-        # u = UnitManager(self.server_id, self.char_id).get_unit_object(unit_id)
-        # s = StaffManger(self.server_id, self.char_id).get_staff_object(staff_id)
-        # s.set_unit(u)
-        # s.calculate()
-        # s.make_cache()
+        u = UnitManager(self.server_id, self.char_id).get_unit_object(unit_id)
+        s = StaffManger(self.server_id, self.char_id).get_staff_object(staff_id)
+        s.set_unit(u)
+        s.calculate()
+        s.make_cache()
+
+        Club(self.server_id, self.char_id).send_notify()
 
     def move_slot(self, slot_id, to_index):
         if str(slot_id) not in self.doc['slots']:
@@ -191,7 +192,7 @@ class Formation(object):
             act = ACT_UPDATE
         else:
             act = ACT_INIT
-            slot_ids = range(1, MAX_SLOT_AMOUNT+1)
+            slot_ids = range(1, MAX_SLOT_AMOUNT + 1)
 
         notify = FormationNotify()
         notify.act = act

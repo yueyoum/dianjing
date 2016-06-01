@@ -14,7 +14,6 @@ from core.mongo import MongoCharacter
 from core.abstract import AbstractClub
 from core.signals import club_level_up_signal
 from core.statistics import FinanceStatistics
-# from core.talent import TalentManager
 
 from dianjing.exception import GameException
 
@@ -64,14 +63,34 @@ class Club(AbstractClub):
         self.crystal = club.get('crystal', 0)
         self.gas = club.get('gas', 0)
 
+        self.load_staffs()
+
     def load_staffs(self, ids=None):
-        from core.staff import StaffManger, Staff
+        from core.staff import StaffManger
         from core.formation import Formation
+
+        self.formation_staffs = []
 
         sm = StaffManger(self.server_id, self.char_id)
         fm = Formation(self.server_id, self.char_id)
 
-        staffs = sm.get_staffs_data(ids=ids)
+        for k in fm.in_formation_staffs():
+            self.formation_staffs.append(sm.get_staff_object(k))
+
+
+    def force_load_staffs(self):
+        from core.staff import StaffManger, Staff
+        from core.formation import Formation
+        from core.unit import UnitManager
+        from core.talent import TalentManager
+
+        self.formation_staffs = []
+
+        sm = StaffManger(self.server_id, self.char_id)
+        fm = Formation(self.server_id, self.char_id)
+        um = UnitManager(self.server_id, self.char_id)
+
+        staffs = sm.get_staffs_data()
         in_formation_staffs = fm.in_formation_staffs()
 
         staff_objs = {}
@@ -83,36 +102,20 @@ class Club(AbstractClub):
             if k in in_formation_staffs:
                 self.formation_staffs.append(v)
 
-                # 这里不用设置兵种， 进入战斗前，再设置，并计算兵种属性
-                # v.formation_position = in_formation_staffs[k]['position']
-                # unit_id = in_formation_staffs[k]['unit_id']
-                # if unit_id:
-                #     v.set_unit(um.get_unit_object(unit_id))
+                v.formation_position = in_formation_staffs[k]['position']
+                unit_id = in_formation_staffs[k]['unit_id']
+                if unit_id:
+                    v.set_unit(um.get_unit_object(unit_id))
 
-        # TODO
-        # talent_effect = TalentManager(self.server_id, self.char_id).get_talent_effect()
+        talent_effect = TalentManager(self.server_id, self.char_id).get_talent_effect()
         for k in in_formation_staffs:
             staff_objs[k].talent_effect(self)
-            # staff_objs[k].talent_tree_effect(talent_effect)
+            staff_objs[k].talent_tree_effect(talent_effect)
 
         for _, v in staff_objs.iteritems():
             v.calculate()
             v.make_cache()
 
-    def before_match(self):
-        from core.formation import Formation
-        from core.unit import UnitManager
-
-        fm = Formation(self.server_id, self.char_id)
-        in_formation_staffs = fm.in_formation_staffs()
-
-        um = UnitManager(self.server_id, self.char_id)
-
-        for s in self.formation_staffs:
-            s.formation_position = in_formation_staffs[s.id]['position']
-            unit_id = in_formation_staffs[s.id]['unit_id']
-            if unit_id:
-                s.set_unit(um.get_unit_object(unit_id))
 
     def check_money(self, diamond=0, gold=0, crystal=0, gas=0):
         # TODO 其他货币

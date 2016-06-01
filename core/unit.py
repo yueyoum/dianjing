@@ -291,6 +291,9 @@ class UnitManager(object):
         self.after_change(uid)
 
     def after_change(self, uid):
+        from core.formation import Formation
+        from core.staff import StaffManger
+
         self.load_units()
         unit = self.get_unit_object(uid)
         all_units = self.get_units_data()
@@ -305,6 +308,23 @@ class UnitManager(object):
                 changed_unit_ids.append(u.id)
 
         self.send_notify(ids=changed_unit_ids)
+
+        # !!!
+        fm = Formation(self.server_id, self.char_id)
+        sm = StaffManger(self.server_id, self.char_id)
+
+        _changed = False
+        for sid in fm.in_formation_staffs():
+            s_obj = sm.get_staff_object(sid)
+            if s_obj.unit and s_obj.unit.id == uid:
+                s_obj.set_unit(unit)
+                _changed = True
+
+        if _changed:
+            Club(self.server_id, self.char_id).send_notify()
+
+
+
 
 
     def send_notify(self, ids=None):

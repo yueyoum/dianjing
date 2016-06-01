@@ -683,7 +683,7 @@ class StaffManger(object):
         if obj:
             return obj
 
-        Club(self.server_id, self.char_id).load_staffs()
+        Club(self.server_id, self.char_id).force_load_staffs()
         return Staff.get(_id)
 
     def has_staff(self, ids):
@@ -813,7 +813,7 @@ class StaffManger(object):
         staff.step_up()
         in_formation_staff_ids = Formation(self.server_id, self.char_id).in_formation_staffs().keys()
         if staff.id in in_formation_staff_ids:
-            Club(self.server_id, self.char_id).load_staffs()
+            Club(self.server_id, self.char_id).force_load_staffs()
             self.send_notify(ids=in_formation_staff_ids)
         else:
             staff.calculate()
@@ -865,7 +865,7 @@ class StaffManger(object):
             staff.reset()
             in_formation_staff_ids = Formation(self.server_id, self.char_id).in_formation_staffs().keys()
             if staff.id in in_formation_staff_ids:
-                Club(self.server_id, self.char_id).load_staffs()
+                Club(self.server_id, self.char_id).force_load_staffs()
                 self.send_notify(ids=in_formation_staff_ids)
             else:
                 staff.calculate()
