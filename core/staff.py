@@ -490,7 +490,6 @@ class Staff(AbstractStaff):
 
         self.calculate()
         self.make_cache()
-        self.send_notify()
 
     def add_equipment_property(self):
         bag = Bag(self.server_id, self.char_id)
@@ -730,6 +729,10 @@ class StaffManger(object):
 
         return None
 
+    def after_staff_change(self):
+        from core.club import Club
+        Club(self.server_id, self.char_id).send_notify()
+
     def equipment_change(self, staff_id, slot_id, tp):
         if tp not in [EQUIP_MOUSE, EQUIP_KEYBOARD, EQUIP_MONITOR, EQUIP_DECORATION]:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
@@ -739,6 +742,8 @@ class StaffManger(object):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
         staff.equipment_change(slot_id, tp)
+        self.send_notify(ids=[staff_id])
+        self.after_staff_change()
 
     def level_up(self, staff_id, up_level):
         staff = self.get_staff_object(staff_id)
@@ -762,6 +767,8 @@ class StaffManger(object):
 
         self.send_notify(ids=[staff_id])
         ValueLogStaffLevelUpTimes(self.server_id, self.char_id).record()
+        self.after_staff_change()
+
 
     def step_up(self, staff_id):
         from core.club import Club
@@ -780,6 +787,8 @@ class StaffManger(object):
             staff.make_cache()
             self.send_notify(ids=[staff_id])
 
+        self.after_staff_change()
+
     def star_up(self, staff_id):
         staff = self.get_staff_object(staff_id)
         if not staff:
@@ -788,6 +797,7 @@ class StaffManger(object):
         staff.star_up()
         ValueLogStaffStarUpTimes(self.server_id, self.char_id).record()
         self.send_notify(ids=[staff_id])
+        self.after_staff_change()
 
     def destroy(self, staff_id, tp):
         from core.club import Club
@@ -843,7 +853,7 @@ class StaffManger(object):
             act = ACT_INIT
         else:
             if not ids:
-                projection = {'staffs': -1}
+                projection = {'staffs': 0}
             else:
                 projection = {'staffs.{0}'.format(i): 1 for i in ids}
                 projection['exp_pool'] = 1
