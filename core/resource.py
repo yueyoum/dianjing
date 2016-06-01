@@ -211,7 +211,8 @@ class ResourceClassification(object):
         club_property = self.money_as_text_dict()
         if self.club_exp:
             club_property['exp'] = self.club_exp
-        Club(server_id, char_id).update(**club_property)
+        if club_property:
+            Club(server_id, char_id).update(**club_property)
 
         if self.vip_exp:
             VIP(server_id, char_id).add_exp(self.vip_exp)
@@ -228,7 +229,8 @@ class ResourceClassification(object):
         if self.staff_exp_pool:
             sm.add_exp_pool(self.staff_exp_pool)
 
-        TalentManager(server_id, char_id).add_talent_points(self.talent_point)
+        if self.talent_point:
+            TalentManager(server_id, char_id).add_talent_points(self.talent_point)
         if self.territory_product:
             Territory(server_id, char_id).add_product(self.territory_product)
 

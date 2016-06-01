@@ -846,6 +846,7 @@ class StaffManger(object):
                 projection = {'staffs': -1}
             else:
                 projection = {'staffs.{0}'.format(i): 1 for i in ids}
+                projection['exp_pool'] = 1
             act = ACT_UPDATE
 
         doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, projection)
