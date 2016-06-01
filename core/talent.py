@@ -62,7 +62,7 @@ class TalentManager(object):
 
         self.send_notify()
 
-        club = Club(self.server_id, self.char_id)
+        club = Club(self.server_id, self.char_id, load_staffs=False)
         club.force_load_staffs()
         club.send_notify()
 
@@ -113,7 +113,7 @@ class TalentManager(object):
 
         self.send_notify()
 
-        club = Club(self.server_id, self.char_id)
+        club = Club(self.server_id, self.char_id, load_staffs=False)
         club.force_load_staffs()
         club.send_notify()
 

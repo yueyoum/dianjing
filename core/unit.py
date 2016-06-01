@@ -11,7 +11,7 @@ from dianjing.exception import GameException
 
 from core.abstract import AbstractUnit
 from core.mongo import MongoUnit
-from core.club import Club
+from core.club import Club, get_club_property
 from core.resource import ResourceClassification
 from core.value_log import ValueLogUnitLevelUpTimes
 
@@ -178,7 +178,7 @@ class UnitManager(object):
             return
 
         unlock_conf = ConfigUnitUnLock.get(_id)
-        club_lv = Club(self.server_id, self.char_id).level
+        club_lv = get_club_property(self.server_id, self.char_id, 'level')
         if club_lv < unlock_conf.need_club_level:
             raise GameException(ConfigErrorMessage.get_error_id("UNIT_UNLOCK_CLUB_LEVEL_NOT_ENOUGH"))
 
@@ -320,7 +320,7 @@ class UnitManager(object):
                 _changed = True
 
         if _changed:
-            club = Club(self.server_id, self.char_id)
+            club = Club(self.server_id, self.char_id, load_staffs=False)
             club.force_load_staffs()
             club.send_notify()
 

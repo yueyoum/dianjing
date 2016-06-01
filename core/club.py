@@ -41,7 +41,7 @@ def get_club_property(server_id, char_id, key, default_value=0):
 class Club(AbstractClub):
     __slots__ = []
 
-    def __init__(self, server_id, char_id):
+    def __init__(self, server_id, char_id, load_staffs=True):
         super(Club, self).__init__()
 
         self.server_id = server_id
@@ -63,9 +63,10 @@ class Club(AbstractClub):
         self.crystal = club.get('crystal', 0)
         self.gas = club.get('gas', 0)
 
-        self.load_staffs()
+        if load_staffs:
+            self.load_staffs()
 
-    def load_staffs(self, ids=None):
+    def load_staffs(self):
         from core.staff import StaffManger
         from core.formation import Formation
 

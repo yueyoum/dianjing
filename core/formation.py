@@ -130,7 +130,7 @@ class Formation(object):
         if old_staff_id:
             changed_staff_ids.append(old_staff_id)
 
-        club = Club(self.server_id, self.char_id)
+        club = Club(self.server_id, self.char_id, load_staffs=False)
         club.force_load_staffs()
         club.send_notify()
         StaffManger(self.server_id, self.char_id).send_notify(ids=changed_staff_ids)
