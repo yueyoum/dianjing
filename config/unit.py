@@ -71,7 +71,7 @@ class UnitStep(object):
 
 class UnitNew(object):
     __slots__ = [
-        'id', 'tp', 'race', 'attack_tp', 'defense_tp', 'cost',
+        'id', 'tp', 'race', 'attack_tp', 'defense_tp', 'operation',
         'skill_1', 'skill_2',
         'hp_max_base', 'attack_base', 'defense_base',
         'attack_speed_base', 'attack_range_base', 'move_speed_base',
@@ -98,7 +98,7 @@ class UnitNew(object):
         self.race = 0
         self.attack_tp = 0
         self.defense_tp = 0
-        self.cost = 0
+        self.operation = 0
         self.skill_1 = 0
         self.skill_2 = 0
         self.hp_max_base = 0

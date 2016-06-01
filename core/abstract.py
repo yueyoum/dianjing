@@ -6,7 +6,7 @@ Date Created:   2015-07-15 14:22
 Description:
 
 """
-
+import math
 from utils import cache
 
 from protomsg.club_pb2 import Club as MessageClub
@@ -141,9 +141,12 @@ class AbstractUnit(object):
         attack = self.config.attack_base + config_level.attack
         defense = self.config.defense_base + config_level.defense
 
-        self.hp = int(hp * (1 + self.hp_percent))
-        self.attack = int(attack * (1 + self.attack_percent))
-        self.defense = int(defense * (1 + self.defense_percent))
+        # self.hp = int(hp * (1 + self.hp_percent))
+        # self.attack = int(attack * (1 + self.attack_percent))
+        # self.defense = int(defense * (1 + self.defense_percent))
+        self.hp = int(hp)
+        self.attack = int(attack)
+        self.defense = int(defense)
 
     def clone(self):
         # type: () -> AbstractUnit
@@ -439,8 +442,29 @@ class AbstractStaff(object):
 
     @property
     def power(self):
-        # TODO
-        return 0
+        if not self.__unit:
+            return 0
+
+        # 属性参考战斗力计算表
+        # hp = (self.manage * 2 * math.pow(self.__unit.config.operation, 0.75) + self.__unit.hp) * (1 + self.__unit.hp_percent)
+        attack = (self.attack * 1 * math.pow(self.__unit.config.operation, 0.75) + self.__unit.attack) * \
+                 (1 + self.__unit.attack_percent)
+        defense = (self.defense * 1 * math.pow(self.__unit.config.operation, 0.75) + self.__unit.defense) * \
+                  (1 + self.__unit.defense_percent)
+
+        unit_amount = self.operation / self.__unit.config.operation
+        t1 = attack * math.pow(unit_amount, 0.65) * self.__unit.attack_speed * \
+             (1 + self.__unit.hit_rate - 0.9 + self.__unit.crit_rate * self.__unit.crit_multiple * 0.7 +
+              self.__unit.hurt_addition_to_terran * 0.2 + self.__unit.hurt_addition_to_zerg * 0.2 +
+              self.__unit.hurt_addition_to_protoss * 0.2)
+
+        t2 = (defense * math.pow(unit_amount, 0.65) * 0.5 + self.__unit.hp * unit_amount * 0.15) * \
+             (self.__unit.dodge_rate + self.__unit.toughness_rate -
+              self.__unit.hurt_addition_by_terran * 0.2 -
+              self.__unit.hurt_addition_by_protoss * 0.2 -
+              self.__unit.hurt_addition_by_zerg * 0.2)
+
+        return int(t1 + t2)
 
     def is_initial_state(self):
         # type: () -> bool
@@ -549,8 +573,11 @@ class AbstractClub(object):
 
     @property
     def power(self):
-        # TODO
-        return 999
+        p = 0
+        for s in self.formation_staffs:
+            p += s.power
+
+        return p
 
     def make_protomsg(self):
         msg = MessageClub()
