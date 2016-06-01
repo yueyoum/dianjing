@@ -295,7 +295,6 @@ class Bag(object):
 
     def item_use(self, slot_id, amount):
         # 道具使用
-        # TODO error handle
         """
 
         :rtype: ResourceClassification

@@ -23,7 +23,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='staff.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0bstaff.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\tbag.proto\x1a\rpackage.proto\"\x86\x02\n\x12StaffRecruitNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12?\n\x04info\x18\x02 \x03(\x0b\x32\x31.Dianjing.protocol.StaffRecruitNotify.RecruitInfo\x12\r\n\x05score\x18\x03 \x02(\x05\x1a\x8e\x01\n\x0bRecruitInfo\x12/\n\x02tp\x18\x01 \x02(\x0e\x32#.Dianjing.protocol.StaffRecruitType\x12\n\n\x02\x63\x64\x18\x02 \x02(\x03\x12\x16\n\x0e\x63ur_free_times\x18\x03 \x01(\x05\x12\x16\n\x0emax_free_times\x18\x04 \x01(\x05\x12\x12\n\nnext_times\x18\x05 \x01(\x05\"\x8a\x01\n\x13StaffRecruitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x02tp\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.StaffRecruitType\x12\x31\n\x04mode\x18\x03 \x02(\x0e\x32#.Dianjing.protocol.StaffRecruitMode\"[\n\x14StaffRecruitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\xb2\x02\n\x05Staff\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0b\n\x03oid\x18\x02 \x02(\x05\x12\r\n\x05level\x18\x03 \x02(\x05\x12\x0c\n\x04step\x18\x04 \x02(\x05\x12\x0c\n\x04star\x18\x05 \x02(\x05\x12\x11\n\tlevel_exp\x18\x06 \x02(\x05\x12\x10\n\x08star_exp\x18\x07 \x02(\x05\x12\x0e\n\x06\x61ttack\x18\x08 \x02(\x05\x12\x0f\n\x07\x64\x65\x66\x65nse\x18\t \x02(\x05\x12\x0e\n\x06manage\x18\n \x02(\x05\x12\x11\n\toperation\x18\x0b \x02(\x05\x12\x1b\n\x13\x65quip_mouse_slot_id\x18\x0c \x02(\t\x12\x1e\n\x16\x65quip_keyboard_slot_id\x18\r \x02(\t\x12\x1d\n\x15\x65quip_monitor_slot_id\x18\x0e \x02(\t\x12 \n\x18\x65quip_decoration_slot_id\x18\x0f \x02(\t\"\x82\x01\n\x0bStaffNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12(\n\x06staffs\x18\x03 \x03(\x0b\x32\x18.Dianjing.protocol.Staff\x12\x10\n\x08\x65xp_pool\x18\x04 \x02(\x05\"1\n\x11StaffRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t\"{\n\x17StaffEquipChangeRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\t\x12\x0f\n\x07slot_id\x18\x03 \x02(\t\x12,\n\x02tp\x18\x04 \x02(\x0e\x32 .Dianjing.protocol.EquipmentType\"8\n\x18StaffEquipChangeResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\x97\x01\n\x13StaffLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\t\x12\x39\n\x04item\x18\x03 \x03(\x0b\x32+.Dianjing.protocol.StaffLevelUpRequest.Item\x1a\"\n\x04Item\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0e\n\x06\x61mount\x18\x02 \x02(\x05\"4\n\x14StaffLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"7\n\x12staffStepUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\t\"3\n\x13StaffStepUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"7\n\x12StaffStarUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\t\"3\n\x13StaffStarUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\xa1\x01\n\x13StaffDestroyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\t\x12>\n\x02tp\x18\x03 \x02(\x0e\x32\x32.Dianjing.protocol.StaffDestroyRequest.DestroyType\"\'\n\x0b\x44\x65stroyType\x12\n\n\x06NORMAL\x10\x00\x12\x0c\n\x08\x41\x44VANCED\x10\x01\"[\n\x14StaffDestroyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*9\n\x10StaffRecruitType\x12\x10\n\x0cRECRUIT_GOLD\x10\x01\x12\x13\n\x0fRECRUIT_DIAMOND\x10\x02*:\n\x10StaffRecruitMode\x12\x12\n\x0eRECRUIT_MODE_1\x10\x01\x12\x12\n\x0eRECRUIT_MODE_2\x10\x02')
+  serialized_pb=_b('\n\x0bstaff.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\tbag.proto\x1a\rpackage.proto\"\x86\x02\n\x12StaffRecruitNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12?\n\x04info\x18\x02 \x03(\x0b\x32\x31.Dianjing.protocol.StaffRecruitNotify.RecruitInfo\x12\r\n\x05score\x18\x03 \x02(\x05\x1a\x8e\x01\n\x0bRecruitInfo\x12/\n\x02tp\x18\x01 \x02(\x0e\x32#.Dianjing.protocol.StaffRecruitType\x12\n\n\x02\x63\x64\x18\x02 \x02(\x03\x12\x16\n\x0e\x63ur_free_times\x18\x03 \x01(\x05\x12\x16\n\x0emax_free_times\x18\x04 \x01(\x05\x12\x12\n\nnext_times\x18\x05 \x01(\x05\"\x8a\x01\n\x13StaffRecruitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x02tp\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.StaffRecruitType\x12\x31\n\x04mode\x18\x03 \x02(\x0e\x32#.Dianjing.protocol.StaffRecruitMode\"[\n\x14StaffRecruitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\xb2\x02\n\x05Staff\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0b\n\x03oid\x18\x02 \x02(\x05\x12\r\n\x05level\x18\x03 \x02(\x05\x12\x0c\n\x04step\x18\x04 \x02(\x05\x12\x0c\n\x04star\x18\x05 \x02(\x05\x12\x11\n\tlevel_exp\x18\x06 \x02(\x05\x12\x10\n\x08star_exp\x18\x07 \x02(\x05\x12\x0e\n\x06\x61ttack\x18\x08 \x02(\x05\x12\x0f\n\x07\x64\x65\x66\x65nse\x18\t \x02(\x05\x12\x0e\n\x06manage\x18\n \x02(\x05\x12\x11\n\toperation\x18\x0b \x02(\x05\x12\x1b\n\x13\x65quip_mouse_slot_id\x18\x0c \x02(\t\x12\x1e\n\x16\x65quip_keyboard_slot_id\x18\r \x02(\t\x12\x1d\n\x15\x65quip_monitor_slot_id\x18\x0e \x02(\t\x12 \n\x18\x65quip_decoration_slot_id\x18\x0f \x02(\t\"\x82\x01\n\x0bStaffNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12(\n\x06staffs\x18\x03 \x03(\x0b\x32\x18.Dianjing.protocol.Staff\x12\x10\n\x08\x65xp_pool\x18\x04 \x02(\x05\"1\n\x11StaffRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ids\x18\x02 \x03(\t\"{\n\x17StaffEquipChangeRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\t\x12\x0f\n\x07slot_id\x18\x03 \x02(\t\x12,\n\x02tp\x18\x04 \x02(\x0e\x32 .Dianjing.protocol.EquipmentType\"8\n\x18StaffEquipChangeResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"J\n\x13StaffLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\t\x12\x10\n\x08up_level\x18\x03 \x02(\x05\"4\n\x14StaffLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"7\n\x12staffStepUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\t\"3\n\x13StaffStepUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"7\n\x12StaffStarUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\t\"3\n\x13StaffStarUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\xa1\x01\n\x13StaffDestroyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\t\x12>\n\x02tp\x18\x03 \x02(\x0e\x32\x32.Dianjing.protocol.StaffDestroyRequest.DestroyType\"\'\n\x0b\x44\x65stroyType\x12\n\n\x06NORMAL\x10\x00\x12\x0c\n\x08\x41\x44VANCED\x10\x01\"[\n\x14StaffDestroyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*9\n\x10StaffRecruitType\x12\x10\n\x0cRECRUIT_GOLD\x10\x01\x12\x13\n\x0fRECRUIT_DIAMOND\x10\x02*:\n\x10StaffRecruitMode\x12\x12\n\x0eRECRUIT_MODE_1\x10\x01\x12\x12\n\x0eRECRUIT_MODE_2\x10\x02')
   ,
   dependencies=[common__pb2.DESCRIPTOR,bag__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -45,8 +45,8 @@ _STAFFRECRUITTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1934,
-  serialized_end=1991,
+  serialized_start=1856,
+  serialized_end=1913,
 )
 _sym_db.RegisterEnumDescriptor(_STAFFRECRUITTYPE)
 
@@ -68,8 +68,8 @@ _STAFFRECRUITMODE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1993,
-  serialized_end=2051,
+  serialized_start=1915,
+  serialized_end=1973,
 )
 _sym_db.RegisterEnumDescriptor(_STAFFRECRUITMODE)
 
@@ -97,8 +97,8 @@ _STAFFDESTROYREQUEST_DESTROYTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1800,
-  serialized_end=1839,
+  serialized_start=1722,
+  serialized_end=1761,
 )
 _sym_db.RegisterEnumDescriptor(_STAFFDESTROYREQUEST_DESTROYTYPE)
 
@@ -605,43 +605,6 @@ _STAFFEQUIPCHANGERESPONSE = _descriptor.Descriptor(
 )
 
 
-_STAFFLEVELUPREQUEST_ITEM = _descriptor.Descriptor(
-  name='Item',
-  full_name='Dianjing.protocol.StaffLevelUpRequest.Item',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='id', full_name='Dianjing.protocol.StaffLevelUpRequest.Item.id', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='amount', full_name='Dianjing.protocol.StaffLevelUpRequest.Item.amount', index=1,
-      number=2, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1367,
-  serialized_end=1401,
-)
-
 _STAFFLEVELUPREQUEST = _descriptor.Descriptor(
   name='StaffLevelUpRequest',
   full_name='Dianjing.protocol.StaffLevelUpRequest',
@@ -664,16 +627,16 @@ _STAFFLEVELUPREQUEST = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='item', full_name='Dianjing.protocol.StaffLevelUpRequest.item', index=2,
-      number=3, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
+      name='up_level', full_name='Dianjing.protocol.StaffLevelUpRequest.up_level', index=2,
+      number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[_STAFFLEVELUPREQUEST_ITEM, ],
+  nested_types=[],
   enum_types=[
   ],
   options=None,
@@ -682,8 +645,8 @@ _STAFFLEVELUPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1250,
-  serialized_end=1401,
+  serialized_start=1249,
+  serialized_end=1323,
 )
 
 
@@ -720,8 +683,8 @@ _STAFFLEVELUPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1403,
-  serialized_end=1455,
+  serialized_start=1325,
+  serialized_end=1377,
 )
 
 
@@ -758,8 +721,8 @@ _STAFFSTEPUPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1457,
-  serialized_end=1512,
+  serialized_start=1379,
+  serialized_end=1434,
 )
 
 
@@ -796,8 +759,8 @@ _STAFFSTEPUPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1514,
-  serialized_end=1565,
+  serialized_start=1436,
+  serialized_end=1487,
 )
 
 
@@ -834,8 +797,8 @@ _STAFFSTARUPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1567,
-  serialized_end=1622,
+  serialized_start=1489,
+  serialized_end=1544,
 )
 
 
@@ -872,8 +835,8 @@ _STAFFSTARUPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1624,
-  serialized_end=1675,
+  serialized_start=1546,
+  serialized_end=1597,
 )
 
 
@@ -918,8 +881,8 @@ _STAFFDESTROYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1678,
-  serialized_end=1839,
+  serialized_start=1600,
+  serialized_end=1761,
 )
 
 
@@ -963,8 +926,8 @@ _STAFFDESTROYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1841,
-  serialized_end=1932,
+  serialized_start=1763,
+  serialized_end=1854,
 )
 
 _STAFFRECRUITNOTIFY_RECRUITINFO.fields_by_name['tp'].enum_type = _STAFFRECRUITTYPE
@@ -976,8 +939,6 @@ _STAFFRECRUITRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 _STAFFNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _STAFFNOTIFY.fields_by_name['staffs'].message_type = _STAFF
 _STAFFEQUIPCHANGEREQUEST.fields_by_name['tp'].enum_type = bag__pb2._EQUIPMENTTYPE
-_STAFFLEVELUPREQUEST_ITEM.containing_type = _STAFFLEVELUPREQUEST
-_STAFFLEVELUPREQUEST.fields_by_name['item'].message_type = _STAFFLEVELUPREQUEST_ITEM
 _STAFFDESTROYREQUEST.fields_by_name['tp'].enum_type = _STAFFDESTROYREQUEST_DESTROYTYPE
 _STAFFDESTROYREQUEST_DESTROYTYPE.containing_type = _STAFFDESTROYREQUEST
 _STAFFDESTROYRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
@@ -1065,19 +1026,11 @@ StaffEquipChangeResponse = _reflection.GeneratedProtocolMessageType('StaffEquipC
 _sym_db.RegisterMessage(StaffEquipChangeResponse)
 
 StaffLevelUpRequest = _reflection.GeneratedProtocolMessageType('StaffLevelUpRequest', (_message.Message,), dict(
-
-  Item = _reflection.GeneratedProtocolMessageType('Item', (_message.Message,), dict(
-    DESCRIPTOR = _STAFFLEVELUPREQUEST_ITEM,
-    __module__ = 'staff_pb2'
-    # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffLevelUpRequest.Item)
-    ))
-  ,
   DESCRIPTOR = _STAFFLEVELUPREQUEST,
   __module__ = 'staff_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffLevelUpRequest)
   ))
 _sym_db.RegisterMessage(StaffLevelUpRequest)
-_sym_db.RegisterMessage(StaffLevelUpRequest.Item)
 
 StaffLevelUpResponse = _reflection.GeneratedProtocolMessageType('StaffLevelUpResponse', (_message.Message,), dict(
   DESCRIPTOR = _STAFFLEVELUPRESPONSE,

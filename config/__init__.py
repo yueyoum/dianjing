@@ -17,7 +17,7 @@ from config.errormsg import ConfigErrorMessage
 from config.staff import ConfigStaffRecruit, ConfigStaffNew, ConfigStaffStar, ConfigStaffLevelNew, ConfigStaffEquipmentLevelAddition, ConfigStaffEquipmentQualityAddition, ConfigStaffEquipmentAddition
 from config.challenge import ConfigChallengeMatch, ConfigChapter, ConfigChallengeResetCost
 from config.unit import ConfigUnitNew, ConfigUnitUnLock, ConfigUnitStepAddition, ConfigUnitLevelAddition, ConfigUnitAddition
-from config.item import ConfigItemNew, ConfigItemUse, ConfigItemMerge, ConfigEquipmentNew, ConfigItemExp
+from config.item import ConfigItemNew, ConfigItemUse, ConfigItemMerge, ConfigEquipmentNew
 from config.skill import ConfigTalentSkill
 from config.task import ConfigTaskMain, ConfigRandomEvent, ConfigTaskDaily, ConfigTaskCondition
 from config.club import ConfigClubLevel, ConfigClubFlag
@@ -79,8 +79,7 @@ def load_config():
             ConfigItemMerge.initialize(data)
         elif item == 'equipment_new.json':
             ConfigEquipmentNew.initialize(data)
-        elif item == 'item_exp.json':
-            ConfigItemExp.initialize(data)
+
         elif item == 'staff_new.json':
             ConfigStaffNew.initialize(data)
         elif item == 'staff_level_new.json':

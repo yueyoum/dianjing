@@ -24,7 +24,7 @@ _MONEY_REVERSE = {v: k for k, v in MONEY.iteritems()}
 TALENT_ITEM_ID = 30006
 VIP_EXP_ITEM_ID = 30010
 CLUB_EXP_ITEM_ID = 30011
-STAFF_EXP_POOL = 30017
+STAFF_EXP_POOL_ID = 30017
 
 # 领地建筑产出ID
 TERRITORY_PRODUCT_BUILDING_TABLE = {
@@ -116,7 +116,7 @@ class ResourceClassification(object):
                 vip_exp += _amount
                 continue
 
-            if _id == STAFF_EXP_POOL:
+            if _id == STAFF_EXP_POOL_ID:
                 staff_exp_pool += _amount
                 continue
 

@@ -108,15 +108,6 @@ class EquipmentNew(object):
         self.levels = {}
         """:type: dict[int, EquipmentLevel]"""
 
-class ItemExp(object):
-    __slots__ = [
-        'id', 'exp'
-    ]
-
-    def __init__(self):
-        self.id = 0
-        self.exp = 0
-
 
 class ConfigItemNew(ConfigBase):
     EntityClass = ItemNew
@@ -182,19 +173,3 @@ class ConfigEquipmentNew(ConfigBase):
         """
         return super(ConfigEquipmentNew, cls).get(_id)
 
-class ConfigItemExp(ConfigBase):
-    EntityClass = ItemExp
-    INSTANCES = {}
-    FILTER_CACHE = {}
-
-    ALL_ITEM_IDS = []
-
-    @classmethod
-    def initialize(cls, fixture):
-        super(ConfigItemExp, cls).initialize(fixture)
-        cls.ALL_ITEM_IDS = cls.INSTANCES.keys()
-
-    @classmethod
-    def get(cls, _id):
-        # type: (int) -> ItemExp
-        return super(ConfigItemExp, cls).get(_id)
