@@ -281,7 +281,6 @@ class UnitManager(object):
 
         ValueLogUnitLevelUpTimes(self.server_id, self.char_id).record()
 
-
     def step_up(self, uid):
         unit = self.get_unit_object(uid)
         if not unit:
@@ -321,11 +320,9 @@ class UnitManager(object):
                 _changed = True
 
         if _changed:
-            Club(self.server_id, self.char_id).send_notify()
-
-
-
-
+            club = Club(self.server_id, self.char_id)
+            club.force_load_staffs()
+            club.send_notify()
 
     def send_notify(self, ids=None):
         if not ids:
@@ -333,7 +330,6 @@ class UnitManager(object):
             ids = self.get_units_data().keys()
         else:
             act = ACT_UPDATE
-
 
         notify = UnitNotify()
         notify.act = act

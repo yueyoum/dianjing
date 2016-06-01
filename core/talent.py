@@ -62,7 +62,9 @@ class TalentManager(object):
 
         self.send_notify()
 
-        Club(self.server_id, self.char_id).send_notify()
+        club = Club(self.server_id, self.char_id)
+        club.force_load_staffs()
+        club.send_notify()
 
     def add_talent_points(self, amount):
         self.doc['total_point'] += amount
@@ -110,8 +112,10 @@ class TalentManager(object):
         )
 
         self.send_notify()
-        Club(self.server_id, self.char_id).send_notify()
 
+        club = Club(self.server_id, self.char_id)
+        club.force_load_staffs()
+        club.send_notify()
 
     def try_unlock(self, tid, unlocked):
         for i in ConfigTalent.get(tid).trigger_unlock:

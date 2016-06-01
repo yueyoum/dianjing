@@ -291,8 +291,18 @@ class AbstractStaff(object):
         self.manage = int(self.manage * (1 + self.manage_percent))
         self.operation = int(self.operation * (1 + self.operation_percent))
 
+        self.calculate_unit()
+
     def set_unit(self, unit):
         # type: (AbstractUnit) -> None
+        self.__unit = unit.clone()
+
+    def calculate_unit(self):
+        from core.unit import UnitManager
+        if not self.__unit:
+            return
+
+        unit = UnitManager(self.server_id, self.char_id).get_unit_object(self.__unit.id)
         self.__unit = unit.clone()
 
         for tid in self.active_talent_ids:
