@@ -102,6 +102,7 @@ class MongoStaff(BaseDocument):
         '_id': null,
         # 员工， unique_id: data. 定义见下面的 STAFF
         'staffs': {},
+        'exp_pool': 0,
     }
 
     STAFF_DOCUMENT = {

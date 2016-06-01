@@ -61,10 +61,9 @@ def level_up(request):
     char_id = request._game_session.char_id
 
     staff_id = request._proto.staff_id
-    item = request._proto.item
-    item = [(i.id, i.amount) for i in item]
+    up_level = request._proto.up_level
 
-    StaffManger(server_id, char_id).level_up(staff_id, item)
+    StaffManger(server_id, char_id).level_up(staff_id, up_level)
 
     response = StaffLevelUpResponse()
     response.ret = 0

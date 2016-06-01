@@ -351,44 +351,26 @@ class Staff(AbstractStaff):
             }}
         )
 
-    def level_up(self, using_items):
-        # using_items: [(id, amount)...]
+    def level_up(self, exp_pool, up_level):
         from core.club import get_club_property
         max_level = min(STAFF_MAX_LEVEL, get_club_property(self.server_id, self.char_id, 'level') * 2)
         if self.level >= max_level:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_ALREADY_MAX_LEVEL"))
 
-        for _id, _amount in using_items:
-            if _amount < 1:
-                raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+        target_level = self.level + up_level
+        if target_level > max_level:
+            target_level = max_level
 
-        bag = Bag(self.server_id, self.char_id)
-        bag.check_items(using_items)
+        while self.level < target_level:
+            config = ConfigStaffLevelNew.get(self.level)
+            up_need_exp = config.exp - self.level_exp
 
-        increase_level_exp = 0
-        for _id, _amount in using_items:
-            _config = ConfigItemExp.get(_id)
-            if not _config:
-                raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+            if exp_pool < up_need_exp:
+                return exp_pool
 
-            increase_level_exp += _config.exp * _amount
-
-        for _id, _amount in using_items:
-            bag.remove_by_item_id(_id, _amount)
-
-        exp = self.level_exp + increase_level_exp
-        while True:
-            if self.level == STAFF_MAX_LEVEL:
-                exp = 0
-                break
-
-            if exp < ConfigStaffLevelNew.get(self.level).exp:
-                break
-
-            exp -= ConfigStaffLevelNew.get(self.level).exp
+            exp_pool -= up_need_exp
             self.level += 1
-
-        self.level_exp = exp
+            self.level_exp = 0
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -401,6 +383,8 @@ class Staff(AbstractStaff):
         self.calculate()
         self.make_cache()
         self.send_notify()
+
+        return exp_pool
 
     def step_up(self):
         if self.step >= self.config.max_step:
@@ -596,7 +580,7 @@ class Staff(AbstractStaff):
                     _add_to_items(i, amount)
 
         # 升星道具
-        for i in range(self.star - 1, self.get_initial_star()-1, -1):
+        for i in range(self.star - 1, self.get_initial_star() - 1, -1):
             config = ConfigStaffStar.get(i)
             amount = config.exp * prob / 100.0 / AVG_STAR_EXP * config.need_item_amount
             if amount:
@@ -641,6 +625,16 @@ class StaffManger(object):
     def staffs_amount(self):
         # type: () -> int
         return len(self.get_staffs_data())
+
+    def add_exp_pool(self, exp):
+        MongoStaff.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$inc': {
+                'exp_pool': exp
+            }}
+        )
+
+        self.send_notify(ids=[])
 
     def get_staffs_data(self, ids=None):
         """
@@ -795,12 +789,27 @@ class StaffManger(object):
 
         staff.equipment_change(slot_id, tp)
 
-    def level_up(self, staff_id, items):
+    def level_up(self, staff_id, up_level):
         staff = self.get_staff_object(staff_id)
         if not staff:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
-        staff.level_up(items)
+        doc = MongoStaff.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'exp_pool': 1}
+        )
+
+        exp_pool = doc.get('exp_pool', 0)
+        remained_exp_pool = staff.level_up(exp_pool, up_level)
+
+        MongoStaff.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'exp_pool': remained_exp_pool
+            }}
+        )
+
+        self.send_notify(ids=[])
         ValueLogStaffLevelUpTimes(self.server_id, self.char_id).record()
 
     def step_up(self, staff_id):
@@ -827,7 +836,6 @@ class StaffManger(object):
 
         staff.star_up()
         ValueLogStaffStarUpTimes(self.server_id, self.char_id).record()
-
 
     def destroy(self, staff_id, tp):
         from core.club import Club
@@ -875,11 +883,14 @@ class StaffManger(object):
         return resource_classified
 
     def send_notify(self, ids=None):
-        if not ids:
-            projection = {'staffs': 1}
+        if ids is None:
+            projection = {'staffs': 1, 'exp_pool': 1}
             act = ACT_INIT
         else:
-            projection = {'staffs.{0}'.format(i): 1 for i in ids}
+            if not ids:
+                projection = {'staffs': -1}
+            else:
+                projection = {'staffs.{0}'.format(i): 1 for i in ids}
             act = ACT_UPDATE
 
         doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, projection)
@@ -887,6 +898,7 @@ class StaffManger(object):
 
         notify = StaffNotify()
         notify.act = act
+        notify.exp_pool = doc.get('exp_pool', 0)
         for k, _ in staffs.iteritems():
             notify_staff = notify.staffs.add()
             staff = self.get_staff_object(k)

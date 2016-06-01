@@ -25,9 +25,10 @@ def item_use(request):
     char_id = request._game_session.char_id
 
     slot_id = request._proto.slot_id
+    amount = request._proto.amount
 
     bag = Bag(server_id, char_id)
-    resource_classified = bag.item_use(slot_id)
+    resource_classified = bag.item_use(slot_id, amount)
 
     response = BagItemUseResponse()
     response.ret = 0

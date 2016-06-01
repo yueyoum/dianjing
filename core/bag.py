@@ -293,7 +293,7 @@ class Bag(object):
         for slot_id, amount in slot_amount:
             self.remove_by_slot_id(slot_id, amount)
 
-    def item_use(self, slot_id):
+    def item_use(self, slot_id, amount):
         # 道具使用
         # TODO error handle
         """
@@ -301,25 +301,26 @@ class Bag(object):
         :rtype: ResourceClassification
         """
         this_slot = self.doc['slots'][slot_id]
+        item_amount = this_slot.get('amount', 1)
+        if amount > item_amount:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_ENOUGH"))
+
         config = ConfigItemUse.get(this_slot['item_id'])
 
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("ITEM_CANNOT_USE"))
+
         if config.use_item_id:
-            if config.use_item_id in MONEY:
-                money = {
-                    MONEY[config.use_item_id]: -config.use_item_amount,
-                    'message': "item use: {0}".format(this_slot['item_id'])
-                }
-                Club(self.server_id, self.char_id).update(**money)
-            else:
-                self.remove_by_item_id(config.use_item_id, config.use_item_amount)
+            cost = [(config.use_item_id, config.use_item_amount)]
+            rc = ResourceClassification.classify(cost)
+            rc.check_exist(self.server_id, self.char_id)
+            rc.remove(self.server_id, self.char_id)
 
-        self.remove_by_slot_id(slot_id, 1)
-
+        self.remove_by_slot_id(slot_id, amount)
         result = config.using_result()
 
         resource_classified = ResourceClassification.classify(result)
         resource_classified.add(self.server_id, self.char_id)
-
         return resource_classified
 
     def item_merge(self, slot_id):

@@ -24,6 +24,7 @@ _MONEY_REVERSE = {v: k for k, v in MONEY.iteritems()}
 TALENT_ITEM_ID = 30006
 VIP_EXP_ITEM_ID = 30010
 CLUB_EXP_ITEM_ID = 30011
+STAFF_EXP_POOL = 30017
 
 # 领地建筑产出ID
 TERRITORY_PRODUCT_BUILDING_TABLE = {
@@ -72,6 +73,7 @@ def filter_bag_item(items):
 class ResourceClassification(object):
     __slots__ = ['money', 'bag', 'staff', 'talent_point', 'club_exp', 'territory_product',
                  'vip_exp',
+                 'staff_exp_pool',
                  ]
 
     def __init__(self):
@@ -85,6 +87,8 @@ class ResourceClassification(object):
         self.territory_product = []
         # vip exp
         self.vip_exp = 0
+        # staff exp pool
+        self.staff_exp_pool = 0
 
     @classmethod
     def classify(cls, items):
@@ -97,6 +101,7 @@ class ResourceClassification(object):
         club_exp = 0
         territory_product = {}
         vip_exp = 0
+        staff_exp_pool = 0
 
         for _id, _amount in items:
             if _id == TALENT_ITEM_ID:
@@ -109,6 +114,10 @@ class ResourceClassification(object):
 
             if _id == VIP_EXP_ITEM_ID:
                 vip_exp += _amount
+                continue
+
+            if _id == STAFF_EXP_POOL:
+                staff_exp_pool += _amount
                 continue
 
             if _id in TERRITORY_PRODUCT_BUILDING_TABLE:
@@ -145,6 +154,7 @@ class ResourceClassification(object):
         obj.talent_point = talent_point
         obj.club_exp = club_exp
         obj.vip_exp = vip_exp
+        obj.staff_exp_pool = staff_exp_pool
         obj.territory_product = territory_product.items()
 
         return obj
@@ -161,21 +171,18 @@ class ResourceClassification(object):
         from core.club import Club
         from core.bag import Bag
         from core.staff import StaffManger
-        from core.talent import TalentManager
         from core.territory import Territory
 
         money_text = self.money_as_text_dict()
         Club(server_id, char_id).check_money(**money_text)
         Bag(server_id, char_id).check_items(self.bag)
         StaffManger(server_id, char_id).check_original_staff_is_initial_state(self.staff)
-        TalentManager(server_id, char_id).check_talent_points(self.talent_point)
         Territory(server_id, char_id).check_product(self.territory_product)
 
     def remove(self, server_id, char_id):
         from core.club import Club
         from core.bag import Bag
         from core.staff import StaffManger
-        from core.talent import TalentManager
         from core.territory import Territory
 
         money_text = self.money_as_text_dict()
@@ -191,7 +198,6 @@ class ResourceClassification(object):
             for _ in range(_amount):
                 sm.remove_initial_state_staff(_id)
 
-        TalentManager(server_id, char_id).deduct_talent_points(self.talent_point)
         Territory(server_id, char_id).check_product(self.territory_product)
 
     def add(self, server_id, char_id):
@@ -218,6 +224,9 @@ class ResourceClassification(object):
         for _id, _amount in self.staff:
             for _ in range(_amount):
                 sm.add(_id)
+
+        if self.staff_exp_pool:
+            sm.add_exp_pool(self.staff_exp_pool)
 
         TalentManager(server_id, char_id).add_talent_points(self.talent_point)
         if self.territory_product:
