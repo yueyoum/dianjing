@@ -388,7 +388,7 @@ class Staff(AbstractStaff):
             self.calculate()
             self.make_cache()
 
-        return exp_pool
+        return exp_pool, _level_up
 
     def step_up(self):
         if self.step >= self.config.max_step:
@@ -431,6 +431,8 @@ class Staff(AbstractStaff):
             inc_exp = random.randint(1, 3)
 
         exp = self.star_exp + inc_exp
+        _star_up = False
+
         while True:
             if self.star == STAFF_MAX_STAR:
                 if exp >= ConfigStaffStar.get(self.star).exp:
@@ -443,6 +445,7 @@ class Staff(AbstractStaff):
 
             exp -= ConfigStaffStar.get(self.star).exp
             self.star += 1
+            _star_up = True
 
         self.star_exp = exp
 
@@ -454,8 +457,11 @@ class Staff(AbstractStaff):
             }}
         )
 
-        self.calculate()
-        self.make_cache()
+        if _star_up:
+            self.calculate()
+            self.make_cache()
+
+        return _star_up
 
     def equipment_change(self, bag_slot_id, tp):
         if not bag_slot_id:
@@ -763,7 +769,7 @@ class StaffManger(object):
         )
 
         exp_pool = doc.get('exp_pool', 0)
-        remained_exp_pool = staff.level_up(exp_pool, up_level)
+        remained_exp_pool, _level_up = staff.level_up(exp_pool, up_level)
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -774,8 +780,8 @@ class StaffManger(object):
 
         self.send_notify(ids=[staff_id])
         ValueLogStaffLevelUpTimes(self.server_id, self.char_id).record()
-        self.after_staff_change()
-
+        if _level_up:
+            self.after_staff_change()
 
     def step_up(self, staff_id):
         from core.club import Club
@@ -801,10 +807,11 @@ class StaffManger(object):
         if not staff:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
-        staff.star_up()
+        _star_up = staff.star_up()
         ValueLogStaffStarUpTimes(self.server_id, self.char_id).record()
         self.send_notify(ids=[staff_id])
-        self.after_staff_change()
+        if _star_up:
+            self.after_staff_change()
 
     def destroy(self, staff_id, tp):
         from core.club import Club

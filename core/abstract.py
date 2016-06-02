@@ -259,10 +259,11 @@ class AbstractStaff(object):
         self.defense += step_config.defense
         self.manage += step_config.manage
         self.operation += step_config.operation
-        self.attack_percent += step_config.attack_percent
-        self.defense_percent += step_config.defense_percent
-        self.manage_percent += step_config.manage_percent
-        self.operation_percent += step_config.operation_percent
+
+        self.attack_percent = step_config.attack_percent
+        self.defense_percent = step_config.defense_percent
+        self.manage_percent = step_config.manage_percent
+        self.operation_percent = step_config.operation_percent
 
         # 星
         star_config = ConfigStaffStar.get(self.star)
@@ -270,6 +271,7 @@ class AbstractStaff(object):
         self.defense += star_config.defense
         self.manage += star_config.manage
         self.operation += star_config.operation
+
         self.attack_percent += star_config.attack_percent
         self.defense_percent += star_config.defense_percent
         self.manage_percent += star_config.manage_percent
@@ -459,9 +461,12 @@ class AbstractStaff(object):
             return 0
 
         # 属性参考战斗力计算表
-        # hp = (self.manage * 2 * math.pow(self.__unit.config.operation, 0.75) + self.__unit.hp) * (1 + self.__unit.hp_percent)
+        hp = (self.manage * 2 * math.pow(self.__unit.config.operation, 0.75) + self.__unit.hp) * \
+             (1 + self.__unit.hp_percent)
+
         attack = (self.attack * 1 * math.pow(self.__unit.config.operation, 0.75) + self.__unit.attack) * \
                  (1 + self.__unit.attack_percent)
+
         defense = (self.defense * 1 * math.pow(self.__unit.config.operation, 0.75) + self.__unit.defense) * \
                   (1 + self.__unit.defense_percent)
 
@@ -471,7 +476,7 @@ class AbstractStaff(object):
               self.__unit.hurt_addition_to_terran * 0.2 + self.__unit.hurt_addition_to_zerg * 0.2 +
               self.__unit.hurt_addition_to_protoss * 0.2)
 
-        t2 = (defense * math.pow(unit_amount, 0.65) * 0.5 + self.__unit.hp * unit_amount * 0.15) * \
+        t2 = (defense * math.pow(unit_amount, 0.65) * 0.5 + hp * unit_amount * 0.15) * \
              (1 + self.__unit.dodge_rate + self.__unit.toughness_rate -
               self.__unit.hurt_addition_by_terran * 0.2 -
               self.__unit.hurt_addition_by_protoss * 0.2 -
