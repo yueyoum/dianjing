@@ -15,6 +15,7 @@ class VIP(object):
                  'daily_dungeon_reset_times',
                  'tower_reset_times',
                  'arena_buy_times',
+                 'energy_buy_times',
                  ]
 
     def __init__(self):
@@ -28,6 +29,7 @@ class VIP(object):
         self.daily_dungeon_reset_times = 0
         self.tower_reset_times = 0
         self.arena_buy_times = 0
+        self.energy_buy_times = 0
 
 
 class ConfigVIP(ConfigBase):

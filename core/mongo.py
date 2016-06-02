@@ -614,3 +614,13 @@ class MongoStaffCollection(BaseDocument):
     }
 
     COLLECTION = 'staff_collection'
+
+# 体力
+class MongoEnergy(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'current': 0,
+        'last_add_at': 0,
+    }
+
+    COLLECTION = 'energy'

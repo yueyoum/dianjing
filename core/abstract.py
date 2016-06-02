@@ -524,7 +524,6 @@ class AbstractClub(object):
         'server_id', 'char_id',
         'id', 'name', 'manager_name', 'flag', 'level',
         'exp', 'gold', 'diamond', 'crystal', 'gas', 'renown',
-        'energy',
         'formation_staffs',
     ]
 
@@ -543,7 +542,6 @@ class AbstractClub(object):
         self.crystal = 0
         self.gas = 0
         self.renown = 0
-        self.energy = 0
         self.formation_staffs = []
         """:type: list[AbstractStaff]"""
 
@@ -593,7 +591,6 @@ class AbstractClub(object):
         msg.crystal = self.crystal
         msg.gas = self.gas
         msg.renown = self.renown
-        msg.energy = self.energy
         msg.power = self.power
 
         return msg

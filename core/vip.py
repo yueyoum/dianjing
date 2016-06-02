@@ -131,3 +131,7 @@ class VIP(object):
     @property
     def arena_buy_times(self):
         return ConfigVIP.get(self.doc['vip']).arena_buy_times
+
+    @property
+    def energy_buy_times(self):
+        return ConfigVIP.get(self.doc['vip']).energy_buy_times

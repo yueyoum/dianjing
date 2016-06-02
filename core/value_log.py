@@ -259,3 +259,8 @@ class ValueLogStaffLevelUpTimes(ValueLog):
 class ValueLogUnitLevelUpTimes(ValueLog):
     KEY = 'unit_level_up'
     __slots__ = []
+
+# 体力购买次数
+class ValueLogEnergyBuyTimes(ValueLog):
+    KEY = 'energy_buy'
+    __slots__ = []

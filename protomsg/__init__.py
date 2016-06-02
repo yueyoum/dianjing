@@ -227,6 +227,9 @@ MESSAGE_TO_ID = {
     "VIPBuyRewardRequest": 3901,
     "VIPBuyRewardResponse": 3902,
     "CollectionNotify": 4000,
+    "EnergyNotify": 4100,
+    "EnergyBuyRequest": 4101,
+    "EnergyBuyResponse": 4102,
 }
 
 ID_TO_MESSAGE = {
@@ -457,6 +460,9 @@ ID_TO_MESSAGE = {
     3901: "VIPBuyRewardRequest",
     3902: "VIPBuyRewardResponse",
     4000: "CollectionNotify",
+    4100: "EnergyNotify",
+    4101: "EnergyBuyRequest",
+    4102: "EnergyBuyResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -550,6 +556,7 @@ PATH_TO_REQUEST = {
     "/game/store/refresh/": ["store", "StoreRefreshRequest"],
     "/game/store/autorefresh/": ["store", "StoreAutoRefreshRequest"],
     "/game/vip/buyreward/": ["vip", "VIPBuyRewardRequest"],
+    "/game/energy/buy/": ["energy", "EnergyBuyRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -643,4 +650,5 @@ PATH_TO_RESPONSE = {
     "/game/store/refresh/": ["store", "StoreRefreshResponse"],
     "/game/store/autorefresh/": ["store", "StoreAutoRefreshResponse"],
     "/game/vip/buyreward/": ["vip", "VIPBuyRewardResponse"],
+    "/game/energy/buy/": ["energy", "EnergyBuyResponse"],
 }

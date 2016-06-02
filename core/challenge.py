@@ -16,6 +16,7 @@ from core.match import ClubMatch
 from core.unit import NPCUnit
 from core.task import TaskMain
 from core.vip import VIP
+from core.energy import Energy
 
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.value_log import ValueLogChallengeMatchTimes, ValueLogAllChallengeWinTimes, ValueLogChallengeResetTimes
@@ -144,6 +145,8 @@ class Challenge(object):
         if not rt.remained_match_times:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_WITHOUT_TIMES"))
 
+        Energy(self.server_id, self.char_id).remove(config.energy)
+
         club_one = Club(self.server_id, self.char_id)
         club_two = ChallengeNPCClub(challenge_id)
         match = ClubMatch(club_one, club_two)
@@ -196,10 +199,19 @@ class Challenge(object):
         if not rt.remained_match_times:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_WITHOUT_TIMES"))
 
+        # 剩余次数限制
         if rt.remained_match_times > 5:
             sweep_times = 5
         else:
             sweep_times = rt.remained_match_times
+
+        # 体力限制
+        en = Energy(self.server_id, self.char_id)
+        current_energy_can_sweep_times = en.energy / config.energy
+        if sweep_times > current_energy_can_sweep_times:
+            sweep_times = current_energy_can_sweep_times
+
+        en.remove(sweep_times * config.energy)
 
         drop_times = doc['challenge_drop'].get(str(challenge_id), {})
         drops = {}

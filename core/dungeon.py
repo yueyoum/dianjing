@@ -19,6 +19,7 @@ from core.club import Club
 from core.value_log import ValueLogDungeonMatchTimes, ValueLogDungeonBuyTimes
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.vip import VIP
+from core.energy import Energy
 
 from protomsg.dungeon_pb2 import DungeonNotify
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
@@ -91,10 +92,7 @@ class Dungeon(object):
         if grade_conf.need_level > club_one.level:
             raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_CLUB_LEVEL_NOT_ENOUGH"))
 
-        # TODO: energy check
-        # conf = ConfigDungeon.get(grade_conf.belong)
-        # if conf.cost:
-        #     raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_ENERGY_NOT_ENOUGH"))
+        Energy(self.server_id, self.char_id).check(ConfigDungeon.get(grade_conf.belong).cost)
 
         ri = TimesInfo(self.server_id, self.char_id, grade_conf.belong)
         if not ri.remained_match_times:
@@ -110,7 +108,7 @@ class Dungeon(object):
         grade_id = int(key)
         conf = ConfigDungeonGrade.get(grade_id)
         if star > 0:
-            # TODO: remove energy
+            Energy(self.server_id, self.char_id).remove(ConfigDungeon.get(conf.belong).cost)
             ValueLogDungeonMatchTimes(self.server_id, self.char_id).record(sub_id=conf.belong, value=1)
 
             resource_classified = ResourceClassification.classify(conf.get_drop())
