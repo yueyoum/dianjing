@@ -20,9 +20,11 @@ from core.value_log import ValueLogArenaMatchTimes, ValueLogArenaHonorPoints, Va
 from core.match import ClubMatch
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.vip import VIP
+from core.character import Character
+from core.mail import MailManager
 
 from config import ConfigErrorMessage, ConfigArenaNPC, ConfigNPCFormation, ConfigArenaHonorReward, \
-    ConfigArenaMatchReward, ConfigArenaBuyTimesCost
+    ConfigArenaMatchReward, ConfigArenaBuyTimesCost, ConfigArenaRankReward
 
 from utils.functional import make_string_id, get_arrow_time_of_today
 from utils.message import MessagePipe
@@ -94,6 +96,27 @@ class Arena(object):
 
         self.try_create_arena_npc()
         self.try_add_self_in_arena()
+
+    @classmethod
+    def cronjob_send_rank_reward(cls, server_id):
+        char_ids = Character.get_recent_login_char_ids(server_id, recent_days=14)
+        char_ids = [i for i in char_ids]
+
+        docs = MongoArena.db(server_id).find({'_id': {'$in': char_ids}})
+        for doc in docs:
+            cid = doc['_id']
+            rank = cid['rank']
+
+            config = ConfigArenaRankReward.get(rank)
+
+            rc = ResourceClassification.classify(config.reward)
+
+            m = MailManager(server_id, cid)
+            m.add(
+                config.mail_title,
+                config.mail_content,
+                attachment=rc.dumps(),
+            )
 
     def try_create_arena_npc(self):
         if MongoArena.db(self.server_id).count():

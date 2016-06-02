@@ -15,6 +15,7 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoMail, MongoCharacter
 from core.character import Character
+from core.resource import ResourceClassification
 
 from config import ConfigErrorMessage
 from config.settings import MAIL_KEEP_DAYS, MAIL_CLEAN_AT
@@ -85,7 +86,7 @@ class MailManager(object):
         title = u"来自 {0} 的邮件".format(self_doc['name'])
         MailManager(self.server_id, to_id).add(title, content, from_id=self.char_id)
 
-    def add(self, title, content, attachment="", from_id=0, function=0, data=None):
+    def add(self, title, content, attachment="", from_id=0, function=0):
         from apps.history_record.models import MailHistoryRecord
 
         now = arrow.utcnow()
@@ -98,7 +99,7 @@ class MailManager(object):
         doc['create_at'] = now.timestamp
         doc['function'] = function
 
-        doc['data'] = base64.b64encode(data)
+        # doc['data'] = base64.b64encode(data)
 
         mail_id = make_string_id()
 
@@ -152,17 +153,16 @@ class MailManager(object):
         if not attachment:
             raise GameException(ConfigErrorMessage.get_error_id("MAIL_HAS_NO_ATTACHMENT"))
 
-        # drop = Drop.loads_from_json(attachment)
-        # message = u"Attachment from mail: {0}".format(this_mail['title'])
-        # Resource(self.server_id, self.char_id).save_drop(drop, message=message)
-        #
-        # MongoMail.db(self.server_id).update_one(
-        #     {'_id': self.char_id},
-        #     {'$set': {'mails.{0}.attachment'.format(mail_id): ""}}
-        # )
-        #
-        # self.send_notify(ids=[mail_id])
-        # return drop
+        rc = ResourceClassification.loads(attachment)
+        rc.add(self.server_id, self.char_id)
+
+        MongoMail.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {'mails.{0}.attachment'.format(mail_id): ""}}
+        )
+
+        self.send_notify(ids=[mail_id])
+        return rc
 
     def clean_expired(self):
         limit_timestamp = get_mail_clean_time().timestamp
@@ -234,8 +234,8 @@ class MailManager(object):
 
             notify_mail.remained_seconds = remained_seconds
 
-            # if v['attachment']:
-            #     notify_mail.attachment.MergeFrom(Drop.loads_from_json(v['attachment']).make_protomsg())
+            if v['attachment']:
+                notify_mail.attachment.MergeFrom(ResourceClassification.loads(v['attachment']).make_protomsg())
 
             function = v.get('function', 0)
             if function:

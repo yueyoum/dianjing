@@ -7,6 +7,9 @@ Description:
 
 """
 
+import base64
+import dill
+
 from config import ConfigItemNew
 
 from protomsg.package_pb2 import Drop as MsgDrop
@@ -272,3 +275,19 @@ class ResourceClassification(object):
             msg_item.amount = _amount
 
         return msg
+
+
+    def dumps(self):
+        """
+
+        :rtype : str
+        """
+        return base64.b64encode(dill.dumps(self))
+
+    @classmethod
+    def loads(cls, data):
+        """
+
+        :rtype : ResourceClassification
+        """
+        return dill.loads(base64.b64decode(data))

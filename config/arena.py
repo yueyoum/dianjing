@@ -112,13 +112,26 @@ class ConfigArenaRankReward(ConfigBase):
     INSTANCES = {}
     FILTER_CACHE = {}
 
+    LIST = []
+
     @classmethod
-    def get(cls, _id):
+    def initialize(cls, fixture):
+        super(ConfigArenaRankReward, cls).initialize(fixture)
+        cls.LIST = cls.INSTANCES.items()
+        cls.LIST.sort(key=lambda item: item[0], reverse=True)
+
+    @classmethod
+    def get(cls, rank):
         """
 
         :rtype: RankReward
         """
-        return super(ConfigArenaRankReward, cls).get(_id)
+        for k, v in cls.LIST:
+            if rank >= k:
+                return v
+
+        raise RuntimeError("ConfigArenaRankReward, Error rank: {0}".format(rank))
+
 
 class ConfigArenaMatchReward(ConfigBase):
     EntityClass = MatchReward
