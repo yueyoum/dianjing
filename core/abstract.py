@@ -472,7 +472,7 @@ class AbstractStaff(object):
               self.__unit.hurt_addition_to_protoss * 0.2)
 
         t2 = (defense * math.pow(unit_amount, 0.65) * 0.5 + self.__unit.hp * unit_amount * 0.15) * \
-             (self.__unit.dodge_rate + self.__unit.toughness_rate -
+             (1 + self.__unit.dodge_rate + self.__unit.toughness_rate -
               self.__unit.hurt_addition_by_terran * 0.2 -
               self.__unit.hurt_addition_by_protoss * 0.2 -
               self.__unit.hurt_addition_by_zerg * 0.2)

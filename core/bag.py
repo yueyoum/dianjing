@@ -310,15 +310,22 @@ class Bag(object):
             raise GameException(ConfigErrorMessage.get_error_id("ITEM_CANNOT_USE"))
 
         if config.use_item_id:
-            cost = [(config.use_item_id, config.use_item_amount)]
+            cost = [(config.use_item_id, config.use_item_amount*amount)]
             rc = ResourceClassification.classify(cost)
             rc.check_exist(self.server_id, self.char_id)
             rc.remove(self.server_id, self.char_id)
 
         self.remove_by_slot_id(slot_id, amount)
-        result = config.using_result()
 
-        resource_classified = ResourceClassification.classify(result)
+        result = {}
+        for i in range(amount):
+            for _id, _amount in config.using_result():
+                if _id in result:
+                    result[_id] += _amount
+                else:
+                    result[_id] = [_amount]
+
+        resource_classified = ResourceClassification.classify(result.items())
         resource_classified.add(self.server_id, self.char_id)
         return resource_classified
 

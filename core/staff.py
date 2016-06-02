@@ -360,16 +360,21 @@ class Staff(AbstractStaff):
         if target_level > max_level:
             target_level = max_level
 
+        _level_up = False
         while self.level < target_level:
             config = ConfigStaffLevelNew.get(self.level)
             up_need_exp = config.exp - self.level_exp
 
             if exp_pool < up_need_exp:
-                return exp_pool
+                self.level_exp += exp_pool
+                exp_pool = 0
+                break
 
             exp_pool -= up_need_exp
             self.level += 1
             self.level_exp = 0
+
+            _level_up = True
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -379,8 +384,10 @@ class Staff(AbstractStaff):
             }}
         )
 
-        self.calculate()
-        self.make_cache()
+        if _level_up:
+            self.calculate()
+            self.make_cache()
+
         return exp_pool
 
     def step_up(self):

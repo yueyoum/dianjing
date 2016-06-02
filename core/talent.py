@@ -55,7 +55,7 @@ class TalentManager(object):
         MongoTalent.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
-                'talent': self.doc['talents'],
+                'talents': self.doc['talents'],
                 'cost_point': self.doc['cost_point'],
             }}
         )
