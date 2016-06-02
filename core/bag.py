@@ -374,7 +374,7 @@ class Bag(object):
         if get_item_type(item_id) != TYPE_EQUIPMENT:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
-        if StaffManger(self.server_id, self.char_id).is_equip_on_staff(slot_id):
+        if StaffManger(self.server_id, self.char_id).find_staff_id_with_equip(slot_id):
             raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_CANNOT_DESTROY_ON_STAFF"))
 
         config = ConfigEquipmentNew.get(item_id)
@@ -429,6 +429,9 @@ class Bag(object):
     def equipment_level_up_confirm(self, slot_id, times=1):
         # 装备升级确认
         # 上一步 用户看到下一级属性后， 点击确认升级
+        from core.staff import StaffManger
+        from core.formation import Formation
+
         this_slot = self.doc['slots'][slot_id]
         item_id = this_slot['item_id']
         level = this_slot['level']
@@ -472,6 +475,18 @@ class Bag(object):
         ValueLogEquipmentLevelUpTimes(self.server_id, self.char_id).record()
 
         self.send_notify(slot_ids=[slot_id])
+
+        sm = StaffManger(self.server_id, self.char_id)
+        staff_id = sm.find_staff_id_with_equip(slot_id)
+        if staff_id:
+            fm = Formation(self.server_id, self.char_id)
+            if staff_id in fm.in_formation_staffs():
+                s_obj = sm.get_staff_object(staff_id)
+                s_obj.calculate()
+                s_obj.make_cache()
+
+                Club(self.server_id, self.char_id).send_notify()
+
         return error_code, levelup, make_equipment_msg(item_id, level)
 
     def send_remove_notify(self, slots_ids):

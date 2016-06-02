@@ -599,16 +599,16 @@ class StaffManger(object):
         doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, projection)
         return doc['staffs']
 
-    def is_equip_on_staff(self, bag_slot_id):
+    def find_staff_id_with_equip(self, bag_slot_id):
         keys = ['equip_mouse', 'equip_keyboard', 'equip_monitor', 'equip_decoration']
 
         staffs = self.get_staffs_data()
         for k, v in staffs.iteritems():
             for key in keys:
                 if v.get(key, "") == bag_slot_id:
-                    return True
+                    return k
 
-        return False
+        return None
 
     def get_all_staff_object(self):
         # type: () -> dict[str, Staff]

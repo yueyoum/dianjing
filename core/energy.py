@@ -67,6 +67,8 @@ class Energy(object):
             self.doc['current'] = MAX_ENERGY_SOFT_LIMIT
             self.doc['last_add_at'] = arrow.utcnow().timestamp
 
+            MongoEnergy.db(self.server_id).insert_one(self.doc)
+
         self.recover()
 
     def recover(self):
