@@ -10,7 +10,7 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoBag
 from core.club import Club, get_club_property
-from core.resource import MONEY, ResourceClassification, money_text_to_item_id
+from core.resource import ResourceClassification, money_text_to_item_id
 from core.value_log import ValueLogEquipmentLevelUpTimes
 
 from utils.functional import make_string_id
@@ -310,12 +310,10 @@ class Bag(object):
             raise GameException(ConfigErrorMessage.get_error_id("ITEM_CANNOT_USE"))
 
         if config.use_item_id:
-            cost = [(config.use_item_id, config.use_item_amount*amount)]
+            cost = [(config.use_item_id, config.use_item_amount * amount)]
             rc = ResourceClassification.classify(cost)
             rc.check_exist(self.server_id, self.char_id)
             rc.remove(self.server_id, self.char_id)
-
-        self.remove_by_slot_id(slot_id, amount)
 
         result = {}
         for i in range(amount):
@@ -323,7 +321,9 @@ class Bag(object):
                 if _id in result:
                     result[_id] += _amount
                 else:
-                    result[_id] = [_amount]
+                    result[_id] = _amount
+
+        self.remove_by_slot_id(slot_id, amount)
 
         resource_classified = ResourceClassification.classify(result.items())
         resource_classified.add(self.server_id, self.char_id)
@@ -365,7 +365,6 @@ class Bag(object):
         resource_classified = ResourceClassification.classify(drop)
         resource_classified.add(self.server_id, self.char_id)
         return resource_classified
-
 
     def equipment_destroy(self, slot_id, use_sycee):
         # 装备销毁
@@ -415,7 +414,6 @@ class Bag(object):
         resource_classified = ResourceClassification.classify(results)
         resource_classified.add(self.server_id, self.char_id)
         return resource_classified
-
 
     def equipment_level_up_preview(self, slot_id):
         # 装备升级准备
