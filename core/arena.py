@@ -115,7 +115,7 @@ class Arena(object):
             m.add(
                 config.mail_title,
                 config.mail_content,
-                attachment=rc.dumps(),
+                attachment=rc.to_json(),
             )
 
     def try_create_arena_npc(self):

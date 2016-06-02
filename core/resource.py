@@ -7,8 +7,7 @@ Description:
 
 """
 
-import base64
-import dill
+import json
 
 from config import ConfigItemNew
 
@@ -92,6 +91,26 @@ class ResourceClassification(object):
         self.vip_exp = 0
         # staff exp pool
         self.staff_exp_pool = 0
+
+    def to_json(self):
+        data = {k: getattr(self, k) for k in self.__slots__}
+        return json.dumps(data)
+
+    @classmethod
+    def load_from_json(cls, data):
+        """
+
+        :rtype: ResourceClassification
+        """
+        data = json.loads(data)
+        obj = cls()
+        for k in cls.__slots__:
+            v = data.get(k, None)
+            if v:
+                setattr(obj, k, v)
+
+        return obj
+
 
     @classmethod
     def classify(cls, items):
@@ -275,19 +294,3 @@ class ResourceClassification(object):
             msg_item.amount = _amount
 
         return msg
-
-
-    def dumps(self):
-        """
-
-        :rtype : str
-        """
-        return base64.b64encode(dill.dumps(self))
-
-    @classmethod
-    def loads(cls, data):
-        """
-
-        :rtype : ResourceClassification
-        """
-        return dill.loads(base64.b64decode(data))

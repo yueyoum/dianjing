@@ -153,7 +153,7 @@ class MailManager(object):
         if not attachment:
             raise GameException(ConfigErrorMessage.get_error_id("MAIL_HAS_NO_ATTACHMENT"))
 
-        rc = ResourceClassification.loads(attachment)
+        rc = ResourceClassification.load_from_json(attachment)
         rc.add(self.server_id, self.char_id)
 
         MongoMail.db(self.server_id).update_one(
@@ -235,7 +235,7 @@ class MailManager(object):
             notify_mail.remained_seconds = remained_seconds
 
             if v['attachment']:
-                notify_mail.attachment.MergeFrom(ResourceClassification.loads(v['attachment']).make_protomsg())
+                notify_mail.attachment.MergeFrom(ResourceClassification.load_from_json(v['attachment']).make_protomsg())
 
             function = v.get('function', 0)
             if function:
