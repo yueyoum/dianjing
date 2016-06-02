@@ -384,9 +384,8 @@ class Staff(AbstractStaff):
             }}
         )
 
-        if _level_up:
-            self.calculate()
-            self.make_cache()
+        self.calculate()
+        self.make_cache()
 
         return exp_pool, _level_up
 
@@ -457,9 +456,8 @@ class Staff(AbstractStaff):
             }}
         )
 
-        if _star_up:
-            self.calculate()
-            self.make_cache()
+        self.calculate()
+        self.make_cache()
 
         return _star_up
 

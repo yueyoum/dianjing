@@ -53,7 +53,10 @@ class Formation(object):
         return False
 
     def in_formation_staffs(self):
-        # type: () -> dict[str, dict[str, int]]
+        """
+
+        :rtype: dict[str, dict]
+        """
         staffs = {}
         for slot_id, v in self.doc['slots'].iteritems():
             if v['staff_id']:

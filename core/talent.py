@@ -11,7 +11,6 @@ from config import ConfigErrorMessage, ConfigTalent
 
 from core.mongo import MongoTalent
 from core.resource import ResourceClassification, money_text_to_item_id
-from core.club import Club
 
 from utils.message import MessagePipe
 
@@ -61,10 +60,7 @@ class TalentManager(object):
         )
 
         self.send_notify()
-
-        club = Club(self.server_id, self.char_id, load_staffs=False)
-        club.force_load_staffs()
-        club.send_notify()
+        self.after_change()
 
     def add_talent_points(self, amount):
         self.doc['total_point'] += amount
@@ -112,10 +108,20 @@ class TalentManager(object):
         )
 
         self.send_notify()
+        self.after_change()
+
+    def after_change(self):
+        from core.club import Club
+        from core.formation import Formation
+        from core.staff import StaffManger
 
         club = Club(self.server_id, self.char_id, load_staffs=False)
         club.force_load_staffs()
         club.send_notify()
+
+        fm = Formation(self.server_id, self.char_id)
+        in_formation_staff_ids = fm.in_formation_staffs().keys()
+        StaffManger(self.server_id, self.char_id).send_notify(ids=in_formation_staff_ids)
 
     def try_unlock(self, tid, unlocked):
         for i in ConfigTalent.get(tid).trigger_unlock:
