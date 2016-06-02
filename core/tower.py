@@ -107,8 +107,6 @@ class Tower(object):
         if not config:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-        self.doc['levels'][str(level)] = star
-
         update_levels = [level]
         self.doc['star'] += star
 
@@ -117,12 +115,16 @@ class Tower(object):
         }
 
         if star == 0:
+            # NOTE 坑
+            self.doc['levels'][str(level)] = -1
+
             updater['levels.{0}'.format(level)] = -1
             updater['turntable'] = {}
             all_list = []
 
             resource_classified = ResourceClassification.classify([])
         else:
+            self.doc['levels'][str(level)] = star
             updater['levels.{0}'.format(level)] = star
 
             if level < MAX_LEVEL:
@@ -286,6 +288,12 @@ class Tower(object):
         updater['sweep_end_at'] = 0
         updater['star'] = self.doc['star']
         updater['talents'] = self.doc['talents']
+
+        # 扫荡完下一关要可打
+        next_level = self.doc['max_star_level'] + 1
+        if next_level < MAX_LEVEL:
+            self.doc['levels'][str(next_level)] = 0
+            updater['levels.{0}'.format(next_level)] = 0
 
         MongoTower.db(self.server_id).update_one(
             {'_id': self.char_id},
