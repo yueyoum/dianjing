@@ -27,6 +27,7 @@ TALENT_ITEM_ID = 30006
 VIP_EXP_ITEM_ID = 30010
 CLUB_EXP_ITEM_ID = 30011
 STAFF_EXP_POOL_ID = 30017
+ARENA_POINT_ID = 30016
 
 # 领地建筑产出ID
 TERRITORY_PRODUCT_BUILDING_TABLE = {
@@ -76,6 +77,7 @@ class ResourceClassification(object):
     __slots__ = ['money', 'bag', 'staff', 'talent_point', 'club_exp', 'territory_product',
                  'vip_exp',
                  'staff_exp_pool',
+                 'arena_point',
                  ]
 
     def __init__(self):
@@ -91,6 +93,7 @@ class ResourceClassification(object):
         self.vip_exp = 0
         # staff exp pool
         self.staff_exp_pool = 0
+        self.arena_point = 0
 
     def to_json(self):
         data = {k: getattr(self, k) for k in self.__slots__}
@@ -111,7 +114,6 @@ class ResourceClassification(object):
 
         return obj
 
-
     @classmethod
     def classify(cls, items):
         # type: (list) -> ResourceClassification
@@ -124,6 +126,7 @@ class ResourceClassification(object):
         territory_product = {}
         vip_exp = 0
         staff_exp_pool = 0
+        arena_point = 0
 
         for _id, _amount in items:
             if _id == TALENT_ITEM_ID:
@@ -140,6 +143,10 @@ class ResourceClassification(object):
 
             if _id == STAFF_EXP_POOL_ID:
                 staff_exp_pool += _amount
+                continue
+
+            if _id == ARENA_POINT_ID:
+                arena_point += _amount
                 continue
 
             if _id in TERRITORY_PRODUCT_BUILDING_TABLE:
@@ -177,6 +184,7 @@ class ResourceClassification(object):
         obj.club_exp = club_exp
         obj.vip_exp = vip_exp
         obj.staff_exp_pool = staff_exp_pool
+        obj.arena_point = arena_point
         obj.territory_product = territory_product.items()
 
         return obj
@@ -194,33 +202,48 @@ class ResourceClassification(object):
         from core.bag import Bag
         from core.staff import StaffManger
         from core.territory import Territory
+        from core.arena import Arena
 
         money_text = self.money_as_text_dict()
-        Club(server_id, char_id).check_money(**money_text)
-        Bag(server_id, char_id).check_items(self.bag)
-        StaffManger(server_id, char_id).check_original_staff_is_initial_state(self.staff)
-        Territory(server_id, char_id).check_product(self.territory_product)
+        if money_text:
+            Club(server_id, char_id).check_money(**money_text)
+        if self.bag:
+            Bag(server_id, char_id).check_items(self.bag)
+        if self.staff:
+            StaffManger(server_id, char_id).check_original_staff_is_initial_state(self.staff)
+        if self.territory_product:
+            Territory(server_id, char_id).check_product(self.territory_product)
+        if self.arena_point:
+            Arena(server_id, char_id).check_point(self.arena_point)
 
     def remove(self, server_id, char_id):
         from core.club import Club
         from core.bag import Bag
         from core.staff import StaffManger
         from core.territory import Territory
+        from core.arena import Arena
 
         money_text = self.money_as_text_dict()
-        money_text = {k: -v for k, v in money_text.iteritems()}
-        Club(server_id, char_id).update(**money_text)
+        if money_text:
+            money_text = {k: -v for k, v in money_text.iteritems()}
+            Club(server_id, char_id).update(**money_text)
 
-        bag = Bag(server_id, char_id)
-        for _id, _amount in self.bag:
-            bag.remove_by_item_id(_id, _amount)
+        if self.bag:
+            bag = Bag(server_id, char_id)
+            for _id, _amount in self.bag:
+                bag.remove_by_item_id(_id, _amount)
 
-        sm = StaffManger(server_id, char_id)
-        for _id, _amount in self.staff:
-            for _ in range(_amount):
-                sm.remove_initial_state_staff(_id)
+        if self.staff:
+            sm = StaffManger(server_id, char_id)
+            for _id, _amount in self.staff:
+                for _ in range(_amount):
+                    sm.remove_initial_state_staff(_id)
 
-        Territory(server_id, char_id).check_product(self.territory_product)
+        if self.territory_product:
+            Territory(server_id, char_id).check_product(self.territory_product)
+
+        if self.arena_point:
+            Arena(server_id, char_id).remove_point(self.arena_point)
 
     def add(self, server_id, char_id):
         from core.club import Club
@@ -229,6 +252,7 @@ class ResourceClassification(object):
         from core.talent import TalentManager
         from core.territory import Territory
         from core.vip import VIP
+        from core.arena import Arena
 
         club_property = self.money_as_text_dict()
         if self.club_exp:
@@ -253,6 +277,10 @@ class ResourceClassification(object):
 
         if self.talent_point:
             TalentManager(server_id, char_id).add_talent_points(self.talent_point)
+
+        if self.arena_point:
+            Arena(server_id, char_id).add_point(self.arena_point)
+
         if self.territory_product:
             Territory(server_id, char_id).add_product(self.territory_product)
 
@@ -287,6 +315,11 @@ class ResourceClassification(object):
             msg_item = msg.items.add()
             msg_item.id = VIP_EXP_ITEM_ID
             msg_item.amount = self.vip_exp
+
+        if self.arena_point:
+            msg_item = msg.items.add()
+            msg_item.id = ARENA_POINT_ID
+            msg_item.amount = self.arena_point
 
         for _id, _amount in self.territory_product:
             msg_item = msg.items.add()

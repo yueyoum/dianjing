@@ -98,14 +98,14 @@ class Arena(object):
         self.try_add_self_in_arena()
 
     @classmethod
-    def cronjob_send_rank_reward(cls, server_id):
+    def send_rank_reward(cls, server_id):
         char_ids = Character.get_recent_login_char_ids(server_id, recent_days=14)
-        char_ids = [i for i in char_ids]
+        char_ids = [str(i) for i in char_ids]
 
         docs = MongoArena.db(server_id).find({'_id': {'$in': char_ids}})
         for doc in docs:
             cid = doc['_id']
-            rank = cid['rank']
+            rank = doc['rank']
 
             config = ConfigArenaRankReward.get(rank)
 
@@ -228,6 +228,37 @@ class Arena(object):
 
         ValueLogArenaBuyTimes(self.server_id, self.char_id).record()
 
+        self.send_notify()
+
+    def add_point(self, point):
+        assert point > 0
+        MongoArena.db(self.server_id).update_one(
+            {'_id': str(self.char_id)},
+            {'$inc': {
+                'point': point
+            }}
+        )
+        self.send_notify()
+
+    def check_point(self, point):
+        doc = MongoArena.db(self.server_id).find_one(
+            {'_id': str(self.char_id)},
+            {'point': 1}
+        )
+
+        current_point = doc.get('point', 0)
+        new_point = current_point - point
+        if new_point < 0:
+            raise GameException(ConfigErrorMessage.get_error_id("ARENA_POINT_NOT_ENOUGH"))
+
+        return new_point
+
+    def remove_point(self, point):
+        new_point = self.check_point(point)
+        MongoArena.db(self.server_id).update_one(
+            {'_id': str(self.char_id)},
+            {'$set': new_point}
+        )
         self.send_notify()
 
     def refresh(self, ignore_cd=False):
@@ -489,6 +520,7 @@ class Arena(object):
         notify.match_times = rt.remained_match_times
         notify.buy_times = rt.remained_buy_times
         notify.buy_cost = rt.buy_cost
+        notify.point = doc.get('point', 0)
 
         for _id, _rank in doc['rivals']:
             notify_rival = notify.rival.add()

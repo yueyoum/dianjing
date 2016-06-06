@@ -491,7 +491,8 @@ class MongoArena(BaseDocument):
         'honor_rewards': {},
         # 被挑战日志
         'logs': [],
-
+        # 积分
+        'point': 0,
     }
 
     COLLECTION = 'arena'
