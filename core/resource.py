@@ -29,6 +29,7 @@ CLUB_EXP_ITEM_ID = 30011
 WORK_CARD_ID = 30015
 ARENA_POINT_ID = 30016
 STAFF_EXP_POOL_ID = 30017
+ENERGY_ID = 30018
 
 # 领地建筑产出ID
 TERRITORY_PRODUCT_BUILDING_TABLE = {
@@ -80,6 +81,7 @@ class ResourceClassification(object):
                  'staff_exp_pool',
                  'arena_point',
                  'work_card',
+                 'energy',
                  ]
 
     def __init__(self):
@@ -97,6 +99,7 @@ class ResourceClassification(object):
         self.staff_exp_pool = 0
         self.arena_point = 0
         self.work_card = 0
+        self.energy = 0
 
     def to_json(self):
         data = {k: getattr(self, k) for k in self.__slots__}
@@ -131,6 +134,7 @@ class ResourceClassification(object):
         staff_exp_pool = 0
         arena_point = 0
         work_card = 0
+        energy = 0
 
         for _id, _amount in items:
             if _id == TALENT_ITEM_ID:
@@ -155,6 +159,10 @@ class ResourceClassification(object):
 
             if _id == WORK_CARD_ID:
                 work_card += _amount
+                continue
+
+            if _id == ENERGY_ID:
+                energy += _amount
                 continue
 
             if _id in TERRITORY_PRODUCT_BUILDING_TABLE:
@@ -212,6 +220,7 @@ class ResourceClassification(object):
         from core.staff import StaffManger
         from core.territory import Territory
         from core.arena import Arena
+        from core.energy import Energy
 
         money_text = self.money_as_text_dict()
         if money_text:
@@ -226,6 +235,8 @@ class ResourceClassification(object):
             Territory(server_id, char_id).check_work_card(self.work_card)
         if self.arena_point:
             Arena(server_id, char_id).check_point(self.arena_point)
+        if self.energy:
+            Energy(server_id, char_id).check(self.energy)
 
     def remove(self, server_id, char_id):
         from core.club import Club
@@ -233,6 +244,7 @@ class ResourceClassification(object):
         from core.staff import StaffManger
         from core.territory import Territory
         from core.arena import Arena
+        from core.energy import Energy
 
         money_text = self.money_as_text_dict()
         if money_text:
@@ -259,6 +271,9 @@ class ResourceClassification(object):
         if self.arena_point:
             Arena(server_id, char_id).remove_point(self.arena_point)
 
+        if self.energy:
+            Energy(server_id, char_id).remove(self.energy)
+
     def add(self, server_id, char_id):
         from core.club import Club
         from core.bag import Bag
@@ -267,6 +282,7 @@ class ResourceClassification(object):
         from core.territory import Territory
         from core.vip import VIP
         from core.arena import Arena
+        from core.energy import Energy
 
         club_property = self.money_as_text_dict()
         if self.club_exp:
@@ -300,6 +316,9 @@ class ResourceClassification(object):
 
         if self.work_card:
             Territory(server_id, char_id).add_work_card(self.work_card)
+
+        if self.energy:
+            Energy(server_id, char_id).add(self.energy)
 
     def make_protomsg(self):
         msg = MsgDrop()

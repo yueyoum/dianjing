@@ -723,6 +723,8 @@ class TerritoryFriend(object):
         return info
 
     def help(self, friend_id, building_id):
+        friend_id = int(friend_id)
+
         if not FriendManager(self.server_id, self.char_id).check_friend_exist(friend_id):
             raise GameException(ConfigErrorMessage.get_error_id("FRIEND_NOT_OK"))
 
