@@ -18,6 +18,7 @@ from protomsg.tower_pb2 import (
     TowerTurnTableResponse,
     TowerSweepFinishResponse,
     TowerSweepResponse,
+    TowerLeaderBoardResponse,
 )
 
 
@@ -96,4 +97,25 @@ def turntable_pick(request):
     response = TowerTurnTableResponse()
     response.ret = 0
     response.got_index = index
+    return ProtobufResponse(response)
+
+
+def get_leader_board(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    t = Tower(server_id, char_id)
+    info = t.get_leader_board()
+
+    response = TowerLeaderBoardResponse()
+    response.ret = 0
+    response.my_rank = info['my_rank']
+    response.my_star = info['my_star']
+
+    for _id, name, star in info['top']:
+        response_leaders = response.leaders.add()
+        response_leaders.id = _id
+        response_leaders.name = name
+        response_leaders.star = star
+
     return ProtobufResponse(response)

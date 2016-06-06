@@ -136,6 +136,7 @@ urlpatterns = [
     url(r'^tower/sweep/$', views.tower.sweep),
     url(r'^tower/sweepfinish/$', views.tower.sweep_finish),
     url(r'^tower/turntable/$', views.tower.turntable_pick),
+    url(r'^tower/leaderboard/$', views.tower.get_leader_board),
 
     url(r'^territory/start/$', views.territory.start),
     url(r'^territory/getreward/$', views.territory.get_reward),

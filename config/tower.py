@@ -120,3 +120,56 @@ class ConfigTowerResetCost(ConfigBase):
                 return v
 
         raise RuntimeError("ConfigTowerResetCost, Error times: {0}".format(times))
+
+
+#######################
+class StarReward(object):
+    __slots__ = ['id', 'reward']
+    def __init__(self):
+        self.id = 0
+        self.reward = 0
+
+class ConfigTowerStarReward(ConfigBase):
+    EntityClass = StarReward
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: StarReward
+        """
+        return super(ConfigTowerStarReward, cls).get(_id)
+
+
+class RankReward(object):
+    __slots__ = ['id', 'reward', 'mail_title', 'mail_content']
+    def __init__(self):
+        self.id = 0
+        self.reward = []
+        self.mail_title = ""
+        self.mail_content = ""
+
+
+class ConfigTowerRankReward(ConfigBase):
+    EntityClass = RankReward
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    LIST = []
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigTowerRankReward, cls).initialize(fixture)
+        cls.LIST = cls.INSTANCES.items()
+        cls.LIST.sort(key=lambda item: item[0], reverse=True)
+
+
+    @classmethod
+    def get(cls, rank):
+        for k, v in cls.LIST:
+            if rank >= k:
+                return v
+
+        raise RuntimeError("ConfigTowerRankReward, Error rank: {0}".format(rank))

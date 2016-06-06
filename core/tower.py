@@ -12,7 +12,7 @@ import arrow
 from dianjing.exception import GameException
 
 from core.mongo import MongoTower
-from core.club import Club
+from core.club import Club, get_club_property
 from core.match import ClubMatch
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.value_log import ValueLogTowerResetTimes, ValueLogTowerWinTimes
@@ -60,9 +60,29 @@ class Tower(object):
             self.doc['levels'] = {'1': 0}
             MongoTower.db(self.server_id).insert_one(self.doc)
 
-    def get_rank(self):
+    @classmethod
+    def reset_star(cls, server_id):
+        MongoTower.db(server_id).update_many(
+            {},
+            {'$set': {
+                'star': 0,
+                'max_star': 0,
+            }}
+        )
+
+    @classmethod
+    def send_rank_reward(cls, server_id):
+        # TODO
+        pass
+
+    def get_current_rank(self):
         # XXX
         doc = MongoTower.db(self.server_id).find({'star': {'$gt': self.doc['star']}})
+        return doc.count() + 1
+
+    def get_day_rank(self):
+        # XXX
+        doc = MongoTower.db(self.server_id).find({'max_star': {'$gt': self.doc['max_star']}})
         return doc.count() + 1
 
     def get_current_level(self):
@@ -113,6 +133,10 @@ class Tower(object):
         updater = {
             'star': self.doc['star']
         }
+
+        if self.doc['star'] > self.doc.get('max_star', 0):
+            self.doc['max_star'] = self.doc['star']
+            updater['max_star'] = self.doc['max_star']
 
         if star == 0:
             # NOTE 坑
@@ -289,6 +313,10 @@ class Tower(object):
         updater['star'] = self.doc['star']
         updater['talents'] = self.doc['talents']
 
+        if self.doc['star'] > self.doc.get('max_star', 0):
+            self.doc['max_star'] = self.doc['star']
+            updater['max_star'] = self.doc['max_star']
+
         # 扫荡完下一关要可打
         next_level = self.doc['max_star_level'] + 1
         if next_level < MAX_LEVEL:
@@ -337,11 +365,31 @@ class Tower(object):
         self.send_notify(act=ACT_UPDATE, levels=[])
         return index
 
+    def get_leader_board(self):
+        docs = MongoTower.db(self.server_id).find({}, {'max_star': 1}).sort('max_star', -1).limit(5)
+        info = {
+            'top': [],
+            'my_star': self.doc.get('max_star', 0),
+            'my_rank': 0,
+        }
+
+        for doc in docs:
+            _id = doc['_id']
+            name = get_club_property(self.server_id, _id, 'name')
+            star = doc['max_star']
+
+            info['top'].append((_id, name, star))
+
+        if info['my_star']:
+            info['my_rank'] = self.get_day_rank()
+
+        return info
+
     def send_notify(self, act=ACT_INIT, levels=None):
         notify = TowerNotify()
         notify.act = act
         notify.star = self.doc['star']
-        notify.rank = self.get_rank()
+        notify.rank = self.get_current_rank()
         notify.talent_ids.extend(self.doc['talents'])
 
         notify.max_star_level = self.doc['max_star_level']

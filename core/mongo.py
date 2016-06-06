@@ -510,6 +510,8 @@ class MongoTower(BaseDocument):
         'talents': [],
         # 当前获得的星数, 每天清零
         'star': 0,
+        # 获取到的最多星数
+        'max_star': 0,
         # 最高三星 (连续的，非连续的不记录)
         'max_star_level': 0,
         # 转盘信息
@@ -519,7 +521,7 @@ class MongoTower(BaseDocument):
     }
 
     COLLECTION = 'tower'
-    INDEXES = ['star',]
+    INDEXES = ['star', 'max_star',]
 
 # 领地建筑
 class MongoTerritory(BaseDocument):

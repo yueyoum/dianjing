@@ -23,7 +23,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='tower.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0btower.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\x1a\x0bmatch.proto\"\xde\x02\n\x0bTowerNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x34\n\x06levels\x18\x03 \x03(\x0b\x32$.Dianjing.protocol.TowerNotify.Level\x12\x0c\n\x04star\x18\x04 \x02(\x05\x12\x0c\n\x04rank\x18\x05 \x02(\x05\x12\x12\n\ntalent_ids\x18\x06 \x03(\x05\x12\x13\n\x0breset_times\x18\x07 \x02(\x05\x12\x16\n\x0emax_star_level\x18\x08 \x02(\x05\x12\x14\n\x0csweep_end_at\x18\t \x02(\x03\x12\x12\n\nreset_cost\x18\n \x02(\x05\x1aY\n\x05Level\x12\r\n\x05level\x18\x01 \x02(\x05\x12\x33\n\x06status\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.TowerLevelStatus\x12\x0c\n\x04star\x18\x03 \x01(\x05\")\n\x16TowerMatchStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"d\n\x17TowerMatchStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"E\n\x17TowerMatchReportReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x0c\n\x04star\x18\x03 \x02(\x05\"\x8b\x01\n\x18TowerMatchReportResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\x12\x0c\n\x04star\x18\x04 \x01(\x05\x12\x1c\n\x14turntable_talent_ids\x18\x05 \x03(\x05\"$\n\x11TowerResetRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"2\n\x12TowerResetResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"$\n\x11TowerSweepRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"2\n\x12TowerSweepResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"*\n\x17TowerSweepFinishRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"_\n\x18TowerSweepFinishResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"6\n\x15TowerTurnTableRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04star\x18\x02 \x02(\x05\"I\n\x16TowerTurnTableResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x11\n\tgot_index\x18\x03 \x01(\x05*v\n\x10TowerLevelStatus\x12\x16\n\x12TOWER_LEVEL_PASSED\x10\x01\x12\x17\n\x13TOWER_LEVEL_CURRENT\x10\x02\x12\x17\n\x13TOWER_LEVEL_FAILURE\x10\x03\x12\x18\n\x14TOWER_LEVEL_NOT_OPEN\x10\x04')
+  serialized_pb=_b('\n\x0btower.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\x1a\x0bmatch.proto\"\xde\x02\n\x0bTowerNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x34\n\x06levels\x18\x03 \x03(\x0b\x32$.Dianjing.protocol.TowerNotify.Level\x12\x0c\n\x04star\x18\x04 \x02(\x05\x12\x0c\n\x04rank\x18\x05 \x02(\x05\x12\x12\n\ntalent_ids\x18\x06 \x03(\x05\x12\x13\n\x0breset_times\x18\x07 \x02(\x05\x12\x16\n\x0emax_star_level\x18\x08 \x02(\x05\x12\x14\n\x0csweep_end_at\x18\t \x02(\x03\x12\x12\n\nreset_cost\x18\n \x02(\x05\x1aY\n\x05Level\x12\r\n\x05level\x18\x01 \x02(\x05\x12\x33\n\x06status\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.TowerLevelStatus\x12\x0c\n\x04star\x18\x03 \x01(\x05\")\n\x16TowerMatchStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"d\n\x17TowerMatchStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"E\n\x17TowerMatchReportReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x0c\n\x04star\x18\x03 \x02(\x05\"\x8b\x01\n\x18TowerMatchReportResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\x12\x0c\n\x04star\x18\x04 \x01(\x05\x12\x1c\n\x14turntable_talent_ids\x18\x05 \x03(\x05\"$\n\x11TowerResetRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"2\n\x12TowerResetResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"$\n\x11TowerSweepRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"2\n\x12TowerSweepResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"*\n\x17TowerSweepFinishRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"_\n\x18TowerSweepFinishResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"6\n\x15TowerTurnTableRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04star\x18\x02 \x02(\x05\"I\n\x16TowerTurnTableResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x11\n\tgot_index\x18\x03 \x01(\x05\"*\n\x17TowerLeaderBoardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\xd1\x01\n\x18TowerLeaderBoardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x43\n\x07leaders\x18\x03 \x03(\x0b\x32\x32.Dianjing.protocol.TowerLeaderBoardResponse.Leader\x12\x0f\n\x07my_rank\x18\x04 \x02(\x05\x12\x0f\n\x07my_star\x18\x05 \x02(\x05\x1a\x30\n\x06Leader\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04star\x18\x03 \x02(\x05\":\n\x15TowerStarRewardNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08rewarded\x18\x02 \x03(\x05\":\n\x19TowerStarGetRewardReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04star\x18\x02 \x02(\x05\"a\n\x1aTowerStarGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*v\n\x10TowerLevelStatus\x12\x16\n\x12TOWER_LEVEL_PASSED\x10\x01\x12\x17\n\x13TOWER_LEVEL_CURRENT\x10\x02\x12\x17\n\x13TOWER_LEVEL_FAILURE\x10\x03\x12\x18\n\x14TOWER_LEVEL_NOT_OPEN\x10\x04')
   ,
   dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,match__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -53,8 +53,8 @@ _TOWERLEVELSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1239,
-  serialized_end=1357,
+  serialized_start=1714,
+  serialized_end=1832,
 )
 _sym_db.RegisterEnumDescriptor(_TOWERLEVELSTATUS)
 
@@ -680,6 +680,261 @@ _TOWERTURNTABLERESPONSE = _descriptor.Descriptor(
   serialized_end=1237,
 )
 
+
+_TOWERLEADERBOARDREQUEST = _descriptor.Descriptor(
+  name='TowerLeaderBoardRequest',
+  full_name='Dianjing.protocol.TowerLeaderBoardRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TowerLeaderBoardRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1239,
+  serialized_end=1281,
+)
+
+
+_TOWERLEADERBOARDRESPONSE_LEADER = _descriptor.Descriptor(
+  name='Leader',
+  full_name='Dianjing.protocol.TowerLeaderBoardResponse.Leader',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.TowerLeaderBoardResponse.Leader.id', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='name', full_name='Dianjing.protocol.TowerLeaderBoardResponse.Leader.name', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='star', full_name='Dianjing.protocol.TowerLeaderBoardResponse.Leader.star', index=2,
+      number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1445,
+  serialized_end=1493,
+)
+
+_TOWERLEADERBOARDRESPONSE = _descriptor.Descriptor(
+  name='TowerLeaderBoardResponse',
+  full_name='Dianjing.protocol.TowerLeaderBoardResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.TowerLeaderBoardResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TowerLeaderBoardResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='leaders', full_name='Dianjing.protocol.TowerLeaderBoardResponse.leaders', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='my_rank', full_name='Dianjing.protocol.TowerLeaderBoardResponse.my_rank', index=3,
+      number=4, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='my_star', full_name='Dianjing.protocol.TowerLeaderBoardResponse.my_star', index=4,
+      number=5, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[_TOWERLEADERBOARDRESPONSE_LEADER, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1284,
+  serialized_end=1493,
+)
+
+
+_TOWERSTARREWARDNOTIFY = _descriptor.Descriptor(
+  name='TowerStarRewardNotify',
+  full_name='Dianjing.protocol.TowerStarRewardNotify',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TowerStarRewardNotify.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='rewarded', full_name='Dianjing.protocol.TowerStarRewardNotify.rewarded', index=1,
+      number=2, type=5, cpp_type=1, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1495,
+  serialized_end=1553,
+)
+
+
+_TOWERSTARGETREWARDREQEUST = _descriptor.Descriptor(
+  name='TowerStarGetRewardReqeust',
+  full_name='Dianjing.protocol.TowerStarGetRewardReqeust',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TowerStarGetRewardReqeust.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='star', full_name='Dianjing.protocol.TowerStarGetRewardReqeust.star', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1555,
+  serialized_end=1613,
+)
+
+
+_TOWERSTARGETREWARDRESPONSE = _descriptor.Descriptor(
+  name='TowerStarGetRewardResponse',
+  full_name='Dianjing.protocol.TowerStarGetRewardResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.TowerStarGetRewardResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TowerStarGetRewardResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='drop', full_name='Dianjing.protocol.TowerStarGetRewardResponse.drop', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1615,
+  serialized_end=1712,
+)
+
 _TOWERNOTIFY_LEVEL.fields_by_name['status'].enum_type = _TOWERLEVELSTATUS
 _TOWERNOTIFY_LEVEL.containing_type = _TOWERNOTIFY
 _TOWERNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
@@ -687,6 +942,9 @@ _TOWERNOTIFY.fields_by_name['levels'].message_type = _TOWERNOTIFY_LEVEL
 _TOWERMATCHSTARTRESPONSE.fields_by_name['match'].message_type = match__pb2._CLUBMATCH
 _TOWERMATCHREPORTRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 _TOWERSWEEPFINISHRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
+_TOWERLEADERBOARDRESPONSE_LEADER.containing_type = _TOWERLEADERBOARDRESPONSE
+_TOWERLEADERBOARDRESPONSE.fields_by_name['leaders'].message_type = _TOWERLEADERBOARDRESPONSE_LEADER
+_TOWERSTARGETREWARDRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 DESCRIPTOR.message_types_by_name['TowerNotify'] = _TOWERNOTIFY
 DESCRIPTOR.message_types_by_name['TowerMatchStartRequest'] = _TOWERMATCHSTARTREQUEST
 DESCRIPTOR.message_types_by_name['TowerMatchStartResponse'] = _TOWERMATCHSTARTRESPONSE
@@ -700,6 +958,11 @@ DESCRIPTOR.message_types_by_name['TowerSweepFinishRequest'] = _TOWERSWEEPFINISHR
 DESCRIPTOR.message_types_by_name['TowerSweepFinishResponse'] = _TOWERSWEEPFINISHRESPONSE
 DESCRIPTOR.message_types_by_name['TowerTurnTableRequest'] = _TOWERTURNTABLEREQUEST
 DESCRIPTOR.message_types_by_name['TowerTurnTableResponse'] = _TOWERTURNTABLERESPONSE
+DESCRIPTOR.message_types_by_name['TowerLeaderBoardRequest'] = _TOWERLEADERBOARDREQUEST
+DESCRIPTOR.message_types_by_name['TowerLeaderBoardResponse'] = _TOWERLEADERBOARDRESPONSE
+DESCRIPTOR.message_types_by_name['TowerStarRewardNotify'] = _TOWERSTARREWARDNOTIFY
+DESCRIPTOR.message_types_by_name['TowerStarGetRewardReqeust'] = _TOWERSTARGETREWARDREQEUST
+DESCRIPTOR.message_types_by_name['TowerStarGetRewardResponse'] = _TOWERSTARGETREWARDRESPONSE
 DESCRIPTOR.enum_types_by_name['TowerLevelStatus'] = _TOWERLEVELSTATUS
 
 TowerNotify = _reflection.GeneratedProtocolMessageType('TowerNotify', (_message.Message,), dict(
@@ -800,6 +1063,49 @@ TowerTurnTableResponse = _reflection.GeneratedProtocolMessageType('TowerTurnTabl
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.TowerTurnTableResponse)
   ))
 _sym_db.RegisterMessage(TowerTurnTableResponse)
+
+TowerLeaderBoardRequest = _reflection.GeneratedProtocolMessageType('TowerLeaderBoardRequest', (_message.Message,), dict(
+  DESCRIPTOR = _TOWERLEADERBOARDREQUEST,
+  __module__ = 'tower_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TowerLeaderBoardRequest)
+  ))
+_sym_db.RegisterMessage(TowerLeaderBoardRequest)
+
+TowerLeaderBoardResponse = _reflection.GeneratedProtocolMessageType('TowerLeaderBoardResponse', (_message.Message,), dict(
+
+  Leader = _reflection.GeneratedProtocolMessageType('Leader', (_message.Message,), dict(
+    DESCRIPTOR = _TOWERLEADERBOARDRESPONSE_LEADER,
+    __module__ = 'tower_pb2'
+    # @@protoc_insertion_point(class_scope:Dianjing.protocol.TowerLeaderBoardResponse.Leader)
+    ))
+  ,
+  DESCRIPTOR = _TOWERLEADERBOARDRESPONSE,
+  __module__ = 'tower_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TowerLeaderBoardResponse)
+  ))
+_sym_db.RegisterMessage(TowerLeaderBoardResponse)
+_sym_db.RegisterMessage(TowerLeaderBoardResponse.Leader)
+
+TowerStarRewardNotify = _reflection.GeneratedProtocolMessageType('TowerStarRewardNotify', (_message.Message,), dict(
+  DESCRIPTOR = _TOWERSTARREWARDNOTIFY,
+  __module__ = 'tower_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TowerStarRewardNotify)
+  ))
+_sym_db.RegisterMessage(TowerStarRewardNotify)
+
+TowerStarGetRewardReqeust = _reflection.GeneratedProtocolMessageType('TowerStarGetRewardReqeust', (_message.Message,), dict(
+  DESCRIPTOR = _TOWERSTARGETREWARDREQEUST,
+  __module__ = 'tower_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TowerStarGetRewardReqeust)
+  ))
+_sym_db.RegisterMessage(TowerStarGetRewardReqeust)
+
+TowerStarGetRewardResponse = _reflection.GeneratedProtocolMessageType('TowerStarGetRewardResponse', (_message.Message,), dict(
+  DESCRIPTOR = _TOWERSTARGETREWARDRESPONSE,
+  __module__ = 'tower_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TowerStarGetRewardResponse)
+  ))
+_sym_db.RegisterMessage(TowerStarGetRewardResponse)
 
 
 # @@protoc_insertion_point(module_scope)
