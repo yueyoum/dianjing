@@ -26,8 +26,9 @@ _MONEY_REVERSE = {v: k for k, v in MONEY.iteritems()}
 TALENT_ITEM_ID = 30006
 VIP_EXP_ITEM_ID = 30010
 CLUB_EXP_ITEM_ID = 30011
-STAFF_EXP_POOL_ID = 30017
+WORK_CARD_ID = 30015
 ARENA_POINT_ID = 30016
+STAFF_EXP_POOL_ID = 30017
 
 # 领地建筑产出ID
 TERRITORY_PRODUCT_BUILDING_TABLE = {
@@ -78,6 +79,7 @@ class ResourceClassification(object):
                  'vip_exp',
                  'staff_exp_pool',
                  'arena_point',
+                 'work_card',
                  ]
 
     def __init__(self):
@@ -94,6 +96,7 @@ class ResourceClassification(object):
         # staff exp pool
         self.staff_exp_pool = 0
         self.arena_point = 0
+        self.work_card = 0
 
     def to_json(self):
         data = {k: getattr(self, k) for k in self.__slots__}
@@ -127,6 +130,7 @@ class ResourceClassification(object):
         vip_exp = 0
         staff_exp_pool = 0
         arena_point = 0
+        work_card = 0
 
         for _id, _amount in items:
             if _id == TALENT_ITEM_ID:
@@ -147,6 +151,10 @@ class ResourceClassification(object):
 
             if _id == ARENA_POINT_ID:
                 arena_point += _amount
+                continue
+
+            if _id == WORK_CARD_ID:
+                work_card += _amount
                 continue
 
             if _id in TERRITORY_PRODUCT_BUILDING_TABLE:
@@ -185,6 +193,7 @@ class ResourceClassification(object):
         obj.vip_exp = vip_exp
         obj.staff_exp_pool = staff_exp_pool
         obj.arena_point = arena_point
+        obj.work_card = work_card
         obj.territory_product = territory_product.items()
 
         return obj
@@ -213,6 +222,8 @@ class ResourceClassification(object):
             StaffManger(server_id, char_id).check_original_staff_is_initial_state(self.staff)
         if self.territory_product:
             Territory(server_id, char_id).check_product(self.territory_product)
+        if self.work_card:
+            Territory(server_id, char_id).check_work_card(self.work_card)
         if self.arena_point:
             Arena(server_id, char_id).check_point(self.arena_point)
 
@@ -240,7 +251,10 @@ class ResourceClassification(object):
                     sm.remove_initial_state_staff(_id)
 
         if self.territory_product:
-            Territory(server_id, char_id).check_product(self.territory_product)
+            Territory(server_id, char_id).remove_product(self.territory_product)
+
+        if self.work_card:
+            Territory(server_id, char_id).remove_work_card(self.work_card)
 
         if self.arena_point:
             Arena(server_id, char_id).remove_point(self.arena_point)
@@ -284,6 +298,9 @@ class ResourceClassification(object):
         if self.territory_product:
             Territory(server_id, char_id).add_product(self.territory_product)
 
+        if self.work_card:
+            Territory(server_id, char_id).add_work_card(self.work_card)
+
     def make_protomsg(self):
         msg = MsgDrop()
         for _id, _amount in self.money:
@@ -320,6 +337,11 @@ class ResourceClassification(object):
             msg_item = msg.items.add()
             msg_item.id = ARENA_POINT_ID
             msg_item.amount = self.arena_point
+
+        if self.work_card:
+            msg_item = msg.items.add()
+            msg_item.id = WORK_CARD_ID
+            msg_item.amount = self.work_card
 
         for _id, _amount in self.territory_product:
             msg_item = msg.items.add()

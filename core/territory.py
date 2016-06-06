@@ -374,6 +374,31 @@ class Territory(object):
 
         self.send_notify()
 
+
+    def add_work_card(self, amount):
+        self.doc['work_card'] += amount
+        self.send_notify(building_id=[], slot_id=[])
+
+    def check_work_card(self, amount):
+        new_amount = self.doc['work_card'] - amount
+        if new_amount < 0:
+            raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_WORK_CARD_NOT_ENOUGH"))
+
+        return new_amount
+
+    def remove_work_card(self, amount):
+        new_amount = self.check_work_card(amount)
+        self.doc['work_card'] = new_amount
+
+        MongoTerritory.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'work_card': self.doc['work_card'],
+            }}
+        )
+
+        self.send_notify(building_id=[], slot_id=[])
+
     def get_all_building_objects(self):
         """
 
@@ -422,10 +447,8 @@ class Territory(object):
         config_slot = ConfigTerritoryBuilding.get(building_id).slots[slot_id]
         cost_amount = config_slot.get_cost_amount(building_level, TRAINING_HOURS.index(hour))
 
-        if cost_amount > self.doc['work_card']:
-            raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_WORK_CARD_NOT_ENOUGH"))
-
-        self.doc['work_card'] -= cost_amount
+        new_amount = self.check_work_card(cost_amount)
+        self.doc['work_card'] = new_amount
 
         slot.staff_id = staff_id
         slot.hour = hour
@@ -566,6 +589,7 @@ class Territory(object):
         # 有building_id，没有 slot_id:  同步整个这个building
         # 有building_id, 也有slot_id: 只同步这个building中的这个slot
         # 没有building_id, 有slot_id: 这是错误情况
+        # building_id 和 slot_id 都是 []: 只同步其他信息
 
         bid_sid_map = {}
 
@@ -575,18 +599,20 @@ class Territory(object):
 
             return ConfigTerritoryBuilding.get(_bid).slots.keys()
 
-        if building_id:
-            act = ACT_UPDATE
-            bids = [building_id]
-            if slot_id:
-                bid_sid_map[building_id] = slot_id
-
-        else:
+        if building_id is None:
             if slot_id:
                 raise RuntimeError("Territory send_notify, no building_id, but has slot_id")
 
             act = ACT_INIT
             bids = ConfigTerritoryBuilding.INSTANCES.keys()
+        else:
+            act = ACT_UPDATE
+            if building_id:
+                bids = [building_id]
+                if slot_id:
+                    bid_sid_map[building_id] = slot_id
+            else:
+                bids = []
 
         notify = TerritoryNotify()
         notify.act = act
