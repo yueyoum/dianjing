@@ -191,7 +191,7 @@ def load_config():
         elif item == 'vip.json':
             ConfigVIP.initialize(data)
 
-        elif item == 'connection.json':
+        elif item == 'collection.json':
             ConfigCollection.initialize(data)
 
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))

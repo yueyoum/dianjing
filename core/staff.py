@@ -240,7 +240,7 @@ class StaffRecruit(object):
         # 金币十连抽
         config = ConfigStaffRecruit.get(1)
 
-        cost = [(money_text_to_item_id('gold'), config.cost_value_1)]
+        cost = [(money_text_to_item_id('gold'), config.cost_value_10)]
 
         resource_classify = ResourceClassification.classify(cost)
         resource_classify.check_exist(self.server_id, self.char_id)
@@ -254,7 +254,7 @@ class StaffRecruit(object):
 
         cd_seconds = self.get_cd_seconds(2)
         if cd_seconds:
-            cost = [(money_text_to_item_id('diamond'), config.cost_value_10)]
+            cost = [(money_text_to_item_id('diamond'), config.cost_value_1)]
 
             resource_classify = ResourceClassification.classify(cost)
             resource_classify.check_exist(self.server_id, self.char_id)
