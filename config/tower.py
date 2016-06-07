@@ -44,7 +44,8 @@ class TowerLevel(object):
     __slots__ = [
         'id', 'talent_id', 'staffs',
         'star_reward',
-        'turntable'
+        'turntable',
+        'sale_goods',
     ]
 
     def __init__(self):
@@ -53,6 +54,7 @@ class TowerLevel(object):
         self.staffs = []
         self.star_reward = {}
         self.turntable = {}
+        self.sale_goods = []
 
     def get_star_reward(self, star):
         return self.star_reward[str(star)]
@@ -66,6 +68,17 @@ class TowerLevel(object):
             table[str(k)] = random.sample(v, 3)
         
         return table
+
+    def get_sale_goods(self):
+        if not self.sale_goods:
+            return []
+
+        prob = random.randint(1, 100)
+        for id1, id2, _p in self.sale_goods:
+            if _p >= prob:
+                return [id1, id2]
+
+        return []
 
     def make_club(self):
         """
@@ -173,3 +186,30 @@ class ConfigTowerRankReward(ConfigBase):
                 return v
 
         raise RuntimeError("ConfigTowerRankReward, Error rank: {0}".format(rank))
+
+
+######################
+class SaleGoods(object):
+    __slots__ = [
+        'id', 'price_now', 'vip_need', 'item_id', 'amount'
+    ]
+
+    def __init__(self):
+        self.id = 0
+        self.price_now = 0
+        self.vip_need = 0
+        self.item_id = 0
+        self.amount = 0
+
+class ConfigTowerSaleGoods(ConfigBase):
+    EntityClass = SaleGoods
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: SaleGoods
+        """
+        return super(ConfigTowerSaleGoods, cls).get(_id)

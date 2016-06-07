@@ -19,6 +19,7 @@ from protomsg.tower_pb2 import (
     TowerSweepFinishResponse,
     TowerSweepResponse,
     TowerLeaderBoardResponse,
+    TowerGoodsBuyResponse,
 )
 
 
@@ -42,7 +43,7 @@ def match_report(request):
 
     t = Tower(server_id, char_id)
 
-    resource_classified, new_star, all_list = t.report(key, star)
+    resource_classified, new_star, all_list, sale_goods = t.report(key, star)
 
     response = TowerMatchReportResponse()
     response.ret = 0
@@ -50,6 +51,8 @@ def match_report(request):
     if all_list:
         response.star = new_star
         response.turntable_talent_ids.extend(all_list)
+
+    response.sale_goods = sale_goods
     return ProtobufResponse(response)
 
 def reset(request):
@@ -118,4 +121,17 @@ def get_leader_board(request):
         response_leaders.name = name
         response_leaders.star = star
 
+    return ProtobufResponse(response)
+
+def buy_goods(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+    goods_id = request._proto.goods_id
+
+    t = Tower(server_id, char_id)
+    rc = t.buy_goods(goods_id)
+
+    response = TowerGoodsBuyResponse()
+    response.ret = 0
+    response.drop.MergeFrom(rc.make_protomsg())
     return ProtobufResponse(response)

@@ -358,9 +358,9 @@ class Bag(object):
         config = ConfigItemMerge.get(item_id)
         drop = []
         if config.renown:
-            drop.append((money_text_to_item_id('renown'), config.renown))
+            drop.append((money_text_to_item_id('renown'), config.renown * amount))
         if config.crystal:
-            drop.append((money_text_to_item_id('crystal'), config.crystal))
+            drop.append((money_text_to_item_id('crystal'), config.crystal * amount))
 
         resource_classified = ResourceClassification.classify(drop)
         resource_classified.add(self.server_id, self.char_id)

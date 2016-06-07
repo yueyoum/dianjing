@@ -38,6 +38,11 @@ class VIP(object):
     def level(self):
         return self.doc['vip']
 
+
+    def check(self, need_vip):
+        if self.doc['vip'] < need_vip:
+            raise GameException(ConfigErrorMessage.get_error_id("VIP_LEVEL_NOT_ENOUGH"))
+
     def add_exp(self, exp):
         old_vip = self.doc['vip']
         self.doc['exp'] += exp

@@ -516,6 +516,8 @@ class MongoTower(BaseDocument):
         'max_star_level': 0,
         # 转盘信息
         'turntable': {},
+        # 购买信息 [(id, bought), ...]  按顺序，bought 0 表示没有买过， 1 表示买过了
+        'goods': [],
         # 扫荡完成时间 0 没有扫荡
         'sweep_end_at': 0,
     }

@@ -20,9 +20,10 @@ from core.vip import VIP
 
 from utils.message import MessagePipe
 
-from config import ConfigTowerLevel, ConfigErrorMessage, ConfigTowerResetCost, GlobalConfig
+from config import ConfigTowerLevel, ConfigErrorMessage, ConfigTowerResetCost, GlobalConfig, ConfigTowerSaleGoods
 from protomsg.tower_pb2 import (
     TowerNotify,
+    TowerGoodsNotify,
     TOWER_LEVEL_CURRENT,
     TOWER_LEVEL_FAILURE,
     TOWER_LEVEL_NOT_OPEN,
@@ -145,6 +146,7 @@ class Tower(object):
             updater['levels.{0}'.format(level)] = -1
             updater['turntable'] = {}
             all_list = []
+            goods = []
 
             resource_classified = ResourceClassification.classify([])
         else:
@@ -177,6 +179,14 @@ class Tower(object):
                 all_list = []
                 updater['turntable'] = {}
 
+            # 是否有商品可购买
+            goods = config.get_sale_goods()
+            if goods:
+                self.doc['goods'].append([goods[0], 0])
+                self.doc['goods'].append([goods[1], 0])
+
+                updater['goods'] = self.doc['goods']
+
             resource_classified = ResourceClassification.classify(config.get_star_reward(star))
             resource_classified.add(self.server_id, self.char_id)
 
@@ -188,7 +198,10 @@ class Tower(object):
         )
 
         self.send_notify(act=ACT_UPDATE, levels=update_levels)
-        return resource_classified, self.doc['star'], all_list
+        if goods:
+            self.send_goods_notify()
+
+        return resource_classified, self.doc['star'], all_list, bool(goods)
 
     def reset(self):
         sweep_end_at = self.doc.get('sweep_end_at', 0)
@@ -365,6 +378,48 @@ class Tower(object):
         self.send_notify(act=ACT_UPDATE, levels=[])
         return index
 
+    def buy_goods(self, goods_id):
+        goods = self.doc.get('goods', [])
+
+        for _id, _bought in goods:
+            if _id == goods_id:
+                if _bought:
+                    raise GameException(ConfigErrorMessage.get_error_id("TOWER_GOODS_HAS_BOUGHT"))
+                break
+        else:
+            raise GameException(ConfigErrorMessage.get_error_id("TOWER_GOODS_NOT_EXIST"))
+
+        config = ConfigTowerSaleGoods.get(goods_id)
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("TOWER_GOODS_NOT_EXIST"))
+
+        if config.vip_need:
+            VIP(self.server_id, self.char_id).check(config.vip_need)
+
+        cost = [(money_text_to_item_id('diamond'), config.price_now)]
+        rc = ResourceClassification.classify(cost)
+        rc.check_exist(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id)
+
+        got = [(config.item_id, config.amount)]
+        rc = ResourceClassification.classify(got)
+        rc.add(self.server_id, self.char_id)
+
+        for i in range(len(goods)):
+            if goods[i][0] == goods_id:
+                goods[i][1] = 1
+
+        self.doc['goods'] = goods
+        MongoTower.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'goods': self.doc['goods']
+            }}
+        )
+
+        self.send_goods_notify()
+        return rc
+
     def get_leader_board(self):
         docs = MongoTower.db(self.server_id).find({}, {'max_star': 1}).sort('max_star', -1).limit(5)
         info = {
@@ -376,7 +431,7 @@ class Tower(object):
         for doc in docs:
             _id = doc['_id']
             name = get_club_property(self.server_id, _id, 'name')
-            star = doc['max_star']
+            star = doc.get('max_star', 0)
 
             info['top'].append((_id, name, star))
 
@@ -417,5 +472,25 @@ class Tower(object):
             else:
                 notify_level.status = TOWER_LEVEL_PASSED
                 notify_level.star = star
+
+        MessagePipe(self.char_id).put(msg=notify)
+
+    def send_goods_notify(self):
+        notify = TowerGoodsNotify()
+        goods = self.doc.get('goods', [])
+
+        for i in range(0, len(goods) - 1, 2):
+            id1, b1 = goods[i]
+            id2, b2 = goods[i + 1]
+            if b1 and b2:
+                continue
+
+            notify_goods = notify.goods.add()
+            notify_goods.id = id1
+            notify_goods.has_bought = b1
+
+            notify_goods = notify.goods.add()
+            notify_goods.id = id2
+            notify_goods.has_bought = b2
 
         MessagePipe(self.char_id).put(msg=notify)

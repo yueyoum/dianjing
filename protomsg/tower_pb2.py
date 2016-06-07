@@ -23,7 +23,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='tower.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0btower.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\x1a\x0bmatch.proto\"\xde\x02\n\x0bTowerNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x34\n\x06levels\x18\x03 \x03(\x0b\x32$.Dianjing.protocol.TowerNotify.Level\x12\x0c\n\x04star\x18\x04 \x02(\x05\x12\x0c\n\x04rank\x18\x05 \x02(\x05\x12\x12\n\ntalent_ids\x18\x06 \x03(\x05\x12\x13\n\x0breset_times\x18\x07 \x02(\x05\x12\x16\n\x0emax_star_level\x18\x08 \x02(\x05\x12\x14\n\x0csweep_end_at\x18\t \x02(\x03\x12\x12\n\nreset_cost\x18\n \x02(\x05\x1aY\n\x05Level\x12\r\n\x05level\x18\x01 \x02(\x05\x12\x33\n\x06status\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.TowerLevelStatus\x12\x0c\n\x04star\x18\x03 \x01(\x05\")\n\x16TowerMatchStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"d\n\x17TowerMatchStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"E\n\x17TowerMatchReportReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x0c\n\x04star\x18\x03 \x02(\x05\"\x8b\x01\n\x18TowerMatchReportResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\x12\x0c\n\x04star\x18\x04 \x01(\x05\x12\x1c\n\x14turntable_talent_ids\x18\x05 \x03(\x05\"$\n\x11TowerResetRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"2\n\x12TowerResetResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"$\n\x11TowerSweepRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"2\n\x12TowerSweepResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"*\n\x17TowerSweepFinishRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"_\n\x18TowerSweepFinishResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"6\n\x15TowerTurnTableRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04star\x18\x02 \x02(\x05\"I\n\x16TowerTurnTableResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x11\n\tgot_index\x18\x03 \x01(\x05\"*\n\x17TowerLeaderBoardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\xd1\x01\n\x18TowerLeaderBoardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x43\n\x07leaders\x18\x03 \x03(\x0b\x32\x32.Dianjing.protocol.TowerLeaderBoardResponse.Leader\x12\x0f\n\x07my_rank\x18\x04 \x02(\x05\x12\x0f\n\x07my_star\x18\x05 \x02(\x05\x1a\x30\n\x06Leader\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04star\x18\x03 \x02(\x05\":\n\x15TowerStarRewardNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08rewarded\x18\x02 \x03(\x05\":\n\x19TowerStarGetRewardReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04star\x18\x02 \x02(\x05\"a\n\x1aTowerStarGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*v\n\x10TowerLevelStatus\x12\x16\n\x12TOWER_LEVEL_PASSED\x10\x01\x12\x17\n\x13TOWER_LEVEL_CURRENT\x10\x02\x12\x17\n\x13TOWER_LEVEL_FAILURE\x10\x03\x12\x18\n\x14TOWER_LEVEL_NOT_OPEN\x10\x04')
+  serialized_pb=_b('\n\x0btower.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\x1a\x0bmatch.proto\"\xde\x02\n\x0bTowerNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x34\n\x06levels\x18\x03 \x03(\x0b\x32$.Dianjing.protocol.TowerNotify.Level\x12\x0c\n\x04star\x18\x04 \x02(\x05\x12\x0c\n\x04rank\x18\x05 \x02(\x05\x12\x12\n\ntalent_ids\x18\x06 \x03(\x05\x12\x13\n\x0breset_times\x18\x07 \x02(\x05\x12\x16\n\x0emax_star_level\x18\x08 \x02(\x05\x12\x14\n\x0csweep_end_at\x18\t \x02(\x03\x12\x12\n\nreset_cost\x18\n \x02(\x05\x1aY\n\x05Level\x12\r\n\x05level\x18\x01 \x02(\x05\x12\x33\n\x06status\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.TowerLevelStatus\x12\x0c\n\x04star\x18\x03 \x01(\x05\"\x86\x01\n\x10TowerGoodsNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x38\n\x05goods\x18\x02 \x03(\x0b\x32).Dianjing.protocol.TowerGoodsNotify.Goods\x1a\'\n\x05Goods\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x12\n\nhas_bought\x18\x02 \x02(\x08\"9\n\x14TowerGoodsBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08goods_id\x18\x02 \x02(\x05\"\\\n\x15TowerGoodsBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\")\n\x16TowerMatchStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"d\n\x17TowerMatchStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"E\n\x17TowerMatchReportReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x0c\n\x04star\x18\x03 \x02(\x05\"\x9f\x01\n\x18TowerMatchReportResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\x12\x0c\n\x04star\x18\x04 \x01(\x05\x12\x1c\n\x14turntable_talent_ids\x18\x05 \x03(\x05\x12\x12\n\nsale_goods\x18\x06 \x01(\x08\"$\n\x11TowerResetRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"2\n\x12TowerResetResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"$\n\x11TowerSweepRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"2\n\x12TowerSweepResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"*\n\x17TowerSweepFinishRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"_\n\x18TowerSweepFinishResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"6\n\x15TowerTurnTableRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04star\x18\x02 \x02(\x05\"I\n\x16TowerTurnTableResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x11\n\tgot_index\x18\x03 \x01(\x05\"*\n\x17TowerLeaderBoardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\xd1\x01\n\x18TowerLeaderBoardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x43\n\x07leaders\x18\x03 \x03(\x0b\x32\x32.Dianjing.protocol.TowerLeaderBoardResponse.Leader\x12\x0f\n\x07my_rank\x18\x04 \x02(\x05\x12\x0f\n\x07my_star\x18\x05 \x02(\x05\x1a\x30\n\x06Leader\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04star\x18\x03 \x02(\x05\":\n\x15TowerStarRewardNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08rewarded\x18\x02 \x03(\x05\":\n\x19TowerStarGetRewardReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04star\x18\x02 \x02(\x05\"a\n\x1aTowerStarGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*v\n\x10TowerLevelStatus\x12\x16\n\x12TOWER_LEVEL_PASSED\x10\x01\x12\x17\n\x13TOWER_LEVEL_CURRENT\x10\x02\x12\x17\n\x13TOWER_LEVEL_FAILURE\x10\x03\x12\x18\n\x14TOWER_LEVEL_NOT_OPEN\x10\x04')
   ,
   dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,match__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -53,8 +53,8 @@ _TOWERLEVELSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1714,
-  serialized_end=1832,
+  serialized_start=2024,
+  serialized_end=2142,
 )
 _sym_db.RegisterEnumDescriptor(_TOWERLEVELSTATUS)
 
@@ -204,6 +204,164 @@ _TOWERNOTIFY = _descriptor.Descriptor(
 )
 
 
+_TOWERGOODSNOTIFY_GOODS = _descriptor.Descriptor(
+  name='Goods',
+  full_name='Dianjing.protocol.TowerGoodsNotify.Goods',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.TowerGoodsNotify.Goods.id', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='has_bought', full_name='Dianjing.protocol.TowerGoodsNotify.Goods.has_bought', index=1,
+      number=2, type=8, cpp_type=7, label=2,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=525,
+  serialized_end=564,
+)
+
+_TOWERGOODSNOTIFY = _descriptor.Descriptor(
+  name='TowerGoodsNotify',
+  full_name='Dianjing.protocol.TowerGoodsNotify',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TowerGoodsNotify.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='goods', full_name='Dianjing.protocol.TowerGoodsNotify.goods', index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[_TOWERGOODSNOTIFY_GOODS, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=430,
+  serialized_end=564,
+)
+
+
+_TOWERGOODSBUYREQUEST = _descriptor.Descriptor(
+  name='TowerGoodsBuyRequest',
+  full_name='Dianjing.protocol.TowerGoodsBuyRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TowerGoodsBuyRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='goods_id', full_name='Dianjing.protocol.TowerGoodsBuyRequest.goods_id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=566,
+  serialized_end=623,
+)
+
+
+_TOWERGOODSBUYRESPONSE = _descriptor.Descriptor(
+  name='TowerGoodsBuyResponse',
+  full_name='Dianjing.protocol.TowerGoodsBuyResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.TowerGoodsBuyResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TowerGoodsBuyResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='drop', full_name='Dianjing.protocol.TowerGoodsBuyResponse.drop', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=625,
+  serialized_end=717,
+)
+
+
 _TOWERMATCHSTARTREQUEST = _descriptor.Descriptor(
   name='TowerMatchStartRequest',
   full_name='Dianjing.protocol.TowerMatchStartRequest',
@@ -230,8 +388,8 @@ _TOWERMATCHSTARTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=429,
-  serialized_end=470,
+  serialized_start=719,
+  serialized_end=760,
 )
 
 
@@ -275,8 +433,8 @@ _TOWERMATCHSTARTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=472,
-  serialized_end=572,
+  serialized_start=762,
+  serialized_end=862,
 )
 
 
@@ -320,8 +478,8 @@ _TOWERMATCHREPORTREQEUST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=574,
-  serialized_end=643,
+  serialized_start=864,
+  serialized_end=933,
 )
 
 
@@ -367,6 +525,13 @@ _TOWERMATCHREPORTRESPONSE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='sale_goods', full_name='Dianjing.protocol.TowerMatchReportResponse.sale_goods', index=5,
+      number=6, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -379,8 +544,8 @@ _TOWERMATCHREPORTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=646,
-  serialized_end=785,
+  serialized_start=936,
+  serialized_end=1095,
 )
 
 
@@ -410,8 +575,8 @@ _TOWERRESETREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=787,
-  serialized_end=823,
+  serialized_start=1097,
+  serialized_end=1133,
 )
 
 
@@ -448,8 +613,8 @@ _TOWERRESETRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=825,
-  serialized_end=875,
+  serialized_start=1135,
+  serialized_end=1185,
 )
 
 
@@ -479,8 +644,8 @@ _TOWERSWEEPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=877,
-  serialized_end=913,
+  serialized_start=1187,
+  serialized_end=1223,
 )
 
 
@@ -517,8 +682,8 @@ _TOWERSWEEPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=915,
-  serialized_end=965,
+  serialized_start=1225,
+  serialized_end=1275,
 )
 
 
@@ -548,8 +713,8 @@ _TOWERSWEEPFINISHREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=967,
-  serialized_end=1009,
+  serialized_start=1277,
+  serialized_end=1319,
 )
 
 
@@ -593,8 +758,8 @@ _TOWERSWEEPFINISHRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1011,
-  serialized_end=1106,
+  serialized_start=1321,
+  serialized_end=1416,
 )
 
 
@@ -631,8 +796,8 @@ _TOWERTURNTABLEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1108,
-  serialized_end=1162,
+  serialized_start=1418,
+  serialized_end=1472,
 )
 
 
@@ -676,8 +841,8 @@ _TOWERTURNTABLERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1164,
-  serialized_end=1237,
+  serialized_start=1474,
+  serialized_end=1547,
 )
 
 
@@ -707,8 +872,8 @@ _TOWERLEADERBOARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1239,
-  serialized_end=1281,
+  serialized_start=1549,
+  serialized_end=1591,
 )
 
 
@@ -752,8 +917,8 @@ _TOWERLEADERBOARDRESPONSE_LEADER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1445,
-  serialized_end=1493,
+  serialized_start=1755,
+  serialized_end=1803,
 )
 
 _TOWERLEADERBOARDRESPONSE = _descriptor.Descriptor(
@@ -810,8 +975,8 @@ _TOWERLEADERBOARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1284,
-  serialized_end=1493,
+  serialized_start=1594,
+  serialized_end=1803,
 )
 
 
@@ -848,8 +1013,8 @@ _TOWERSTARREWARDNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1495,
-  serialized_end=1553,
+  serialized_start=1805,
+  serialized_end=1863,
 )
 
 
@@ -886,8 +1051,8 @@ _TOWERSTARGETREWARDREQEUST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1555,
-  serialized_end=1613,
+  serialized_start=1865,
+  serialized_end=1923,
 )
 
 
@@ -931,14 +1096,17 @@ _TOWERSTARGETREWARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1615,
-  serialized_end=1712,
+  serialized_start=1925,
+  serialized_end=2022,
 )
 
 _TOWERNOTIFY_LEVEL.fields_by_name['status'].enum_type = _TOWERLEVELSTATUS
 _TOWERNOTIFY_LEVEL.containing_type = _TOWERNOTIFY
 _TOWERNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _TOWERNOTIFY.fields_by_name['levels'].message_type = _TOWERNOTIFY_LEVEL
+_TOWERGOODSNOTIFY_GOODS.containing_type = _TOWERGOODSNOTIFY
+_TOWERGOODSNOTIFY.fields_by_name['goods'].message_type = _TOWERGOODSNOTIFY_GOODS
+_TOWERGOODSBUYRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 _TOWERMATCHSTARTRESPONSE.fields_by_name['match'].message_type = match__pb2._CLUBMATCH
 _TOWERMATCHREPORTRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 _TOWERSWEEPFINISHRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
@@ -946,6 +1114,9 @@ _TOWERLEADERBOARDRESPONSE_LEADER.containing_type = _TOWERLEADERBOARDRESPONSE
 _TOWERLEADERBOARDRESPONSE.fields_by_name['leaders'].message_type = _TOWERLEADERBOARDRESPONSE_LEADER
 _TOWERSTARGETREWARDRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 DESCRIPTOR.message_types_by_name['TowerNotify'] = _TOWERNOTIFY
+DESCRIPTOR.message_types_by_name['TowerGoodsNotify'] = _TOWERGOODSNOTIFY
+DESCRIPTOR.message_types_by_name['TowerGoodsBuyRequest'] = _TOWERGOODSBUYREQUEST
+DESCRIPTOR.message_types_by_name['TowerGoodsBuyResponse'] = _TOWERGOODSBUYRESPONSE
 DESCRIPTOR.message_types_by_name['TowerMatchStartRequest'] = _TOWERMATCHSTARTREQUEST
 DESCRIPTOR.message_types_by_name['TowerMatchStartResponse'] = _TOWERMATCHSTARTRESPONSE
 DESCRIPTOR.message_types_by_name['TowerMatchReportReqeust'] = _TOWERMATCHREPORTREQEUST
@@ -979,6 +1150,35 @@ TowerNotify = _reflection.GeneratedProtocolMessageType('TowerNotify', (_message.
   ))
 _sym_db.RegisterMessage(TowerNotify)
 _sym_db.RegisterMessage(TowerNotify.Level)
+
+TowerGoodsNotify = _reflection.GeneratedProtocolMessageType('TowerGoodsNotify', (_message.Message,), dict(
+
+  Goods = _reflection.GeneratedProtocolMessageType('Goods', (_message.Message,), dict(
+    DESCRIPTOR = _TOWERGOODSNOTIFY_GOODS,
+    __module__ = 'tower_pb2'
+    # @@protoc_insertion_point(class_scope:Dianjing.protocol.TowerGoodsNotify.Goods)
+    ))
+  ,
+  DESCRIPTOR = _TOWERGOODSNOTIFY,
+  __module__ = 'tower_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TowerGoodsNotify)
+  ))
+_sym_db.RegisterMessage(TowerGoodsNotify)
+_sym_db.RegisterMessage(TowerGoodsNotify.Goods)
+
+TowerGoodsBuyRequest = _reflection.GeneratedProtocolMessageType('TowerGoodsBuyRequest', (_message.Message,), dict(
+  DESCRIPTOR = _TOWERGOODSBUYREQUEST,
+  __module__ = 'tower_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TowerGoodsBuyRequest)
+  ))
+_sym_db.RegisterMessage(TowerGoodsBuyRequest)
+
+TowerGoodsBuyResponse = _reflection.GeneratedProtocolMessageType('TowerGoodsBuyResponse', (_message.Message,), dict(
+  DESCRIPTOR = _TOWERGOODSBUYRESPONSE,
+  __module__ = 'tower_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TowerGoodsBuyResponse)
+  ))
+_sym_db.RegisterMessage(TowerGoodsBuyResponse)
 
 TowerMatchStartRequest = _reflection.GeneratedProtocolMessageType('TowerMatchStartRequest', (_message.Message,), dict(
   DESCRIPTOR = _TOWERMATCHSTARTREQUEST,
