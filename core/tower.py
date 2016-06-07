@@ -243,6 +243,7 @@ class Tower(object):
 
         ValueLogTowerResetTimes(self.server_id, self.char_id).record()
         self.send_notify()
+        self.send_goods_notify()
 
     def _sweep_check(self):
         if not self.doc['max_star_level']:
