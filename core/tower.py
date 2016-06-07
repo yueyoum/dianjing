@@ -237,6 +237,7 @@ class Tower(object):
                 'talents': self.doc['talents'],
                 'star': self.doc['star'],
                 'turntable': {},
+                'goods': [],
             }}
         )
 
