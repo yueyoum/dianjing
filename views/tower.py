@@ -126,10 +126,10 @@ def get_leader_board(request):
 def buy_goods(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
-    goods_id = request._proto.goods_id
+    goods_index = request._proto.goods_id
 
     t = Tower(server_id, char_id)
-    rc = t.buy_goods(goods_id)
+    rc = t.buy_goods(goods_index)
 
     response = TowerGoodsBuyResponse()
     response.ret = 0

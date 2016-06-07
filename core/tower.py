@@ -388,20 +388,17 @@ class Tower(object):
         self.send_notify(act=ACT_UPDATE, levels=[])
         return index
 
-    def buy_goods(self, goods_id):
+    def buy_goods(self, goods_index):
         goods = self.doc.get('goods', [])
+        try:
+            goods_id, bought = goods[goods_index]
+        except IndexError:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-        for _id, _bought in goods:
-            if _id == goods_id:
-                if _bought:
-                    raise GameException(ConfigErrorMessage.get_error_id("TOWER_GOODS_HAS_BOUGHT"))
-                break
-        else:
-            raise GameException(ConfigErrorMessage.get_error_id("TOWER_GOODS_NOT_EXIST"))
+        if bought:
+            raise GameException(ConfigErrorMessage.get_error_id("TOWER_GOODS_HAS_BOUGHT"))
 
         config = ConfigTowerSaleGoods.get(goods_id)
-        if not config:
-            raise GameException(ConfigErrorMessage.get_error_id("TOWER_GOODS_NOT_EXIST"))
 
         if config.vip_need:
             VIP(self.server_id, self.char_id).check(config.vip_need)
@@ -415,11 +412,8 @@ class Tower(object):
         rc = ResourceClassification.classify(got)
         rc.add(self.server_id, self.char_id)
 
-        for i in range(len(goods)):
-            if goods[i][0] == goods_id:
-                goods[i][1] = 1
+        self.doc['goods'][goods_index][1] = 1
 
-        self.doc['goods'] = goods
         MongoTower.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
