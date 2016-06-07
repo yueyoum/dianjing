@@ -55,6 +55,9 @@ class Tower(object):
         self.char_id = char_id
 
         self.doc = MongoTower.db(self.server_id).find_one({'_id': self.char_id})
+        if 'goods' not in self.doc:
+            self.doc['goods'] = []
+
         if not self.doc:
             self.doc = MongoTower.document()
             self.doc['_id'] = self.char_id
@@ -321,10 +324,16 @@ class Tower(object):
                 if self.doc['star'] < 0:
                     self.doc['star'] = 0
 
+            goods = config.get_sale_goods()
+            if goods:
+                self.doc['goods'].append([goods[0], 0])
+                self.doc['goods'].append([goods[1], 0])
+
         self.doc['sweep_end_at'] = 0
         updater['sweep_end_at'] = 0
         updater['star'] = self.doc['star']
         updater['talents'] = self.doc['talents']
+        updater['goods'] = self.doc['goods']
 
         if self.doc['star'] > self.doc.get('max_star', 0):
             self.doc['max_star'] = self.doc['star']
@@ -345,6 +354,7 @@ class Tower(object):
         resource_classified.add(self.server_id, self.char_id)
 
         self.send_notify(act=ACT_UPDATE)
+        self.send_goods_notify()
         return resource_classified
 
     def turntable_pick(self, star):

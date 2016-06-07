@@ -106,7 +106,10 @@ def game_start_handler(server_id, char_id, **kwargs):
     a.send_honor_notify()
     a.send_match_log_notify()
 
-    Tower(server_id, char_id).send_notify()
+    t = Tower(server_id, char_id)
+    t.send_notify()
+    t.send_goods_notify()
+
     Territory(server_id, char_id).send_notify()
     TerritoryStore(server_id, char_id).send_notify()
 
