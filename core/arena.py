@@ -192,8 +192,9 @@ class Arena(object):
         # TODO rule
 
         condition = [
+            {'_id': {'$ne': str(self.char_id)}},
             {'rank': {'$gte': rank - 50}},
-            {'rank': {'$lte': rank + 50}}
+            {'rank': {'$lte': rank + 50}},
         ]
 
         docs = MongoArena.db(self.server_id).find({'$and': condition}, {'_id': 1, 'rank': 1})

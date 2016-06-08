@@ -28,6 +28,18 @@ ALL_TYPES = ConfigStoreType.INSTANCES.keys()
 MAX_REFRESH_TIMES = 10
 
 
+class RefreshInfo(object):
+    __slots__ = ['current_refresh_times', 'remained_refresh_times', 'refresh_cost']
+
+    def __init__(self, server_id, char_id, tp):
+        self.current_refresh_times = ValueLogStoreRefreshTimes(server_id, char_id).count_of_today(sub_id=tp)
+        self.remained_refresh_times = MAX_REFRESH_TIMES - self.current_refresh_times
+        if self.remained_refresh_times < 0:
+            self.remained_refresh_times = 0
+
+        self.refresh_cost = ConfigStoreRefreshCost.get_cost(tp, self.current_refresh_times + 1)
+
+
 class Store(object):
     __slots__ = ['server_id', 'char_id', 'doc']
 
@@ -78,19 +90,6 @@ class Store(object):
 
         return last_at + config.refresh_hour_interval * 3600
 
-    def get_current_refresh_times(self, tp):
-        return ValueLogStoreRefreshTimes(self.server_id, self.char_id).count_of_today(sub_id=tp)
-
-    def get_remained_refresh_times(self, tp):
-        remained_times = MAX_REFRESH_TIMES - self.get_current_refresh_times(tp)
-        if remained_times < 0:
-            remained_times = 0
-
-        return remained_times
-
-    def get_refresh_cost(self, tp):
-        return ConfigStoreRefreshCost.get_cost(tp, self.get_current_refresh_times(tp))
-
     def buy(self, tp, goods_id):
         if tp not in ALL_TYPES:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
@@ -131,12 +130,12 @@ class Store(object):
         if tp not in ALL_TYPES:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
-        remained_times = self.get_remained_refresh_times(tp)
-        if not remained_times:
+        ri = RefreshInfo(self.server_id, self.char_id, tp)
+        if not ri.remained_refresh_times:
             raise GameException(ConfigErrorMessage.get_error_id("STORE_REFRESH_NO_TIMES"))
 
-        diamond = self.get_refresh_cost(tp)
-        resource_classified = ResourceClassification.classify([(money_text_to_item_id('diamond'), diamond)])
+        cost = [(money_text_to_item_id('diamond'), ri.refresh_cost), ]
+        resource_classified = ResourceClassification.classify(cost)
         resource_classified.check_exist(self.server_id, self.char_id)
         resource_classified.remove(self.server_id, self.char_id)
 
@@ -147,7 +146,7 @@ class Store(object):
         if tp not in ALL_TYPES:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
-        if self.next_auto_refresh_timestamp(tp) < arrow.utcnow().timestamp:
+        if self.next_auto_refresh_timestamp(tp) > arrow.utcnow().timestamp:
             return
 
         self.make_refresh(tp, set_timestamp=True)
@@ -181,11 +180,13 @@ class Store(object):
         notify = StoreNotify()
         notify.act = act
         for _t in tps:
+            ri = RefreshInfo(self.server_id, self.char_id, _t)
+
             notify_type = notify.store_types.add()
             notify_type.tp = _t
             notify_type.auto_refresh_at = self.next_auto_refresh_timestamp(_t)
-            notify_type.remained_refresh_times = self.get_remained_refresh_times(_t)
-            notify_type.refresh_cost = self.get_refresh_cost(_t)
+            notify_type.remained_refresh_times = ri.remained_refresh_times
+            notify_type.refresh_cost = ri.refresh_cost
 
             for _g in _get_goods_id_of_tp(_t):
                 _g_data = self.doc['tp'][str(_t)]['goods'][str(_g)]

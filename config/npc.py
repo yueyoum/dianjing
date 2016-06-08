@@ -26,6 +26,7 @@ class _Club(AbstractClub):
         self.id = _id
         self.flag = 1
         self.npc_staffs = npc_staffs
+        self.load_staffs()
 
     def load_staffs(self, **kwargs):
         from core.unit import NPCUnit
