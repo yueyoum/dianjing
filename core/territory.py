@@ -110,7 +110,8 @@ class Slot(object):
             self.hour = data['hour']
             self.report = data['report']
             self.reward = data['reward']
-            self.end_at = self.start_at + self.hour * 3600
+            # TODO real time
+            self.end_at = self.start_at + self.hour / 4 * 60
         else:
             self.open = False
 
@@ -374,7 +375,6 @@ class Territory(object):
 
         self.send_notify()
 
-
     def add_work_card(self, amount):
         self.doc['work_card'] += amount
         self.send_notify(building_id=[], slot_id=[])
@@ -475,7 +475,7 @@ class Territory(object):
                 1,
                 [str(building_exp), ConfigItemNew.get(slot.product_id).name,
                  str(product_amount)],
-                start_at
+                0,
             ),
         ]
 
@@ -483,18 +483,19 @@ class Territory(object):
         config_staff_product = ConfigTerritoryStaffProduct.get(sm.get_staff_object(staff_id).oid)
         if config_staff_product:
             _id, _amount = config_staff_product.get_product(TRAINING_HOURS.index(hour))
+            if _amount:
+                report.append((
+                    2,
+                    [ConfigItemNew.get(_id).name, str(_amount)],
+                    0,
+                ))
 
-            report.append((
-                2,
-                [ConfigItemNew.get(_id).name, str(_amount)],
-                start_at + 600
-            ))
-
-            ri.add(_id, _amount)
+                ri.add(_id, _amount)
 
         # 概率奖励
-        end_at = start_at + hour * 3600
-        extra_at = start_at + 1800
+        # TODO real time
+        end_at = start_at + hour / 4 * 60
+        extra_at = start_at + 10
         while extra_at < end_at:
             # TODO building_level
             _id, _amount = ConfigTerritoryBuilding.get(building_id).slots[slot_id].get_extra_product(1)
@@ -506,7 +507,7 @@ class Territory(object):
             ))
 
             ri.add(_id, _amount)
-            extra_at += 1800
+            extra_at += 10
 
         reward['items'] = ri.items.items()
 
