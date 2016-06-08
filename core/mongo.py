@@ -508,10 +508,17 @@ class MongoTower(BaseDocument):
         'levels': {},
         # 已经购买的talent id 列表
         'talents': [],
-        # 当前获得的星数, 每天清零
-        'star': 0,
-        # 获取到的最多星数
-        'max_star': 0,
+
+        # NOTE
+        # 当前获得的星数, 每次重置清零
+        'current_star': 0,
+        # 今天获取到的最多星数， 每天重置后开始算， 每日排行榜也是根据这个算的，每天清零
+        # 如果当天没有重置，那么就不往这个里面记录
+        # 重置后才记录。。。
+        'today_max_star': 0,
+        # 历史最高星数，仅仅是一个简单的记录
+        'history_max_star': 0,
+
         # 最高三星 (连续的，非连续的不记录)
         'max_star_level': 0,
         # 转盘信息
@@ -523,7 +530,7 @@ class MongoTower(BaseDocument):
     }
 
     COLLECTION = 'tower'
-    INDEXES = ['star', 'max_star',]
+    INDEXES = ['current_star', 'today_max_star',]
 
 # 领地建筑
 class MongoTerritory(BaseDocument):

@@ -55,9 +55,6 @@ class Tower(object):
         self.char_id = char_id
 
         self.doc = MongoTower.db(self.server_id).find_one({'_id': self.char_id})
-        if 'goods' not in self.doc:
-            self.doc['goods'] = []
-
         if not self.doc:
             self.doc = MongoTower.document()
             self.doc['_id'] = self.char_id
@@ -69,8 +66,7 @@ class Tower(object):
         MongoTower.db(server_id).update_many(
             {},
             {'$set': {
-                'star': 0,
-                'max_star': 0,
+                'today_max_star': 0,
             }}
         )
 
@@ -81,12 +77,18 @@ class Tower(object):
 
     def get_current_rank(self):
         # XXX
-        doc = MongoTower.db(self.server_id).find({'star': {'$gt': self.doc['star']}})
+        if not self.doc['current_star']:
+            return 0
+
+        doc = MongoTower.db(self.server_id).find({'current_star': {'$gt': self.doc['current_star']}})
         return doc.count() + 1
 
     def get_day_rank(self):
         # XXX
-        doc = MongoTower.db(self.server_id).find({'max_star': {'$gt': self.doc['max_star']}})
+        if not self.doc['today_max_star']:
+            return 0
+
+        doc = MongoTower.db(self.server_id).find({'today_max_star': {'$gt': self.doc['today_max_star']}})
         return doc.count() + 1
 
     def get_current_level(self):
@@ -99,6 +101,28 @@ class Tower(object):
     def is_all_complete(self):
         # 0　表示可以打，　-1 表示失败，　不能打的没有记录，　这里就用-2表示
         return self.doc['levels'].get(str(MAX_LEVEL), -2) > 0
+
+    def set_today_max_star(self):
+        # 今天重置后的最高星数，
+        # 不重置还不算！！！
+        # 这里不能直接 $set， 得用 $inc
+        # 因为有定时任务在 直接清零
+        ri = ResetInfo(self.server_id, self.char_id)
+        if not ri.reset_times:
+            # 只有当天重置过的，才记录当天最高星数
+            return
+
+        inc_value = self.doc['current_star'] - self.doc['today_max_star']
+        if inc_value <= 0:
+            return
+
+        self.doc['today_max_star'] = self.doc['current_star']
+        MongoTower.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$inc': {
+                'today_max_star': inc_value
+            }}
+        )
 
     def match(self):
         sweep_end_at = self.doc.get('sweep_end_at', 0)
@@ -132,17 +156,18 @@ class Tower(object):
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         update_levels = [level]
-        self.doc['star'] += star
+        self.doc['current_star'] += star
 
         updater = {
-            'star': self.doc['star']
+            'current_star': self.doc['star']
         }
 
-        if self.doc['star'] > self.doc.get('max_star', 0):
-            self.doc['max_star'] = self.doc['star']
-            updater['max_star'] = self.doc['max_star']
+        if self.doc['current_star'] > self.doc['history_max_star']:
+            self.doc['history_max_star'] = self.doc['current_star']
+            updater['history_max_star'] = self.doc['history_max_star']
 
         if star == 0:
+            # 输了
             # NOTE 坑
             self.doc['levels'][str(level)] = -1
 
@@ -153,10 +178,13 @@ class Tower(object):
 
             resource_classified = ResourceClassification.classify([])
         else:
+            self.set_today_max_star()
+
             self.doc['levels'][str(level)] = star
             updater['levels.{0}'.format(level)] = star
 
             if level < MAX_LEVEL:
+                # 开启下一关
                 next_level = level + 1
                 self.doc['levels'][str(next_level)] = 0
 
@@ -164,6 +192,7 @@ class Tower(object):
                 updater['levels.{0}'.format(next_level)] = 0
 
             if star == 3 and level == self.doc['max_star_level'] + 1:
+                # 记录连续最大三星
                 self.doc['max_star_level'] = level
                 updater['max_star_level'] = level
 
@@ -228,14 +257,14 @@ class Tower(object):
 
         self.doc['levels'] = {'1': 0}
         self.doc['talents'] = []
-        self.doc['star'] = 0
+        self.doc['current_star'] = 0
 
         MongoTower.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
                 'levels': self.doc['levels'],
                 'talents': self.doc['talents'],
-                'star': self.doc['star'],
+                'current_star': self.doc['star'],
                 'turntable': {},
                 'goods': [],
             }}
@@ -307,7 +336,7 @@ class Tower(object):
         for i in range(start_level, self.doc['max_star_level'] + 1):
             updater['levels.{0}'.format(i)] = 3
             self.doc['levels'][str(i)] = 3
-            self.doc['star'] += 3
+            self.doc['current_star'] += 3
 
             config = ConfigTowerLevel.get(i)
             drop = config.get_star_reward(3)
@@ -319,12 +348,20 @@ class Tower(object):
 
             turntable = config.get_turntable()
             if turntable:
-                got = random.choice(turntable['9'])
-                self.doc['talents'].append(got)
+                if self.doc['current_star'] >= 9:
+                    got = random.choice(turntable['9'])
+                    self.doc['talents'].append(got)
+                    self.doc['current_star'] -= 9
 
-                self.doc['star'] -= 9
-                if self.doc['star'] < 0:
-                    self.doc['star'] = 0
+                elif self.doc['current_star'] >= 6:
+                    got = random.choice(turntable['6'])
+                    self.doc['talents'].append(got)
+                    self.doc['current_star'] -= 6
+
+                elif self.doc['current_star'] >= 3:
+                    got = random.choice(turntable['3'])
+                    self.doc['talents'].append(got)
+                    self.doc['current_star'] -= 3
 
             goods = config.get_sale_goods()
             if goods:
@@ -333,13 +370,15 @@ class Tower(object):
 
         self.doc['sweep_end_at'] = 0
         updater['sweep_end_at'] = 0
-        updater['star'] = self.doc['star']
+        updater['current_star'] = self.doc['current_star']
         updater['talents'] = self.doc['talents']
         updater['goods'] = self.doc['goods']
 
-        if self.doc['star'] > self.doc.get('max_star', 0):
-            self.doc['max_star'] = self.doc['star']
-            updater['max_star'] = self.doc['max_star']
+        if self.doc['current_star'] > self.doc['history_max_star']:
+            self.doc['history_max_star'] = self.doc['current_star']
+            updater['history_max_star'] = self.doc['history_max_star']
+
+        self.set_today_max_star()
 
         # 扫荡完下一关要可打
         next_level = self.doc['max_star_level'] + 1
@@ -427,29 +466,26 @@ class Tower(object):
         return rc
 
     def get_leader_board(self):
-        docs = MongoTower.db(self.server_id).find({}, {'max_star': 1}).sort('max_star', -1).limit(5)
+        docs = MongoTower.db(self.server_id).find({}, {'today_max_star': 1}).sort('today_max_star', -1).limit(5)
         info = {
             'top': [],
-            'my_star': self.doc.get('max_star', 0),
-            'my_rank': 0,
+            'my_star': self.doc['today_max_star'],
+            'my_rank': self.get_day_rank(),
         }
 
         for doc in docs:
             _id = doc['_id']
             name = get_club_property(self.server_id, _id, 'name')
-            star = doc.get('max_star', 0)
+            star = doc['today_max_star']
 
             info['top'].append((_id, name, star))
-
-        if info['my_star']:
-            info['my_rank'] = self.get_day_rank()
 
         return info
 
     def send_notify(self, act=ACT_INIT, levels=None):
         notify = TowerNotify()
         notify.act = act
-        notify.star = self.doc['star']
+        notify.star = self.doc['current_star']
         notify.rank = self.get_current_rank()
         notify.talent_ids.extend(self.doc['talents'])
 
