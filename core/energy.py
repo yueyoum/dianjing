@@ -78,7 +78,8 @@ class Energy(object):
         if self.doc['current'] >= MAX_ENERGY_SOFT_LIMIT:
             return
 
-        passed_seconds = arrow.utcnow().timestamp - self.doc['last_add_at']
+        now = arrow.utcnow().timestamp
+        passed_seconds = now - self.doc['last_add_at']
         times = passed_seconds / RECOVER_INTERVAL
         if times < 0:
             return
@@ -88,7 +89,8 @@ class Energy(object):
             times = can_add_times
 
         self.doc['current'] += times
-        self.doc['last_add_at'] += times * RECOVER_INTERVAL
+        # NOTE, 这里直接加到当前时间
+        self.doc['last_add_at'] = now
 
         MongoEnergy.db(self.server_id).update_one(
             {'_id': self.char_id},
