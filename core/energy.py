@@ -127,7 +127,6 @@ class Energy(object):
             }}
         )
 
-        self.recover()
         self.send_notify()
 
     def add(self, value):
@@ -143,7 +142,6 @@ class Energy(object):
             }}
         )
 
-        self.recover()
         self.send_notify()
 
     def buy(self):
