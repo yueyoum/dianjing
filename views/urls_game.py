@@ -25,7 +25,6 @@ import views.sponsor
 import views.activity
 import views.active_value
 import views.shop
-import views.auction
 import views.bag
 import views.unit
 import views.formation
@@ -101,10 +100,6 @@ urlpatterns = [
 
     url(r'^itemshop/buy/$', views.shop.item_shop_buy),
 
-    url(r'^auction/search/$', views.auction.search),
-    url(r'^auction/sell/$', views.auction.sell),
-    url(r'^auction/cancel/$', views.auction.cancel),
-    url(r'^auction/bidding/$', views.auction.bidding),
 
     url(r'^bagitem/use/$', views.bag.item_use),
     url(r'^bagitem/merge/$', views.bag.item_merge),
