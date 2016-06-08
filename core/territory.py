@@ -24,7 +24,7 @@ from core.value_log import (
 from core.club import Club
 from core.staff import StaffManger
 from core.friend import FriendManager
-from core.resource import ResourceClassification, TERRITORY_PRODUCT_BUILDING_TABLE
+from core.resource import ResourceClassification, TERRITORY_PRODUCT_BUILDING_TABLE, money_text_to_item_id
 from core.match import ClubMatch
 
 from utils.message import MessagePipe
@@ -232,7 +232,11 @@ class Building(object):
         if not self.open:
             return 0
 
-        return ConfigTerritoryBuilding.get(self.id).levels[self.level].inspire.max_times - self.current_inspire_times()
+        remained = ConfigTerritoryBuilding.get(self.id).levels[self.level].inspire.max_times - self.current_inspire_times()
+        if remained < 0:
+            remained = 0
+
+        return remained
 
     def inspire_cost(self):
         if not self.open:
@@ -240,6 +244,33 @@ class Building(object):
 
         times = self.current_inspire_times() + 1
         return ConfigInspireCost.get(times)
+
+    def make_inspire(self):
+        """
+
+        :rtype: ResourceClassification | None
+        """
+        if not self.remained_inspire_times():
+            raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_NO_INSPIRE_TIMES"))
+
+        cost = [(money_text_to_item_id('diamond'), self.inspire_cost()),]
+        rc = ResourceClassification.classify(cost)
+        rc.check_exist(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id)
+
+        ValueLogTerritoryBuildingInspireTimes(self.server_id, self.char_id).record(sub_id=self.id)
+
+        config = ConfigTerritoryBuilding.get(self.id).levels[self.level].inspire
+
+        self.add_exp(config.exp)
+        reward = config.get_reward()
+        if reward:
+            rc = ResourceClassification.classify(reward)
+            rc.add(self.server_id, self.char_id)
+            return rc
+
+        return None
+
 
     def get_working_slot_amount(self):
         working_slot_amount = 0
@@ -584,6 +615,21 @@ class Territory(object):
             }}
         )
         self.send_notify(building_id=building_id)
+
+    def inspire_building(self, building_id):
+        building = self.get_building_object(building_id, slots_ids=[])
+        drop = building.make_inspire()
+
+        # TODO 格子解锁
+        MongoTerritory.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'buildings.{0}.level'.format(building_id): building.level,
+                'buildings.{0}.exp'.format(building_id): building.exp,
+            }}
+        )
+        self.send_notify(building_id=building_id)
+        return drop
 
     def send_notify(self, building_id=None, slot_id=None):
         # building_id 和 slot_id 都没有: 全部同步

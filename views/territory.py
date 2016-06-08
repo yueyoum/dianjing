@@ -18,6 +18,7 @@ from protomsg.territory_pb2 import (
     TerritoryFriendListResponse,
     TerritoryMatchReportResponse,
     TerritoryStoreBuyResponse,
+    TerritoryInspireResponse,
 )
 
 def start(request):
@@ -123,4 +124,21 @@ def friend_report(request):
     response = TerritoryMatchReportResponse()
     response.ret = 0
     response.drop.MergeFrom(resource_classified.make_protomsg())
+    return ProtobufResponse(response)
+
+
+def inspire(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    building_id = request._proto.building_id
+
+    t = Territory(server_id, char_id)
+    drop = t.inspire_building(building_id)
+
+    response = TerritoryInspireResponse()
+    response.ret = 0
+    if drop:
+        response.drop.MergeFrom(drop.make_protomsg())
+
     return ProtobufResponse(response)

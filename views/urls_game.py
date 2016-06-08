@@ -145,6 +145,7 @@ urlpatterns = [
     url(r'^territory/friend/list/$', views.territory.friend_list),
     url(r'^territory/friend/help/$', views.territory.friend_help),
     url(r'^territory/friend/report/$', views.territory.friend_report),
+    url(r'^territory/inspire/$', views.territory.inspire),
 
     url(r'^store/buy/$', views.store.buy),
     url(r'^store/refresh/$', views.store.refresh),
