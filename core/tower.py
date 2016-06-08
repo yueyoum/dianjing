@@ -159,7 +159,7 @@ class Tower(object):
         self.doc['current_star'] += star
 
         updater = {
-            'current_star': self.doc['star']
+            'current_star': self.doc['current_star']
         }
 
         if self.doc['current_star'] > self.doc['history_max_star']:
@@ -233,7 +233,7 @@ class Tower(object):
         if goods:
             self.send_goods_notify()
 
-        return resource_classified, self.doc['star'], all_list, bool(goods)
+        return resource_classified, self.doc['current_star'], all_list, bool(goods)
 
     def reset(self):
         sweep_end_at = self.doc.get('sweep_end_at', 0)
@@ -264,7 +264,7 @@ class Tower(object):
             {'$set': {
                 'levels': self.doc['levels'],
                 'talents': self.doc['talents'],
-                'current_star': self.doc['star'],
+                'current_star': self.doc['current_star'],
                 'turntable': {},
                 'goods': [],
             }}
@@ -402,7 +402,7 @@ class Tower(object):
         if star not in [3, 6, 9]:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-        if star < self.doc['star']:
+        if star < self.doc['current_star']:
             raise GameException(ConfigErrorMessage.get_error_id("TOWER_STAR_NOT_ENOUGH"))
 
         turntable = self.doc.get('turntable', {})
@@ -412,14 +412,14 @@ class Tower(object):
         got = random.choice(turntable[str(star)])
         index = turntable['all_list'].index(got)
 
-        self.doc['star'] -= star
+        self.doc['current_star'] -= star
         self.doc['talents'].append(got)
 
         MongoTower.db(self.server_id).update_one(
             {'_id': self.char_id},
             {
                 '$set': {
-                    'star': self.doc['star'],
+                    'current_star': self.doc['current_star'],
                     'talents': self.doc['talents'],
                     'turntable': {},
                 }
