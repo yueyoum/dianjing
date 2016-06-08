@@ -140,3 +140,7 @@ class VIP(object):
     @property
     def energy_buy_times(self):
         return ConfigVIP.get(self.doc['vip']).energy_buy_times
+
+    @property
+    def store_refresh_times(self):
+        return ConfigVIP.get(self.doc['vip']).store_refresh_times

@@ -15,6 +15,7 @@ from core.mongo import MongoStore
 from core.value_log import ValueLogStoreRefreshTimes
 from core.club import get_club_property
 from core.resource import ResourceClassification, money_text_to_item_id
+from core.vip import VIP
 
 from utils.message import MessagePipe
 
@@ -25,15 +26,13 @@ from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 ALL_TYPES = ConfigStoreType.INSTANCES.keys()
 
-MAX_REFRESH_TIMES = 10
-
 
 class RefreshInfo(object):
     __slots__ = ['current_refresh_times', 'remained_refresh_times', 'refresh_cost']
 
     def __init__(self, server_id, char_id, tp):
         self.current_refresh_times = ValueLogStoreRefreshTimes(server_id, char_id).count_of_today(sub_id=tp)
-        self.remained_refresh_times = MAX_REFRESH_TIMES - self.current_refresh_times
+        self.remained_refresh_times = VIP(server_id, char_id).store_refresh_times - self.current_refresh_times
         if self.remained_refresh_times < 0:
             self.remained_refresh_times = 0
 
