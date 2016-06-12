@@ -553,14 +553,45 @@ class Staff(AbstractStaff):
                 self.manage += equip_quality_addition.manage
                 self.manage_percent += equip_quality_addition.manage_percent
 
-    def get_total_level_exp(self, percent=100):
-        # 得到一路升级过来的经验
+    def get_cost_items(self, percent=100):
+        # 得到一路升级过来所消耗的物品
+        items = {}
+
+        def _add_to_items(__id, __amount):
+            if __id in items:
+                items[__id] += __amount
+            else:
+                items[__id] = __amount
+
         exp = self.level_exp
         for i in range(self.level - 1, 0, -1):
             exp += ConfigStaffLevelNew.get(i).exp
 
         exp *= 1 + percent / 100.0
-        return int(exp)
+
+        _add_to_items(STAFF_EXP_POOL_ID, int(exp))
+
+        # 升星道具
+        for i in range(self.star - 1, self.get_initial_star() - 1, -1):
+            config = ConfigStaffStar.get(i)
+            amount = config.exp * percent / 100.0 / AVG_STAR_EXP * config.need_item_amount
+            if amount:
+                _add_to_items(config.need_item_id, amount)
+
+        # 升阶道具
+        for i in range(self.step - 1, -1, -1):
+            config = self.config.steps[i]
+            for _id, _amount in config.update_item_need:
+                _amount = _amount * percent / 100.0
+                _add_to_items(_id, _amount)
+
+        results = []
+        for k, v in items.iteritems():
+            v = int(round(v))
+            if v:
+                results.append((k, v))
+
+        return results
 
     def send_notify(self):
         notify = StaffNotify()
@@ -824,10 +855,9 @@ class StaffManger(object):
 
         if tp == 0:
             # 普通分解
-            items = [
-                (STAFF_EXP_POOL_ID, staff.get_total_level_exp(70)),
-                (money_text_to_item_id('crystal'), ConfigStaffNew.get(staff.oid).crystal)
-            ]
+            items = staff.get_cost_items(70)
+            crystal = ConfigStaffNew.get(staff.oid).crystal
+            items.append((money_text_to_item_id('crystal'), crystal))
         else:
             if staff.is_initial_state():
                 raise GameException(ConfigErrorMessage.get_error_id("STAFF_CANNOT_DESTROY_INITIAL_STATE"))
@@ -837,9 +867,7 @@ class StaffManger(object):
             resource_classified.check_exist(self.server_id, self.char_id)
             resource_classified.remove(self.server_id, self.char_id)
 
-            items = [
-                (STAFF_EXP_POOL_ID, staff.get_total_level_exp(100))
-            ]
+            items = staff.get_cost_items(100)
 
         resource_classified = ResourceClassification.classify(items)
         resource_classified.add(self.server_id, self.char_id)
