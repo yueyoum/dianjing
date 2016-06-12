@@ -357,10 +357,10 @@ class Arena(object):
         rank_changed = 0
         my_doc = MongoArena.db(self.server_id).find_one({'_id': str(self.char_id)}, {'rank': 1, 'max_rank': 1})
 
+        my_rank = my_doc['rank']
         my_max_rank = my_doc.get('max_rank', 0)
 
         if win:
-            my_rank = my_doc['rank']
             rival_doc = MongoArena.db(self.server_id).find_one({'_id': rival_id}, {'rank': 1})
             rival_rank = rival_doc['rank']
 
@@ -383,6 +383,7 @@ class Arena(object):
                 )
 
                 rank_changed = my_rank - rival_rank
+                my_rank = rival_rank
 
                 if not is_npc_club(rival_id):
                     Arena(self.server_id, int(rival_id)).add_match_log(3, [my_club_name, str(rank_changed)])
@@ -412,7 +413,7 @@ class Arena(object):
 
         remove_lock_key(my_lock_key)
         remove_lock_key(rival_lock_key)
-        return resource_classified, rank_changed, my_max_rank
+        return resource_classified, rank_changed, my_max_rank, my_rank
 
     def get_today_honor_reward_info(self):
         today_key = str(get_arrow_time_of_today().timestamp)

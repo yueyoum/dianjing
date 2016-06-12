@@ -65,13 +65,14 @@ def match_report(request):
     win = request._proto.win
 
     a = Arena(server_id, char_id)
-    resource_classified, rank_changed, max_rank = a.report(key, win)
+    resource_classified, rank_changed, max_rank, my_rank = a.report(key, win)
 
     response = ArenaMatchReportResponse()
     response.ret = 0
     response.drop.MergeFrom(resource_classified.make_protomsg())
     response.rank_changed = rank_changed
     response.max_rank = max_rank
+    response.my_rank = my_rank
     return ProtobufResponse(response)
 
 

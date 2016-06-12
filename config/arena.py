@@ -50,7 +50,7 @@ class MatchReward(object):
         }
 
         if self.random_items:
-            prob = random.randint(1, self.random_items[-1][2])
+            prob = random.randint(1, 100)
             for _id, _amount, _prob in self.random_items:
                 if _prob >= prob:
                     if _id in items:
