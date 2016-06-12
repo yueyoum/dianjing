@@ -483,6 +483,8 @@ class MongoArena(BaseDocument):
         '_id': null,
         # 排名
         'rank': 0,
+        # 历史最高排名
+        'max_rank': 0,
         # 刷出来的对手
         'rivals': [],
         # 荣耀领奖记录

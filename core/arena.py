@@ -144,6 +144,7 @@ class Arena(object):
                 doc = MongoArena.document()
                 doc['_id'] = _id
                 doc['rank'] = i
+                doc['max_rank'] = i
 
                 npcs.append(doc)
 
@@ -181,6 +182,7 @@ class Arena(object):
             doc = MongoArena.document()
             doc['_id'] = str(self.char_id)
             doc['rank'] = MongoArena.db(self.server_id).count() + 1
+            doc['max_rank'] = doc['rank']
             # 初始化就得刷5个对手出来
             rivals = self.get_rival_list(doc['rank'])
             doc['rivals'] = rivals
@@ -352,17 +354,27 @@ class Arena(object):
 
         my_club_name = get_club_property(self.server_id, self.char_id, 'name')
 
-        if win:
-            doc = MongoArena.db(self.server_id).find_one({'_id': str(self.char_id)}, {'rank': 1})
-            my_rank = doc['rank']
-            doc = MongoArena.db(self.server_id).find_one({'_id': rival_id}, {'rank': 1})
-            rival_rank = doc['rank']
+        rank_changed = 0
+        my_doc = MongoArena.db(self.server_id).find_one({'_id': str(self.char_id)}, {'rank': 1, 'max_rank': 1})
 
-            if my_rank < rival_rank:
+        my_max_rank = my_doc.get('max_rank', 0)
+
+        if win:
+            my_rank = my_doc['rank']
+            rival_doc = MongoArena.db(self.server_id).find_one({'_id': rival_id}, {'rank': 1})
+            rival_rank = rival_doc['rank']
+
+            if my_rank > rival_rank:
                 # 交换排名
+                updater = {'rank': rival_rank}
+
+                if rival_rank > my_max_rank:
+                    updater['max_rank'] = rival_rank
+                    my_max_rank = rival_rank
+
                 MongoArena.db(self.server_id).update_one(
                     {'_id': str(self.char_id)},
-                    {'$set': {'rank': rival_rank}}
+                    {'$set': updater}
                 )
 
                 MongoArena.db(self.server_id).update_one(
@@ -370,8 +382,10 @@ class Arena(object):
                     {'$set': {'rank': my_rank}}
                 )
 
+                rank_changed = my_rank - rival_rank
+
                 if not is_npc_club(rival_id):
-                    Arena(self.server_id, int(rival_id)).add_match_log(3, [my_club_name, str(rival_rank - my_rank)])
+                    Arena(self.server_id, int(rival_id)).add_match_log(3, [my_club_name, str(rank_changed)])
 
             else:
                 if not is_npc_club(rival_id):
@@ -398,7 +412,7 @@ class Arena(object):
 
         remove_lock_key(my_lock_key)
         remove_lock_key(rival_lock_key)
-        return resource_classified
+        return resource_classified, rank_changed, my_max_rank
 
     def get_today_honor_reward_info(self):
         today_key = str(get_arrow_time_of_today().timestamp)
@@ -522,6 +536,7 @@ class Arena(object):
         notify.buy_times = rt.remained_buy_times
         notify.buy_cost = rt.buy_cost
         notify.point = doc.get('point', 0)
+        notify.max_rank = doc.get('max_rank', 0)
 
         for _id, _rank in doc['rivals']:
             notify_rival = notify.rival.add()
