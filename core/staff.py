@@ -183,7 +183,7 @@ class StaffRecruit(object):
                 result.add_score = can_add_score
 
         self.doc['score'] += result.add_score
-        ValueLogStaffRecruitScore(self.server_id, self.char_id).record(sub_id=tp, value=can_add_score)
+        ValueLogStaffRecruitScore(self.server_id, self.char_id).record(sub_id=tp, value=result.add_score)
 
         MongoStaffRecruit.db(self.server_id).update_one(
             {'_id': self.char_id},

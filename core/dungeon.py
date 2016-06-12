@@ -97,7 +97,7 @@ class Dungeon(object):
         ri = TimesInfo(self.server_id, self.char_id, grade_conf.belong)
         if not ri.remained_match_times:
             # 购买
-            self.buy_times(grade_conf.belong, send_notify=False)
+            self.buy_times(grade_conf.belong)
 
         club_two = ConfigNPCFormation.get(grade_conf.npc)
         msg = ClubMatch(club_one, club_two).start()

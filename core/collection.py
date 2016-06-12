@@ -55,4 +55,4 @@ class Collection(object):
         notify = CollectionNotify()
         notify.act = act
         notify.collected_ids.extend(staff_ids)
-        MessagePipe(self.server_id).put(msg=notify)
+        MessagePipe(self.char_id).put(msg=notify)
