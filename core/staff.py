@@ -567,7 +567,7 @@ class Staff(AbstractStaff):
         for i in range(self.level - 1, 0, -1):
             exp += ConfigStaffLevelNew.get(i).exp
 
-        exp *= 1 + percent / 100.0
+        exp = exp * percent / 100.0
 
         _add_to_items(STAFF_EXP_POOL_ID, int(exp))
 

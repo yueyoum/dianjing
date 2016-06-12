@@ -362,6 +362,11 @@ class ResourceClassification(object):
             msg_item.id = WORK_CARD_ID
             msg_item.amount = self.work_card
 
+        if self.staff_exp_pool:
+            msg_item = msg.items.add()
+            msg_item.id = STAFF_EXP_POOL_ID
+            msg_item.amount = self.staff_exp_pool
+
         for _id, _amount in self.territory_product:
             msg_item = msg.items.add()
             msg_item.id = _id
