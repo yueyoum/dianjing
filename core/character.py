@@ -29,10 +29,6 @@ from config.settings import (
 from config import ConfigErrorMessage
 
 
-NORMAL_MAX_ENERGY = 200
-VIP_MAX_ENERGY = 240
-
-
 class Character(object):
     __slots__ = ['server_id', 'char_id']
 
@@ -56,7 +52,6 @@ class Character(object):
         doc['club']['diamond'] = CHAR_INIT_DIAMOND
         doc['club']['crystal'] = CHAR_INIT_CRYSTAL
         doc['club']['gas'] = CHAR_INIT_GAS
-        doc['energy']['power'] = NORMAL_MAX_ENERGY
 
         sm = StaffManger(server_id, char_id)
         f = Formation(server_id, char_id)
@@ -72,7 +67,6 @@ class Character(object):
 
         doc['club']['match_staffs'] = unique_ids
         MongoCharacter.db(server_id).insert_one(doc)
-
 
     @classmethod
     def get_recent_login_char_ids(cls, server_id, recent_days=7, other_conditions=None):

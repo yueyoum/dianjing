@@ -368,7 +368,7 @@ class Arena(object):
                 # 交换排名
                 updater = {'rank': rival_rank}
 
-                if rival_rank > my_max_rank:
+                if rival_rank < my_max_rank:
                     updater['max_rank'] = rival_rank
                     my_max_rank = rival_rank
 

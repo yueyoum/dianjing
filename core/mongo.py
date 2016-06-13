@@ -79,23 +79,10 @@ class MongoCharacter(BaseDocument):
             'crystal': 0,
             'gas': 0,
         },
-
-        # 所属联赛小组
-        'league_group': 0,
-        'league_level': 1,
-        # 是否报名参加了杯赛
-        'in_cup': 0,
-
-        # 体力
-        'energy': {
-            'key': "",              # 充能回调key
-            'power': 0,             # 体力
-            'times': 0,             # 当天花费钻石充能次数
-        },
     }
 
     COLLECTION = "character"
-    INDEXES = ['name', 'last_login', 'league_level', 'in_cup', 'club.level']
+    INDEXES = ['name', 'last_login', 'club.level',]
 
 class MongoStaff(BaseDocument):
     DOCUMENT = {
