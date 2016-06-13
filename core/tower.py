@@ -94,6 +94,15 @@ class Tower(object):
 
         return 0
 
+    def get_total_current_star(self):
+        # 获得本阶段总星数
+        star = 0
+        for v in self.doc['levels'].values():
+            if v > 0:
+                star += v
+
+        return star
+
     def is_all_complete(self):
         # 0　表示可以打，　-1 表示失败，　不能打的没有记录，　这里就用-2表示
         return self.doc['levels'].get(str(MAX_LEVEL), -2) > 0
@@ -158,10 +167,6 @@ class Tower(object):
             'current_star': self.doc['current_star']
         }
 
-        if self.doc['current_star'] > self.doc['history_max_star']:
-            self.doc['history_max_star'] = self.doc['current_star']
-            updater['history_max_star'] = self.doc['history_max_star']
-
         if star == 0:
             # 输了
             # NOTE 坑
@@ -219,6 +224,11 @@ class Tower(object):
             resource_classified.add(self.server_id, self.char_id)
 
             ValueLogTowerWinTimes(self.server_id, self.char_id).record()
+
+        total_star = self.get_total_current_star()
+        if total_star > self.doc['history_max_star']:
+            self.doc['history_max_star'] = total_star
+            updater['history_max_star'] = total_star
 
         MongoTower.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -370,10 +380,6 @@ class Tower(object):
         updater['talents'] = self.doc['talents']
         updater['goods'] = self.doc['goods']
 
-        if self.doc['current_star'] > self.doc['history_max_star']:
-            self.doc['history_max_star'] = self.doc['current_star']
-            updater['history_max_star'] = self.doc['history_max_star']
-
         self.set_today_max_star()
 
         # 扫荡完下一关要可打
@@ -381,6 +387,11 @@ class Tower(object):
         if next_level < MAX_LEVEL:
             self.doc['levels'][str(next_level)] = 0
             updater['levels.{0}'.format(next_level)] = 0
+
+        total_star = self.get_total_current_star()
+        if total_star > self.doc['history_max_star']:
+            self.doc['history_max_star'] = total_star
+            updater['history_max_star'] = total_star
 
         MongoTower.db(self.server_id).update_one(
             {'_id': self.char_id},
