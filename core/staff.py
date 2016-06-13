@@ -129,6 +129,37 @@ class StaffRecruit(object):
     def get_score(self):
         return self.doc['score']
 
+    def add_score(self, value):
+        self.doc['score'] += value
+        MongoStaffRecruit.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$inc': {
+                'score': value
+            }}
+        )
+        self.send_notify()
+
+
+    def check_score(self, value):
+        new_score = self.doc['score'] - value
+        if new_score < 0:
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_RECRUIT_SCORE_NOT_ENOUGH"))
+
+        return new_score
+
+    def remove_score(self, value):
+        new_score = self.check_score(value)
+        self.doc['score'] = new_score
+        MongoStaffRecruit.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'score': new_score
+            }}
+        )
+
+        self.send_notify()
+
+
     def get_point(self, tp):
         return self.doc['point'].get(str(tp), 0)
 

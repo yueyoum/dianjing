@@ -75,15 +75,11 @@ class Tower(object):
         # TODO
         pass
 
-    def get_current_rank(self):
-        # XXX
-        if not self.doc['current_star']:
-            return 0
+    def check_history_max_star(self, star):
+        if star > self.doc['history_max_star']:
+            raise GameException(ConfigErrorMessage.get_error_id("TOWER_HISTORY_MAX_STAR_CHECK_FAILURE"))
 
-        doc = MongoTower.db(self.server_id).find({'current_star': {'$gt': self.doc['current_star']}})
-        return doc.count() + 1
-
-    def get_day_rank(self):
+    def get_today_rank(self):
         # XXX
         if not self.doc['today_max_star']:
             return 0
@@ -402,7 +398,7 @@ class Tower(object):
         if star not in [3, 6, 9]:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-        if star < self.doc['current_star']:
+        if star > self.doc['current_star']:
             raise GameException(ConfigErrorMessage.get_error_id("TOWER_STAR_NOT_ENOUGH"))
 
         turntable = self.doc.get('turntable', {})
@@ -467,26 +463,24 @@ class Tower(object):
 
     def get_leader_board(self):
         docs = MongoTower.db(self.server_id).find({}, {'today_max_star': 1}).sort('today_max_star', -1).limit(5)
-        info = {
-            'top': [],
-            'my_star': self.doc['today_max_star'],
-            'my_rank': self.get_day_rank(),
-        }
 
+        info = []
         for doc in docs:
             _id = doc['_id']
             name = get_club_property(self.server_id, _id, 'name')
             star = doc['today_max_star']
 
-            info['top'].append((_id, name, star))
+            info.append((_id, name, star))
 
         return info
 
     def send_notify(self, act=ACT_INIT, levels=None):
         notify = TowerNotify()
         notify.act = act
-        notify.star = self.doc['current_star']
-        notify.rank = self.get_current_rank()
+        notify.current_star = self.doc['current_star']
+        notify.today_max_star = self.doc['today_max_star']
+        notify.history_max_star = self.doc['history_max_star']
+        notify.today_rank = self.get_today_rank()
         notify.talent_ids.extend(self.doc['talents'])
 
         notify.max_star_level = self.doc['max_star_level']

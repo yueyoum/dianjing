@@ -112,10 +112,8 @@ def get_leader_board(request):
 
     response = TowerLeaderBoardResponse()
     response.ret = 0
-    response.my_rank = info['my_rank']
-    response.my_star = info['my_star']
 
-    for _id, name, star in info['top']:
+    for _id, name, star in info:
         response_leaders = response.leaders.add()
         response_leaders.id = _id
         response_leaders.name = name

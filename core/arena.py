@@ -189,6 +189,16 @@ class Arena(object):
 
             MongoArena.db(self.server_id).insert_one(doc)
 
+    def check_max_rank(self, rank):
+        doc = MongoArena.db(self.server_id).find_one(
+            {'_id': str(self.char_id)},
+            {'max_rank': 1}
+        )
+
+        max_rank = doc.get('max_rank', 0)
+        if rank > max_rank:
+            raise GameException(ConfigErrorMessage.get_error_id("ARENA_MAX_RANK_CHECK_FAILURE"))
+
     def get_rival_list(self, rank):
         # 获取对手列表
         # TODO rule

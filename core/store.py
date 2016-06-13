@@ -16,6 +16,8 @@ from core.value_log import ValueLogStoreRefreshTimes
 from core.club import get_club_property
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.vip import VIP
+from core.tower import Tower
+from core.arena import Arena
 
 from utils.message import MessagePipe
 
@@ -104,6 +106,16 @@ class Store(object):
 
         if data['times'] >= config.times_limit:
             raise GameException(ConfigErrorMessage.get_error_id("STORE_GOODS_NO_TIMES"))
+
+        if config.condition_id == 1:
+            # VIP 等级
+            VIP(self.server_id, self.char_id).check(config.condition_value)
+        elif config.condition_id == 2:
+            # 爬塔历史最高星
+            Tower(self.server_id, self.char_id).check_history_max_star(config.condition_value)
+        elif config.condition_id == 3:
+            # 竞技场历史最高排名
+            Arena(self.server_id, self.char_id).check_max_rank(config.condition_value)
 
         item_id, item_amount, need_id, need_amount = config.content[data['index']]
         resource_classify = ResourceClassification.classify([(need_id, need_amount)])

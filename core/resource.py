@@ -23,6 +23,7 @@ MONEY = {
 
 _MONEY_REVERSE = {v: k for k, v in MONEY.iteritems()}
 
+RECRUIT_STAFF_SCORE_ID = 30005
 TALENT_ITEM_ID = 30006
 VIP_EXP_ITEM_ID = 30010
 CLUB_EXP_ITEM_ID = 30011
@@ -82,6 +83,7 @@ class ResourceClassification(object):
                  'arena_point',
                  'work_card',
                  'energy',
+                 'staff_recruit_score',
                  ]
 
     def __init__(self):
@@ -100,6 +102,7 @@ class ResourceClassification(object):
         self.arena_point = 0
         self.work_card = 0
         self.energy = 0
+        self.staff_recruit_score = 0
 
     def to_json(self):
         data = {k: getattr(self, k) for k in self.__slots__}
@@ -135,6 +138,7 @@ class ResourceClassification(object):
         arena_point = 0
         work_card = 0
         energy = 0
+        staff_recruit_score = 0
 
         for _id, _amount in items:
             if _id == TALENT_ITEM_ID:
@@ -163,6 +167,10 @@ class ResourceClassification(object):
 
             if _id == ENERGY_ID:
                 energy += _amount
+                continue
+
+            if _id == RECRUIT_STAFF_SCORE_ID:
+                staff_recruit_score += _amount
                 continue
 
             if _id in TERRITORY_PRODUCT_BUILDING_TABLE:
@@ -202,6 +210,7 @@ class ResourceClassification(object):
         obj.staff_exp_pool = staff_exp_pool
         obj.arena_point = arena_point
         obj.work_card = work_card
+        obj.staff_recruit_score = staff_recruit_score
         obj.territory_product = territory_product.items()
 
         return obj
@@ -217,7 +226,7 @@ class ResourceClassification(object):
     def check_exist(self, server_id, char_id):
         from core.club import Club
         from core.bag import Bag
-        from core.staff import StaffManger
+        from core.staff import StaffManger, StaffRecruit
         from core.territory import Territory
         from core.arena import Arena
         from core.energy import Energy
@@ -237,11 +246,13 @@ class ResourceClassification(object):
             Arena(server_id, char_id).check_point(self.arena_point)
         if self.energy:
             Energy(server_id, char_id).check(self.energy)
+        if self.staff_recruit_score:
+            StaffRecruit(server_id, char_id).check_score(self.staff_recruit_score)
 
     def remove(self, server_id, char_id):
         from core.club import Club
         from core.bag import Bag
-        from core.staff import StaffManger
+        from core.staff import StaffManger, StaffRecruit
         from core.territory import Territory
         from core.arena import Arena
         from core.energy import Energy
@@ -274,10 +285,13 @@ class ResourceClassification(object):
         if self.energy:
             Energy(server_id, char_id).remove(self.energy)
 
+        if self.staff_recruit_score:
+            StaffRecruit(server_id, char_id).remove_score(self.staff_recruit_score)
+
     def add(self, server_id, char_id):
         from core.club import Club
         from core.bag import Bag
-        from core.staff import StaffManger
+        from core.staff import StaffManger, StaffRecruit
         from core.talent import TalentManager
         from core.territory import Territory
         from core.vip import VIP
@@ -319,6 +333,9 @@ class ResourceClassification(object):
 
         if self.energy:
             Energy(server_id, char_id).add(self.energy)
+
+        if self.staff_recruit_score:
+            StaffRecruit(server_id, char_id).add_score(self.staff_recruit_score)
 
     def make_protomsg(self):
         msg = MsgDrop()
@@ -366,6 +383,11 @@ class ResourceClassification(object):
             msg_item = msg.items.add()
             msg_item.id = STAFF_EXP_POOL_ID
             msg_item.amount = self.staff_exp_pool
+
+        if self.staff_recruit_score:
+            msg_item = msg.items.add()
+            msg_item.id = RECRUIT_STAFF_SCORE_ID
+            msg_item.amount = self.staff_recruit_score
 
         for _id, _amount in self.territory_product:
             msg_item = msg.items.add()
