@@ -112,16 +112,17 @@ class Tower(object):
         # 不重置还不算！！！
         # 这里不能直接 $set， 得用 $inc
         # 因为有定时任务在 直接清零
+        # NOTE: 因为用了 sef.doc 的数据，必须在 设置完后 才能调用
         ri = ResetInfo(self.server_id, self.char_id)
         if not ri.reset_times:
             # 只有当天重置过的，才记录当天最高星数
             return
 
-        inc_value = self.doc['current_star'] - self.doc['today_max_star']
+        inc_value = self.get_total_current_star() - self.doc['today_max_star']
         if inc_value <= 0:
             return
 
-        self.doc['today_max_star'] = self.doc['current_star']
+        self.doc['today_max_star'] += inc_value
         MongoTower.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$inc': {
@@ -179,8 +180,6 @@ class Tower(object):
 
             resource_classified = ResourceClassification.classify([])
         else:
-            self.set_today_max_star()
-
             self.doc['levels'][str(level)] = star
             updater['levels.{0}'.format(level)] = star
 
@@ -225,6 +224,7 @@ class Tower(object):
 
             ValueLogTowerWinTimes(self.server_id, self.char_id).record()
 
+        self.set_today_max_star()
         total_star = self.get_total_current_star()
         if total_star > self.doc['history_max_star']:
             self.doc['history_max_star'] = total_star
@@ -380,13 +380,13 @@ class Tower(object):
         updater['talents'] = self.doc['talents']
         updater['goods'] = self.doc['goods']
 
-        self.set_today_max_star()
-
         # 扫荡完下一关要可打
         next_level = self.doc['max_star_level'] + 1
         if next_level < MAX_LEVEL:
             self.doc['levels'][str(next_level)] = 0
             updater['levels.{0}'.format(next_level)] = 0
+
+        self.set_today_max_star()
 
         total_star = self.get_total_current_star()
         if total_star > self.doc['history_max_star']:
