@@ -60,11 +60,11 @@ TRAINING_HOURS = [4, 8, 12]
 BUILDING_PRODUCT_ID_TABLE = {v: k for k, v in TERRITORY_PRODUCT_BUILDING_TABLE.iteritems()}
 
 STAFF_QUALITY_MODULUS = {
-    1: 0.5,
-    2: 0.6,
-    3: 0.7,
-    4: 0.8,
-    5: 0.9,
+    1: 0.7,
+    2: 0.8,
+    3: 0.9,
+    4: 1.0,
+    5: 1.1,
 }
 
 # TODO real time
@@ -133,11 +133,10 @@ class Slot(object):
 
         quality_modulus = STAFF_QUALITY_MODULUS[ConfigItemNew.get(staff_obj.oid).quality]
         slot_modulus = ConfigTerritoryBuilding.get(self.building_id).slots[self.id].exp_modulus
-        exp = (100 * math.pow(self.building_level, 0.9) +
-               100 * math.pow(self.hour, 0.5)) * quality_modulus * slot_modulus
-        product_amount = (150 * math.pow(self.building_level, 0.8) +
-                          150 * math.pow(self.hour, 0.6)) * quality_modulus * slot_modulus
 
+        exp = 10 * math.pow(self.hour, 0.8) * quality_modulus * slot_modulus
+        product_amount = 100 * math.pow(self.hour, 0.8) * quality_modulus * slot_modulus
+        
         return int(exp), int(product_amount)
 
     def make_protomsg(self):
