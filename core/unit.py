@@ -133,15 +133,6 @@ class Unit(AbstractUnit):
         MessagePipe(self.char_id).put(msg=notify)
 
 
-def get_init_units():
-    units = []
-    for k, v in ConfigUnitUnLock.INSTANCES.items():
-        if v.need_club_level == 0 and not v.need_unit_level:
-            units.append(k)
-
-    return units
-
-
 class UnitManager(object):
     __slots__ = ['server_id', 'char_id']
 

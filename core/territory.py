@@ -55,7 +55,7 @@ from protomsg.territory_pb2 import (
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
 # TODO
-INIT_TERRITORY_BUILDING_IDS = [101, 102, 103]
+INIT_WORK_CARD = 5000
 TRAINING_HOURS = [4, 8, 12]
 BUILDING_PRODUCT_ID_TABLE = {v: k for k, v in TERRITORY_PRODUCT_BUILDING_TABLE.iteritems()}
 
@@ -201,6 +201,8 @@ class Building(object):
         max_level = max(config.levels.keys())
 
         self.exp += exp
+
+        level_up = False
         while True:
             if self.level >= max_level:
                 self.level = max_level
@@ -215,6 +217,10 @@ class Building(object):
 
             self.exp -= update_need_exp
             self.level += 1
+
+            level_up = True
+
+        return level_up
 
     def add_product(self, amount):
         self.product_amount += amount
@@ -232,7 +238,8 @@ class Building(object):
         if not self.open:
             return 0
 
-        remained = ConfigTerritoryBuilding.get(self.id).levels[self.level].inspire.max_times - self.current_inspire_times()
+        remained = ConfigTerritoryBuilding.get(self.id).levels[
+                       self.level].inspire.max_times - self.current_inspire_times()
         if remained < 0:
             remained = 0
 
@@ -253,7 +260,7 @@ class Building(object):
         if not self.remained_inspire_times():
             raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_NO_INSPIRE_TIMES"))
 
-        cost = [(money_text_to_item_id('diamond'), self.inspire_cost()),]
+        cost = [(money_text_to_item_id('diamond'), self.inspire_cost()), ]
         rc = ResourceClassification.classify(cost)
         rc.check_exist(self.server_id, self.char_id)
         rc.remove(self.server_id, self.char_id)
@@ -262,15 +269,14 @@ class Building(object):
 
         config = ConfigTerritoryBuilding.get(self.id).levels[self.level].inspire
 
-        self.add_exp(config.exp)
+        level_up = self.add_exp(config.exp)
         reward = config.get_reward()
         if reward:
             rc = ResourceClassification.classify(reward)
             rc.add(self.server_id, self.char_id)
-            return rc
+            return rc, level_up
 
-        return None
-
+        return None, level_up
 
     def get_working_slot_amount(self):
         working_slot_amount = 0
@@ -342,21 +348,51 @@ class Territory(object):
         if not self.doc:
             self.doc = MongoTerritory.document()
             self.doc['_id'] = self.char_id
-            # TODO
-            self.doc['work_card'] = 5000
+            self.doc['work_card'] = INIT_WORK_CARD
 
-            for i in INIT_TERRITORY_BUILDING_IDS:
+            for i in ConfigTerritoryBuilding.INSTANCES.keys():
                 building_doc = MongoTerritory.document_building()
-                building_config = ConfigTerritoryBuilding.get(i)
-
-                for slot_id, slot_config in building_config.slots.iteritems():
-                    if slot_config.need_building_level < 1:
-                        # TODO VIP check
-                        building_doc['slots'][str(slot_id)] = MongoTerritory.document_slot()
-
                 self.doc['buildings'][str(i)] = building_doc
 
             MongoTerritory.db(self.server_id).insert_one(self.doc)
+
+        self.try_unlock_slot(send_notify=False)
+
+    def try_unlock_slot(self, send_notify=True):
+        from core.vip import VIP
+
+        vip_level = VIP(self.server_id, self.char_id).level
+        updater = {}
+
+        bid_sids = []
+
+        for building_id, config_building in ConfigTerritoryBuilding.INSTANCES.iteritems():
+            for slot_id, config_slot in config_building.slots.iteritems():
+                if str(slot_id) in self.doc['buildings'][str(building_id)]['slots']:
+                    # 已经开启了
+                    continue
+
+                if config_slot.need_vip_level > vip_level:
+                    continue
+
+                if config_slot.need_building_level > self.doc['buildings'][str(building_id)]['level']:
+                    continue
+
+                slot_doc = MongoTerritory.document_slot()
+                self.doc['buildings'][str(building_id)]['slots'][str(slot_id)] = slot_doc
+                updater['buildings.{0}.slots.{1}'.format(building_id, slot_id)] = slot_doc
+
+                bid_sids.append((building_id, slot_id))
+
+        if updater:
+            MongoTerritory.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': updater}
+            )
+
+        if send_notify:
+            for bid, sid in bid_sids:
+                self.send_notify(building_id=bid, slot_id=sid)
 
     def check_product(self, items):
         # items: [(_id, amount),]
@@ -573,7 +609,7 @@ class Territory(object):
 
         reward = slot.reward
 
-        building.add_exp(reward['building_exp'])
+        level_up = building.add_exp(reward['building_exp'])
         building.add_product(reward['product_amount'])
 
         empty_slot_doc = MongoTerritory.document_slot()
@@ -593,6 +629,9 @@ class Territory(object):
             }}
         )
 
+        if level_up:
+            self.try_unlock_slot()
+
         self.send_notify(building_id=building_id, slot_id=slot_id)
 
         resource_classified = ResourceClassification.classify(reward['items'])
@@ -604,9 +643,8 @@ class Territory(object):
 
     def add_building_exp(self, building_id, exp):
         building = self.get_building_object(building_id, slots_ids=[])
-        building.add_exp(exp)
+        level_up = building.add_exp(exp)
 
-        # TODO 格子解锁
         MongoTerritory.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
@@ -614,13 +652,16 @@ class Territory(object):
                 'buildings.{0}.exp'.format(building_id): building.exp,
             }}
         )
+
+        if level_up:
+            self.try_unlock_slot()
+
         self.send_notify(building_id=building_id)
 
     def inspire_building(self, building_id):
         building = self.get_building_object(building_id, slots_ids=[])
-        drop = building.make_inspire()
+        drop, level_up = building.make_inspire()
 
-        # TODO 格子解锁
         MongoTerritory.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
@@ -628,6 +669,10 @@ class Territory(object):
                 'buildings.{0}.exp'.format(building_id): building.exp,
             }}
         )
+
+        if level_up:
+            self.try_unlock_slot()
+
         self.send_notify(building_id=building_id)
         return drop
 
