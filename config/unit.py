@@ -165,6 +165,7 @@ class UnitUnLock(object):
 class ConfigUnitUnLock(ConfigBase):
     EntityClass = UnitUnLock
     INSTANCES = {}
+    """:type: dict[int, UnitUnLock]"""
     FILTER_CACHE = {}
 
     @classmethod

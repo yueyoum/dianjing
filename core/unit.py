@@ -152,47 +152,49 @@ class UnitManager(object):
         if not MongoUnit.exist(self.server_id, self.char_id):
             doc = MongoUnit.document()
             doc['_id'] = self.char_id
-
-            init_ids = get_init_units()
-
-            for _id in init_ids:
-                unit_doc = MongoUnit.document_unit()
-                doc['units'][str(_id)] = unit_doc
-
             MongoUnit.db(self.server_id).insert_one(doc)
 
-    def unlock_club_level_up_listener(self, club_level):
-        pass
+        self.try_unlock(send_notify=False)
 
-    def unlock_unit_level_up_listener(self, unit_id, unit_level):
-        pass
-
-    def _unlock(self, _id):
+    def try_unlock(self, send_notify=True):
         doc = MongoUnit.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'units': 1}
         )
 
-        if _id in doc['units']:
-            # already unlocked
+        unlocked_unit_ids = []
+
+        club_level = get_club_property(self.server_id, self.char_id, 'level')
+        for unit_id, config in ConfigUnitUnLock.INSTANCES.iteritems():
+            if str(unit_id) in doc['units']:
+                continue
+
+            if config.need_club_level > club_level:
+                continue
+
+            condition_unit_level = True
+            for _uid, _lv in config.need_unit_level:
+                this_unit_level = doc['units'].get(str(_uid), {}).get('level', 0)
+                if _lv > this_unit_level:
+                    condition_unit_level = False
+                    break
+
+            if condition_unit_level:
+                unlocked_unit_ids.append(unit_id)
+
+        if not unlocked_unit_ids:
             return
 
-        unlock_conf = ConfigUnitUnLock.get(_id)
-        club_lv = get_club_property(self.server_id, self.char_id, 'level')
-        if club_lv < unlock_conf.need_club_level:
-            raise GameException(ConfigErrorMessage.get_error_id("UNIT_UNLOCK_CLUB_LEVEL_NOT_ENOUGH"))
-
-        for _id, level in unlock_conf.need_unit_level:
-            if doc['units'][str(_id)] < level:
-                raise GameException(ConfigErrorMessage.get_error_id("UNIT_UNLOCK_UNIT_LEVEL_NOT_ENOUGH"))
-
-        unit_doc = MongoUnit.document_unit()
+        updater = {
+            'units.{0}'.format(i): MongoUnit.document_unit() for i in unlocked_unit_ids
+            }
         MongoUnit.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': {'units.{0}'.format(_id): unit_doc}},
+            {'$set': updater}
         )
 
-        self.send_notify(ids=[_id])
+        if send_notify:
+            self.send_notify(ids=unlocked_unit_ids)
 
     def is_unit_unlocked(self, _id):
         doc = MongoUnit.db(self.server_id).find_one(
@@ -278,6 +280,8 @@ class UnitManager(object):
 
         unit.level_up()
         self.after_change(uid)
+
+        self.try_unlock()
 
         ValueLogUnitLevelUpTimes(self.server_id, self.char_id).record()
 
