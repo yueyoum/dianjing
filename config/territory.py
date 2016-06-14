@@ -22,7 +22,7 @@ class _Inspire(object):
         prob = random.randint(1, 100)
         for _id, _amount, _prob in self.reward:
             if _prob >= prob:
-                return [_id, _amount]
+                return [(_id, _amount)]
 
         return []
 

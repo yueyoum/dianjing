@@ -871,7 +871,7 @@ class TerritoryFriend(object):
         MongoTerritory.db(self.server_id).update_one(
             {'_id': friend_id},
             {'$set': {
-                'buildings.{0}.event_id': 0
+                'buildings.{0}.event_id'.format(building_id): 0
             }}
         )
 
