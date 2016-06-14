@@ -80,7 +80,7 @@ class TaskMain(object):
 
 def get_task_condition_value(server_id, char_id, condition_id):
     config = ConfigTaskCondition.get(condition_id)
-    if not config.server_module:
+    if not config or not config.server_module:
         # TODO
         return 0
 

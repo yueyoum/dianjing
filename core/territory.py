@@ -136,7 +136,7 @@ class Slot(object):
 
         exp = 10 * math.pow(self.hour, 0.8) * quality_modulus * slot_modulus
         product_amount = 100 * math.pow(self.hour, 0.8) * quality_modulus * slot_modulus
-        
+
         return int(exp), int(product_amount)
 
     def make_protomsg(self):
