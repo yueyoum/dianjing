@@ -291,6 +291,8 @@ class Tower(object):
         self.doc['levels'] = {'1': 0}
         self.doc['talents'] = []
         self.doc['current_star'] = 0
+        self.doc['turntable'] = {}
+        self.doc['goods'] = []
 
         MongoTower.db(self.server_id).update_one(
             {'_id': self.char_id},

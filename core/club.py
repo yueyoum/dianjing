@@ -118,7 +118,7 @@ class Club(AbstractClub):
             v.make_cache()
 
 
-    def check_money(self, diamond=0, gold=0, crystal=0, gas=0):
+    def check_money(self, diamond=0, gold=0, crystal=0, gas=0, renown=0):
         # TODO 其他货币
         if diamond > self.diamond:
             raise GameException(ConfigErrorMessage.get_error_id("DIAMOND_NOT_ENOUGH"))
@@ -128,6 +128,8 @@ class Club(AbstractClub):
             raise GameException(ConfigErrorMessage.get_error_id("CRYSTAL_NOT_ENOUGH"))
         if gas > self.gas:
             raise GameException(ConfigErrorMessage.get_error_id("GAS_NOT_ENOUGH"))
+        if renown > self.renown:
+            raise GameException(ConfigErrorMessage.get_error_id("RENOWN_NOT_ENOUGH"))
 
     def update(self, **kwargs):
         exp = kwargs.get('exp', 0)
@@ -153,6 +155,8 @@ class Club(AbstractClub):
             raise GameException(ConfigErrorMessage.get_error_id("CRYSTAL_NOT_ENOUGH"))
         if self.gas < 0:
             raise GameException(ConfigErrorMessage.get_error_id("GAS_NOT_ENOUGH"))
+        if self.renown < 0:
+            raise GameException(ConfigErrorMessage.get_error_id("RENOWN_NOT_ENOUGH"))
 
         # update
         level_changed = False

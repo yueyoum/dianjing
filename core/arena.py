@@ -288,7 +288,7 @@ class Arena(object):
         new_point = self.check_point(point)
         MongoArena.db(self.server_id).update_one(
             {'_id': str(self.char_id)},
-            {'$set': new_point}
+            {'$set': {'point': new_point}}
         )
         self.send_notify()
 
