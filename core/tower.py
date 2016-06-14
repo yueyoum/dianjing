@@ -13,14 +13,24 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoTower
 from core.club import Club, get_club_property
+from core.character import Character
 from core.match import ClubMatch
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.value_log import ValueLogTowerResetTimes, ValueLogTowerWinTimes
 from core.vip import VIP
+from core.mail import MailManager
 
 from utils.message import MessagePipe
 
-from config import ConfigTowerLevel, ConfigErrorMessage, ConfigTowerResetCost, GlobalConfig, ConfigTowerSaleGoods
+from config import (
+    ConfigTowerLevel,
+    ConfigErrorMessage,
+    ConfigTowerResetCost,
+    GlobalConfig,
+    ConfigTowerSaleGoods,
+    ConfigTowerRankReward,
+)
+
 from protomsg.tower_pb2 import (
     TowerNotify,
     TowerGoodsNotify,
@@ -72,8 +82,25 @@ class Tower(object):
 
     @classmethod
     def send_rank_reward(cls, server_id):
-        # TODO
-        pass
+        char_ids = Character.get_recent_login_char_ids(server_id, recent_days=14)
+        char_ids = [str(i) for i in char_ids]
+
+        docs = MongoTower.db(server_id).find({'_id': {'$in': char_ids}}, {'_id': 1}).sort('today_max_star', -1)
+
+        rank = 1
+        for doc in docs:
+            cid = doc['_id']
+
+            config = ConfigTowerRankReward.get(rank)
+
+            rc = ResourceClassification.classify(config.reward)
+
+            m = MailManager(server_id, cid)
+            m.add(
+                config.mail_title,
+                config.mail_content,
+                attachment=rc.to_json(),
+            )
 
     def check_history_max_star(self, star):
         if star > self.doc['history_max_star']:

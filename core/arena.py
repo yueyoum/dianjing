@@ -102,7 +102,7 @@ class Arena(object):
         char_ids = Character.get_recent_login_char_ids(server_id, recent_days=14)
         char_ids = [str(i) for i in char_ids]
 
-        docs = MongoArena.db(server_id).find({'_id': {'$in': char_ids}})
+        docs = MongoArena.db(server_id).find({'_id': {'$in': char_ids}}, {'rank': 1})
         for doc in docs:
             cid = doc['_id']
             rank = doc['rank']
@@ -111,7 +111,7 @@ class Arena(object):
 
             rc = ResourceClassification.classify(config.reward)
 
-            m = MailManager(server_id, cid)
+            m = MailManager(server_id, int(cid))
             m.add(
                 config.mail_title,
                 config.mail_content,

@@ -181,6 +181,10 @@ class ConfigTowerRankReward(ConfigBase):
 
     @classmethod
     def get(cls, rank):
+        """
+
+        :rtype: RankReward
+        """
         for k, v in cls.LIST:
             if rank >= k:
                 return v
