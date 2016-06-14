@@ -155,6 +155,9 @@ class Bag(object):
         assert config.tp in BAG_CAN_CONTAINS_TYPE
 
         if config.tp == TYPE_EQUIPMENT:
+            if not ConfigEquipmentNew.get(item_id).levels:
+                raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_HAS_NO_LEVEL_CAN_NOT_ADD"))
+
             level = kwargs.get('level', 0)
             amount = kwargs.get('amount', 1)
             new_state = self._add_equipment(item_id, level, amount)

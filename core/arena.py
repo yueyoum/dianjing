@@ -219,13 +219,18 @@ class Arena(object):
         range_1, range_2, range_3, range_4 = ConfigArenaSearchRange.get(rank)
 
         results = []
-        res1 = _query(rank - range_1, rank - range_2)
-        if len(res1) > 3:
-            res1 = random.sample(res1, 3)
 
+        # 先取后面的，如果后面没人 （新角色第一次进入，是排最后一名的）
         res2 = _query(rank - range_3, rank - range_4)
         if len(res2) > 2:
             res2 = random.sample(res2, 2)
+
+        need_res1_amount = 5 - len(res2)
+
+        res1 = _query(rank - range_1, rank - range_2)
+
+        if len(res1) > need_res1_amount:
+            res1 = random.sample(res1, need_res1_amount)
 
         results.extend(res1)
         results.extend(res2)
