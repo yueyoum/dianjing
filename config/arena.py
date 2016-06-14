@@ -69,6 +69,16 @@ class BuyTimesCost(object):
         self.diamond = 0
 
 
+class SearchRange(object):
+    __slots__ = ['id', 'range_1', 'range_2', 'range_3', 'range_4']
+    def __init__(self):
+        self.id = 0
+        self.range_1 = 0
+        self.range_2 = 0
+        self.range_3 = 0
+        self.range_4 = 0
+
+
 class ConfigArenaNPC(ConfigBase):
     EntityClass = ArenaNPC
     INSTANCES = {}
@@ -169,3 +179,27 @@ class ConfigArenaBuyTimesCost(ConfigBase):
                 return v
 
         raise RuntimeError("ConfigArenaBuyTimesCost, Error times: {0}".format(times))
+
+
+class ConfigArenaSearchRange(ConfigBase):
+    EntityClass = SearchRange
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    LIST = []
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigArenaSearchRange, cls).initialize(fixture)
+        for k, v in cls.INSTANCES.iteritems():
+            cls.LIST.append((k, v))
+
+        cls.LIST.sort(key=lambda item: item[0], reverse=True)
+
+    @classmethod
+    def get(cls, rank):
+        for k, v in cls.LIST:
+            if rank >= k:
+                return v.range_1, v.range_2, v.range_3, v.range_4
+
+        raise RuntimeError("ConfigArenaSearchRange, Error rank: {0}".format(rank))

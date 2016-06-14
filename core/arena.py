@@ -24,7 +24,7 @@ from core.character import Character
 from core.mail import MailManager
 
 from config import ConfigErrorMessage, ConfigArenaNPC, ConfigNPCFormation, ConfigArenaHonorReward, \
-    ConfigArenaMatchReward, ConfigArenaBuyTimesCost, ConfigArenaRankReward
+    ConfigArenaMatchReward, ConfigArenaBuyTimesCost, ConfigArenaRankReward, ConfigArenaSearchRange
 
 from utils.functional import make_string_id, get_arrow_time_of_today
 from utils.message import MessagePipe
@@ -201,21 +201,34 @@ class Arena(object):
 
     def get_rival_list(self, rank):
         # 获取对手列表
-        # TODO rule
+        def _query(low, high):
+            condition = [
+                {'_id': {'$ne': str(self.char_id)}},
+                {'rank': {'$gte': low}},
+                {'rank': {'$lte': high}},
+            ]
 
-        condition = [
-            {'_id': {'$ne': str(self.char_id)}},
-            {'rank': {'$gte': rank - 50}},
-            {'rank': {'$lte': rank + 50}},
-        ]
+            docs = MongoArena.db(self.server_id).find({'$and': condition}, {'_id': 1, 'rank': 1})
 
-        docs = MongoArena.db(self.server_id).find({'$and': condition}, {'_id': 1, 'rank': 1})
+            res = []
+            for doc in docs:
+                res.append((doc['_id'], doc['rank']))
+
+            return res
+
+        range_1, range_2, range_3, range_4 = ConfigArenaSearchRange.get(rank)
 
         results = []
-        for doc in docs:
-            results.append((doc['_id'], doc['rank']))
+        res1 = _query(rank - range_1, rank - range_2)
+        if len(res1) > 3:
+            res1 = random.sample(res1, 3)
 
-        results = random.sample(results, 5)
+        res2 = _query(rank - range_3, rank - range_4)
+        if len(res2) > 2:
+            res2 = random.sample(res2, 2)
+
+        results.extend(res1)
+        results.extend(res2)
 
         results.sort(key=lambda item: item[1])
         return results
