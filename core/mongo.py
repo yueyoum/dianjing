@@ -519,7 +519,7 @@ class MongoTower(BaseDocument):
     }
 
     COLLECTION = 'tower'
-    INDEXES = ['current_star', 'today_max_star',]
+    INDEXES = ['today_max_star',]
 
 # 领地建筑
 class MongoTerritory(BaseDocument):
@@ -527,9 +527,6 @@ class MongoTerritory(BaseDocument):
         '_id': null,
         'buildings': {},
         'work_card': 0,
-        # 是否产量变化标志， 建筑升级，获得产量，等等都会讲其设置为True
-        # 定时任务只获取 True 的进行处理
-        'product_flag': False,
     }
 
     BUILDING_DOCUMENT = {
@@ -560,7 +557,6 @@ class MongoTerritory(BaseDocument):
         return copy.deepcopy(cls.SLOT_DOCUMENT)
 
     COLLECTION = 'territory'
-    INDEXES = ['product_flag',]
 
 
 # 商店

@@ -21,6 +21,7 @@ from core.value_log import (
     ValueLogTerritoryTrainingTimes,
 )
 
+from core.character import Character
 from core.club import Club
 from core.staff import StaffManger
 from core.friend import FriendManager
@@ -222,11 +223,19 @@ class Building(object):
         return level_up
 
     def add_product(self, amount):
-        self.product_amount += amount
-
         limit = ConfigTerritoryBuilding.get(self.id).levels[self.level].product_limit
         if self.product_amount >= limit:
+            return False
+
+        self.product_amount += amount
+        if self.product_amount >= limit:
             self.product_amount = limit
+
+        return True
+
+    def auto_increase_product(self):
+        config = ConfigTerritoryBuilding.get(self.id).levels[self.level]
+        return self.add_product(config.product_rate)
 
     def current_inspire_times(self):
         if not self.open:
@@ -339,21 +348,24 @@ class Building(object):
 class Territory(object):
     __slots__ = ['server_id', 'char_id', 'doc']
 
-    def __init__(self, server_id, char_id):
+    def __init__(self, server_id, char_id, doc=None):
         self.server_id = server_id
         self.char_id = char_id
 
-        self.doc = MongoTerritory.db(self.server_id).find_one({'_id': self.char_id})
-        if not self.doc:
-            self.doc = MongoTerritory.document()
-            self.doc['_id'] = self.char_id
-            self.doc['work_card'] = INIT_WORK_CARD
+        if doc:
+            self.doc = doc
+        else:
+            self.doc = MongoTerritory.db(self.server_id).find_one({'_id': self.char_id})
+            if not self.doc:
+                self.doc = MongoTerritory.document()
+                self.doc['_id'] = self.char_id
+                self.doc['work_card'] = INIT_WORK_CARD
 
-            for i in ConfigTerritoryBuilding.INSTANCES.keys():
-                building_doc = MongoTerritory.document_building()
-                self.doc['buildings'][str(i)] = building_doc
+                for i in BUILDING_PRODUCT_ID_TABLE:
+                    building_doc = MongoTerritory.document_building()
+                    self.doc['buildings'][str(i)] = building_doc
 
-            MongoTerritory.db(self.server_id).insert_one(self.doc)
+                MongoTerritory.db(self.server_id).insert_one(self.doc)
 
         self.try_unlock_slot(send_notify=False)
 
@@ -392,6 +404,16 @@ class Territory(object):
         if send_notify:
             for bid, sid in bid_sids:
                 self.send_notify(building_id=bid, slot_id=sid)
+
+    @classmethod
+    def auto_increase_product(cls, server_id):
+        char_ids = Character.get_recent_login_char_ids(server_id, recent_days=14)
+        char_ids = [i for i in char_ids]
+
+        docs = MongoTerritory.db(server_id).find({'_id': {'$in': char_ids}})
+        for doc in docs:
+            t = Territory(server_id, doc['_id'], doc)
+            t.building_auto_increase_product()
 
     def check_product(self, items):
         # items: [(_id, amount),]
@@ -441,6 +463,23 @@ class Territory(object):
 
         self.send_notify()
 
+    def building_auto_increase_product(self):
+        updater = {}
+
+        buildings = self.get_all_building_objects()
+        for bid, b in buildings.iteritems():
+            if b.auto_increase_product():
+                self.doc['buildings'][str(bid)]['product_amount'] = b.product_amount
+                updater['buildings.{0}.product_amount'.format(bid)] = b.product_amount
+
+        if updater:
+            MongoTerritory.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': updater}
+            )
+
+            self.send_notify()
+
     def add_work_card(self, amount):
         self.doc['work_card'] += amount
         self.send_notify(building_id=[], slot_id=[])
@@ -464,6 +503,9 @@ class Territory(object):
         )
 
         self.send_notify(building_id=[], slot_id=[])
+
+    def is_building_open(self, building_id):
+        return str(building_id) in self.doc['buildings']
 
     def get_all_building_objects(self):
         """
@@ -508,10 +550,9 @@ class Territory(object):
             raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_SLOT_HAS_STAFF"))
 
         # TODO check whether this staff is in training
-        building_level = self.get_building_object(building_id, slots_ids=[]).level
 
         config_slot = ConfigTerritoryBuilding.get(building_id).slots[slot_id]
-        cost_amount = config_slot.get_cost_amount(building_level, TRAINING_HOURS.index(hour))
+        cost_amount = config_slot.get_cost_amount(building.level, TRAINING_HOURS.index(hour))
 
         new_amount = self.check_work_card(cost_amount)
         self.doc['work_card'] = new_amount
