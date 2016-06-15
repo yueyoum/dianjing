@@ -35,7 +35,7 @@ from core.system import send_broadcast_notify
 from core.dungeon import Dungeon
 from core.arena import Arena
 from core.tower import Tower
-from core.territory import Territory, TerritoryStore
+from core.territory import Territory, TerritoryStore, TerritoryFriend
 from core.store import Store
 from core.vip import VIP
 from core.collection import Collection
@@ -112,6 +112,7 @@ def game_start_handler(server_id, char_id, **kwargs):
 
     Territory(server_id, char_id).send_notify()
     TerritoryStore(server_id, char_id).send_notify()
+    TerritoryFriend(server_id, char_id).send_remained_times_notify()
 
     Store(server_id, char_id).send_notify()
     VIP(server_id, char_id).send_notify()

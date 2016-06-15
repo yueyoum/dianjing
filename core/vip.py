@@ -144,3 +144,7 @@ class VIP(object):
     @property
     def store_refresh_times(self):
         return ConfigVIP.get(self.doc['vip']).store_refresh_times
+
+    @property
+    def territory_help_times(self):
+        return ConfigVIP.get(self.doc['vip']).territory_help_times

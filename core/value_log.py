@@ -218,6 +218,11 @@ class ValueLogTerritoryHelpFriendTimes(ValueLog):
     KEY = 'territory_help_friend'
     __slots__ = []
 
+# 领地 被帮助 次数
+class ValueLogTerritoryGotHelpTimes(ValueLog):
+    KEY = 'territory_got_help'
+    __slots__ = []
+
 
 # 领地建筑鼓舞次数
 class ValueLogTerritoryBuildingInspireTimes(ValueLog):

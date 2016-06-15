@@ -19,6 +19,7 @@ from core.value_log import (
     ValueLogTerritoryStoreBuyTimes,
     ValueLogTerritoryHelpFriendTimes,
     ValueLogTerritoryTrainingTimes,
+    ValueLogTerritoryGotHelpTimes,
 )
 
 from core.character import Character
@@ -27,6 +28,7 @@ from core.staff import StaffManger
 from core.friend import FriendManager
 from core.resource import ResourceClassification, TERRITORY_PRODUCT_BUILDING_TABLE, money_text_to_item_id
 from core.match import ClubMatch
+from core.vip import VIP
 
 from utils.message import MessagePipe
 
@@ -51,6 +53,7 @@ from protomsg.territory_pb2 import (
     TERRITORY_SLOT_LOCK,
 
     TerritoryStoreNotify,
+    TerritoryFriendHelpRemainedTimesNotify,
 )
 
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
@@ -75,6 +78,8 @@ EVENT_INTERVAL = {
     2: [3, 5],
     3: [2, 3],
 }
+
+MAX_GOT_HELP_TIMES = 30
 
 
 class ResultItems(object):
@@ -370,8 +375,6 @@ class Territory(object):
         self.try_unlock_slot(send_notify=False)
 
     def try_unlock_slot(self, send_notify=True):
-        from core.vip import VIP
-
         vip_level = VIP(self.server_id, self.char_id).level
         updater = {}
 
@@ -384,9 +387,8 @@ class Territory(object):
                     continue
 
                 # 条件满足一个就可以
-                if vip_level >= config_slot.need_vip_level or self.doc['buildings'][str(building_id)][
-                    'level'] >= config_slot.need_building_level:
-                    
+                if (vip_level >= config_slot.need_vip_level) or (
+                            self.doc['buildings'][str(building_id)]['level'] >= config_slot.need_building_level):
                     slot_doc = MongoTerritory.document_slot()
                     self.doc['buildings'][str(building_id)]['slots'][str(slot_id)] = slot_doc
                     updater['buildings.{0}.slots.{1}'.format(building_id, slot_id)] = slot_doc
@@ -852,11 +854,35 @@ class TerritoryFriend(object):
             info[fid] = b_list
         return info
 
+    def get_remained_help_times(self):
+        # 剩余的帮助别人的次数
+        total_times = VIP(self.server_id, self.char_id).territory_help_times
+        current_times = ValueLogTerritoryHelpFriendTimes(self.server_id, self.char_id).count_of_today()
+        remained = total_times - current_times
+        if remained < 0:
+            remained = 0
+
+        return remained
+
+    def get_remained_got_help_times(self):
+        # 剩余的被帮助次数
+        current_times = ValueLogTerritoryGotHelpTimes(self.server_id, self.char_id).count_of_today()
+        remained = MAX_GOT_HELP_TIMES - current_times
+        if remained < 0:
+            remained = 0
+
+        return remained
+
     def help(self, friend_id, building_id):
         friend_id = int(friend_id)
-
         if not FriendManager(self.server_id, self.char_id).check_friend_exist(friend_id):
             raise GameException(ConfigErrorMessage.get_error_id("FRIEND_NOT_OK"))
+
+        if not self.get_remained_help_times():
+            raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_NO_HELP_FRIEND_TIMES"))
+
+        if not TerritoryFriend(self.server_id, friend_id).get_remained_got_help_times():
+            raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_NO_GOT_HELP_TIMES"))
 
         t = Territory(self.server_id, self.char_id)
         building = t.get_building_object(building_id, slots_ids=[])
@@ -874,6 +900,9 @@ class TerritoryFriend(object):
         )
 
         ValueLogTerritoryHelpFriendTimes(self.server_id, self.char_id).record()
+        ValueLogTerritoryGotHelpTimes(self.server_id, friend_id).record()
+
+        self.send_remained_times_notify()
 
         config = ConfigTerritoryEvent.get(event_id)
         if not config.npc:
@@ -911,3 +940,8 @@ class TerritoryFriend(object):
         resource_classified = ResourceClassification.classify(drop)
         resource_classified.add(self.server_id, self.char_id)
         return resource_classified
+
+    def send_remained_times_notify(self):
+        notify = TerritoryFriendHelpRemainedTimesNotify()
+        notify.times = self.get_remained_help_times()
+        MessagePipe(self.char_id).put(msg=notify)
