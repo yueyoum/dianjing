@@ -175,20 +175,26 @@ class Formation(object):
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
         this_slot_index = self.doc['position'].index(slot_id)
-        target_index_slot_id = self.doc['position'][to_index]
+        target_slot_id = self.doc['position'][to_index]
 
         self.doc['position'][to_index] = slot_id
-        self.doc['position'][this_slot_index] = target_index_slot_id
+        self.doc['position'][this_slot_index] = target_slot_id
 
         MongoFormation.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
                 'position.{0}'.format(to_index): slot_id,
-                'position.{0}'.format(this_slot_index): target_index_slot_id
+                'position.{0}'.format(this_slot_index): target_slot_id
             }}
         )
 
-        self.send_notify(slot_ids=[slot_id, target_index_slot_id])
+        changed = [slot_id]
+        if target_slot_id:
+            # NOTE: 要是 把 slot_id 移动到 一个空的位置
+            # 此时 target_slot_id 为0， 直接发notify 就会混乱
+            changed.append(target_slot_id)
+
+        self.send_notify(slot_ids=changed)
 
     def send_notify(self, slot_ids=None):
         if slot_ids:

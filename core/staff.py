@@ -824,7 +824,7 @@ class StaffManger(object):
         changed = [staff_id]
         if other_staff_id:
             changed.append(other_staff_id)
-            
+
         self.send_notify(ids=changed)
         self.after_staff_change()
 
