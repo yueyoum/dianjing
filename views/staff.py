@@ -87,11 +87,12 @@ def star_up(request):
 
     staff_id = request._proto.staff_id
 
-    crit =  StaffManger(server_id, char_id).star_up(staff_id)
+    crit, inc_exp =  StaffManger(server_id, char_id).star_up(staff_id)
 
     response = StaffStarUpResponse()
     response.ret = 0
     response.crit = crit
+    response.increase = inc_exp
     return ProtobufResponse(response)
 
 

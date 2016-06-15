@@ -490,7 +490,7 @@ class Staff(AbstractStaff):
         self.calculate()
         self.make_cache()
 
-        return _star_up, crit
+        return _star_up, crit, inc_exp
 
     def equipment_change(self, bag_slot_id, tp):
         # 会影响的其他staff_id
@@ -879,13 +879,13 @@ class StaffManger(object):
         if not staff:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
-        _star_up, crit = staff.star_up()
+        _star_up, crit, inc_exp = staff.star_up()
         ValueLogStaffStarUpTimes(self.server_id, self.char_id).record()
         self.send_notify(ids=[staff_id])
         if _star_up:
             self.after_staff_change()
 
-        return crit
+        return crit, inc_exp
 
     def destroy(self, staff_id, tp):
         from core.club import Club
