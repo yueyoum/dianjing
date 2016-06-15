@@ -383,17 +383,15 @@ class Territory(object):
                     # 已经开启了
                     continue
 
-                if config_slot.need_vip_level > vip_level:
-                    continue
+                # 条件满足一个就可以
+                if vip_level >= config_slot.need_vip_level or self.doc['buildings'][str(building_id)][
+                    'level'] >= config_slot.need_building_level:
+                    
+                    slot_doc = MongoTerritory.document_slot()
+                    self.doc['buildings'][str(building_id)]['slots'][str(slot_id)] = slot_doc
+                    updater['buildings.{0}.slots.{1}'.format(building_id, slot_id)] = slot_doc
 
-                if config_slot.need_building_level > self.doc['buildings'][str(building_id)]['level']:
-                    continue
-
-                slot_doc = MongoTerritory.document_slot()
-                self.doc['buildings'][str(building_id)]['slots'][str(slot_id)] = slot_doc
-                updater['buildings.{0}.slots.{1}'.format(building_id, slot_id)] = slot_doc
-
-                bid_sids.append((building_id, slot_id))
+                    bid_sids.append((building_id, slot_id))
 
         if updater:
             MongoTerritory.db(self.server_id).update_one(
