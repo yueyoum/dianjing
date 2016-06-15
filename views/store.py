@@ -24,10 +24,11 @@ def buy(request):
     goods_id = request._proto.goods_id
 
     s = Store(server_id, char_id)
-    s.buy(tp, goods_id)
+    drop =  s.buy(tp, goods_id)
 
     response = StoreBuyResponse()
     response.ret = 0
+    response.drop.MergeFrom(drop.make_protomsg())
     return ProtobufResponse(response)
 
 def refresh(request):
