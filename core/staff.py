@@ -455,8 +455,10 @@ class Staff(AbstractStaff):
 
         if random.randint(1, 100) <= 30:
             inc_exp = 6
+            crit = True
         else:
             inc_exp = random.randint(1, 3)
+            crit = False
 
         exp = self.star_exp + inc_exp
         _star_up = False
@@ -488,7 +490,7 @@ class Staff(AbstractStaff):
         self.calculate()
         self.make_cache()
 
-        return _star_up
+        return _star_up, crit
 
     def equipment_change(self, bag_slot_id, tp):
         # 会影响的其他staff_id
@@ -877,11 +879,13 @@ class StaffManger(object):
         if not staff:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
-        _star_up = staff.star_up()
+        _star_up, crit = staff.star_up()
         ValueLogStaffStarUpTimes(self.server_id, self.char_id).record()
         self.send_notify(ids=[staff_id])
         if _star_up:
             self.after_staff_change()
+
+        return crit
 
     def destroy(self, staff_id, tp):
         from core.club import Club
