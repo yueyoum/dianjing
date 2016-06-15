@@ -61,7 +61,11 @@ class Store(object):
         club_level = get_club_property(self.server_id, self.char_id, 'level')
         goods = ConfigStore.refresh(tp, club_level)
 
-        tp_doc = MongoStore.document_tp()
+        try:
+            tp_doc = self.doc['tp'][str(tp)]
+        except KeyError:
+            tp_doc = MongoStore.document_tp()
+
         if set_timestamp:
             tp_doc['refresh_at'] = arrow.utcnow().timestamp
 

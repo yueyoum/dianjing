@@ -501,8 +501,8 @@ class Tower(object):
         self.send_goods_notify()
         return rc
 
-    def get_leader_board(self):
-        docs = MongoTower.db(self.server_id).find({}, {'today_max_star': 1}).sort('today_max_star', -1).limit(5)
+    def get_leader_board(self, amount=30):
+        docs = MongoTower.db(self.server_id).find({}, {'today_max_star': 1}).sort('today_max_star', -1).limit(amount)
 
         info = []
         for doc in docs:

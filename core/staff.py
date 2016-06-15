@@ -139,7 +139,6 @@ class StaffRecruit(object):
         )
         self.send_notify()
 
-
     def check_score(self, value):
         new_score = self.doc['score'] - value
         if new_score < 0:
@@ -158,7 +157,6 @@ class StaffRecruit(object):
         )
 
         self.send_notify()
-
 
     def get_point(self, tp):
         return self.doc['point'].get(str(tp), 0)
@@ -493,6 +491,9 @@ class Staff(AbstractStaff):
         return _star_up
 
     def equipment_change(self, bag_slot_id, tp):
+        # 会影响的其他staff_id
+        other_staff_id = ""
+
         if not bag_slot_id:
             # 卸下
             bag_slot_id = ""
@@ -510,8 +511,7 @@ class Staff(AbstractStaff):
             if equip_config.tp != tp:
                 raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_TYPE_NOT_MATCH"))
 
-            if StaffManger(self.server_id, self.char_id).find_staff_id_by_equipment_slot_id(bag_slot_id):
-                raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_ON_OTHER_STUFF"))
+            other_staff_id = StaffManger(self.server_id, self.char_id).find_staff_id_by_equipment_slot_id(bag_slot_id)
 
         if tp == EQUIP_MOUSE:
             key = 'equip_mouse'
@@ -532,6 +532,8 @@ class Staff(AbstractStaff):
 
         self.calculate()
         self.make_cache()
+
+        return other_staff_id
 
     def add_equipment_property(self):
         bag = Bag(self.server_id, self.char_id)
@@ -785,7 +787,7 @@ class StaffManger(object):
                 return
 
     def find_staff_id_by_equipment_slot_id(self, slot_id):
-        # type: (str) -> str|None
+        # type: (str) -> str
         # 找slot_id在哪个角色身上
         assert slot_id, "Invalid slot_id: {0}".format(slot_id)
         doc = MongoStaff.db(self.server_id).find_one(
@@ -800,7 +802,7 @@ class StaffManger(object):
                             v['equip_decoration'] == slot_id:
                 return k
 
-        return None
+        return ""
 
     def after_staff_change(self):
         from core.club import Club
@@ -814,8 +816,16 @@ class StaffManger(object):
         if not staff:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
-        staff.equipment_change(slot_id, tp)
-        self.send_notify(ids=[staff_id])
+        other_staff_id = staff.equipment_change(slot_id, tp)
+        if other_staff_id:
+            # 把装备从 这个 staff 上撤下
+            self.get_staff_object(other_staff_id).equipment_change("", tp)
+
+        changed = [staff_id]
+        if other_staff_id:
+            changed.append(other_staff_id)
+            
+        self.send_notify(ids=changed)
         self.after_staff_change()
 
     def level_up(self, staff_id, up_level):

@@ -318,22 +318,24 @@ class Arena(object):
 
         self.send_notify()
 
-    def match(self, rival_id):
-        cd = self.get_match_cd()
-        if cd:
-            raise GameException(ConfigErrorMessage.get_error_id("ARENA_MATCH_IN_CD"))
-
+    def check_and_buy_times(self):
         rt = MatchTimes(self.server_id, self.char_id)
         cost = [(money_text_to_item_id('diamond'), rt.buy_cost), ]
         rc = ResourceClassification.classify(cost)
 
-        _using_diamond = False
         if not rt.remained_match_times:
             if not rt.remained_buy_times:
                 raise GameException(ConfigErrorMessage.get_error_id("ARENA_NO_BUY_TIMES"))
 
-            _using_diamond = True
             rc.check_exist(self.server_id, self.char_id)
+            rc.remove(self.server_id, self.char_id)
+            ValueLogArenaBuyTimes(self.server_id, self.char_id).record()
+
+            self.send_notify()
+
+    def match(self, rival_id):
+        if self.get_match_cd():
+            raise GameException(ConfigErrorMessage.get_error_id("ARENA_MATCH_IN_CD"))
 
         doc = MongoArena.db(self.server_id).find_one(
             {'_id': str(self.char_id)},
@@ -354,6 +356,8 @@ class Arena(object):
         if rival_doc['rank'] != _rank:
             raise GameException(ConfigErrorMessage.get_error_id("ARENA_RIVAL_RANK_CHANGED"))
 
+        self.check_and_buy_times()
+
         try:
             with ArenaMatchLock(self.server_id, self.char_id).lock(hold_seconds=180) as my_lock:
                 try:
@@ -364,12 +368,6 @@ class Arena(object):
                         msg = club_match.start()
                         # NOTE: rival_id 如果是NPC的话， 本来里面就是:分割的。 这里不能再用:
                         msg.key = "{0}#{1}#{2}".format(rival_id, my_lock.key, rival_lock.key)
-
-                        ValueLogArenaMatchTimes(self.server_id, self.char_id).record()
-                        if _using_diamond:
-                            rc.remove(self.server_id, self.char_id)
-                            ValueLogArenaBuyTimes(self.server_id, self.char_id).record()
-
                         return msg
                 except LockTimeOut:
                     raise GameException(ConfigErrorMessage.get_error_id("ARENA_RIVAL_IN_MATCH"))
@@ -389,6 +387,9 @@ class Arena(object):
         my_max_rank = my_doc.get('max_rank', 0)
 
         if win:
+            # 只有胜利结算的时候才算记录次数
+            ValueLogArenaMatchTimes(self.server_id, self.char_id).record()
+
             rival_doc = MongoArena.db(self.server_id).find_one({'_id': rival_id}, {'rank': 1})
             rival_rank = rival_doc['rank']
 
@@ -499,7 +500,7 @@ class Arena(object):
         self.send_match_log_notify()
 
     @classmethod
-    def get_leader_board(cls, server_id, amount=5):
+    def get_leader_board(cls, server_id, amount=30):
         """
 
         :rtype: list[core.abstract.AbstractClub]
