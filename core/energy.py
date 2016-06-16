@@ -160,6 +160,7 @@ class Energy(object):
         rc.check_exist(self.server_id, self.char_id)
         rc.remove(self.server_id, self.char_id)
 
+        ValueLogEnergyBuyTimes(self.server_id, self.char_id).record()
         self.add(60)
 
     def send_notify(self):

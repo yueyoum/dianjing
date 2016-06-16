@@ -399,7 +399,7 @@ class Staff(AbstractStaff):
         if target_level > max_level:
             target_level = max_level
 
-        _level_up = False
+        old_level = self.level
         while self.level < target_level:
             config = ConfigStaffLevelNew.get(self.level)
             up_need_exp = config.exp - self.level_exp
@@ -413,8 +413,6 @@ class Staff(AbstractStaff):
             self.level += 1
             self.level_exp = 0
 
-            _level_up = True
-
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
@@ -426,7 +424,7 @@ class Staff(AbstractStaff):
         self.calculate()
         self.make_cache()
 
-        return exp_pool, _level_up
+        return exp_pool, self.level - old_level
 
     def step_up(self):
         if self.step >= self.config.max_step:
@@ -858,7 +856,7 @@ class StaffManger(object):
         )
 
         exp_pool = doc.get('exp_pool', 0)
-        remained_exp_pool, _level_up = staff.level_up(exp_pool, up_level)
+        remained_exp_pool, _level_up_amount = staff.level_up(exp_pool, up_level)
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -868,12 +866,13 @@ class StaffManger(object):
         )
 
         self.send_notify(ids=[staff_id])
-        ValueLogStaffLevelUpTimes(self.server_id, self.char_id).record()
 
-        in_formation_staff_ids = Formation(self.server_id, self.char_id).in_formation_staffs().keys()
+        if _level_up_amount:
+            ValueLogStaffLevelUpTimes(self.server_id, self.char_id).record(value=_level_up_amount)
 
-        if _level_up and staff.id in in_formation_staff_ids:
-            self.after_staff_change()
+            in_formation_staff_ids = Formation(self.server_id, self.char_id).in_formation_staffs().keys()
+            if staff.id in in_formation_staff_ids:
+                self.after_staff_change()
 
     def step_up(self, staff_id):
         from core.club import Club
