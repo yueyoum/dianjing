@@ -183,6 +183,10 @@ class ValueLogArenaMatchTimes(ValueLog):
     KEY = 'arena_match'
     __slots__ = []
 
+# 竞技场胜利次数
+class ValueLogArenaWinTimes(ValueLog):
+    KEY = 'arena_win'
+    __slots__ = []
 
 # 竞技场购买次数
 class ValueLogArenaBuyTimes(ValueLog):

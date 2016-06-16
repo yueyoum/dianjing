@@ -16,7 +16,7 @@ from core.mongo import MongoArena
 from core.club import Club, get_club_property
 from core.lock import LockTimeOut, ArenaLock, ArenaMatchLock, remove_lock_key
 from core.cooldown import ArenaRefreshCD, ArenaMatchCD
-from core.value_log import ValueLogArenaMatchTimes, ValueLogArenaHonorPoints, ValueLogArenaBuyTimes
+from core.value_log import ValueLogArenaMatchTimes, ValueLogArenaHonorPoints, ValueLogArenaBuyTimes, ValueLogArenaWinTimes
 from core.match import ClubMatch
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.vip import VIP
@@ -387,8 +387,7 @@ class Arena(object):
         my_max_rank = my_doc.get('max_rank', 0)
 
         if win:
-            # 只有胜利结算的时候才算记录次数
-            ValueLogArenaMatchTimes(self.server_id, self.char_id).record()
+            ValueLogArenaWinTimes(self.server_id, self.char_id).record()
 
             rival_doc = MongoArena.db(self.server_id).find_one({'_id': rival_id}, {'rank': 1})
             rival_rank = rival_doc['rank']
@@ -428,6 +427,7 @@ class Arena(object):
                 Arena(self.server_id, int(rival_id)).add_match_log(1, [my_club_name])
 
         ValueLogArenaHonorPoints(self.server_id, self.char_id).record(value=config.honor)
+        ValueLogArenaMatchTimes(self.server_id, self.char_id).record()
 
         drop = config.get_drop()
         resource_classified = ResourceClassification.classify(drop)
