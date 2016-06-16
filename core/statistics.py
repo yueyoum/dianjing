@@ -12,11 +12,14 @@ from django.conf import settings
 from django.db.models import Q
 
 from utils.message import MessagePipe
+from utils.functional import get_arrow_time_of_today
 
 from protomsg.statistics_pb2 import FinanceStatisticsNotify
 
 
 class FinanceStatistics(object):
+    __slots__ = ['server_id', 'char_id']
+
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
@@ -62,7 +65,7 @@ class FinanceStatistics(object):
                     index = i
                     break
             else:
-                index = len(days)-1
+                index = len(days) - 1
 
             if s.club_gold > 0:
                 income[index] += s.club_gold
@@ -70,6 +73,23 @@ class FinanceStatistics(object):
                 expense[index] += abs(s.club_gold)
 
         return income, expense
+
+    def count_of_today(self):
+        from apps.statistics.models import Statistics
+        today = get_arrow_time_of_today()
+        tomorrow = today.replace(days=1)
+
+        condition = Q(char_id=self.char_id) & Q(create_at__gte=today.format("YYYY-MM-DD HH:mm:ssZ")) & Q(
+            create_at__lte=tomorrow.format("YYYY-MM-DD HH:mm:ssZ"))
+
+        value = 0
+        for s in Statistics.objects.filter(condition):
+            value += self._count_value_filter(s)
+
+        return value
+
+    def _count_value_filter(self, obj):
+        raise NotImplementedError()
 
     def send_notify(self):
         # 只有 gold 需要notify
@@ -80,3 +100,47 @@ class FinanceStatistics(object):
         notify.expense.extend(expense)
 
         MessagePipe(self.char_id).put(msg=notify)
+
+
+# 金币花费
+class GoldCostStatistics(FinanceStatistics):
+    __slots__ = []
+
+    def _count_value_filter(self, obj):
+        if obj.club_gold < 0:
+            return obj.club_gold
+
+        return 0
+
+
+# 金币获得
+class GoldGotStatistics(FinanceStatistics):
+    __slots__ = []
+
+    def _count_value_filter(self, obj):
+        if obj.club_gold > 0:
+            return obj.club_gold
+
+        return 0
+
+
+# 钻石花费
+class DiamondCostStatistics(FinanceStatistics):
+    __slots__ = []
+
+    def _count_value_filter(self, obj):
+        if obj.club_diamond < 0:
+            return obj.club_diamond
+
+        return 0
+
+
+# 钻石获得
+class DiamondGotStatistics(FinanceStatistics):
+    __slots__ = []
+
+    def _count_value_filter(self, obj):
+        if obj.club_diamond > 0:
+            return obj.club_diamond
+
+        return 0

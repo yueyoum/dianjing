@@ -10,8 +10,6 @@ from core.club import get_club_property
 from core.vip import VIP
 from core.signals import random_event_done_signal, daily_task_finish_signal
 
-import core.value_log as VLOG
-
 from config import ConfigErrorMessage, ConfigRandomEvent, ConfigTaskMain, ConfigTaskDaily, ConfigTaskCondition
 
 from utils.message import MessagePipe, MessageFactory
@@ -19,11 +17,12 @@ from utils.message import MessagePipe, MessageFactory
 from protomsg.task_pb2 import TaskNotify, RandomEventNotify, TaskDailyNotify, TASK_DOING, TASK_DONE, TASK_FINISH
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
-
 MAX_TASK_MAIN_ID = max(ConfigTaskMain.INSTANCES.keys())
+
 
 class TaskMain(object):
     __slots__ = ['server_id', 'char_id', 'doing']
+
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
@@ -37,7 +36,6 @@ class TaskMain(object):
             MongoTaskMain.db(self.server_id).insert_one(doc)
 
             self.doing = 1
-
 
     def trig(self, challenge_id):
         if not self.doing:
@@ -77,17 +75,16 @@ class TaskMain(object):
         MessagePipe(self.char_id).put(msg=notify)
 
 
-
 def get_task_condition_value(server_id, char_id, condition_id):
     config = ConfigTaskCondition.get(condition_id)
     if not config or not config.server_module:
-        # TODO
         return 0
 
-    CLS = getattr(VLOG, config.server_module)
-    obj = CLS(server_id, char_id)
-    """:type: core.value_log.ValueLog"""
+    model_name, class_name = config.server_module.rsplit(',', 1)
+    _Model = __import__(model_name, fromlist=[class_name])
+    _Class = getattr(_Model, class_name)
 
+    obj = _Class(server_id, char_id)
     return obj.count_of_today()
 
 

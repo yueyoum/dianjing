@@ -389,6 +389,11 @@ class ResourceClassification(object):
             msg_item.id = RECRUIT_STAFF_SCORE_ID
             msg_item.amount = self.staff_recruit_score
 
+        if self.energy:
+            msg_item = msg.items.add()
+            msg_item.id = ENERGY_ID
+            msg_item.amount = self.energy
+
         for _id, _amount in self.territory_product:
             msg_item = msg.items.add()
             msg_item.id = _id

@@ -166,7 +166,7 @@ class ValueLogAllChallengeWinTimes(ValueLog):
     __slots__ = []
 
 
-# 日常副本 (大类)
+# 日常副本 胜利次数 (大类)
 class ValueLogDungeonMatchTimes(CategoryValueLog):
     KEY = 'dungeon_match'
     __slots__ = []
@@ -182,6 +182,7 @@ class ValueLogDungeonBuyTimes(CategoryValueLog):
 class ValueLogArenaMatchTimes(ValueLog):
     KEY = 'arena_match'
     __slots__ = []
+
 
 # 竞技场购买次数
 class ValueLogArenaBuyTimes(ValueLog):
@@ -217,6 +218,7 @@ class ValueLogTerritoryTrainingTimes(ValueLog):
 class ValueLogTerritoryHelpFriendTimes(ValueLog):
     KEY = 'territory_help_friend'
     __slots__ = []
+
 
 # 领地 被帮助 次数
 class ValueLogTerritoryGotHelpTimes(ValueLog):
@@ -264,6 +266,7 @@ class ValueLogStaffLevelUpTimes(ValueLog):
 class ValueLogUnitLevelUpTimes(ValueLog):
     KEY = 'unit_level_up'
     __slots__ = []
+
 
 # 体力购买次数
 class ValueLogEnergyBuyTimes(ValueLog):
