@@ -13,5 +13,5 @@ from core.collection import Collection
 
 
 @receiver(staff_new_add_signal, dispatch_uid='signals.staff.staff_new_add_handler')
-def staff_new_add_handler(server_id, char_id, oid, unique_id, send_notify, **kwargs):
-    Collection(server_id, char_id).add(oid, send_notify=send_notify)
+def staff_new_add_handler(server_id, char_id, oid, unique_id, force_load_staffs, **kwargs):
+    Collection(server_id, char_id).add(oid, force_load_staffs=force_load_staffs)

@@ -775,7 +775,7 @@ class StaffManger(object):
             char_id=self.char_id,
             oid=staff_original_id,
             unique_id=unique_id,
-            send_notify=send_notify,
+            force_load_staffs=send_notify,
         )
 
         return unique_id
