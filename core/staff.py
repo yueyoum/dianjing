@@ -774,7 +774,8 @@ class StaffManger(object):
             server_id=self.server_id,
             char_id=self.char_id,
             oid=staff_original_id,
-            unique_id=unique_id
+            unique_id=unique_id,
+            send_notify=send_notify,
         )
 
         return unique_id

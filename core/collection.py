@@ -30,7 +30,7 @@ class Collection(object):
             self.doc['_id'] = self.char_id
             MongoStaffCollection.db(self.server_id).insert_one(self.doc)
 
-    def add(self, staff_id):
+    def add(self, staff_id, send_notify=True):
         from core.club import Club
 
         if staff_id in self.doc['staffs']:
@@ -46,7 +46,7 @@ class Collection(object):
         )
 
         self.send_notify(staff_ids=[staff_id])
-        Club(self.server_id, self.char_id, load_staffs=False).force_load_staffs(send_notify=True)
+        Club(self.server_id, self.char_id, load_staffs=False).force_load_staffs(send_notify=send_notify)
 
     def get_talent_effects(self):
         return [ConfigCollection.get(i).talent_effect_id for i in self.doc['staffs']]
