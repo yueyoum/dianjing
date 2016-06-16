@@ -171,6 +171,9 @@ class StaffRecruit(object):
         if mode not in [RECRUIT_MODE_1, RECRUIT_MODE_2]:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
+        # NOTE: 钻石免费单抽 的积分 要单独处理
+        diamond_single_free = False
+
         if tp == RECRUIT_GOLD:
             if mode == RECRUIT_MODE_1:
                 recruit_times = self._recruit_tp_1_mode_1()
@@ -180,22 +183,30 @@ class StaffRecruit(object):
             ValueLogStaffRecruitGoldTimes(self.server_id, self.char_id).record(value=recruit_times)
         else:
             if mode == RECRUIT_MODE_1:
-                recruit_times = self._recruit_tp_2_mode_1()
+                recruit_times, diamond_single_free = self._recruit_tp_2_mode_1()
             else:
                 recruit_times = self._recruit_tp_2_mode_2()
 
             ValueLogStaffRecruitDiamondTimes(self.server_id, self.char_id).record(value=recruit_times)
 
-        config = ConfigStaffRecruit.get(tp)
+        if diamond_single_free:
+            converted_tp = 3
+        else:
+            converted_tp = tp
+
+        config = ConfigStaffRecruit.get(converted_tp)
+
+        # times 3 和 2 还是公用的
         current_times = self.get_times(tp) + 1
 
-        result = RecruitResult(self.get_point(tp))
+        # point 是分开计的
+        result = RecruitResult(self.get_point(converted_tp))
 
         for i in range(current_times, current_times + recruit_times):
             res = config.recruit(result.point, i)
             result.add(res)
 
-        self.doc['point'][str(tp)] = result.point
+        self.doc['point'][str(converted_tp)] = result.point
 
         # 记录次数
         ValueLogStaffRecruitTimes(self.server_id, self.char_id).record(sub_id=tp, value=recruit_times)
@@ -217,7 +228,7 @@ class StaffRecruit(object):
         MongoStaffRecruit.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
-                'point.{0}'.format(tp): result.point,
+                'point.{0}'.format(converted_tp): result.point,
                 'score': self.doc['score']
             }}
         )
@@ -298,7 +309,7 @@ class StaffRecruit(object):
                 }}
             )
 
-        return 1
+        return 1, not bool(cd_seconds)
 
     def _recruit_tp_2_mode_2(self):
         # 钻石十连抽

@@ -480,7 +480,7 @@ class Bag(object):
                 }}
             )
 
-        ValueLogEquipmentLevelUpTimes(self.server_id, self.char_id).record()
+        ValueLogEquipmentLevelUpTimes(self.server_id, self.char_id).record(value=times)
 
         self.send_notify(slot_ids=[slot_id])
 
