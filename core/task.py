@@ -80,7 +80,7 @@ def get_task_condition_value(server_id, char_id, condition_id):
     if not config or not config.server_module:
         return 0
 
-    model_name, class_name = config.server_module.rsplit(',', 1)
+    model_name, class_name = config.server_module.rsplit('.', 1)
     _Model = __import__(model_name, fromlist=[class_name])
     _Class = getattr(_Model, class_name)
 
