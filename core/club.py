@@ -79,11 +79,12 @@ class Club(AbstractClub):
             self.formation_staffs.append(sm.get_staff_object(k))
 
 
-    def force_load_staffs(self):
+    def force_load_staffs(self, send_notify=False):
         from core.staff import StaffManger, Staff
         from core.formation import Formation
         from core.unit import UnitManager
         from core.talent import TalentManager
+        from core.collection import Collection
 
         self.formation_staffs = []
 
@@ -108,14 +109,21 @@ class Club(AbstractClub):
                 if unit_id:
                     v.set_unit(um.get_unit_object(unit_id))
 
-        talent_effect = TalentManager(self.server_id, self.char_id).get_talent_effect()
+        talent_effects_1 = TalentManager(self.server_id, self.char_id).get_talent_effect()
+        talent_effects_2 = Collection(self.server_id, self.char_id).get_talent_effects()
         for k in in_formation_staffs:
             staff_objs[k].talent_effect(self)
-            staff_objs[k].talent_tree_effect(talent_effect)
+            staff_objs[k].add_other_talent_effects(talent_effects_1)
+            staff_objs[k].add_other_talent_effects(talent_effects_2)
 
         for _, v in staff_objs.iteritems():
             v.calculate()
             v.make_cache()
+
+        if send_notify:
+            self.send_notify()
+            in_formation_staff_ids = fm.in_formation_staffs().keys()
+            sm.send_notify(ids=in_formation_staff_ids)
 
 
     def check_money(self, diamond=0, gold=0, crystal=0, gas=0, renown=0):

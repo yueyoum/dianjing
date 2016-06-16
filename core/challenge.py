@@ -145,7 +145,7 @@ class Challenge(object):
         if not rt.remained_match_times:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_WITHOUT_TIMES"))
 
-        Energy(self.server_id, self.char_id).remove(config.energy)
+        Energy(self.server_id, self.char_id).check(config.energy)
 
         club_one = Club(self.server_id, self.char_id)
         club_two = ChallengeNPCClub(challenge_id)
@@ -254,6 +254,7 @@ class Challenge(object):
             return None
 
         ValueLogAllChallengeWinTimes(self.server_id, self.char_id).record()
+        Energy(self.server_id, self.char_id).remove(config.energy)
 
         projection = {
             'challenge_star.{0}'.format(challenge_id): 1,

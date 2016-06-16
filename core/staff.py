@@ -50,7 +50,6 @@ from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 GOLD_MAX_FREE_TIMES = 5
 GOLD_CD_SECONDS = 600
-DIAMOND_CD_SECONDS = 3600 * 24 * 2
 
 RECRUIT_CD_SECONDS = {
     1: 600,
@@ -822,6 +821,8 @@ class StaffManger(object):
         Club(self.server_id, self.char_id).send_notify()
 
     def equipment_change(self, staff_id, slot_id, tp):
+        from core.formation import Formation
+
         if tp not in [EQUIP_MOUSE, EQUIP_KEYBOARD, EQUIP_MONITOR, EQUIP_DECORATION]:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
@@ -839,9 +840,13 @@ class StaffManger(object):
             changed.append(other_staff_id)
 
         self.send_notify(ids=changed)
-        self.after_staff_change()
+
+        in_formation_staff_ids = Formation(self.server_id, self.char_id).in_formation_staffs().keys()
+        if staff.id in in_formation_staff_ids:
+            self.after_staff_change()
 
     def level_up(self, staff_id, up_level):
+        from core.formation import Formation
         staff = self.get_staff_object(staff_id)
         if not staff:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
@@ -863,7 +868,10 @@ class StaffManger(object):
 
         self.send_notify(ids=[staff_id])
         ValueLogStaffLevelUpTimes(self.server_id, self.char_id).record()
-        if _level_up:
+
+        in_formation_staff_ids = Formation(self.server_id, self.char_id).in_formation_staffs().keys()
+
+        if _level_up and staff.id in in_formation_staff_ids:
             self.after_staff_change()
 
     def step_up(self, staff_id):
@@ -876,16 +884,14 @@ class StaffManger(object):
         staff.step_up()
         in_formation_staff_ids = Formation(self.server_id, self.char_id).in_formation_staffs().keys()
         if staff.id in in_formation_staff_ids:
-            Club(self.server_id, self.char_id, load_staffs=False).force_load_staffs()
-            self.send_notify(ids=in_formation_staff_ids)
+            Club(self.server_id, self.char_id, load_staffs=False).force_load_staffs(send_notify=True)
         else:
             staff.calculate()
             staff.make_cache()
             self.send_notify(ids=[staff_id])
 
-        self.after_staff_change()
-
     def star_up(self, staff_id):
+        from core.formation import Formation
         staff = self.get_staff_object(staff_id)
         if not staff:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
@@ -893,7 +899,9 @@ class StaffManger(object):
         _star_up, crit, inc_exp = staff.star_up()
         ValueLogStaffStarUpTimes(self.server_id, self.char_id).record()
         self.send_notify(ids=[staff_id])
-        if _star_up:
+
+        in_formation_staff_ids = Formation(self.server_id, self.char_id).in_formation_staffs().keys()
+        if _star_up and staff.id in in_formation_staff_ids:
             self.after_staff_change()
 
         return crit, inc_exp
@@ -934,8 +942,7 @@ class StaffManger(object):
             staff.reset()
             in_formation_staff_ids = Formation(self.server_id, self.char_id).in_formation_staffs().keys()
             if staff.id in in_formation_staff_ids:
-                Club(self.server_id, self.char_id, load_staffs=False).force_load_staffs()
-                self.send_notify(ids=in_formation_staff_ids)
+                Club(self.server_id, self.char_id, load_staffs=False).force_load_staffs(send_notify=True)
             else:
                 staff.calculate()
                 staff.make_cache()

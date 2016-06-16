@@ -129,6 +129,8 @@ class Formation(object):
         self.send_notify(slot_ids=[slot_id])
 
         # NOTE 阵型改变，重新load staffs
+        # 这里不直接调用 club.force_load_staffs 的 send_notify
+        # 是因为这里 改变的staff 还可能包括下阵的
         changed_staff_ids = self.in_formation_staffs().keys()
         if old_staff_id:
             changed_staff_ids.append(old_staff_id)

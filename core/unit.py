@@ -315,6 +315,7 @@ class UnitManager(object):
                 _changed = True
 
         if _changed:
+            # 这里不用发送 staff notify ，所以也不用 force_load_staffs 的 send_notify
             club = Club(self.server_id, self.char_id, load_staffs=False)
             club.force_load_staffs()
             club.send_notify()

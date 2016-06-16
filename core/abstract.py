@@ -397,17 +397,19 @@ class AbstractStaff(object):
                 for s in club.formation_staffs:
                     s.active_talent_ids.append(tid)
 
-    def talent_tree_effect(self, effect_ids):
-        if not isinstance(effect_ids, list):
-            effect_ids = [effect_ids]
+    def add_other_talent_effects(self, effect_ids):
+        for eid in effect_ids:
+            config_talent = ConfigTalentSkill.get(eid)
+            if config_talent.target == 1:
+                # 外部加成的天赋， 如果是选手自身，那么该是哪一个选手？
+                # 所以这是错误情况
+                raise RuntimeError("AbstractStaff.add_other_talent_effects. effect_id: {0} target is 1".format(eid))
 
-        for effect_id in effect_ids:
-            config_talent = ConfigTalentSkill.get(effect_id)
             if config_talent.target in [2, 6, 7, 8, 9, 10, 11, 12, 13] or \
                     (config_talent.target == 3 and self.config.race == 1) or \
                     (config_talent.target == 4 and self.config.race == 3) or \
                     (config_talent.target == 5 and self.config.race == 2):
-                self.active_talent_ids.append(effect_id)
+                self.active_talent_ids.append(eid)
 
     def _add_talent_effect_to_staff(self, config):
         """
@@ -472,7 +474,7 @@ class AbstractStaff(object):
 
         unit_amount = self.operation / self.__unit.config.operation
         t1 = attack * math.pow(unit_amount, 0.65) * self.__unit.attack_speed * \
-             (1 + self.__unit.hit_rate - 0.9 + self.__unit.crit_rate * (self.__unit.crit_multiple-1) * 0.7 +
+             (1 + self.__unit.hit_rate - 0.9 + self.__unit.crit_rate * (self.__unit.crit_multiple - 1) * 0.7 +
               self.__unit.hurt_addition_to_terran * 0.2 + self.__unit.hurt_addition_to_zerg * 0.2 +
               self.__unit.hurt_addition_to_protoss * 0.2)
 
@@ -581,6 +583,21 @@ class AbstractClub(object):
             p += s.power
 
         return p
+
+    def add_temporary_talent_effects(self):
+        # 添加临时天赋
+        from core.tower import get_tower_talent_effects
+        if not self.char_id:
+            return
+
+        effects = get_tower_talent_effects(self.server_id, self.char_id)
+        if not effects:
+            return
+
+        for s in self.formation_staffs:
+            s.add_other_talent_effects(effects)
+            s.calculate()
+            # no make cache
 
     def make_protomsg(self):
         msg = MessageClub()

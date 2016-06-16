@@ -19,6 +19,7 @@ from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 class Collection(object):
     __slots__ = ['server_id', 'char_id', 'doc']
+
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
@@ -30,6 +31,8 @@ class Collection(object):
             MongoStaffCollection.db(self.server_id).insert_one(self.doc)
 
     def add(self, staff_id):
+        from core.club import Club
+
         if staff_id in self.doc['staffs']:
             return
 
@@ -43,7 +46,10 @@ class Collection(object):
         )
 
         self.send_notify(staff_ids=[staff_id])
+        Club(self.server_id, self.char_id, load_staffs=False).force_load_staffs(send_notify=True)
 
+    def get_talent_effects(self):
+        return [ConfigCollection.get(i).talent_effect_id for i in self.doc['staffs']]
 
     def send_notify(self, staff_ids=None):
         if staff_ids:

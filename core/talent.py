@@ -112,16 +112,7 @@ class TalentManager(object):
 
     def after_change(self):
         from core.club import Club
-        from core.formation import Formation
-        from core.staff import StaffManger
-
-        club = Club(self.server_id, self.char_id, load_staffs=False)
-        club.force_load_staffs()
-        club.send_notify()
-
-        fm = Formation(self.server_id, self.char_id)
-        in_formation_staff_ids = fm.in_formation_staffs().keys()
-        StaffManger(self.server_id, self.char_id).send_notify(ids=in_formation_staff_ids)
+        Club(self.server_id, self.char_id, load_staffs=False).force_load_staffs(send_notify=True)
 
     def try_unlock(self, tid, unlocked):
         for i in ConfigTalent.get(tid).trigger_unlock:

@@ -44,6 +44,15 @@ from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
 MAX_LEVEL = max(ConfigTowerLevel.INSTANCES.keys())
 
+def get_tower_talent_effects(server_id, char_id):
+    # 这里单独提供一个方法是为了 统一处理的时候
+    # 如果用了 Tower 这个类， NPC也会给创建记录
+    doc = MongoTower.db(server_id).find_one({'_id': char_id}, {'talents': 1})
+    if not doc:
+        return []
+
+    return doc.get('talents', [])
+
 
 class ResetInfo(object):
     __slots__ = ['reset_times', 'remained_times', 'reset_cost']
@@ -101,6 +110,9 @@ class Tower(object):
                 config.mail_content,
                 attachment=rc.to_json(),
             )
+
+    def talent_effects(self):
+        return self.doc['talents']
 
     def check_history_max_star(self, star):
         if star > self.doc['history_max_star']:
