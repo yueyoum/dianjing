@@ -40,7 +40,7 @@ class ValueLog(object):
 
         # task trig
         from core.task import TaskDaily
-        task_condition_id = ConfigTaskCondition.get_condition_id_by_server_module(self.__class__.__name__)
+        task_condition_id = ConfigTaskCondition.get_condition_id_by_server_module('core.value_log.{0}'.format(self.__class__.__name__))
         if task_condition_id:
             TaskDaily(self.server_id, self.char_id).trig(task_condition_id)
 

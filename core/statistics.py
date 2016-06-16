@@ -108,7 +108,7 @@ class GoldCostStatistics(FinanceStatistics):
 
     def _count_value_filter(self, obj):
         if obj.club_gold < 0:
-            return obj.club_gold
+            return -obj.club_gold
 
         return 0
 
@@ -130,7 +130,7 @@ class DiamondCostStatistics(FinanceStatistics):
 
     def _count_value_filter(self, obj):
         if obj.club_diamond < 0:
-            return obj.club_diamond
+            return -obj.club_diamond
 
         return 0
 
