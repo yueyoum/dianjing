@@ -115,6 +115,7 @@ class Club(AbstractClub):
             staff_objs[k].talent_effect(self)
             staff_objs[k].add_other_talent_effects(talent_effects_1)
             staff_objs[k].add_other_talent_effects(talent_effects_2)
+            staff_objs[k].add_other_talent_effects(staff_objs[k].active_qianban_ids)
 
         for _, v in staff_objs.iteritems():
             v.calculate()

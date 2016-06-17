@@ -9,35 +9,53 @@ Description:
 
 from config.base import ConfigBase
 
-class QianBan(object):
-    __slots__ = ['id', 'condition_tp', 'condition_value', 'addition_tp', 'addition_property', 'addition_skill']
+
+class _QianBan(object):
+    __slots__ = ['condition_tp', 'condition_value', 'talent_effect_id']
+
+    def __init__(self):
+        self.condition_tp = 0
+        self.condition_value = []
+        self.talent_effect_id = 0
+
+    def __getitem__(self, item):
+        return getattr(self, item)
+
+    @classmethod
+    def create(cls, data):
+        obj = cls()
+        obj.condition_tp = data['condition_tp']
+        obj.condition_value = data['condition_value']
+        obj.talent_effect_id = data['talent_effect_id']
+
+        return obj
+
+
+class _StaffQianBan(object):
+    __slots__ = ['id', 'qianban']
+
     def __init__(self):
         self.id = 0
-        self.condition_tp = 0
-        self.condition_value = 0
-        self.addition_tp = 0
-        self.addition_property = 0
-        self.addition_skill = {}
-
+        self.qianban = {}
+        """:type: dict[int, _QianBan]"""
 
 
 class ConfigQianBan(ConfigBase):
-    EntityClass = QianBan
+    EntityClass = _StaffQianBan
     INSTANCES = {}
+    """:type: dict[int, _StaffQianBan]"""
     FILTER_CACHE = {}
 
     @classmethod
     def initialize(cls, fixture):
         super(ConfigQianBan, cls).initialize(fixture)
-        for i in cls.INSTANCES.values():
-            i.addition_skill = {int(k): v for k, v in i.addition_skill.iteritems()}
+        for _, v in cls.INSTANCES.iteritems():
+            v.qianban = {int(_k): _QianBan.create(_v) for _k, _v in v.qianban.iteritems()}
 
-    
     @classmethod
-    def get(cls, id):
+    def get(cls, _id):
         """
 
-        :rtype : QianBan
+        :rtype : _StaffQianBan
         """
-        return super(ConfigQianBan, cls).get(id)
-
+        return super(ConfigQianBan, cls).get(_id)

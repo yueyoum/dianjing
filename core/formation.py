@@ -201,7 +201,10 @@ class Formation(object):
         s.calculate()
         s.make_cache()
 
-        Club(self.server_id, self.char_id).send_notify()
+        # NOTE 兵种改变可能会导致牵绊改变，从而改变天赋
+        # 所以这里暴力重新加载staffs
+        club = Club(self.server_id, self.char_id, load_staffs=False)
+        club.force_load_staffs(send_notify=True)
 
     def move_slot(self, slot_id, to_index):
         if str(slot_id) not in self.doc['slots']:

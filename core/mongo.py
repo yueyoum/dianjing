@@ -363,48 +363,6 @@ class MongoTrainingMatch(BaseDocument):
     COLLECTION = 'training_match'
 
 
-# 员工拍卖
-class MongoAuctionStaff(BaseDocument):
-    DOCUMENT = {
-        '_id': null,        # 物品ID
-        'char_id': 0,       # 出售者ID
-        'club_name': "",
-
-        # 员工属性 要存入购买者的 staffs 数据库中
-        'staff_id': 0,      # 员工ID
-        'exp': 0,           # 当前经验
-        'level': 0,         # 当前等级
-        'status': 0,        # 状态， 对应 staff_status.json
-        'skills': {},       # 技能
-
-        # 下面这些额外信息用于搜索
-        'quality': '',
-        'jingong': 0,       # 进攻
-        'qianzhi': 0,       # 牵制
-        'xintai': 0,        # 心态
-        'baobing': 0,       # 暴兵
-        'fangshou': 0,      # 防守
-        'yunying': 0,       # 运营
-        'yishi': 0,         # 意识
-        'caozuo': 0,        # 操作
-        'zhimingdu': 0,     # 知名度
-
-        # 拍卖设置
-        'start_at': 0,      # 开始时间
-        'tp': 0,            # 拍卖类型
-        'min_price': 0,     # 最低价
-        'max_price': 0,     # 一口价
-
-        # 拍卖信息
-        'bidder': 0,        # 最新的竞标者(竞标者id)
-        'bidding': 0,       # 最新的竞标价格
-        # 定时任务key
-        'key': "",
-    }
-
-    COLLECTION = 'auction_staff'
-    INDEXES = ['char_id']
-
 
 # 用户竞价列表
 class MongoBidding(BaseDocument):

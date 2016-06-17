@@ -19,6 +19,7 @@ from config import (
     ConfigUnitNew,
     ConfigItemNew,
     ConfigTalentSkill,
+    ConfigQianBan,
 )
 
 
@@ -172,7 +173,6 @@ class AbstractStaff(object):
     __slots__ = [
         'config',
         'server_id', 'char_id', 'id', 'oid', 'level', 'step', 'star', 'level_exp', 'star_exp',
-        'active_qianban_ids',
 
         'equip_mouse', 'equip_keyboard', 'equip_monitor', 'equip_decoration',
         'attack', 'defense', 'manage', 'operation',
@@ -186,6 +186,7 @@ class AbstractStaff(object):
         '__unit',
 
         'active_talent_ids',
+        'active_qianban_ids',
     ]
 
     def __init__(self):
@@ -216,7 +217,6 @@ class AbstractStaff(object):
         self.equip_keyboard = ''
         self.equip_monitor = ''
         self.equip_decoration = ''
-        self.active_qianban_ids = []
 
         self.formation_position = None
 
@@ -224,6 +224,8 @@ class AbstractStaff(object):
         """:type: AbstractUnit"""
 
         self.active_talent_ids = []
+        self.active_qianban_ids = []
+
 
     @classmethod
     def get(cls, _id):
@@ -237,6 +239,21 @@ class AbstractStaff(object):
 
     def after_init(self):
         self.config = ConfigStaffNew.get(self.oid)
+
+    def check_activie_qianban_ids(self):
+        config = ConfigQianBan.get(self.oid)
+        if not config:
+            return
+
+        ids = []
+        for k, v in config.qianban.iteritems():
+            # TODO  more condition_tp
+            if v.condition_tp == 1:
+                # 装备兵种
+                if self.__unit and self.__unit.id in v.condition_value:
+                    ids.append(k)
+
+        self.active_qianban_ids = ids
 
     @property
     def unit(self):
@@ -298,6 +315,7 @@ class AbstractStaff(object):
     def set_unit(self, unit):
         # type: (AbstractUnit) -> None
         self.__unit = unit.clone()
+        self.check_activie_qianban_ids()
 
     def calculate_unit(self):
         if not self.server_id:
@@ -400,12 +418,12 @@ class AbstractStaff(object):
     def add_other_talent_effects(self, effect_ids):
         for eid in effect_ids:
             config_talent = ConfigTalentSkill.get(eid)
-            if config_talent.target == 1:
-                # 外部加成的天赋， 如果是选手自身，那么该是哪一个选手？
-                # 所以这是错误情况
-                raise RuntimeError("AbstractStaff.add_other_talent_effects. effect_id: {0} target is 1".format(eid))
+            # if config_talent.target == 1:
+            #     # 外部加成的天赋， 如果是选手自身，那么该是哪一个选手？
+            #     # 所以这是错误情况
+            #     raise RuntimeError("AbstractStaff.add_other_talent_effects. effect_id: {0} target is 1".format(eid))
 
-            if config_talent.target in [2, 6, 7, 8, 9, 10, 11, 12, 13] or \
+            if config_talent.target in [1, 2, 6, 7, 8, 9, 10, 11, 12, 13] or \
                     (config_talent.target == 3 and self.config.race == 1) or \
                     (config_talent.target == 4 and self.config.race == 3) or \
                     (config_talent.target == 5 and self.config.race == 2):
@@ -522,6 +540,7 @@ class AbstractStaff(object):
         msg.equip_keyboard_slot_id = self.equip_keyboard
         msg.equip_monitor_slot_id = self.equip_monitor
         msg.equip_decoration_slot_id = self.equip_decoration
+        msg.qianban_ids.extend(self.active_qianban_ids)
 
         return msg
 
@@ -572,9 +591,6 @@ class AbstractClub(object):
                 units.append(s.__unit)
 
         return units
-
-    def qianban_affect(self):
-        pass
 
     @property
     def power(self):
