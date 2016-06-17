@@ -155,10 +155,12 @@ class Tower(object):
         # 这里不能直接 $set， 得用 $inc
         # 因为有定时任务在 直接清零
         # NOTE: 因为用了 sef.doc 的数据，必须在 设置完后 才能调用
-        ri = ResetInfo(self.server_id, self.char_id)
-        if not ri.reset_times:
-            # 只有当天重置过的，才记录当天最高星数
-            return
+        # NOTE: 还要判断是不是当天创建的新角色，新角色就算没重置也得记录啊啊啊
+        if Character(self.server_id, self.char_id).create_days > 1:
+            ri = ResetInfo(self.server_id, self.char_id)
+            if not ri.reset_times:
+                # 只有当天重置过的，才记录当天最高星数
+                return
 
         inc_value = self.get_total_current_star() - self.doc['today_max_star']
         if inc_value <= 0:
