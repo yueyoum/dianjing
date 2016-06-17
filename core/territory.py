@@ -899,17 +899,18 @@ class TerritoryFriend(object):
             }}
         )
 
-        ValueLogTerritoryHelpFriendTimes(self.server_id, self.char_id).record()
-        ValueLogTerritoryGotHelpTimes(self.server_id, friend_id).record()
-
-        self.send_remained_times_notify()
-
         config = ConfigTerritoryEvent.get(event_id)
         if not config.npc:
             resource_classified = ResourceClassification.classify(config.reward_win)
             resource_classified.add(self.server_id, self.char_id)
 
             Territory(self.server_id, friend_id).add_building_exp(building_id, config.target_exp)
+
+            # NOTE： 战斗要等到结算的时候再记录次数
+            ValueLogTerritoryHelpFriendTimes(self.server_id, self.char_id).record()
+            ValueLogTerritoryGotHelpTimes(self.server_id, friend_id).record()
+            self.send_remained_times_notify()
+
             return None, resource_classified
 
         npc_club = ConfigNPCFormation.get(config.npc)
@@ -928,6 +929,11 @@ class TerritoryFriend(object):
             event_id = int(event_id)
         except:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
+        # NOTE： 战斗要等到结算的时候再记录次数
+        ValueLogTerritoryHelpFriendTimes(self.server_id, self.char_id).record()
+        ValueLogTerritoryGotHelpTimes(self.server_id, friend_id).record()
+        self.send_remained_times_notify()
 
         config = ConfigTerritoryEvent.get(event_id)
         Territory(self.server_id, friend_id).add_building_exp(building_id, config.target_exp)

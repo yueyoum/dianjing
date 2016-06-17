@@ -134,13 +134,13 @@ class Formation(object):
         old_staff_id = self.doc['slots'][str(slot_id)]['staff_id']
         if not old_staff_id:
             # 这是新上阵的选手，需要根据是第几个上的，确定其位置
-            now_amount = len(self.in_formation_staffs())
+            this_amount = len(self.in_formation_staffs()) + 1
 
-            for pos in FORMATION_DEFAULT_POSITION[now_amount]:
+            for pos in FORMATION_DEFAULT_POSITION[this_amount]:
                 if not self.doc['position'][pos]:
                     break
             else:
-                raise RuntimeError("Formation Auto set position error. now amount: {0}".format(now_amount))
+                raise RuntimeError("Formation Auto set position error. now amount: {0}".format(this_amount))
 
             old_pos = self.doc['position'].index(slot_id)
             self.doc['position'][old_pos] = 0
