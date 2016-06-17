@@ -30,6 +30,14 @@ from protomsg.formation_pb2 import (
 
 MAX_SLOT_AMOUNT = 6
 
+FORMATION_DEFAULT_POSITION = {
+    2: [15, 16, 14, 17, 13, 12],
+    3: [22, 20, 23, 21, 19, 18],
+    4: [9, 10, 8, 11, 7, 6],
+    5: [9, 10, 8, 11, 7, 6],
+    6: [9, 10, 8, 11, 7, 6],
+}
+
 
 class Formation(object):
     __slots__ = ['server_id', 'char_id', 'doc']
@@ -44,6 +52,50 @@ class Formation(object):
             self.doc['_id'] = self.char_id
             self.doc['position'] = [0] * 30
             MongoFormation.db(self.server_id).insert_one(self.doc)
+
+    def initialize(self, init_data):
+        # [(staff_unique_id, unit_id, position), ...]
+
+        def _get_empty_position():
+            empty_positions = [_index for _index, _slot_id in enumerate(self.doc['position']) if _slot_id == 0]
+            return random.choice(empty_positions)
+
+        slot_id = 1
+
+        updater = {}
+        for staff_unique_id, unit_id, position in init_data:
+            doc = MongoFormation.document_slot()
+            doc['staff_id'] = staff_unique_id
+            doc['unit_id'] = unit_id
+
+            self.doc['slots'][str(slot_id)] = doc
+            self.doc['position'][position] = slot_id
+
+            updater['slots.{0}'.format(slot_id)] = doc
+            updater['position.{0}'.format(position)] = slot_id
+
+            slot_id += 1
+
+        more_open_slot_amount = MAX_SLOT_AMOUNT - len(init_data)
+        for i in range(more_open_slot_amount):
+            doc = MongoFormation.document_slot()
+            doc['staff_id'] = ""
+            doc['unit_id'] = 0
+
+            self.doc['slots'][str(slot_id)] = doc
+
+            pos = _get_empty_position()
+            self.doc['position'][pos] = slot_id
+
+            updater['slots.{0}'.format(slot_id)] = doc
+            updater['position.{0}'.format(pos)] = slot_id
+
+            slot_id += 1
+
+        MongoFormation.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': updater}
+        )
 
     def is_staff_in_formation(self, staff_id):
         for _, v in self.doc['slots'].iteritems():
@@ -68,42 +120,6 @@ class Formation(object):
 
         return staffs
 
-    def open_slot(self, staff_unique_id="", unit_id=0, send_notify=True):
-        if staff_unique_id:
-            # TODO error code
-            StaffManger(self.server_id, self.char_id).check_staff(ids=[staff_unique_id])
-
-            if staff_unique_id in self.in_formation_staffs():
-                raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
-
-        slot_id = len(self.doc['slots']) + 1
-        if slot_id > MAX_SLOT_AMOUNT:
-            # TODO error code
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
-
-        data = MongoFormation.document_slot()
-        data['staff_id'] = staff_unique_id
-        data['unit_id'] = unit_id
-
-        empty_positions = [_index for _index, _slot_id in enumerate(self.doc['position']) if _slot_id == 0]
-        pos = random.choice(empty_positions)
-
-        self.doc['slots'][str(slot_id)] = data
-        self.doc['position'][pos] = slot_id
-
-        MongoFormation.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': {
-                'slots.{0}'.format(slot_id): data,
-                'position.{0}'.format(pos): slot_id
-            }}
-        )
-
-        if send_notify:
-            self.send_notify(slot_ids=[slot_id])
-
-        return slot_id
-
     def set_staff(self, slot_id, staff_id):
         if str(slot_id) not in self.doc['slots']:
             raise GameException(ConfigErrorMessage.get_error_id("FORMATION_SLOT_NOT_OPEN"))
@@ -113,17 +129,35 @@ class Formation(object):
         if staff_id in self.in_formation_staffs():
             raise GameException(ConfigErrorMessage.get_error_id("FORMATION_STAFF_ALREADY_IN"))
 
+        updater = {}
+
         old_staff_id = self.doc['slots'][str(slot_id)]['staff_id']
+        if not old_staff_id:
+            # 这是新上阵的选手，需要根据是第几个上的，确定其位置
+            now_amount = len(self.in_formation_staffs())
+
+            for pos in FORMATION_DEFAULT_POSITION[now_amount]:
+                if not self.doc['position'][pos]:
+                    break
+            else:
+                raise RuntimeError("Formation Auto set position error. now amount: {0}".format(now_amount))
+
+            old_pos = self.doc['position'].index(slot_id)
+            self.doc['position'][old_pos] = 0
+            self.doc['position'][pos] = slot_id
+
+            updater['position.{0}'.format(pos)] = slot_id
+            updater['position.{0}'.format(old_pos)] = 0
 
         self.doc['slots'][str(slot_id)]['staff_id'] = staff_id
         self.doc['slots'][str(slot_id)]['unit_id'] = 0
 
+        updater['slots.{0}.staff_id'.format(slot_id)] = staff_id
+        updater['slots.{0}.unit_id'.format(slot_id)] = 0
+
         MongoFormation.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': {
-                'slots.{0}.staff_id'.format(slot_id): staff_id,
-                'slots.{0}.unit_id'.format(slot_id): 0,
-            }}
+            {'$set': updater}
         )
 
         self.send_notify(slot_ids=[slot_id])

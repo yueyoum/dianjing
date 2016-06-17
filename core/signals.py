@@ -17,8 +17,7 @@ account_login_signal = Signal(providing_args=['account_id', 'ip', 'to_server_id'
 char_created_signal = Signal(providing_args=['server_id', 'char_id', 'char_name'])
 # 游戏开始
 game_start_signal = Signal(providing_args=['server_id', 'char_id'])
-# 参赛员工设置完成
-match_staffs_set_done_signal = Signal(providing_args=['server_id', 'char_id', 'match_staffs'])
+
 # 进行了一场挑战赛
 challenge_match_signal = Signal(providing_args=['server_id', 'char_id', 'challenge_id', 'win'])
 # 好友切磋比赛
@@ -43,8 +42,6 @@ staff_new_add_signal = Signal(providing_args=['server_id', 'char_id', 'oid', 'un
 # VIP
 vip_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])
 
-# 更换出阵队员
-match_staffs_set_change_signal = Signal(providing_args=['server_id', 'char_id'])
 # 员工强化培训
 training_property_start_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
 training_property_done_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])

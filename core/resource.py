@@ -210,6 +210,7 @@ class ResourceClassification(object):
         obj.staff_exp_pool = staff_exp_pool
         obj.arena_point = arena_point
         obj.work_card = work_card
+        obj.energy = energy
         obj.staff_recruit_score = staff_recruit_score
         obj.territory_product = territory_product.items()
 

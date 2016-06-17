@@ -40,7 +40,7 @@ class Character(object):
     def create(cls, server_id, char_id, char_name, club_name, club_flag):
         # 这里是club创建完毕后再调用的
         from core.staff import StaffManger
-        from core.formation import Formation, MAX_SLOT_AMOUNT
+        from core.formation import Formation
 
         doc = MongoCharacter.document()
         doc['_id'] = char_id
@@ -54,18 +54,15 @@ class Character(object):
         doc['club']['gas'] = CHAR_INIT_GAS
 
         sm = StaffManger(server_id, char_id)
-        f = Formation(server_id, char_id)
-        unique_ids = []
-        for staff_id, unit_id in CHAR_INIT_STAFFS:
+
+        formation_init_data = []
+        for staff_id, unit_id, position in CHAR_INIT_STAFFS:
             uid = sm.add(staff_id, send_notify=False)
-            f.open_slot(staff_unique_id=uid, unit_id=unit_id, send_notify=False)
-            unique_ids.append(uid)
+            formation_init_data.append((uid, unit_id, position))
 
-        more_open_slots_amount = MAX_SLOT_AMOUNT - len(CHAR_INIT_STAFFS)
-        for i in range(more_open_slots_amount):
-            f.open_slot(send_notify=False)
+        fm = Formation(server_id, char_id)
+        fm.initialize(formation_init_data)
 
-        doc['club']['match_staffs'] = unique_ids
         MongoCharacter.db(server_id).insert_one(doc)
 
     @classmethod

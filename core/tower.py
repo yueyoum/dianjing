@@ -92,7 +92,7 @@ class Tower(object):
     @classmethod
     def send_rank_reward(cls, server_id):
         char_ids = Character.get_recent_login_char_ids(server_id, recent_days=14)
-        char_ids = [str(i) for i in char_ids]
+        char_ids = [i for i in char_ids]
 
         docs = MongoTower.db(server_id).find({'_id': {'$in': char_ids}}, {'_id': 1}).sort('today_max_star', -1)
 
@@ -110,6 +110,9 @@ class Tower(object):
                 config.mail_content,
                 attachment=rc.to_json(),
             )
+
+            rank += 1
+
 
     def talent_effects(self):
         return self.doc['talents']
