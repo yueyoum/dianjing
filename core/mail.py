@@ -178,7 +178,7 @@ class MailManager(object):
 
         if expired:
             if len(expired) == total_amount:
-                MongoMail.db(self.server_id).drop()
+                MongoMail.db(self.server_id).delete_one({'_id': self.char_id})
             else:
                 updater = {"mails.{0}".format(i): 1 for i in expired}
 
