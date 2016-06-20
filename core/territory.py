@@ -532,6 +532,9 @@ class Territory(object):
                 if not s.open:
                     continue
 
+                if not s.staff_id:
+                    continue
+
                 if sm.get_staff_object(s.staff_id).oid == oid:
                     return True
 
@@ -716,6 +719,9 @@ class Territory(object):
         building = self.get_building_object(building_id, slots_ids=[])
         level_up = building.add_exp(exp)
 
+        self.doc['buildings'][str(building_id)]['level'] = building.level
+        self.doc['buildings'][str(building_id)]['exp'] = building.exp
+
         MongoTerritory.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
@@ -732,6 +738,9 @@ class Territory(object):
     def inspire_building(self, building_id):
         building = self.get_building_object(building_id, slots_ids=[])
         drop, level_up = building.make_inspire()
+
+        self.doc['buildings'][str(building_id)]['level'] = building.level
+        self.doc['buildings'][str(building_id)]['exp'] = building.exp
 
         MongoTerritory.db(self.server_id).update_one(
             {'_id': self.char_id},
