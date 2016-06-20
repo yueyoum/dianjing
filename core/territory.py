@@ -507,6 +507,20 @@ class Territory(object):
     def is_building_open(self, building_id):
         return str(building_id) in self.doc['buildings']
 
+    def is_staff_training(self, staff_id):
+        for k, v in self.get_all_building_objects().iteritems():
+            if not v.open:
+                continue
+
+            for _, s in v.slots.iteritems():
+                if not s.open:
+                    continue
+
+                if s.staff_id == staff_id:
+                    return True
+
+        return False
+
     def get_all_building_objects(self):
         """
 
@@ -549,7 +563,8 @@ class Territory(object):
         if slot.staff_id:
             raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_SLOT_HAS_STAFF"))
 
-        # TODO check whether this staff is in training
+        if self.is_staff_training(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_STAFF_IS_TRAINING"))
 
         config_slot = ConfigTerritoryBuilding.get(building_id).slots[slot_id]
         cost_amount = config_slot.get_cost_amount(building.level, TRAINING_HOURS.index(hour))
