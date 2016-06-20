@@ -32,11 +32,11 @@ class _QianBan(object):
 
 
 class _StaffQianBan(object):
-    __slots__ = ['id', 'qianban']
+    __slots__ = ['id', 'info']
 
     def __init__(self):
         self.id = 0
-        self.qianban = {}
+        self.info = {}
         """:type: dict[int, _QianBan]"""
 
 
@@ -50,7 +50,7 @@ class ConfigQianBan(ConfigBase):
     def initialize(cls, fixture):
         super(ConfigQianBan, cls).initialize(fixture)
         for _, v in cls.INSTANCES.iteritems():
-            v.qianban = {int(_k): _QianBan.create(_v) for _k, _v in v.qianban.iteritems()}
+            v.info = {int(_k): _QianBan.create(_v) for _k, _v in v.info.iteritems()}
 
     @classmethod
     def get(cls, _id):

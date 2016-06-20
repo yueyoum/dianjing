@@ -16,7 +16,7 @@ from core.value_log import ValueLogEnergyBuyTimes
 from core.vip import VIP
 from core.resource import ResourceClassification, money_text_to_item_id
 
-from config import ConfigErrorMessage
+from config import ConfigErrorMessage, ConfigEnergyBuyCost
 
 from utils.message import MessagePipe
 
@@ -25,21 +25,6 @@ from protomsg.energy_pb2 import EnergyNotify
 MAX_ENERGY_SOFT_LIMIT = 120
 MAX_ENERGY_HARD_LIMIT = 999
 RECOVER_INTERVAL = 60 * 5
-
-
-class BuyCost(object):
-    __slots__ = []
-    TIMES = (
-        (5, 200), (4, 150), (3, 100), (2, 80), (1, 50)
-    )
-
-    @classmethod
-    def get_cost(cls, times):
-        for t, c in cls.TIMES:
-            if times >= t:
-                return c
-
-        raise RuntimeError("Energy BuyCost, Error times: {0}".format(times))
 
 
 class BuyTimeInfo(object):
@@ -51,7 +36,7 @@ class BuyTimeInfo(object):
         if self.remained_buy_times < 0:
             self.remained_buy_times = 0
 
-        self.buy_cost = BuyCost.get_cost(self.buy_times + 1)
+        self.buy_cost = ConfigEnergyBuyCost.get_cost(self.buy_times + 1)
 
 
 class Energy(object):

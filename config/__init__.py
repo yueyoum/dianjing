@@ -35,6 +35,7 @@ from config.territory import ConfigTerritoryBuilding, ConfigInspireCost, ConfigT
 from config.store import ConfigStore, ConfigStoreRefreshCost, ConfigStoreType
 from config.vip import ConfigVIP
 from config.collection import ConfigCollection
+from config.energy import ConfigEnergyBuyCost
 
 
 _has_configed = False
@@ -197,6 +198,9 @@ def load_config():
 
         elif item == 'collection.json':
             ConfigCollection.initialize(data)
+
+        elif item == 'energy_buy_cost.json':
+            ConfigEnergyBuyCost.initialize(data)
 
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))
 
