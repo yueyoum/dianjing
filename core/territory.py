@@ -507,7 +507,7 @@ class Territory(object):
     def is_building_open(self, building_id):
         return str(building_id) in self.doc['buildings']
 
-    def is_staff_training(self, staff_id):
+    def is_staff_training_check_by_unique_id(self, staff_id):
         for k, v in self.get_all_building_objects().iteritems():
             if not v.open:
                 continue
@@ -517,6 +517,22 @@ class Territory(object):
                     continue
 
                 if s.staff_id == staff_id:
+                    return True
+
+        return False
+
+    def is_staff_training_check_by_oid(self, oid):
+        sm = StaffManger(self.server_id, self.char_id)
+
+        for k, v in self.get_all_building_objects().iteritems():
+            if not v.open:
+                continue
+
+            for _, s in v.slots.iteritems():
+                if not s.open:
+                    continue
+
+                if sm.get_staff_object(s.staff_id).oid == oid:
                     return True
 
         return False
@@ -563,7 +579,7 @@ class Territory(object):
         if slot.staff_id:
             raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_SLOT_HAS_STAFF"))
 
-        if self.is_staff_training(staff_id):
+        if self.is_staff_training_check_by_oid(sm.get_staff_object(staff_id).oid):
             raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_STAFF_IS_TRAINING"))
 
         config_slot = ConfigTerritoryBuilding.get(building_id).slots[slot_id]
