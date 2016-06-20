@@ -21,7 +21,8 @@ from utils.message import MessagePipe
 
 from config import (
     ConfigClubLevel,
-    ConfigErrorMessage
+    ConfigErrorMessage,
+    ConfigQianBan,
 )
 
 from protomsg.club_pb2 import ClubNotify
@@ -115,7 +116,7 @@ class Club(AbstractClub):
             staff_objs[k].talent_effect(self)
             staff_objs[k].add_other_talent_effects(talent_effects_1)
             staff_objs[k].add_other_talent_effects(talent_effects_2)
-            staff_objs[k].add_other_talent_effects(staff_objs[k].active_qianban_ids)
+            staff_objs[k].add_other_talent_effects(staff_objs[k].active_qianban_talent_effect_ids)
 
         for _, v in staff_objs.iteritems():
             v.calculate()

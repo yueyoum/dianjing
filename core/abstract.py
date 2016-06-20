@@ -187,6 +187,7 @@ class AbstractStaff(object):
 
         'active_talent_ids',
         'active_qianban_ids',
+        'active_qianban_talent_effect_ids',
     ]
 
     def __init__(self):
@@ -225,6 +226,7 @@ class AbstractStaff(object):
 
         self.active_talent_ids = []
         self.active_qianban_ids = []
+        self.active_qianban_talent_effect_ids = []
 
 
     @classmethod
@@ -245,15 +247,18 @@ class AbstractStaff(object):
         if not config:
             return
 
-        ids = []
-        for k, v in config.qianban.iteritems():
+        qianban_ids = []
+        talent_effect_ids = []
+        for k, v in config.info.iteritems():
             # TODO  more condition_tp
             if v.condition_tp == 1:
                 # 装备兵种
                 if self.__unit and self.__unit.id in v.condition_value:
-                    ids.append(k)
+                    qianban_ids.append(k)
+                    talent_effect_ids.append(v.talent_effect_id)
 
-        self.active_qianban_ids = ids
+        self.active_qianban_ids = qianban_ids
+        self.active_qianban_talent_effect_ids = talent_effect_ids
 
     @property
     def unit(self):
