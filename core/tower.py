@@ -44,6 +44,7 @@ from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
 MAX_LEVEL = max(ConfigTowerLevel.INSTANCES.keys())
 
+
 def get_tower_talent_effects(server_id, char_id):
     # 这里单独提供一个方法是为了 统一处理的时候
     # 如果用了 Tower 这个类， NPC也会给创建记录
@@ -94,7 +95,11 @@ class Tower(object):
         char_ids = Character.get_recent_login_char_ids(server_id, recent_days=14)
         char_ids = [i for i in char_ids]
 
-        docs = MongoTower.db(server_id).find({'_id': {'$in': char_ids}}, {'_id': 1}).sort('today_max_star', -1)
+        condition = {'$and': [
+            {'_id': {'$in': char_ids}},
+            {'today_max_star': {'$ne': 0}}
+        ]}
+        docs = MongoTower.db(server_id).find(condition, {'_id': 1}).sort('today_max_star', -1)
 
         rank = 1
         for doc in docs:
@@ -112,7 +117,6 @@ class Tower(object):
             )
 
             rank += 1
-
 
     def talent_effects(self):
         return self.doc['talents']
@@ -519,7 +523,10 @@ class Tower(object):
         return rc
 
     def get_leader_board(self, amount=30):
-        docs = MongoTower.db(self.server_id).find({}, {'today_max_star': 1}).sort('today_max_star', -1).limit(amount)
+        docs = MongoTower.db(self.server_id).find(
+            {'today_max_star': {'$ne': 0}},
+            {'today_max_star': 1}
+        ).sort('today_max_star', -1).limit(amount)
 
         info = []
         for doc in docs:

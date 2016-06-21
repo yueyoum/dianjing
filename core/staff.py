@@ -461,7 +461,7 @@ class Staff(AbstractStaff):
         resource_classified.check_exist(self.server_id, self.char_id)
         resource_classified.remove(self.server_id, self.char_id)
 
-        if random.randint(1, 100) <= 30:
+        if random.randint(1, 100) <= 20:
             inc_exp = 6
             crit = True
         else:

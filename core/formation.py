@@ -31,7 +31,7 @@ from protomsg.formation_pb2 import (
 MAX_SLOT_AMOUNT = 6
 
 FORMATION_DEFAULT_POSITION = {
-    2: [15, 16, 14, 17, 13, 12],
+    2: [20, 22],
     3: [22, 20, 23, 21, 19, 18],
     4: [9, 10, 8, 11, 7, 6],
     5: [9, 10, 8, 11, 7, 6],
