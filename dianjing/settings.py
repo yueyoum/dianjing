@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'anymail',
     'duckadmin',
     'apps.helper',
     'apps.server',
@@ -136,14 +137,14 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler'
         },
         'console': {
-            'class': 'logging.StreamHandler',
             'level': 'DEBUG',
-            'formatter': 'verbose'
+            'formatter': 'verbose',
+            'class': 'logging.StreamHandler',
         },
     },
     'loggers': {
         'django.request': {
-            'handlers': [],
+            'handlers': ['console', 'mail_admins'],
             'level': 'ERROR',
             'propagate': True,
         },
@@ -185,8 +186,6 @@ DATABASES = {
 
 
 TIME_ZONE = doc.find('timezone').text
-SERVER_HOST = doc.find('host').text
-
 
 AES_KEY = doc.find('crypto/key').text
 AES_CBC_IV = doc.find('crypto/iv').text
@@ -202,13 +201,26 @@ else:
     MONGODB_USER = None
     MONGODB_PASSWORD = None
 
-TIMERD_URL = doc.find('timerd').text
+# MAILGUN
+ANYMAIL = {
+    'MAILGUN_API_KEY': doc.find('mailgun/key').text
+}
+SERVER_EMAIL = "{0} <{0}@{1}>".format(doc.find('mailgun/sender').text, doc.find('mailgun/domain').text)
+EMAIL_BACKEND = "anymail.backends.mailgun.MailgunBackend"
+EMAIL_SUBJECT_PREFIX = "[DianJing]"
+
+_config_admins = doc.find('admins')
+ADMINS = ()
+for _admin in _config_admins.getchildren():
+    ADMINS += ((_admin.attrib['name'], _admin.attrib['email']), )
+
 
 QINIU_ACCESS_KEY = doc.find('qiniu/accesskey').text
 QINIU_SECRET_KEY = doc.find('qiniu/secretkey').text
 QINIU_BUCKET = doc.find('qiniu/bucket').text
 QINIU_DOMAIN = doc.find('qiniu/domain').text
 
+del _config_admins
 del doc
 del tree
 del et

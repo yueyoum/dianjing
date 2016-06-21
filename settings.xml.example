@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
     <timezone>Asia/Shanghai</timezone>
-    <host>http://127.0.0.1:8000</host>
-    <timerd>http://127.0.0.1:6789</timerd>
 
     <mysql>
         <host>127.0.0.1</host>
@@ -27,6 +25,17 @@
         <user></user>
         <password></password>
     </mongodb>
+
+    <mailgun>
+        <sender></sender>
+        <key></key>
+        <domain></domain>
+    </mailgun>
+
+    <!-- admin 是服务器报错后要发送的人. 如果有多个，就写多个admin-->
+    <admins>
+        <admin name="Wang Chao" email="mztimes_dev@163.com" />
+    </admins>
 
     <qiniu>
         <accesskey></accesskey>
