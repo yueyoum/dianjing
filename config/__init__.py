@@ -36,6 +36,7 @@ from config.store import ConfigStore, ConfigStoreRefreshCost, ConfigStoreType
 from config.vip import ConfigVIP
 from config.collection import ConfigCollection
 from config.energy import ConfigEnergyBuyCost
+from config.formation import ConfigFormationSlot
 
 
 _has_configed = False
@@ -201,6 +202,9 @@ def load_config():
 
         elif item == 'energy_buy_cost.json':
             ConfigEnergyBuyCost.initialize(data)
+
+        elif item == 'formation_slot.json':
+            ConfigFormationSlot.initialize(data)
 
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))
 

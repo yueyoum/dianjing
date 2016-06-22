@@ -16,7 +16,7 @@ from core.club import Club
 
 from utils.message import MessagePipe
 
-from config import ConfigErrorMessage
+from config import ConfigErrorMessage, ConfigFormationSlot
 
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 from protomsg.formation_pb2 import (
@@ -65,10 +65,12 @@ class Formation(object):
     def initialize(self, init_data):
         # [(staff_unique_id, unit_id, position), ...]
 
-        slot_id = 1
+        opened_slot_ids = ConfigFormationSlot.get_opened_slot_ids(1)
 
         updater = {}
-        for staff_unique_id, unit_id, position in init_data:
+        for index, staff_unique_id, unit_id, position in enumerate(init_data):
+            slot_id = opened_slot_ids[index]
+
             doc = MongoFormation.document_slot()
             doc['staff_id'] = staff_unique_id
             doc['unit_id'] = unit_id
@@ -79,28 +81,41 @@ class Formation(object):
             updater['slots.{0}'.format(slot_id)] = doc
             updater['position.{0}'.format(position)] = slot_id
 
-            slot_id += 1
-
-        more_open_slot_amount = MAX_SLOT_AMOUNT - len(init_data)
-        for i in range(more_open_slot_amount):
-            doc = MongoFormation.document_slot()
-            doc['staff_id'] = ""
-            doc['unit_id'] = 0
-
-            self.doc['slots'][str(slot_id)] = doc
-
-            pos = self.get_slot_init_position(slot_id)
-            self.doc['position'][pos] = slot_id
-
-            updater['slots.{0}'.format(slot_id)] = doc
-            updater['position.{0}'.format(pos)] = slot_id
-
-            slot_id += 1
-
         MongoFormation.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': updater}
         )
+
+    def try_open_slots(self, new_club_level):
+        opened_slot_ids = ConfigFormationSlot.get_opened_slot_ids(new_club_level)
+
+        new_slot_ids = []
+        updater = {}
+
+        for i in opened_slot_ids:
+            if str(i) in self.doc['slots']:
+                continue
+
+            pos = self.get_slot_init_position(i)
+            doc = MongoFormation.document_slot()
+            doc['staff_id'] = ""
+            doc['unit_id'] = 0
+
+            self.doc['slots'][str(i)] = doc
+            self.doc['position'][pos] = i
+
+            updater['slots.{0}'.format(i)] = doc
+            updater['position.{0}'.format(pos)] = i
+
+            new_slot_ids.append(i)
+
+        if new_slot_ids:
+            MongoFormation.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': updater}
+            )
+
+            self.send_notify(slot_ids=new_slot_ids)
 
     def is_staff_in_formation(self, staff_id):
         for _, v in self.doc['slots'].iteritems():
