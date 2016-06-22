@@ -501,11 +501,15 @@ class Staff(AbstractStaff):
             cost_item_id = 0
             cost_item_amount = 0
 
-            while self.star > old_star:
+            while self.star == old_star:
                 try:
                     _crit, _inc_exp, _cost_id, _cost_amount = _make_single_up()
-                except GameException:
-                    break
+                except GameException as e:
+                    if not inc_exp:
+                        # 说明一次都没成功
+                        raise e
+                    else:
+                        break
 
                 if _crit:
                     crit = _crit

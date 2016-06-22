@@ -97,16 +97,26 @@ class Unit(AbstractUnit):
 
             self.level += 1
         else:
+
+            _add = 0
             while self.level <= max_level:
+                if _add == add_level:
+                    break
+
                 try:
                     using_items = self.config.levels[self.level].update_item_need
                     resource_classified = ResourceClassification.classify(using_items)
                     resource_classified.check_exist(self.server_id, self.char_id)
                     resource_classified.remove(self.server_id, self.char_id)
-                except GameException:
-                    break
+                except GameException as e:
+                    if _add == 0:
+                        # 一次都没升过
+                        raise e
+                    else:
+                        break
 
                 self.level += 1
+                _add += 1
 
         if self.level != old_level:
             MongoUnit.db(self.server_id).update_one(
