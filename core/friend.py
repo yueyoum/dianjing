@@ -42,6 +42,7 @@ FRIEND_STATUS_TABLE = {
     FRIEND_STATUS_SELF_CONFIRM: friend_pb2.FRIEND_NEED_SELF_CONFIRM,
 }
 
+MAX_FRIEND_AMOUNT = 50
 
 class FriendManager(object):
     def __init__(self, server_id, char_id):
@@ -293,6 +294,7 @@ class FriendManager(object):
             act = ACT_INIT
 
         notify.act = act
+        notify.max_amount = MAX_FRIEND_AMOUNT
 
         doc = MongoFriend.db(self.server_id).find_one({'_id': self.char_id}, projection)
         friend_ids = [int(i) for i in doc['friends'].keys()]
