@@ -9,8 +9,8 @@ Description:
 
 from utils.http import ProtobufResponse
 
-from core.mongo import MongoCharacter
 from core.friend import FriendManager
+from core.club import Club
 
 from protomsg.friend_pb2 import (
     FRIEND_NOT,
@@ -33,28 +33,10 @@ def get_candidates(request):
     response = FriendCandidatesResponse()
     response.ret = 0
 
-    if not candidates:
-        return ProtobufResponse(response)
-
-    char_docs = MongoCharacter.db(server_id).find(
-        {'_id': {'$in': candidates}},
-        # TODO, other fields
-        {'name': 1, 'club': 1}
-    )
-
-    char_dict = {c['_id']: c for c in char_docs}
-
     for c in candidates:
-        notify_friend = response.friends.add()
-        notify_friend.status = FRIEND_NOT
-        notify_friend.id = str(c)
-        notify_friend.name = char_dict[c]['name']
-        # TODO
-        notify_friend.avatar = ""
-        notify_friend.club_name = char_dict[c]['club']['name']
-        notify_friend.club_flag = char_dict[c]['club']['flag']
-        notify_friend.club_gold = char_dict[c]['club']['gold']
-        notify_friend.club_level = char_dict[c]['club']['level']
+        response_friend = response.friends.add()
+        response_friend.status = FRIEND_NOT
+        response_friend.club.MergeFrom(Club(server_id, c).make_protomsg())
 
     return ProtobufResponse(response)
 
