@@ -234,6 +234,8 @@ class Formation(object):
             changed.append(target_slot_id)
 
         self.send_notify(slot_ids=changed)
+        # 阵型位置改了，staff有缓存，得重新load
+        Club(self.server_id, self.char_id, load_staffs=False).force_load_staffs()
 
     def send_notify(self, slot_ids=None):
         if slot_ids:
