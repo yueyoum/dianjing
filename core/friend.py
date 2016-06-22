@@ -72,7 +72,6 @@ class FriendManager(object):
 
         return friend_ids
 
-
     def get_candidates(self):
         char_doc = MongoCharacter.db(self.server_id).find_one(
             {'_id': self.char_id},
@@ -87,11 +86,11 @@ class FriendManager(object):
 
         def query(level_range):
             if level_range is not None:
-                min_level = level-level_range
+                min_level = level - level_range
                 if min_level < 1:
                     min_level = 1
 
-                max_level = level+level_range
+                max_level = level + level_range
 
                 condition = {
                     '$and': [
@@ -107,12 +106,12 @@ class FriendManager(object):
                 {'_id': 1}
             )
 
-            candidate_ids = []
+            _candidate_ids = []
             for d in other_doc:
                 if d['_id'] != self.char_id and str(d['_id']) not in friend_doc['friends']:
-                    candidate_ids.append(d['_id'])
+                    _candidate_ids.append(d['_id'])
 
-            return candidate_ids
+            return _candidate_ids
 
         candidate_ids = query(10)
         if len(candidate_ids) < FRIEND_CANDIDATES_AMOUNT:
@@ -298,24 +297,14 @@ class FriendManager(object):
         doc = MongoFriend.db(self.server_id).find_one({'_id': self.char_id}, projection)
         friend_ids = [int(i) for i in doc['friends'].keys()]
 
-        char_docs = MongoCharacter.db(self.server_id).find(
-            {'_id': {'$in': friend_ids}},
-            # TODO, other fields
-            {'name': 1, 'club': 1}
-        )
-
-        char_dict = {c['_id']: c for c in char_docs}
-
         for f in friend_ids:
             notify_friend = notify.friends.add()
             notify_friend.status = FRIEND_STATUS_TABLE[doc['friends'][str(f)]]
-            notify_friend.id = str(f)
-            notify_friend.name = char_dict[f]['name']
+
+            friend_club = Club(self.server_id, f)
+            notify_friend.club.MergeFrom(friend_club.make_protomsg())
+
             # TODO
-            notify_friend.avatar = ""
-            notify_friend.club_name = char_dict[f]['club']['name']
-            notify_friend.club_flag = char_dict[f]['club']['flag']
-            notify_friend.club_gold = char_dict[f]['club']['gold']
-            notify_friend.club_level = char_dict[f]['club']['level']
+            notify_friend.online = True
 
         MessagePipe(self.char_id).put(msg=notify)
