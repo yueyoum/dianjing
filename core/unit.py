@@ -79,29 +79,46 @@ class Unit(AbstractUnit):
         self.level = data['level']
         self.after_init()
 
-    def level_up(self):
+    def level_up(self, add_level):
+        assert add_level > 0
+
         from core.club import get_club_property
         max_level = min(self.config.max_level, get_club_property(self.server_id, self.char_id, 'level') * 2)
         if self.level >= max_level:
             raise GameException(ConfigErrorMessage.get_error_id("UNIT_REACH_MAX_LEVEL"))
 
-        using_items = self.config.levels[self.level].update_item_need
-        resource_classified = ResourceClassification.classify(using_items)
-        resource_classified.check_exist(self.server_id, self.char_id)
-        resource_classified.remove(self.server_id, self.char_id)
+        old_level = self.level
 
-        self.level += 1
+        if add_level == 1:
+            using_items = self.config.levels[self.level].update_item_need
+            resource_classified = ResourceClassification.classify(using_items)
+            resource_classified.check_exist(self.server_id, self.char_id)
+            resource_classified.remove(self.server_id, self.char_id)
 
-        MongoUnit.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$inc': {
-                'units.{0}.level'.format(self.id): 1
-            }}
-        )
+            self.level += 1
+        else:
+            while self.level <= max_level:
+                try:
+                    using_items = self.config.levels[self.level].update_item_need
+                    resource_classified = ResourceClassification.classify(using_items)
+                    resource_classified.check_exist(self.server_id, self.char_id)
+                    resource_classified.remove(self.server_id, self.char_id)
+                except GameException:
+                    break
+
+                self.level += 1
+
+        if self.level != old_level:
+            MongoUnit.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {
+                    'units.{0}.level'.format(self.id): self.level
+                }}
+            )
 
         # 升级可能会导致其他的unit属性改变（加成）
         # 所以在UnitManage 里统一load一次unit
-        # 是否要优化？
+        return self.level - old_level
 
     def step_up(self):
         if self.step >= self.config.max_step:
@@ -264,17 +281,16 @@ class UnitManager(object):
         self.load_units()
         return Unit.get(self.char_id, _id)
 
-    def level_up(self, uid):
+    def level_up(self, uid, add_level):
         unit = self.get_unit_object(uid)
         if not unit:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-        unit.level_up()
-        self.after_change(uid)
-
-        self.try_unlock()
-
-        ValueLogUnitLevelUpTimes(self.server_id, self.char_id).record()
+        changed_level = unit.level_up(add_level)
+        if changed_level:
+            self.after_change(uid)
+            self.try_unlock()
+            ValueLogUnitLevelUpTimes(self.server_id, self.char_id).record(value=changed_level)
 
     def step_up(self, uid):
         unit = self.get_unit_object(uid)

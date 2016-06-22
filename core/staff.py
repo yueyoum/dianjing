@@ -450,42 +450,70 @@ class Staff(AbstractStaff):
         # 不仅会影响自己，可能（如果在阵型中）也会影响到其他选手
         # 所以这里不自己 calculate， 而是先让 club 重新 load staffs
 
-    def star_up(self):
+    def star_up(self, single):
+        # single = True,  只升级一次
+        # single = False, 尽量升到下一星级
         if self.star >= STAFF_MAX_STAR:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_ALREADY_MAX_STAR"))
 
-        star_config = ConfigStaffStar.get(self.star)
-        using_items = [(star_config.need_item_id, star_config.need_item_amount)]
+        old_star = self.star
 
-        resource_classified = ResourceClassification.classify(using_items)
-        resource_classified.check_exist(self.server_id, self.char_id)
-        resource_classified.remove(self.server_id, self.char_id)
+        def _make_single_up():
+            star_config = ConfigStaffStar.get(self.star)
+            using_items = [(star_config.need_item_id, star_config.need_item_amount)]
 
-        if random.randint(1, 100) <= 20:
-            inc_exp = 6
-            crit = True
+            resource_classified = ResourceClassification.classify(using_items)
+            resource_classified.check_exist(self.server_id, self.char_id)
+            resource_classified.remove(self.server_id, self.char_id)
+
+            if random.randint(1, 100) <= 20:
+                inc_exp = 6
+                crit = True
+            else:
+                inc_exp = random.randint(1, 3)
+                crit = False
+
+            exp = self.star_exp + inc_exp
+
+            while True:
+                if self.star == STAFF_MAX_STAR:
+                    if exp >= ConfigStaffStar.get(self.star).exp:
+                        exp = ConfigStaffStar.get(self.star).exp - 1
+
+                    break
+
+                if exp < ConfigStaffStar.get(self.star).exp:
+                    break
+
+                exp -= ConfigStaffStar.get(self.star).exp
+                self.star += 1
+
+            self.star_exp = exp
+
+            return crit, inc_exp, star_config.need_item_id, star_config.need_item_amount
+
+
+        if single:
+            crit, inc_exp, cost_item_id, cost_item_amount = _make_single_up()
         else:
-            inc_exp = random.randint(1, 3)
             crit = False
+            inc_exp = 0
+            cost_item_id = 0
+            cost_item_amount = 0
 
-        exp = self.star_exp + inc_exp
-        _star_up = False
+            while self.star > old_star:
+                try:
+                    _crit, _inc_exp, _cost_id, _cost_amount = _make_single_up()
+                except GameException:
+                    break
 
-        while True:
-            if self.star == STAFF_MAX_STAR:
-                if exp >= ConfigStaffStar.get(self.star).exp:
-                    exp = ConfigStaffStar.get(self.star).exp - 1
+                if _crit:
+                    crit = _crit
 
-                break
+                inc_exp += _inc_exp
+                cost_item_id = _cost_id
+                cost_item_amount += _cost_amount
 
-            if exp < ConfigStaffStar.get(self.star).exp:
-                break
-
-            exp -= ConfigStaffStar.get(self.star).exp
-            self.star += 1
-            _star_up = True
-
-        self.star_exp = exp
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -495,10 +523,11 @@ class Staff(AbstractStaff):
             }}
         )
 
-        self.calculate()
-        self.make_cache()
+        if self.star != old_star:
+            self.calculate()
+            self.make_cache()
 
-        return _star_up, crit, inc_exp
+        return self.star!=old_star, crit, inc_exp, cost_item_id, cost_item_amount
 
     def equipment_change(self, bag_slot_id, tp):
         # 会影响的其他staff_id
@@ -890,13 +919,13 @@ class StaffManger(object):
             staff.make_cache()
             self.send_notify(ids=[staff_id])
 
-    def star_up(self, staff_id):
+    def star_up(self, staff_id, single):
         from core.formation import Formation
         staff = self.get_staff_object(staff_id)
         if not staff:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
-        _star_up, crit, inc_exp = staff.star_up()
+        _star_up, crit, inc_exp, cost_item_id, cost_item_amount = staff.star_up(single)
         ValueLogStaffStarUpTimes(self.server_id, self.char_id).record()
         self.send_notify(ids=[staff_id])
 
@@ -904,7 +933,7 @@ class StaffManger(object):
         if _star_up and staff.id in in_formation_staff_ids:
             self.after_staff_change()
 
-        return crit, inc_exp
+        return crit, inc_exp, cost_item_id, cost_item_amount
 
     def destroy(self, staff_id, tp):
         from core.club import Club

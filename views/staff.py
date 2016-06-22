@@ -86,13 +86,16 @@ def star_up(request):
     char_id = request._game_session.char_id
 
     staff_id = request._proto.staff_id
+    single = request._proto.single
 
-    crit, inc_exp =  StaffManger(server_id, char_id).star_up(staff_id)
+    crit, inc_exp, cost_item_id, cost_item_amount =  StaffManger(server_id, char_id).star_up(staff_id, single)
 
     response = StaffStarUpResponse()
     response.ret = 0
     response.crit = crit
     response.increase = inc_exp
+    response.cost_item_id = cost_item_id
+    response.cost_item_amount = cost_item_amount
     return ProtobufResponse(response)
 
 

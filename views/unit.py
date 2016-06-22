@@ -11,8 +11,14 @@ def level_up(request):
     char_id = request._game_session.char_id
 
     uid = request._proto.id
+    single = request._proto.single
 
-    UnitManager(server_id, char_id).level_up(uid)
+    if single:
+        add_level = 1
+    else:
+        add_level = 5
+
+    UnitManager(server_id, char_id).level_up(uid, add_level)
 
     response = UnitLevelUpResponse()
     response.ret = 0

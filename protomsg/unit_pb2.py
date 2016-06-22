@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='unit.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\nunit.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\\\n\x04Unit\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0c\n\x04step\x18\x03 \x02(\x05\x12\n\n\x02hp\x18\x04 \x02(\x05\x12\x0e\n\x06\x61ttack\x18\x05 \x02(\x05\x12\x0f\n\x07\x64\x65\x66\x65nse\x18\x06 \x02(\x05\"m\n\nUnitNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12&\n\x05units\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Unit\"1\n\x12UnitLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"3\n\x13UnitLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"0\n\x11UnitStepUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"2\n\x12UnitStepUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+  serialized_pb=_b('\n\nunit.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\\\n\x04Unit\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0c\n\x04step\x18\x03 \x02(\x05\x12\n\n\x02hp\x18\x04 \x02(\x05\x12\x0e\n\x06\x61ttack\x18\x05 \x02(\x05\x12\x0f\n\x07\x64\x65\x66\x65nse\x18\x06 \x02(\x05\"m\n\nUnitNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12&\n\x05units\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Unit\"A\n\x12UnitLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\x12\x0e\n\x06single\x18\x03 \x02(\x08\"3\n\x13UnitLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"0\n\x11UnitStepUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"2\n\x12UnitStepUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
   ,
   dependencies=[common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -160,6 +160,13 @@ _UNITLEVELUPREQUEST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='single', full_name='Dianjing.protocol.UnitLevelUpRequest.single', index=2,
+      number=3, type=8, cpp_type=7, label=2,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -173,7 +180,7 @@ _UNITLEVELUPREQUEST = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=252,
-  serialized_end=301,
+  serialized_end=317,
 )
 
 
@@ -210,8 +217,8 @@ _UNITLEVELUPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=303,
-  serialized_end=354,
+  serialized_start=319,
+  serialized_end=370,
 )
 
 
@@ -248,8 +255,8 @@ _UNITSTEPUPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=356,
-  serialized_end=404,
+  serialized_start=372,
+  serialized_end=420,
 )
 
 
@@ -286,8 +293,8 @@ _UNITSTEPUPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=406,
-  serialized_end=456,
+  serialized_start=422,
+  serialized_end=472,
 )
 
 _UNITNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
