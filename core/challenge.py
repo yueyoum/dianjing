@@ -287,36 +287,38 @@ class Challenge(object):
             updated_chapter_ids.append(config.chapter)
             updated_challenge_ids.append(challenge_id)
 
-            # open challenge, chapter
-            for i in config.next:
-                if str(i) in doc['challenge_star']:
-                    continue
+        # try open challenge, chapter
+        for i in config.next:
+            if str(i) in doc['challenge_star']:
+                continue
 
-                updated_challenge_ids.append(i)
+            updated_challenge_ids.append(i)
 
-                MongoChallenge.db(self.server_id).update_one(
-                    {'_id': self.char_id},
-                    {'$set': {
-                        'challenge_star.{0}'.format(i): 0,
-                    }}
-                )
+            MongoChallenge.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {
+                    'challenge_star.{0}'.format(i): 0,
+                }}
+            )
 
-                chapter_id = ConfigChallengeMatch.get(i).chapter
-                if str(chapter_id) in doc['chapters']:
-                    continue
+            chapter_id = ConfigChallengeMatch.get(i).chapter
+            if str(chapter_id) in doc['chapters']:
+                continue
 
-                updated_chapter_ids.append(chapter_id)
-                MongoChallenge.db(self.server_id).update_one(
-                    {'_id': self.char_id},
-                    {'$set': {
-                        'chapters.{0}'.format(chapter_id): {
-                            'star': 0,
-                            'rewards': []
-                        }
-                    }}
-                )
+            updated_chapter_ids.append(chapter_id)
+            MongoChallenge.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {
+                    'chapters.{0}'.format(chapter_id): {
+                        'star': 0,
+                        'rewards': []
+                    }
+                }}
+            )
 
+        if updated_chapter_ids:
             self.send_chapter_notify(ids=updated_chapter_ids)
+        if updated_challenge_ids:
             self.send_challenge_notify(ids=updated_challenge_ids)
 
         # drop
@@ -335,7 +337,6 @@ class Challenge(object):
 
         # task
         TaskMain(self.server_id, self.char_id).trig(challenge_id)
-
         return resource_classified
 
     def get_chapter_reward(self, chapter_id, index):
