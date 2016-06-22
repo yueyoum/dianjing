@@ -140,13 +140,14 @@ class Formation(object):
         if not old_staff_id:
             # 这是新上阵的选手，需要根据是第几个上的，确定其位置
             pos = self.get_slot_init_position(slot_id)
-
             old_pos = self.doc['position'].index(slot_id)
-            self.doc['position'][old_pos] = 0
-            self.doc['position'][pos] = slot_id
+            if old_pos != pos:
+                # 注意： 可能相同
+                self.doc['position'][old_pos] = 0
+                self.doc['position'][pos] = slot_id
 
-            updater['position.{0}'.format(pos)] = slot_id
-            updater['position.{0}'.format(old_pos)] = 0
+                updater['position.{0}'.format(old_pos)] = 0
+                updater['position.{0}'.format(pos)] = slot_id
 
         self.doc['slots'][str(slot_id)]['staff_id'] = staff_id
         self.doc['slots'][str(slot_id)]['unit_id'] = 0
