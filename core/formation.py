@@ -7,8 +7,6 @@ Description:
 
 """
 
-import random
-
 from dianjing.exception import GameException
 
 from core.mongo import MongoFormation
@@ -53,12 +51,19 @@ class Formation(object):
             self.doc['position'] = [0] * 30
             MongoFormation.db(self.server_id).insert_one(self.doc)
 
+    def get_slot_init_position(self, slot_id):
+        for pos in FORMATION_DEFAULT_POSITION[slot_id]:
+            this_pos_slot_id = self.doc['position'][pos]
+            if this_pos_slot_id == slot_id:
+                return pos
+
+            if not this_pos_slot_id:
+                return pos
+
+        raise RuntimeError("Formation set position error. slot_id: {0}".format(slot_id))
+
     def initialize(self, init_data):
         # [(staff_unique_id, unit_id, position), ...]
-
-        def _get_empty_position():
-            empty_positions = [_index for _index, _slot_id in enumerate(self.doc['position']) if _slot_id == 0]
-            return random.choice(empty_positions)
 
         slot_id = 1
 
@@ -84,7 +89,7 @@ class Formation(object):
 
             self.doc['slots'][str(slot_id)] = doc
 
-            pos = _get_empty_position()
+            pos = self.get_slot_init_position(slot_id)
             self.doc['position'][pos] = slot_id
 
             updater['slots.{0}'.format(slot_id)] = doc
@@ -134,13 +139,7 @@ class Formation(object):
         old_staff_id = self.doc['slots'][str(slot_id)]['staff_id']
         if not old_staff_id:
             # 这是新上阵的选手，需要根据是第几个上的，确定其位置
-            this_amount = len(self.in_formation_staffs()) + 1
-
-            for pos in FORMATION_DEFAULT_POSITION[this_amount]:
-                if not self.doc['position'][pos]:
-                    break
-            else:
-                raise RuntimeError("Formation Auto set position error. now amount: {0}".format(this_amount))
+            pos = self.get_slot_init_position(slot_id)
 
             old_pos = self.doc['position'].index(slot_id)
             self.doc['position'][old_pos] = 0
