@@ -71,12 +71,11 @@ STAFF_QUALITY_MODULUS = {
     5: 1.1,
 }
 
-# TODO real time
-# 事件发生间隔分钟数
+# 事件发生间隔秒数
 EVENT_INTERVAL = {
-    1: [5, 6],
-    2: [3, 5],
-    3: [2, 3],
+    1: [6000, 7200],
+    2: [5000, 6000],
+    3: [3600, 5000],
 }
 
 MAX_GOT_HELP_TIMES = 30
@@ -116,8 +115,7 @@ class Slot(object):
             self.hour = data['hour']
             self.report = data['report']
             self.reward = data['reward']
-            # TODO real time
-            self.end_at = self.start_at + self.hour / 4 * 60
+            self.end_at = self.start_at + self.hour * 3600
         else:
             self.open = False
 
@@ -303,14 +301,13 @@ class Building(object):
         if not self.open:
             return
 
-        # working_amount = self.get_working_slot_amount()
-        # try:
-        #     i1, i2 = EVENT_INTERVAL[working_amount]
-        # except KeyError:
-        #     return
+        working_amount = self.get_working_slot_amount()
+        try:
+            i1, i2 = EVENT_INTERVAL[working_amount]
+        except KeyError:
+            return
 
-        # interval = random.randint(i1, i2)
-        interval = 2
+        interval = random.randint(i1, i2)
         now = arrow.utcnow().timestamp
         if self.event_at + interval > now:
             return
@@ -634,11 +631,9 @@ class Territory(object):
                 ri.add(_id, _amount)
 
         # 概率奖励
-        # TODO real time
-        end_at = start_at + hour / 4 * 60
-        extra_at = start_at + 10
+        end_at = start_at + hour * 3600
+        extra_at = start_at + 3600
         while extra_at < end_at:
-            # TODO building_level
             _id, _amount = ConfigTerritoryBuilding.get(building_id).slots[slot_id].get_extra_product(1)
 
             report.append((
@@ -648,7 +643,7 @@ class Territory(object):
             ))
 
             ri.add(_id, _amount)
-            extra_at += 10
+            extra_at += 3600
 
         reward['items'] = ri.items.items()
 

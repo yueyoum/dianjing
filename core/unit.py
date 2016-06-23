@@ -97,26 +97,36 @@ class Unit(AbstractUnit):
 
             self.level += 1
         else:
+            # 这里要反过来试，如果正向试的话， 可能需要试5次，此时有点慢
+            # 反过来只对 只能升一两次的情况比较慢，但这种可以接受
+            can_add_level = max_level - self.level
+            if add_level > can_add_level:
+                add_level = can_add_level
 
-            _add = 0
-            while self.level <= max_level:
-                if _add == add_level:
-                    break
+            def _try_up(_add):
+                using_items = []
+                this_level = self.level
 
+                for _ in range(_add):
+                    items = self.config.levels[this_level].update_item_need
+                    using_items.extend(items)
+                    this_level += 1
+
+                rc = ResourceClassification.classify(using_items)
+                rc.check_exist(self.server_id, self.char_id)
+                rc.remove(self.server_id, self.char_id)
+
+            for i in range(add_level, 0, -1):
                 try:
-                    using_items = self.config.levels[self.level].update_item_need
-                    resource_classified = ResourceClassification.classify(using_items)
-                    resource_classified.check_exist(self.server_id, self.char_id)
-                    resource_classified.remove(self.server_id, self.char_id)
+                    _try_up(i)
                 except GameException as e:
-                    if _add == 0:
-                        # 一次都没升过
+                    if i == 1:
+                        # 只升一级都报错
                         raise e
-                    else:
-                        break
-
-                self.level += 1
-                _add += 1
+                else:
+                    # 没有raise GameException 资源是够的
+                    self.level += i
+                    break
 
         if self.level != old_level:
             MongoUnit.db(self.server_id).update_one(

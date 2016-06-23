@@ -447,30 +447,40 @@ class Bag(object):
         config = ConfigEquipmentNew.get(item_id)
         max_level = min(config.max_level, get_club_property(self.server_id, self.char_id, 'level') * 2)
 
-        def do_level_up(_level):
-            if _level >= max_level:
-                raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_REACH_MAX_LEVEL"))
+        if level >= max_level:
+            raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_REACH_MAX_LEVEL"))
 
-            item_needs = config.levels[_level].update_item_need
+        can_add_level = max_level - level
+        if times > can_add_level:
+            times = can_add_level
+
+        def do_level_up(_add):
+            item_needs = []
+            this_level = level
+
+            for _ in range(_add):
+                item = config.levels[this_level].update_item_need
+                item_needs.extend(item)
 
             resource_classified = ResourceClassification.classify(item_needs)
             resource_classified.check_exist(self.server_id, self.char_id)
             resource_classified.remove(self.server_id, self.char_id)
 
-            return _level + 1
+            this_level += 1
 
-        error_code = 0
         old_level = level
-        for i in range(times):
+        error_code = 0
+
+        for i in range(times, 0, -1):
             try:
-                level = do_level_up(level)
+                do_level_up(i)
             except GameException as e:
                 error_code = e.error_id
+            else:
+                level += i
                 break
 
-        levelup = False
         if level > old_level:
-            levelup = True
             self.doc['slots'][slot_id]['level'] = level
 
             MongoBag.db(self.server_id).update_one(
@@ -480,22 +490,21 @@ class Bag(object):
                 }}
             )
 
-        ValueLogEquipmentLevelUpTimes(self.server_id, self.char_id).record(value=times)
+            ValueLogEquipmentLevelUpTimes(self.server_id, self.char_id).record(value=level-old_level)
+            self.send_notify(slot_ids=[slot_id])
 
-        self.send_notify(slot_ids=[slot_id])
+            sm = StaffManger(self.server_id, self.char_id)
+            staff_id = sm.find_staff_id_with_equip(slot_id)
+            if staff_id:
+                fm = Formation(self.server_id, self.char_id)
+                if staff_id in fm.in_formation_staffs():
+                    s_obj = sm.get_staff_object(staff_id)
+                    s_obj.calculate()
+                    s_obj.make_cache()
 
-        sm = StaffManger(self.server_id, self.char_id)
-        staff_id = sm.find_staff_id_with_equip(slot_id)
-        if staff_id:
-            fm = Formation(self.server_id, self.char_id)
-            if staff_id in fm.in_formation_staffs():
-                s_obj = sm.get_staff_object(staff_id)
-                s_obj.calculate()
-                s_obj.make_cache()
+                    Club(self.server_id, self.char_id).send_notify()
 
-                Club(self.server_id, self.char_id).send_notify()
-
-        return error_code, levelup, make_equipment_msg(item_id, level)
+        return error_code, level!=old_level, make_equipment_msg(item_id, level)
 
     def send_remove_notify(self, slots_ids):
         notify = BagSlotsRemoveNotify()
