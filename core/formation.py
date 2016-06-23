@@ -68,7 +68,7 @@ class Formation(object):
         opened_slot_ids = ConfigFormationSlot.get_opened_slot_ids(1)
 
         updater = {}
-        for index, staff_unique_id, unit_id, position in enumerate(init_data):
+        for index, (staff_unique_id, unit_id, position) in enumerate(init_data):
             slot_id = opened_slot_ids[index]
 
             doc = MongoFormation.document_slot()

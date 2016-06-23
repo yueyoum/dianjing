@@ -190,6 +190,9 @@ class Tower(object):
         config = ConfigTowerLevel.get(level)
 
         club_one = Club(self.server_id, self.char_id)
+        if config.talent_id:
+            club_one.add_talent_effects([config.talent_id])
+
         club_two = config.make_club()
         club_match = ClubMatch(club_one, club_two)
         msg = club_match.start()

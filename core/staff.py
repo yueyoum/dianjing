@@ -529,7 +529,8 @@ class Staff(AbstractStaff):
 
         if self.star != old_star:
             self.calculate()
-            self.make_cache()
+
+        self.make_cache()
 
         return self.star!=old_star, crit, inc_exp, cost_item_id, cost_item_amount
 

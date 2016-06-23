@@ -185,9 +185,14 @@ class AbstractStaff(object):
         # 这样不同staff带的unit就有不一样的表现
         '__unit',
 
-        'active_talent_ids',
+        # 自身的天赋
+        'self_talent_ids',
+        # 外部加的天赋，比如 天赋树，图鉴，等等
+        'other_talent_ids',
+        # 激活的牵绊
         'active_qianban_ids',
-        'active_qianban_talent_effect_ids',
+        # 牵绊的天赋
+        'qianban_talent_ids',
     ]
 
     def __init__(self):
@@ -224,10 +229,10 @@ class AbstractStaff(object):
         self.__unit = None
         """:type: AbstractUnit"""
 
-        self.active_talent_ids = []
+        self.self_talent_ids = []
+        self.other_talent_ids = []
         self.active_qianban_ids = []
-        self.active_qianban_talent_effect_ids = []
-
+        self.qianban_talent_ids = []
 
     @classmethod
     def get(cls, _id):
@@ -258,11 +263,15 @@ class AbstractStaff(object):
                     talent_effect_ids.append(v.talent_effect_id)
 
         self.active_qianban_ids = qianban_ids
-        self.active_qianban_talent_effect_ids = talent_effect_ids
+        self.qianban_talent_ids = talent_effect_ids
 
     @property
     def unit(self):
         return self.__unit
+
+    def get_active_talent_ids(self):
+        # 牵绊的天赋效果可能会频繁变动，比如兵种变化
+        return self.self_talent_ids + self.other_talent_ids + self.qianban_talent_ids
 
     def calculate(self):
         # 等级
@@ -303,7 +312,7 @@ class AbstractStaff(object):
         self.add_equipment_property()
 
         # 天赋
-        for tid in self.active_talent_ids:
+        for tid in self.get_active_talent_ids():
             config_talent = ConfigTalentSkill.get(tid)
             if config_talent.target <= 5:
                 # 对选手的
@@ -333,7 +342,7 @@ class AbstractStaff(object):
         unit = UnitManager(self.server_id, self.char_id).get_unit_object(self.__unit.id)
         self.__unit = unit.clone()
 
-        for tid in self.active_talent_ids:
+        for tid in self.get_active_talent_ids():
             config_talent = ConfigTalentSkill.get(tid)
             if config_talent.target <= 5:
                 continue
@@ -341,7 +350,9 @@ class AbstractStaff(object):
             if config_talent.target in [6, 10] or \
                     (config_talent.target in [7, 11] and self.__unit.config.race == 1) or \
                     (config_talent.target in [8, 12] and self.__unit.config.race == 3) or \
-                    (config_talent.target in [9, 13] and self.__unit.config.race == 2):
+                    (config_talent.target in [9, 13] and self.__unit.config.race == 2) or \
+                    (config_talent.target == 14 and self.__unit.config.tp == 2) or \
+                    (config_talent.target == 15 and self.__unit.config.tp == 1):
                 self._add_talent_effect_to_unit(config_talent)
 
         self.__unit.final_calculate()
@@ -359,7 +370,7 @@ class AbstractStaff(object):
 
         return ids
 
-    def talent_effect(self, club):
+    def add_self_talent_effect(self, club):
         """
 
         :param club:
@@ -370,57 +381,70 @@ class AbstractStaff(object):
             config_talent = ConfigTalentSkill.get(tid)
             if config_talent.target == 1:
                 # 选手自身
-                self.active_talent_ids.append(tid)
+                self.self_talent_ids.append(tid)
             elif config_talent.target == 2:
                 # 上阵所有选手
                 for s in club.formation_staffs:
-                    s.active_talent_ids.append(tid)
+                    s.self_talent_ids.append(tid)
             elif config_talent.target == 3:
                 # 上阵所有人族选手
                 for s in club.get_formation_terran_staffs():
-                    s.active_talent_ids.append(tid)
+                    s.self_talent_ids.append(tid)
             elif config_talent.target == 4:
                 # 上阵所有虫族选手
                 for s in club.get_formation_zerg_staffs():
-                    s.active_talent_ids.append(tid)
+                    s.self_talent_ids.append(tid)
             elif config_talent.target == 5:
                 # 上阵所有神族选手
                 for s in club.get_formation_protoss_staffs():
-                    s.active_talent_ids.append(tid)
+                    s.self_talent_ids.append(tid)
 
             # 因为选手的带的兵也会随时变化，所以这里就直接把和兵相关的 天赋 记录下来
             # 这样就不用更换了兵种后再来判断天赋影响
             elif config_talent.target == 6:
                 # 选手自身携带的任意兵种
-                self.active_talent_ids.append(tid)
+                self.self_talent_ids.append(tid)
             elif config_talent.target == 7:
                 # 选手自身携带的人族兵种
-                self.active_talent_ids.append(tid)
+                self.self_talent_ids.append(tid)
             elif config_talent.target == 8:
                 # 选手自身携带的虫族并种
-                self.active_talent_ids.append(tid)
+                self.self_talent_ids.append(tid)
             elif config_talent.target == 9:
                 # 选手自身携带的神族并种
-                self.active_talent_ids.append(tid)
+                self.self_talent_ids.append(tid)
 
             elif config_talent.target == 10:
                 # 所有选手所有任意兵种
                 for s in club.formation_staffs:
-                    s.active_talent_ids.append(tid)
+                    s.self_talent_ids.append(tid)
             elif config_talent.target == 11:
                 # 所有选手所有人族兵种
                 for s in club.formation_staffs:
-                    s.active_talent_ids.append(tid)
+                    s.self_talent_ids.append(tid)
             elif config_talent.target == 12:
                 # 所有选手所有虫族兵种
                 for s in club.formation_staffs:
-                    s.active_talent_ids.append(tid)
+                    s.self_talent_ids.append(tid)
             elif config_talent.target == 13:
                 # 所有选手所有神族兵种
                 for s in club.formation_staffs:
-                    s.active_talent_ids.append(tid)
+                    s.self_talent_ids.append(tid)
+            elif config_talent.target == 14:
+                # 敌我上阵的所有空中兵种
+                for s in club.formation_staffs:
+                    s.self_talent_ids.append(tid)
+            elif config_talent.target == 15:
+                # 敌我上阵的所有地面兵种
+                for s in club.formation_staffs:
+                    s.self_talent_ids.append(tid)
+            else:
+                raise RuntimeError("Unknown talent {0} target {1}".format(tid, config_talent.target))
 
     def add_other_talent_effects(self, effect_ids):
+        # NOTE 这个方法必须在 club 里调用。
+        # 因为 可能有 要加给 敌方 的 talents
+        # 这里如果给敌方加，就重复了
         for eid in effect_ids:
             config_talent = ConfigTalentSkill.get(eid)
             # if config_talent.target == 1:
@@ -428,11 +452,13 @@ class AbstractStaff(object):
             #     # 所以这是错误情况
             #     raise RuntimeError("AbstractStaff.add_other_talent_effects. effect_id: {0} target is 1".format(eid))
 
-            if config_talent.target in [1, 2, 6, 7, 8, 9, 10, 11, 12, 13] or \
+            if config_talent.target in [1, 2, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15] or \
                     (config_talent.target == 3 and self.config.race == 1) or \
                     (config_talent.target == 4 and self.config.race == 3) or \
                     (config_talent.target == 5 and self.config.race == 2):
-                self.active_talent_ids.append(eid)
+                self.other_talent_ids.append(eid)
+            else:
+                raise RuntimeError("Unknown talent {0} target {1}".format(eid, config_talent.target))
 
     def _add_talent_effect_to_staff(self, config):
         """
@@ -556,6 +582,9 @@ class AbstractClub(object):
         'id', 'name', 'manager_name', 'flag', 'level',
         'exp', 'gold', 'diamond', 'crystal', 'gas', 'renown',
         'formation_staffs',
+
+        # 给对手要加的天赋
+        'talents_for_rival',
     ]
 
     def __init__(self):
@@ -576,6 +605,8 @@ class AbstractClub(object):
         self.formation_staffs = []
         """:type: list[AbstractStaff]"""
 
+        self.talents_for_rival = []
+
     def load_staffs(self, **kwargs):
         raise NotImplementedError()
 
@@ -588,15 +619,6 @@ class AbstractClub(object):
     def get_formation_zerg_staffs(self):
         return [s for s in self.formation_staffs if s.config.race == 3]
 
-    def get_formation_all_units(self):
-        # type: () -> list[AbstractUnit]
-        units = []
-        for s in self.formation_staffs:
-            if s.__unit:
-                units.append(s.__unit)
-
-        return units
-
     @property
     def power(self):
         p = 0
@@ -604,6 +626,28 @@ class AbstractClub(object):
             p += s.power
 
         return p
+
+    def get_talents_ids_for_rival(self):
+        # club instance 并没有缓存起来
+        # 所以 staff.talent_effects 里如果给 club 添加了 talents_for_rival
+        # 那么当时上下文销毁了，这些talents_for_rival就没有了
+        # 所以这里要每次都重新获取
+        ids = []
+        for s in self.formation_staffs:
+            for i in s.self_talent_ids:
+                if ConfigTalentSkill.get(i).target in [14, 15]:
+                    ids.append(i)
+
+        return self.talents_for_rival + ids
+
+    def add_talent_effects(self, talent_effect_ids):
+        for i in talent_effect_ids:
+            config = ConfigTalentSkill.get(i)
+            if config.target in [14, 15]:
+                self.talents_for_rival.append(i)
+
+        for s in self.formation_staffs:
+            s.add_other_talent_effects(talent_effect_ids)
 
     def add_temporary_talent_effects(self):
         # 添加临时天赋
@@ -615,8 +659,15 @@ class AbstractClub(object):
         if not effects:
             return
 
+        self.add_talent_effects(effects)
+
+    def add_rival_talent_effects(self, talent_effect_ids):
+        # 添加来自对方的天赋效果
         for s in self.formation_staffs:
-            s.add_other_talent_effects(effects)
+            s.add_other_talent_effects(talent_effect_ids)
+
+    def make_temporary_staff_calculate(self):
+        for s in self.formation_staffs:
             s.calculate()
             # no make cache
 

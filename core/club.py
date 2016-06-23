@@ -22,7 +22,6 @@ from utils.message import MessagePipe
 from config import (
     ConfigClubLevel,
     ConfigErrorMessage,
-    ConfigQianBan,
 )
 
 from protomsg.club_pb2 import ClubNotify
@@ -79,7 +78,6 @@ class Club(AbstractClub):
         for k in fm.in_formation_staffs():
             self.formation_staffs.append(sm.get_staff_object(k))
 
-
     def force_load_staffs(self, send_notify=False):
         from core.staff import StaffManger, Staff
         from core.formation import Formation
@@ -110,13 +108,14 @@ class Club(AbstractClub):
                 if unit_id:
                     v.set_unit(um.get_unit_object(unit_id))
 
+        for k in in_formation_staffs:
+            staff_objs[k].add_self_talent_effect(self)
+
         talent_effects_1 = TalentManager(self.server_id, self.char_id).get_talent_effect()
         talent_effects_2 = Collection(self.server_id, self.char_id).get_talent_effects()
-        for k in in_formation_staffs:
-            staff_objs[k].talent_effect(self)
-            staff_objs[k].add_other_talent_effects(talent_effects_1)
-            staff_objs[k].add_other_talent_effects(talent_effects_2)
-            staff_objs[k].add_other_talent_effects(staff_objs[k].active_qianban_talent_effect_ids)
+
+        self.add_talent_effects(talent_effects_1)
+        self.add_talent_effects(talent_effects_2)
 
         for _, v in staff_objs.iteritems():
             v.calculate()
@@ -126,7 +125,6 @@ class Club(AbstractClub):
             self.send_notify()
             in_formation_staff_ids = fm.in_formation_staffs().keys()
             sm.send_notify(ids=in_formation_staff_ids)
-
 
     def check_money(self, diamond=0, gold=0, crystal=0, gas=0, renown=0):
         # TODO 其他货币

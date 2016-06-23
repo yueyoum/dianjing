@@ -47,6 +47,12 @@ class ClubMatch(object):
         self.club_one.add_temporary_talent_effects()
         self.club_two.add_temporary_talent_effects()
 
+        self.club_one.add_rival_talent_effects(self.club_two.get_talents_ids_for_rival())
+        self.club_two.add_rival_talent_effects(self.club_one.get_talents_ids_for_rival())
+
+        self.club_one.make_temporary_staff_calculate()
+        self.club_two.make_temporary_staff_calculate()
+
         msg = MessageClubMatch()
         msg.seed = self.seed
         msg.key = "this is key"
