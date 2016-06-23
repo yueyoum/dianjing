@@ -127,6 +127,46 @@ class Challenge(object):
 
             MongoChallenge.db(self.server_id).insert_one(doc)
 
+    def open_all(self):
+        # FOR TEST
+        doc = MongoChallenge.db(self.server_id).find_one(
+            {'_id': self.char_id}
+        )
+
+        updater = {}
+
+        update_challenge_ids = []
+        update_chapter_ids = []
+        for i in ConfigChallengeMatch.INSTANCES.keys():
+            if str(i) in doc['challenge_star']:
+                continue
+
+            doc['challenge_star'][str(i)] = 0
+            updater['challenge_star.{0}'.format(i)] = 0
+
+            update_challenge_ids.append(i)
+
+            chapter_id = ConfigChallengeMatch.get(i).chapter
+            if str(chapter_id) in doc['chapters']:
+                continue
+
+            doc['chapters'][str(chapter_id)] = {'star': 0, 'rewards': []}
+            updater['chapters.{0}'.format(chapter_id)] = {'star': 0, 'rewards': []}
+
+            update_chapter_ids.append(chapter_id)
+
+
+        MongoChallenge.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': updater}
+        )
+
+        if update_chapter_ids:
+            self.send_chapter_notify(update_chapter_ids)
+        if update_challenge_ids:
+            self.send_challenge_notify(update_challenge_ids)
+
+
     def start(self, challenge_id):
         config = ConfigChallengeMatch.get(challenge_id)
         if not config:

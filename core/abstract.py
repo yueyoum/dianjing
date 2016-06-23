@@ -457,8 +457,7 @@ class AbstractStaff(object):
                     (config_talent.target == 4 and self.config.race == 3) or \
                     (config_talent.target == 5 and self.config.race == 2):
                 self.other_talent_ids.append(eid)
-            else:
-                raise RuntimeError("Unknown talent {0} target {1}".format(eid, config_talent.target))
+
 
     def _add_talent_effect_to_staff(self, config):
         """

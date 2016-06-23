@@ -89,6 +89,8 @@ class Chat(object):
         )
 
     def command(self, tp, data):
+        from core.challenge import Challenge
+
         if tp == ChatSendRequest.ADD_ITEM:
             items = []
             for x in data.split(';'):
@@ -123,9 +125,10 @@ class Chat(object):
             )
 
             Club(self.server_id, self.char_id).send_notify()
+        elif tp == ChatSendRequest.OPEN_ALL_CHALLENGE:
+            Challenge(self.server_id, self.char_id).open_all()
         else:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
-
 
     def send_notify(self):
         notify = ChatNotify()
