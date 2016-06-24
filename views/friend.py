@@ -36,6 +36,8 @@ def get_candidates(request):
     for c in candidates:
         response_friend = response.friends.add()
         response_friend.status = FRIEND_NOT
+        # TODO
+        response_friend.online = True
         response_friend.club.MergeFrom(Club(server_id, c).make_protomsg())
 
     return ProtobufResponse(response)
