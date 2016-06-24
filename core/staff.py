@@ -53,7 +53,7 @@ GOLD_CD_SECONDS = 600
 
 RECRUIT_CD_SECONDS = {
     1: 600,
-    2: 3600 * 24 * 2
+    2: 3600 * 24
 }
 
 
