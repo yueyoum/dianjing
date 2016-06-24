@@ -247,6 +247,9 @@ class Challenge(object):
 
         # 体力限制
         en = Energy(self.server_id, self.char_id)
+        # NOTE 要保证至少可以打一次！
+        en.check(config.energy)
+
         current_energy_can_sweep_times = en.energy / config.energy
         if sweep_times > current_energy_can_sweep_times:
             sweep_times = current_energy_can_sweep_times
