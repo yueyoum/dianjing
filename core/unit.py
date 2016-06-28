@@ -182,7 +182,9 @@ class UnitManager(object):
             doc['_id'] = self.char_id
             MongoUnit.db(self.server_id).insert_one(doc)
 
-    def try_unlock(self):
+            self.try_unlock(send_notify=False)
+
+    def try_unlock(self, send_notify=True):
         doc = MongoUnit.db(self.server_id).find_one(
             {'_id': self.char_id},
             {'units': 1}
@@ -219,7 +221,8 @@ class UnitManager(object):
             {'$set': updater}
         )
 
-        self.send_notify(ids=unlocked_unit_ids)
+        if send_notify:
+            self.send_notify(ids=unlocked_unit_ids)
 
     def is_unit_unlocked(self, _id):
         doc = MongoUnit.db(self.server_id).find_one(
