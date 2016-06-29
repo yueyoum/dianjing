@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='common.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0c\x63ommon.proto\x12\x11\x44ianjing.protocol\"/\n\tUTCNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\ttimestamp\x18\x02 \x02(\x03\"*\n\rStaffBaseInfo\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\"\x1e\n\x0bSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\",\n\x0cSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\x1e\n\x0bPingRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\",\n\x0cPingResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*C\n\x0bNextOperate\x12\n\n\x06OPT_OK\x10\x01\x12\x13\n\x0fOPT_CREATE_CHAR\x10\x02\x12\x13\n\x0fOPT_CREATE_CLUB\x10\x03*C\n\x0cUploadStatus\x12\x0f\n\x0bUPLOAD_NONE\x10\x01\x12\x11\n\rUPLOAD_VERIFY\x10\x02\x12\x0f\n\x0bUPLOAD_DONE\x10\x03*&\n\x06\x41\x63tion\x12\x0c\n\x08\x41\x43T_INIT\x10\x01\x12\x0e\n\nACT_UPDATE\x10\x02*\xc1\x01\n\x0bLeagueLevel\x12\x12\n\x0eLEAGUE_LEVEL_1\x10\x01\x12\x12\n\x0eLEAGUE_LEVEL_2\x10\x02\x12\x12\n\x0eLEAGUE_LEVEL_3\x10\x03\x12\x12\n\x0eLEAGUE_LEVEL_4\x10\x04\x12\x12\n\x0eLEAGUE_LEVEL_5\x10\x05\x12\x12\n\x0eLEAGUE_LEVEL_6\x10\x06\x12\x12\n\x0eLEAGUE_LEVEL_7\x10\x07\x12\x12\n\x0eLEAGUE_LEVEL_8\x10\x08\x12\x12\n\x0eLEAGUE_LEVEL_9\x10\t*1\n\x08\x43lubType\x12\x12\n\x0e\x43LUB_TYPE_REAL\x10\x01\x12\x11\n\rCLUB_TYPE_NPC\x10\x02')
+  serialized_pb=_b('\n\x0c\x63ommon.proto\x12\x11\x44ianjing.protocol\"/\n\tUTCNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\ttimestamp\x18\x02 \x02(\x03\"\x1e\n\x0bSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\",\n\x0cSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\x1e\n\x0bPingRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\",\n\x0cPingResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*.\n\x0bNextOperate\x12\n\n\x06OPT_OK\x10\x01\x12\x13\n\x0fOPT_CREATE_CLUB\x10\x02*&\n\x06\x41\x63tion\x12\x0c\n\x08\x41\x43T_INIT\x10\x01\x12\x0e\n\nACT_UPDATE\x10\x02*1\n\x08\x43lubType\x12\x12\n\x0e\x43LUB_TYPE_REAL\x10\x01\x12\x11\n\rCLUB_TYPE_NPC\x10\x02')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -35,49 +35,18 @@ _NEXTOPERATE = _descriptor.EnumDescriptor(
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OPT_CREATE_CHAR', index=1, number=2,
-      options=None,
-      type=None),
-    _descriptor.EnumValueDescriptor(
-      name='OPT_CREATE_CLUB', index=2, number=3,
+      name='OPT_CREATE_CLUB', index=1, number=2,
       options=None,
       type=None),
   ],
   containing_type=None,
   options=None,
-  serialized_start=284,
-  serialized_end=351,
+  serialized_start=240,
+  serialized_end=286,
 )
 _sym_db.RegisterEnumDescriptor(_NEXTOPERATE)
 
 NextOperate = enum_type_wrapper.EnumTypeWrapper(_NEXTOPERATE)
-_UPLOADSTATUS = _descriptor.EnumDescriptor(
-  name='UploadStatus',
-  full_name='Dianjing.protocol.UploadStatus',
-  filename=None,
-  file=DESCRIPTOR,
-  values=[
-    _descriptor.EnumValueDescriptor(
-      name='UPLOAD_NONE', index=0, number=1,
-      options=None,
-      type=None),
-    _descriptor.EnumValueDescriptor(
-      name='UPLOAD_VERIFY', index=1, number=2,
-      options=None,
-      type=None),
-    _descriptor.EnumValueDescriptor(
-      name='UPLOAD_DONE', index=2, number=3,
-      options=None,
-      type=None),
-  ],
-  containing_type=None,
-  options=None,
-  serialized_start=353,
-  serialized_end=420,
-)
-_sym_db.RegisterEnumDescriptor(_UPLOADSTATUS)
-
-UploadStatus = enum_type_wrapper.EnumTypeWrapper(_UPLOADSTATUS)
 _ACTION = _descriptor.EnumDescriptor(
   name='Action',
   full_name='Dianjing.protocol.Action',
@@ -95,63 +64,12 @@ _ACTION = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=422,
-  serialized_end=460,
+  serialized_start=288,
+  serialized_end=326,
 )
 _sym_db.RegisterEnumDescriptor(_ACTION)
 
 Action = enum_type_wrapper.EnumTypeWrapper(_ACTION)
-_LEAGUELEVEL = _descriptor.EnumDescriptor(
-  name='LeagueLevel',
-  full_name='Dianjing.protocol.LeagueLevel',
-  filename=None,
-  file=DESCRIPTOR,
-  values=[
-    _descriptor.EnumValueDescriptor(
-      name='LEAGUE_LEVEL_1', index=0, number=1,
-      options=None,
-      type=None),
-    _descriptor.EnumValueDescriptor(
-      name='LEAGUE_LEVEL_2', index=1, number=2,
-      options=None,
-      type=None),
-    _descriptor.EnumValueDescriptor(
-      name='LEAGUE_LEVEL_3', index=2, number=3,
-      options=None,
-      type=None),
-    _descriptor.EnumValueDescriptor(
-      name='LEAGUE_LEVEL_4', index=3, number=4,
-      options=None,
-      type=None),
-    _descriptor.EnumValueDescriptor(
-      name='LEAGUE_LEVEL_5', index=4, number=5,
-      options=None,
-      type=None),
-    _descriptor.EnumValueDescriptor(
-      name='LEAGUE_LEVEL_6', index=5, number=6,
-      options=None,
-      type=None),
-    _descriptor.EnumValueDescriptor(
-      name='LEAGUE_LEVEL_7', index=6, number=7,
-      options=None,
-      type=None),
-    _descriptor.EnumValueDescriptor(
-      name='LEAGUE_LEVEL_8', index=7, number=8,
-      options=None,
-      type=None),
-    _descriptor.EnumValueDescriptor(
-      name='LEAGUE_LEVEL_9', index=8, number=9,
-      options=None,
-      type=None),
-  ],
-  containing_type=None,
-  options=None,
-  serialized_start=463,
-  serialized_end=656,
-)
-_sym_db.RegisterEnumDescriptor(_LEAGUELEVEL)
-
-LeagueLevel = enum_type_wrapper.EnumTypeWrapper(_LEAGUELEVEL)
 _CLUBTYPE = _descriptor.EnumDescriptor(
   name='ClubType',
   full_name='Dianjing.protocol.ClubType',
@@ -169,29 +87,16 @@ _CLUBTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=658,
-  serialized_end=707,
+  serialized_start=328,
+  serialized_end=377,
 )
 _sym_db.RegisterEnumDescriptor(_CLUBTYPE)
 
 ClubType = enum_type_wrapper.EnumTypeWrapper(_CLUBTYPE)
 OPT_OK = 1
-OPT_CREATE_CHAR = 2
-OPT_CREATE_CLUB = 3
-UPLOAD_NONE = 1
-UPLOAD_VERIFY = 2
-UPLOAD_DONE = 3
+OPT_CREATE_CLUB = 2
 ACT_INIT = 1
 ACT_UPDATE = 2
-LEAGUE_LEVEL_1 = 1
-LEAGUE_LEVEL_2 = 2
-LEAGUE_LEVEL_3 = 3
-LEAGUE_LEVEL_4 = 4
-LEAGUE_LEVEL_5 = 5
-LEAGUE_LEVEL_6 = 6
-LEAGUE_LEVEL_7 = 7
-LEAGUE_LEVEL_8 = 8
-LEAGUE_LEVEL_9 = 9
 CLUB_TYPE_REAL = 1
 CLUB_TYPE_NPC = 2
 
@@ -235,44 +140,6 @@ _UTCNOTIFY = _descriptor.Descriptor(
 )
 
 
-_STAFFBASEINFO = _descriptor.Descriptor(
-  name='StaffBaseInfo',
-  full_name='Dianjing.protocol.StaffBaseInfo',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='id', full_name='Dianjing.protocol.StaffBaseInfo.id', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='level', full_name='Dianjing.protocol.StaffBaseInfo.level', index=1,
-      number=2, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=84,
-  serialized_end=126,
-)
-
-
 _SYNCREQUEST = _descriptor.Descriptor(
   name='SyncRequest',
   full_name='Dianjing.protocol.SyncRequest',
@@ -299,8 +166,8 @@ _SYNCREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=128,
-  serialized_end=158,
+  serialized_start=84,
+  serialized_end=114,
 )
 
 
@@ -337,8 +204,8 @@ _SYNCRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=160,
-  serialized_end=204,
+  serialized_start=116,
+  serialized_end=160,
 )
 
 
@@ -368,8 +235,8 @@ _PINGREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=206,
-  serialized_end=236,
+  serialized_start=162,
+  serialized_end=192,
 )
 
 
@@ -406,20 +273,17 @@ _PINGRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=238,
-  serialized_end=282,
+  serialized_start=194,
+  serialized_end=238,
 )
 
 DESCRIPTOR.message_types_by_name['UTCNotify'] = _UTCNOTIFY
-DESCRIPTOR.message_types_by_name['StaffBaseInfo'] = _STAFFBASEINFO
 DESCRIPTOR.message_types_by_name['SyncRequest'] = _SYNCREQUEST
 DESCRIPTOR.message_types_by_name['SyncResponse'] = _SYNCRESPONSE
 DESCRIPTOR.message_types_by_name['PingRequest'] = _PINGREQUEST
 DESCRIPTOR.message_types_by_name['PingResponse'] = _PINGRESPONSE
 DESCRIPTOR.enum_types_by_name['NextOperate'] = _NEXTOPERATE
-DESCRIPTOR.enum_types_by_name['UploadStatus'] = _UPLOADSTATUS
 DESCRIPTOR.enum_types_by_name['Action'] = _ACTION
-DESCRIPTOR.enum_types_by_name['LeagueLevel'] = _LEAGUELEVEL
 DESCRIPTOR.enum_types_by_name['ClubType'] = _CLUBTYPE
 
 UTCNotify = _reflection.GeneratedProtocolMessageType('UTCNotify', (_message.Message,), dict(
@@ -428,13 +292,6 @@ UTCNotify = _reflection.GeneratedProtocolMessageType('UTCNotify', (_message.Mess
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.UTCNotify)
   ))
 _sym_db.RegisterMessage(UTCNotify)
-
-StaffBaseInfo = _reflection.GeneratedProtocolMessageType('StaffBaseInfo', (_message.Message,), dict(
-  DESCRIPTOR = _STAFFBASEINFO,
-  __module__ = 'common_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.StaffBaseInfo)
-  ))
-_sym_db.RegisterMessage(StaffBaseInfo)
 
 SyncRequest = _reflection.GeneratedProtocolMessageType('SyncRequest', (_message.Message,), dict(
   DESCRIPTOR = _SYNCREQUEST,

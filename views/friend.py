@@ -49,11 +49,10 @@ def get_info(request):
     friend_id = request._proto.id
 
     fm = FriendManager(server_id, char_id)
-    char, club = fm.get_info(friend_id)
+    club = fm.get_info(friend_id)
 
     response = FriendGetInfoResponse()
     response.ret = 0
-    response.char.MergeFrom(char.make_protomsg())
     response.club.MergeFrom(club.make_protomsg())
 
     return ProtobufResponse(response)

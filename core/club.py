@@ -6,9 +6,12 @@ Date Created:   2015-07-03 15:09
 Description:
 
 """
+#
+# import base64
+# import dill
+import arrow
 
-import base64
-import dill
+from django.conf import settings
 
 from core.mongo import MongoCharacter
 from core.abstract import AbstractClub
@@ -24,6 +27,14 @@ from config import (
     ConfigErrorMessage,
 )
 
+from config.settings import (
+    CHAR_INIT_DIAMOND,
+    CHAR_INIT_GOLD,
+    CHAR_INIT_CRYSTAL,
+    CHAR_INIT_GAS,
+    CHAR_INIT_STAFFS,
+)
+
 from protomsg.club_pb2 import ClubNotify
 
 MAX_CLUB_LEVEL = max(ConfigClubLevel.INSTANCES.keys())
@@ -32,10 +43,10 @@ MAX_CLUB_LEVEL = max(ConfigClubLevel.INSTANCES.keys())
 def get_club_property(server_id, char_id, key, default_value=0):
     doc = MongoCharacter.db(server_id).find_one(
         {'_id': char_id},
-        {'club.{0}'.format(key): 1}
+        {key: 1}
     )
 
-    return doc['club'].get(key, default_value)
+    return doc.get(key, default_value)
 
 
 class Club(AbstractClub):
@@ -47,21 +58,19 @@ class Club(AbstractClub):
         self.server_id = server_id
         self.char_id = char_id
 
-        doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id}, {'club': 1, 'name': 1})
-        club = doc['club']
+        doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id})
 
         self.id = self.char_id  # 玩家ID
-        self.name = club['name']  # 俱乐部名
-        self.manager_name = doc['name']  # 角色名
-        self.flag = club['flag']  # 俱乐部旗帜
-        self.level = club['level']  # 俱乐部等级
-        self.exp = club.get('exp', 0)
-        self.gold = club['gold']  # 游戏币
-        self.diamond = club['diamond']  # 钻石
-        self.renown = club.get('renown', 0)
+        self.name = doc['name']  # 俱乐部名
+        self.flag = doc['flag']  # 俱乐部旗帜
+        self.level = doc['level']  # 俱乐部等级
+        self.exp = doc['exp']
+        self.gold = doc['gold']  # 游戏币
+        self.diamond = doc['diamond']  # 钻石
+        self.renown = doc['renown']
 
-        self.crystal = club.get('crystal', 0)
-        self.gas = club.get('gas', 0)
+        self.crystal = doc['crystal']
+        self.gas = doc['gas']
 
         if load_staffs:
             self.load_staffs()
@@ -126,8 +135,77 @@ class Club(AbstractClub):
             in_formation_staff_ids = fm.in_formation_staffs().keys()
             sm.send_notify(ids=in_formation_staff_ids)
 
+    @classmethod
+    def create(cls, server_id, char_id, club_name, club_flag):
+        from core.staff import StaffManger
+        from core.formation import Formation
+
+        doc = MongoCharacter.document()
+        doc['_id'] = char_id
+        doc['create_at'] = arrow.utcnow().timestamp
+
+        doc['name'] = club_name
+        doc['flag'] = club_flag
+        doc['gold'] = CHAR_INIT_GOLD
+        doc['diamond'] = CHAR_INIT_DIAMOND
+        doc['crystal'] = CHAR_INIT_CRYSTAL
+        doc['gas'] = CHAR_INIT_GAS
+
+        sm = StaffManger(server_id, char_id)
+
+        formation_init_data = []
+        for staff_id, unit_id, position in CHAR_INIT_STAFFS:
+            uid = sm.add(staff_id, send_notify=False)
+            formation_init_data.append((uid, unit_id, position))
+
+        fm = Formation(server_id, char_id)
+        fm.initialize(formation_init_data)
+
+        MongoCharacter.db(server_id).insert_one(doc)
+
+    @classmethod
+    def get_recent_login_char_ids(cls, server_id, recent_days=7, other_conditions=None):
+        day_limit = arrow.utcnow().replace(days=-recent_days)
+        timestamp = day_limit.timestamp
+
+        condition = {'last_login': {'$gte': timestamp}}
+        if other_conditions:
+            condition = [condition]
+            condition.extend(other_conditions)
+            condition = {'$and': condition}
+
+        doc = MongoCharacter.db(server_id).find(condition)
+        for d in doc:
+            yield d['_id']
+
+    @classmethod
+    def create_days(cls, server_id, char_id):
+        # 从创建到现在是第几天。 从1开始
+        doc = MongoCharacter.db(server_id).find_one(
+            {'_id': char_id},
+            {'create_at': 1}
+        )
+
+        create_at = arrow.get(doc['create_at']).to(settings.TIME_ZONE)
+        now = arrow.utcnow().to(settings.TIME_ZONE)
+        days = (now.date() - create_at.date()).days
+        return days + 1
+
+    def set_login(self):
+        from django.db.models import F
+        from apps.character.models import Character as ModelCharacter
+
+        now = arrow.utcnow()
+        ModelCharacter.objects.filter(id=self.char_id).update(
+            last_login=now.format("YYYY-MM-DD HH:mm:ssZ"),
+            login_times=F('login_times') + 1,
+        )
+        MongoCharacter.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {'last_login': now.timestamp}}
+        )
+
     def check_money(self, diamond=0, gold=0, crystal=0, gas=0, renown=0):
-        # TODO 其他货币
         if diamond > self.diamond:
             raise GameException(ConfigErrorMessage.get_error_id("DIAMOND_NOT_ENOUGH"))
         if gold > self.gold:
@@ -184,13 +262,13 @@ class Club(AbstractClub):
         MongoCharacter.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
-                'club.level': self.level,
-                'club.exp': self.exp,
-                'club.gold': self.gold,
-                'club.diamond': self.diamond,
-                'club.crystal': self.crystal,
-                'club.gas': self.gas,
-                'club.renown': self.renown
+                'level': self.level,
+                'exp': self.exp,
+                'gold': self.gold,
+                'diamond': self.diamond,
+                'crystal': self.crystal,
+                'gas': self.gas,
+                'renown': self.renown
             }}
         )
 
@@ -211,20 +289,20 @@ class Club(AbstractClub):
                 message=message
             )
 
-    def dumps(self):
-        """
-
-        :rtype : str
-        """
-        return base64.b64encode(dill.dumps(self))
-
-    @classmethod
-    def loads(cls, data):
-        """
-
-        :rtype : Club
-        """
-        return dill.loads(base64.b64decode(data))
+    # def dumps(self):
+    #     """
+    #
+    #     :rtype : str
+    #     """
+    #     return base64.b64encode(dill.dumps(self))
+    #
+    # @classmethod
+    # def loads(cls, data):
+    #     """
+    #
+    #     :rtype : Club
+    #     """
+    #     return dill.loads(base64.b64decode(data))
 
     def send_notify(self):
         msg = self.make_protomsg()

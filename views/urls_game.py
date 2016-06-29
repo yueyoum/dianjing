@@ -12,7 +12,6 @@ from django.conf.urls import url
 import views.common
 import views.account
 import views.server
-import views.character
 import views.club
 import views.staff
 import views.challenge
@@ -22,9 +21,7 @@ import views.task
 import views.chat
 import views.notification
 import views.sponsor
-import views.activity
 import views.active_value
-import views.shop
 import views.bag
 import views.unit
 import views.formation
@@ -47,9 +44,6 @@ urlpatterns = [
 
     url(r'^servers/$', views.server.get_server_list),
     url(r'^start/$', views.server.start_game),
-
-    url(r'^character/create/$', views.character.create),
-    url(r'^character/avatar/upload/$', views.character.save_avatar_handler),
 
     url(r'^club/create/$', views.club.create),
 
@@ -94,13 +88,7 @@ urlpatterns = [
     url(r'^sponsor/$', views.sponsor.sponsor),
     url(r'^sponsor/getincome/$', views.sponsor.get_income),
 
-    url(r'^signin/$', views.activity.signin),
-    url(r'^activity/loginreward/$', views.activity.get_login_reward),
-
     url(r'^activevalue/getreward/$', views.active_value.get_reward),
-
-    url(r'^itemshop/buy/$', views.shop.item_shop_buy),
-
 
     url(r'^bagitem/use/$', views.bag.item_use),
     url(r'^bagitem/merge/$', views.bag.item_merge),

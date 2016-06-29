@@ -11,7 +11,6 @@ import random
 from dianjing.exception import GameException
 
 from core.mongo import MongoFriend, MongoCharacter
-from core.character import Character
 from core.club import Club
 from core.match import ClubMatch
 from core.signals import friend_match_signal, friend_ok_signal
@@ -60,9 +59,8 @@ class FriendManager(object):
                                                                  FRIEND_STATUS_SELF_CONFIRM]):
             raise GameException(ConfigErrorMessage.get_error_id("FRIEND_NOT_EXIST"))
 
-        char = Character(self.server_id, friend_id)
         club = Club(self.server_id, friend_id)
-        return char, club
+        return club
 
     def get_real_friends_ids(self):
         doc = MongoFriend.db(self.server_id).find_one({'_id': self.char_id})

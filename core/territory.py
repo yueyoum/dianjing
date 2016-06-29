@@ -22,7 +22,6 @@ from core.value_log import (
     ValueLogTerritoryGotHelpTimes,
 )
 
-from core.character import Character
 from core.club import Club
 from core.staff import StaffManger
 from core.friend import FriendManager
@@ -404,7 +403,7 @@ class Territory(object):
 
     @classmethod
     def auto_increase_product(cls, server_id):
-        char_ids = Character.get_recent_login_char_ids(server_id, recent_days=14)
+        char_ids = Club.get_recent_login_char_ids(server_id, recent_days=14)
         char_ids = [i for i in char_ids]
 
         docs = MongoTerritory.db(server_id).find({'_id': {'$in': char_ids}})

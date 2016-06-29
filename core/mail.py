@@ -14,8 +14,8 @@ from django.conf import settings
 from dianjing.exception import GameException
 
 from core.mongo import MongoMail, MongoCharacter
-from core.character import Character
 from core.resource import ResourceClassification
+from core.club import Club
 
 from config import ConfigErrorMessage
 from config.settings import MAIL_KEEP_DAYS, MAIL_CLEAN_AT
@@ -216,7 +216,8 @@ class MailManager(object):
             if v['from_id']:
                 # char
                 notify_mail.mail_from.from_type = MAIL_FROM_USER
-                notify_mail.mail_from.char.MergeFrom(Character(self.server_id, v['from_id']).make_protomsg())
+                # XXX
+                notify_mail.mail_from.club.MergeFrom(Club(self.server_id, v['from_id']).make_protomsg())
             else:
                 notify_mail.mail_from.from_type = MAIL_FROM_SYSTEM
 

@@ -14,11 +14,10 @@ from django.conf import settings
 from dianjing.exception import GameException
 
 from core.mongo import MongoWelfare
-from core.club import get_club_property
+from core.club import get_club_property, Club
 from core.vip import VIP
 from core.value_log import ValueLogWelfareSignInTimes, ValueLogWelfareEnergyRewardTimes
 from core.resource import ResourceClassification
-from core.character import Character
 
 from utils.message import MessagePipe
 
@@ -106,7 +105,7 @@ class Welfare(object):
             return WELFARE_HAS_GOT
 
         if login_days is None:
-            login_days = Character(self.server_id, self.char_id).create_days
+            login_days = Club.create_days(self.server_id, self.char_id)
 
         if login_days >= _id:
             return WELFARE_CAN_GET
@@ -212,7 +211,7 @@ class Welfare(object):
             act = ACT_INIT
             ids = ConfigWelfareNewPlayer.INSTANCES.keys()
 
-        login_days = Character(self.server_id, self.char_id).create_days
+        login_days = Club.create_days(self.server_id, self.char_id)
 
         notify = WelfareNewPlayerNotify()
         notify.act = act

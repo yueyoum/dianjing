@@ -60,29 +60,26 @@ class Null(object):
 null = Null()
 
 
+# 就是 club
 class MongoCharacter(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        'name': null,
         'create_at': 0,
         'last_login': 0,
-        'avatar_key': '',
-        'avatar_ok': False,
 
-        'club': {
-            'name': null,
-            'flag': null,
-            'level': 1,
-            'renown': 0,
-            'gold': 0,
-            'diamond': 0,
-            'crystal': 0,
-            'gas': 0,
-        },
+
+        'name': null,
+        'flag': 1,
+        'level': 1,
+        'renown': 0,
+        'gold': 0,
+        'diamond': 0,
+        'crystal': 0,
+        'gas': 0,
     }
 
     COLLECTION = "character"
-    INDEXES = ['name', 'last_login', 'club.level',]
+    INDEXES = ['name', 'last_login', 'level',]
 
 class MongoStaff(BaseDocument):
     DOCUMENT = {

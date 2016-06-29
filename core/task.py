@@ -4,7 +4,7 @@
 from dianjing.exception import GameException
 
 from core.mongo import MongoTaskMain, MongoRecord, MongoTaskDaily
-from core.character import Character
+from core.club import Club
 from core.resource import ResourceClassification
 from core.club import get_club_property
 from core.vip import VIP
@@ -234,7 +234,7 @@ class RandomEvent(object):
         notify.times = 0
         data = MessageFactory.pack(notify)
 
-        for char_id in Character.get_recent_login_char_ids(server_id):
+        for char_id in Club.get_recent_login_char_ids(server_id):
             MessagePipe(char_id).put(data=data)
 
     def done(self, event_id):

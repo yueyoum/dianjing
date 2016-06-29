@@ -13,8 +13,7 @@ from django.dispatch import Signal
 
 # 帐号登录
 account_login_signal = Signal(providing_args=['account_id', 'ip', 'to_server_id'])
-# 创建角色
-char_created_signal = Signal(providing_args=['server_id', 'char_id', 'char_name'])
+
 # 游戏开始
 game_start_signal = Signal(providing_args=['server_id', 'char_id'])
 

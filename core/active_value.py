@@ -10,8 +10,7 @@ Description:
 from dianjing.exception import GameException
 
 from core.mongo import MongoActiveValue
-from core.character import Character
-
+from core.club import Club
 from utils.message import MessagePipe
 
 from config import ConfigActiveReward, ConfigErrorMessage, ConfigActiveFunction
@@ -48,7 +47,7 @@ class ActiveValue(object):
             }
         )
 
-        for char_id in Character.get_recent_login_char_ids(server_id):
+        for char_id in Club.get_recent_login_char_ids(server_id):
             av = ActiveValue(server_id, char_id)
             av.send_function_notify()
             av.send_value_notify()

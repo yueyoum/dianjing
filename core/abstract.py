@@ -578,7 +578,7 @@ class AbstractStaff(object):
 class AbstractClub(object):
     __slots__ = [
         'server_id', 'char_id',
-        'id', 'name', 'manager_name', 'flag', 'level',
+        'id', 'name', 'flag', 'level',
         'exp', 'gold', 'diamond', 'crystal', 'gas', 'renown',
         'formation_staffs',
 
@@ -592,7 +592,6 @@ class AbstractClub(object):
 
         self.id = 0
         self.name = ""
-        self.manager_name = ""
         self.flag = 0
         self.level = 1
         self.exp = 0
@@ -675,7 +674,6 @@ class AbstractClub(object):
         # 因为NPC的ID是UUID，所以这里为了统一，club的ID 都是 str
         msg.id = str(self.id)
         msg.name = self.name
-        msg.manager = self.manager_name
         msg.flag = self.flag
         msg.level = self.level
         msg.exp = self.exp

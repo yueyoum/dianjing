@@ -20,7 +20,6 @@ from core.value_log import ValueLogArenaMatchTimes, ValueLogArenaHonorPoints, Va
 from core.match import ClubMatch
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.vip import VIP
-from core.character import Character
 from core.mail import MailManager
 
 from config import ConfigErrorMessage, ConfigArenaNPC, ConfigNPCFormation, ConfigArenaHonorReward, \
@@ -99,7 +98,7 @@ class Arena(object):
 
     @classmethod
     def send_rank_reward(cls, server_id):
-        char_ids = Character.get_recent_login_char_ids(server_id, recent_days=14)
+        char_ids = Club.get_recent_login_char_ids(server_id, recent_days=14)
         char_ids = [str(i) for i in char_ids]
 
         docs = MongoArena.db(server_id).find({'_id': {'$in': char_ids}}, {'rank': 1})

@@ -18,7 +18,7 @@ from core.signals import account_login_signal, game_start_signal
 from config import ConfigErrorMessage
 
 from protomsg.server_pb2 import GetServerListResponse, StartGameResponse
-from protomsg.common_pb2 import OPT_OK, OPT_CREATE_CHAR, OPT_CREATE_CLUB
+from protomsg.common_pb2 import OPT_OK, OPT_CREATE_CLUB
 
 
 def get_server_list(request):
@@ -63,17 +63,12 @@ def start_game(request):
     try:
         char = Character.objects.get(account_id=account_id, server_id=server_id)
     except Character.DoesNotExist:
-        response.next = OPT_CREATE_CHAR
+        response.next = OPT_CREATE_CLUB
         response.session = session.serialize()
         return ProtobufResponse(response)
 
     char_id = char.id
     session.char_id = char_id
-
-    if not char.club_name:
-        response.next = OPT_CREATE_CLUB
-        response.session = session.serialize()
-        return ProtobufResponse(response)
 
     game_start_signal.send(
         sender=None,

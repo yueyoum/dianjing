@@ -11,7 +11,6 @@ import arrow
 from django.dispatch import receiver
 
 from core.signals import game_start_signal
-from core.character import Character
 from core.club import Club
 from core.staff import StaffManger, StaffRecruit
 from core.formation import Formation
@@ -39,7 +38,7 @@ from core.store import Store
 from core.vip import VIP
 from core.collection import Collection
 from core.energy import Energy
-from core.welfare import Welfare
+# from core.welfare import Welfare
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
@@ -53,9 +52,6 @@ def game_start_handler(server_id, char_id, **kwargs):
     msg.timestamp = arrow.utcnow().timestamp
     MessagePipe(char_id).put(msg=msg)
 
-    c = Character(server_id, char_id)
-    c.send_notify()
-
     UnitManager(server_id, char_id).send_notify()
 
     Bag(server_id, char_id).send_notify()
@@ -64,9 +60,8 @@ def game_start_handler(server_id, char_id, **kwargs):
     StaffRecruit(server_id, char_id).send_notify()
     Formation(server_id, char_id).send_notify()
 
-    c.set_login()
-
     club = Club(server_id, char_id)
+    club.set_login()
     club.send_notify()
 
     chall = Challenge(server_id, char_id)

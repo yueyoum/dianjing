@@ -13,7 +13,6 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoTower
 from core.club import Club, get_club_property
-from core.character import Character
 from core.match import ClubMatch
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.value_log import ValueLogTowerResetTimes, ValueLogTowerWinTimes
@@ -92,7 +91,7 @@ class Tower(object):
 
     @classmethod
     def send_rank_reward(cls, server_id):
-        char_ids = Character.get_recent_login_char_ids(server_id, recent_days=14)
+        char_ids = Club.get_recent_login_char_ids(server_id, recent_days=14)
         char_ids = [i for i in char_ids]
 
         condition = {'$and': [
@@ -160,7 +159,7 @@ class Tower(object):
         # 因为有定时任务在 直接清零
         # NOTE: 因为用了 sef.doc 的数据，必须在 设置完后 才能调用
         # NOTE: 还要判断是不是当天创建的新角色，新角色就算没重置也得记录啊啊啊
-        if Character(self.server_id, self.char_id).create_days > 1:
+        if Club.create_days(self.server_id, self.char_id) > 1:
             ri = ResetInfo(self.server_id, self.char_id)
             if not ri.reset_times:
                 # 只有当天重置过的，才记录当天最高星数

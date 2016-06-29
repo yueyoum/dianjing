@@ -8,19 +8,19 @@ Description:
 """
 
 from django.db import IntegrityError
+from django.db.models import Q
 
 from dianjing.exception import GameException
-from apps.character.models import Character as ModelCharacter
+from apps.character.models import Character
+
+from core.club import Club
 
 from utils.http import ProtobufResponse
 from config import ConfigErrorMessage
 
 from core.signals import game_start_signal
-from core.character import Character
 
-from protomsg.club_pb2 import (
-    CreateClubResponse,
-)
+from protomsg.club_pb2 import CreateClubResponse
 
 
 def create(request):
@@ -28,29 +28,30 @@ def create(request):
     flag = request._proto.flag
 
     session = request._game_session
+    account_id = session.account_id
     server_id = session.server_id
-    char_id = session.char_id
 
-    char = ModelCharacter.objects.get(id=char_id)
-    if char.club_name:
+    if Character.objects.filter(Q(account_id=account_id) & Q(server_id=server_id)).exists():
         raise GameException(ConfigErrorMessage.get_error_id("CLUB_ALREADY_CREATED"))
 
     try:
-        char.club_name = name
-        char.save()
+        char = Character.objects.create(
+            account_id=account_id,
+            server_id=server_id,
+            name=name,
+        )
     except IntegrityError:
         raise GameException(ConfigErrorMessage.get_error_id("CLUB_NAME_TAKEN"))
 
-    Character.create(server_id, char_id, char.name, name, flag)
+    Club.create(server_id, char.id, name, flag)
 
     game_start_signal.send(
         sender=None,
         server_id=server_id,
-        char_id=char_id,
+        char_id=char.id,
     )
 
     response = CreateClubResponse()
     response.ret = 0
     response.session = session.serialize()
     return ProtobufResponse(response)
-
