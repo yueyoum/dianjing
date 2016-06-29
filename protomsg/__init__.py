@@ -241,6 +241,18 @@ MESSAGE_TO_ID = {
     "EnergyNotify": 4100,
     "EnergyBuyRequest": 4101,
     "EnergyBuyResponse": 4102,
+    "WelfareSignInNotify": 4200,
+    "WelfareNewPlayerNotify": 4201,
+    "WelfareLevelRewardNotify": 4202,
+    "WelfareEnergyRewardNotify": 4203,
+    "WelfareSignInRequest": 4204,
+    "WelfareSignInResponse": 4205,
+    "WelfareNewPlayerGetRequest": 4206,
+    "WelfareNewPlayerGetResponse": 4207,
+    "WelfareLevelRewardGetRequest": 4208,
+    "WelfareLevelRewardGetResponse": 4209,
+    "WelfareEnergyRewardGetReqeust": 4210,
+    "WelfareEnergyRewardGetResponse": 4211,
 }
 
 ID_TO_MESSAGE = {
@@ -485,6 +497,18 @@ ID_TO_MESSAGE = {
     4100: "EnergyNotify",
     4101: "EnergyBuyRequest",
     4102: "EnergyBuyResponse",
+    4200: "WelfareSignInNotify",
+    4201: "WelfareNewPlayerNotify",
+    4202: "WelfareLevelRewardNotify",
+    4203: "WelfareEnergyRewardNotify",
+    4204: "WelfareSignInRequest",
+    4205: "WelfareSignInResponse",
+    4206: "WelfareNewPlayerGetRequest",
+    4207: "WelfareNewPlayerGetResponse",
+    4208: "WelfareLevelRewardGetRequest",
+    4209: "WelfareLevelRewardGetResponse",
+    4210: "WelfareEnergyRewardGetReqeust",
+    4211: "WelfareEnergyRewardGetResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -583,6 +607,10 @@ PATH_TO_REQUEST = {
     "/game/store/autorefresh/": ["store", "StoreAutoRefreshRequest"],
     "/game/vip/buyreward/": ["vip", "VIPBuyRewardRequest"],
     "/game/energy/buy/": ["energy", "EnergyBuyRequest"],
+    "/game/welfare/signin/": ["welfare", "WelfareSignInRequest"],
+    "/game/welfare/newplayer/": ["welfare", "WelfareNewPlayerGetRequest"],
+    "/game/welfare/levelreward/": ["welfare", "WelfareLevelRewardGetRequest"],
+    "/game/welfare/energyreward/": ["welfare", "WelfareEnergyRewardGetReqeust"],
 }
 
 PATH_TO_RESPONSE = {
@@ -681,4 +709,8 @@ PATH_TO_RESPONSE = {
     "/game/store/autorefresh/": ["store", "StoreAutoRefreshResponse"],
     "/game/vip/buyreward/": ["vip", "VIPBuyRewardResponse"],
     "/game/energy/buy/": ["energy", "EnergyBuyResponse"],
+    "/game/welfare/signin/": ["welfare", "WelfareSignInResponse"],
+    "/game/welfare/newplayer/": ["welfare", "WelfareNewPlayerGetResponse"],
+    "/game/welfare/levelreward/": ["welfare", "WelfareLevelRewardGetResponse"],
+    "/game/welfare/energyreward/": ["welfare", "WelfareEnergyRewardGetResponse"],
 }

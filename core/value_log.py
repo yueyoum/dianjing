@@ -276,3 +276,14 @@ class ValueLogUnitLevelUpTimes(ValueLog):
 class ValueLogEnergyBuyTimes(ValueLog):
     KEY = 'energy_buy'
     __slots__ = []
+
+
+# 福利签到
+class ValueLogWelfareSignInTimes(ValueLog):
+    KEY = 'welfare_signin'
+    __slots__ = []
+
+# 福利体力领取
+class ValueLogWelfareEnergyRewardTimes(CategoryValueLog):
+    KEY = 'welfare_energy'
+    __slots__ = []

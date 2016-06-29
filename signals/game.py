@@ -30,7 +30,6 @@ from core.activity.login_reward import ActivityLoginReward
 from core.activity.signin import SignIn
 from core.active_value import ActiveValue
 from core.talent import TalentManager
-# from core.auction import AuctionManager
 from core.system import send_broadcast_notify
 from core.dungeon import Dungeon
 from core.arena import Arena
@@ -40,6 +39,7 @@ from core.store import Store
 from core.vip import VIP
 from core.collection import Collection
 from core.energy import Energy
+from core.welfare import Welfare
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
@@ -93,9 +93,6 @@ def game_start_handler(server_id, char_id, **kwargs):
     TalentManager(server_id, char_id).send_notify()
 
     Dungeon(server_id, char_id).send_notify()
-    #
-    # AuctionManager(server_id, char_id).send_bidding_list_notify()
-    # AuctionManager(server_id, char_id).send_sell_list_notify()
 
     av = ActiveValue(server_id, char_id)
     av.send_function_notify()
@@ -119,5 +116,11 @@ def game_start_handler(server_id, char_id, **kwargs):
     Collection(server_id, char_id).send_notify()
 
     Energy(server_id, char_id).send_notify()
+
+    # w = Welfare(server_id, char_id)
+    # w.send_signin_notify()
+    # w.send_new_player_notify()
+    # w.send_level_reward_notify()
+    # w.send_energy_reward_notify()
 
     send_broadcast_notify(char_id)

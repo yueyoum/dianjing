@@ -579,3 +579,21 @@ class MongoEnergy(BaseDocument):
     }
 
     COLLECTION = 'energy'
+
+
+# 福利
+class MongoWelfare(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # 已经签到的次数，循环
+        # 这个需要ValueLog配合
+        # valuelog 检测今天是否签过了
+        # signin 表示已经签的次数， 当前应该签到的次数就得 +1
+        'signin': 0,
+        # 已经领奖的 新手礼包id列表
+        'new_player': [],
+        # 已经领取的等级礼包
+        'level_reward': [],
+    }
+
+    COLLECTION = 'welfare'

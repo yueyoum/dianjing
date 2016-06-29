@@ -36,6 +36,7 @@ import views.territory
 import views.store
 import views.vip
 import views.energy
+import views.welfare
 
 urlpatterns = [
     url(r'^sync/$', views.common.sync),
@@ -149,4 +150,9 @@ urlpatterns = [
     url(r'^vip/buyreward/$', views.vip.buy_reward),
 
     url(r'^energy/buy/$', views.energy.buy),
+
+    url(r'^welfare/signin/$', views.welfare.signin),
+    url(r'^welfare/newplayer/$', views.welfare.new_player_get),
+    url(r'^welfare/levelreward/$', views.welfare.level_reward_get),
+    url(r'^welfare/energereward/$', views.welfare.energy_reward_get),
 ]
