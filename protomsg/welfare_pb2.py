@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='welfare.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\rwelfare.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"K\n\x0bWelfareItem\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x30\n\x06status\x18\x02 \x02(\x0e\x32 .Dianjing.protocol.WelfareStatus\"C\n\x13WelfareSignInNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03\x64\x61y\x18\x03 \x02(\x05\x12\x0e\n\x06signed\x18\x04 \x02(\x08\"\x80\x01\n\x16WelfareNewPlayerNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12-\n\x05items\x18\x03 \x03(\x0b\x32\x1e.Dianjing.protocol.WelfareItem\"\x82\x01\n\x18WelfareLevelRewardNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12-\n\x05items\x18\x03 \x03(\x0b\x32\x1e.Dianjing.protocol.WelfareItem\"\xb2\x01\n\x19WelfareEnergyRewardNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12J\n\ntime_range\x18\x02 \x03(\x0b\x32\x36.Dianjing.protocol.WelfareEnergyRewardNotify.TimeRange\x12\x0f\n\x07\x63\x61n_get\x18\x03 \x02(\x08\x1a\'\n\tTimeRange\x12\r\n\x05start\x18\x01 \x02(\x05\x12\x0b\n\x03\x65nd\x18\x02 \x02(\x05\"\'\n\x14WelfareSignInRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\\\n\x15WelfareSignInResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"9\n\x1aWelfareNewPlayerGetRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"b\n\x1bWelfareNewPlayerGetResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\";\n\x1cWelfareLevelRewardGetRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"d\n\x1dWelfareLevelRewardGetResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"0\n\x1dWelfareEnergyRewardGetReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"e\n\x1eWelfareEnergyRewardGetResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*N\n\rWelfareStatus\x12\x13\n\x0fWELFARE_CAN_GET\x10\x01\x12\x13\n\x0fWELFARE_HAS_GOT\x10\x02\x12\x13\n\x0fWELFARE_CAN_NOT\x10\x03')
+  serialized_pb=_b('\n\rwelfare.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"K\n\x0bWelfareItem\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x30\n\x06status\x18\x02 \x02(\x0e\x32 .Dianjing.protocol.WelfareStatus\"C\n\x13WelfareSignInNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03\x64\x61y\x18\x03 \x02(\x05\x12\x0e\n\x06signed\x18\x04 \x02(\x08\"\x80\x01\n\x16WelfareNewPlayerNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12-\n\x05items\x18\x03 \x03(\x0b\x32\x1e.Dianjing.protocol.WelfareItem\"\x82\x01\n\x18WelfareLevelRewardNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12-\n\x05items\x18\x03 \x03(\x0b\x32\x1e.Dianjing.protocol.WelfareItem\"\xb2\x01\n\x19WelfareEnergyRewardNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12J\n\ntime_range\x18\x02 \x03(\x0b\x32\x36.Dianjing.protocol.WelfareEnergyRewardNotify.TimeRange\x1a\x38\n\tTimeRange\x12\r\n\x05start\x18\x01 \x02(\x05\x12\x0b\n\x03\x65nd\x18\x02 \x02(\x05\x12\x0f\n\x07\x63\x61n_get\x18\x03 \x02(\x08\"\'\n\x14WelfareSignInRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\\\n\x15WelfareSignInResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"9\n\x1aWelfareNewPlayerGetRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"b\n\x1bWelfareNewPlayerGetResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\";\n\x1cWelfareLevelRewardGetRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"d\n\x1dWelfareLevelRewardGetResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"0\n\x1dWelfareEnergyRewardGetReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"e\n\x1eWelfareEnergyRewardGetResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*N\n\rWelfareStatus\x12\x13\n\x0fWELFARE_CAN_GET\x10\x01\x12\x13\n\x0fWELFARE_HAS_GOT\x10\x02\x12\x13\n\x0fWELFARE_CAN_NOT\x10\x03')
   ,
   dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -254,6 +254,13 @@ _WELFAREENERGYREWARDNOTIFY_TIMERANGE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='can_get', full_name='Dianjing.protocol.WelfareEnergyRewardNotify.TimeRange.can_get', index=2,
+      number=3, type=8, cpp_type=7, label=2,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -266,7 +273,7 @@ _WELFAREENERGYREWARDNOTIFY_TIMERANGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=615,
+  serialized_start=598,
   serialized_end=654,
 )
 
@@ -288,13 +295,6 @@ _WELFAREENERGYREWARDNOTIFY = _descriptor.Descriptor(
       name='time_range', full_name='Dianjing.protocol.WelfareEnergyRewardNotify.time_range', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='can_get', full_name='Dianjing.protocol.WelfareEnergyRewardNotify.can_get', index=2,
-      number=3, type=8, cpp_type=7, label=2,
-      has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),

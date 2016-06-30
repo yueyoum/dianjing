@@ -124,17 +124,6 @@ class Welfare(object):
 
         return WELFARE_CAN_NOT
 
-    def get_energy_reward_index(self):
-        hour = arrow.utcnow().to(settings.TIME_ZONE).hour
-        for index, (start, end) in enumerate(ENERGY_TIME_RANGE):
-            if start <= hour <= end:
-                times = ValueLogWelfareEnergyRewardTimes(self.server_id, self.char_id).count_of_today(sub_id=index)
-                if not times:
-                    # OK
-                    return index
-
-        return None
-
     def new_player_get(self, _id):
         config = ConfigWelfareNewPlayer.get(_id)
         if not config:
@@ -190,18 +179,25 @@ class Welfare(object):
         return rc
 
     def energy_reward_get(self):
-        index = self.get_energy_reward_index()
-        if index is None:
-            raise GameException(ConfigErrorMessage.get_error_id("WELFARE_ENERGY_CAN_NOT_GET"))
+        hour = arrow.utcnow().to(settings.TIME_ZONE).hour
 
-        config = ConfigItemUse.get(-1)
-        items = config.using_result()
-        rc = ResourceClassification.classify(items)
-        rc.add(self.server_id, self.char_id)
+        for index, (start, end) in ENERGY_TIME_RANGE:
+            if start <= hour <= end:
+                times = ValueLogWelfareEnergyRewardTimes(self.server_id, self.char_id).count_of_today(sub_id=index)
+                if times > 0:
+                    raise GameException(ConfigErrorMessage.get_error_id("WELFARE_ENERGY_ALREADY_GOT"))
 
-        ValueLogWelfareEnergyRewardTimes(self.server_id, self.char_id).record(sub_id=index)
-        self.send_energy_reward_notify()
-        return rc
+                ValueLogWelfareEnergyRewardTimes(self.server_id, self.char_id).record(sub_id=index)
+
+                config = ConfigItemUse.get(-1)
+                items = config.using_result()
+                rc = ResourceClassification.classify(items)
+                rc.add(self.server_id, self.char_id)
+
+                self.send_energy_reward_notify()
+                return rc
+
+        raise GameException(ConfigErrorMessage.get_error_id("WELFARE_ENERGY_CAN_NOT_GET_NOT_IN_TIME"))
 
     def send_new_player_notify(self, _id=None):
         if _id:
@@ -243,12 +239,12 @@ class Welfare(object):
 
     def send_energy_reward_notify(self):
         notify = WelfareEnergyRewardNotify()
-        for start, end in ENERGY_TIME_RANGE:
+        for index, (start, end) in enumerate(ENERGY_TIME_RANGE):
             notify_range = notify.time_range.add()
             notify_range.start = start
             notify_range.end = end
 
-        index = self.get_energy_reward_index()
-        notify.can_get = index is not None
+            times = ValueLogWelfareEnergyRewardTimes(self.server_id, self.char_id).count_of_today(sub_id=index)
+            notify_range.can_get = times == 0
 
         MessagePipe(self.char_id).put(msg=notify)
