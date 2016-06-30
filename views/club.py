@@ -43,6 +43,9 @@ def create(request):
     except IntegrityError:
         raise GameException(ConfigErrorMessage.get_error_id("CLUB_NAME_TAKEN"))
 
+    # NOTE: 返回的时候middleware就是根据 request._game_session.char_id
+    # 来从 队列里取 消息的。 所以这里得设置
+    request._game_session.char_id = char.id
     Club.create(server_id, char.id, name, flag)
 
     game_start_signal.send(

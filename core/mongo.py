@@ -71,6 +71,7 @@ class MongoCharacter(BaseDocument):
         'name': null,
         'flag': 1,
         'level': 1,
+        'exp': 0,
         'renown': 0,
         'gold': 0,
         'diamond': 0,
