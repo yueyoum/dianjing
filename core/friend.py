@@ -74,10 +74,10 @@ class FriendManager(object):
     def get_candidates(self):
         char_doc = MongoCharacter.db(self.server_id).find_one(
             {'_id': self.char_id},
-            {'club.level': 1}
+            {'level': 1}
         )
 
-        level = char_doc['club']['level']
+        level = char_doc['level']
 
         friend_doc = MongoFriend.db(self.server_id).find_one(
             {'_id': self.char_id}
@@ -93,8 +93,8 @@ class FriendManager(object):
 
                 condition = {
                     '$and': [
-                        {'club.level': {'$gte': min_level}},
-                        {'club.level': {'$lte': max_level}}
+                        {'level': {'$gte': min_level}},
+                        {'level': {'$lte': max_level}}
                     ]
                 }
             else:
@@ -157,7 +157,7 @@ class FriendManager(object):
         return status in expect_status
 
     def add(self, name):
-        doc = MongoCharacter.db(self.server_id).find_one({'club.name': name}, {'_id': 1})
+        doc = MongoCharacter.db(self.server_id).find_one({'name': name}, {'_id': 1})
         if not doc:
             raise GameException(ConfigErrorMessage.get_error_id("CHAR_NOT_EXIST"))
 

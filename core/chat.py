@@ -42,13 +42,13 @@ class Chat(object):
 
         char_doc = MongoCharacter.db(self.server_id).find_one(
             {'_id': self.char_id},
-            {'club.name': 1, 'club.vip': 1}
+            {'name': 1, 'vip': 1}
         )
 
         msg = ChatMessage()
         msg.channel = channel
         msg.club.id = str(self.char_id)
-        msg.club.name = char_doc['club']['name']
+        msg.club.name = char_doc['name']
         msg.club.vip = VIP(self.server_id, self.char_id).level
         msg.msg = text
 
@@ -106,7 +106,7 @@ class Chat(object):
                 _id, _amount = x.split(',')
                 name = item_id_to_money_text(int(_id))
 
-                setter['club.{0}'.format(name)] = int(_amount)
+                setter[name] = int(_amount)
 
             MongoCharacter.db(self.server_id).update_one(
                 {'_id': self.char_id},
@@ -120,7 +120,7 @@ class Chat(object):
             MongoCharacter.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {'$set': {
-                    'club.level': level
+                    'level': level
                 }}
             )
 

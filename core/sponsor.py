@@ -113,10 +113,10 @@ class SponsorManager(object):
     def add_sponsor_log(self, from_id):
         from_doc = MongoCharacter.db(self.server_id).find_one(
             {'_id': from_id},
-            {'club.name': 1}
+            {'name': 1}
         )
 
-        data = [1, [from_doc['club']['name']]]
+        data = [1, [from_doc['name']]]
         MongoSponsor.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$push': {'logs': {
@@ -130,10 +130,10 @@ class SponsorManager(object):
     def add_income_log(self, from_id, income):
         from_doc = MongoCharacter.db(self.server_id).find_one(
             {'_id': from_id},
-            {'club.name': 1}
+            {'name': 1}
         )
 
-        data = [2, [from_doc['club']['name'], str(income)]]
+        data = [2, [from_doc['name'], str(income)]]
         MongoSponsor.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$push': {'logs': {
@@ -158,8 +158,8 @@ class SponsorManager(object):
         if not doc['sponsor_to_id']:
             notify.sponsor_to = ""
         else:
-            sponsor_to_doc = MongoCharacter.db(self.server_id).find_one({'_id': doc['sponsor_to_id']}, {'club.name': 1})
-            notify.sponsor_to = sponsor_to_doc['club']['name']
+            sponsor_to_doc = MongoCharacter.db(self.server_id).find_one({'_id': doc['sponsor_to_id']}, {'name': 1})
+            notify.sponsor_to = sponsor_to_doc['name']
 
         notify.total_income = doc['income']
         for template_id, args in doc['logs']:
@@ -169,13 +169,13 @@ class SponsorManager(object):
 
         sponsor_ids = [int(k) for k in doc['sponsors'].keys()]
         sponsors_doc = MongoCharacter.db(self.server_id).find({'_id': {'$in': sponsor_ids}},
-                                                              {'club.name': 1, 'club.flag': 1})
+                                                              {'name': 1, 'flag': 1})
         sponsors = {d['_id']: d for d in sponsors_doc}
 
         for sid in sponsor_ids:
             notify_sponsor = notify.sponsors.add()
-            notify_sponsor.club_flag = sponsors[sid]['club']['flag']
-            notify_sponsor.club_name = sponsors[sid]['club']['name']
+            notify_sponsor.club_flag = sponsors[sid]['flag']
+            notify_sponsor.club_name = sponsors[sid]['name']
             notify_sponsor.income = doc['sponsors'][str(sid)]
 
             this_sponsor_doc = MongoSponsor.db(self.server_id).find_one({'_id': sid}, {'sponsors': 1})
