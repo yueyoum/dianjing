@@ -88,17 +88,9 @@ class Welfare(object):
             }}
         )
 
-        ValueLogWelfareEnergyRewardTimes(self.server_id, self.char_id).record()
+        ValueLogWelfareSignInTimes(self.server_id, self.char_id).record()
         self.send_signin_notify()
         return rc
-
-    def send_signin_notify(self):
-        today_times = ValueLogWelfareSignInTimes(self.server_id, self.char_id).count_of_today()
-
-        notify = WelfareSignInNotify()
-        notify.day = self.doc['signin'] + 1
-        notify.signed = today_times > 0
-        MessagePipe(self.char_id).put(msg=notify)
 
     def get_new_player_item_status(self, _id, login_days=None):
         if _id in self.doc['new_player']:
@@ -198,6 +190,14 @@ class Welfare(object):
                 return rc
 
         raise GameException(ConfigErrorMessage.get_error_id("WELFARE_ENERGY_CAN_NOT_GET_NOT_IN_TIME"))
+
+    def send_signin_notify(self):
+        today_times = ValueLogWelfareSignInTimes(self.server_id, self.char_id).count_of_today()
+
+        notify = WelfareSignInNotify()
+        notify.day = self.doc['signin'] + 1
+        notify.signed = today_times > 0
+        MessagePipe(self.char_id).put(msg=notify)
 
     def send_new_player_notify(self, _id=None):
         if _id:

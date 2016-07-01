@@ -142,5 +142,5 @@ urlpatterns = [
     url(r'^welfare/signin/$', views.welfare.signin),
     url(r'^welfare/newplayer/$', views.welfare.new_player_get),
     url(r'^welfare/levelreward/$', views.welfare.level_reward_get),
-    url(r'^welfare/energereward/$', views.welfare.energy_reward_get),
+    url(r'^welfare/energyreward/$', views.welfare.energy_reward_get),
 ]
