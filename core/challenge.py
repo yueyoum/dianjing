@@ -155,6 +155,8 @@ class Challenge(object):
 
             update_chapter_ids.append(chapter_id)
 
+        if not updater:
+            return
 
         MongoChallenge.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -476,17 +478,38 @@ class Challenge(object):
 
         ids = doc['challenge_star'].keys()
 
+        match_times = ValueLogChallengeMatchTimes(self.server_id, self.char_id).batch_count_of_today()
+        reset_times = ValueLogChallengeResetTimes(self.server_id, self.char_id).batch_count_of_today()
+        total_reset_times = VIP(self.server_id, self.char_id).challenge_reset_times
+
+        def _get_free_times(_id):
+            total_times = ConfigChallengeMatch.get(int(_id)).times_limit * (reset_times.get(_id, 0) + 1)
+            free_times = total_times - match_times.get(_id, 0)
+            if free_times < 0:
+                free_times = 0
+
+            return free_times
+
+        def _get_buy_times(_id):
+            remained = total_reset_times - reset_times.get(_id, 0)
+            if remained < 0:
+                remained = 0
+
+            return remained
+
+        def _get_buy_cost(_id):
+            return ConfigChallengeResetCost.get_cost(reset_times.get(_id, 0) + 1)
+
+
         notify = ChallengeNotify()
         notify.act = act
 
         for i in ids:
-            rt = RemainedTimes(self.server_id, self.char_id, int(i))
-
             notify_challenge = notify.challenge.add()
             notify_challenge.id = int(i)
             notify_challenge.star = doc['challenge_star'][i]
-            notify_challenge.free_times = rt.remained_match_times
-            notify_challenge.buy_times = rt.remained_reset_times
-            notify_challenge.buy_cost = rt.reset_cost
+            notify_challenge.free_times = _get_free_times(i)
+            notify_challenge.buy_times = _get_buy_times(i)
+            notify_challenge.buy_cost = _get_buy_cost(i)
 
         MessagePipe(self.char_id).put(msg=notify)
