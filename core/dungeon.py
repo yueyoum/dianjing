@@ -128,16 +128,36 @@ class Dungeon(object):
             act = ACT_INIT
             ids = get_opened_category_ids()
 
+        match_times = ValueLogDungeonMatchTimes(self.server_id, self.char_id).batch_count_of_today()
+        buy_times = ValueLogDungeonBuyTimes(self.server_id, self.char_id).batch_count_of_today()
+        total_reset_times = VIP(self.server_id, self.char_id).dungeon_reset_times
+
+        def _get_remained_match_times(_id):
+            _id = str(_id)
+            remained = DUNGEON_FREE_TIMES + buy_times.get(_id, 0) - match_times.get(_id, 0)
+            if remained < 0:
+                remained = 0
+
+            return remained
+
+        def _get_remained_buy_times(_id):
+            remained = total_reset_times - buy_times.get(str(_id), 0)
+            if remained < 0:
+                return remained
+
+            return remained
+
+        def _get_buy_cost(_id):
+            return ConfigDungeonBuyCost.get_cost(_id, buy_times.get(str(_id), 0)+1)
+
         notify = DungeonNotify()
         notify.act = act
 
         for i in ids:
-            ri = TimesInfo(self.server_id, self.char_id, i)
-
             notify_info = notify.info.add()
             notify_info.id = i
-            notify_info.free_times = ri.remained_match_times
-            notify_info.buy_times = ri.remained_buy_times
-            notify_info.buy_cost = ri.buy_cost
+            notify_info.free_times = _get_remained_match_times(i)
+            notify_info.buy_times = _get_remained_buy_times(i)
+            notify_info.buy_cost = _get_buy_cost(i)
 
         MessagePipe(self.char_id).put(msg=notify)
