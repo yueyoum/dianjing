@@ -35,7 +35,7 @@ from core.store import Store
 from core.vip import VIP
 from core.collection import Collection
 from core.energy import Energy
-# from core.welfare import Welfare
+from core.welfare import Welfare
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
@@ -106,10 +106,10 @@ def game_start_handler(server_id, char_id, **kwargs):
 
     Energy(server_id, char_id).send_notify()
 
-    # w = Welfare(server_id, char_id)
-    # w.send_signin_notify()
-    # w.send_new_player_notify()
-    # w.send_level_reward_notify()
-    # w.send_energy_reward_notify()
+    w = Welfare(server_id, char_id)
+    w.send_signin_notify()
+    w.send_new_player_notify()
+    w.send_level_reward_notify()
+    w.send_energy_reward_notify()
 
     send_broadcast_notify(char_id)

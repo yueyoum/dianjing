@@ -173,7 +173,7 @@ class Welfare(object):
     def energy_reward_get(self):
         hour = arrow.utcnow().to(settings.TIME_ZONE).hour
 
-        for index, (start, end) in ENERGY_TIME_RANGE:
+        for index, (start, end) in enumerate(ENERGY_TIME_RANGE):
             if start <= hour <= end:
                 times = ValueLogWelfareEnergyRewardTimes(self.server_id, self.char_id).count_of_today(sub_id=index)
                 if times > 0:
@@ -195,8 +195,14 @@ class Welfare(object):
         today_times = ValueLogWelfareSignInTimes(self.server_id, self.char_id).count_of_today()
 
         notify = WelfareSignInNotify()
-        notify.day = self.doc['signin'] + 1
-        notify.signed = today_times > 0
+
+        if today_times > 0:
+            notify.day = self.doc['signin']
+            notify.signed = True
+        else:
+            notify.day = self.doc['signin'] + 1
+            notify.signed = False
+
         MessagePipe(self.char_id).put(msg=notify)
 
     def send_new_player_notify(self, _id=None):
