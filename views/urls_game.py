@@ -9,8 +9,6 @@ Description:
 
 from django.conf.urls import url
 
-import views.admin
-
 import views.common
 import views.account
 import views.server
@@ -38,8 +36,6 @@ import views.energy
 import views.welfare
 
 urlpatterns = [
-    url(r'^flushcache/$', views.admin.flushcache),
-
     url(r'^sync/$', views.common.sync),
     url(r'^ping/$', views.common.ping),
 

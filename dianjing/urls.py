@@ -4,6 +4,8 @@ from django.contrib import admin
 import apps.config.views
 import apps.system.views
 
+import views.admin
+
 urlpatterns = [
     # Examples:
     # url(r'^$', 'dianjing.views.home', name='home'),
@@ -15,4 +17,6 @@ urlpatterns = [
 
     url(r'^system/config/$', apps.config.views.get_config),
     url(r'^system/bulletin/$', apps.system.views.get_bulletins),
+
+    url(r'^flushcache/$', views.admin.flushcache),
 ]
