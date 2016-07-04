@@ -32,6 +32,7 @@ from core.vip import VIP
 from utils.message import MessagePipe
 
 from config import (
+    GlobalConfig,
     ConfigErrorMessage,
     ConfigTerritoryBuilding,
     ConfigInspireCost,
@@ -403,7 +404,10 @@ class Territory(object):
 
     @classmethod
     def auto_increase_product(cls, server_id):
-        char_ids = Club.get_recent_login_char_ids(server_id, recent_days=14)
+        level_limit = GlobalConfig.get("TERRITORY_BUILDING_AUTO_INCREASE_LEVEL")
+        level_condition = {'level': {'$gte': level_limit}}
+
+        char_ids = Club.get_recent_login_char_ids(server_id, recent_days=14, other_conditions=[level_condition])
         char_ids = [i for i in char_ids]
 
         docs = MongoTerritory.db(server_id).find({'_id': {'$in': char_ids}})
