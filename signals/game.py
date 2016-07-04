@@ -26,7 +26,7 @@ from core.statistics import FinanceStatistics
 from core.sponsor import SponsorManager
 from core.active_value import ActiveValue
 from core.talent import TalentManager
-from core.system import send_broadcast_notify
+from core.system import send_system_notify
 from core.dungeon import Dungeon
 from core.arena import Arena
 from core.tower import Tower
@@ -112,4 +112,4 @@ def game_start_handler(server_id, char_id, **kwargs):
     w.send_level_reward_notify()
     w.send_energy_reward_notify()
 
-    send_broadcast_notify(char_id)
+    send_system_notify(char_id)

@@ -56,7 +56,8 @@ training_sponsor_start_signal = Signal(providing_args=['server_id', 'char_id', '
 
 training_skill_start_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id', 'skill_id'])
 # 招募了员工
-recruit_staff_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
+recruit_staff_diamond_signal = Signal(providing_args=['server_id', 'char_id', 'times', 'staffs'])
+recruit_staff_gold_signal = Signal(providing_args=['server_id', 'char_id', 'times', 'staffs'])
 
 # 充值
 purchase_done_signal = Signal(providing_args=['server_id', 'char_id', 'diamond'])

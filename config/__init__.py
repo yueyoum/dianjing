@@ -38,6 +38,7 @@ from config.collection import ConfigCollection
 from config.energy import ConfigEnergyBuyCost
 from config.formation import ConfigFormationSlot
 from config.welfare import ConfigWelfareSignIn, ConfigWelfareLevelReward, ConfigWelfareNewPlayer
+from config.template import ConfigBroadcastTemplate
 
 
 _has_configed = False
@@ -213,6 +214,9 @@ def load_config():
             ConfigWelfareNewPlayer.initialize(data)
         elif item == 'welfare_signin.json':
             ConfigWelfareSignIn.initialize(data)
+
+        elif item == 'broadcast_template.json':
+            ConfigBroadcastTemplate.initialize(data)
 
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))
 

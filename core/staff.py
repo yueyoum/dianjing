@@ -26,8 +26,7 @@ from core.value_log import (
     ValueLogStaffLevelUpTimes,
 )
 
-# from core.signals import recruit_staff_signal, staff_level_up_signal
-from core.signals import staff_new_add_signal
+from core.signals import staff_new_add_signal, recruit_staff_diamond_signal, recruit_staff_gold_signal
 
 from config import (
     ConfigStaffRecruit,
@@ -76,18 +75,7 @@ class RecruitResult(object):
         if self.point < 0:
             self.point = 0
 
-        for item in res.item:
-            self.items.append(item)
-
-    def items_for_save(self):
-        result = {}
-        for _id, _amount in self.items:
-            if _id in result:
-                result[_id] += _amount
-            else:
-                result[_id] = _amount
-
-        return result.items()
+        self.items.extend(res.item)
 
 
 class StaffRecruit(object):
@@ -232,8 +220,25 @@ class StaffRecruit(object):
             }}
         )
 
-        resource_classify = ResourceClassification.classify(result.items_for_save())
-        resource_classify.add(self.server_id, self.char_id)
+        rc = ResourceClassification.classify(result.items)
+        rc.add(self.server_id, self.char_id)
+
+        if tp == RECRUIT_GOLD:
+            recruit_staff_gold_signal.send(
+                sender=None,
+                server_id=self.server_id,
+                char_id=self.char_id,
+                times=recruit_times,
+                staffs=rc.staff
+            )
+        else:
+            recruit_staff_diamond_signal.send(
+                sender=None,
+                server_id=self.server_id,
+                char_id=self.char_id,
+                times=recruit_times,
+                staffs=rc.staff
+            )
 
         self.send_notify()
         # NOTE: 结果不能堆叠
@@ -467,13 +472,13 @@ class Staff(AbstractStaff):
             resource_classified.remove(self.server_id, self.char_id)
 
             if random.randint(1, 100) <= 20:
-                inc_exp = 6
-                crit = True
+                _exp = 6
+                is_crit = True
             else:
-                inc_exp = random.randint(1, 3)
-                crit = False
+                _exp = random.randint(1, 3)
+                is_crit = False
 
-            exp = self.star_exp + inc_exp
+            exp = self.star_exp + _exp
 
             while True:
                 if self.star == STAFF_MAX_STAR:
@@ -490,8 +495,7 @@ class Staff(AbstractStaff):
 
             self.star_exp = exp
 
-            return crit, inc_exp, star_config.need_item_id, star_config.need_item_amount
-
+            return is_crit, _exp, star_config.need_item_id, star_config.need_item_amount
 
         if single:
             crit, inc_exp, cost_item_id, cost_item_amount = _make_single_up()
@@ -518,7 +522,6 @@ class Staff(AbstractStaff):
                 cost_item_id = _cost_id
                 cost_item_amount += _cost_amount
 
-
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
@@ -532,7 +535,7 @@ class Staff(AbstractStaff):
 
         self.make_cache()
 
-        return self.star!=old_star, crit, inc_exp, cost_item_id, cost_item_amount
+        return self.star != old_star, crit, inc_exp, cost_item_id, cost_item_amount
 
     def equipment_change(self, bag_slot_id, tp):
         # 会影响的其他staff_id
