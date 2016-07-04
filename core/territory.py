@@ -404,7 +404,7 @@ class Territory(object):
 
     @classmethod
     def auto_increase_product(cls, server_id):
-        level_limit = GlobalConfig.get("TERRITORY_BUILDING_AUTO_INCREASE_LEVEL")
+        level_limit = GlobalConfig.value("TERRITORY_BUILDING_AUTO_INCREASE_LEVEL")
         level_condition = {'level': {'$gte': level_limit}}
 
         char_ids = Club.get_recent_login_char_ids(server_id, recent_days=14, other_conditions=[level_condition])

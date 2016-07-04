@@ -28,3 +28,6 @@ def get(key):
 
 def delete(key):
     RedisDB.get().delete(key)
+
+def flush():
+    RedisDB.get().flushdb()
