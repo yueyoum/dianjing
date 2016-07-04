@@ -98,7 +98,7 @@ class Unit(AbstractUnit):
             self.level += 1
         else:
             # 这里要反过来试，如果正向试的话， 可能需要试5次，此时有点慢
-            # 反过来只对 只能升一两次的情况比较慢，但这种可以接受
+            # 反过来只对 只是升一两次的情况比较慢，但这种可以接受
             can_add_level = max_level - self.level
             if add_level > can_add_level:
                 add_level = can_add_level

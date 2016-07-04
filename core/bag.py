@@ -461,12 +461,11 @@ class Bag(object):
             for _ in range(_add):
                 item = config.levels[this_level].update_item_need
                 item_needs.extend(item)
+                this_level += 1
 
             resource_classified = ResourceClassification.classify(item_needs)
             resource_classified.check_exist(self.server_id, self.char_id)
             resource_classified.remove(self.server_id, self.char_id)
-
-            this_level += 1
 
         old_level = level
         error_code = 0
