@@ -81,16 +81,7 @@ class Tower(object):
             MongoTower.db(self.server_id).insert_one(self.doc)
 
     @classmethod
-    def reset_star(cls, server_id):
-        MongoTower.db(server_id).update_many(
-            {},
-            {'$set': {
-                'today_max_star': 0,
-            }}
-        )
-
-    @classmethod
-    def send_rank_reward(cls, server_id):
+    def send_rank_reward_and_reset_star(cls, server_id):
         char_ids = Club.get_recent_login_char_ids(server_id, recent_days=14)
         char_ids = [i for i in char_ids]
 
@@ -116,6 +107,14 @@ class Tower(object):
             )
 
             rank += 1
+
+        # reset today max star
+        MongoTower.db(server_id).update_many(
+            {},
+            {'$set': {
+                'today_max_star': 0,
+            }}
+        )
 
     def talent_effects(self):
         return self.doc['talents']

@@ -20,6 +20,7 @@ from core.value_log import ValueLogWelfareSignInTimes, ValueLogWelfareEnergyRewa
 from core.resource import ResourceClassification
 
 from utils.message import MessagePipe
+from utils.functional import get_arrow_time_of_today
 
 from config import (
     ConfigWelfareLevelReward,
@@ -171,10 +172,14 @@ class Welfare(object):
         return rc
 
     def energy_reward_get(self):
-        hour = arrow.utcnow().to(settings.TIME_ZONE).hour
+        now = arrow.utcnow().to(settings.TIME_ZONE)
+        today = get_arrow_time_of_today()
 
-        for index, (start, end) in enumerate(ENERGY_TIME_RANGE):
-            if start <= hour <= end:
+        for index, (start_hour, end_hour) in enumerate(ENERGY_TIME_RANGE):
+
+            start_at = today.replace(hour=start_hour)
+            end_at = today.replace(hour=end_hour)
+            if start_at <= now <= end_at:
                 times = ValueLogWelfareEnergyRewardTimes(self.server_id, self.char_id).count_of_today(sub_id=index)
                 if times > 0:
                     raise GameException(ConfigErrorMessage.get_error_id("WELFARE_ENERGY_ALREADY_GOT"))

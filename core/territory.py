@@ -58,7 +58,7 @@ from protomsg.territory_pb2 import (
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
 # TODO
-INIT_WORK_CARD = 5000
+INIT_WORK_CARD = 0
 TRAINING_HOURS = [4, 8, 12]
 BUILDING_PRODUCT_ID_TABLE = {v: k for k, v in TERRITORY_PRODUCT_BUILDING_TABLE.iteritems()}
 
