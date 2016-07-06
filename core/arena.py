@@ -448,6 +448,7 @@ class Arena(object):
             server_id=self.server_id,
             char_id=self.char_id,
             target_id=rival_id,
+            target_name=ArenaClub(self.server_id, rival_id).name,
             my_rank=my_rank,
             target_rank=rival_rank,
             win=win,

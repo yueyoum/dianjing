@@ -9,8 +9,6 @@ Description:
 
 from django.dispatch import Signal
 
-# TODO 清理
-
 # 帐号登录
 account_login_signal = Signal(providing_args=['account_id', 'ip', 'to_server_id'])
 
@@ -22,8 +20,8 @@ challenge_match_signal = Signal(providing_args=['server_id', 'char_id', 'challen
 # 好友切磋比赛
 friend_match_signal = Signal(providing_args=['server_id', 'char_id', 'target_id', 'win'])
 
-# 竞技场比赛
-arena_match_signal = Signal(providing_args=['server_id', 'char_id', 'target_id', 'my_rank', 'target_rank', 'win'])
+# 竞技场比赛  参数里有 target_name，是因为可能对手是NPC
+arena_match_signal = Signal(providing_args=['server_id', 'char_id', 'target_id', 'target_name', 'my_rank', 'target_rank', 'win'])
 
 # 聊天说了一句话
 chat_signal = Signal(providing_args=['server_id', 'char_id'])

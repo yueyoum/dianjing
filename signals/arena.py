@@ -12,8 +12,8 @@ from core.signals import arena_match_signal
 
 from core.system import BroadCast
 
-@receiver(arena_match_signal, dispatch_uid='signals.arena.match_handler')
-def match_handler(server_id, char_id, target_id, my_rank, target_rank, win, **kwargs):
+@receiver(arena_match_signal, dispatch_uid='signals.arena.arena_match_handler')
+def arena_match_handler(server_id, char_id, target_id, target_name, my_rank, target_rank, win, **kwargs):
     if win:
         b = BroadCast(server_id, char_id)
-        b.cast_arena_match_notify(target_id, target_rank)
+        b.cast_arena_match_notify(target_name, target_rank)

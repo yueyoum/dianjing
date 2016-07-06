@@ -7,9 +7,12 @@ Description:
 
 """
 
+import cPickle
+
 from core.club import get_club_property
 
 from utils.message import MessagePipe, MessageFactory
+from tasks import world
 
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 from protomsg.broadcast_pb2 import BroadcastNotify
@@ -61,9 +64,9 @@ class BroadCast(object):
         text = template.format(self.name, ConfigItemNew.get(staff_original_id).name, star_level)
         self.do_cast(text)
 
-    def cast_arena_match_notify(self, target_char_id, target_rank):
+    def cast_arena_match_notify(self, target_name, target_rank):
         template = ConfigBroadcastTemplate.get(3).template
-        text = template.format(self.name, target_rank, get_club_property(self.server_id, target_char_id, 'name'))
+        text = template.format(self.name, target_rank, target_name)
         self.do_cast(text)
 
     def cast_diamond_recruit_staff_notify(self, staff_original_id):
@@ -72,18 +75,17 @@ class BroadCast(object):
         self.do_cast(text)
 
     def do_cast(self, text, repeat_times=1):
-        # TODO
-        # 选择最近在线的用户
-        from core.club import Club
-
         notify = BroadcastNotify()
         notify.act = ACT_UPDATE
         b = notify.broadcast.add()
         b.text = text
         b.repeat_times = repeat_times
 
-        data = MessageFactory.pack(notify)
+        arg = {
+            'server_id': self.server_id,
+            'exclude_chars': [],
+            'data': MessageFactory.pack(notify)
+        }
 
-        char_ids = Club.get_recent_login_char_ids(self.server_id)
-        for cid in char_ids:
-            MessagePipe(cid).put(data=data)
+        payload = cPickle.dumps(arg)
+        world.broadcast(payload=payload)
