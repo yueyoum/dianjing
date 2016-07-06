@@ -7,10 +7,3 @@ Description:
 
 """
 
-from django.dispatch import receiver
-from core.signals import purchase_done_signal
-from core.sponsor import SponsorManager
-
-@receiver(purchase_done_signal, dispatch_uid='signals.purchase.purchase_done_handler')
-def purchase_done_handler(server_id, char_id, diamond, **kwargs):
-    SponsorManager(server_id, char_id).purchase(diamond)
