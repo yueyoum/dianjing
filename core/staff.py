@@ -622,7 +622,7 @@ class Staff(AbstractStaff):
     def add_equipment_property(self):
         bag = Bag(self.server_id, self.char_id)
 
-        level = 0
+        levels = []
         qualities = []
 
         # 装备本身属性
@@ -647,18 +647,19 @@ class Staff(AbstractStaff):
 
             if slot_id != self.equip_decoration:
                 # 装备加成不算 饰品
-                level += data['level']
+                levels.append(data['level'])
                 qualities.append(config.quality)
 
         # 装备加成
-        equip_level_addition = ConfigStaffEquipmentAddition.get_by_level(level)
-        if equip_level_addition:
-            self.attack += equip_level_addition.attack
-            self.attack_percent += equip_level_addition.attack_percent
-            self.defense += equip_level_addition.defense
-            self.defense_percent += equip_level_addition.defense_percent
-            self.manage += equip_level_addition.manage
-            self.manage_percent += equip_level_addition.manage_percent
+        if len(levels) == 3:
+            equip_level_addition = ConfigStaffEquipmentAddition.get_by_level(sum(levels))
+            if equip_level_addition:
+                self.attack += equip_level_addition.attack
+                self.attack_percent += equip_level_addition.attack_percent
+                self.defense += equip_level_addition.defense
+                self.defense_percent += equip_level_addition.defense_percent
+                self.manage += equip_level_addition.manage
+                self.manage_percent += equip_level_addition.manage_percent
 
         if len(qualities) == 3:
             equip_quality_addition = ConfigStaffEquipmentAddition.get_by_quality(min(qualities))
