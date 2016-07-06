@@ -20,8 +20,6 @@ import views.mail
 import views.task
 import views.chat
 import views.notification
-import views.sponsor
-import views.active_value
 import views.bag
 import views.unit
 import views.formation
@@ -77,18 +75,12 @@ urlpatterns = [
     url(r'^mail/delete/$', views.mail.delete),
     url(r'^mail/getattachment/$', views.mail.get_attachment),
 
-    # url(r'^randomevent/done/$', views.task.random_event_done),
     url(r'^taskdaily/getreward/$', views.task.task_daily_get_reward),
 
     url(r'^chat/send/$', views.chat.send),
 
     url(r'^notification/open/$', views.notification.open),
     url(r'^notification/delete/$', views.notification.delete),
-
-    url(r'^sponsor/$', views.sponsor.sponsor),
-    url(r'^sponsor/getincome/$', views.sponsor.get_income),
-
-    url(r'^activevalue/getreward/$', views.active_value.get_reward),
 
     url(r'^bagitem/use/$', views.bag.item_use),
     url(r'^bagitem/merge/$', views.bag.item_merge),

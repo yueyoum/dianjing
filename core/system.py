@@ -42,6 +42,15 @@ class BroadCast(object):
         self.char_id = char_id
         self.name = get_club_property(server_id, char_id, 'name')
 
+    def try_cast_login_notify(self):
+        # 这个玩家登陆要广播的消息
+        from core.arena import Arena
+        top = Arena.get_leader_board(self.server_id, amount=1)
+        if top and top[0].id == self.char_id:
+            template = ConfigBroadcastTemplate.get(4).template
+            text = template.format(self.name)
+            self.do_cast(text)
+
     def cast_staff_step_up_notify(self, staff_original_id, step_level):
         template = ConfigBroadcastTemplate.get(1).template
         text = template.format(self.name, ConfigItemNew.get(staff_original_id).name, step_level)
@@ -55,11 +64,6 @@ class BroadCast(object):
     def cast_arena_match_notify(self, target_char_id, target_rank):
         template = ConfigBroadcastTemplate.get(3).template
         text = template.format(self.name, target_rank, get_club_property(self.server_id, target_char_id, 'name'))
-        self.do_cast(text)
-
-    def cast_arena_top_one_notify(self):
-        template = ConfigBroadcastTemplate.get(4).template
-        text = template.format(self.name)
         self.do_cast(text)
 
     def cast_diamond_recruit_staff_notify(self, staff_original_id):
@@ -82,5 +86,4 @@ class BroadCast(object):
 
         char_ids = Club.get_recent_login_char_ids(self.server_id)
         for cid in char_ids:
-            if cid != self.char_id:
-                MessagePipe(cid).put(data=data)
+            MessagePipe(cid).put(data=data)

@@ -135,7 +135,7 @@ class Slot(object):
 
         staff_obj = StaffManger(self.server_id, self.char_id).get_staff_object(self.staff_id)
 
-        quality_modulus = STAFF_QUALITY_MODULUS[ConfigItemNew.get(staff_obj.oid).quality]
+        quality_modulus = STAFF_QUALITY_MODULUS[staff_obj.quality]
         slot_modulus = ConfigTerritoryBuilding.get(self.building_id).slots[self.id].exp_modulus
 
         exp = 10 * math.pow(self.hour, 0.8) * quality_modulus * slot_modulus
@@ -482,6 +482,14 @@ class Territory(object):
 
     def add_work_card(self, amount):
         self.doc['work_card'] += amount
+
+        MongoTerritory.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'work_card': self.doc['work_card']
+            }}
+        )
+
         self.send_notify(building_id=[], slot_id=[])
 
     def check_work_card(self, amount):

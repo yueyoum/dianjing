@@ -3,18 +3,16 @@
 
 from dianjing.exception import GameException
 
-from core.mongo import MongoTaskMain, MongoRecord, MongoTaskDaily
-from core.club import Club
+from core.mongo import MongoTaskMain, MongoTaskDaily
 from core.resource import ResourceClassification
 from core.club import get_club_property
 from core.vip import VIP
-from core.signals import random_event_done_signal, daily_task_finish_signal
 
-from config import ConfigErrorMessage, ConfigRandomEvent, ConfigTaskMain, ConfigTaskDaily, ConfigTaskCondition
+from config import ConfigErrorMessage, ConfigTaskMain, ConfigTaskDaily, ConfigTaskCondition
 
-from utils.message import MessagePipe, MessageFactory
+from utils.message import MessagePipe
 
-from protomsg.task_pb2 import TaskNotify, RandomEventNotify, TaskDailyNotify, TASK_DOING, TASK_DONE, TASK_FINISH
+from protomsg.task_pb2 import TaskNotify, TaskDailyNotify, TASK_DOING, TASK_DONE, TASK_FINISH
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 MAX_TASK_MAIN_ID = max(ConfigTaskMain.INSTANCES.keys())
@@ -206,69 +204,4 @@ class TaskDaily(object):
             notify_task.value = current_value
             notify_task.status = status
 
-        MessagePipe(self.char_id).put(msg=notify)
-
-
-class RandomEvent(object):
-    KEY = 'random_events'
-
-    def __init__(self, server_id, char_id):
-        self.server_id = server_id
-        self.char_id = char_id
-
-        if not MongoRecord.exist(self.server_id, self.char_id):
-            doc = MongoRecord.document()
-            doc['_id'] = self.char_id
-            MongoRecord.db(self.server_id).insert_one(doc)
-
-    @classmethod
-    def cronjob(cls, server_id):
-        MongoRecord.db(server_id).update_many(
-            {},
-            {'$unset': {
-                'records.{0}'.format(cls.KEY): 1
-            }}
-        )
-
-        notify = RandomEventNotify()
-        notify.times = 0
-        data = MessageFactory.pack(notify)
-
-        for char_id in Club.get_recent_login_char_ids(server_id):
-            MessagePipe(char_id).put(data=data)
-
-    def done(self, event_id):
-        config = ConfigRandomEvent.get(event_id)
-        if not config:
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
-
-        random_event_done_signal.send(
-            sender=None,
-            server_id=self.server_id,
-            char_id=self.char_id,
-            event_id=event_id
-        )
-
-        # drop = Drop.generate(config.package)
-        # message = u"RandomEvent Done. {0}".format(event_id)
-        # Resource(self.server_id, self.char_id).save_drop(drop, message)
-        #
-        # MongoRecord.db(self.server_id).update_one(
-        #     {'_id': self.char_id},
-        #     {'$inc': {
-        #         'records.{0}'.format(self.KEY): 1
-        #     }}
-        # )
-        #
-        # self.send_notify()
-        # return drop.make_protomsg()
-
-    def send_notify(self):
-        doc = MongoRecord.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {'records.{0}'.format(self.KEY): 1}
-        )
-
-        notify = RandomEventNotify()
-        notify.times = doc['records'].get(self.KEY, 0)
         MessagePipe(self.char_id).put(msg=notify)

@@ -32,28 +32,6 @@ class TaskDaily(object):
         self.rewards = []
 
 
-class RandomEvent(object):
-    __slots__ = ['id', 'package']
-
-    def __init__(self):
-        self.id = 0
-        self.package = 0
-
-
-class ConfigRandomEvent(ConfigBase):
-    EntityClass = RandomEvent
-    INSTANCES = {}
-    FILTER_CACHE = {}
-
-    @classmethod
-    def get(cls, _id):
-        """
-
-        :rtype : RandomEvent
-        """
-        return super(ConfigRandomEvent, cls).get(_id)
-
-
 class ConfigTaskCondition(ConfigBase):
     EntityClass = TaskCondition
     INSTANCES = {}

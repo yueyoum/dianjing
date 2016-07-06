@@ -19,14 +19,12 @@ from core.unit import UnitManager
 from core.challenge import Challenge
 from core.friend import FriendManager
 from core.mail import MailManager
-from core.task import RandomEvent, TaskMain, TaskDaily
+from core.task import TaskMain, TaskDaily
 from core.chat import Chat
 from core.notification import Notification
 from core.statistics import FinanceStatistics
-from core.sponsor import SponsorManager
-from core.active_value import ActiveValue
 from core.talent import TalentManager
-from core.system import send_system_notify
+from core.system import send_system_notify, BroadCast
 from core.dungeon import Dungeon
 from core.arena import Arena
 from core.tower import Tower
@@ -68,7 +66,6 @@ def game_start_handler(server_id, char_id, **kwargs):
     FriendManager(server_id, char_id).send_notify()
     MailManager(server_id, char_id).send_notify()
 
-    RandomEvent(server_id, char_id).send_notify()
     TaskMain(server_id, char_id).send_notify()
     TaskDaily(server_id, char_id).send_notify()
 
@@ -77,15 +74,10 @@ def game_start_handler(server_id, char_id, **kwargs):
     Notification(server_id, char_id).send_notify()
 
     FinanceStatistics(server_id, char_id).send_notify()
-    SponsorManager(server_id, char_id).send_notify()
 
     TalentManager(server_id, char_id).send_notify()
 
     Dungeon(server_id, char_id).send_notify()
-
-    av = ActiveValue(server_id, char_id)
-    av.send_function_notify()
-    av.send_value_notify()
 
     a = Arena(server_id, char_id)
     a.send_notify()
@@ -113,3 +105,4 @@ def game_start_handler(server_id, char_id, **kwargs):
     w.send_energy_reward_notify()
 
     send_system_notify(char_id)
+    BroadCast(server_id, char_id).try_cast_login_notify()

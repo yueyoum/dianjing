@@ -14,24 +14,25 @@ import zipfile
 
 from config.global_config import GlobalConfig
 from config.errormsg import ConfigErrorMessage
-from config.staff import ConfigStaffRecruit, ConfigStaffNew, ConfigStaffStar, ConfigStaffLevelNew, ConfigStaffEquipmentLevelAddition, ConfigStaffEquipmentQualityAddition, ConfigStaffEquipmentAddition
+from config.staff import ConfigStaffRecruit, ConfigStaffNew, ConfigStaffStar, ConfigStaffLevelNew, \
+    ConfigStaffEquipmentLevelAddition, ConfigStaffEquipmentQualityAddition, ConfigStaffEquipmentAddition
 from config.challenge import ConfigChallengeMatch, ConfigChapter, ConfigChallengeResetCost
-from config.unit import ConfigUnitNew, ConfigUnitUnLock, ConfigUnitStepAddition, ConfigUnitLevelAddition, ConfigUnitAddition
+from config.unit import ConfigUnitNew, ConfigUnitUnLock, ConfigUnitStepAddition, ConfigUnitLevelAddition, \
+    ConfigUnitAddition
 from config.item import ConfigItemNew, ConfigItemUse, ConfigItemMerge, ConfigEquipmentNew
 from config.skill import ConfigTalentSkill
-from config.task import ConfigTaskMain, ConfigRandomEvent, ConfigTaskDaily, ConfigTaskCondition
+from config.task import ConfigTaskMain, ConfigTaskDaily, ConfigTaskCondition
 from config.club import ConfigClubLevel, ConfigClubFlag
 from config.qianban import ConfigQianBan
-from config.activity import ConfigActivityCategory
 from config.signin import ConfigSignIn
-from config.activity_login_reward import ConfigLoginReward
-from config.active_value import ConfigActiveFunction, ConfigActiveReward
 from config.talent import ConfigTalent
 from config.dungeon import ConfigDungeon, ConfigDungeonGrade, ConfigDungeonBuyCost
 from config.npc import ConfigNPCFormation
-from config.arena import ConfigArenaNPC, ConfigArenaHonorReward, ConfigArenaBuyTimesCost, ConfigArenaMatchReward, ConfigArenaRankReward, ConfigArenaSearchRange
+from config.arena import ConfigArenaNPC, ConfigArenaHonorReward, ConfigArenaBuyTimesCost, ConfigArenaMatchReward, \
+    ConfigArenaRankReward, ConfigArenaSearchRange
 from config.tower import ConfigTowerLevel, ConfigTowerResetCost, ConfigTowerSaleGoods, ConfigTowerRankReward
-from config.territory import ConfigTerritoryBuilding, ConfigInspireCost, ConfigTerritoryStaffProduct, ConfigTerritoryEvent, ConfigTerritoryStore
+from config.territory import ConfigTerritoryBuilding, ConfigInspireCost, ConfigTerritoryStaffProduct, \
+    ConfigTerritoryEvent, ConfigTerritoryStore
 from config.store import ConfigStore, ConfigStoreRefreshCost, ConfigStoreType
 from config.vip import ConfigVIP
 from config.collection import ConfigCollection
@@ -39,7 +40,6 @@ from config.energy import ConfigEnergyBuyCost
 from config.formation import ConfigFormationSlot
 from config.welfare import ConfigWelfareSignIn, ConfigWelfareLevelReward, ConfigWelfareNewPlayer
 from config.template import ConfigBroadcastTemplate
-
 
 _has_configed = False
 
@@ -64,159 +64,148 @@ def load_config():
             z_file = os.path.join(settings.BASE_DIR, 'config', 'config.zip')
 
     z = zipfile.ZipFile(z_file)
-    for item in z.namelist():
-        content = z.open(item).read()
+    for name in z.namelist():
+        content = z.open(name).read()
         if not content:
             continue
 
         data = json.loads(content)
 
-        if item == 'global_config.json':
+        if name == 'global_config.json':
             GlobalConfig.initialize(data)
-        elif item == 'errormsg.json':
+        elif name == 'errormsg.json':
             ConfigErrorMessage.initialize(data)
-        elif item == 'item_new.json':
+        elif name == 'item_new.json':
             ConfigItemNew.initialize(data)
-        elif item == 'item_use.json':
+        elif name == 'item_use.json':
             ConfigItemUse.initialize(data)
-        elif item == 'item_merge.json':
+        elif name == 'item_merge.json':
             ConfigItemMerge.initialize(data)
-        elif item == 'equipment_new.json':
+        elif name == 'equipment_new.json':
             ConfigEquipmentNew.initialize(data)
 
-        elif item == 'staff_new.json':
+        elif name == 'staff_new.json':
             ConfigStaffNew.initialize(data)
-        elif item == 'staff_level_new.json':
+        elif name == 'staff_level_new.json':
             ConfigStaffLevelNew.initialize(data)
-        elif item == 'staff_star.json':
+        elif name == 'staff_star.json':
             ConfigStaffStar.initialize(data)
-        elif item == 'staff_equip_level_addition.json':
+        elif name == 'staff_equip_level_addition.json':
             ConfigStaffEquipmentLevelAddition.initialize(data)
-        elif item == 'staff_equip_quality_addition.json':
+        elif name == 'staff_equip_quality_addition.json':
             ConfigStaffEquipmentQualityAddition.initialize(data)
-        elif item == 'staff_recruit.json':
+        elif name == 'staff_recruit.json':
             ConfigStaffRecruit.initialize(data)
 
-        elif item == 'challenge_chapter.json':
+        elif name == 'challenge_chapter.json':
             ConfigChapter.initialize(data)
-        elif item == 'challenge_match.json':
+        elif name == 'challenge_match.json':
             ConfigChallengeMatch.initialize(data)
-        elif item == 'challenge_buy_cost.json':
+        elif name == 'challenge_buy_cost.json':
             ConfigChallengeResetCost.initialize(data)
 
-        elif item == 'unit_new.json':
+        elif name == 'unit_new.json':
             ConfigUnitNew.initialize(data)
-        elif item == 'unit_unlock.json':
+        elif name == 'unit_unlock.json':
             ConfigUnitUnLock.initialize(data)
-        elif item == 'unit_level_addition.json':
+        elif name == 'unit_level_addition.json':
             ConfigUnitLevelAddition.initialize(data)
-        elif item == 'unit_step_addition.json':
+        elif name == 'unit_step_addition.json':
             ConfigUnitStepAddition.initialize(data)
 
-        elif item == 'talent_skill.json':
+        elif name == 'talent_skill.json':
             ConfigTalentSkill.initialize(data)
 
-        elif item == 'task_condition.json':
+        elif name == 'task_condition.json':
             ConfigTaskCondition.initialize(data)
-        elif item == 'task_main.json':
+        elif name == 'task_main.json':
             ConfigTaskMain.initialize(data)
-        elif item == 'task_daily.json':
+        elif name == 'task_daily.json':
             ConfigTaskDaily.initialize(data)
-        elif item == 'random_event.json':
-            ConfigRandomEvent.initialize(data)
 
-        elif item == 'club_level.json':
+        elif name == 'club_level.json':
             ConfigClubLevel.initialize(data)
-        elif item == 'club_flag.json':
+        elif name == 'club_flag.json':
             ConfigClubFlag.initialize(data)
 
-        elif item == 'qianban.json':
+        elif name == 'qianban.json':
             ConfigQianBan.initialize(data)
 
-        elif item == 'activity_category.json':
-            ConfigActivityCategory.initialize(data)
-        elif item == 'activity_signin.json':
+        elif name == 'activity_signin.json':
             ConfigSignIn.initialize(data)
-        elif item == 'activity_login_reward.json':
-            ConfigLoginReward.initialize(data)
-        elif item == 'active_function.json':
-            ConfigActiveFunction.initialize(data)
-        elif item == 'active_reward.json':
-            ConfigActiveReward.initialize(data)
 
-        elif item == 'talent.json':
+        elif name == 'talent.json':
             ConfigTalent.initialize(data)
-        elif item == 'dungeon.json':
+        elif name == 'dungeon.json':
             ConfigDungeon.initialize(data)
-        elif item == 'dungeon_grade.json':
+        elif name == 'dungeon_grade.json':
             ConfigDungeonGrade.initialize(data)
-        elif item == 'dungeon_reset_cost.json':
+        elif name == 'dungeon_reset_cost.json':
             ConfigDungeonBuyCost.initialize(data)
 
-        elif item == 'npc_formation.json':
+        elif name == 'npc_formation.json':
             ConfigNPCFormation.initialize(data)
 
-        elif item == 'arena_npc.json':
+        elif name == 'arena_npc.json':
             ConfigArenaNPC.initialize(data)
-        elif item == 'arena_honor_reward.json':
+        elif name == 'arena_honor_reward.json':
             ConfigArenaHonorReward.initialize(data)
-        elif item == 'arena_rank_reward.json':
+        elif name == 'arena_rank_reward.json':
             ConfigArenaRankReward.initialize(data)
-        elif item == 'arena_match_reward.json':
+        elif name == 'arena_match_reward.json':
             ConfigArenaMatchReward.initialize(data)
-        elif item == 'arena_buy_times_cost.json':
+        elif name == 'arena_buy_times_cost.json':
             ConfigArenaBuyTimesCost.initialize(data)
-        elif item == 'arena_search_range.json':
+        elif name == 'arena_search_range.json':
             ConfigArenaSearchRange.initialize(data)
 
-        elif item == 'tower_level.json':
+        elif name == 'tower_level.json':
             ConfigTowerLevel.initialize(data)
-        elif item == 'tower_reset_cost.json':
+        elif name == 'tower_reset_cost.json':
             ConfigTowerResetCost.initialize(data)
-        elif item == 'tower_sale_goods.json':
+        elif name == 'tower_sale_goods.json':
             ConfigTowerSaleGoods.initialize(data)
-        elif item == 'tower_rank_reward.json':
+        elif name == 'tower_rank_reward.json':
             ConfigTowerRankReward.initialize(data)
 
-        elif item == 'territory_building.json':
+        elif name == 'territory_building.json':
             ConfigTerritoryBuilding.initialize(data)
-        elif item == 'territory_inspire_cost.json':
+        elif name == 'territory_inspire_cost.json':
             ConfigInspireCost.initialize(data)
-        elif item == 'territory_staff_special_product.json':
+        elif name == 'territory_staff_special_product.json':
             ConfigTerritoryStaffProduct.initialize(data)
-        elif item == 'territory_event.json':
+        elif name == 'territory_event.json':
             ConfigTerritoryEvent.initialize(data)
-        elif item == 'territory_store.json':
+        elif name == 'territory_store.json':
             ConfigTerritoryStore.initialize(data)
 
-        elif item == 'store_type.json':
+        elif name == 'store_type.json':
             ConfigStoreType.initialize(data)
-        elif item == 'store.json':
+        elif name == 'store.json':
             ConfigStore.initialize(data)
-        elif item == 'store_refresh_cost.json':
+        elif name == 'store_refresh_cost.json':
             ConfigStoreRefreshCost.initialize(data)
 
-        elif item == 'vip.json':
+        elif name == 'vip.json':
             ConfigVIP.initialize(data)
 
-        elif item == 'collection.json':
+        elif name == 'collection.json':
             ConfigCollection.initialize(data)
 
-        elif item == 'energy_buy_cost.json':
+        elif name == 'energy_buy_cost.json':
             ConfigEnergyBuyCost.initialize(data)
 
-        elif item == 'formation_slot.json':
+        elif name == 'formation_slot.json':
             ConfigFormationSlot.initialize(data)
 
-        elif item == 'welfare_level_reward.json':
+        elif name == 'welfare_level_reward.json':
             ConfigWelfareLevelReward.initialize(data)
-        elif item == 'welfare_new_player.json':
+        elif name == 'welfare_new_player.json':
             ConfigWelfareNewPlayer.initialize(data)
-        elif item == 'welfare_signin.json':
+        elif name == 'welfare_signin.json':
             ConfigWelfareSignIn.initialize(data)
 
-        elif item == 'broadcast_template.json':
+        elif name == 'broadcast_template.json':
             ConfigBroadcastTemplate.initialize(data)
 
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))
-

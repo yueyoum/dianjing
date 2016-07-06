@@ -21,6 +21,7 @@ from core.match import ClubMatch
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.vip import VIP
 from core.mail import MailManager
+from core.signals import arena_match_signal
 
 from config import ConfigErrorMessage, ConfigArenaNPC, ConfigNPCFormation, ConfigArenaHonorReward, \
     ConfigArenaMatchReward, ConfigArenaBuyTimesCost, ConfigArenaRankReward, ConfigArenaSearchRange
@@ -380,16 +381,16 @@ class Arena(object):
         my_club_name = get_club_property(self.server_id, self.char_id, 'name')
 
         rank_changed = 0
-        my_doc = MongoArena.db(self.server_id).find_one({'_id': str(self.char_id)}, {'rank': 1, 'max_rank': 1})
 
+        my_doc = MongoArena.db(self.server_id).find_one({'_id': str(self.char_id)}, {'rank': 1, 'max_rank': 1})
         my_rank = my_doc['rank']
         my_max_rank = my_doc.get('max_rank', 0)
 
+        rival_doc = MongoArena.db(self.server_id).find_one({'_id': rival_id}, {'rank': 1})
+        rival_rank = rival_doc['rank']
+
         if win:
             ValueLogArenaWinTimes(self.server_id, self.char_id).record()
-
-            rival_doc = MongoArena.db(self.server_id).find_one({'_id': rival_id}, {'rank': 1})
-            rival_rank = rival_doc['rank']
 
             if my_rank > rival_rank:
                 # 交换排名
@@ -441,6 +442,17 @@ class Arena(object):
 
         remove_lock_key(my_lock_key)
         remove_lock_key(rival_lock_key)
+
+        arena_match_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            target_id=rival_id,
+            my_rank=my_rank,
+            target_rank=rival_rank,
+            win=win,
+        )
+
         return resource_classified, rank_changed, my_max_rank, my_rank
 
     def get_today_honor_reward_info(self):

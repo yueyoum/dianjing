@@ -26,7 +26,14 @@ from core.value_log import (
     ValueLogStaffLevelUpTimes,
 )
 
-from core.signals import staff_new_add_signal, recruit_staff_diamond_signal, recruit_staff_gold_signal
+from core.signals import (
+    staff_new_add_signal,
+    recruit_staff_diamond_signal,
+    recruit_staff_gold_signal,
+    staff_level_up_signal,
+    staff_star_up_signal,
+    staff_step_up_signal,
+)
 
 from config import (
     ConfigStaffRecruit,
@@ -429,6 +436,15 @@ class Staff(AbstractStaff):
         self.calculate()
         self.make_cache()
 
+        staff_level_up_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            staff_id=self.id,
+            staff_oid=self.oid,
+            new_level=self.level
+        )
+
         return exp_pool, self.level - old_level
 
     def step_up(self):
@@ -454,6 +470,16 @@ class Staff(AbstractStaff):
         # NOTE 升阶可能会导致 天赋技能 改变
         # 不仅会影响自己，可能（如果在阵型中）也会影响到其他选手
         # 所以这里不自己 calculate， 而是先让 club 重新 load staffs
+
+        staff_step_up_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            staff_id=self.id,
+            staff_oid=self.oid,
+            new_step=self.step
+        )
+
 
     def star_up(self, single):
         # single = True,  只升级一次
@@ -535,7 +561,18 @@ class Staff(AbstractStaff):
 
         self.make_cache()
 
-        return self.star != old_star, crit, inc_exp, cost_item_id, cost_item_amount
+        star_changed = self.star > old_star
+        if star_changed:
+            staff_star_up_signal.send(
+                sender=None,
+                server_id=self.server_id,
+                char_id=self.char_id,
+                staff_id=self.id,
+                staff_oid=self.oid,
+                new_star=self.star
+            )
+
+        return star_changed, crit, inc_exp, cost_item_id, cost_item_amount
 
     def equipment_change(self, bag_slot_id, tp):
         # 会影响的其他staff_id

@@ -7,23 +7,9 @@ Description:
 
 """
 from utils.http import ProtobufResponse
-from core.task import RandomEvent, TaskDaily
+from core.task import TaskDaily
 
-from protomsg.task_pb2 import RandomEventDoneResponse, TaskDailyGetRewardResponse
-
-
-def random_event_done(request):
-    server_id = request._game_session.server_id
-    char_id = request._game_session.char_id
-    event_id = request._proto.id
-
-    drop = RandomEvent(server_id, char_id).done(event_id)
-
-    response = RandomEventDoneResponse()
-    response.ret = 0
-    response.drop.MergeFrom(drop)
-    return ProtobufResponse(response)
-
+from protomsg.task_pb2 import TaskDailyGetRewardResponse
 
 def task_daily_get_reward(request):
     server_id = request._game_session.server_id

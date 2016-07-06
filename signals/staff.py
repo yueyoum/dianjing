@@ -8,7 +8,13 @@ Description:
 """
 
 from django.dispatch import receiver
-from core.signals import staff_new_add_signal, recruit_staff_diamond_signal
+from core.signals import (
+    staff_new_add_signal,
+    recruit_staff_diamond_signal,
+    staff_star_up_signal,
+    staff_step_up_signal,
+)
+
 from core.collection import Collection
 from core.system import BroadCast
 
@@ -23,3 +29,14 @@ def recruit_staff_diamond_handler(server_id, char_id, times, staffs, **kwargs):
     b = BroadCast(server_id, char_id)
     for _sid, _amount in staffs:
         b.cast_diamond_recruit_staff_notify(_sid)
+
+
+@receiver(staff_star_up_signal, dispatch_uid='signals.staff.star_up_handler')
+def star_up_handler(server_id, char_id, staff_id, staff_oid, new_star, **kwargs):
+    b = BroadCast(server_id, char_id)
+    b.cast_staff_star_up_notify(staff_oid, new_star)
+
+@receiver(staff_step_up_signal, dispatch_uid='signals.staff.step_up_handler')
+def step_up_handler(server_id, char_id, staff_id, staff_oid, new_step, **kwargs):
+    b = BroadCast(server_id, char_id)
+    b.cast_staff_step_up_notify(staff_oid, new_step)

@@ -458,7 +458,6 @@ class AbstractStaff(object):
                     (config_talent.target == 5 and self.config.race == 2):
                 self.other_talent_ids.append(eid)
 
-
     def _add_talent_effect_to_staff(self, config):
         """
 
@@ -533,6 +532,10 @@ class AbstractStaff(object):
               self.__unit.hurt_addition_by_zerg * 0.2)
 
         return int(t1 + t2)
+
+    @property
+    def quality(self):
+        return self.star / 10 + 1
 
     def is_initial_state(self):
         # type: () -> bool
