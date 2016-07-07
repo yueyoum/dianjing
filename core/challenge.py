@@ -58,7 +58,6 @@ class ChallengeNPCClub(AbstractClub):
         self.id = challenge_match_id
 
         self.name = self.config.name
-        # TODO
         self.flag = 1
 
     def load_staffs(self, **kwargs):

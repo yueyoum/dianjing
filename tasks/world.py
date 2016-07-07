@@ -26,8 +26,8 @@ def broadcast(args):
         # 选择最近在线的用户
         char_ids = Club.get_recent_login_char_ids(server_id)
 
-        for c in char_ids:
-            if c not in exclude_chars:
-                MessagePipe(c['_id']).put(data=data)
+        for cid in char_ids:
+            if cid not in exclude_chars:
+                MessagePipe(cid).put(data=data)
     except:
         traceback.print_exc()

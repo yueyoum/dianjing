@@ -105,9 +105,7 @@ class VIP(object):
                 'rewards': self.doc['rewards']
             }}
         )
-        # TODO
-        # 这里还会触发 TalentNotify ， 需要查明原因
-        # ['VIPBuyRewardResponse', 'ClubNotify', 'FinanceStatisticsNotify', 'TalentNotify', 'ClubNotify', 'BagSlotsNotify', 'TalentNotify', 'VIPNotify']
+
         self.send_notify()
         return rc
 

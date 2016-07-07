@@ -334,8 +334,11 @@ class Bag(object):
 
     def item_merge(self, slot_id):
         # 碎片合成
-        # TODO error handler
-        this_slot = self.doc['slots'][slot_id]
+        try:
+            this_slot = self.doc['slots'][slot_id]
+        except KeyError:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
         item_id = this_slot['item_id']
         amount = this_slot['amount']
 
@@ -426,8 +429,6 @@ class Bag(object):
         level = this_slot['level']
 
         config = ConfigEquipmentNew.get(item_id)
-        # TODO check exists
-
         max_level = min(config.max_level, get_club_property(self.server_id, self.char_id, 'level') * 2)
         if level >= max_level:
             raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_REACH_MAX_LEVEL"))

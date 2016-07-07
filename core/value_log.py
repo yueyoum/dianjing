@@ -13,8 +13,8 @@ from core.mongo import MongoTimesLog
 from utils.functional import make_string_id, get_arrow_time_of_today
 from config import ConfigTaskCondition
 
+KEEP_DAYS = 100
 
-# TODO 定时清理
 class ValueLog(object):
     KEY = None
     __slots__ = ['server_id', 'char_id']
@@ -22,6 +22,11 @@ class ValueLog(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
+
+    @classmethod
+    def clean(cls, server_id):
+        now = arrow.utcnow().replace(days=-KEEP_DAYS)
+        MongoTimesLog.db(server_id).delete_many({'timestamp': {'$lte': now.timestamp}})
 
     def make_key(self, sub_id=None):
         # sub_id 是给大类用的， 比如关卡ID

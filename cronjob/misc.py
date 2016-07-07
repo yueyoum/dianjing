@@ -9,13 +9,16 @@ Description:
 import traceback
 
 import uwsgidecorators
+from apps.server.models import Server
 from apps.statistics.models import Statistics
 from apps.account.models import AccountLoginLog
+
+from core.value_log import ValueLog
 
 from cronjob.log import Logger
 
 
-@uwsgidecorators.cron(10, 4, -1, -1, -1, target='spooler')
+@uwsgidecorators.cron(0, 3, -1, -1, -1, target='spooler')
 def clean_statistics(*args):
     logger = Logger("clean_statistics")
     logger.write("Start")
@@ -30,13 +33,30 @@ def clean_statistics(*args):
         logger.close()
 
 
-@uwsgidecorators.cron(20, 4, -1, -1, -1, target='spooler')
+@uwsgidecorators.cron(30, 3, -1, -1, -1, target='spooler')
 def clean_account_log(*args):
     logger = Logger('clean_account_log')
     logger.write("Start")
 
     try:
         AccountLoginLog.cronjob()
+    except:
+        logger.error(traceback.format_exc())
+    else:
+        logger.write("Done")
+    finally:
+        logger.close()
+
+
+@uwsgidecorators.cron(0, 4, -1, -1, -1, target='spooler')
+def clean_value_log(*args):
+    logger = Logger('clean_value_log')
+    logger.write("Start")
+
+    try:
+        for sid in Server.opened_server_ids():
+            ValueLog.clean(sid)
+            logger.write("Server {0} Done.".format(sid))
     except:
         logger.error(traceback.format_exc())
     else:

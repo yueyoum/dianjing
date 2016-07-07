@@ -39,7 +39,7 @@ def clean_mail(*args):
         logger.close()
 
 
-@uwsgidecorators.cron(0, 4, -1, -1, -1, target="spooler")
+@uwsgidecorators.cron(30, 2, -1, -1, -1, target="spooler")
 def clean_mail_history(*args):
     logger = Logger("clean_mail_history")
     logger.write("Start")

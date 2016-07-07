@@ -247,7 +247,7 @@ class AbstractStaff(object):
     def after_init(self):
         self.config = ConfigStaffNew.get(self.oid)
 
-    def check_activie_qianban_ids(self):
+    def check_active_qianban_ids(self):
         config = ConfigQianBan.get(self.oid)
         if not config:
             return
@@ -255,12 +255,13 @@ class AbstractStaff(object):
         qianban_ids = []
         talent_effect_ids = []
         for k, v in config.info.iteritems():
-            # TODO  more condition_tp
             if v.condition_tp == 1:
                 # 装备兵种
                 if self.__unit and self.__unit.id in v.condition_value:
                     qianban_ids.append(k)
                     talent_effect_ids.append(v.talent_effect_id)
+            else:
+                raise RuntimeError("Unknown qianban condition tp: {0}".format(v.condition_tp))
 
         self.active_qianban_ids = qianban_ids
         self.qianban_talent_ids = talent_effect_ids
@@ -329,7 +330,7 @@ class AbstractStaff(object):
     def set_unit(self, unit):
         # type: (AbstractUnit) -> None
         self.__unit = unit.clone()
-        self.check_activie_qianban_ids()
+        self.check_active_qianban_ids()
 
     def calculate_unit(self):
         if not self.server_id:

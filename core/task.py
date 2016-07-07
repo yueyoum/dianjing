@@ -151,7 +151,6 @@ class TaskDaily(object):
         if task_id not in self.doc['tasks']:
             return None, None
 
-        # TODO 注意其他比较方式
         if current_value >= config.condition_value:
             return current_value, TASK_FINISH
 

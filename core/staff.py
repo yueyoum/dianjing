@@ -586,7 +586,6 @@ class Staff(AbstractStaff):
             bag = Bag(self.server_id, self.char_id)
             slot = bag.get_slot(bag_slot_id)
 
-            # TODO error handle
             item_id = slot['item_id']
             if get_item_type(item_id) != TYPE_EQUIPMENT:
                 raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
