@@ -9,16 +9,19 @@ Description:
 import json
 from utils import crypto
 
+
 class GameSession(object):
     def __init__(self, **kwargs):
         self.__dict__['kwargs'] = kwargs
 
     def __getattr__(self, item):
-        return self.kwargs[item]
+        try:
+            return self.kwargs[item]
+        except KeyError:
+            return None
 
     def __setattr__(self, key, value):
         self.__dict__['kwargs'][key] = value
-
 
     def serialize(self):
         return GameSession.dumps(**self.kwargs)

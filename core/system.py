@@ -12,7 +12,6 @@ import cPickle
 from core.club import get_club_property
 
 from utils.message import MessagePipe, MessageFactory
-from tasks import world
 
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 from protomsg.broadcast_pb2 import BroadcastNotify
@@ -75,6 +74,8 @@ class BroadCast(object):
         self.do_cast(text)
 
     def do_cast(self, text, repeat_times=1):
+        from tasks import world
+
         notify = BroadcastNotify()
         notify.act = ACT_UPDATE
         b = notify.broadcast.add()

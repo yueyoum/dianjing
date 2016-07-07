@@ -506,3 +506,18 @@ class MongoWelfare(BaseDocument):
     }
 
     COLLECTION = 'welfare'
+
+
+# 操作日志 也可以用来统计最近在线玩家
+class MongoOperationLog(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'char_id': null,
+        'action': '',
+        'ret': 0,
+        'timestamp': 0,
+        'cost_millisecond': 0,
+    }
+
+    COLLECTION = 'operation_log'
+    INDEXES = ['char_id', 'timestamp', 'cost_millisecond']

@@ -1,0 +1,61 @@
+# -*- coding: utf-8 -*-
+"""
+Author:         Wang Chao <yueyoum@gmail.com>
+Filename:       operation_log
+Date Created:   2016-07-07 15-27
+Description:
+
+"""
+import arrow
+
+from utils.functional import make_string_id
+
+from core.mongo import MongoOperationLog
+
+
+KEEP_DAYS = 7
+
+class OperationLog(object):
+    __slots__ = ['server_id', 'char_id',  'start_at']
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+
+        self.start_at = arrow.utcnow()
+
+    @classmethod
+    def clean(cls, server_id):
+        limit = arrow.utcnow().replace(days=-KEEP_DAYS)
+        MongoOperationLog.db(server_id).delete_many({'timestamp': {'$lte': limit.timestamp}})
+
+    @classmethod
+    def get_recent_action_char_ids(cls, server_id, recent_minutes=10):
+        limit = arrow.utcnow().replace(minutes=-recent_minutes)
+        char_ids = []
+        docs = MongoOperationLog.db(server_id).find(
+                    {'timestamp': {'$gte': limit.timestamp}},
+                    {'_id': 1}
+                ).sort('timestamp', -1)
+
+        for doc in docs:
+            char_ids.append(doc['_id'])
+
+        return char_ids
+
+    def record(self, action, ret):
+        start_at = self.start_at.timestamp + self.start_at.microsecond / 1000
+
+        now = arrow.utcnow()
+        end_at = now.timestamp + now.microsecond / 1000
+
+        cost = end_at - start_at
+
+        doc = MongoOperationLog.document()
+        doc['_id'] = make_string_id()
+        doc['char_id'] = self.char_id
+        doc['action'] = action
+        doc['ret'] = ret
+        doc['timestamp'] = self.start_at.timestamp
+        doc['cost_millisecond'] = cost
+
+        MongoOperationLog.db(self.server_id).insert_one(doc)

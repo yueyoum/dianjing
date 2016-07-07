@@ -16,6 +16,7 @@ from core.match import ClubMatch
 from core.signals import friend_match_signal, friend_ok_signal
 
 from utils.message import MessagePipe
+from utils.operation_log import OperationLog
 
 from config import ConfigErrorMessage
 from config.settings import FRIEND_CANDIDATES_AMOUNT
@@ -297,6 +298,8 @@ class FriendManager(object):
         doc = MongoFriend.db(self.server_id).find_one({'_id': self.char_id}, projection)
         friend_ids = [int(i) for i in doc['friends'].keys()]
 
+        online_char_ids = OperationLog.get_recent_action_char_ids(self.server_id)
+
         for f in friend_ids:
             notify_friend = notify.friends.add()
             notify_friend.status = FRIEND_STATUS_TABLE[doc['friends'][str(f)]]
@@ -304,7 +307,6 @@ class FriendManager(object):
             friend_club = Club(self.server_id, f)
             notify_friend.club.MergeFrom(friend_club.make_protomsg())
 
-            # TODO
-            notify_friend.online = True
+            notify_friend.online = f in online_char_ids
 
         MessagePipe(self.char_id).put(msg=notify)

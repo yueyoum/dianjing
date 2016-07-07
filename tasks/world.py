@@ -11,7 +11,7 @@ import cPickle
 import traceback
 import uwsgidecorators
 
-from core.club import Club
+from utils.operation_log import OperationLog
 from utils.message import MessagePipe
 
 @uwsgidecorators.spool
@@ -22,9 +22,7 @@ def broadcast(args):
         exclude_chars = payload['exclude_chars']
         data = payload['data']
 
-        # TODO
-        # 选择最近在线的用户
-        char_ids = Club.get_recent_login_char_ids(server_id)
+        char_ids = OperationLog.get_recent_action_char_ids(server_id)
 
         for cid in char_ids:
             if cid not in exclude_chars:

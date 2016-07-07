@@ -11,6 +11,7 @@ from utils.http import ProtobufResponse
 
 from core.friend import FriendManager
 from core.club import Club
+from utils.operation_log import OperationLog
 
 from protomsg.friend_pb2 import (
     FRIEND_NOT,
@@ -33,11 +34,12 @@ def get_candidates(request):
     response = FriendCandidatesResponse()
     response.ret = 0
 
+    online_char_ids = OperationLog.get_recent_action_char_ids(server_id)
+
     for c in candidates:
         response_friend = response.friends.add()
         response_friend.status = FRIEND_NOT
-        # TODO
-        response_friend.online = True
+        response_friend.online = c in online_char_ids
         response_friend.club.MergeFrom(Club(server_id, c).make_protomsg())
 
     return ProtobufResponse(response)

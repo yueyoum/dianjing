@@ -17,6 +17,7 @@ from core.db import RedisDB, MongoDB
 from utils.http import ProtobufResponse
 from utils.session import GameSession
 from utils.message import NUM_FILED, MessagePipe
+from utils.operation_log import OperationLog
 
 from protomsg import PATH_TO_REQUEST, PATH_TO_RESPONSE, ID_TO_MESSAGE
 
@@ -64,6 +65,13 @@ class GameRequestMiddleware(object):
         print proto
         print session.kwargs
 
+        if session.char_id:
+            request._operation_log = OperationLog(session.server_id, session.char_id)
+        else:
+            request._operation_log = None
+
+        request._game_error_id = 0
+
 
 class GameResponseMiddleware(object):
     # 在这里将队列中的消息一起取出返回给客户端
@@ -74,12 +82,11 @@ class GameResponseMiddleware(object):
         if response.status_code != 200:
             return response
 
-        try:
-            char_id = request._game_session.char_id
-        except:
-            char_id = None
+        if request._operation_log:
+            request._operation_log.record(request.path, request._game_error_id)
+            request._operation_log = None
 
-        # XXX
+        char_id = request._game_session.char_id
         if char_id:
             all_msgs = MessagePipe(char_id).get()
         else:
@@ -115,12 +122,12 @@ class GameExceptionMiddleware(object):
         if not isinstance(exception, GameException):
             return
 
-        try:
-            char_id = request._game_session.char_id
-        except:
-            char_id = None
+        char_id = request._game_session.char_id
+
         print "==== WARNING ===="
         print "Char: {0}, Error: {1}, {2}".format(char_id, exception.error_id, exception.error_msg)
+
+        request._game_error_id = exception.error_id
 
         msg_file, msg_name = PATH_TO_RESPONSE[request.path]
         msg_module = __import__('protomsg.{0}_pb2'.format(msg_file), fromlist=['*'])

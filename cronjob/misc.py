@@ -14,6 +14,7 @@ from apps.statistics.models import Statistics
 from apps.account.models import AccountLoginLog
 
 from core.value_log import ValueLog
+from utils.operation_log import OperationLog
 
 from cronjob.log import Logger
 
@@ -56,6 +57,23 @@ def clean_value_log(*args):
     try:
         for sid in Server.opened_server_ids():
             ValueLog.clean(sid)
+            logger.write("Server {0} Done.".format(sid))
+    except:
+        logger.error(traceback.format_exc())
+    else:
+        logger.write("Done")
+    finally:
+        logger.close()
+
+
+@uwsgidecorators.cron(30, 4, -1, -1, -1, target='spooler')
+def clean_operation_log(*args):
+    logger = Logger('clean_operation_log')
+    logger.write("Start")
+
+    try:
+        for sid in Server.opened_server_ids():
+            OperationLog.clean(sid)
             logger.write("Server {0} Done.".format(sid))
     except:
         logger.error(traceback.format_exc())
