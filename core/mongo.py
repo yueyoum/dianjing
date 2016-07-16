@@ -10,6 +10,8 @@ Description:
 import copy
 from core.db import MongoDB
 
+# NOTE:
+# 需要 mongodb 3.2 及以上版本
 
 def ensure_index():
     from apps.server.models import Server
@@ -335,12 +337,11 @@ class MongoArena(BaseDocument):
     DOCUMENT = {
         # string id, 既有玩家，也有NPC
         '_id': null,
-        # 排名
-        'rank': 0,
+
         # 历史最高排名
         'max_rank': 0,
         # 刷出来的对手
-        'rivals': [],
+        'rival': 0,
         # 荣耀领奖记录
         # NOTE: 这里特殊处理，记录的是 当天日期: 领奖记录列表
         # 玩家每次登陆时删除过期的日期
@@ -349,10 +350,47 @@ class MongoArena(BaseDocument):
         'logs': [],
         # 积分
         'point': 0,
+        'search_times': 0,
     }
 
     COLLECTION = 'arena'
-    INDEXES = ['rank']
+
+
+# 竞技场积分排名
+# 排名规则：
+# 1， 根据score排名，score大的排在前面
+# 2， 如果score一样，则根据达到这个score的先后顺序排序
+#
+# 使用 聚合框架 完成排名检索
+# 首先查找自己的score 和 在此score中排序
+# db.arena_score.aggregate([
+#     {$match: {char_ids: <Char ID>}},
+#     {$unwind: {path: "$char_ids", includeArrayIndex: "index"}},
+#     {$match: {char_ids: <Char ID>}}
+# ])
+# 返回结果 {"_id": <_ID>, "index": <INDEX>}
+# _ID 就是自己的score, 记作MyScore
+
+# 接下来是找比MyScore大的有多少人
+# db.arena_score.aggregate([
+#     {$match: {_id: {$gt: <MyScore>}}},
+#     {$project: {amount: {$size: "$char_ids"}}},
+#     {$group: {_id: null, amount: {$sum: "$amount"}}}
+# ])
+# 会得到结果 {"_id": null, "amount": <AMOUNT>}
+#
+# 自己的排名就是 AMOUNT + INDEX + 1
+#
+class MongoArenaScore(BaseDocument):
+    DOCUMENT = {
+        # _id 就是score
+        '_id': 0,
+        # 这里面是 角色ID列表，
+        'char_ids': [],
+    }
+
+    COLLECTION = 'arena_score'
+    INDEXES = ['char_ids',]
 
 
 # 塔

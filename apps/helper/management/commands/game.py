@@ -14,6 +14,9 @@ from apps.character.models import Character
 from apps.statistics.models import Statistics
 from core.db import MongoDB, RedisDB
 
+from core.arena import Arena
+
+
 class Command(BaseCommand):
     help = """Game Management
     commands:
@@ -32,6 +35,8 @@ class Command(BaseCommand):
             self._reset()
         elif options['cmd'] == 'empty_cache':
             self._empty_cache()
+        elif options['cmd'] == 'init':
+            self._init()
         else:
             self.stderr.write("unknown command!")
 
@@ -46,7 +51,6 @@ class Command(BaseCommand):
         AccountThird.objects.all().delete()
         AccountRegular.objects.all().delete()
         Account.objects.all().delete()
-
 
         RedisDB.get().flushall()
 
@@ -63,3 +67,7 @@ class Command(BaseCommand):
     def _empty_cache(self):
         RedisDB.connect()
         RedisDB.get().flushall()
+
+    def _init(self):
+        for s in Server.objects.all():
+            Arena.try_create_arena_npc(s.id)

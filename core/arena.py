@@ -11,12 +11,13 @@ import random
 
 from dianjing.exception import GameException
 
-from core.mongo import MongoArena
+from core.mongo import MongoArena, MongoArenaScore
 
 from core.club import Club, get_club_property
 from core.lock import LockTimeOut, ArenaLock, ArenaMatchLock, remove_lock_key
 from core.cooldown import ArenaRefreshCD, ArenaMatchCD
-from core.value_log import ValueLogArenaMatchTimes, ValueLogArenaHonorPoints, ValueLogArenaBuyTimes, ValueLogArenaWinTimes
+from core.value_log import ValueLogArenaMatchTimes, ValueLogArenaHonorPoints, ValueLogArenaBuyTimes, \
+    ValueLogArenaWinTimes
 from core.match import ClubMatch
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.vip import VIP
@@ -40,6 +41,7 @@ from protomsg.arena_pb2 import (
 )
 
 ARENA_FREE_TIMES = 5
+ARENA_DEFAULT_SCORE = 1000
 
 
 # NOTE: mongo中的 _id 是 string
@@ -87,6 +89,88 @@ class MatchTimes(object):
         self.buy_cost = ConfigArenaBuyTimesCost.get_cost(self.buy_times + 1)
 
 
+class ArenaScore(object):
+    __slots__ = ['server_id', 'char_id', 'score']
+
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+
+        doc = MongoArenaScore.db(self.server_id).find_one(
+            {'char_ids': str(self.char_id)},
+            {'_id': 1}
+        )
+
+        if doc:
+            self.score = doc['_id']
+        else:
+            self.score = None
+
+    @property
+    def rank(self):
+        if not self.score:
+            raise RuntimeError("ArenaScore can not calculate rank for None score")
+
+        q1 = MongoArenaScore.db(self.server_id).aggregate([
+            {'$match': {'_id': self.score}},
+            {'$unwind': {'path': '$char_ids', 'includeArrayIndex': 'index'}},
+            {'$match': {'char_ids': str(self.char_id)}}
+        ])
+
+        q2 = MongoArenaScore.db(self.server_id).aggregate([
+            {'$match': {'_id': {'$gt': self.score}}},
+            {'$project': {'amount': {'$size': '$char_ids'}}},
+            {'$group': {'_id': None, 'amount': {'$sum': '$amount'}}}
+        ])
+
+        q1 = list(q1)
+        q2 = list(q2)
+
+        if q2:
+            amount = q2[0]['amount']
+        else:
+            amount = 0
+
+        return amount + q1[0]['index'] + 1
+
+    def set_score(self, score):
+        if self.score:
+            if self.score == score:
+                return
+
+            MongoArenaScore.db(self.server_id).update_one(
+                {'_id': self.score},
+                {'$pull': {'char_ids': str(self.char_id)}}
+            )
+
+        MongoArenaScore.db(self.server_id).update_one(
+            {'_id': score},
+            {'$push': {'char_ids': str(self.char_id)}},
+            upsert=True
+        )
+
+        self.score = score
+
+    def add_score(self, score):
+        if not self.score:
+            raise RuntimeError("ArenaScore can not add score for {0}".format(self.char_id))
+
+        MongoArenaScore.db(self.server_id).update_one(
+            {'_id': self.score},
+            {'$pull': {'char_ids': str(self.char_id)}}
+        )
+
+        self.score += score
+        if self.score < ARENA_DEFAULT_SCORE:
+            self.score = ARENA_DEFAULT_SCORE
+
+        MongoArenaScore.db(self.server_id).update_one(
+            {'_id': self.score},
+            {'$push': {'char_ids': str(self.char_id)}},
+            upsert=True
+        )
+
+
 class Arena(object):
     __slots__ = ['server_id', 'char_id']
 
@@ -94,7 +178,6 @@ class Arena(object):
         self.server_id = server_id
         self.char_id = char_id
 
-        self.try_create_arena_npc()
         self.try_add_self_in_arena()
 
     @classmethod
@@ -118,11 +201,12 @@ class Arena(object):
                 attachment=rc.to_json(),
             )
 
-    def try_create_arena_npc(self):
-        if MongoArena.db(self.server_id).count():
+    @classmethod
+    def try_create_arena_npc(cls, server_id):
+        if MongoArena.db(server_id).count():
             return
 
-        with ArenaLock(self.server_id, self.char_id).lock(hold_seconds=10):
+        with ArenaLock(server_id, None).lock(hold_seconds=20):
             # 这里要进行double-check
             # 考虑这种情况：
             # 有两个并发的 try_create_arena_npc 调用
@@ -131,24 +215,24 @@ class Arena(object):
             # 然后等待锁， 此时A已经获取了锁，并且最终填充完数据后，B获得锁
             # 此时B必须再进行一次检查，否则B就会生成多余数据
             # double-check 在 多线程的 单例模式 中，也是必备
-            if MongoArena.db(self.server_id).count():
+            if MongoArena.db(server_id).count():
                 return
 
             npcs = []
-            for i in range(1, 5001):
-                # 1 到 5000 个npc
-                config = ConfigArenaNPC.get(i)
-                npc_id = config.get_npc_id()
-                _id = "npc:{0}:{1}".format(npc_id, make_string_id())
 
-                doc = MongoArena.document()
-                doc['_id'] = _id
-                doc['rank'] = i
-                doc['max_rank'] = i
+            for _, v in ConfigArenaNPC.INSTANCES.iteritems():
+                for _ in range(v.amount):
+                    npc_id = random.choice(v.npcs)
+                    _id = "npc:{0}:{1}".format(npc_id, make_string_id())
 
-                npcs.append(doc)
+                    doc = MongoArena.document()
+                    doc['_id'] = _id
+                    npcs.append(doc)
 
-            MongoArena.db(self.server_id).insert_many(npcs)
+                    score = random.randint(v.score_low, v.score_high)
+                    ArenaScore(server_id, _id).set_score(score)
+
+            MongoArena.db(server_id).insert_many(npcs)
 
     def try_add_self_in_arena(self):
         doc = MongoArena.db(self.server_id).find_one(
@@ -177,66 +261,69 @@ class Arena(object):
 
             return
 
-        with ArenaLock(self.server_id, self.char_id).lock():
-            # 这时候要给自己定排名，所以得把整个竞技场锁住，不能让别人插进来
-            doc = MongoArena.document()
-            doc['_id'] = str(self.char_id)
-            doc['rank'] = MongoArena.db(self.server_id).count() + 1
-            doc['max_rank'] = doc['rank']
-            # 初始化就得刷5个对手出来
-            rivals = self.get_rival_list(doc['rank'])
-            doc['rivals'] = rivals
+        doc = MongoArena.document()
+        doc['_id'] = str(self.char_id)
+        MongoArena.db(self.server_id).insert_one(doc)
 
-            MongoArena.db(self.server_id).insert_one(doc)
+        ArenaScore(self.server_id, self.char_id).set_score(ARENA_DEFAULT_SCORE)
 
-    def check_max_rank(self, rank):
+    def get_current_rank(self):
+        return ArenaScore(self.server_id, self.char_id).rank
+
+    def get_max_rank(self):
         doc = MongoArena.db(self.server_id).find_one(
             {'_id': str(self.char_id)},
             {'max_rank': 1}
         )
 
-        max_rank = doc.get('max_rank', 0)
+        max_rank = doc['max_rank']
+        if max_rank:
+            return max_rank
+
+        return self.get_current_rank()
+
+    def check_max_rank(self, rank):
+        max_rank = self.get_max_rank()
         if rank > max_rank:
             raise GameException(ConfigErrorMessage.get_error_id("ARENA_MAX_RANK_CHECK_FAILURE"))
 
-    def get_rival_list(self, rank):
+    def search_rival(self, search_times=0):
         # 获取对手列表
         def _query(low, high):
             condition = [
-                {'_id': {'$ne': str(self.char_id)}},
-                {'rank': {'$gte': low}},
-                {'rank': {'$lte': high}},
+                {'_id': {'$gte': low}},
+                {'_id': {'$lte': high}},
             ]
 
-            docs = MongoArena.db(self.server_id).find({'$and': condition}, {'_id': 1, 'rank': 1})
-
-            res = []
+            docs = MongoArenaScore.db(self.server_id).find({'$and': condition})
             for doc in docs:
-                res.append((doc['_id'], doc['rank']))
+                if doc['char_ids']:
+                    cid = random.choice(doc['char_ids'])
+                    if cid != str(self.char_id):
+                        return cid
 
-            return res
+            return None
 
-        range_1, range_2, range_3, range_4 = ConfigArenaSearchRange.get(rank)
+        if not search_times:
+            doc = MongoArena.db(self.server_id).find_one(
+                {'_id': str(self.char_id)},
+                {'search_times': 1}
+            )
 
-        results = []
+            search_times = doc['search_times']
 
-        # 先取后面的，如果后面没人 （新角色第一次进入，是排最后一名的）
-        res2 = _query(rank - range_3, rank - range_4)
-        if len(res2) > 2:
-            res2 = random.sample(res2, 2)
+        my_score = ArenaScore(self.server_id, self.char_id).score
+        #
+        # while True:
+        #     search_config = ConfigArenaSearchRange.get(search_times)
 
-        need_res1_amount = 5 - len(res2)
+        # TODO real rule
+        result = _query(my_score * 0.1, my_score * 10)
+        if not result:
+            result = _query(ARENA_DEFAULT_SCORE, 100000)
+            assert result
 
-        res1 = _query(rank - range_1, rank - range_2)
-
-        if len(res1) > need_res1_amount:
-            res1 = random.sample(res1, need_res1_amount)
-
-        results.extend(res1)
-        results.extend(res2)
-
-        results.sort(key=lambda item: item[1])
-        return results
+        return result
 
     def get_refresh_cd(self):
         return ArenaRefreshCD(self.server_id, self.char_id).get_cd_seconds()
@@ -298,18 +385,12 @@ class Arena(object):
             if cd:
                 raise GameException(ConfigErrorMessage.get_error_id("ARENA_REFRESH_IN_CD"))
 
-        doc = MongoArena.db(self.server_id).find_one(
-            {'_id': str(self.char_id)},
-            {'rank': 1}
-        )
-
-        rank = doc['rank']
-        rivals = self.get_rival_list(rank)
+        rival = self.search_rival()
 
         MongoArena.db(self.server_id).update_one(
             {'_id': str(self.char_id)},
             {'$set': {
-                'rivals': rivals
+                'rival': rival
             }}
         )
 
@@ -333,28 +414,20 @@ class Arena(object):
 
             self.send_notify()
 
-    def match(self, rival_id):
+    def match(self):
         if self.get_match_cd():
             raise GameException(ConfigErrorMessage.get_error_id("ARENA_MATCH_IN_CD"))
 
         doc = MongoArena.db(self.server_id).find_one(
             {'_id': str(self.char_id)},
-            {'rivals': 1}
+            {'rival': 1}
         )
 
-        for _id, _rank in doc['rivals']:
-            if _id == rival_id:
-                break
-        else:
+        rival_id = doc['rival']
+
+        if not rival_id:
+            # TODO error code
             raise GameException(ConfigErrorMessage.get_error_id("ARENA_RIVAL_NOT_IN_REFRESHED_LIST"))
-
-        rival_doc = MongoArena.db(self.server_id).find_one(
-            {'_id': _id},
-            {'rank': 1}
-        )
-
-        if rival_doc['rank'] != _rank:
-            raise GameException(ConfigErrorMessage.get_error_id("ARENA_RIVAL_RANK_CHANGED"))
 
         self.check_and_buy_times()
 
@@ -380,42 +453,32 @@ class Arena(object):
 
         my_club_name = get_club_property(self.server_id, self.char_id, 'name')
 
-        rank_changed = 0
+        my_rank = self.get_current_rank()
+        my_max_rank = self.get_max_rank()
 
-        my_doc = MongoArena.db(self.server_id).find_one({'_id': str(self.char_id)}, {'rank': 1, 'max_rank': 1})
-        my_rank = my_doc['rank']
-        my_max_rank = my_doc.get('max_rank', 0)
+        # TODO real add score
+        ass = ArenaScore(self.server_id, self.char_id)
+        ass.add_score(100 if win else -100)
 
-        rival_doc = MongoArena.db(self.server_id).find_one({'_id': rival_id}, {'rank': 1})
-        rival_rank = rival_doc['rank']
+        new_rank = ass.rank
+        if new_rank > my_max_rank:
+            my_max_rank = new_rank
+
+            MongoArena.db(self.server_id).update_one(
+                {'_id': str(self.char_id)},
+                {'$set': {'max_rank': new_rank}}
+            )
+
+        rank_changed = new_rank - my_rank
+
+        rival_rank = Arena(self.server_id, rival_id).get_current_rank()
 
         if win:
             ValueLogArenaWinTimes(self.server_id, self.char_id).record()
 
             if my_rank > rival_rank:
-                # 交换排名
-                updater = {'rank': rival_rank}
-
-                if not my_max_rank or rival_rank < my_max_rank:
-                    updater['max_rank'] = rival_rank
-                    my_max_rank = rival_rank
-
-                MongoArena.db(self.server_id).update_one(
-                    {'_id': str(self.char_id)},
-                    {'$set': updater}
-                )
-
-                MongoArena.db(self.server_id).update_one(
-                    {'_id': rival_id},
-                    {'$set': {'rank': my_rank}}
-                )
-
-                rank_changed = my_rank - rival_rank
-                my_rank = rival_rank
-
                 if not is_npc_club(rival_id):
                     Arena(self.server_id, int(rival_id)).add_match_log(3, [my_club_name, str(rank_changed)])
-
             else:
                 if not is_npc_club(rival_id):
                     Arena(self.server_id, int(rival_id)).add_match_log(2, [my_club_name])
@@ -449,12 +512,12 @@ class Arena(object):
             char_id=self.char_id,
             target_id=rival_id,
             target_name=ArenaClub(self.server_id, rival_id).name,
-            my_rank=my_rank,
+            my_rank=new_rank,
             target_rank=rival_rank,
             win=win,
         )
 
-        return resource_classified, rank_changed, my_max_rank, my_rank
+        return resource_classified, rank_changed, my_max_rank, new_rank
 
     def get_today_honor_reward_info(self):
         today_key = str(get_arrow_time_of_today().timestamp)
@@ -570,7 +633,7 @@ class Arena(object):
         rt = MatchTimes(self.server_id, self.char_id)
 
         notify = ArenaNotify()
-        notify.my_rank = doc['rank']
+        notify.my_rank = self.get_current_rank()
         notify.match_cd = self.get_match_cd()
         notify.refresh_cd = self.get_refresh_cd()
 
@@ -578,17 +641,17 @@ class Arena(object):
         notify.buy_times = rt.remained_buy_times
         notify.buy_cost = rt.buy_cost
         notify.point = doc.get('point', 0)
-        notify.max_rank = doc.get('max_rank', 0)
+        notify.max_rank = self.get_max_rank()
 
-        for _id, _rank in doc['rivals']:
+        if doc['rival']:
             notify_rival = notify.rival.add()
-            club = ArenaClub(self.server_id, _id)
+            club = ArenaClub(self.server_id, doc['rival'])
 
             notify_rival.id = str(club.id)
             notify_rival.name = club.name
             notify_rival.club_flag = club.flag
             notify_rival.level = club.level
             notify_rival.power = club.power
-            notify_rival.rank = _rank
+            notify_rival.rank = Arena(self.server_id, doc['rival']).get_current_rank()
 
         MessagePipe(self.char_id).put(msg=notify)

@@ -11,14 +11,14 @@ import random
 from config.base import ConfigBase
 
 class ArenaNPC(object):
-    __slots__ = ['id', 'npcs']
+    __slots__ = ['id', 'score_low', 'score_high', 'npcs', 'amount']
 
     def __init__(self):
         self.id = 0
         self.npcs = []
-
-    def get_npc_id(self):
-        return random.choice(self.npcs)
+        self.score_low = 0
+        self.score_high = 0
+        self.amount = 0
 
 class HonorReward(object):
     __slots__ = ['id', 'reward']
@@ -70,39 +70,21 @@ class BuyTimesCost(object):
 
 
 class SearchRange(object):
-    __slots__ = ['id', 'range_1', 'range_2', 'range_3', 'range_4']
+    __slots__ = ['id', 'range_1', 'range_2', 'score_win', 'score_lose']
     def __init__(self):
         self.id = 0
         self.range_1 = 0
         self.range_2 = 0
-        self.range_3 = 0
-        self.range_4 = 0
+        self.score_win = 0
+        self.score_lose = 0
 
 
 class ConfigArenaNPC(ConfigBase):
     EntityClass = ArenaNPC
     INSTANCES = {}
+    """:type: dict[int, ArenaNPC]"""
     FILTER_CACHE = {}
 
-    ORDERED_INSTANCES = []
-
-    @classmethod
-    def initialize(cls, fixture):
-        super(ConfigArenaNPC, cls).initialize(fixture)
-
-        cls.ORDERED_INSTANCES = cls.INSTANCES.items()
-        cls.ORDERED_INSTANCES.sort(key=lambda item: item[0], reverse=True)
-
-    @classmethod
-    def get(cls, _id):
-        """
-
-        :rtype: ArenaNPC
-        """
-        # 这个方法只会在 初始化竞技场的时候 调用
-        for a, b in cls.ORDERED_INSTANCES:
-            if _id >= a:
-                return b
 
 class ConfigArenaHonorReward(ConfigBase):
     EntityClass = HonorReward
@@ -184,22 +166,32 @@ class ConfigArenaBuyTimesCost(ConfigBase):
 class ConfigArenaSearchRange(ConfigBase):
     EntityClass = SearchRange
     INSTANCES = {}
+    """:type: dict[int, SearchRange]"""
     FILTER_CACHE = {}
 
     LIST = []
+    """:type: list[SearchRange]"""
+    START_INDEX = 0
 
     @classmethod
     def initialize(cls, fixture):
         super(ConfigArenaSearchRange, cls).initialize(fixture)
-        for k, v in cls.INSTANCES.iteritems():
-            cls.LIST.append((k, v))
+        cls.LIST = cls.INSTANCES.values()
+        cls.LIST.sort(key=lambda item: item.id)
 
-        cls.LIST.sort(key=lambda item: item[0], reverse=True)
+        for index, i in enumerate(cls.LIST):
+            if i.range_1 <= 1 <= i.range_2:
+                cls.START_INDEX = index
+                break
+        else:
+            raise RuntimeError("ConfigArenaSearchRange Can not find StartIndex")
 
     @classmethod
-    def get(cls, rank):
-        for k, v in cls.LIST:
-            if rank >= k:
-                return v.range_1, v.range_2, v.range_3, v.range_4
+    def get(cls, times):
+        index = cls.START_INDEX + times
+        if index < 0:
+            index = 0
+        if index > len(cls.LIST) - 1:
+            index = len(cls.LIST) - 1
 
-        raise RuntimeError("ConfigArenaSearchRange, Error rank: {0}".format(rank))
+        return cls.LIST[index]
