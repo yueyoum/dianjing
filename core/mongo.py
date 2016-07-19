@@ -13,11 +13,9 @@ from core.db import MongoDB
 # NOTE:
 # 需要 mongodb 3.2 及以上版本
 
-def ensure_index():
-    from apps.server.models import Server
-    for sid in Server.opened_server_ids():
-        for i in BaseDocument.__subclasses__():
-            i.create_indexes(sid)
+def ensure_index(server_id):
+    for i in BaseDocument.__subclasses__():
+        i.create_indexes(server_id)
 
 
 class BaseDocument(object):
@@ -350,7 +348,7 @@ class MongoArena(BaseDocument):
         'logs': [],
         # 积分
         'point': 0,
-        'search_times': 0,
+        'search_index': 0,
     }
 
     COLLECTION = 'arena'

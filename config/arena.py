@@ -69,6 +69,13 @@ class BuyTimesCost(object):
         self.diamond = 0
 
 
+class SearchResetCost(object):
+    __slots__ = ['id', 'diamond']
+    def __init__(self):
+        self.id = 0
+        self.diamond = 0
+
+
 class SearchRange(object):
     __slots__ = ['id', 'range_1', 'range_2', 'score_win', 'score_lose']
     def __init__(self):
@@ -172,12 +179,15 @@ class ConfigArenaSearchRange(ConfigBase):
     LIST = []
     """:type: list[SearchRange]"""
     START_INDEX = 0
+    MAX_INDEX = 0
 
     @classmethod
     def initialize(cls, fixture):
         super(ConfigArenaSearchRange, cls).initialize(fixture)
         cls.LIST = cls.INSTANCES.values()
         cls.LIST.sort(key=lambda item: item.id)
+
+        cls.MAX_INDEX = len(cls.LIST) - 1
 
         for index, i in enumerate(cls.LIST):
             if i.range_1 <= 1 <= i.range_2:
@@ -187,11 +197,29 @@ class ConfigArenaSearchRange(ConfigBase):
             raise RuntimeError("ConfigArenaSearchRange Can not find StartIndex")
 
     @classmethod
-    def get(cls, times):
-        index = cls.START_INDEX + times
-        if index < 0:
-            index = 0
-        if index > len(cls.LIST) - 1:
-            index = len(cls.LIST) - 1
-
+    def get(cls, index):
         return cls.LIST[index]
+
+
+class ConfigArenaSearchResetCost(ConfigBase):
+    EntityClass = SearchResetCost
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    LIST = []
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigArenaSearchResetCost, cls).initialize(fixture)
+        for k, v in cls.INSTANCES.iteritems():
+            cls.LIST.append((k, v.diamond))
+
+        cls.LIST.sort(key=lambda item: item[0], reverse=True)
+
+    @classmethod
+    def get_cost(cls, times):
+        for k, v in cls.LIST:
+            if times >= k:
+                return v
+
+        raise RuntimeError("ConfigArenaSearchResetCost, Error times: {0}".format(times))

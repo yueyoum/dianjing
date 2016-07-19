@@ -17,7 +17,7 @@ from core.club import Club, get_club_property
 from core.lock import LockTimeOut, ArenaLock, ArenaMatchLock, remove_lock_key
 from core.cooldown import ArenaRefreshCD, ArenaMatchCD
 from core.value_log import ValueLogArenaMatchTimes, ValueLogArenaHonorPoints, ValueLogArenaBuyTimes, \
-    ValueLogArenaWinTimes
+    ValueLogArenaWinTimes, ValueLogArenaSearchResetTimes
 from core.match import ClubMatch
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.vip import VIP
@@ -25,7 +25,8 @@ from core.mail import MailManager
 from core.signals import arena_match_signal
 
 from config import ConfigErrorMessage, ConfigArenaNPC, ConfigNPCFormation, ConfigArenaHonorReward, \
-    ConfigArenaMatchReward, ConfigArenaBuyTimesCost, ConfigArenaRankReward, ConfigArenaSearchRange
+    ConfigArenaMatchReward, ConfigArenaBuyTimesCost, ConfigArenaRankReward, ConfigArenaSearchRange, \
+    ConfigArenaSearchResetCost
 
 from utils.functional import make_string_id, get_arrow_time_of_today
 from utils.message import MessagePipe
@@ -42,6 +43,7 @@ from protomsg.arena_pb2 import (
 
 ARENA_FREE_TIMES = 5
 ARENA_DEFAULT_SCORE = 1000
+ARENA_REFRESH_CD_SECONDS = 60 * 30
 
 
 # NOTE: mongo中的 _id 是 string
@@ -71,22 +73,34 @@ class ArenaClub(object):
         return Club(server_id, int(arena_club_id))
 
 
-class MatchTimes(object):
-    __slots__ = ['match_times', 'buy_times', 'remained_match_times', 'remained_buy_times', 'buy_cost']
+class TimesInfo(object):
+    __slots__ = [
+        'match_times', 'buy_times', 'reset_times',
+        'remained_match_times', 'remained_buy_times', 'remained_reset_times',
+        'buy_cost', 'reset_cost',
+    ]
 
     def __init__(self, server_id, char_id):
         self.match_times = ValueLogArenaMatchTimes(server_id, char_id).count_of_today()
         self.buy_times = ValueLogArenaBuyTimes(server_id, char_id).count_of_today()
+        self.reset_times = ValueLogArenaSearchResetTimes(server_id, char_id).count_of_today()
+
+        vip = VIP(server_id, char_id)
 
         self.remained_match_times = ARENA_FREE_TIMES + self.buy_times - self.match_times
         if self.remained_match_times < 0:
             self.remained_match_times = 0
 
-        self.remained_buy_times = VIP(server_id, char_id).arena_buy_times - self.buy_times
+        self.remained_buy_times = vip.arena_buy_times - self.buy_times
         if self.remained_buy_times < 0:
             self.remained_buy_times = 0
 
+        self.remained_reset_times = vip.arena_search_reset_times - self.reset_times
+        if self.remained_reset_times < 0:
+            self.remained_reset_times = 0
+
         self.buy_cost = ConfigArenaBuyTimesCost.get_cost(self.buy_times + 1)
+        self.reset_cost = ConfigArenaSearchResetCost.get_cost(self.reset_times + 1)
 
 
 class ArenaScore(object):
@@ -182,19 +196,17 @@ class Arena(object):
 
     @classmethod
     def send_rank_reward(cls, server_id):
-        char_ids = Club.get_recent_login_char_ids(server_id, recent_days=14)
-        char_ids = [str(i) for i in char_ids]
+        char_ids = Club.get_recent_login_char_ids(server_id, recent_days=7)
 
-        docs = MongoArena.db(server_id).find({'_id': {'$in': char_ids}}, {'rank': 1})
-        for doc in docs:
-            cid = doc['_id']
-            rank = doc['rank']
+        for cid in char_ids:
+            arena = Arena(server_id, cid)
+            rank = arena.get_current_rank()
 
             config = ConfigArenaRankReward.get(rank)
 
             rc = ResourceClassification.classify(config.reward)
 
-            m = MailManager(server_id, int(cid))
+            m = MailManager(server_id, cid)
             m.add(
                 config.mail_title,
                 config.mail_content,
@@ -220,7 +232,7 @@ class Arena(object):
 
             npcs = []
 
-            for _, v in ConfigArenaNPC.INSTANCES.iteritems():
+            for _K, v in ConfigArenaNPC.INSTANCES.iteritems():
                 for _ in range(v.amount):
                     npc_id = random.choice(v.npcs)
                     _id = "npc:{0}:{1}".format(npc_id, make_string_id())
@@ -287,7 +299,7 @@ class Arena(object):
         if rank > max_rank:
             raise GameException(ConfigErrorMessage.get_error_id("ARENA_MAX_RANK_CHECK_FAILURE"))
 
-    def search_rival(self, search_times=0):
+    def search_rival(self):
         # 获取对手列表
         def _query(low, high):
             condition = [
@@ -295,51 +307,81 @@ class Arena(object):
                 {'_id': {'$lte': high}},
             ]
 
-            docs = MongoArenaScore.db(self.server_id).find({'$and': condition})
-            for doc in docs:
-                if doc['char_ids']:
-                    cid = random.choice(doc['char_ids'])
-                    if cid != str(self.char_id):
-                        return cid
+            _docs = MongoArenaScore.db(self.server_id).find({'$and': condition})
+
+            char_ids = []
+            for _doc in _docs:
+                char_ids.extend(_doc['char_ids'])
+
+            random.shuffle(char_ids)
+
+            for cid in char_ids:
+                if cid == str(self.char_id):
+                    continue
+
+                if ArenaMatchCD(self.server_id, self.char_id, cid).get_cd_seconds():
+                    continue
+
+                return cid
 
             return None
 
-        if not search_times:
-            doc = MongoArena.db(self.server_id).find_one(
-                {'_id': str(self.char_id)},
-                {'search_times': 1}
-            )
+        doc = MongoArena.db(self.server_id).find_one(
+            {'_id': str(self.char_id)},
+            {'search_index': 1}
+        )
 
-            search_times = doc['search_times']
+        search_index = doc['search_index']
 
         my_score = ArenaScore(self.server_id, self.char_id).score
-        #
-        # while True:
-        #     search_config = ConfigArenaSearchRange.get(search_times)
 
-        # TODO real rule
-        result = _query(my_score * 0.1, my_score * 10)
-        if not result:
-            result = _query(ARENA_DEFAULT_SCORE, 100000)
-            assert result
+        rival_id = 0
+        _search_times = 0
+        while True:
+            if _search_times > len(ConfigArenaSearchRange.LIST):
+                break
 
-        return result
+            search_config = ConfigArenaSearchRange.get(search_index)
+            rival_id = _query(my_score * search_config.range_1, my_score * search_config.range_2)
+            if rival_id:
+                break
+
+            if search_index >= ConfigArenaSearchRange.START_INDEX:
+                search_index += 1
+                if search_index > ConfigArenaSearchRange.MAX_INDEX:
+                    search_index = ConfigArenaSearchRange.START_INDEX - 1
+            else:
+                search_index -= 1
+                if search_index < 0:
+                    search_index = 0
+
+            _search_times += 1
+
+        if not rival_id:
+            raise GameException(ConfigErrorMessage.get_error_id("ARENA_SEARCH_NO_RIVAL"))
+
+        MongoArena.db(self.server_id).update_one(
+            {'_id': str(self.char_id)},
+            {'$set': {
+                'rival_id': rival_id,
+                'search_index': search_index
+            }}
+        )
+
+        self.send_notify()
 
     def get_refresh_cd(self):
         return ArenaRefreshCD(self.server_id, self.char_id).get_cd_seconds()
-
-    def get_match_cd(self):
-        return ArenaMatchCD(self.server_id, self.char_id).get_cd_seconds()
 
     def get_honor_points(self):
         return ValueLogArenaHonorPoints(self.server_id, self.char_id).count_of_today()
 
     def buy_times(self):
-        rt = MatchTimes(self.server_id, self.char_id)
-        if not rt.remained_buy_times:
+        ti = TimesInfo(self.server_id, self.char_id)
+        if not ti.remained_buy_times:
             raise GameException(ConfigErrorMessage.get_error_id("ARENA_NO_BUY_TIMES"))
 
-        cost = [(money_text_to_item_id('diamond'), rt.buy_cost), ]
+        cost = [(money_text_to_item_id('diamond'), ti.buy_cost), ]
         rc = ResourceClassification.classify(cost)
         rc.check_exist(self.server_id, self.char_id)
         rc.remove(self.server_id, self.char_id)
@@ -379,11 +421,22 @@ class Arena(object):
         )
         self.send_notify()
 
-    def refresh(self, ignore_cd=False):
-        if not ignore_cd:
-            cd = self.get_refresh_cd()
-            if cd:
-                raise GameException(ConfigErrorMessage.get_error_id("ARENA_REFRESH_IN_CD"))
+    def refresh(self):
+        cd = self.get_refresh_cd()
+        if cd:
+            # 就是要花钱了
+            ti = TimesInfo(self.server_id, self.char_id)
+            if not ti.reset_times:
+                raise GameException(ConfigErrorMessage.get_error_id("ARENA_NO_SEARCH_RESET_TIMES"))
+
+            cost = [(money_text_to_item_id('diamond'), ti.reset_cost), ]
+            rc = ResourceClassification.classify(cost)
+            rc.check_exist(self.server_id, self.char_id)
+            rc.remove(self.server_id, self.char_id)
+
+            ValueLogArenaSearchResetTimes(self.server_id, self.char_id).record()
+        else:
+            ArenaRefreshCD(self.server_id, self.char_id).set(ARENA_REFRESH_CD_SECONDS)
 
         rival = self.search_rival()
 
@@ -394,20 +447,16 @@ class Arena(object):
             }}
         )
 
-        if not ignore_cd:
-            ArenaRefreshCD(self.server_id, self.char_id).set(5)
-
         self.send_notify()
 
     def check_and_buy_times(self):
-        rt = MatchTimes(self.server_id, self.char_id)
-        cost = [(money_text_to_item_id('diamond'), rt.buy_cost), ]
-        rc = ResourceClassification.classify(cost)
-
-        if not rt.remained_match_times:
-            if not rt.remained_buy_times:
+        ti = TimesInfo(self.server_id, self.char_id)
+        if not ti.remained_match_times:
+            if not ti.remained_buy_times:
                 raise GameException(ConfigErrorMessage.get_error_id("ARENA_NO_BUY_TIMES"))
 
+            cost = [(money_text_to_item_id('diamond'), ti.buy_cost), ]
+            rc = ResourceClassification.classify(cost)
             rc.check_exist(self.server_id, self.char_id)
             rc.remove(self.server_id, self.char_id)
             ValueLogArenaBuyTimes(self.server_id, self.char_id).record()
@@ -415,9 +464,6 @@ class Arena(object):
             self.send_notify()
 
     def match(self):
-        if self.get_match_cd():
-            raise GameException(ConfigErrorMessage.get_error_id("ARENA_MATCH_IN_CD"))
-
         doc = MongoArena.db(self.server_id).find_one(
             {'_id': str(self.char_id)},
             {'rival': 1}
@@ -426,15 +472,14 @@ class Arena(object):
         rival_id = doc['rival']
 
         if not rival_id:
-            # TODO error code
-            raise GameException(ConfigErrorMessage.get_error_id("ARENA_RIVAL_NOT_IN_REFRESHED_LIST"))
+            raise GameException(ConfigErrorMessage.get_error_id("ARENA_MATCH_NO_RIVAL"))
 
         self.check_and_buy_times()
 
         try:
-            with ArenaMatchLock(self.server_id, self.char_id).lock(hold_seconds=180) as my_lock:
+            with ArenaMatchLock(self.server_id, self.char_id).lock(hold_seconds=30) as my_lock:
                 try:
-                    with ArenaMatchLock(self.server_id, rival_id).lock(hold_seconds=180) as rival_lock:
+                    with ArenaMatchLock(self.server_id, rival_id).lock(hold_seconds=30) as rival_lock:
                         club_one = Club(self.server_id, self.char_id)
                         club_two = ArenaClub(self.server_id, rival_id)
                         club_match = ClubMatch(club_one, club_two)
@@ -448,7 +493,6 @@ class Arena(object):
             raise GameException(ConfigErrorMessage.get_error_id("ARENA_SELF_IN_MATCH"))
 
     def report(self, key, win):
-        # 这里self 和 rival 都应该处于 lock 状态
         rival_id, my_lock_key, rival_lock_key = key.split('#')
 
         my_club_name = get_club_property(self.server_id, self.char_id, 'name')
@@ -456,9 +500,20 @@ class Arena(object):
         my_rank = self.get_current_rank()
         my_max_rank = self.get_max_rank()
 
-        # TODO real add score
+        doc = MongoArena.db(self.server_id).find_one(
+            {'_id': str(self.char_id)},
+            {'search_index': 1}
+        )
+
+        config_search = ConfigArenaSearchRange.get(doc['search_index'])
+        if win:
+            score_changed = config_search.score_win
+        else:
+            score_changed = -config_search.score_lose
+
         ass = ArenaScore(self.server_id, self.char_id)
-        ass.add_score(100 if win else -100)
+
+        ass.add_score(score_changed)
 
         new_rank = ass.rank
         if new_rank > my_max_rank:
@@ -483,22 +538,18 @@ class Arena(object):
                 if not is_npc_club(rival_id):
                     Arena(self.server_id, int(rival_id)).add_match_log(2, [my_club_name])
 
-            config = ConfigArenaMatchReward.get(1)
+            config_reward = ConfigArenaMatchReward.get(1)
         else:
-            config = ConfigArenaMatchReward.get(2)
+            config_reward = ConfigArenaMatchReward.get(2)
             if not is_npc_club(rival_id):
                 Arena(self.server_id, int(rival_id)).add_match_log(1, [my_club_name])
 
-        ValueLogArenaHonorPoints(self.server_id, self.char_id).record(value=config.honor)
+        ValueLogArenaHonorPoints(self.server_id, self.char_id).record(value=config_reward.honor)
         ValueLogArenaMatchTimes(self.server_id, self.char_id).record()
 
-        drop = config.get_drop()
+        drop = config_reward.get_drop()
         resource_classified = ResourceClassification.classify(drop)
         resource_classified.add(self.server_id, self.char_id)
-
-        self.refresh(ignore_cd=True)
-        # TODO cd
-        ArenaMatchCD(self.server_id, self.char_id).set(0)
 
         self.send_honor_notify()
         self.send_notify()
@@ -517,7 +568,7 @@ class Arena(object):
             win=win,
         )
 
-        return resource_classified, rank_changed, my_max_rank, new_rank
+        return resource_classified, score_changed, rank_changed, my_max_rank, new_rank, ass.score
 
     def get_today_honor_reward_info(self):
         today_key = str(get_arrow_time_of_today().timestamp)
@@ -580,13 +631,17 @@ class Arena(object):
 
         :rtype: list[core.abstract.AbstractClub]
         """
-        docs = MongoArena.db(server_id).find({}, {'_id': 1}).sort('rank').limit(amount)
-
         clubs = []
-        for doc in docs:
-            clubs.append(ArenaClub(server_id, doc['_id']))
 
-        return clubs
+        a = 0
+        docs = MongoArenaScore.db(server_id).find({}).sort('_id', -1)
+        for doc in docs:
+            for cid in doc['char_ids']:
+                clubs.append(ArenaClub(server_id, cid))
+                a += 1
+
+                if a >= amount:
+                    return clubs
 
     def send_honor_notify(self, reward_info=None):
         if not reward_info:
@@ -630,28 +685,31 @@ class Arena(object):
             {'_id': str(self.char_id)}
         )
 
-        rt = MatchTimes(self.server_id, self.char_id)
+        ti = TimesInfo(self.server_id, self.char_id)
 
         notify = ArenaNotify()
         notify.my_rank = self.get_current_rank()
-        notify.match_cd = self.get_match_cd()
-        notify.refresh_cd = self.get_refresh_cd()
+        notify.remained_match_times = ti.remained_match_times
 
-        notify.match_times = rt.remained_match_times
-        notify.buy_times = rt.remained_buy_times
-        notify.buy_cost = rt.buy_cost
-        notify.point = doc.get('point', 0)
+        notify.refresh_cd = self.get_refresh_cd()
+        notify.remained_refresh_times = ti.remained_reset_times
+        notify.refresh_cost = ti.reset_cost
+
+        notify.remained_buy_times = ti.remained_buy_times
+        notify.buy_cost = ti.buy_cost
+        notify.point = doc['point']
         notify.max_rank = self.get_max_rank()
 
         if doc['rival']:
             notify_rival = notify.rival.add()
-            club = ArenaClub(self.server_id, doc['rival'])
+            rival_club = ArenaClub(self.server_id, doc['rival'])
 
-            notify_rival.id = str(club.id)
-            notify_rival.name = club.name
-            notify_rival.club_flag = club.flag
-            notify_rival.level = club.level
-            notify_rival.power = club.power
+            notify_rival.id = str(rival_club.id)
+            notify_rival.name = rival_club.name
+            notify_rival.club_flag = rival_club.flag
+            notify_rival.level = rival_club.level
+            notify_rival.power = rival_club.power
             notify_rival.rank = Arena(self.server_id, doc['rival']).get_current_rank()
+            notify_rival.score = ArenaScore(self.server_id, doc['rival']).score
 
         MessagePipe(self.char_id).put(msg=notify)

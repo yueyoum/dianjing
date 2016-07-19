@@ -89,7 +89,7 @@ _EQUIPMENT = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='attack_percent', full_name='Dianjing.protocol.Equipment.attack_percent', index=2,
       number=3, type=2, cpp_type=6, label=2,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -103,7 +103,7 @@ _EQUIPMENT = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='defense_percent', full_name='Dianjing.protocol.Equipment.defense_percent', index=4,
       number=5, type=2, cpp_type=6, label=2,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -117,7 +117,7 @@ _EQUIPMENT = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='manage_percent', full_name='Dianjing.protocol.Equipment.manage_percent', index=6,
       number=7, type=2, cpp_type=6, label=2,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -131,7 +131,7 @@ _EQUIPMENT = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='operation_percent', full_name='Dianjing.protocol.Equipment.operation_percent', index=8,
       number=9, type=2, cpp_type=6, label=2,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),

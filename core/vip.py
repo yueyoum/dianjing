@@ -24,6 +24,7 @@ MAX_VIP_LEVEL = max(ConfigVIP.INSTANCES.keys())
 
 class VIP(object):
     __slots__ = ['server_id', 'char_id', 'doc']
+
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
@@ -37,7 +38,6 @@ class VIP(object):
     @property
     def level(self):
         return self.doc['vip']
-
 
     def check(self, need_vip):
         if self.doc['vip'] < need_vip:
@@ -80,7 +80,6 @@ class VIP(object):
                 new_level=self.doc['vip']
             )
 
-
     def buy_reward(self, vip_level):
         config = ConfigVIP.get(vip_level)
         if not config:
@@ -109,7 +108,6 @@ class VIP(object):
         self.send_notify()
         return rc
 
-
     def send_notify(self):
         notify = VIPNotify()
         notify.vip = self.doc['vip']
@@ -117,7 +115,6 @@ class VIP(object):
         notify.rewarded.extend(self.doc['rewards'])
 
         MessagePipe(self.char_id).put(msg=notify)
-
 
     @property
     def challenge_reset_times(self):
@@ -146,3 +143,7 @@ class VIP(object):
     @property
     def territory_help_times(self):
         return ConfigVIP.get(self.doc['vip']).territory_help_times
+
+    @property
+    def arena_search_reset_times(self):
+        return ConfigVIP.get(self.doc['vip']).arena_search_reset_times

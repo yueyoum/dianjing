@@ -29,7 +29,7 @@ from config.talent import ConfigTalent
 from config.dungeon import ConfigDungeon, ConfigDungeonGrade, ConfigDungeonBuyCost
 from config.npc import ConfigNPCFormation
 from config.arena import ConfigArenaNPC, ConfigArenaHonorReward, ConfigArenaBuyTimesCost, ConfigArenaMatchReward, \
-    ConfigArenaRankReward, ConfigArenaSearchRange
+    ConfigArenaRankReward, ConfigArenaSearchRange, ConfigArenaSearchResetCost
 from config.tower import ConfigTowerLevel, ConfigTowerResetCost, ConfigTowerSaleGoods, ConfigTowerRankReward
 from config.territory import ConfigTerritoryBuilding, ConfigInspireCost, ConfigTerritoryStaffProduct, \
     ConfigTerritoryEvent, ConfigTerritoryStore
@@ -158,6 +158,8 @@ def load_config():
             ConfigArenaBuyTimesCost.initialize(data)
         elif name == 'arena_search_range.json':
             ConfigArenaSearchRange.initialize(data)
+        elif name == 'arena_reset_cost.json':
+            ConfigArenaSearchResetCost.initialize(data)
 
         elif name == 'tower_level.json':
             ConfigTowerLevel.initialize(data)

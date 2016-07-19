@@ -9,7 +9,7 @@ Description:
 
 from utils.http import ProtobufResponse
 
-from core.arena import Arena
+from core.arena import Arena, ArenaScore
 from protomsg.arena_pb2 import (
     ArenaHonorGetRewardResponse,
     ArenaLeaderBoardResponse,
@@ -45,10 +45,8 @@ def match_start(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
-    rival_id = request._proto.rival_id
-
     a = Arena(server_id, char_id)
-    msg = a.match(rival_id)
+    msg = a.match()
 
     response = ArenaMatchStartResponse()
     response.ret = 0
@@ -65,20 +63,21 @@ def match_report(request):
     win = request._proto.win
 
     a = Arena(server_id, char_id)
-    resource_classified, rank_changed, max_rank, my_rank = a.report(key, win)
+    resource_classified, score_changed, rank_changed, max_rank, my_rank, my_score = a.report(key, win)
 
     response = ArenaMatchReportResponse()
     response.ret = 0
     response.drop.MergeFrom(resource_classified.make_protomsg())
+    response.score_changed = score_changed
     response.rank_changed = rank_changed
     response.max_rank = max_rank
     response.my_rank = my_rank
+    response.my_score = my_score
     return ProtobufResponse(response)
 
 
 def leader_board(request):
     server_id = request._game_session.server_id
-    # char_id = request._game_session.char_id
 
     clubs = Arena.get_leader_board(server_id)
 
@@ -92,6 +91,7 @@ def leader_board(request):
         response_rival.level = club.level
         response_rival.power = club.power
         response_rival.rank = index+1
+        response_rival.score = ArenaScore(server_id, club.id).score
 
     return ProtobufResponse(response)
 

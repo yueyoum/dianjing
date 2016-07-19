@@ -199,6 +199,12 @@ class ValueLogArenaBuyTimes(ValueLog):
     __slots__ = []
 
 
+# 竞技场搜索重置次数
+class ValueLogArenaSearchResetTimes(ValueLog):
+    KEY = 'arena_search_reset'
+    __slots__ = []
+
+
 # 竞技场荣耀点
 class ValueLogArenaHonorPoints(ValueLog):
     KEY = 'arena_honor'

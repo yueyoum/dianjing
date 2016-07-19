@@ -28,4 +28,6 @@ class Command(BaseCommand):
 
     def _create_index(self):
         from core.mongo import ensure_index
-        ensure_index()
+        from apps.server.models import Server
+        for sid in Server.opened_server_ids():
+            ensure_index(sid)

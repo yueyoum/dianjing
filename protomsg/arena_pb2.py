@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='arena.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0b\x61rena.proto\x12\x11\x44ianjing.protocol\x1a\rpackage.proto\x1a\x0bmatch.proto\"e\n\nArenaRival\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x11\n\tclub_flag\x18\x03 \x02(\x05\x12\r\n\x05level\x18\x04 \x02(\x05\x12\r\n\x05power\x18\x05 \x02(\x05\x12\x0c\n\x04rank\x18\x06 \x02(\x05\"\xde\x01\n\x0b\x41renaNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12,\n\x05rival\x18\x02 \x03(\x0b\x32\x1d.Dianjing.protocol.ArenaRival\x12\x0f\n\x07my_rank\x18\x03 \x02(\x05\x12\x10\n\x08match_cd\x18\x04 \x02(\x05\x12\x13\n\x0bmatch_times\x18\x05 \x02(\x05\x12\x12\n\nrefresh_cd\x18\x06 \x02(\x05\x12\x11\n\tbuy_times\x18\x07 \x02(\x05\x12\x10\n\x08\x62uy_cost\x18\x08 \x02(\x05\x12\r\n\x05point\x18\t \x02(\x05\x12\x10\n\x08max_rank\x18\n \x02(\x05\"&\n\x13\x41renaRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"4\n\x14\x41renaRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\'\n\x14\x41renaBuyTimesRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"5\n\x15\x41renaBuyTimesResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\";\n\x16\x41renaMatchStartReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08rival_id\x18\x02 \x02(\t\"d\n\x17\x41renaMatchStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"D\n\x17\x41renaMatchReportReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x0b\n\x03win\x18\x03 \x02(\x08\"\x98\x01\n\x18\x41renaMatchReportResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\x12\x14\n\x0crank_changed\x18\x04 \x01(\x05\x12\x10\n\x08max_rank\x18\x05 \x01(\x05\x12\x0f\n\x07my_rank\x18\x06 \x01(\x05\"*\n\x17\x41renaLeaderBoardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"f\n\x18\x41renaLeaderBoardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12,\n\x05rival\x18\x03 \x03(\x0b\x32\x1d.Dianjing.protocol.ArenaRival\"\xd5\x01\n\x16\x41renaHonorStatusNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08my_honor\x18\x02 \x02(\x05\x12\x45\n\x06honors\x18\x03 \x03(\x0b\x32\x35.Dianjing.protocol.ArenaHonorStatusNotify.HonorStatus\x1aQ\n\x0bHonorStatus\x12\r\n\x05honor\x18\x01 \x02(\x05\x12\x33\n\x06status\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.ArenaHonorStatus\"<\n\x1a\x41renaHonorGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05honor\x18\x02 \x02(\x05\"b\n\x1b\x41renaHonorGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\x86\x01\n\x13\x41renaMatchLogNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x38\n\x04logs\x18\x02 \x03(\x0b\x32*.Dianjing.protocol.ArenaMatchLogNotify.Log\x1a$\n\x03Log\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x11\n\targuments\x18\x02 \x03(\t*a\n\x10\x41renaHonorStatus\x12\x17\n\x13\x41RENA_HONOR_CAN_NOT\x10\x00\x12\x17\n\x13\x41RENA_HONOR_CAN_GET\x10\x01\x12\x1b\n\x17\x41RENA_HONOR_ALREADY_GOT\x10\x02')
+  serialized_pb=_b('\n\x0b\x61rena.proto\x12\x11\x44ianjing.protocol\x1a\rpackage.proto\x1a\x0bmatch.proto\"t\n\nArenaRival\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x11\n\tclub_flag\x18\x03 \x02(\x05\x12\r\n\x05level\x18\x04 \x02(\x05\x12\r\n\x05power\x18\x05 \x02(\x05\x12\x0c\n\x04rank\x18\x06 \x02(\x05\x12\r\n\x05score\x18\x07 \x02(\x05\"\x94\x02\n\x0b\x41renaNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12,\n\x05rival\x18\x02 \x01(\x0b\x32\x1d.Dianjing.protocol.ArenaRival\x12\x0f\n\x07my_rank\x18\x03 \x02(\x05\x12\x1c\n\x14remained_match_times\x18\x04 \x02(\x05\x12\x12\n\nrefresh_cd\x18\x05 \x02(\x05\x12\x1e\n\x16remained_refresh_times\x18\x06 \x02(\x05\x12\x14\n\x0crefresh_cost\x18\x07 \x02(\x05\x12\x1a\n\x12remained_buy_times\x18\x08 \x02(\x05\x12\x10\n\x08\x62uy_cost\x18\t \x02(\x05\x12\r\n\x05point\x18\n \x02(\x05\x12\x10\n\x08max_rank\x18\x0b \x02(\x05\"&\n\x13\x41renaRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"4\n\x14\x41renaRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\'\n\x14\x41renaBuyTimesRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"5\n\x15\x41renaBuyTimesResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\")\n\x16\x41renaMatchStartReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"d\n\x17\x41renaMatchStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"D\n\x17\x41renaMatchReportReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x0b\n\x03win\x18\x03 \x02(\x08\"\xc1\x01\n\x18\x41renaMatchReportResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\x12\x15\n\rscore_changed\x18\x04 \x01(\x05\x12\x14\n\x0crank_changed\x18\x05 \x01(\x05\x12\x10\n\x08max_rank\x18\x06 \x01(\x05\x12\x0f\n\x07my_rank\x18\x07 \x01(\x05\x12\x10\n\x08my_score\x18\x08 \x01(\x05\"*\n\x17\x41renaLeaderBoardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"f\n\x18\x41renaLeaderBoardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12,\n\x05rival\x18\x03 \x03(\x0b\x32\x1d.Dianjing.protocol.ArenaRival\"\xd5\x01\n\x16\x41renaHonorStatusNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08my_honor\x18\x02 \x02(\x05\x12\x45\n\x06honors\x18\x03 \x03(\x0b\x32\x35.Dianjing.protocol.ArenaHonorStatusNotify.HonorStatus\x1aQ\n\x0bHonorStatus\x12\r\n\x05honor\x18\x01 \x02(\x05\x12\x33\n\x06status\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.ArenaHonorStatus\"<\n\x1a\x41renaHonorGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05honor\x18\x02 \x02(\x05\"b\n\x1b\x41renaHonorGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\x86\x01\n\x13\x41renaMatchLogNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x38\n\x04logs\x18\x02 \x03(\x0b\x32*.Dianjing.protocol.ArenaMatchLogNotify.Log\x1a$\n\x03Log\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x11\n\targuments\x18\x02 \x03(\t*a\n\x10\x41renaHonorStatus\x12\x17\n\x13\x41RENA_HONOR_CAN_NOT\x10\x00\x12\x17\n\x13\x41RENA_HONOR_CAN_GET\x10\x01\x12\x1b\n\x17\x41RENA_HONOR_ALREADY_GOT\x10\x02')
   ,
   dependencies=[package__pb2.DESCRIPTOR,match__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -48,8 +48,8 @@ _ARENAHONORSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1631,
-  serialized_end=1728,
+  serialized_start=1723,
+  serialized_end=1820,
 )
 _sym_db.RegisterEnumDescriptor(_ARENAHONORSTATUS)
 
@@ -109,6 +109,13 @@ _ARENARIVAL = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='score', full_name='Dianjing.protocol.ArenaRival.score', index=6,
+      number=7, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -122,7 +129,7 @@ _ARENARIVAL = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=62,
-  serialized_end=163,
+  serialized_end=178,
 )
 
 
@@ -142,8 +149,8 @@ _ARENANOTIFY = _descriptor.Descriptor(
       options=None),
     _descriptor.FieldDescriptor(
       name='rival', full_name='Dianjing.protocol.ArenaNotify.rival', index=1,
-      number=2, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -155,50 +162,57 @@ _ARENANOTIFY = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='match_cd', full_name='Dianjing.protocol.ArenaNotify.match_cd', index=3,
+      name='remained_match_times', full_name='Dianjing.protocol.ArenaNotify.remained_match_times', index=3,
       number=4, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='match_times', full_name='Dianjing.protocol.ArenaNotify.match_times', index=4,
+      name='refresh_cd', full_name='Dianjing.protocol.ArenaNotify.refresh_cd', index=4,
       number=5, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='refresh_cd', full_name='Dianjing.protocol.ArenaNotify.refresh_cd', index=5,
+      name='remained_refresh_times', full_name='Dianjing.protocol.ArenaNotify.remained_refresh_times', index=5,
       number=6, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='buy_times', full_name='Dianjing.protocol.ArenaNotify.buy_times', index=6,
+      name='refresh_cost', full_name='Dianjing.protocol.ArenaNotify.refresh_cost', index=6,
       number=7, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='buy_cost', full_name='Dianjing.protocol.ArenaNotify.buy_cost', index=7,
+      name='remained_buy_times', full_name='Dianjing.protocol.ArenaNotify.remained_buy_times', index=7,
       number=8, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='point', full_name='Dianjing.protocol.ArenaNotify.point', index=8,
+      name='buy_cost', full_name='Dianjing.protocol.ArenaNotify.buy_cost', index=8,
       number=9, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='max_rank', full_name='Dianjing.protocol.ArenaNotify.max_rank', index=9,
+      name='point', full_name='Dianjing.protocol.ArenaNotify.point', index=9,
       number=10, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='max_rank', full_name='Dianjing.protocol.ArenaNotify.max_rank', index=10,
+      number=11, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -215,8 +229,8 @@ _ARENANOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=166,
-  serialized_end=388,
+  serialized_start=181,
+  serialized_end=457,
 )
 
 
@@ -246,8 +260,8 @@ _ARENAREFRESHREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=390,
-  serialized_end=428,
+  serialized_start=459,
+  serialized_end=497,
 )
 
 
@@ -284,8 +298,8 @@ _ARENAREFRESHRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=430,
-  serialized_end=482,
+  serialized_start=499,
+  serialized_end=551,
 )
 
 
@@ -315,8 +329,8 @@ _ARENABUYTIMESREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=484,
-  serialized_end=523,
+  serialized_start=553,
+  serialized_end=592,
 )
 
 
@@ -353,8 +367,8 @@ _ARENABUYTIMESRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=525,
-  serialized_end=578,
+  serialized_start=594,
+  serialized_end=647,
 )
 
 
@@ -372,13 +386,6 @@ _ARENAMATCHSTARTREQEUST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
-    _descriptor.FieldDescriptor(
-      name='rival_id', full_name='Dianjing.protocol.ArenaMatchStartReqeust.rival_id', index=1,
-      number=2, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
   ],
   extensions=[
   ],
@@ -391,8 +398,8 @@ _ARENAMATCHSTARTREQEUST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=580,
-  serialized_end=639,
+  serialized_start=649,
+  serialized_end=690,
 )
 
 
@@ -436,8 +443,8 @@ _ARENAMATCHSTARTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=641,
-  serialized_end=741,
+  serialized_start=692,
+  serialized_end=792,
 )
 
 
@@ -481,8 +488,8 @@ _ARENAMATCHREPORTREQEUST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=743,
-  serialized_end=811,
+  serialized_start=794,
+  serialized_end=862,
 )
 
 
@@ -515,22 +522,36 @@ _ARENAMATCHREPORTRESPONSE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='rank_changed', full_name='Dianjing.protocol.ArenaMatchReportResponse.rank_changed', index=3,
+      name='score_changed', full_name='Dianjing.protocol.ArenaMatchReportResponse.score_changed', index=3,
       number=4, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='max_rank', full_name='Dianjing.protocol.ArenaMatchReportResponse.max_rank', index=4,
+      name='rank_changed', full_name='Dianjing.protocol.ArenaMatchReportResponse.rank_changed', index=4,
       number=5, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='my_rank', full_name='Dianjing.protocol.ArenaMatchReportResponse.my_rank', index=5,
+      name='max_rank', full_name='Dianjing.protocol.ArenaMatchReportResponse.max_rank', index=5,
       number=6, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='my_rank', full_name='Dianjing.protocol.ArenaMatchReportResponse.my_rank', index=6,
+      number=7, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='my_score', full_name='Dianjing.protocol.ArenaMatchReportResponse.my_score', index=7,
+      number=8, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -547,8 +568,8 @@ _ARENAMATCHREPORTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=814,
-  serialized_end=966,
+  serialized_start=865,
+  serialized_end=1058,
 )
 
 
@@ -578,8 +599,8 @@ _ARENALEADERBOARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=968,
-  serialized_end=1010,
+  serialized_start=1060,
+  serialized_end=1102,
 )
 
 
@@ -623,8 +644,8 @@ _ARENALEADERBOARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1012,
-  serialized_end=1114,
+  serialized_start=1104,
+  serialized_end=1206,
 )
 
 
@@ -661,8 +682,8 @@ _ARENAHONORSTATUSNOTIFY_HONORSTATUS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1249,
-  serialized_end=1330,
+  serialized_start=1341,
+  serialized_end=1422,
 )
 
 _ARENAHONORSTATUSNOTIFY = _descriptor.Descriptor(
@@ -705,8 +726,8 @@ _ARENAHONORSTATUSNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1117,
-  serialized_end=1330,
+  serialized_start=1209,
+  serialized_end=1422,
 )
 
 
@@ -743,8 +764,8 @@ _ARENAHONORGETREWARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1332,
-  serialized_end=1392,
+  serialized_start=1424,
+  serialized_end=1484,
 )
 
 
@@ -788,8 +809,8 @@ _ARENAHONORGETREWARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1394,
-  serialized_end=1492,
+  serialized_start=1486,
+  serialized_end=1584,
 )
 
 
@@ -826,8 +847,8 @@ _ARENAMATCHLOGNOTIFY_LOG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1593,
-  serialized_end=1629,
+  serialized_start=1685,
+  serialized_end=1721,
 )
 
 _ARENAMATCHLOGNOTIFY = _descriptor.Descriptor(
@@ -863,8 +884,8 @@ _ARENAMATCHLOGNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1495,
-  serialized_end=1629,
+  serialized_start=1587,
+  serialized_end=1721,
 )
 
 _ARENANOTIFY.fields_by_name['rival'].message_type = _ARENARIVAL
