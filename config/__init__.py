@@ -37,7 +37,7 @@ from config.store import ConfigStore, ConfigStoreRefreshCost, ConfigStoreType
 from config.vip import ConfigVIP
 from config.collection import ConfigCollection
 from config.energy import ConfigEnergyBuyCost
-from config.formation import ConfigFormationSlot
+from config.formation import ConfigFormationSlot, ConfigFormation
 from config.welfare import ConfigWelfareSignIn, ConfigWelfareLevelReward, ConfigWelfareNewPlayer
 from config.template import ConfigBroadcastTemplate
 
@@ -197,6 +197,8 @@ def load_config():
         elif name == 'energy_buy_cost.json':
             ConfigEnergyBuyCost.initialize(data)
 
+        elif name == 'formation.json':
+            ConfigFormation.initialize(data)
         elif name == 'formation_slot.json':
             ConfigFormationSlot.initialize(data)
 

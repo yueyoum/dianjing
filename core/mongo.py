@@ -121,7 +121,9 @@ class MongoFormation(BaseDocument):
         # 只保存开了的， slot_id 从1 递增
         'slots': {},
         # slot_id 序列， 0 表示这个位置（index）的 slot 没有开启
-        'position': []
+        'position': [],
+        'levels': {},
+        'using': 0,
     }
 
     DOCUMENT_SLOT = {
