@@ -367,7 +367,6 @@ class Arena(object):
             {'_id': str(self.char_id)},
             {'$set': {
                 'rival': rival_id,
-                'search_index': search_index
             }}
         )
 
@@ -511,8 +510,20 @@ class Arena(object):
         config_search = ConfigArenaSearchRange.get(doc['search_index'])
         if win:
             score_changed = config_search.score_win
+            new_search_index = doc['search_index'] + 1
         else:
             score_changed = -config_search.score_lose
+            new_search_index = doc['search_index'] - 1
+
+        if new_search_index > ConfigArenaSearchRange.MAX_INDEX:
+            new_search_index = ConfigArenaSearchRange.MAX_INDEX
+        if new_search_index < 0:
+            new_search_index = 0
+
+        MongoArena.db(self.server_id).update_one(
+            {'_id': str(self.char_id)},
+            {'$set': {'search_index': new_search_index}}
+        )
 
         ass = ArenaScore(self.server_id, self.char_id)
 
