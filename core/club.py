@@ -112,6 +112,7 @@ class Club(AbstractClub):
             if k in in_formation_staffs:
                 self.formation_staffs.append(v)
 
+                v.policy = in_formation_staffs[k]['policy']
                 v.formation_position = in_formation_staffs[k]['position']
                 unit_id = in_formation_staffs[k]['unit_id']
                 if unit_id:
@@ -122,9 +123,11 @@ class Club(AbstractClub):
 
         talent_effects_1 = TalentManager(self.server_id, self.char_id).get_talent_effect()
         talent_effects_2 = Collection(self.server_id, self.char_id).get_talent_effects()
+        talent_effects_3 = fm.get_talent_effects()
 
         self.add_talent_effects(talent_effects_1)
         self.add_talent_effects(talent_effects_2)
+        self.add_talent_effects(talent_effects_3)
 
         for _, v in staff_objs.iteritems():
             v.calculate()

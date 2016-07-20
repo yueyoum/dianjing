@@ -18,7 +18,7 @@ from core.resource import ResourceClassification
 
 from utils.message import MessagePipe
 
-from config import ConfigErrorMessage, ConfigFormationSlot, ConfigFormation
+from config import ConfigErrorMessage, ConfigFormationSlot, ConfigFormation, ConfigUnitNew
 
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 from protomsg.formation_pb2 import (
@@ -138,7 +138,8 @@ class Formation(object):
                 position = self.doc['position'].index(int(slot_id))
                 staffs[v['staff_id']] = {
                     'unit_id': v['unit_id'],
-                    'position': position
+                    'position': position,
+                    'policy': v.get('policy', 1),
                 }
 
         return staffs
@@ -173,6 +174,12 @@ class Formation(object):
         updater['slots.{0}.staff_id'.format(slot_id)] = staff_id
         updater['slots.{0}.unit_id'.format(slot_id)] = 0
 
+        # 检测阵型是否还可用
+        if self.doc['using'] and not self.is_formation_valid(self.doc['using']):
+            self.doc['using'] = 0
+            updater['using'] = 0
+            self.send_formation_notify(formation_ids=[])
+
         MongoFormation.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': updater}
@@ -202,19 +209,29 @@ class Formation(object):
         if not staff_id:
             raise GameException(ConfigErrorMessage.get_error_id("FORMATION_SLOT_NO_STAFF"))
 
+        u = UnitManager(self.server_id, self.char_id).get_unit_object(unit_id)
+        s = StaffManger(self.server_id, self.char_id).get_staff_object(staff_id)
+
+        if s.config.race != u.config.race:
+            raise GameException(ConfigErrorMessage.get_error_id("FORMATION_STAFF_UNIT_RACE_NOT_MATCH"))
+
+        updater = {'slots.{0}.unit_id'.format(slot_id): unit_id}
+
+        # 检测阵型是否还可用
+        if self.doc['using'] and not self.is_formation_valid(self.doc['using']):
+            self.doc['using'] = 0
+            updater['using'] = 0
+            self.send_formation_notify(formation_ids=[])
+
         self.doc['slots'][str(slot_id)]['unit_id'] = unit_id
 
         MongoFormation.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': {
-                'slots.{0}.unit_id'.format(slot_id): unit_id
-            }}
+            {'$set': updater}
         )
 
         self.send_slot_notify(slot_ids=[slot_id])
 
-        u = UnitManager(self.server_id, self.char_id).get_unit_object(unit_id)
-        s = StaffManger(self.server_id, self.char_id).get_staff_object(staff_id)
         s.set_unit(u)
         s.calculate()
         s.make_cache()
@@ -243,6 +260,10 @@ class Formation(object):
             }}
         )
         self.send_slot_notify(slot_ids=[slot_id])
+
+        s = StaffManger(self.server_id, self.char_id).get_staff_object(staff_id)
+        s.policy = policy
+        s.make_cache()
 
     def move_slot(self, slot_id, to_index):
         if str(slot_id) not in self.doc['slots']:
@@ -323,11 +344,15 @@ class Formation(object):
 
         self.send_formation_notify(formation_ids=[fid])
 
+        if fid == self.doc['using']:
+            # 阵型改变，从而改变天赋
+            # 所以这里暴力重新加载staffs
+            club = Club(self.server_id, self.char_id, load_staffs=False)
+            club.force_load_staffs(send_notify=True)
+
     def is_formation_valid(self, fid):
         use_condition_type, use_condition_value = ConfigFormation.get(fid).use_condition
-
         in_formation_staffs = self.in_formation_staffs()
-        sm = StaffManger(self.server_id, self.char_id)
 
         if use_condition_type == 0:
             # 任意数量
@@ -337,8 +362,11 @@ class Formation(object):
             # 对应种族数量
             # 因为这个的 condition_type 的定义 和 race 定义是一样的，所以直接比较
             amount = 0
-            for staff_id in in_formation_staffs:
-                if sm.get_staff_object(staff_id).config.race == use_condition_type:
+            for _, v in in_formation_staffs:
+                if not v['unit_id']:
+                    continue
+
+                if ConfigUnitNew.get(v['unit_id']).race == use_condition_type:
                     amount += 1
 
             if amount < use_condition_value:
@@ -368,6 +396,19 @@ class Formation(object):
 
         self.send_formation_notify(formation_ids=[])
 
+        # 阵型改变，从而改变天赋
+        # 所以这里暴力重新加载staffs
+        club = Club(self.server_id, self.char_id, load_staffs=False)
+        club.force_load_staffs(send_notify=True)
+
+    def get_talent_effects(self):
+        fid = self.doc['using']
+        if not fid:
+            return []
+
+        level = self.doc['levels'][str(fid)]
+        return ConfigFormation.get(fid).levels[level].talent_effects
+
     def send_slot_notify(self, slot_ids=None):
         if slot_ids:
             act = ACT_UPDATE
@@ -395,7 +436,6 @@ class Formation(object):
                     notify_slot.status = FORMATION_SLOT_USE
                     notify_slot.staff_id = data['staff_id']
                     notify_slot.unit_id = data['unit_id']
-                    notify_slot.policy = data.get('policy', 1)
 
         MessagePipe(self.char_id).put(msg=notify)
 

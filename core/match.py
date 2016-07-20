@@ -111,6 +111,8 @@ class ClubMatch(object):
                 msg_troop.army.finalHurtAppend = fs.unit.final_hurt_addition
                 msg_troop.army.finalHurtReduce = fs.unit.final_hurt_reduce
 
+                msg_troop.policy = fs.policy
+
         fill_club_msg(msg.club_one, self.club_one)
         fill_club_msg(msg.club_two, self.club_two)
 

@@ -193,6 +193,9 @@ class AbstractStaff(object):
         'active_qianban_ids',
         # 牵绊的天赋
         'qianban_talent_ids',
+
+        # 策略 这个是和 阵型slot 绑定的，但为了方便， 直接设置到 staff 上
+        'policy',
     ]
 
     def __init__(self):
@@ -233,6 +236,8 @@ class AbstractStaff(object):
         self.other_talent_ids = []
         self.active_qianban_ids = []
         self.qianban_talent_ids = []
+
+        self.policy = 1
 
     @classmethod
     def get(cls, _id):
@@ -643,6 +648,9 @@ class AbstractClub(object):
         return self.talents_for_rival + ids
 
     def add_talent_effects(self, talent_effect_ids):
+        if not talent_effect_ids:
+            return
+
         for i in talent_effect_ids:
             config = ConfigTalentSkill.get(i)
             if config.target in [14, 15]:
