@@ -241,60 +241,43 @@ class Formation(object):
         club = Club(self.server_id, self.char_id, load_staffs=False)
         club.force_load_staffs(send_notify=True)
 
-    def set_policy(self, slot_id, policy):
-        if str(slot_id) not in self.doc['slots']:
-            raise GameException(ConfigErrorMessage.get_error_id("FORMATION_SLOT_NOT_OPEN"))
+    def sync_from_client(self, slots_data):
+        positions = range(0, 30)
+        updater = {}
 
-        staff_id = self.doc['slots'][str(slot_id)]['staff_id']
-        if not staff_id:
-            raise GameException(ConfigErrorMessage.get_error_id("FORMATION_SLOT_NO_STAFF"))
+        for slot_id, index, policy in slots_data:
+            if str(slot_id) not in self.doc['slots']:
+                raise GameException(ConfigErrorMessage.get_error_id("FORMATION_SLOT_NOT_OPEN"))
 
-        if policy not in [1, 2]:
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+            if index < 0 or index > 29:
+                raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
-        self.doc['slots'][str(slot_id)]['policy'] = policy
-        MongoFormation.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': {
-                'slots.{0}.policy'.format(slot_id): policy
-            }}
-        )
-        self.send_slot_notify(slot_ids=[slot_id])
+            if policy not in [1, 2]:
+                raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
-        s = StaffManger(self.server_id, self.char_id).get_staff_object(staff_id)
-        s.policy = policy
-        s.make_cache()
+            if not self.doc['slots']['staff_id']:
+                raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
-    def move_slot(self, slot_id, to_index):
-        if str(slot_id) not in self.doc['slots']:
-            raise GameException(ConfigErrorMessage.get_error_id("FORMATION_SLOT_NOT_OPEN"))
+            positions[index] = slot_id
+            updater['slots.{0}.policy'] = policy
 
-        if to_index < 0 or to_index > 30:
-            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+        updater['position'] = positions
 
-        this_slot_index = self.doc['position'].index(slot_id)
-        target_slot_id = self.doc['position'][to_index]
-
-        self.doc['position'][to_index] = slot_id
-        self.doc['position'][this_slot_index] = target_slot_id
+        self.doc['position'] = positions
+        for slot_id, index, policy in slots_data:
+            self.doc['slots.{0}.policy'.format(slot_id)] = policy
 
         MongoFormation.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': {
-                'position.{0}'.format(to_index): slot_id,
-                'position.{0}'.format(this_slot_index): target_slot_id
-            }}
+            {'$set': updater}
         )
 
-        changed = [slot_id]
-        if target_slot_id:
-            # NOTE: 要是 把 slot_id 移动到 一个空的位置
-            # 此时 target_slot_id 为0， 直接发notify 就会混乱
-            changed.append(target_slot_id)
+        self.send_slot_notify()
 
-        self.send_slot_notify(slot_ids=changed)
-        # 阵型位置改了，staff有缓存，得重新load
-        Club(self.server_id, self.char_id, load_staffs=False).force_load_staffs()
+        # 阵型改变，从而改变天赋
+        # 所以这里暴力重新加载staffs
+        club = Club(self.server_id, self.char_id, load_staffs=False)
+        club.force_load_staffs(send_notify=True)
 
     def active_formation(self, fid):
         config = ConfigFormation.get(fid)

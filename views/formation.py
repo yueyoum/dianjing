@@ -12,13 +12,12 @@ from utils.http import ProtobufResponse
 from core.formation import Formation
 
 from protomsg.formation_pb2 import (
-    FormationMoveSlotResponse,
     FormationSetStaffResponse,
     FormationSetUnitResponse,
     FormationActiveResponse,
     FormationLevelUpResponse,
-    FormationSetPolicyResponse,
     FormationUseResponse,
+    FormationSyncResponse,
 )
 
 def set_staff(request):
@@ -47,20 +46,6 @@ def set_unit(request):
     f.set_unit(slot_id, unit_id)
 
     response = FormationSetUnitResponse()
-    response.ret = 0
-    return ProtobufResponse(response)
-
-def move_slot(request):
-    server_id = request._game_session.server_id
-    char_id = request._game_session.char_id
-
-    slot_id = request._proto.slot_id
-    to_index = request._proto.to_index
-
-    f = Formation(server_id, char_id)
-    f.move_slot(slot_id, to_index)
-
-    response = FormationMoveSlotResponse()
     response.ret = 0
     return ProtobufResponse(response)
 
@@ -101,16 +86,16 @@ def use(request):
     response.ret = 0
     return ProtobufResponse(response)
 
-def set_policy(request):
+def sync(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
-    slot_id = request._proto.slot_id
-    policy = request._proto.unit_id
+    slots_data = []
+    for slot in request._proto.slots:
+        slots_data.append((slot.id, slot.index, slot.policy))
 
-    f = Formation(server_id, char_id)
-    f.set_policy(slot_id, policy)
+    Formation(server_id, char_id).sync_from_client(slots_data)
 
-    response = FormationSetPolicyResponse()
+    response = FormationSyncResponse()
     response.ret = 0
     return ProtobufResponse(response)
