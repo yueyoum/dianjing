@@ -303,7 +303,7 @@ class Arena(object):
             raise GameException(ConfigErrorMessage.get_error_id("ARENA_MAX_RANK_CHECK_FAILURE"))
 
     def search_rival(self):
-        # 获取对手列表
+        # 获取对手
         def _query(low, high):
             condition = [
                 {'_id': {'$gte': low}},
@@ -363,14 +363,7 @@ class Arena(object):
         if not rival_id:
             raise GameException(ConfigErrorMessage.get_error_id("ARENA_SEARCH_NO_RIVAL"))
 
-        MongoArena.db(self.server_id).update_one(
-            {'_id': str(self.char_id)},
-            {'$set': {
-                'rival': rival_id,
-            }}
-        )
-
-        self.send_notify()
+        return rival_id
 
     def get_refresh_cd(self):
         return ArenaRefreshCD(self.server_id, self.char_id).get_cd_seconds()
@@ -522,7 +515,10 @@ class Arena(object):
 
         MongoArena.db(self.server_id).update_one(
             {'_id': str(self.char_id)},
-            {'$set': {'search_index': new_search_index}}
+            {'$set': {
+                'search_index': new_search_index,
+                'rival': 0,
+            }}
         )
 
         ass = ArenaScore(self.server_id, self.char_id)
