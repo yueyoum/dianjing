@@ -192,6 +192,7 @@ class Arena(object):
         self.server_id = server_id
         self.char_id = char_id
 
+        self.try_create_arena_npc(self.server_id)
         self.try_add_self_in_arena()
 
     @classmethod
@@ -239,6 +240,7 @@ class Arena(object):
 
                     doc = MongoArena.document()
                     doc['_id'] = _id
+                    doc['search_index'] = ConfigArenaSearchRange.START_INDEX
                     npcs.append(doc)
 
                     score = random.randint(v.score_low, v.score_high)
@@ -275,6 +277,7 @@ class Arena(object):
 
         doc = MongoArena.document()
         doc['_id'] = str(self.char_id)
+        doc['search_index'] = ConfigArenaSearchRange.START_INDEX
         MongoArena.db(self.server_id).insert_one(doc)
 
         ArenaScore(self.server_id, self.char_id).set_score(ARENA_DEFAULT_SCORE)
@@ -363,7 +366,7 @@ class Arena(object):
         MongoArena.db(self.server_id).update_one(
             {'_id': str(self.char_id)},
             {'$set': {
-                'rival_id': rival_id,
+                'rival': rival_id,
                 'search_index': search_index
             }}
         )

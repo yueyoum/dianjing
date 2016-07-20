@@ -52,6 +52,7 @@ class FormationLevel(object):
 
 class Formation(object):
     __slots__ = [
+        'id',
         'active_need_star',
         'active_need_items',
         'use_condition',
@@ -60,6 +61,7 @@ class Formation(object):
     ]
 
     def __init__(self):
+        self.id = 0
         self.active_need_star = 0
         self.active_need_items = []
         self.use_condition = []
