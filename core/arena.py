@@ -428,7 +428,7 @@ class Arena(object):
         if cd:
             # 就是要花钱了
             ti = TimesInfo(self.server_id, self.char_id)
-            if not ti.reset_times:
+            if not ti.remained_reset_times:
                 raise GameException(ConfigErrorMessage.get_error_id("ARENA_NO_SEARCH_RESET_TIMES"))
 
             cost = [(money_text_to_item_id('diamond'), ti.reset_cost), ]
@@ -715,15 +715,14 @@ class Arena(object):
         notify.max_rank = self.get_max_rank()
 
         if doc['rival']:
-            notify_rival = notify.rival.add()
             rival_club = ArenaClub(self.server_id, doc['rival'])
 
-            notify_rival.id = str(rival_club.id)
-            notify_rival.name = rival_club.name
-            notify_rival.club_flag = rival_club.flag
-            notify_rival.level = rival_club.level
-            notify_rival.power = rival_club.power
-            notify_rival.rank = Arena(self.server_id, doc['rival']).get_current_rank()
-            notify_rival.score = ArenaScore(self.server_id, doc['rival']).score
+            notify.rival.id = str(rival_club.id)
+            notify.rival.name = rival_club.name
+            notify.rival.club_flag = rival_club.flag
+            notify.rival.level = rival_club.level
+            notify.rival.power = rival_club.power
+            notify.rival.rank = Arena(self.server_id, doc['rival']).get_current_rank()
+            notify.rival.score = ArenaScore(self.server_id, doc['rival']).score
 
         MessagePipe(self.char_id).put(msg=notify)
