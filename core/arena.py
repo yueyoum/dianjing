@@ -341,22 +341,25 @@ class Arena(object):
         rival_id = 0
         _search_times = 0
         while True:
-            if _search_times > len(ConfigArenaSearchRange.LIST):
+            if _search_times > len(ConfigArenaSearchRange.LIST) * 2:
                 break
+
+            # 这里循环 search_index
+            if search_index > ConfigArenaSearchRange.MAX_INDEX:
+                search_index = ConfigArenaSearchRange.START_INDEX - 1
+            elif search_index < 0:
+                search_index = ConfigArenaSearchRange.START_INDEX
 
             search_config = ConfigArenaSearchRange.get(search_index)
             rival_id = _query(my_score * search_config.range_1, my_score * search_config.range_2)
             if rival_id:
                 break
 
+            # 这里改变 search_index
             if search_index >= ConfigArenaSearchRange.START_INDEX:
                 search_index += 1
-                if search_index > ConfigArenaSearchRange.MAX_INDEX:
-                    search_index = ConfigArenaSearchRange.START_INDEX - 1
             else:
                 search_index -= 1
-                if search_index < 0:
-                    search_index = 0
 
             _search_times += 1
 
