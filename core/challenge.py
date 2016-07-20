@@ -167,6 +167,10 @@ class Challenge(object):
         if update_challenge_ids:
             self.send_challenge_notify(update_challenge_ids)
 
+    def check_starts(self, star):
+        if star > self.get_all_star():
+            raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_STAR_NOT_ENOUGH"))
+
     def get_all_star(self):
         doc = MongoChallenge.db(self.server_id).find_one(
             {'_id': self.char_id},

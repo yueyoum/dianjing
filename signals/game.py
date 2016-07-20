@@ -53,7 +53,10 @@ def game_start_handler(server_id, char_id, **kwargs):
 
     StaffManger(server_id, char_id).send_notify()
     StaffRecruit(server_id, char_id).send_notify()
-    Formation(server_id, char_id).send_notify()
+
+    f = Formation(server_id, char_id)
+    f.send_formation_notify()
+    f.send_slot_notify()
 
     club = Club(server_id, char_id)
     club.set_login()

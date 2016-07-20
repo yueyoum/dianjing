@@ -122,6 +122,8 @@ class MongoFormation(BaseDocument):
         'slots': {},
         # slot_id 序列， 0 表示这个位置（index）的 slot 没有开启
         'position': [],
+
+        # 新加 选择阵型，升级
         'levels': {},
         'using': 0,
     }
@@ -129,6 +131,7 @@ class MongoFormation(BaseDocument):
     DOCUMENT_SLOT = {
         'staff_id': "",
         'unit_id': 0,
+        'policy': 1,
     }
 
     @classmethod

@@ -48,6 +48,10 @@ urlpatterns = [
     url(r'^formation/setstaff/$', views.formation.set_staff),
     url(r'^formation/setunit/$', views.formation.set_unit),
     url(r'^formation/moveslot/$', views.formation.move_slot),
+    url(r'^formation/active/$', views.formation.active),
+    url(r'^formation/levelup/$', views.formation.level_up),
+    url(r'^formation/use/$', views.formation.use),
+    url(r'^formation/setpolicy/$', views.formation.set_policy),
 
     url(r'^staff/recruit/$', views.staff.recruit),
 

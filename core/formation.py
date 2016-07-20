@@ -13,10 +13,12 @@ from core.mongo import MongoFormation
 from core.staff import StaffManger
 from core.unit import UnitManager
 from core.club import Club
+from core.challenge import Challenge
+from core.resource import ResourceClassification
 
 from utils.message import MessagePipe
 
-from config import ConfigErrorMessage, ConfigFormationSlot
+from config import ConfigErrorMessage, ConfigFormationSlot, ConfigFormation
 
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 from protomsg.formation_pb2 import (
@@ -24,6 +26,7 @@ from protomsg.formation_pb2 import (
     FORMATION_SLOT_NOT_OPEN,
     FORMATION_SLOT_USE,
     FormationNotify,
+    FormationSlotNotify,
 )
 
 MAX_SLOT_AMOUNT = 6
@@ -115,7 +118,7 @@ class Formation(object):
                 {'$set': updater}
             )
 
-            self.send_notify(slot_ids=new_slot_ids)
+            self.send_slot_notify(slot_ids=new_slot_ids)
 
     def is_staff_in_formation(self, staff_id):
         for _, v in self.doc['slots'].iteritems():
@@ -175,7 +178,7 @@ class Formation(object):
             {'$set': updater}
         )
 
-        self.send_notify(slot_ids=[slot_id])
+        self.send_slot_notify(slot_ids=[slot_id])
 
         # NOTE 阵型改变，重新load staffs
         # 这里不直接调用 club.force_load_staffs 的 send_notify
@@ -208,7 +211,7 @@ class Formation(object):
             }}
         )
 
-        self.send_notify(slot_ids=[slot_id])
+        self.send_slot_notify(slot_ids=[slot_id])
 
         u = UnitManager(self.server_id, self.char_id).get_unit_object(unit_id)
         s = StaffManger(self.server_id, self.char_id).get_staff_object(staff_id)
@@ -220,6 +223,26 @@ class Formation(object):
         # 所以这里暴力重新加载staffs
         club = Club(self.server_id, self.char_id, load_staffs=False)
         club.force_load_staffs(send_notify=True)
+
+    def set_policy(self, slot_id, policy):
+        if str(slot_id) not in self.doc['slots']:
+            raise GameException(ConfigErrorMessage.get_error_id("FORMATION_SLOT_NOT_OPEN"))
+
+        staff_id = self.doc['slots'][str(slot_id)]['staff_id']
+        if not staff_id:
+            raise GameException(ConfigErrorMessage.get_error_id("FORMATION_SLOT_NO_STAFF"))
+
+        if policy not in [1, 2]:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
+        self.doc['slots'][str(slot_id)]['policy'] = policy
+        MongoFormation.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'slots.{0}.policy'.format(slot_id): policy
+            }}
+        )
+        self.send_slot_notify(slot_ids=[slot_id])
 
     def move_slot(self, slot_id, to_index):
         if str(slot_id) not in self.doc['slots']:
@@ -248,36 +271,148 @@ class Formation(object):
             # 此时 target_slot_id 为0， 直接发notify 就会混乱
             changed.append(target_slot_id)
 
-        self.send_notify(slot_ids=changed)
+        self.send_slot_notify(slot_ids=changed)
         # 阵型位置改了，staff有缓存，得重新load
         Club(self.server_id, self.char_id, load_staffs=False).force_load_staffs()
 
-    def send_notify(self, slot_ids=None):
+    def active_formation(self, fid):
+        config = ConfigFormation.get(fid)
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("FORMATION_NOT_EXIST"))
+
+        if str(fid) in self.doc['levels']:
+            raise GameException(ConfigErrorMessage.get_error_id("FORMATION_ALREADY_ACTIVE"))
+
+        Challenge(self.server_id, self.char_id).check_starts(config.active_need_star)
+
+        rc = ResourceClassification.classify(config.active_need_items)
+        rc.check_exist(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id)
+
+        self.doc['levels'][str(fid)] = 1
+        MongoFormation.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'levels.{0}'.format(fid): 1
+            }}
+        )
+
+        self.send_formation_notify(formation_ids=[fid])
+
+    def levelup_formation(self, fid):
+        config = ConfigFormation.get(fid)
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("FORMATION_NOT_EXIST"))
+
+        level = self.doc['levels'].get(str(fid), 0)
+        if level == 0:
+            raise GameException(ConfigErrorMessage.get_error_id("FORMATION_NOT_ACTIVE"))
+
+        if level >= config.max_level:
+            raise GameException(ConfigErrorMessage.get_error_id("FORMATION_REACH_MAX_LEVEL"))
+
+        Challenge(self.server_id, self.char_id).check_starts(config.levels[level].level_up_need_star)
+
+        self.doc['levels'][str(fid)] = level + 1
+        MongoFormation.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'levels.{0}'.format(fid): level + 1
+            }}
+        )
+
+        self.send_formation_notify(formation_ids=[fid])
+
+    def is_formation_valid(self, fid):
+        use_condition_type, use_condition_value = ConfigFormation.get(fid).use_condition
+
+        in_formation_staffs = self.in_formation_staffs()
+        sm = StaffManger(self.server_id, self.char_id)
+
+        if use_condition_type == 0:
+            # 任意数量
+            if len(in_formation_staffs) < use_condition_value:
+                return False
+        else:
+            # 对应种族数量
+            # 因为这个的 condition_type 的定义 和 race 定义是一样的，所以直接比较
+            amount = 0
+            for staff_id in in_formation_staffs:
+                if sm.get_staff_object(staff_id).config.race == use_condition_type:
+                    amount += 1
+
+            if amount < use_condition_value:
+                return False
+
+        return True
+
+    def use_formation(self, fid):
+        config = ConfigFormation.get(fid)
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("FORMATION_NOT_EXIST"))
+
+        level = self.doc['levels'].get(str(fid), 0)
+        if level == 0:
+            raise GameException(ConfigErrorMessage.get_error_id("FORMATION_NOT_ACTIVE"))
+
+        if not self.is_formation_valid(fid):
+            raise GameException(ConfigErrorMessage.get_error_id("FORMATION_CAN_NOT_USE"))
+
+        self.doc['using'] = fid
+        MongoFormation.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'using': fid
+            }}
+        )
+
+        self.send_formation_notify(formation_ids=[])
+
+    def send_slot_notify(self, slot_ids=None):
         if slot_ids:
             act = ACT_UPDATE
         else:
             act = ACT_INIT
             slot_ids = range(1, MAX_SLOT_AMOUNT + 1)
 
-        notify = FormationNotify()
+        notify = FormationSlotNotify()
         notify.act = act
 
         for _id in slot_ids:
-            notify_formation = notify.formation.add()
-            notify_formation.slot_id = _id
+            notify_slot = notify.slots.add()
+            notify_slot.slot_id = _id
 
             try:
                 data = self.doc['slots'][str(_id)]
             except KeyError:
-                notify_formation.status = FORMATION_SLOT_NOT_OPEN
+                notify_slot.status = FORMATION_SLOT_NOT_OPEN
             else:
-                notify_formation.position = self.doc['position'].index(_id)
+                notify_slot.position = self.doc['position'].index(_id)
 
                 if not data['staff_id']:
-                    notify_formation.status = FORMATION_SLOT_EMPTY
+                    notify_slot.status = FORMATION_SLOT_EMPTY
                 else:
-                    notify_formation.status = FORMATION_SLOT_USE
-                    notify_formation.staff_id = data['staff_id']
-                    notify_formation.unit_id = data['unit_id']
+                    notify_slot.status = FORMATION_SLOT_USE
+                    notify_slot.staff_id = data['staff_id']
+                    notify_slot.unit_id = data['unit_id']
+                    notify_slot.policy = data.get('policy', 1)
+
+        MessagePipe(self.char_id).put(msg=notify)
+
+    def send_formation_notify(self, formation_ids=None):
+        if formation_ids:
+            act = ACT_UPDATE
+        else:
+            act = ACT_INIT
+            formation_ids = ConfigFormation.INSTANCES.keys()
+
+        notify = FormationNotify()
+        notify.act = act
+        notify.using_formation = self.doc['using']
+
+        for i in formation_ids:
+            notify_formation = notify.formation.add()
+            notify_formation.id = i
+            notify_formation.level = self.doc['levels'].get(str(i), 0)
 
         MessagePipe(self.char_id).put(msg=notify)
