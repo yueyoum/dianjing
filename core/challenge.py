@@ -17,6 +17,7 @@ from core.unit import NPCUnit
 from core.task import TaskMain
 from core.vip import VIP
 from core.energy import Energy
+from core.formation import Formation
 
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.value_log import ValueLogChallengeMatchTimes, ValueLogAllChallengeWinTimes, ValueLogChallengeResetTimes
@@ -179,7 +180,7 @@ class Challenge(object):
 
         return sum(doc['challenge_star'].values())
 
-    def start(self, challenge_id):
+    def start(self, challenge_id, formation_slots=None):
         config = ConfigChallengeMatch.get(challenge_id)
         if not config:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NOT_EXIST"))
@@ -196,6 +197,9 @@ class Challenge(object):
         rt = RemainedTimes(self.server_id, self.char_id, challenge_id)
         if not rt.remained_match_times:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_WITHOUT_TIMES"))
+
+        if formation_slots:
+            Formation(self.server_id, self.char_id).sync_slots(formation_slots)
 
         Energy(self.server_id, self.char_id).check(config.energy)
 

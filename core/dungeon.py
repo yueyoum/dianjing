@@ -20,6 +20,7 @@ from core.value_log import ValueLogDungeonMatchTimes, ValueLogDungeonBuyTimes
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.vip import VIP
 from core.energy import Energy
+from core.formation import Formation
 
 from protomsg.dungeon_pb2 import DungeonNotify
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
@@ -82,7 +83,7 @@ class Dungeon(object):
         if send_notify:
             self.send_notify(category_id=category_id)
 
-    def start(self, dungeon_id):
+    def start(self, dungeon_id, formation_slots=None):
         grade_conf = ConfigDungeonGrade.get(dungeon_id)
         if not grade_conf:
             raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_NOT_EXIST"))
@@ -91,6 +92,9 @@ class Dungeon(object):
 
         if grade_conf.need_level > club_one.level:
             raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_CLUB_LEVEL_NOT_ENOUGH"))
+
+        if formation_slots:
+            Formation(self.server_id, self.char_id).sync_slots(formation_slots)
 
         Energy(self.server_id, self.char_id).check(ConfigDungeon.get(grade_conf.belong).cost)
 

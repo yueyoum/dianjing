@@ -19,7 +19,10 @@ from protomsg.territory_pb2 import (
     TerritoryMatchReportResponse,
     TerritoryStoreBuyResponse,
     TerritoryInspireResponse,
+    TerritoryMatchStartResponse,
 )
+
+from views.helper import parse_protocol_sync_formation_slots
 
 def start(request):
     server_id = request._game_session.server_id
@@ -110,6 +113,20 @@ def friend_help(request):
 
     return ProtobufResponse(response)
 
+def friend_match_start(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    key = request._proto.key
+    formation_slots = parse_protocol_sync_formation_slots(request._proto.slots)
+
+    match = TerritoryFriend(server_id, char_id).match_start(key, formation_slots)
+
+    response = TerritoryMatchStartResponse()
+    response.ret = 0
+    response.match.MergeFrom(match)
+
+    return ProtobufResponse(response)
 
 def friend_report(request):
     server_id = request._game_session.server_id

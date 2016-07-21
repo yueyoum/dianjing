@@ -13,7 +13,6 @@ from core.mongo import MongoFormation
 from core.staff import StaffManger
 from core.unit import UnitManager
 from core.club import Club
-from core.challenge import Challenge
 from core.resource import ResourceClassification
 
 from utils.message import MessagePipe
@@ -241,7 +240,7 @@ class Formation(object):
         club = Club(self.server_id, self.char_id, load_staffs=False)
         club.force_load_staffs(send_notify=True)
 
-    def sync_from_client(self, slots_data):
+    def sync_slots(self, slots_data):
         positions = range(0, 30)
         updater = {}
 
@@ -255,7 +254,7 @@ class Formation(object):
             if policy not in [1, 2]:
                 raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
-            if not self.doc['slots']['staff_id']:
+            if not self.doc['slots'][str(slot_id)]['staff_id']:
                 raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
             positions[index] = slot_id
@@ -265,14 +264,14 @@ class Formation(object):
 
         self.doc['position'] = positions
         for slot_id, index, policy in slots_data:
-            self.doc['slots.{0}.policy'.format(slot_id)] = policy
+            self.doc['slots'][str(slot_id)]['policy'] = policy
 
         MongoFormation.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': updater}
         )
 
-        self.send_slot_notify()
+        self.send_slot_notify(slot_ids=self.doc['slots'].keys())
 
         # 阵型改变，从而改变天赋
         # 所以这里暴力重新加载staffs
@@ -280,6 +279,8 @@ class Formation(object):
         club.force_load_staffs(send_notify=True)
 
     def active_formation(self, fid):
+        from core.challenge import Challenge
+
         config = ConfigFormation.get(fid)
         if not config:
             raise GameException(ConfigErrorMessage.get_error_id("FORMATION_NOT_EXIST"))
@@ -304,6 +305,8 @@ class Formation(object):
         self.send_formation_notify(formation_ids=[fid])
 
     def levelup_formation(self, fid):
+        from core.challenge import Challenge
+
         config = ConfigFormation.get(fid)
         if not config:
             raise GameException(ConfigErrorMessage.get_error_id("FORMATION_NOT_EXIST"))
@@ -369,14 +372,19 @@ class Formation(object):
         if not self.is_formation_valid(fid):
             raise GameException(ConfigErrorMessage.get_error_id("FORMATION_CAN_NOT_USE"))
 
+        updater = {'using': fid}
         self.doc['using'] = fid
+        # 把格子策略设置为默认值
+        for k in self.doc['slots']:
+            self.doc['slots'][k]['policy'] = 1
+            updater['slots.{0}.policy'.format(k)] = 1
+
         MongoFormation.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': {
-                'using': fid
-            }}
+            {'$set': updater}
         )
 
+        self.send_slot_notify(slot_ids=self.doc['slots'].keys())
         self.send_formation_notify(formation_ids=[])
 
         # 阵型改变，从而改变天赋

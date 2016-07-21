@@ -19,6 +19,8 @@ from protomsg.challenge_pb2 import (
     ChallengeResetResponse,
 )
 
+from views.helper import parse_protocol_sync_formation_slots
+
 
 def reset(request):
     server_id = request._game_session.server_id
@@ -40,8 +42,10 @@ def start(request):
 
     challenge_id = request._proto.id
 
+    formation_slots = parse_protocol_sync_formation_slots(request._proto.slots)
+
     c = Challenge(server_id, char_id)
-    msg = c.start(challenge_id)
+    msg = c.start(challenge_id, formation_slots)
 
     response = ChallengeStartResponse()
     response.ret = 0

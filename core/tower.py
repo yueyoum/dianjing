@@ -18,6 +18,7 @@ from core.resource import ResourceClassification, money_text_to_item_id
 from core.value_log import ValueLogTowerResetTimes, ValueLogTowerWinTimes
 from core.vip import VIP
 from core.mail import MailManager
+from core.formation import Formation
 
 from utils.message import MessagePipe
 
@@ -176,7 +177,7 @@ class Tower(object):
             }}
         )
 
-    def match(self):
+    def match(self, formation_slots=None):
         sweep_end_at = self.doc.get('sweep_end_at', 0)
         if sweep_end_at:
             raise GameException(ConfigErrorMessage.get_error_id("TOWER_IN_SWEEP_CANNOT_OPERATE"))
@@ -184,6 +185,9 @@ class Tower(object):
         level = self.get_current_level()
         if not level:
             raise GameException(ConfigErrorMessage.get_error_id("TOWER_ALREADY_ALL_PASSED"))
+
+        if formation_slots:
+            Formation(self.server_id, self.char_id).sync_slots(formation_slots)
 
         config = ConfigTowerLevel.get(level)
 

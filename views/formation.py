@@ -17,7 +17,6 @@ from protomsg.formation_pb2 import (
     FormationActiveResponse,
     FormationLevelUpResponse,
     FormationUseResponse,
-    FormationSyncResponse,
 )
 
 def set_staff(request):
@@ -83,19 +82,5 @@ def use(request):
     Formation(server_id, char_id).use_formation(fid)
 
     response = FormationUseResponse()
-    response.ret = 0
-    return ProtobufResponse(response)
-
-def sync(request):
-    server_id = request._game_session.server_id
-    char_id = request._game_session.char_id
-
-    slots_data = []
-    for slot in request._proto.slots:
-        slots_data.append((slot.id, slot.index, slot.policy))
-
-    Formation(server_id, char_id).sync_from_client(slots_data)
-
-    response = FormationSyncResponse()
     response.ret = 0
     return ProtobufResponse(response)

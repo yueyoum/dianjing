@@ -16,15 +16,16 @@ _sym_db = _symbol_database.Default()
 import match_pb2 as match__pb2
 import package_pb2 as package__pb2
 import common_pb2 as common__pb2
+import formation_pb2 as formation__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='dungeon.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\rdungeon.proto\x12\x11\x44ianjing.protocol\x1a\x0bmatch.proto\x1a\rpackage.proto\x1a\x0c\x63ommon.proto\"R\n\x0b\x44ungeonInfo\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x12\n\nfree_times\x18\x02 \x02(\x05\x12\x11\n\tbuy_times\x18\x03 \x02(\x05\x12\x10\n\x08\x62uy_cost\x18\x04 \x02(\x05\"v\n\rDungeonNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12,\n\x04info\x18\x03 \x03(\x0b\x32\x1e.Dianjing.protocol.DungeonInfo\"5\n\x16\x44ungeonBuyTimesRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"7\n\x17\x44ungeonBuyTimesResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\"2\n\x13\x44ungeonMatchRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"a\n\x14\x44ungeonMatchResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"G\n\x19\x44ungeonMatchReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04star\x18\x02 \x02(\x05\x12\x0b\n\x03key\x18\x03 \x02(\t\"a\n\x1a\x44ungeonMatchReportResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop')
+  serialized_pb=_b('\n\rdungeon.proto\x12\x11\x44ianjing.protocol\x1a\x0bmatch.proto\x1a\rpackage.proto\x1a\x0c\x63ommon.proto\x1a\x0f\x66ormation.proto\"R\n\x0b\x44ungeonInfo\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x12\n\nfree_times\x18\x02 \x02(\x05\x12\x11\n\tbuy_times\x18\x03 \x02(\x05\x12\x10\n\x08\x62uy_cost\x18\x04 \x02(\x05\"v\n\rDungeonNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12,\n\x04info\x18\x03 \x03(\x0b\x32\x1e.Dianjing.protocol.DungeonInfo\"5\n\x16\x44ungeonBuyTimesRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"7\n\x17\x44ungeonBuyTimesResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\"g\n\x13\x44ungeonMatchRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\x12\x33\n\x05slots\x18\x03 \x03(\x0b\x32$.Dianjing.protocol.SyncFormationSlot\"a\n\x14\x44ungeonMatchResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"G\n\x19\x44ungeonMatchReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04star\x18\x02 \x02(\x05\x12\x0b\n\x03key\x18\x03 \x02(\t\"a\n\x1a\x44ungeonMatchReportResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop')
   ,
-  dependencies=[match__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,common__pb2.DESCRIPTOR,])
+  dependencies=[match__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,common__pb2.DESCRIPTOR,formation__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
@@ -77,8 +78,8 @@ _DUNGEONINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=78,
-  serialized_end=160,
+  serialized_start=95,
+  serialized_end=177,
 )
 
 
@@ -122,8 +123,8 @@ _DUNGEONNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=162,
-  serialized_end=280,
+  serialized_start=179,
+  serialized_end=297,
 )
 
 
@@ -160,8 +161,8 @@ _DUNGEONBUYTIMESREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=282,
-  serialized_end=335,
+  serialized_start=299,
+  serialized_end=352,
 )
 
 
@@ -198,8 +199,8 @@ _DUNGEONBUYTIMESRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=337,
-  serialized_end=392,
+  serialized_start=354,
+  serialized_end=409,
 )
 
 
@@ -224,6 +225,13 @@ _DUNGEONMATCHREQUEST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='slots', full_name='Dianjing.protocol.DungeonMatchRequest.slots', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -236,8 +244,8 @@ _DUNGEONMATCHREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=394,
-  serialized_end=444,
+  serialized_start=411,
+  serialized_end=514,
 )
 
 
@@ -281,8 +289,8 @@ _DUNGEONMATCHRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=446,
-  serialized_end=543,
+  serialized_start=516,
+  serialized_end=613,
 )
 
 
@@ -326,8 +334,8 @@ _DUNGEONMATCHREPORTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=545,
-  serialized_end=616,
+  serialized_start=615,
+  serialized_end=686,
 )
 
 
@@ -371,12 +379,13 @@ _DUNGEONMATCHREPORTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=618,
-  serialized_end=715,
+  serialized_start=688,
+  serialized_end=785,
 )
 
 _DUNGEONNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _DUNGEONNOTIFY.fields_by_name['info'].message_type = _DUNGEONINFO
+_DUNGEONMATCHREQUEST.fields_by_name['slots'].message_type = formation__pb2._SYNCFORMATIONSLOT
 _DUNGEONMATCHRESPONSE.fields_by_name['match'].message_type = match__pb2._CLUBMATCH
 _DUNGEONMATCHREPORTRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 DESCRIPTOR.message_types_by_name['DungeonInfo'] = _DUNGEONINFO

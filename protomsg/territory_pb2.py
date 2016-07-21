@@ -17,15 +17,16 @@ _sym_db = _symbol_database.Default()
 import common_pb2 as common__pb2
 import package_pb2 as package__pb2
 import match_pb2 as match__pb2
+import formation_pb2 as formation__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='territory.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0fterritory.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\x1a\x0bmatch.proto\"\xf4\x01\n\rTerritorySlot\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x36\n\x06status\x18\x02 \x02(\x0e\x32&.Dianjing.protocol.TerritorySlotStatus\x12\x10\n\x08staff_id\x18\x03 \x01(\t\x12\x0c\n\x04hour\x18\x04 \x01(\x05\x12\x0e\n\x06\x65nd_at\x18\x05 \x01(\x03\x12\x37\n\x06report\x18\x06 \x03(\x0b\x32\'.Dianjing.protocol.TerritorySlot.Report\x1a\x36\n\x06Report\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05param\x18\x02 \x03(\t\x12\x11\n\ttimestamp\x18\x03 \x02(\x03\"\x8a\x02\n\x11TerritoryBuilding\x12\n\n\x02id\x18\x01 \x02(\x05\x12:\n\x06status\x18\x02 \x02(\x0e\x32*.Dianjing.protocol.TerritoryBuildingStatus\x12\r\n\x05level\x18\x03 \x01(\x05\x12\x0b\n\x03\x65xp\x18\x04 \x01(\x05\x12\x12\n\nproduct_id\x18\x05 \x01(\x05\x12\x16\n\x0eproduct_amount\x18\x06 \x01(\x05\x12\x14\n\x0cinspire_cost\x18\x07 \x01(\x05\x12\x1e\n\x16remained_inspire_times\x18\x08 \x01(\x05\x12/\n\x05slots\x18\t \x03(\x0b\x32 .Dianjing.protocol.TerritorySlot\"\xae\x01\n\x0fTerritoryNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x37\n\tbuildings\x18\x03 \x03(\x0b\x32$.Dianjing.protocol.TerritoryBuilding\x12\x16\n\x0etraining_hours\x18\x04 \x03(\x05\x12\x11\n\twork_card\x18\x05 \x02(\x05\"?\n\x17TerritoryInspireRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x13\n\x0b\x62uilding_id\x18\x02 \x02(\x05\"_\n\x18TerritoryInspireResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"v\n\x1dTerritoryTrainingStartReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x13\n\x0b\x62uilding_id\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\x12\x10\n\x08staff_id\x18\x04 \x02(\t\x12\x0c\n\x04hour\x18\x05 \x02(\x05\">\n\x1eTerritoryTrainingStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"Z\n!TerritoryTrainingGetRewardReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x13\n\x0b\x62uilding_id\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\"i\n\"TerritoryTrainingGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\xc2\x01\n\x14TerritoryStoreNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12@\n\x05items\x18\x03 \x03(\x0b\x32\x31.Dianjing.protocol.TerritoryStoreNotify.StoreItem\x1a/\n\tStoreItem\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x16\n\x0eremained_times\x18\x02 \x02(\x05\"7\n\x18TerritoryStoreBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"`\n\x19TerritoryStoreBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"H\n&TerritoryFriendHelpRemainedTimesNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05times\x18\x02 \x02(\x05\"-\n\x1aTerritoryFriendListRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\xa6\x02\n\x1bTerritoryFriendListResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x46\n\x07\x66riends\x18\x03 \x03(\x0b\x32\x35.Dianjing.protocol.TerritoryFriendListResponse.Friend\x1a\xa0\x01\n\x06\x46riend\x12\n\n\x02id\x18\x01 \x02(\t\x12Q\n\tbuildings\x18\x05 \x03(\x0b\x32>.Dianjing.protocol.TerritoryFriendListResponse.Friend.Building\x1a\x37\n\x08\x42uilding\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x10\n\x08\x65vent_id\x18\x03 \x01(\x05\"U\n\x1aTerritoryFriendHelpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tfriend_id\x18\x02 \x02(\t\x12\x13\n\x0b\x62uilding_id\x18\x03 \x02(\x05\"\x8f\x01\n\x1bTerritoryFriendHelpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\x12%\n\x04\x64rop\x18\x04 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"H\n\x1bTerritoryMatchReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x0b\n\x03win\x18\x03 \x02(\x08\"c\n\x1cTerritoryMatchReportResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*S\n\x17TerritoryBuildingStatus\x12\x1b\n\x17TERRITORY_BUILDING_OPEN\x10\x01\x12\x1b\n\x17TERRITORY_BUILDING_LOCK\x10\x02*G\n\x13TerritorySlotStatus\x12\x17\n\x13TERRITORY_SLOT_OPEN\x10\x01\x12\x17\n\x13TERRITORY_SLOT_LOCK\x10\x02')
+  serialized_pb=_b('\n\x0fterritory.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\x1a\x0bmatch.proto\x1a\x0f\x66ormation.proto\"\xf4\x01\n\rTerritorySlot\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x36\n\x06status\x18\x02 \x02(\x0e\x32&.Dianjing.protocol.TerritorySlotStatus\x12\x10\n\x08staff_id\x18\x03 \x01(\t\x12\x0c\n\x04hour\x18\x04 \x01(\x05\x12\x0e\n\x06\x65nd_at\x18\x05 \x01(\x03\x12\x37\n\x06report\x18\x06 \x03(\x0b\x32\'.Dianjing.protocol.TerritorySlot.Report\x1a\x36\n\x06Report\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05param\x18\x02 \x03(\t\x12\x11\n\ttimestamp\x18\x03 \x02(\x03\"\x8a\x02\n\x11TerritoryBuilding\x12\n\n\x02id\x18\x01 \x02(\x05\x12:\n\x06status\x18\x02 \x02(\x0e\x32*.Dianjing.protocol.TerritoryBuildingStatus\x12\r\n\x05level\x18\x03 \x01(\x05\x12\x0b\n\x03\x65xp\x18\x04 \x01(\x05\x12\x12\n\nproduct_id\x18\x05 \x01(\x05\x12\x16\n\x0eproduct_amount\x18\x06 \x01(\x05\x12\x14\n\x0cinspire_cost\x18\x07 \x01(\x05\x12\x1e\n\x16remained_inspire_times\x18\x08 \x01(\x05\x12/\n\x05slots\x18\t \x03(\x0b\x32 .Dianjing.protocol.TerritorySlot\"\xae\x01\n\x0fTerritoryNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x37\n\tbuildings\x18\x03 \x03(\x0b\x32$.Dianjing.protocol.TerritoryBuilding\x12\x16\n\x0etraining_hours\x18\x04 \x03(\x05\x12\x11\n\twork_card\x18\x05 \x02(\x05\"?\n\x17TerritoryInspireRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x13\n\x0b\x62uilding_id\x18\x02 \x02(\x05\"_\n\x18TerritoryInspireResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"v\n\x1dTerritoryTrainingStartReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x13\n\x0b\x62uilding_id\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\x12\x10\n\x08staff_id\x18\x04 \x02(\t\x12\x0c\n\x04hour\x18\x05 \x02(\x05\">\n\x1eTerritoryTrainingStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"Z\n!TerritoryTrainingGetRewardReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x13\n\x0b\x62uilding_id\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\"i\n\"TerritoryTrainingGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\xc2\x01\n\x14TerritoryStoreNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12@\n\x05items\x18\x03 \x03(\x0b\x32\x31.Dianjing.protocol.TerritoryStoreNotify.StoreItem\x1a/\n\tStoreItem\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x16\n\x0eremained_times\x18\x02 \x02(\x05\"7\n\x18TerritoryStoreBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"`\n\x19TerritoryStoreBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"H\n&TerritoryFriendHelpRemainedTimesNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05times\x18\x02 \x02(\x05\"-\n\x1aTerritoryFriendListRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\xa6\x02\n\x1bTerritoryFriendListResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x46\n\x07\x66riends\x18\x03 \x03(\x0b\x32\x35.Dianjing.protocol.TerritoryFriendListResponse.Friend\x1a\xa0\x01\n\x06\x46riend\x12\n\n\x02id\x18\x01 \x02(\t\x12Q\n\tbuildings\x18\x05 \x03(\x0b\x32>.Dianjing.protocol.TerritoryFriendListResponse.Friend.Building\x1a\x37\n\x08\x42uilding\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x10\n\x08\x65vent_id\x18\x03 \x01(\x05\"U\n\x1aTerritoryFriendHelpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tfriend_id\x18\x02 \x02(\t\x12\x13\n\x0b\x62uilding_id\x18\x03 \x02(\x05\"\x8f\x01\n\x1bTerritoryFriendHelpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\x12%\n\x04\x64rop\x18\x04 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"o\n\x1aTerritoryMatchStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x33\n\x05slots\x18\x03 \x03(\x0b\x32$.Dianjing.protocol.SyncFormationSlot\"h\n\x1bTerritoryMatchStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"H\n\x1bTerritoryMatchReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x0b\n\x03win\x18\x03 \x02(\x08\"c\n\x1cTerritoryMatchReportResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*S\n\x17TerritoryBuildingStatus\x12\x1b\n\x17TERRITORY_BUILDING_OPEN\x10\x01\x12\x1b\n\x17TERRITORY_BUILDING_LOCK\x10\x02*G\n\x13TerritorySlotStatus\x12\x17\n\x13TERRITORY_SLOT_OPEN\x10\x01\x12\x17\n\x13TERRITORY_SLOT_LOCK\x10\x02')
   ,
-  dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,match__pb2.DESCRIPTOR,])
+  dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,match__pb2.DESCRIPTOR,formation__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 _TERRITORYBUILDINGSTATUS = _descriptor.EnumDescriptor(
@@ -45,8 +46,8 @@ _TERRITORYBUILDINGSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=2496,
-  serialized_end=2579,
+  serialized_start=2732,
+  serialized_end=2815,
 )
 _sym_db.RegisterEnumDescriptor(_TERRITORYBUILDINGSTATUS)
 
@@ -68,8 +69,8 @@ _TERRITORYSLOTSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=2581,
-  serialized_end=2652,
+  serialized_start=2817,
+  serialized_end=2888,
 )
 _sym_db.RegisterEnumDescriptor(_TERRITORYSLOTSTATUS)
 
@@ -121,8 +122,8 @@ _TERRITORYSLOT_REPORT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=271,
-  serialized_end=325,
+  serialized_start=288,
+  serialized_end=342,
 )
 
 _TERRITORYSLOT = _descriptor.Descriptor(
@@ -186,8 +187,8 @@ _TERRITORYSLOT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=81,
-  serialized_end=325,
+  serialized_start=98,
+  serialized_end=342,
 )
 
 
@@ -273,8 +274,8 @@ _TERRITORYBUILDING = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=328,
-  serialized_end=594,
+  serialized_start=345,
+  serialized_end=611,
 )
 
 
@@ -332,8 +333,8 @@ _TERRITORYNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=597,
-  serialized_end=771,
+  serialized_start=614,
+  serialized_end=788,
 )
 
 
@@ -370,8 +371,8 @@ _TERRITORYINSPIREREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=773,
-  serialized_end=836,
+  serialized_start=790,
+  serialized_end=853,
 )
 
 
@@ -415,8 +416,8 @@ _TERRITORYINSPIRERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=838,
-  serialized_end=933,
+  serialized_start=855,
+  serialized_end=950,
 )
 
 
@@ -474,8 +475,8 @@ _TERRITORYTRAININGSTARTREQEUST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=935,
-  serialized_end=1053,
+  serialized_start=952,
+  serialized_end=1070,
 )
 
 
@@ -512,8 +513,8 @@ _TERRITORYTRAININGSTARTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1055,
-  serialized_end=1117,
+  serialized_start=1072,
+  serialized_end=1134,
 )
 
 
@@ -557,8 +558,8 @@ _TERRITORYTRAININGGETREWARDREQEUST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1119,
-  serialized_end=1209,
+  serialized_start=1136,
+  serialized_end=1226,
 )
 
 
@@ -602,8 +603,8 @@ _TERRITORYTRAININGGETREWARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1211,
-  serialized_end=1316,
+  serialized_start=1228,
+  serialized_end=1333,
 )
 
 
@@ -640,8 +641,8 @@ _TERRITORYSTORENOTIFY_STOREITEM = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1466,
-  serialized_end=1513,
+  serialized_start=1483,
+  serialized_end=1530,
 )
 
 _TERRITORYSTORENOTIFY = _descriptor.Descriptor(
@@ -684,8 +685,8 @@ _TERRITORYSTORENOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1319,
-  serialized_end=1513,
+  serialized_start=1336,
+  serialized_end=1530,
 )
 
 
@@ -722,8 +723,8 @@ _TERRITORYSTOREBUYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1515,
-  serialized_end=1570,
+  serialized_start=1532,
+  serialized_end=1587,
 )
 
 
@@ -767,8 +768,8 @@ _TERRITORYSTOREBUYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1572,
-  serialized_end=1668,
+  serialized_start=1589,
+  serialized_end=1685,
 )
 
 
@@ -805,8 +806,8 @@ _TERRITORYFRIENDHELPREMAINEDTIMESNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1670,
-  serialized_end=1742,
+  serialized_start=1687,
+  serialized_end=1759,
 )
 
 
@@ -836,8 +837,8 @@ _TERRITORYFRIENDLISTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1744,
-  serialized_end=1789,
+  serialized_start=1761,
+  serialized_end=1806,
 )
 
 
@@ -881,8 +882,8 @@ _TERRITORYFRIENDLISTRESPONSE_FRIEND_BUILDING = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2031,
-  serialized_end=2086,
+  serialized_start=2048,
+  serialized_end=2103,
 )
 
 _TERRITORYFRIENDLISTRESPONSE_FRIEND = _descriptor.Descriptor(
@@ -918,8 +919,8 @@ _TERRITORYFRIENDLISTRESPONSE_FRIEND = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1926,
-  serialized_end=2086,
+  serialized_start=1943,
+  serialized_end=2103,
 )
 
 _TERRITORYFRIENDLISTRESPONSE = _descriptor.Descriptor(
@@ -962,8 +963,8 @@ _TERRITORYFRIENDLISTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1792,
-  serialized_end=2086,
+  serialized_start=1809,
+  serialized_end=2103,
 )
 
 
@@ -1007,8 +1008,8 @@ _TERRITORYFRIENDHELPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2088,
-  serialized_end=2173,
+  serialized_start=2105,
+  serialized_end=2190,
 )
 
 
@@ -1059,8 +1060,98 @@ _TERRITORYFRIENDHELPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2176,
-  serialized_end=2319,
+  serialized_start=2193,
+  serialized_end=2336,
+)
+
+
+_TERRITORYMATCHSTARTREQUEST = _descriptor.Descriptor(
+  name='TerritoryMatchStartRequest',
+  full_name='Dianjing.protocol.TerritoryMatchStartRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TerritoryMatchStartRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='key', full_name='Dianjing.protocol.TerritoryMatchStartRequest.key', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='slots', full_name='Dianjing.protocol.TerritoryMatchStartRequest.slots', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2338,
+  serialized_end=2449,
+)
+
+
+_TERRITORYMATCHSTARTRESPONSE = _descriptor.Descriptor(
+  name='TerritoryMatchStartResponse',
+  full_name='Dianjing.protocol.TerritoryMatchStartResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.TerritoryMatchStartResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.TerritoryMatchStartResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='match', full_name='Dianjing.protocol.TerritoryMatchStartResponse.match', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2451,
+  serialized_end=2555,
 )
 
 
@@ -1104,8 +1195,8 @@ _TERRITORYMATCHREPORTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2321,
-  serialized_end=2393,
+  serialized_start=2557,
+  serialized_end=2629,
 )
 
 
@@ -1149,8 +1240,8 @@ _TERRITORYMATCHREPORTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2395,
-  serialized_end=2494,
+  serialized_start=2631,
+  serialized_end=2730,
 )
 
 _TERRITORYSLOT_REPORT.containing_type = _TERRITORYSLOT
@@ -1172,6 +1263,8 @@ _TERRITORYFRIENDLISTRESPONSE_FRIEND.containing_type = _TERRITORYFRIENDLISTRESPON
 _TERRITORYFRIENDLISTRESPONSE.fields_by_name['friends'].message_type = _TERRITORYFRIENDLISTRESPONSE_FRIEND
 _TERRITORYFRIENDHELPRESPONSE.fields_by_name['match'].message_type = match__pb2._CLUBMATCH
 _TERRITORYFRIENDHELPRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
+_TERRITORYMATCHSTARTREQUEST.fields_by_name['slots'].message_type = formation__pb2._SYNCFORMATIONSLOT
+_TERRITORYMATCHSTARTRESPONSE.fields_by_name['match'].message_type = match__pb2._CLUBMATCH
 _TERRITORYMATCHREPORTRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 DESCRIPTOR.message_types_by_name['TerritorySlot'] = _TERRITORYSLOT
 DESCRIPTOR.message_types_by_name['TerritoryBuilding'] = _TERRITORYBUILDING
@@ -1190,6 +1283,8 @@ DESCRIPTOR.message_types_by_name['TerritoryFriendListRequest'] = _TERRITORYFRIEN
 DESCRIPTOR.message_types_by_name['TerritoryFriendListResponse'] = _TERRITORYFRIENDLISTRESPONSE
 DESCRIPTOR.message_types_by_name['TerritoryFriendHelpRequest'] = _TERRITORYFRIENDHELPREQUEST
 DESCRIPTOR.message_types_by_name['TerritoryFriendHelpResponse'] = _TERRITORYFRIENDHELPRESPONSE
+DESCRIPTOR.message_types_by_name['TerritoryMatchStartRequest'] = _TERRITORYMATCHSTARTREQUEST
+DESCRIPTOR.message_types_by_name['TerritoryMatchStartResponse'] = _TERRITORYMATCHSTARTRESPONSE
 DESCRIPTOR.message_types_by_name['TerritoryMatchReportRequest'] = _TERRITORYMATCHREPORTREQUEST
 DESCRIPTOR.message_types_by_name['TerritoryMatchReportResponse'] = _TERRITORYMATCHREPORTRESPONSE
 DESCRIPTOR.enum_types_by_name['TerritoryBuildingStatus'] = _TERRITORYBUILDINGSTATUS
@@ -1345,6 +1440,20 @@ TerritoryFriendHelpResponse = _reflection.GeneratedProtocolMessageType('Territor
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.TerritoryFriendHelpResponse)
   ))
 _sym_db.RegisterMessage(TerritoryFriendHelpResponse)
+
+TerritoryMatchStartRequest = _reflection.GeneratedProtocolMessageType('TerritoryMatchStartRequest', (_message.Message,), dict(
+  DESCRIPTOR = _TERRITORYMATCHSTARTREQUEST,
+  __module__ = 'territory_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TerritoryMatchStartRequest)
+  ))
+_sym_db.RegisterMessage(TerritoryMatchStartRequest)
+
+TerritoryMatchStartResponse = _reflection.GeneratedProtocolMessageType('TerritoryMatchStartResponse', (_message.Message,), dict(
+  DESCRIPTOR = _TERRITORYMATCHSTARTRESPONSE,
+  __module__ = 'territory_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TerritoryMatchStartResponse)
+  ))
+_sym_db.RegisterMessage(TerritoryMatchStartResponse)
 
 TerritoryMatchReportRequest = _reflection.GeneratedProtocolMessageType('TerritoryMatchReportRequest', (_message.Message,), dict(
   DESCRIPTOR = _TERRITORYMATCHREPORTREQUEST,

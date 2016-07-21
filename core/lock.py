@@ -71,9 +71,3 @@ class RedisLock(object):
 class ArenaLock(RedisLock):
     def make_key(self):
         return 'lock:arena:{0}'.format(self.server_id)
-
-
-# 竞技场比赛
-class ArenaMatchLock(RedisLock):
-    def make_key(self):
-        return 'lock:arena_match:{0}:{1}'.format(self.server_id, self.char_id)

@@ -22,13 +22,17 @@ from protomsg.tower_pb2 import (
     TowerGoodsBuyResponse,
 )
 
+from views.helper import parse_protocol_sync_formation_slots
+
 
 def match_start(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
+    formation_slots = parse_protocol_sync_formation_slots(request._proto.slots)
+
     t = Tower(server_id, char_id)
-    msg = t.match()
+    msg = t.match(formation_slots)
 
     response = TowerMatchStartResponse()
     response.ret = 0

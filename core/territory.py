@@ -28,6 +28,7 @@ from core.friend import FriendManager
 from core.resource import ResourceClassification, TERRITORY_PRODUCT_BUILDING_TABLE, money_text_to_item_id
 from core.match import ClubMatch
 from core.vip import VIP
+from core.formation import Formation
 
 from utils.message import MessagePipe
 
@@ -965,6 +966,27 @@ class TerritoryFriend(object):
         msg = match.start()
         msg.key = "{0}:{1}:{2}".format(friend_id, building_id, event_id)
         return msg, None
+
+    def match_start(self, key, formation_slots=None):
+        try:
+            friend_id, building_id, event_id = key.split(':')
+            friend_id = int(friend_id)
+            building_id = int(building_id)
+            event_id = int(event_id)
+        except:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
+        if formation_slots:
+            Formation(self.server_id, self.char_id).sync_slots(formation_slots)
+
+        config = ConfigTerritoryEvent.get(event_id)
+        npc_club = ConfigNPCFormation.get(config.npc)
+        my_club = Club(self.server_id, self.char_id)
+
+        match = ClubMatch(my_club, npc_club)
+        msg = match.start()
+        msg.key = "{0}:{1}:{2}".format(friend_id, building_id, event_id)
+        return msg
 
     def match_report(self, key, win):
         try:

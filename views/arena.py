@@ -19,6 +19,8 @@ from protomsg.arena_pb2 import (
     ArenaBuyTimesResponse,
 )
 
+from views.helper import parse_protocol_sync_formation_slots
+
 def buy_times(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
@@ -45,8 +47,10 @@ def match_start(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
+    formation_slots = parse_protocol_sync_formation_slots(request._proto.slots)
+
     a = Arena(server_id, char_id)
-    msg = a.match()
+    msg = a.match(formation_slots)
 
     response = ArenaMatchStartResponse()
     response.ret = 0

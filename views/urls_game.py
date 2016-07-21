@@ -50,7 +50,6 @@ urlpatterns = [
     url(r'^formation/active/$', views.formation.active),
     url(r'^formation/levelup/$', views.formation.level_up),
     url(r'^formation/use/$', views.formation.use),
-    url(r'^formation/sync/$', views.formation.sync),
 
     url(r'^staff/recruit/$', views.staff.recruit),
 
@@ -123,6 +122,7 @@ urlpatterns = [
     url(r'^territory/store/buy/$', views.territory.store_buy),
     url(r'^territory/friend/list/$', views.territory.friend_list),
     url(r'^territory/friend/help/$', views.territory.friend_help),
+    url(r'^territory/friend/match/$', views.territory.friend_match_start),
     url(r'^territory/friend/report/$', views.territory.friend_report),
     url(r'^territory/inspire/$', views.territory.inspire),
 

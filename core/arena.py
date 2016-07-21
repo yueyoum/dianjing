@@ -14,7 +14,7 @@ from dianjing.exception import GameException
 from core.mongo import MongoArena, MongoArenaScore
 
 from core.club import Club, get_club_property
-from core.lock import LockTimeOut, ArenaLock, ArenaMatchLock, remove_lock_key
+from core.lock import ArenaLock
 from core.cooldown import ArenaRefreshCD, ArenaMatchCD
 from core.value_log import ValueLogArenaMatchTimes, ValueLogArenaHonorPoints, ValueLogArenaBuyTimes, \
     ValueLogArenaWinTimes, ValueLogArenaSearchResetTimes
@@ -22,6 +22,7 @@ from core.match import ClubMatch
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.vip import VIP
 from core.mail import MailManager
+from core.formation import Formation
 from core.signals import arena_match_signal
 
 from config import ConfigErrorMessage, ConfigArenaNPC, ConfigNPCFormation, ConfigArenaHonorReward, \
@@ -461,7 +462,7 @@ class Arena(object):
 
             self.send_notify()
 
-    def match(self):
+    def match(self, formation_slots=None):
         doc = MongoArena.db(self.server_id).find_one(
             {'_id': str(self.char_id)},
             {'rival': 1}
@@ -472,26 +473,20 @@ class Arena(object):
         if not rival_id:
             raise GameException(ConfigErrorMessage.get_error_id("ARENA_MATCH_NO_RIVAL"))
 
+        if formation_slots:
+            Formation(self.server_id, self.char_id).sync_slots(formation_slots)
+
         self.check_and_buy_times()
 
-        try:
-            with ArenaMatchLock(self.server_id, self.char_id).lock(hold_seconds=30) as my_lock:
-                try:
-                    with ArenaMatchLock(self.server_id, rival_id).lock(hold_seconds=30) as rival_lock:
-                        club_one = Club(self.server_id, self.char_id)
-                        club_two = ArenaClub(self.server_id, rival_id)
-                        club_match = ClubMatch(club_one, club_two)
-                        msg = club_match.start()
-                        # NOTE: rival_id 如果是NPC的话， 本来里面就是:分割的。 这里不能再用:
-                        msg.key = "{0}#{1}#{2}".format(rival_id, my_lock.key, rival_lock.key)
-                        return msg
-                except LockTimeOut:
-                    raise GameException(ConfigErrorMessage.get_error_id("ARENA_RIVAL_IN_MATCH"))
-        except LockTimeOut:
-            raise GameException(ConfigErrorMessage.get_error_id("ARENA_SELF_IN_MATCH"))
+        club_one = Club(self.server_id, self.char_id)
+        club_two = ArenaClub(self.server_id, rival_id)
+        club_match = ClubMatch(club_one, club_two)
+        msg = club_match.start()
+        msg.key = rival_id
+        return msg
 
     def report(self, key, win):
-        rival_id, my_lock_key, rival_lock_key = key.split('#')
+        rival_id = key
 
         my_club_name = get_club_property(self.server_id, self.char_id, 'name')
 
@@ -525,7 +520,6 @@ class Arena(object):
         )
 
         ass = ArenaScore(self.server_id, self.char_id)
-
         ass.add_score(score_changed)
 
         new_rank = ass.rank
@@ -566,9 +560,6 @@ class Arena(object):
 
         self.send_honor_notify()
         self.send_notify()
-
-        remove_lock_key(my_lock_key)
-        remove_lock_key(rival_lock_key)
 
         arena_match_signal.send(
             sender=None,

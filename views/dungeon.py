@@ -12,6 +12,7 @@ from utils.http import ProtobufResponse
 
 from protomsg.dungeon_pb2 import DungeonMatchResponse, DungeonMatchReportResponse, DungeonBuyTimesResponse
 
+from views.helper import parse_protocol_sync_formation_slots
 
 
 def buy_times(request):
@@ -32,8 +33,9 @@ def start(request):
     char_id = request._game_session.char_id
 
     dungeon_id = request._proto.id
+    formation_slots = parse_protocol_sync_formation_slots(request._proto.slots)
 
-    msg = Dungeon(server_id, char_id).start(dungeon_id)
+    msg = Dungeon(server_id, char_id).start(dungeon_id, formation_slots)
     response = DungeonMatchResponse()
     response.ret = 0
     response.match.MergeFrom(msg)

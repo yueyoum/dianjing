@@ -16,15 +16,16 @@ _sym_db = _symbol_database.Default()
 
 import package_pb2 as package__pb2
 import match_pb2 as match__pb2
+import formation_pb2 as formation__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='arena.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0b\x61rena.proto\x12\x11\x44ianjing.protocol\x1a\rpackage.proto\x1a\x0bmatch.proto\"t\n\nArenaRival\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x11\n\tclub_flag\x18\x03 \x02(\x05\x12\r\n\x05level\x18\x04 \x02(\x05\x12\r\n\x05power\x18\x05 \x02(\x05\x12\x0c\n\x04rank\x18\x06 \x02(\x05\x12\r\n\x05score\x18\x07 \x02(\x05\"\x94\x02\n\x0b\x41renaNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12,\n\x05rival\x18\x02 \x01(\x0b\x32\x1d.Dianjing.protocol.ArenaRival\x12\x0f\n\x07my_rank\x18\x03 \x02(\x05\x12\x1c\n\x14remained_match_times\x18\x04 \x02(\x05\x12\x12\n\nrefresh_cd\x18\x05 \x02(\x05\x12\x1e\n\x16remained_refresh_times\x18\x06 \x02(\x05\x12\x14\n\x0crefresh_cost\x18\x07 \x02(\x05\x12\x1a\n\x12remained_buy_times\x18\x08 \x02(\x05\x12\x10\n\x08\x62uy_cost\x18\t \x02(\x05\x12\r\n\x05point\x18\n \x02(\x05\x12\x10\n\x08max_rank\x18\x0b \x02(\x05\"&\n\x13\x41renaRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"4\n\x14\x41renaRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\'\n\x14\x41renaBuyTimesRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"5\n\x15\x41renaBuyTimesResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\")\n\x16\x41renaMatchStartReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"d\n\x17\x41renaMatchStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"D\n\x17\x41renaMatchReportReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x0b\n\x03win\x18\x03 \x02(\x08\"\xc1\x01\n\x18\x41renaMatchReportResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\x12\x15\n\rscore_changed\x18\x04 \x01(\x05\x12\x14\n\x0crank_changed\x18\x05 \x01(\x05\x12\x10\n\x08max_rank\x18\x06 \x01(\x05\x12\x0f\n\x07my_rank\x18\x07 \x01(\x05\x12\x10\n\x08my_score\x18\x08 \x01(\x05\"*\n\x17\x41renaLeaderBoardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"f\n\x18\x41renaLeaderBoardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12,\n\x05rival\x18\x03 \x03(\x0b\x32\x1d.Dianjing.protocol.ArenaRival\"\xd5\x01\n\x16\x41renaHonorStatusNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08my_honor\x18\x02 \x02(\x05\x12\x45\n\x06honors\x18\x03 \x03(\x0b\x32\x35.Dianjing.protocol.ArenaHonorStatusNotify.HonorStatus\x1aQ\n\x0bHonorStatus\x12\r\n\x05honor\x18\x01 \x02(\x05\x12\x33\n\x06status\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.ArenaHonorStatus\"<\n\x1a\x41renaHonorGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05honor\x18\x02 \x02(\x05\"b\n\x1b\x41renaHonorGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\x86\x01\n\x13\x41renaMatchLogNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x38\n\x04logs\x18\x02 \x03(\x0b\x32*.Dianjing.protocol.ArenaMatchLogNotify.Log\x1a$\n\x03Log\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x11\n\targuments\x18\x02 \x03(\t*a\n\x10\x41renaHonorStatus\x12\x17\n\x13\x41RENA_HONOR_CAN_NOT\x10\x00\x12\x17\n\x13\x41RENA_HONOR_CAN_GET\x10\x01\x12\x1b\n\x17\x41RENA_HONOR_ALREADY_GOT\x10\x02')
+  serialized_pb=_b('\n\x0b\x61rena.proto\x12\x11\x44ianjing.protocol\x1a\rpackage.proto\x1a\x0bmatch.proto\x1a\x0f\x66ormation.proto\"t\n\nArenaRival\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x11\n\tclub_flag\x18\x03 \x02(\x05\x12\r\n\x05level\x18\x04 \x02(\x05\x12\r\n\x05power\x18\x05 \x02(\x05\x12\x0c\n\x04rank\x18\x06 \x02(\x05\x12\r\n\x05score\x18\x07 \x02(\x05\"\x94\x02\n\x0b\x41renaNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12,\n\x05rival\x18\x02 \x01(\x0b\x32\x1d.Dianjing.protocol.ArenaRival\x12\x0f\n\x07my_rank\x18\x03 \x02(\x05\x12\x1c\n\x14remained_match_times\x18\x04 \x02(\x05\x12\x12\n\nrefresh_cd\x18\x05 \x02(\x05\x12\x1e\n\x16remained_refresh_times\x18\x06 \x02(\x05\x12\x14\n\x0crefresh_cost\x18\x07 \x02(\x05\x12\x1a\n\x12remained_buy_times\x18\x08 \x02(\x05\x12\x10\n\x08\x62uy_cost\x18\t \x02(\x05\x12\r\n\x05point\x18\n \x02(\x05\x12\x10\n\x08max_rank\x18\x0b \x02(\x05\"&\n\x13\x41renaRefreshRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"4\n\x14\x41renaRefreshResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\'\n\x14\x41renaBuyTimesRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"5\n\x15\x41renaBuyTimesResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"^\n\x16\x41renaMatchStartReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x33\n\x05slots\x18\x02 \x03(\x0b\x32$.Dianjing.protocol.SyncFormationSlot\"d\n\x17\x41renaMatchStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"D\n\x17\x41renaMatchReportReqeust\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x0b\n\x03win\x18\x03 \x02(\x08\"\xc1\x01\n\x18\x41renaMatchReportResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\x12\x15\n\rscore_changed\x18\x04 \x01(\x05\x12\x14\n\x0crank_changed\x18\x05 \x01(\x05\x12\x10\n\x08max_rank\x18\x06 \x01(\x05\x12\x0f\n\x07my_rank\x18\x07 \x01(\x05\x12\x10\n\x08my_score\x18\x08 \x01(\x05\"*\n\x17\x41renaLeaderBoardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"f\n\x18\x41renaLeaderBoardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12,\n\x05rival\x18\x03 \x03(\x0b\x32\x1d.Dianjing.protocol.ArenaRival\"\xd5\x01\n\x16\x41renaHonorStatusNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08my_honor\x18\x02 \x02(\x05\x12\x45\n\x06honors\x18\x03 \x03(\x0b\x32\x35.Dianjing.protocol.ArenaHonorStatusNotify.HonorStatus\x1aQ\n\x0bHonorStatus\x12\r\n\x05honor\x18\x01 \x02(\x05\x12\x33\n\x06status\x18\x02 \x02(\x0e\x32#.Dianjing.protocol.ArenaHonorStatus\"<\n\x1a\x41renaHonorGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05honor\x18\x02 \x02(\x05\"b\n\x1b\x41renaHonorGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\x86\x01\n\x13\x41renaMatchLogNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x38\n\x04logs\x18\x02 \x03(\x0b\x32*.Dianjing.protocol.ArenaMatchLogNotify.Log\x1a$\n\x03Log\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x11\n\targuments\x18\x02 \x03(\t*a\n\x10\x41renaHonorStatus\x12\x17\n\x13\x41RENA_HONOR_CAN_NOT\x10\x00\x12\x17\n\x13\x41RENA_HONOR_CAN_GET\x10\x01\x12\x1b\n\x17\x41RENA_HONOR_ALREADY_GOT\x10\x02')
   ,
-  dependencies=[package__pb2.DESCRIPTOR,match__pb2.DESCRIPTOR,])
+  dependencies=[package__pb2.DESCRIPTOR,match__pb2.DESCRIPTOR,formation__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 _ARENAHONORSTATUS = _descriptor.EnumDescriptor(
@@ -48,8 +49,8 @@ _ARENAHONORSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1723,
-  serialized_end=1820,
+  serialized_start=1793,
+  serialized_end=1890,
 )
 _sym_db.RegisterEnumDescriptor(_ARENAHONORSTATUS)
 
@@ -128,8 +129,8 @@ _ARENARIVAL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=62,
-  serialized_end=178,
+  serialized_start=79,
+  serialized_end=195,
 )
 
 
@@ -229,8 +230,8 @@ _ARENANOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=181,
-  serialized_end=457,
+  serialized_start=198,
+  serialized_end=474,
 )
 
 
@@ -260,8 +261,8 @@ _ARENAREFRESHREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=459,
-  serialized_end=497,
+  serialized_start=476,
+  serialized_end=514,
 )
 
 
@@ -298,8 +299,8 @@ _ARENAREFRESHRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=499,
-  serialized_end=551,
+  serialized_start=516,
+  serialized_end=568,
 )
 
 
@@ -329,8 +330,8 @@ _ARENABUYTIMESREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=553,
-  serialized_end=592,
+  serialized_start=570,
+  serialized_end=609,
 )
 
 
@@ -367,8 +368,8 @@ _ARENABUYTIMESRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=594,
-  serialized_end=647,
+  serialized_start=611,
+  serialized_end=664,
 )
 
 
@@ -386,6 +387,13 @@ _ARENAMATCHSTARTREQEUST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='slots', full_name='Dianjing.protocol.ArenaMatchStartReqeust.slots', index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -398,8 +406,8 @@ _ARENAMATCHSTARTREQEUST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=649,
-  serialized_end=690,
+  serialized_start=666,
+  serialized_end=760,
 )
 
 
@@ -443,8 +451,8 @@ _ARENAMATCHSTARTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=692,
-  serialized_end=792,
+  serialized_start=762,
+  serialized_end=862,
 )
 
 
@@ -488,8 +496,8 @@ _ARENAMATCHREPORTREQEUST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=794,
-  serialized_end=862,
+  serialized_start=864,
+  serialized_end=932,
 )
 
 
@@ -568,8 +576,8 @@ _ARENAMATCHREPORTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=865,
-  serialized_end=1058,
+  serialized_start=935,
+  serialized_end=1128,
 )
 
 
@@ -599,8 +607,8 @@ _ARENALEADERBOARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1060,
-  serialized_end=1102,
+  serialized_start=1130,
+  serialized_end=1172,
 )
 
 
@@ -644,8 +652,8 @@ _ARENALEADERBOARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1104,
-  serialized_end=1206,
+  serialized_start=1174,
+  serialized_end=1276,
 )
 
 
@@ -682,8 +690,8 @@ _ARENAHONORSTATUSNOTIFY_HONORSTATUS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1341,
-  serialized_end=1422,
+  serialized_start=1411,
+  serialized_end=1492,
 )
 
 _ARENAHONORSTATUSNOTIFY = _descriptor.Descriptor(
@@ -726,8 +734,8 @@ _ARENAHONORSTATUSNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1209,
-  serialized_end=1422,
+  serialized_start=1279,
+  serialized_end=1492,
 )
 
 
@@ -764,8 +772,8 @@ _ARENAHONORGETREWARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1424,
-  serialized_end=1484,
+  serialized_start=1494,
+  serialized_end=1554,
 )
 
 
@@ -809,8 +817,8 @@ _ARENAHONORGETREWARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1486,
-  serialized_end=1584,
+  serialized_start=1556,
+  serialized_end=1654,
 )
 
 
@@ -847,8 +855,8 @@ _ARENAMATCHLOGNOTIFY_LOG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1685,
-  serialized_end=1721,
+  serialized_start=1755,
+  serialized_end=1791,
 )
 
 _ARENAMATCHLOGNOTIFY = _descriptor.Descriptor(
@@ -884,11 +892,12 @@ _ARENAMATCHLOGNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1587,
-  serialized_end=1721,
+  serialized_start=1657,
+  serialized_end=1791,
 )
 
 _ARENANOTIFY.fields_by_name['rival'].message_type = _ARENARIVAL
+_ARENAMATCHSTARTREQEUST.fields_by_name['slots'].message_type = formation__pb2._SYNCFORMATIONSLOT
 _ARENAMATCHSTARTRESPONSE.fields_by_name['match'].message_type = match__pb2._CLUBMATCH
 _ARENAMATCHREPORTRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 _ARENALEADERBOARDRESPONSE.fields_by_name['rival'].message_type = _ARENARIVAL
