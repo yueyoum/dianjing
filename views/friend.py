@@ -19,7 +19,6 @@ from protomsg.friend_pb2 import (
     FriendAddResponse,
     FriendRemoveResponse,
     FriendAcceptResponse,
-    FriendMatchResponse,
     FriendCandidatesResponse,
 )
 
@@ -99,19 +98,4 @@ def accept(request):
 
     response = FriendAcceptResponse()
     response.ret = 0
-    return ProtobufResponse(response)
-
-
-def match(request):
-    server_id = request._game_session.server_id
-    char_id = request._game_session.char_id
-
-    friend_id = request._proto.id
-
-    fm = FriendManager(server_id, char_id)
-    msg = fm.match(friend_id)
-
-    response = FriendMatchResponse()
-    response.ret = 0
-    response.match.MergeFrom(msg)
     return ProtobufResponse(response)
