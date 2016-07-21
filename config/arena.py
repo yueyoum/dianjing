@@ -34,6 +34,15 @@ class RankReward(object):
         self.mail_title = ""
         self.mail_content = ""
 
+class RankRewardWeekly(object):
+    __slots__ = ['id', 'reward', 'mail_title', 'mail_content']
+    def __init__(self):
+        self.id = 0
+        self.reward = []
+        self.mail_title = ""
+        self.mail_content = ""
+
+
 class MatchReward(object):
     __slots__ = ['id', 'honor', 'item_id', 'item_amount', 'random_items']
     def __init__(self):
@@ -130,6 +139,31 @@ class ConfigArenaRankReward(ConfigBase):
                 return v
 
         raise RuntimeError("ConfigArenaRankReward, Error rank: {0}".format(rank))
+
+class ConfigArenaRankRewardWeekly(ConfigBase):
+    EntityClass = RankRewardWeekly
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    LIST = []
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigArenaRankRewardWeekly, cls).initialize(fixture)
+        cls.LIST = cls.INSTANCES.items()
+        cls.LIST.sort(key=lambda item: item[0], reverse=True)
+
+    @classmethod
+    def get(cls, rank):
+        """
+
+        :rtype: RankRewardWeekly
+        """
+        for k, v in cls.LIST:
+            if rank >= k:
+                return v
+
+        raise RuntimeError("ConfigArenaRankRewardWeekly, Error rank: {0}".format(rank))
 
 
 class ConfigArenaMatchReward(ConfigBase):

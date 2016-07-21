@@ -8,6 +8,8 @@ Description:
 """
 
 import random
+import arrow
+from django.conf import settings
 
 from dianjing.exception import GameException
 
@@ -16,18 +18,32 @@ from core.mongo import MongoArena, MongoArenaScore
 from core.club import Club, get_club_property
 from core.lock import ArenaLock
 from core.cooldown import ArenaRefreshCD, ArenaMatchCD
-from core.value_log import ValueLogArenaMatchTimes, ValueLogArenaHonorPoints, ValueLogArenaBuyTimes, \
-    ValueLogArenaWinTimes, ValueLogArenaSearchResetTimes
 from core.match import ClubMatch
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.vip import VIP
 from core.mail import MailManager
 from core.formation import Formation
 from core.signals import arena_match_signal
+from core.value_log import (
+    ValueLogArenaMatchTimes,
+    ValueLogArenaHonorPoints,
+    ValueLogArenaBuyTimes,
+    ValueLogArenaWinTimes,
+    ValueLogArenaSearchResetTimes,
+)
 
-from config import ConfigErrorMessage, ConfigArenaNPC, ConfigNPCFormation, ConfigArenaHonorReward, \
-    ConfigArenaMatchReward, ConfigArenaBuyTimesCost, ConfigArenaRankReward, ConfigArenaSearchRange, \
-    ConfigArenaSearchResetCost
+from config import (
+    ConfigErrorMessage,
+    ConfigArenaNPC,
+    ConfigNPCFormation,
+    ConfigArenaHonorReward,
+    ConfigArenaMatchReward,
+    ConfigArenaBuyTimesCost,
+    ConfigArenaRankReward,
+    ConfigArenaSearchRange,
+    ConfigArenaSearchResetCost,
+    ConfigArenaRankRewardWeekly,
+)
 
 from utils.functional import make_string_id, get_arrow_time_of_today
 from utils.message import MessagePipe
@@ -200,12 +216,16 @@ class Arena(object):
     def send_rank_reward(cls, server_id):
         char_ids = Club.get_recent_login_char_ids(server_id, recent_days=7)
 
+        # 加上一分钟，确保已经到了第二天
+        # 定时任务要是 23:59:59 启动，那天数判断就错了
+        weekday = arrow.utcnow().to(settings.TIME_ZONE).replace(minutes=1).weekday()
+
         for cid in char_ids:
             arena = Arena(server_id, cid)
             rank = arena.get_current_rank()
 
+            # 每日奖励
             config = ConfigArenaRankReward.get(rank)
-
             rc = ResourceClassification.classify(config.reward)
 
             m = MailManager(server_id, cid)
@@ -214,6 +234,18 @@ class Arena(object):
                 config.mail_content,
                 attachment=rc.to_json(),
             )
+
+            if weekday == 0:
+                # 周一发周奖励
+                config_weekly = ConfigArenaRankRewardWeekly.get(rank)
+                rc = ResourceClassification.classify(config_weekly.reward)
+
+                m = MailManager(server_id, cid)
+                m.add(
+                    config_weekly.mail_title,
+                    config_weekly.mail_content,
+                    attachment=rc.to_json()
+                )
 
     @classmethod
     def try_create_arena_npc(cls, server_id):
