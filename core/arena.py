@@ -498,6 +498,8 @@ class Arena(object):
             {'search_index': 1}
         )
 
+        ArenaRefreshCD(self.server_id, self.char_id).clean()
+
         config_search = ConfigArenaSearchRange.get(doc['search_index'])
         if win:
             score_changed = config_search.score_win
@@ -703,6 +705,7 @@ class Arena(object):
         notify.buy_cost = ti.buy_cost
         notify.point = doc['point']
         notify.max_rank = self.get_max_rank()
+        notify.my_score = ArenaScore(self.server_id, self.char_id).score
 
         if doc['rival']:
             rival_club = ArenaClub(self.server_id, doc['rival'])
