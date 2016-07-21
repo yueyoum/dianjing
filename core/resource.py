@@ -9,7 +9,11 @@ Description:
 
 import json
 
-from config import ConfigItemNew
+from dianjing.exception import GameException
+
+from core.mongo import MongoResource
+
+from config import ConfigErrorMessage, ConfigItemNew
 
 from protomsg.package_pb2 import Drop as MsgDrop
 
@@ -76,6 +80,50 @@ def filter_bag_item(items):
     return [(_id, _amount) for _id, _amount in items if _id not in MONEY]
 
 
+class _Resource(object):
+    __slots__ = ['resource']
+
+    def __init__(self):
+        self.resource = {}
+
+    def set(self, _id, _amount):
+        if _id in self.resource:
+            self.resource[_id] += _amount
+        else:
+            self.resource[_id] = _amount
+
+    def add(self, server_id, char_id):
+        updater = {'resource.{0}'.format(k): v for k, v in self.resource.iteritems()}
+        MongoResource.db(server_id).update_one(
+            {'_id': char_id},
+            {'$inc': updater}
+        )
+
+    def check_exists(self, server_id, char_id):
+        doc = MongoResource.db(server_id).find_one({'_id': char_id})
+        if not doc:
+            raise GameException(ConfigErrorMessage.get_error_id("RESOURCE_NOT_ENOUGH"))
+
+        for k, v in self.resource.iteritems():
+            if v > doc['resource'].get(str(k), 0):
+                raise GameException(ConfigErrorMessage.get_error_id("RESOURCE_NOT_ENOUGH"))
+
+        return doc
+
+    def remove(self, server_id, char_id):
+        doc = self.check_exists(server_id, char_id)
+        updater = {}
+
+        for k, v in self.resource.iteritems():
+            new_value = doc['resource'][str(k)] - v
+            updater['resource.{0}'.format(k)] = new_value
+
+        MongoResource.db(server_id).update_one(
+            {'_id': char_id},
+            {'$set': updater}
+        )
+
+
 class ResourceClassification(object):
     __slots__ = ['money', 'bag', 'staff', 'talent_point', 'club_exp', 'territory_product',
                  'vip_exp',
@@ -84,6 +132,8 @@ class ResourceClassification(object):
                  'work_card',
                  'energy',
                  'staff_recruit_score',
+
+                 'resource_data',
                  ]
 
     def __init__(self):
@@ -103,6 +153,8 @@ class ResourceClassification(object):
         self.work_card = 0
         self.energy = 0
         self.staff_recruit_score = 0
+
+        self.resource_data = []
 
     def to_json(self):
         data = {k: getattr(self, k) for k in self.__slots__}
@@ -139,6 +191,8 @@ class ResourceClassification(object):
         work_card = 0
         energy = 0
         staff_recruit_score = 0
+
+        resource_data = {}
 
         for _id, _amount in items:
             if _id == TALENT_ITEM_ID:
@@ -185,10 +239,17 @@ class ResourceClassification(object):
 
             tp = ConfigItemNew.get(_id).tp
             if tp == 3:
-                if _id in money:
-                    money[_id] += _amount
+                if _id in MONEY:
+                    if _id in money:
+                        money[_id] += _amount
+                    else:
+                        money[_id] = _amount
                 else:
-                    money[_id] = _amount
+                    if _id in resource_data:
+                        resource_data[_id] += _amount
+                    else:
+                        resource_data[_id] = _amount
+
             elif tp == 6:
                 if _id in staff:
                     staff[_id] += _amount
@@ -213,6 +274,8 @@ class ResourceClassification(object):
         obj.energy = energy
         obj.staff_recruit_score = staff_recruit_score
         obj.territory_product = territory_product.items()
+
+        obj.resource_data = resource_data.items()
 
         return obj
 
@@ -249,6 +312,10 @@ class ResourceClassification(object):
             Energy(server_id, char_id).check(self.energy)
         if self.staff_recruit_score:
             StaffRecruit(server_id, char_id).check_score(self.staff_recruit_score)
+        if self.resource_data:
+            _r = _Resource()
+            _r.resource = dict(self.resource_data)
+            _r.check_exists(server_id, char_id)
 
     def remove(self, server_id, char_id):
         from core.club import Club
@@ -288,6 +355,11 @@ class ResourceClassification(object):
 
         if self.staff_recruit_score:
             StaffRecruit(server_id, char_id).remove_score(self.staff_recruit_score)
+
+        if self.resource_data:
+            _r = _Resource()
+            _r.resource = dict(self.resource_data)
+            _r.remove(server_id, char_id)
 
     def add(self, server_id, char_id):
         from core.club import Club
@@ -337,6 +409,11 @@ class ResourceClassification(object):
 
         if self.staff_recruit_score:
             StaffRecruit(server_id, char_id).add_score(self.staff_recruit_score)
+
+        if self.resource_data:
+            _r = _Resource()
+            _r.resource = dict(self.resource_data)
+            _r.add(server_id, char_id)
 
     def make_protomsg(self):
         msg = MsgDrop()
@@ -396,6 +473,11 @@ class ResourceClassification(object):
             msg_item.amount = self.energy
 
         for _id, _amount in self.territory_product:
+            msg_item = msg.items.add()
+            msg_item.id = _id
+            msg_item.amount = _amount
+
+        for _id, _amount in self.resource_data:
             msg_item = msg.items.add()
             msg_item.id = _id
             msg_item.amount = _amount

@@ -562,3 +562,17 @@ class MongoOperationLog(BaseDocument):
 
     COLLECTION = 'operation_log'
     INDEXES = ['char_id', 'timestamp', 'cost_millisecond']
+
+# 资源代币
+# 现在所有的东西都是配置在item里面的，其实这些代币资源应该同意放在一起
+# 这样好处理。
+# 比如 gold, diamond, point, honor, xxx 都放在一起
+# 但是以前是分模块 自己处理自己的， 其实是没设计好
+# 后面的新资源，都同意在这里记录
+class MongoResource(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'resource': {}
+    }
+
+    COLLECTION = 'resource'
