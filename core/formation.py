@@ -412,14 +412,14 @@ class Formation(object):
 
         for _id in slot_ids:
             notify_slot = notify.slots.add()
-            notify_slot.slot_id = _id
+            notify_slot.slot_id = int(_id)
 
             try:
                 data = self.doc['slots'][str(_id)]
             except KeyError:
                 notify_slot.status = FORMATION_SLOT_NOT_OPEN
             else:
-                notify_slot.position = self.doc['position'].index(_id)
+                notify_slot.position = self.doc['position'].index(int(_id))
 
                 if not data['staff_id']:
                     notify_slot.status = FORMATION_SLOT_EMPTY
