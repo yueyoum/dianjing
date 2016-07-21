@@ -13,7 +13,6 @@ urlpatterns = [
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^game/', include('views.urls_game')),
-    url(r'^api/', include('views.urls_api')),
 
     url(r'^system/config/$', apps.config.views.get_config),
     url(r'^system/bulletin/$', apps.system.views.get_bulletins),

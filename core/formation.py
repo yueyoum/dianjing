@@ -241,7 +241,7 @@ class Formation(object):
         club.force_load_staffs(send_notify=True)
 
     def sync_slots(self, slots_data):
-        positions = range(0, 30)
+        positions = [0] * 30
         updater = {}
 
         for slot_id, index, policy in slots_data:
@@ -258,7 +258,7 @@ class Formation(object):
                 raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
             positions[index] = slot_id
-            updater['slots.{0}.policy'] = policy
+            updater['slots.{0}.policy'.format(slot_id)] = policy
 
         updater['position'] = positions
 
