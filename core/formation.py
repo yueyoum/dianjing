@@ -98,17 +98,13 @@ class Formation(object):
             if str(i) in self.doc['slots']:
                 continue
 
-            pos = self.get_slot_init_position(i)
             doc = MongoFormation.document_slot()
             doc['staff_id'] = ""
             doc['unit_id'] = 0
 
             self.doc['slots'][str(i)] = doc
-            self.doc['position'][pos] = i
 
             updater['slots.{0}'.format(i)] = doc
-            updater['position.{0}'.format(pos)] = i
-
             new_slot_ids.append(i)
 
         if new_slot_ids:
@@ -260,17 +256,17 @@ class Formation(object):
             positions[index] = slot_id
             updater['slots.{0}.policy'.format(slot_id)] = policy
 
-        # 发来的只是部分数据，对应以前的position中的数据 要得意保留
-        # 比如 以前的 position 是 [0, 1, 0, 2, 0]
-        # 发来的数据是 把 1 移动到 最后
-        # 这时候自己组织的 positions 是 [0, 0, 0, 0, 1]
-        # 现在就需要把 2 有也放进来
-        for _index, _id in enumerate(self.doc['position']):
-            if _id not in positions:
-                if positions[_index]:
-                    raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
-
-                positions[_index] = _id
+        # # 发来的只是部分数据，对应以前的position中的数据 要得意保留
+        # # 比如 以前的 position 是 [0, 1, 0, 2, 0]
+        # # 发来的数据是 把 1 移动到 最后
+        # # 这时候自己组织的 positions 是 [0, 0, 0, 0, 1]
+        # # 现在就需要把 2 有也放进来
+        # for _index, _id in enumerate(self.doc['position']):
+        #     if _id not in positions:
+        #         if positions[_index]:
+        #             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+        #
+        #         positions[_index] = _id
 
         updater['position'] = positions
 
@@ -431,12 +427,11 @@ class Formation(object):
             except KeyError:
                 notify_slot.status = FORMATION_SLOT_NOT_OPEN
             else:
-                notify_slot.position = self.doc['position'].index(int(_id))
-
                 if not data['staff_id']:
                     notify_slot.status = FORMATION_SLOT_EMPTY
                 else:
                     notify_slot.status = FORMATION_SLOT_USE
+                    notify_slot.position = self.doc['position'].index(int(_id))
                     notify_slot.staff_id = data['staff_id']
                     notify_slot.unit_id = data['unit_id']
 
