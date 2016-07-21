@@ -328,6 +328,10 @@ class Formation(object):
 
         Challenge(self.server_id, self.char_id).check_starts(config.levels[level].level_up_need_star)
 
+        rc = ResourceClassification.classify(config.levels[level].level_up_need_items)
+        rc.check_exist(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id)
+
         self.doc['levels'][str(fid)] = level + 1
         MongoFormation.db(self.server_id).update_one(
             {'_id': self.char_id},

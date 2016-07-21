@@ -34,9 +34,10 @@ class ConfigFormationSlot(ConfigBase):
 
 
 class FormationLevel(object):
-    __slots__ = ['level_up_need_star', 'talent_effects']
+    __slots__ = ['level_up_need_star', 'level_up_need_items', 'talent_effects']
     def __init__(self):
         self.level_up_need_star = 0
+        self.level_up_need_items = []
         self.talent_effects = []
 
     @classmethod
@@ -47,8 +48,10 @@ class FormationLevel(object):
         """
         obj = cls()
         obj.level_up_need_star = data['level_up_need_star']
+        obj.level_up_need_items = data['level_up_need_items']
         obj.talent_effects = data['talent_effects']
 
+        return obj
 
 class Formation(object):
     __slots__ = [
