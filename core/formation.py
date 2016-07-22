@@ -133,7 +133,7 @@ class Formation(object):
             if v['staff_id']:
                 try:
                     position = self.doc['position'].index(int(slot_id))
-                except IndexError:
+                except ValueError:
                     position = -1
 
                 staffs[v['staff_id']] = {
