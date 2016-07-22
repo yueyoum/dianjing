@@ -191,15 +191,19 @@ class ArenaScore(object):
             {'$pull': {'char_ids': str(self.char_id)}}
         )
 
-        self.score += score
-        if self.score < ARENA_DEFAULT_SCORE:
-            self.score = ARENA_DEFAULT_SCORE
+        new_score = self.score + score
+        if new_score < ARENA_DEFAULT_SCORE:
+            new_score = ARENA_DEFAULT_SCORE
+
+        self.score = new_score
 
         MongoArenaScore.db(self.server_id).update_one(
             {'_id': self.score},
             {'$push': {'char_ids': str(self.char_id)}},
             upsert=True
         )
+
+        return new_score - self.score
 
 
 class Arena(object):
@@ -554,7 +558,7 @@ class Arena(object):
         )
 
         ass = ArenaScore(self.server_id, self.char_id)
-        ass.add_score(score_changed)
+        score_changed = ass.add_score(score_changed)
 
         new_rank = ass.rank
         if new_rank > my_max_rank:
