@@ -53,16 +53,12 @@ class Formation(object):
             self.doc['position'] = [0] * 30
             MongoFormation.db(self.server_id).insert_one(self.doc)
 
-    def get_slot_init_position(self, slot_id):
-        for pos in FORMATION_DEFAULT_POSITION[slot_id]:
-            this_pos_slot_id = self.doc['position'][pos]
-            if this_pos_slot_id == slot_id:
+    def get_slot_init_position(self, slot_amount):
+        for pos in FORMATION_DEFAULT_POSITION[slot_amount]:
+            if not self.doc['position'][pos]:
                 return pos
 
-            if not this_pos_slot_id:
-                return pos
-
-        raise RuntimeError("Formation set position error. slot_id: {0}".format(slot_id))
+        raise RuntimeError("Formation set position error. slot_id: {0}".format(slot_amount))
 
     def initialize(self, init_data):
         # [(staff_unique_id, unit_id, position), ...]
@@ -127,10 +123,19 @@ class Formation(object):
 
         :rtype: dict[str, dict]
         """
+
+        # 如果没有兵种，这个选手在战斗中是不出现的
+        # 但是一些天赋效果的条件是靠 上阵选手 来判断的
+        # 所以这里得把所有在阵型中的选手返回
+        # 没有兵种的slot，肯定没有position
         staffs = {}
         for slot_id, v in self.doc['slots'].iteritems():
             if v['staff_id']:
-                position = self.doc['position'].index(int(slot_id))
+                try:
+                    position = self.doc['position'].index(int(slot_id))
+                except IndexError:
+                    position = -1
+
                 staffs[v['staff_id']] = {
                     'unit_id': v['unit_id'],
                     'position': position,
@@ -148,26 +153,23 @@ class Formation(object):
         if staff_id in self.in_formation_staffs():
             raise GameException(ConfigErrorMessage.get_error_id("FORMATION_STAFF_ALREADY_IN"))
 
-        updater = {}
-
         old_staff_id = self.doc['slots'][str(slot_id)]['staff_id']
-        if not old_staff_id:
-            # 这是新上阵的选手，需要根据是第几个上的，确定其位置
-            pos = self.get_slot_init_position(slot_id)
-            old_pos = self.doc['position'].index(slot_id)
-            if old_pos != pos:
-                # 注意： 可能相同
-                self.doc['position'][old_pos] = 0
-                self.doc['position'][pos] = slot_id
-
-                updater['position.{0}'.format(old_pos)] = 0
-                updater['position.{0}'.format(pos)] = slot_id
-
         self.doc['slots'][str(slot_id)]['staff_id'] = staff_id
         self.doc['slots'][str(slot_id)]['unit_id'] = 0
+        self.doc['slots'][str(slot_id)]['policy'] = 1
 
-        updater['slots.{0}.staff_id'.format(slot_id)] = staff_id
-        updater['slots.{0}.unit_id'.format(slot_id)] = 0
+        updater = {
+            'slots.{0}.staff_id'.format(slot_id): staff_id,
+            'slots.{0}.unit_id'.format(slot_id): 0,
+            'slots.{0}.policy'.format(slot_id): 1
+        }
+
+        if slot_id in self.doc['position']:
+            # 换完人，兵种清空了，也就从阵型位置上撤掉了
+            index = self.doc['position'].index(slot_id)
+            self.doc['position'][index] = 0
+
+            updater['position.{0}'.format(index)] = 0
 
         # 检测阵型是否还可用
         if self.doc['using'] and not self.is_formation_valid(self.doc['using']):
@@ -210,15 +212,25 @@ class Formation(object):
         if s.config.race != u.config.race:
             raise GameException(ConfigErrorMessage.get_error_id("FORMATION_STAFF_UNIT_RACE_NOT_MATCH"))
 
-        updater = {'slots.{0}.unit_id'.format(slot_id): unit_id}
+        self.doc['slots'][str(slot_id)]['unit_id'] = unit_id
+        self.doc['slots'][str(slot_id)]['policy'] = 1
+
+        updater = {
+            'slots.{0}.unit_id'.format(slot_id): unit_id,
+            'slots.{0}.policy'.format(slot_id): 1
+        }
+
+        # 如果没有位置，那么就给设置一个位置
+        if slot_id not in self.doc['position']:
+            position = self.get_slot_init_position(len(self.doc['slots']))
+            self.doc['position'][position] = slot_id
+            updater['position.{0}'.format(position)] = slot_id
 
         # 检测阵型是否还可用
         if self.doc['using'] and not self.is_formation_valid(self.doc['using']):
             self.doc['using'] = 0
             updater['using'] = 0
             self.send_formation_notify(formation_ids=[])
-
-        self.doc['slots'][str(slot_id)]['unit_id'] = unit_id
 
         MongoFormation.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -256,17 +268,17 @@ class Formation(object):
             positions[index] = slot_id
             updater['slots.{0}.policy'.format(slot_id)] = policy
 
-        # 发来的只是部分数据，对应以前的position中的数据 要得意保留
-        # 比如 以前的 position 是 [0, 1, 0, 2, 0]
-        # 发来的数据是 把 1 移动到 最后
-        # 这时候自己组织的 positions 是 [0, 0, 0, 0, 1]
-        # 现在就需要把 2 有也放进来
-        for _index, _id in enumerate(self.doc['position']):
-            if _id not in positions:
-                if positions[_index]:
-                    raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
-
-                positions[_index] = _id
+        # # 发来的只是部分数据，对应以前的position中的数据 要得意保留
+        # # 比如 以前的 position 是 [0, 1, 0, 2, 0]
+        # # 发来的数据是 把 1 移动到 最后
+        # # 这时候自己组织的 positions 是 [0, 0, 0, 0, 1]
+        # # 现在就需要把 2 有也放进来
+        # for _index, _id in enumerate(self.doc['position']):
+        #     if _id not in positions:
+        #         if positions[_index]:
+        #             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+        #
+        #         positions[_index] = _id
 
         updater['position'] = positions
 
@@ -435,9 +447,12 @@ class Formation(object):
                     notify_slot.status = FORMATION_SLOT_EMPTY
                 else:
                     notify_slot.status = FORMATION_SLOT_USE
-                    notify_slot.position = self.doc['position'].index(int(_id))
                     notify_slot.staff_id = data['staff_id']
                     notify_slot.unit_id = data['unit_id']
+                    if data['unit_id']:
+                        notify_slot.position = self.doc['position'].index(int(_id))
+                    else:
+                        notify_slot.position = -1
 
         MessagePipe(self.char_id).put(msg=notify)
 
