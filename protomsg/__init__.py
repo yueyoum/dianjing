@@ -135,7 +135,6 @@ MESSAGE_TO_ID = {
     "ArenaMatchStartResponse": 3510,
     "ArenaMatchReportReqeust": 3511,
     "ArenaMatchReportResponse": 3512,
-    "ArenaMatchLogNotify": 3513,
     "ArenaBuyTimesRequest": 3514,
     "ArenaBuyTimesResponse": 3515,
     "TowerNotify": 3600,
@@ -204,6 +203,7 @@ MESSAGE_TO_ID = {
     "WelfareLevelRewardGetResponse": 4209,
     "WelfareEnergyRewardGetReqeust": 4210,
     "WelfareEnergyRewardGetResponse": 4211,
+    "ResourceNotify": 4300,
 }
 
 ID_TO_MESSAGE = {
@@ -342,7 +342,6 @@ ID_TO_MESSAGE = {
     3510: "ArenaMatchStartResponse",
     3511: "ArenaMatchReportReqeust",
     3512: "ArenaMatchReportResponse",
-    3513: "ArenaMatchLogNotify",
     3514: "ArenaBuyTimesRequest",
     3515: "ArenaBuyTimesResponse",
     3600: "TowerNotify",
@@ -411,6 +410,7 @@ ID_TO_MESSAGE = {
     4209: "WelfareLevelRewardGetResponse",
     4210: "WelfareEnergyRewardGetReqeust",
     4211: "WelfareEnergyRewardGetResponse",
+    4300: "ResourceNotify",
 }
 
 PATH_TO_REQUEST = {

@@ -16,6 +16,9 @@ from core.mongo import MongoResource
 from config import ConfigErrorMessage, ConfigItemNew
 
 from protomsg.package_pb2 import Drop as MsgDrop
+from protomsg.resource_pb2 import ResourceNotify
+
+from utils.message import MessagePipe
 
 MONEY = {
     30000: 'diamond',  # 钻石
@@ -99,6 +102,8 @@ class _Resource(object):
             {'$inc': updater}
         )
 
+        self.send_notify(server_id, char_id)
+
     def check_exists(self, server_id, char_id):
         doc = MongoResource.db(server_id).find_one({'_id': char_id})
         if not doc:
@@ -122,6 +127,22 @@ class _Resource(object):
             {'_id': char_id},
             {'$set': updater}
         )
+
+        self.send_notify(server_id, char_id)
+
+    @classmethod
+    def send_notify(cls, server_id, char_id):
+        doc = MongoResource.db(server_id).find_one(
+            {'_id': char_id},
+        )
+
+        notify = ResourceNotify()
+        for k, v in doc['resource'].iteritems():
+            notify_resource = notify.resource.add()
+            notify_resource.id = int(k)
+            notify_resource.amount = v
+
+        MessagePipe(char_id).put(msg=notify)
 
 
 class ResourceClassification(object):

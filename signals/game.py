@@ -34,6 +34,7 @@ from core.vip import VIP
 from core.collection import Collection
 from core.energy import Energy
 from core.welfare import Welfare
+from core.resource import _Resource
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
@@ -85,7 +86,6 @@ def game_start_handler(server_id, char_id, **kwargs):
     a = Arena(server_id, char_id)
     a.send_notify()
     a.send_honor_notify()
-    a.send_match_log_notify()
 
     t = Tower(server_id, char_id)
     t.send_notify()
@@ -106,6 +106,8 @@ def game_start_handler(server_id, char_id, **kwargs):
     w.send_new_player_notify()
     w.send_level_reward_notify()
     w.send_energy_reward_notify()
+
+    _Resource.send_notify(server_id, char_id)
 
     send_system_notify(char_id)
     BroadCast(server_id, char_id).try_cast_login_notify()

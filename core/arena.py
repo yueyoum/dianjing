@@ -15,7 +15,7 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoArena, MongoArenaScore
 
-from core.club import Club, get_club_property
+from core.club import Club
 from core.lock import ArenaLock
 from core.cooldown import ArenaRefreshCD, ArenaMatchCD
 from core.match import ClubMatch
@@ -51,7 +51,6 @@ from utils.message import MessagePipe
 from protomsg.arena_pb2 import (
     ArenaNotify,
     ArenaHonorStatusNotify,
-    ArenaMatchLogNotify,
 
     ARENA_HONOR_ALREADY_GOT,
     ARENA_HONOR_CAN_GET,
@@ -195,6 +194,7 @@ class ArenaScore(object):
         if new_score < ARENA_DEFAULT_SCORE:
             new_score = ARENA_DEFAULT_SCORE
 
+        changed = new_score - self.score
         self.score = new_score
 
         MongoArenaScore.db(self.server_id).update_one(
@@ -203,7 +203,7 @@ class ArenaScore(object):
             upsert=True
         )
 
-        return new_score - self.score
+        return changed
 
 
 class Arena(object):
@@ -524,8 +524,6 @@ class Arena(object):
     def report(self, key, win):
         rival_id = key
 
-        my_club_name = get_club_property(self.server_id, self.char_id, 'name')
-
         my_rank = self.get_current_rank()
         my_max_rank = self.get_max_rank()
 
@@ -575,19 +573,9 @@ class Arena(object):
 
         if win:
             ValueLogArenaWinTimes(self.server_id, self.char_id).record()
-
-            if my_rank > rival_rank:
-                if not is_npc_club(rival_id):
-                    Arena(self.server_id, int(rival_id)).add_match_log(3, [my_club_name, str(rank_changed)])
-            else:
-                if not is_npc_club(rival_id):
-                    Arena(self.server_id, int(rival_id)).add_match_log(2, [my_club_name])
-
             config_reward = ConfigArenaMatchReward.get(1)
         else:
             config_reward = ConfigArenaMatchReward.get(2)
-            if not is_npc_club(rival_id):
-                Arena(self.server_id, int(rival_id)).add_match_log(1, [my_club_name])
 
         ValueLogArenaHonorPoints(self.server_id, self.char_id).record(value=config_reward.honor)
         ValueLogArenaMatchTimes(self.server_id, self.char_id).record()
@@ -610,7 +598,7 @@ class Arena(object):
             win=win,
         )
 
-        return resource_classified, score_changed, rank_changed, my_max_rank, new_rank, ass.score
+        return resource_classified, score_changed, -rank_changed, my_max_rank, new_rank, ass.score
 
     def get_today_honor_reward_info(self):
         today_key = str(get_arrow_time_of_today().timestamp)
@@ -650,23 +638,6 @@ class Arena(object):
         self.send_honor_notify(reward_info=reward_info)
         return resource_classified
 
-    def add_match_log(self, _id, _argument):
-        log = [_id, _argument]
-
-        MongoArena.db(self.server_id).update_one(
-            {'_id': str(self.char_id)},
-            {
-                '$push': {
-                    'logs': {
-                        '$each': [log],
-                        '$slice': -50,
-                    }
-                }
-            }
-        )
-
-        self.send_match_log_notify()
-
     @classmethod
     def get_leader_board(cls, server_id, amount=30):
         """
@@ -704,21 +675,6 @@ class Arena(object):
                 notify_honor.status = ARENA_HONOR_CAN_GET
             else:
                 notify_honor.status = ARENA_HONOR_CAN_NOT
-
-        MessagePipe(self.char_id).put(msg=notify)
-
-    def send_match_log_notify(self):
-        doc = MongoArena.db(self.server_id).find_one(
-            {'_id': str(self.char_id)},
-            {'logs': []}
-        )
-
-        logs = doc.get('logs', [])
-        notify = ArenaMatchLogNotify()
-        for _id, _arguments in logs:
-            notify_log = notify.logs.add()
-            notify_log.id = _id
-            notify_log.arguments.extend(_arguments)
 
         MessagePipe(self.char_id).put(msg=notify)
 
