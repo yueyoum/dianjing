@@ -99,7 +99,8 @@ class _Resource(object):
         updater = {'resource.{0}'.format(k): v for k, v in self.resource.iteritems()}
         MongoResource.db(server_id).update_one(
             {'_id': char_id},
-            {'$inc': updater}
+            {'$inc': updater},
+            upsert=True
         )
 
         self.send_notify(server_id, char_id)
@@ -135,6 +136,9 @@ class _Resource(object):
         doc = MongoResource.db(server_id).find_one(
             {'_id': char_id},
         )
+
+        if not doc:
+            return
 
         notify = ResourceNotify()
         for k, v in doc['resource'].iteritems():

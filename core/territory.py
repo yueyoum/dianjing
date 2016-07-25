@@ -210,7 +210,7 @@ class Building(object):
             if self.level >= max_level:
                 self.level = max_level
                 if self.exp >= config.levels[max_level].exp:
-                    self.exp = config.levels[max_level].exp - 1
+                    self.exp = config.levels[max_level].exp
 
                 break
 
@@ -884,7 +884,7 @@ class TerritoryFriend(object):
         """:type: dict[int, list[dict]]"""
 
         for fid in friend_ids:
-            t = Territory(self.server_id, self.char_id)
+            t = Territory(self.server_id, fid)
             buildings = t.get_all_building_objects()
 
             b_list = []
@@ -930,7 +930,7 @@ class TerritoryFriend(object):
         if not TerritoryFriend(self.server_id, friend_id).get_remained_got_help_times():
             raise GameException(ConfigErrorMessage.get_error_id("TERRITORY_NO_GOT_HELP_TIMES"))
 
-        t = Territory(self.server_id, self.char_id)
+        t = Territory(self.server_id, friend_id)
         building = t.get_building_object(building_id, slots_ids=[])
 
         event_id = building.event_id

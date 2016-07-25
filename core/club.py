@@ -250,11 +250,12 @@ class Club(AbstractClub):
         # update
         level_changed = False
         while True:
-            if self.level >= MAX_CLUB_LEVEL:
-                self.exp = 0
-                break
-
             need_exp = ConfigClubLevel.get(self.level).exp
+            if self.level >= MAX_CLUB_LEVEL:
+                if self.exp >= need_exp:
+                    self.exp = need_exp
+                    break
+
             if self.exp < need_exp:
                 break
 
