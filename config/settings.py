@@ -11,8 +11,8 @@ CHAR_INIT_GOLD = 100000
 CHAR_INIT_DIAMOND = 0
 CHAR_INIT_CRYSTAL = 0
 CHAR_INIT_GAS = 0
-# staff_id, unit_id, position
-CHAR_INIT_STAFFS = [(60209, 201, 8),]
+# staff_id, unit_id
+CHAR_INIT_STAFFS = [(60209, 201),]
 
 # 俱乐部买员工格子花费钻石
 BUY_STAFF_SLOT_COST = 50

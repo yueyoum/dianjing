@@ -31,6 +31,7 @@ from protomsg.formation_pb2 import (
 MAX_SLOT_AMOUNT = 6
 
 FORMATION_DEFAULT_POSITION = {
+    1: [8],
     2: [9, 7],
     3: [7, 9, 6, 8, 10, 11],
     4: [20, 19, 21, 18, 22, 23],
@@ -61,12 +62,12 @@ class Formation(object):
         raise RuntimeError("Formation set position error. slot_id: {0}".format(slot_amount))
 
     def initialize(self, init_data):
-        # [(staff_unique_id, unit_id, position), ...]
+        # [(staff_unique_id, unit_id), ...]
 
         opened_slot_ids = ConfigFormationSlot.get_opened_slot_ids(1)
 
         updater = {}
-        for index, (staff_unique_id, unit_id, position) in enumerate(init_data):
+        for index, (staff_unique_id, unit_id) in enumerate(init_data):
             slot_id = opened_slot_ids[index]
 
             doc = MongoFormation.document_slot()
@@ -74,6 +75,8 @@ class Formation(object):
             doc['unit_id'] = unit_id
 
             self.doc['slots'][str(slot_id)] = doc
+
+            position = self.get_slot_init_position(len(self.doc['slots']))
             self.doc['position'][position] = slot_id
 
             updater['slots.{0}'.format(slot_id)] = doc
