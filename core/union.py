@@ -69,7 +69,12 @@ class Union(object):
         :rtype: IUnion
         """
         member_doc = MongoUnionMember.db(server_id).find_one({'_id': char_id})
-        if not member_doc or not member_doc['joined']:
+        if not member_doc:
+            member_doc = MongoUnionMember.document()
+            member_doc['_id'] = char_id
+            MongoUnionMember.db(server_id).insert_one(member_doc)
+
+        if not member_doc['joined']:
             return UnionNotJoined(server_id, char_id, None, None)
 
         union_doc = MongoUnion.db(server_id).find_one({'_id': member_doc['joined']})

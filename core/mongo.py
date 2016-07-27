@@ -585,7 +585,7 @@ class MongoUnion(BaseDocument):
         'create_at': 0,
         'name': '',
         'owner': 0,
-        'level': 0,
+        'level': 1,
         'contribution': 0,
         'bulletin': '',
         'apply_list': [],

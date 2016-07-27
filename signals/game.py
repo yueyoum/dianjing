@@ -35,6 +35,7 @@ from core.collection import Collection
 from core.energy import Energy
 from core.welfare import Welfare
 from core.resource import _Resource
+from core.union import Union
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
@@ -106,6 +107,11 @@ def game_start_handler(server_id, char_id, **kwargs):
     w.send_new_player_notify()
     w.send_level_reward_notify()
     w.send_energy_reward_notify()
+
+    u = Union(server_id, char_id)
+    u.send_notify()
+    u.send_my_check_notify()
+    u.send_my_applied_notify()
 
     _Resource.send_notify(server_id, char_id)
 
