@@ -40,6 +40,7 @@ from config.energy import ConfigEnergyBuyCost
 from config.formation import ConfigFormationSlot, ConfigFormation
 from config.welfare import ConfigWelfareSignIn, ConfigWelfareLevelReward, ConfigWelfareNewPlayer
 from config.template import ConfigBroadcastTemplate
+from config.union import ConfigUnionSignin, ConfigUnionLevel
 
 _has_configed = False
 
@@ -213,5 +214,10 @@ def load_config():
 
         elif name == 'broadcast_template.json':
             ConfigBroadcastTemplate.initialize(data)
+
+        elif name == 'union_level.json':
+            ConfigUnionLevel.initialize(data)
+        elif name == 'union_signin.json':
+            ConfigUnionSignin.initialize(data)
 
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))

@@ -375,7 +375,7 @@ class Formation(object):
             # 对应种族数量
             # 因为这个的 condition_type 的定义 和 race 定义是一样的，所以直接比较
             amount = 0
-            for _, v in in_formation_staffs:
+            for _, v in in_formation_staffs.iteritems():
                 if not v['unit_id']:
                     continue
 

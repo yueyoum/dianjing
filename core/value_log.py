@@ -298,3 +298,9 @@ class ValueLogWelfareSignInTimes(ValueLog):
 class ValueLogWelfareEnergyRewardTimes(CategoryValueLog):
     KEY = 'welfare_energy'
     __slots__ = []
+
+
+# 公会每日签到
+class ValueLogUnionSignInTimes(CategoryValueLog):
+    KEY = 'union_signin'
+    __slots__ = []

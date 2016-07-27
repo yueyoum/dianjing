@@ -32,6 +32,7 @@ import views.store
 import views.vip
 import views.energy
 import views.welfare
+import views.union
 
 urlpatterns = [
     url(r'^sync/$', views.common.sync),
@@ -137,4 +138,15 @@ urlpatterns = [
     url(r'^welfare/newplayer/$', views.welfare.new_player_get),
     url(r'^welfare/levelreward/$', views.welfare.level_reward_get),
     url(r'^welfare/energyreward/$', views.welfare.energy_reward_get),
+
+    url(r'^union/create/$', views.union.create),
+    url(r'^union/setbulletin/$', views.union.set_bulletin),
+    url(r'^union/list/$', views.union.get_list),
+    url(r'^union/apply/$', views.union.apply_union),
+    url(r'^union/agree/$', views.union.agree),
+    url(r'^union/refuse/$', views.union.refuse),
+    url(r'^union/kick/$', views.union.kick),
+    url(r'^union/transfer/$', views.union.transfer),
+    url(r'^union/quit/$', views.union.quit),
+    url(r'^union/signin/$', views.union.signin),
 ]

@@ -22,6 +22,7 @@ class BaseDocument(object):
     DOCUMENT = {}
     COLLECTION = ""
     INDEXES = []
+    UNIQUE = []
 
     @classmethod
     def document(cls):
@@ -46,11 +47,11 @@ class BaseDocument(object):
 
     @classmethod
     def create_indexes(cls, server_id):
-        if not cls.INDEXES:
-            return
-
         for i in cls.INDEXES:
             cls.db(server_id).create_index(i)
+
+        for i in cls.UNIQUE:
+            cls.db(server_id).create_index(i, unique=True)
 
 
 class Null(object):
@@ -576,3 +577,33 @@ class MongoResource(BaseDocument):
     }
 
     COLLECTION = 'resource'
+
+# 公会
+class MongoUnion(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'create_at': 0,
+        'name': '',
+        'owner': 0,
+        'level': 0,
+        'contribution': 0,
+        'bulletin': '',
+        'apply_list': [],
+    }
+
+    COLLECTION = 'union'
+    INDEXES = ['apply_list',]
+    UNIQUE = ['name', 'owner',]
+
+class MongoUnionMember(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'joined': '',
+        'joined_at': 0,
+        'coin': 0,
+        'contribution': 0,
+        'today_contribution': 0,
+    }
+
+    COLLECTION = 'union_member'
+    INDEXES = ['joined',]
