@@ -18,6 +18,7 @@ from core.resource import ResourceClassification, money_text_to_item_id
 from core.vip import VIP
 from core.tower import Tower
 from core.arena import Arena
+from core.union import Union
 
 from utils.message import MessagePipe
 
@@ -120,6 +121,9 @@ class Store(object):
         elif config.condition_id == 3:
             # 竞技场历史最高排名
             Arena(self.server_id, self.char_id).check_max_rank(config.condition_value)
+        elif config.condition_id == 4:
+            # 当前公会等级
+            Union(self.server_id, self.char_id).check_level(config.condition_value)
 
         item_id, item_amount, need_id, need_amount = config.content[data['index']]
         resource_classify = ResourceClassification.classify([(need_id, need_amount)])

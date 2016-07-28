@@ -156,6 +156,9 @@ class IUnion(object):
     def sign_in(self, _id):
         raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
+    def check_level(self, target_level):
+        raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
     def send_notify(self, **kwargs):
         raise NotImplementedError()
 
@@ -219,6 +222,7 @@ class UnionNotJoined(IUnion):
 
         u = Union(self.server_id, doc['owner'])
         u.send_my_check_notify()
+
 
     def send_notify(self):
         notify = UnionNotify()
@@ -300,6 +304,10 @@ class UnionJoined(IUnion):
 
         self.send_notify()
         return rc
+
+    def check_level(self, target_level):
+        if self.union_doc['level'] < target_level:
+            raise GameException(ConfigErrorMessage.get_error_id("UNION_LEVEL_NOT_ENOUGH"))
 
     def add_contribution(self, value, send_notify=True):
         # 给自己加
