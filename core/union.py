@@ -383,7 +383,8 @@ class UnionJoined(IUnion):
 
         members.sort(key=lambda item: item.contribution, reverse=True)
 
-        members.insert(0, _MemberClub(self.server_id, owner_doc['_id'], owner_doc['contribution'],
+        if owner_doc:
+            members.insert(0, _MemberClub(self.server_id, owner_doc['_id'], owner_doc['contribution'],
                                       owner_doc['today_contribution']))
         return members
 
@@ -577,7 +578,7 @@ class UnionOwner(UnionJoined):
             return
 
         members = self.get_members()
-        next_char_id = members[1].char_id
+        next_char_id = members[0].char_id
         self.transfer(next_char_id, send_mail=False)
 
         MailManager(self.server_id, next_char_id).add(
