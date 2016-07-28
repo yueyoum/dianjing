@@ -18,6 +18,7 @@ from core.resource import ResourceClassification, money_text_to_item_id
 from core.value_log import ValueLogUnionSignInTimes
 from core.club import Club
 from core.vip import VIP
+from core.mail import MailManager
 
 from utils.message import MessagePipe
 from utils.functional import make_string_id
@@ -443,6 +444,32 @@ class UnionMember(UnionJoined):
 class UnionOwner(UnionJoined):
     __slots__ = []
 
+    @classmethod
+    def try_auto_transfer(cls, server_id):
+        for doc in MongoUnion.db(server_id).find_one({}, {'owner': 1}):
+            if Club.days_since_last_login(server_id, doc['owner']) <= 7:
+                continue
+
+            u = Union(server_id, doc['owner'])
+            assert isinstance(u, UnionOwner)
+
+            if u.get_members_amount() == 1:
+                continue
+
+            members = u.get_members()
+            next_char_id = members[1].id
+            u.transfer(next_char_id, send_mail=False)
+
+            MailManager(server_id, doc['owner']).add(
+                title=u"公会会长资格取消",
+                content=u"你已经连续7天没有登陆，已经取消你的会长资格。"
+            )
+
+            MailManager(server_id, next_char_id).add(
+                title=u"公会会长自动转移",
+                content=u"原会长已经连续7天没有登陆，现在你自动成为了会长。"
+            )
+
     def set_bulletin(self, content):
         if len(content) > BULLETIN_MAX_LENGTH:
             raise GameException(ConfigErrorMessage.get_error_id("UNION_BULLETIN_TOO_LONG"))
@@ -519,7 +546,7 @@ class UnionOwner(UnionJoined):
 
         u.quit()
 
-    def transfer(self, char_id):
+    def transfer(self, char_id, send_mail=True):
         if char_id == self.char_id:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
@@ -535,16 +562,28 @@ class UnionOwner(UnionJoined):
             }}
         )
 
+        if send_mail:
+            MailManager(self.server_id, char_id).add(
+                title=u"会长转移",
+                content=u"原公会会长已经把会长的职位转移给你。希望你管理好公会。"
+            )
+
         self.send_notify_to_all_members(send_my_check_notify=True)
 
     def quit(self, *args):
         super(UnionOwner, self).quit(send_notify=False)
         if self.get_members_amount() == 0:
             MongoUnion.db(self.server_id).delete_one({'_id': self.union_doc['_id']})
+            return
 
         members = self.get_members()
         next_char_id = members[1].char_id
-        self.transfer(next_char_id)
+        self.transfer(next_char_id, send_mail=False)
+
+        MailManager(self.server_id, next_char_id).add(
+            title=u"会长转移",
+            content=u"原会长退出，现在你已经是公会会长。"
+        )
 
     def send_my_check_notify(self):
         notify = UnionMyCheckNotify()

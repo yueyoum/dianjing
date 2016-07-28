@@ -194,6 +194,19 @@ class Club(AbstractClub):
         days = (now.date() - create_at.date()).days
         return days + 1
 
+    @classmethod
+    def days_since_last_login(cls, server_id, char_id):
+        # 从最近一次登陆 到现在已经过了多少天
+        doc = MongoCharacter.db(server_id).find_one(
+            {'_id': char_id},
+            {'last_login': 1}
+        )
+
+        last_login = arrow.get(doc['last_login']).to(settings.TIME_ZONE)
+        now = arrow.utcnow().to(settings.TIME_ZONE)
+        days = (now.date() - last_login.date()).days
+        return days
+
     def set_login(self):
         from django.db.models import F
         from apps.character.models import Character as ModelCharacter
