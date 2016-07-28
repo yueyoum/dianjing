@@ -21,7 +21,7 @@ challenge_match_signal = Signal(providing_args=['server_id', 'char_id', 'challen
 friend_match_signal = Signal(providing_args=['server_id', 'char_id', 'target_id', 'win'])
 
 # 竞技场比赛  参数里有 target_name，是因为可能对手是NPC
-arena_match_signal = Signal(providing_args=['server_id', 'char_id', 'target_id', 'target_name', 'my_rank', 'target_rank', 'win'])
+arena_match_signal = Signal(providing_args=['server_id', 'char_id', 'target_id', 'target_name', 'my_rank', 'target_rank', 'win', 'continue_win'])
 
 # 聊天说了一句话
 chat_signal = Signal(providing_args=['server_id', 'char_id'])

@@ -195,7 +195,6 @@ AES_CBC_IV = doc.find('crypto/iv').text
 
 REDIS_HOST = doc.find('redis/host').text
 REDIS_PORT = int( doc.find('redis/port').text )
-REDIS_CACHE_SECONDS = int( doc.find('redis/cache-seconds').text )
 
 if doc.find('mongodb/user') is not None:
     MONGODB_USER = doc.find('mongodb/user').text
@@ -216,12 +215,6 @@ _config_admins = doc.find('admins')
 ADMINS = ()
 for _admin in _config_admins.getchildren():
     ADMINS += ((_admin.attrib['name'], _admin.attrib['email']), )
-
-
-QINIU_ACCESS_KEY = doc.find('qiniu/accesskey').text
-QINIU_SECRET_KEY = doc.find('qiniu/secretkey').text
-QINIU_BUCKET = doc.find('qiniu/bucket').text
-QINIU_DOMAIN = doc.find('qiniu/domain').text
 
 del _config_admins
 del doc

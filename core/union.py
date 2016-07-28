@@ -24,6 +24,16 @@ from utils.message import MessagePipe
 from utils.functional import make_string_id
 
 from config import GlobalConfig, ConfigErrorMessage, ConfigUnionSignin, ConfigUnionLevel
+from config.text import (
+    UNION_AUTO_TRANSFER_OLD_OWNER_MAIL_TITLE,
+    UNION_AUTO_TRANSFER_OLD_OWNER_MAIL_CONTENT,
+    UNION_AUTO_TRANSFER_NEW_OWNER_MAIL_TITLE,
+    UNION_AUTO_TRANSFER_NEW_OWNER_MAIL_CONTENT,
+    UNION_MANUAL_TRANSFER_NEW_OWNER_MAIL_TITLE,
+    UNION_MANUAL_TRANSFER_NEW_OWNER_MAIL_CONTENT,
+    UNION_QUIT_TRANSFER_NEW_OWNER_MAIL_TITLE,
+    UNION_QUIT_TRANSFER_NEW_OWNER_MAIL_CONTENT,
+)
 
 from protomsg.union_pb2 import UnionMyAppliedNotify, UnionMyCheckNotify, UnionNotify, UnionMember as MsgMember
 
@@ -224,7 +234,6 @@ class UnionNotJoined(IUnion):
         u = Union(self.server_id, doc['owner'])
         u.send_my_check_notify()
 
-
     def send_notify(self):
         notify = UnionNotify()
         notify.id = ""
@@ -385,7 +394,7 @@ class UnionJoined(IUnion):
 
         if owner_doc:
             members.insert(0, _MemberClub(self.server_id, owner_doc['_id'], owner_doc['contribution'],
-                                      owner_doc['today_contribution']))
+                                          owner_doc['today_contribution']))
         return members
 
     def get_members_amount(self):
@@ -464,13 +473,13 @@ class UnionOwner(UnionJoined):
             u.transfer(next_char_id, send_mail=False)
 
             MailManager(server_id, doc['owner']).add(
-                title=u"公会会长资格取消",
-                content=u"你已经连续7天没有登陆，已经取消你的会长资格。"
+                title=UNION_AUTO_TRANSFER_OLD_OWNER_MAIL_TITLE,
+                content=UNION_AUTO_TRANSFER_OLD_OWNER_MAIL_CONTENT
             )
 
             MailManager(server_id, next_char_id).add(
-                title=u"公会会长自动转移",
-                content=u"原会长已经连续7天没有登陆，现在你自动成为了会长。"
+                title=UNION_AUTO_TRANSFER_NEW_OWNER_MAIL_TITLE,
+                content=UNION_AUTO_TRANSFER_NEW_OWNER_MAIL_CONTENT
             )
 
             transfer.append((doc['_id'], doc['owner'], next_char_id))
@@ -571,8 +580,8 @@ class UnionOwner(UnionJoined):
 
         if send_mail:
             MailManager(self.server_id, char_id).add(
-                title=u"会长转移",
-                content=u"原公会会长已经把会长的职位转移给你。希望你管理好公会。"
+                title=UNION_MANUAL_TRANSFER_NEW_OWNER_MAIL_TITLE,
+                content=UNION_MANUAL_TRANSFER_NEW_OWNER_MAIL_CONTENT
             )
 
         self.send_notify_to_all_members(send_my_check_notify=True)
@@ -588,8 +597,8 @@ class UnionOwner(UnionJoined):
         self.transfer(next_char_id, send_mail=False)
 
         MailManager(self.server_id, next_char_id).add(
-            title=u"会长转移",
-            content=u"原会长退出，现在你已经是公会会长。"
+            title=UNION_QUIT_TRANSFER_NEW_OWNER_MAIL_TITLE,
+            content=UNION_QUIT_TRANSFER_NEW_OWNER_MAIL_CONTENT,
         )
 
     def send_my_check_notify(self):

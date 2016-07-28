@@ -18,6 +18,7 @@ from core.signals import (
 from core.collection import Collection
 from core.system import BroadCast
 
+from config.text import BROADCAST_STAFF_STAR_TEXT
 
 @receiver(staff_new_add_signal, dispatch_uid='signals.staff.staff_new_add_handler')
 def staff_new_add_handler(server_id, char_id, oid, unique_id, force_load_staffs, **kwargs):
@@ -33,10 +34,13 @@ def recruit_staff_diamond_handler(server_id, char_id, times, staffs, **kwargs):
 
 @receiver(staff_star_up_signal, dispatch_uid='signals.staff.star_up_handler')
 def star_up_handler(server_id, char_id, staff_id, staff_oid, new_star, **kwargs):
-    b = BroadCast(server_id, char_id)
-    b.cast_staff_star_up_notify(staff_oid, new_star)
+    text = BROADCAST_STAFF_STAR_TEXT.get(new_star, "")
+    if text:
+        b = BroadCast(server_id, char_id)
+        b.cast_staff_star_up_notify(staff_oid, text)
 
 @receiver(staff_step_up_signal, dispatch_uid='signals.staff.step_up_handler')
 def step_up_handler(server_id, char_id, staff_id, staff_oid, new_step, **kwargs):
-    b = BroadCast(server_id, char_id)
-    b.cast_staff_step_up_notify(staff_oid, new_step)
+    if new_step > 3:
+        b = BroadCast(server_id, char_id)
+        b.cast_staff_step_up_notify(staff_oid, new_step)

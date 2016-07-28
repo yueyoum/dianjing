@@ -529,7 +529,10 @@ class Arena(object):
 
         doc = MongoArena.db(self.server_id).find_one(
             {'_id': str(self.char_id)},
-            {'search_index': 1}
+            {
+                'search_index': 1,
+                'continue_win': 1,
+            }
         )
 
         ArenaRefreshCD(self.server_id, self.char_id).clean()
@@ -538,9 +541,11 @@ class Arena(object):
         if win:
             score_changed = config_search.score_win
             new_search_index = doc['search_index'] + 1
+            continue_win = doc.get('continue_win', 0) + 1
         else:
             score_changed = -config_search.score_lose
             new_search_index = doc['search_index'] - 1
+            continue_win = 0
 
         if new_search_index > ConfigArenaSearchRange.MAX_INDEX:
             new_search_index = ConfigArenaSearchRange.MAX_INDEX
@@ -552,6 +557,7 @@ class Arena(object):
             {'$set': {
                 'search_index': new_search_index,
                 'rival': 0,
+                'continue_win': continue_win,
             }}
         )
 
@@ -596,6 +602,7 @@ class Arena(object):
             my_rank=new_rank,
             target_rank=rival_rank,
             win=win,
+            continue_win=continue_win,
         )
 
         return resource_classified, score_changed, -rank_changed, my_max_rank, new_rank, ass.score
@@ -655,6 +662,8 @@ class Arena(object):
 
                 if a >= amount:
                     return clubs
+
+        return clubs
 
     def send_honor_notify(self, reward_info=None):
         if not reward_info:

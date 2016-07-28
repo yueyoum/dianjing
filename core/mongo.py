@@ -355,6 +355,9 @@ class MongoArena(BaseDocument):
         # 积分
         'point': 0,
         'search_index': 0,
+
+        # 连胜次数
+        'continue_win': 0,
     }
 
     COLLECTION = 'arena'

@@ -12,6 +12,7 @@ import traceback
 
 import uwsgidecorators
 from apps.server.models import Server
+from core.mongo import MongoArena
 from core.arena import Arena
 from cronjob.log import Logger
 
@@ -23,6 +24,13 @@ def send_rank_reward(*args):
 
     try:
         for sid in Server.duty_server_ids():
+            MongoArena.db(sid).update_many(
+                {},
+                {'$set': {
+                    'continue_win': 0
+                }}
+            )
+
             Arena.send_rank_reward(sid)
             logger.write("Server {0} Finish".format(sid))
     except:

@@ -58,14 +58,14 @@ class BroadCast(object):
         text = template.format(self.name, ConfigItemNew.get(staff_original_id).name, step_level)
         self.do_cast(text)
 
-    def cast_staff_star_up_notify(self, staff_original_id, star_level):
+    def cast_staff_star_up_notify(self, staff_original_id, star_text):
         template = ConfigBroadcastTemplate.get(2).template
-        text = template.format(self.name, ConfigItemNew.get(staff_original_id).name, star_level)
+        text = template.format(self.name, ConfigItemNew.get(staff_original_id).name, star_text)
         self.do_cast(text)
 
-    def cast_arena_match_notify(self, target_name, target_rank):
+    def cast_arena_match_notify(self, continue_win):
         template = ConfigBroadcastTemplate.get(3).template
-        text = template.format(self.name, target_rank, target_name)
+        text = template.format(self.name, continue_win)
         self.do_cast(text)
 
     def cast_diamond_recruit_staff_notify(self, staff_original_id):

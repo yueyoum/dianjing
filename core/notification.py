@@ -41,15 +41,15 @@ class Notification(object):
 
         return noti_id in doc['notis']
 
-    def add_league_notification(self, win, target, score_got, gold_got, score_rank):
-        tp = 1 if win else 2
-        args = (target, str(score_got), str(gold_got), str(score_rank))
-        return self._add(tp, args)
-
-    def add_ladder_notification(self, win, from_name, current_order, ladder_score):
-        tp = 3 if win else 4
-        args = (from_name, str(current_order), str(ladder_score))
-        return self._add(tp, args)
+    # def add_league_notification(self, win, target, score_got, gold_got, score_rank):
+    #     tp = 1 if win else 2
+    #     args = (target, str(score_got), str(gold_got), str(score_rank))
+    #     return self._add(tp, args)
+    #
+    # def add_ladder_notification(self, win, from_name, current_order, ladder_score):
+    #     tp = 3 if win else 4
+    #     args = (from_name, str(current_order), str(ladder_score))
+    #     return self._add(tp, args)
 
     def _add(self, tp, args):
         doc = MongoNotification.db(self.server_id).find_one({'_id': self.char_id}, {'notis': 1})
