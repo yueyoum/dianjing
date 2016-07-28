@@ -6,6 +6,7 @@ Date Created:   2016-07-27 15:04
 Description:
 
 """
+from collections import OrderedDict
 
 import arrow
 from pymongo.errors import DuplicateKeyError
@@ -28,17 +29,52 @@ from protomsg.union_pb2 import UnionMyAppliedNotify, UnionMyCheckNotify, UnionNo
 BULLETIN_MAX_LENGTH = 255
 
 
-def get_all_union(server_id):
-    docs = MongoUnion.db(server_id).find()
+class _UnionInfo(object):
+    __slots__ = ['server_id', 'id', 'name', 'owner', 'level', 'contribution', 'rank']
+
+    def __init__(self, server_id, doc):
+        self.server_id = server_id
+
+        self.id = doc['_id']
+        self.name = doc['name']
+        self.owner = doc['owner']
+        self.level = doc['level']
+        self.contribution = doc['contribution']
+
+        self.rank = None
+
+    @property
+    def members_amount(self):
+        return MongoUnionMember.db(self.server_id).find({'joined': self.id}).count()
+
+    @property
+    def all_contribution(self):
+        contribution = self.contribution
+        for lv in range(self.level - 1, 0, -1):
+            contribution += ConfigUnionLevel.get(lv).contribution
+
+        return contribution
+
+
+def get_all_unions(server_id):
+    """
+
+    :rtype: dict[str, _UnionInfo]
+    """
+    docs = MongoUnion.db(server_id).find({}, {'create_at': 0, 'bulletin': 0, 'apply_list': 0})
 
     unions = []
     for doc in docs:
-        unions.append((
-            doc['_id'], 99, doc['level'], doc['name'],
-            MongoUnionMember.db(server_id).find({'joined': doc['_id']}).count()
-        ))
+        unions.append(_UnionInfo(server_id, doc))
 
-    return unions
+    unions.sort(key=lambda item: item.all_contribution, reverse=True)
+
+    res = OrderedDict()
+    for index, u in enumerate(unions):
+        u.rank = index + 1
+        res[u.id] = u
+
+    return res
 
 
 class _MemberClub(Club):
@@ -120,7 +156,7 @@ class IUnion(object):
     def sign_in(self, _id):
         raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
-    def send_notify(self):
+    def send_notify(self, **kwargs):
         raise NotImplementedError()
 
     def send_my_applied_notify(self):
@@ -345,14 +381,21 @@ class UnionJoined(IUnion):
     def get_members_amount(self):
         return MongoUnionMember.db(self.server_id).find({'joined': self.union_doc['_id']}).count()
 
-    def send_notify_to_all_members(self, send_my_check_notify=False):
+    def get_rank(self):
+        unions = get_all_unions(self.server_id)
+        return unions[self.union_doc['_id']].rank
+
+    def send_notify_to_all_members(self, rank=None, send_my_check_notify=False):
+        if rank is None:
+            rank = self.get_rank()
+
         for doc in MongoUnionMember.db(self.server_id).find({'joined': self.union_doc['_id']}):
             u = Union(self.server_id, doc['_id'])
-            u.send_notify()
+            u.send_notify(rank=rank)
             if send_my_check_notify:
                 u.send_my_check_notify()
 
-    def send_notify(self):
+    def send_notify(self, rank=None):
         notify = UnionNotify()
         notify.id = self.union_doc['_id']
         notify.name = self.union_doc['name']
@@ -360,7 +403,9 @@ class UnionJoined(IUnion):
         notify.level = self.union_doc['level']
         notify.contribution = self.union_doc['contribution']
 
-        notify.rank = 99
+        if rank is None:
+            rank = self.get_rank()
+        notify.rank = rank
         notify.my_contribution = self.member_doc['contribution']
 
         members = self.get_members()

@@ -9,7 +9,7 @@ Description:
 
 from utils.http import ProtobufResponse
 
-from core.union import Union, get_all_union
+from core.union import Union, get_all_unions
 
 from protomsg.union_pb2 import (
     UnionAgreeResponse,
@@ -28,19 +28,18 @@ def get_list(request):
     server_id = request._game_session.server_id
     # char_id = request._game_session.char_id
 
-    unions = get_all_union(server_id)
-
+    unions = get_all_unions(server_id)
 
     response = UnionListResponse()
     response.ret = 0
 
-    for _id, rank, level, name, amount in unions:
+    for _, v in unions.iteritems():
         response_union = response.union.add()
-        response_union.id = _id
-        response_union.rank = rank
-        response_union.level = level
-        response_union.name = name
-        response_union.members_amount = amount
+        response_union.id = v.id
+        response_union.rank = v.rank
+        response_union.level = v.level
+        response_union.name = v.name
+        response_union.members_amount = v.members_amount
 
     return ProtobufResponse(response)
 
