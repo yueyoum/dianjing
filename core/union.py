@@ -150,6 +150,14 @@ class UnionNotJoined(IUnion):
         except DuplicateKeyError:
             raise GameException(ConfigErrorMessage.get_error_id("UNION_NAME_HAS_TAKEN"))
 
+        MongoUnionMember.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'joined': doc['_id'],
+                'joined_at': arrow.utcnow().timestamp
+            }}
+        )
+
         u = Union(self.server_id, self.char_id)
         u.send_notify()
         u.send_my_applied_notify()
@@ -184,7 +192,6 @@ class UnionNotJoined(IUnion):
         notify.level = 0
         notify.contribution = 0
         notify.rank = 0
-        notify.my_coin = 0
         notify.my_contribution = 0
         notify.signin_id = 0
         MessagePipe(self.char_id).put(msg=notify)
@@ -354,7 +361,6 @@ class UnionJoined(IUnion):
         notify.contribution = self.union_doc['contribution']
 
         notify.rank = 99
-        notify.my_coin = self.member_doc['coin']
         notify.my_contribution = self.member_doc['contribution']
 
         members = self.get_members()

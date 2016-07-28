@@ -600,7 +600,6 @@ class MongoUnionMember(BaseDocument):
         '_id': null,
         'joined': '',
         'joined_at': 0,
-        'coin': 0,
         'contribution': 0,
         'today_contribution': 0,
     }

@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='union.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0bunion.proto\x12\x11\x44ianjing.protocol\x1a\rpackage.proto\"\x8b\x01\n\x0bUnionMember\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04\x66lag\x18\x02 \x02(\x05\x12\x0c\n\x04name\x18\x03 \x02(\t\x12\r\n\x05level\x18\x04 \x02(\x05\x12\r\n\x05power\x18\x05 \x02(\x05\x12\x1a\n\x12total_contribution\x18\x06 \x02(\x05\x12\x1a\n\x12today_contribution\x18\x07 \x02(\x05\"\xeb\x01\n\x0bUnionNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\x12\x0c\n\x04name\x18\x03 \x02(\t\x12\x10\n\x08\x62ulletin\x18\x04 \x02(\t\x12\r\n\x05level\x18\x05 \x02(\x05\x12\x14\n\x0c\x63ontribution\x18\x06 \x02(\x05\x12\x0c\n\x04rank\x18\x07 \x02(\x05\x12\x0f\n\x07my_coin\x18\t \x02(\x05\x12\x17\n\x0fmy_contribution\x18\n \x02(\x05\x12/\n\x07members\x18\x0b \x03(\x0b\x32\x1e.Dianjing.protocol.UnionMember\x12\x11\n\tsignin_id\x18\x0c \x02(\x05\":\n\x14UnionMyAppliedNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tunion_ids\x18\x02 \x03(\t\"V\n\x12UnionMyCheckNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x07members\x18\x02 \x03(\x0b\x32\x1e.Dianjing.protocol.UnionMember\"3\n\x12UnionCreateRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\"3\n\x13UnionCreateResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"<\n\x17UnionSetBulletinRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08\x62ulletin\x18\x02 \x02(\t\"8\n\x18UnionSetBulletinResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"#\n\x10UnionListRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\xc4\x01\n\x11UnionListResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x39\n\x05union\x18\x03 \x03(\x0b\x32*.Dianjing.protocol.UnionListResponse.Union\x1aV\n\x05Union\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04rank\x18\x02 \x02(\x05\x12\r\n\x05level\x18\x03 \x02(\x05\x12\x0c\n\x04name\x18\x04 \x02(\t\x12\x16\n\x0emembers_amount\x18\x05 \x02(\x05\"6\n\x11UnionApplyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08union_id\x18\x02 \x02(\t\"2\n\x12UnionApplyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"5\n\x11UnionAgreeRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63har_id\x18\x02 \x02(\t\"2\n\x12UnionAgreeResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"6\n\x12UnionRefuseRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63har_id\x18\x02 \x02(\t\"3\n\x13UnionRefuseResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"4\n\x10UnionKickRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63har_id\x18\x02 \x02(\t\"1\n\x11UnionKickResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"8\n\x14UnionTransferRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63har_id\x18\x02 \x02(\t\"5\n\x15UnionTransferResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"#\n\x10UnionQuitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"1\n\x11UnionQuitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"1\n\x12UnionSigninRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"Z\n\x13UnionSigninResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop')
+  serialized_pb=_b('\n\x0bunion.proto\x12\x11\x44ianjing.protocol\x1a\rpackage.proto\"\x8b\x01\n\x0bUnionMember\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04\x66lag\x18\x02 \x02(\x05\x12\x0c\n\x04name\x18\x03 \x02(\t\x12\r\n\x05level\x18\x04 \x02(\x05\x12\r\n\x05power\x18\x05 \x02(\x05\x12\x1a\n\x12total_contribution\x18\x06 \x02(\x05\x12\x1a\n\x12today_contribution\x18\x07 \x02(\x05\"\xda\x01\n\x0bUnionNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\x12\x0c\n\x04name\x18\x03 \x02(\t\x12\x10\n\x08\x62ulletin\x18\x04 \x02(\t\x12\r\n\x05level\x18\x05 \x02(\x05\x12\x14\n\x0c\x63ontribution\x18\x06 \x02(\x05\x12\x0c\n\x04rank\x18\x07 \x02(\x05\x12\x17\n\x0fmy_contribution\x18\n \x02(\x05\x12/\n\x07members\x18\x0b \x03(\x0b\x32\x1e.Dianjing.protocol.UnionMember\x12\x11\n\tsignin_id\x18\x0c \x02(\x05\":\n\x14UnionMyAppliedNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tunion_ids\x18\x02 \x03(\t\"V\n\x12UnionMyCheckNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x07members\x18\x02 \x03(\x0b\x32\x1e.Dianjing.protocol.UnionMember\"3\n\x12UnionCreateRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\"3\n\x13UnionCreateResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"<\n\x17UnionSetBulletinRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08\x62ulletin\x18\x02 \x02(\t\"8\n\x18UnionSetBulletinResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"#\n\x10UnionListRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\xc4\x01\n\x11UnionListResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x39\n\x05union\x18\x03 \x03(\x0b\x32*.Dianjing.protocol.UnionListResponse.Union\x1aV\n\x05Union\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04rank\x18\x02 \x02(\x05\x12\r\n\x05level\x18\x03 \x02(\x05\x12\x0c\n\x04name\x18\x04 \x02(\t\x12\x16\n\x0emembers_amount\x18\x05 \x02(\x05\"6\n\x11UnionApplyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08union_id\x18\x02 \x02(\t\"2\n\x12UnionApplyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"5\n\x11UnionAgreeRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63har_id\x18\x02 \x02(\t\"2\n\x12UnionAgreeResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"6\n\x12UnionRefuseRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63har_id\x18\x02 \x02(\t\"3\n\x13UnionRefuseResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"4\n\x10UnionKickRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63har_id\x18\x02 \x02(\t\"1\n\x11UnionKickResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"8\n\x14UnionTransferRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63har_id\x18\x02 \x02(\t\"5\n\x15UnionTransferResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"#\n\x10UnionQuitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"1\n\x11UnionQuitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"1\n\x12UnionSigninRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"Z\n\x13UnionSigninResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop')
   ,
   dependencies=[package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -158,28 +158,21 @@ _UNIONNOTIFY = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='my_coin', full_name='Dianjing.protocol.UnionNotify.my_coin', index=7,
-      number=9, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='my_contribution', full_name='Dianjing.protocol.UnionNotify.my_contribution', index=8,
+      name='my_contribution', full_name='Dianjing.protocol.UnionNotify.my_contribution', index=7,
       number=10, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='members', full_name='Dianjing.protocol.UnionNotify.members', index=9,
+      name='members', full_name='Dianjing.protocol.UnionNotify.members', index=8,
       number=11, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='signin_id', full_name='Dianjing.protocol.UnionNotify.signin_id', index=10,
+      name='signin_id', full_name='Dianjing.protocol.UnionNotify.signin_id', index=9,
       number=12, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -198,7 +191,7 @@ _UNIONNOTIFY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=192,
-  serialized_end=427,
+  serialized_end=410,
 )
 
 
@@ -235,8 +228,8 @@ _UNIONMYAPPLIEDNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=429,
-  serialized_end=487,
+  serialized_start=412,
+  serialized_end=470,
 )
 
 
@@ -273,8 +266,8 @@ _UNIONMYCHECKNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=489,
-  serialized_end=575,
+  serialized_start=472,
+  serialized_end=558,
 )
 
 
@@ -311,8 +304,8 @@ _UNIONCREATEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=577,
-  serialized_end=628,
+  serialized_start=560,
+  serialized_end=611,
 )
 
 
@@ -349,8 +342,8 @@ _UNIONCREATERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=630,
-  serialized_end=681,
+  serialized_start=613,
+  serialized_end=664,
 )
 
 
@@ -387,8 +380,8 @@ _UNIONSETBULLETINREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=683,
-  serialized_end=743,
+  serialized_start=666,
+  serialized_end=726,
 )
 
 
@@ -425,8 +418,8 @@ _UNIONSETBULLETINRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=745,
-  serialized_end=801,
+  serialized_start=728,
+  serialized_end=784,
 )
 
 
@@ -456,8 +449,8 @@ _UNIONLISTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=803,
-  serialized_end=838,
+  serialized_start=786,
+  serialized_end=821,
 )
 
 
@@ -515,8 +508,8 @@ _UNIONLISTRESPONSE_UNION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=951,
-  serialized_end=1037,
+  serialized_start=934,
+  serialized_end=1020,
 )
 
 _UNIONLISTRESPONSE = _descriptor.Descriptor(
@@ -559,8 +552,8 @@ _UNIONLISTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=841,
-  serialized_end=1037,
+  serialized_start=824,
+  serialized_end=1020,
 )
 
 
@@ -597,8 +590,8 @@ _UNIONAPPLYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1039,
-  serialized_end=1093,
+  serialized_start=1022,
+  serialized_end=1076,
 )
 
 
@@ -635,8 +628,8 @@ _UNIONAPPLYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1095,
-  serialized_end=1145,
+  serialized_start=1078,
+  serialized_end=1128,
 )
 
 
@@ -673,8 +666,8 @@ _UNIONAGREEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1147,
-  serialized_end=1200,
+  serialized_start=1130,
+  serialized_end=1183,
 )
 
 
@@ -711,8 +704,8 @@ _UNIONAGREERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1202,
-  serialized_end=1252,
+  serialized_start=1185,
+  serialized_end=1235,
 )
 
 
@@ -749,8 +742,8 @@ _UNIONREFUSEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1254,
-  serialized_end=1308,
+  serialized_start=1237,
+  serialized_end=1291,
 )
 
 
@@ -787,8 +780,8 @@ _UNIONREFUSERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1310,
-  serialized_end=1361,
+  serialized_start=1293,
+  serialized_end=1344,
 )
 
 
@@ -825,8 +818,8 @@ _UNIONKICKREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1363,
-  serialized_end=1415,
+  serialized_start=1346,
+  serialized_end=1398,
 )
 
 
@@ -863,8 +856,8 @@ _UNIONKICKRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1417,
-  serialized_end=1466,
+  serialized_start=1400,
+  serialized_end=1449,
 )
 
 
@@ -901,8 +894,8 @@ _UNIONTRANSFERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1468,
-  serialized_end=1524,
+  serialized_start=1451,
+  serialized_end=1507,
 )
 
 
@@ -939,8 +932,8 @@ _UNIONTRANSFERRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1526,
-  serialized_end=1579,
+  serialized_start=1509,
+  serialized_end=1562,
 )
 
 
@@ -970,8 +963,8 @@ _UNIONQUITREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1581,
-  serialized_end=1616,
+  serialized_start=1564,
+  serialized_end=1599,
 )
 
 
@@ -1008,8 +1001,8 @@ _UNIONQUITRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1618,
-  serialized_end=1667,
+  serialized_start=1601,
+  serialized_end=1650,
 )
 
 
@@ -1046,8 +1039,8 @@ _UNIONSIGNINREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1669,
-  serialized_end=1718,
+  serialized_start=1652,
+  serialized_end=1701,
 )
 
 
@@ -1091,8 +1084,8 @@ _UNIONSIGNINRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1720,
-  serialized_end=1810,
+  serialized_start=1703,
+  serialized_end=1793,
 )
 
 _UNIONNOTIFY.fields_by_name['members'].message_type = _UNIONMEMBER
