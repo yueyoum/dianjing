@@ -447,6 +447,8 @@ class UnionOwner(UnionJoined):
 
     @classmethod
     def try_auto_transfer(cls, server_id):
+        transfer = []
+
         for doc in MongoUnion.db(server_id).find_one({}, {'owner': 1}):
             if Club.days_since_last_login(server_id, doc['owner']) <= 7:
                 continue
@@ -470,6 +472,10 @@ class UnionOwner(UnionJoined):
                 title=u"公会会长自动转移",
                 content=u"原会长已经连续7天没有登陆，现在你自动成为了会长。"
             )
+
+            transfer.append((doc['_id'], doc['owner'], next_char_id))
+
+        return transfer
 
     def set_bulletin(self, content):
         if len(content) > BULLETIN_MAX_LENGTH:

@@ -13,7 +13,7 @@ from apps.account.models import Account, AccountBan, AccountLoginLog, AccountReg
 from apps.character.models import Character
 from apps.statistics.models import Statistics
 from core.db import MongoDB, RedisDB
-from core.mongo import ensure_index, MongoArena, MongoArenaScore
+from core.mongo import ensure_index
 
 from core.arena import Arena
 
@@ -70,9 +70,6 @@ class Command(BaseCommand):
         RedisDB.get().flushall()
 
     def _init(self):
-        for s in Server.objects.all():
-            MongoArena.db(s.id).drop()
-            MongoArenaScore.db(s.id).drop()
-            ensure_index(s.id)
-
-            Arena.try_create_arena_npc(s.id)
+        for sid in Server.duty_server_ids():
+            ensure_index(sid)
+            Arena.try_create_arena_npc(sid)

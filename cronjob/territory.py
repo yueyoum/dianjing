@@ -22,7 +22,7 @@ def territory_auto_increase_product(*args):
     logger.write("Start")
 
     try:
-        for sid in Server.opened_server_ids():
+        for sid in Server.duty_server_ids():
             Territory.auto_increase_product(sid)
             logger.write("Server {0} Finish".format(sid))
     except:

@@ -2,6 +2,7 @@
 
 import arrow
 
+from django.conf import settings
 from django.db import models
 from django.db import connection
 
@@ -33,6 +34,10 @@ class Server(models.Model):
         return servers
 
     @classmethod
-    def opened_server_ids(cls):
-        servers = cls.opened_servers()
-        return [s.id for s in servers]
+    def duty_server_ids(cls):
+        ids = []
+        for s in cls.opened_servers():
+            if settings.DUTY_SERVER_MIN <= s.id <= settings.DUTY_SERVER_MAX:
+                ids.append(s.id)
+
+        return ids

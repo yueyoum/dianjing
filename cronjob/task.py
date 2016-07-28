@@ -21,7 +21,7 @@ def reset_task_daily(*args):
     logger.write("Start")
 
     try:
-        for sid in Server.opened_server_ids():
+        for sid in Server.duty_server_ids():
             MongoTaskDaily.db(sid).drop()
 
             logger.write("Server {0} Finish".format(sid))

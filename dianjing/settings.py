@@ -187,6 +187,9 @@ DATABASES = {
 
 TIME_ZONE = doc.find('timezone').text
 
+DUTY_SERVER_MIN = int( doc.find('duty-server/min').text )
+DUTY_SERVER_MAX = int( doc.find('duty-server/max').text )
+
 AES_KEY = doc.find('crypto/key').text
 AES_CBC_IV = doc.find('crypto/iv').text
 

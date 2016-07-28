@@ -20,7 +20,7 @@ def tower_send_reward_and_reset_star(*args):
     logger.write("Start")
 
     try:
-        for sid in Server.opened_server_ids():
+        for sid in Server.duty_server_ids():
             Tower.send_rank_reward_and_reset_star(sid)
             logger.write("Server {0} Finish".format(sid))
     except:

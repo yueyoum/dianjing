@@ -55,7 +55,7 @@ def clean_value_log(*args):
     logger.write("Start")
 
     try:
-        for sid in Server.opened_server_ids():
+        for sid in Server.duty_server_ids():
             ValueLog.clean(sid)
             logger.write("Server {0} Done.".format(sid))
     except:
@@ -72,7 +72,7 @@ def clean_operation_log(*args):
     logger.write("Start")
 
     try:
-        for sid in Server.opened_server_ids():
+        for sid in Server.duty_server_ids():
             OperationLog.clean(sid)
             logger.write("Server {0} Done.".format(sid))
     except:

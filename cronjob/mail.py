@@ -27,7 +27,7 @@ def clean_mail(*args):
     logger.write("Start")
 
     try:
-        server_ids = Server.opened_server_ids()
+        server_ids = Server.duty_server_ids()
         for s in server_ids:
             cleaned_amount = MailManager.cronjob(s)
             logger.write("server {0} cleaned amount {1}".format(s, cleaned_amount))

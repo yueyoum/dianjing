@@ -22,7 +22,7 @@ def send_rank_reward(*args):
     logger.write("Start")
 
     try:
-        for sid in Server.opened_server_ids():
+        for sid in Server.duty_server_ids():
             Arena.send_rank_reward(sid)
             logger.write("Server {0} Finish".format(sid))
     except:

@@ -6,7 +6,7 @@ Date Created:   2016-07-28 10:50
 Description:
 
 """
-
+import json
 import traceback
 
 import uwsgidecorators
@@ -22,7 +22,7 @@ def union_reset_today_contribution(*args):
     logger.write("Start")
 
     try:
-        for sid in Server.opened_server_ids():
+        for sid in Server.duty_server_ids():
             MongoUnionMember.db(sid).update_many(
                 {},
                 {'$set': {
@@ -44,9 +44,10 @@ def union_auto_transfer(*args):
     logger.write("Start")
 
     try:
-        for sid in Server.opened_server_ids():
-            UnionOwner.try_auto_transfer(sid)
+        for sid in Server.duty_server_ids():
+            result = UnionOwner.try_auto_transfer(sid)
             logger.write("Server {0} Finish".format(sid))
+            logger.write(json.dumps(result))
     except:
         logger.error(traceback.format_exc())
     else:
