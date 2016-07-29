@@ -39,6 +39,9 @@ class GameRequestMiddleware(object):
         if request.method != 'POST':
             return HttpResponse(status=403)
 
+        # NOTE
+        request._operation_log = None
+
         try:
             # body 格式：  数量 ID 长度 真实数据
             data = request.body[12:]  # 去掉 数量 ID 长度
@@ -78,8 +81,6 @@ class GameRequestMiddleware(object):
 
         if session.char_id:
             request._operation_log = OperationLog(session.server_id, session.char_id)
-        else:
-            request._operation_log = None
 
         request._game_error_id = 0
 
