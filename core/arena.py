@@ -251,6 +251,19 @@ class Arena(object):
                     attachment=rc.to_json()
                 )
 
+        if weekday == 0:
+            docs = MongoArena.db(server_id).find(
+                {'_id': {'$regex': '^\d+$'}},
+                {'_id': 1}
+            )
+
+            default_score_doc = MongoArenaScore.db(server_id).find_one({'_id': ARENA_DEFAULT_SCORE})
+            for doc in docs:
+                if doc['_id'] in default_score_doc['char_ids']:
+                    continue
+
+                ArenaScore(server_id, int(doc['_id'])).set_score(ARENA_DEFAULT_SCORE)
+
     @classmethod
     def try_create_arena_npc(cls, server_id):
         if MongoArena.db(server_id).count():
