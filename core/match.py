@@ -44,9 +44,6 @@ class ClubMatch(object):
         if not self.club_two.formation_staffs:
             self.club_two.load_staffs()
 
-        self.club_one.add_temporary_talent_effects()
-        self.club_two.add_temporary_talent_effects()
-
         self.club_one.add_rival_talent_effects(self.club_two.get_talents_ids_for_rival())
         self.club_two.add_rival_talent_effects(self.club_one.get_talents_ids_for_rival())
 

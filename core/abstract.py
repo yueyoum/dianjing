@@ -659,7 +659,7 @@ class AbstractClub(object):
         for s in self.formation_staffs:
             s.add_other_talent_effects(talent_effect_ids)
 
-    def add_temporary_talent_effects(self):
+    def add_tower_temporary_talent_effects(self):
         # 添加临时天赋
         from core.tower import get_tower_talent_effects
         if not self.char_id:

@@ -196,6 +196,15 @@ class Tower(object):
             club_one.add_talent_effects([config.talent_id])
 
         club_two = config.make_club()
+
+        if not club_one.formation_staffs:
+            club_one.load_staffs()
+        if not club_two.formation_staffs:
+            club_two.load_staffs()
+
+        club_one.add_tower_temporary_talent_effects()
+        club_two.add_tower_temporary_talent_effects()
+
         club_match = ClubMatch(club_one, club_two)
         msg = club_match.start()
         msg.key = str(level)
