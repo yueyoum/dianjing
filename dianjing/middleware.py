@@ -15,9 +15,11 @@ from dianjing.exception import GameException
 
 from core.db import RedisDB, MongoDB
 from utils.http import ProtobufResponse
-from utils.session import GameSession
+from utils.session import GameSession, LoginID
 from utils.message import NUM_FILED, MessagePipe
 from utils.operation_log import OperationLog
+
+from config import ConfigErrorMessage
 
 from protomsg import PATH_TO_REQUEST, PATH_TO_RESPONSE, ID_TO_MESSAGE
 
@@ -54,8 +56,16 @@ class GameRequestMiddleware(object):
             else:
                 # 其他消息都应该有session
                 session = GameSession.loads(session)
+                login_id = LoginID.get(session.account_id)
+                if not login_id:
+                    raise GameException(ConfigErrorMessage.get_error_id("RELOGIN"))
+                if session.login_id != login_id:
+                    raise GameException(ConfigErrorMessage.get_error_id("INVALID_LOGIN_ID"))
 
-        except:
+        except Exception as e:
+            if isinstance(e, GameException):
+                raise e
+
             print "==== ERROR ===="
             traceback.print_exc()
             return HttpResponse(status=403)

@@ -10,7 +10,7 @@ Description:
 from dianjing.exception import GameException
 
 from utils.http import ProtobufResponse
-from utils.session import GameSession
+from utils.session import GameSession, LoginID
 
 from core.account import register as register_func, regular_login, third_login
 from config import ConfigErrorMessage
@@ -24,9 +24,11 @@ def register(request):
 
     account = register_func(name, password)
 
+    login_id = LoginID.new(account.account.id)
+
     response = RegisterResponse()
     response.ret = 0
-    response.session = GameSession.dumps(account_id=account.account.id)
+    response.session = GameSession.dumps(account_id=account.account.id, login_id=login_id)
     response.account.MergeFrom(request._proto.account)
 
     return ProtobufResponse(response)
@@ -42,9 +44,11 @@ def login(request):
     else:
         raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
+    login_id = LoginID.new(account.account.id)
+
     response = LoginResponse()
     response.ret = 0
-    response.session = GameSession.dumps(account_id=account.account.id)
+    response.session = GameSession.dumps(account_id=account.account.id, login_id=login_id)
     response.account.MergeFrom(request._proto.account)
 
     return ProtobufResponse(response)

@@ -7,7 +7,10 @@ Description:
 
 """
 import json
+
+from core.db import RedisDB
 from utils import crypto
+from utils.functional import make_short_random_string
 
 
 class GameSession(object):
@@ -43,3 +46,20 @@ class GameSession(object):
     @classmethod
     def empty(cls):
         return cls()
+
+
+class LoginID(object):
+    ID_EXPIRE = 3600 * 24 * 2 # 2 days
+
+    @classmethod
+    def new(cls, account_id):
+        key = 'login_id:{0}'.format(account_id)
+        value = make_short_random_string()
+
+        RedisDB.get().setex(key, value, cls.ID_EXPIRE)
+        return value
+
+    @classmethod
+    def get(cls, account_id,):
+        key = 'login_id:{0}'.format(account_id)
+        return RedisDB.get().get(key)

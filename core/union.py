@@ -123,7 +123,7 @@ class Union(object):
             MongoUnionMember.db(server_id).insert_one(member_doc)
 
         if not member_doc['joined']:
-            return UnionNotJoined(server_id, char_id, None, None)
+            return UnionNotJoined(server_id, char_id, member_doc, None)
 
         union_doc = MongoUnion.db(server_id).find_one({'_id': member_doc['joined']})
         if union_doc['owner'] == char_id:
