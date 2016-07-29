@@ -41,13 +41,14 @@ BULLETIN_MAX_LENGTH = 255
 
 
 class _UnionInfo(object):
-    __slots__ = ['server_id', 'id', 'name', 'owner', 'level', 'contribution', 'rank']
+    __slots__ = ['server_id', 'id', 'name', 'bulletin', 'owner', 'level', 'contribution', 'rank']
 
     def __init__(self, server_id, doc):
         self.server_id = server_id
 
         self.id = doc['_id']
         self.name = doc['name']
+        self.bulletin = doc['bulletin']
         self.owner = doc['owner']
         self.level = doc['level']
         self.contribution = doc['contribution']

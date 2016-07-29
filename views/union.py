@@ -40,6 +40,7 @@ def get_list(request):
         response_union.level = v.level
         response_union.name = v.name
         response_union.members_amount = v.members_amount
+        response_union.bulletin = v.bulletin
 
     return ProtobufResponse(response)
 
