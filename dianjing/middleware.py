@@ -57,15 +57,16 @@ class GameRequestMiddleware(object):
                 # 其他消息都应该有session
                 session = GameSession.loads(session)
                 login_id = LoginID.get(session.account_id)
+                error_id = 0
                 if not login_id:
-                    raise GameException(ConfigErrorMessage.get_error_id("RELOGIN"))
+                    error_id = ConfigErrorMessage.get_error_id("RELOGIN")
                 if session.login_id != login_id:
-                    raise GameException(ConfigErrorMessage.get_error_id("INVALID_LOGIN_ID"))
+                    error_id = ConfigErrorMessage.get_error_id("INVALID_LOGIN_ID")
 
-        except Exception as e:
-            if isinstance(e, GameException):
-                raise e
-
+                if error_id:
+                    error_proto = make_response_with_error_id(request.path, error_id)
+                    return ProtobufResponse(error_proto)
+        except:
             print "==== ERROR ===="
             traceback.print_exc()
             return HttpResponse(status=403)
@@ -139,13 +140,18 @@ class GameExceptionMiddleware(object):
 
         request._game_error_id = exception.error_id
 
-        msg_file, msg_name = PATH_TO_RESPONSE[request.path]
-        msg_module = __import__('protomsg.{0}_pb2'.format(msg_file), fromlist=['*'])
-
-        msg = getattr(msg_module, msg_name)
-
-        proto = msg()
-        proto.ret = exception.error_id
-        proto.session = ""
-
+        proto = make_response_with_error_id(request.path, exception.error_id)
         return ProtobufResponse(proto)
+
+
+def make_response_with_error_id(request_path, error_id):
+    msg_file, msg_name = PATH_TO_RESPONSE[request_path]
+    msg_module = __import__('protomsg.{0}_pb2'.format(msg_file), fromlist=['*'])
+
+    msg = getattr(msg_module, msg_name)
+
+    proto = msg()
+    proto.ret = error_id
+    proto.session = ""
+
+    return proto
