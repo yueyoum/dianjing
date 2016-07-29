@@ -60,6 +60,8 @@ class GameRequestMiddleware(object):
             session = proto.session
             if msg_name in ["RegisterRequest", "LoginRequest"]:
                 session = GameSession.empty()
+                # NOTE
+                request._game_session = session
             else:
                 # 其他消息都应该有session
                 session = GameSession.loads(session)
