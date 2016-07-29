@@ -41,6 +41,7 @@ class GameRequestMiddleware(object):
 
         # NOTE
         request._operation_log = None
+        request._game_error_id = 0
 
         try:
             # body 格式：  数量 ID 长度 真实数据
@@ -53,12 +54,19 @@ class GameRequestMiddleware(object):
             proto = msg()
             proto.ParseFromString(data)
 
+            # NOTE
+            request._proto = proto
+
             session = proto.session
             if msg_name in ["RegisterRequest", "LoginRequest"]:
                 session = GameSession.empty()
             else:
                 # 其他消息都应该有session
                 session = GameSession.loads(session)
+
+                # NOTE
+                request._game_session = session
+
                 login_id = LoginID.get(session.account_id)
                 error_id = 0
                 if not login_id:
@@ -67,22 +75,21 @@ class GameRequestMiddleware(object):
                     error_id = ConfigErrorMessage.get_error_id("INVALID_LOGIN_ID")
 
                 if error_id:
+                    # 这里还要走一遍 GameResponseMiddleware
+                    # 为了不让这个请求把 正常的通知带走，这里得把 char_id 清空
+                    request._game_session.char_id = None
                     error_proto = make_response_with_error_id(request.path, error_id)
                     return ProtobufResponse(error_proto)
+
+                if session.char_id:
+                    request._operation_log = OperationLog(session.server_id, session.char_id)
         except:
             print "==== ERROR ===="
             traceback.print_exc()
             return HttpResponse(status=403)
 
-        request._proto = proto
-        request._game_session = session
         print proto
         print session.kwargs
-
-        if session.char_id:
-            request._operation_log = OperationLog(session.server_id, session.char_id)
-
-        request._game_error_id = 0
 
 
 class GameResponseMiddleware(object):
