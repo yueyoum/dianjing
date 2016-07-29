@@ -82,10 +82,16 @@ class BroadCast(object):
         b.text = text
         b.repeat_times = repeat_times
 
+        data = MessageFactory.pack(notify)
+
+        # 先发给自己，确保自己能立即看到
+        MessagePipe(self.char_id).put(data=data)
+
+        # 再发给其他人
         arg = {
             'server_id': self.server_id,
-            'exclude_chars': [],
-            'data': MessageFactory.pack(notify)
+            'exclude_chars': [self.char_id],
+            'data': data
         }
 
         payload = cPickle.dumps(arg)

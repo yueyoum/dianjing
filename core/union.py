@@ -73,7 +73,7 @@ def get_all_unions(server_id):
 
     :rtype: dict[str, _UnionInfo]
     """
-    docs = MongoUnion.db(server_id).find({}, {'create_at': 0, 'bulletin': 0, 'apply_list': 0})
+    docs = MongoUnion.db(server_id).find({}, {'create_at': 0, 'apply_list': 0})
 
     unions = []
     for doc in docs:
