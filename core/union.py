@@ -208,11 +208,19 @@ class UnionNotJoined(IUnion):
             }}
         )
 
+        rc.remove(self.server_id, self.char_id)
+
         u = Union(self.server_id, self.char_id)
         u.send_notify()
         u.send_my_applied_notify()
 
     def apply_union(self, union_id):
+        kick_flag = self.member_doc.get('kick_flag', False)
+        quit_flag = self.member_doc.get('quit_flag', False)
+
+        if kick_flag or quit_flag:
+            raise GameException(ConfigErrorMessage.get_error_id("UNION_CANNOT_APPLY_QUIT_OR_KICK"))
+
         doc = MongoUnion.db(self.server_id).find_one({'_id': union_id})
         if not doc:
             raise GameException(ConfigErrorMessage.get_error_id("UNION_NOT_EXIST"))
@@ -267,11 +275,18 @@ class UnionJoined(IUnion):
     def apply_union(self, union_id):
         raise GameException(ConfigErrorMessage.get_error_id("UNION_CANNOT_APPLY_ALREADY_IN"))
 
-    def quit(self, send_notify=True):
+    def quit(self, kick=False, send_notify=True):
         self.member_doc['joined'] = 0
         self.member_doc['joined_at'] = 0
         self.member_doc['contribution'] = 0
         self.member_doc['today_contribution'] = 0
+
+        if kick:
+            flag = 'kick_flag'
+        else:
+            flag = 'quit_flag'
+
+        self.member_doc[flag] = True
 
         MongoUnionMember.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -280,6 +295,7 @@ class UnionJoined(IUnion):
                 'joined_at': 0,
                 'contribution': 0,
                 'today_contribution': 0,
+                flag: True,
             }}
         )
 

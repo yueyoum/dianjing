@@ -605,6 +605,10 @@ class MongoUnionMember(BaseDocument):
         'joined_at': 0,
         'contribution': 0,
         'today_contribution': 0,
+
+        # 当天是否退出或者被踢
+        'quit_flag': False,
+        'kick_flag': False,
     }
 
     COLLECTION = 'union_member'
