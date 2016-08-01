@@ -174,30 +174,28 @@ class Formation(object):
 
             updater['position.{0}'.format(index)] = 0
 
-        # 检测阵型是否还可用
-        if self.doc['using'] and not self.is_formation_valid(self.doc['using']):
-            self.doc['using'] = 0
-            updater['using'] = 0
-            self.send_formation_notify(formation_ids=[])
-
         MongoFormation.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': updater}
         )
 
-        self.send_slot_notify(slot_ids=[slot_id])
+        # 检测阵型是否还可用
+        if self.doc['using'] and not self.is_formation_valid(self.doc['using']):
+            self.use_formation(0)
+        else:
+            self.send_slot_notify(slot_ids=[slot_id])
 
-        # NOTE 阵型改变，重新load staffs
-        # 这里不直接调用 club.force_load_staffs 的 send_notify
-        # 是因为这里 改变的staff 还可能包括下阵的
-        changed_staff_ids = self.in_formation_staffs().keys()
-        if old_staff_id:
-            changed_staff_ids.append(old_staff_id)
+            # NOTE 阵型改变，重新load staffs
+            # 这里不直接调用 club.force_load_staffs 的 send_notify
+            # 是因为这里 改变的staff 还可能包括下阵的
+            changed_staff_ids = self.in_formation_staffs().keys()
+            if old_staff_id:
+                changed_staff_ids.append(old_staff_id)
 
-        club = Club(self.server_id, self.char_id, load_staffs=False)
-        club.force_load_staffs()
-        club.send_notify()
-        StaffManger(self.server_id, self.char_id).send_notify(ids=changed_staff_ids)
+            club = Club(self.server_id, self.char_id, load_staffs=False)
+            club.force_load_staffs()
+            club.send_notify()
+            StaffManger(self.server_id, self.char_id).send_notify(ids=changed_staff_ids)
 
     def set_unit(self, slot_id, unit_id):
         if str(slot_id) not in self.doc['slots']:
@@ -229,27 +227,25 @@ class Formation(object):
             self.doc['position'][position] = slot_id
             updater['position.{0}'.format(position)] = slot_id
 
-        # 检测阵型是否还可用
-        if self.doc['using'] and not self.is_formation_valid(self.doc['using']):
-            self.doc['using'] = 0
-            updater['using'] = 0
-            self.send_formation_notify(formation_ids=[])
-
         MongoFormation.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': updater}
         )
 
-        self.send_slot_notify(slot_ids=[slot_id])
-
         s.set_unit(u)
         s.calculate()
         s.make_cache()
 
-        # NOTE 兵种改变可能会导致牵绊改变，从而改变天赋
-        # 所以这里暴力重新加载staffs
-        club = Club(self.server_id, self.char_id, load_staffs=False)
-        club.force_load_staffs(send_notify=True)
+        # 检测阵型是否还可用
+        if self.doc['using'] and not self.is_formation_valid(self.doc['using']):
+            self.use_formation(0)
+        else:
+            self.send_slot_notify(slot_ids=[slot_id])
+
+            # NOTE 兵种改变可能会导致牵绊改变，从而改变天赋
+            # 所以这里暴力重新加载staffs
+            club = Club(self.server_id, self.char_id, load_staffs=False)
+            club.force_load_staffs(send_notify=True)
 
     def sync_slots(self, slots_data):
         positions = [0] * 30
@@ -393,16 +389,17 @@ class Formation(object):
         return True
 
     def use_formation(self, fid):
-        config = ConfigFormation.get(fid)
-        if not config:
-            raise GameException(ConfigErrorMessage.get_error_id("FORMATION_NOT_EXIST"))
+        if fid != 0:
+            config = ConfigFormation.get(fid)
+            if not config:
+                raise GameException(ConfigErrorMessage.get_error_id("FORMATION_NOT_EXIST"))
 
-        level = self.doc['levels'].get(str(fid), 0)
-        if level == 0:
-            raise GameException(ConfigErrorMessage.get_error_id("FORMATION_NOT_ACTIVE"))
+            level = self.doc['levels'].get(str(fid), 0)
+            if level == 0:
+                raise GameException(ConfigErrorMessage.get_error_id("FORMATION_NOT_ACTIVE"))
 
-        if not self.is_formation_valid(fid):
-            raise GameException(ConfigErrorMessage.get_error_id("FORMATION_CAN_NOT_USE"))
+            if not self.is_formation_valid(fid):
+                raise GameException(ConfigErrorMessage.get_error_id("FORMATION_CAN_NOT_USE"))
 
         updater = {'using': fid}
         self.doc['using'] = fid
