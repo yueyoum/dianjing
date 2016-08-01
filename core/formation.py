@@ -369,7 +369,12 @@ class Formation(object):
 
         if use_condition_type == 0:
             # 任意数量
-            if len(in_formation_staffs) < use_condition_value:
+            amount = 0
+            for _, v in in_formation_staffs.iteritems():
+                if v['unit_id']:
+                    amount += 1
+
+            if amount < use_condition_value:
                 return False
         else:
             # 对应种族数量

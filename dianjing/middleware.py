@@ -62,10 +62,8 @@ class GameRequestMiddleware(object):
 
             if msg_name not in ["RegisterRequest", "LoginRequest"]:
                 # 除过这两个消息，其他消息都应该有session
-                session = proto.session
+                session = GameSession.loads(proto.session)
                 request._game_session = session
-
-                session = GameSession.loads(session)
 
                 login_id = LoginID.get(session.account_id)
                 error_id = 0
