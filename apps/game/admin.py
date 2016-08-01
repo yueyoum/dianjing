@@ -2,8 +2,8 @@ from django.contrib import admin
 
 from duckadmin import DuckAdmin
 
-from apps.game.forms import MyForm
+from apps.game.forms import FormOperationLog
 
-@admin.register(MyForm)
-class MyAdmin(DuckAdmin):
-    duck_form = MyForm
+@admin.register(FormOperationLog)
+class AdminOperationLog(DuckAdmin):
+    duck_form = FormOperationLog
