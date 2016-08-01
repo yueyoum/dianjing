@@ -10,32 +10,20 @@ Description:
 from django import forms
 from duckadmin import DuckForm
 
-from core.mongo import MongoCharacter
+from core.mongo import MongoOperationLog
 
-def make_data(doc):
-    club = doc['club']
-    club['_id'] = doc['_id']
-    club['match_staffs'] = ','.join([str(i) for i in club['match_staffs']])
-    club['tibu_staffs'] = ','.join([str(i) for i in club['tibu_staffs']])
-    return club
-
-class MyForm(DuckForm):
+class FormOperationLog(DuckForm):
     app_label = 'game'
-    model_name = 'club'
-    verbose_name = '俱乐部'
+    model_name = 'operation_log'
+    verbose_name = '操作日志'
     pk_name = 'id'
 
-    _id = forms.IntegerField()
-    name = forms.CharField()
-    flag = forms.IntegerField()
-    level = forms.IntegerField()
-    renown = forms.IntegerField()
-    vip = forms.IntegerField()
-    gold = forms.IntegerField()
-    diamond = forms.IntegerField()
-    policy = forms.IntegerField()
-    match_staffs = forms.CharField()
-    tibu_staffs = forms.CharField()
+    _id = forms.CharField()
+    char_id = forms.IntegerField()
+    action = forms.CharField()
+    ret = forms.IntegerField()
+    timestamp = forms.IntegerField()
+    cost_millisecond = forms.IntegerField()
 
     @classmethod
     def get_data(cls):
@@ -62,15 +50,4 @@ class MyForm(DuckForm):
 
     @classmethod
     def update_data(cls, data):
-        pk = data.pop('_id')
-
-        match_staffs = [int(i) for i in data['match_staffs'].split(',')]
-        tibu_staffs = [int(i) for i in data['tibu_staffs'].split(',')]
-
-        data['match_staffs'] = match_staffs
-        data['tibu_staffs'] = tibu_staffs
-
-        MongoCharacter.db(1).update_one(
-            {'_id': pk},
-            {'$set': {'club': data}}
-        )
+        raise RuntimeError("can not create")

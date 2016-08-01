@@ -355,7 +355,7 @@ STAFF_MAX_LEVEL = max(ConfigStaffLevelNew.INSTANCES.keys())
 STAFF_MAX_STAR = max(ConfigStaffStar.INSTANCES.keys())
 MIN_STAR_EXP = 1
 MAX_STAR_EXP = 3
-AVG_STAR_EXP = (MIN_STAR_EXP + MAX_STAR_EXP) / 2
+AVG_STAR_EXP = 3.2
 
 
 class Staff(AbstractStaff):
