@@ -13,6 +13,19 @@ from duckadmin import DuckForm
 from core.mongo import MongoOperationLog
 
 
+class IterWrapper(object):
+    __slots__ = ['docs', 'count']
+    def __init__(self, docs):
+        self.docs = docs
+        self.count = docs.count()
+
+    def __iter__(self):
+        for doc in self.docs:
+            yield doc
+
+    def __len__(self):
+        return self.count
+
 class FormOperationLog(DuckForm):
     app_label = 'game'
     model_name = 'operation_log'
@@ -78,7 +91,7 @@ class FormOperationLog(DuckForm):
         if start or stop:
             docs.skip(start).limit(stop - start)
 
-        return docs
+        return IterWrapper(docs)
 
     @classmethod
     def get_data_by_pk(cls, request, pk):
