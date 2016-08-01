@@ -7,6 +7,9 @@ Description:
 
 """
 
+import arrow
+from django.conf import settings
+
 from django import forms
 from duckadmin import DuckForm
 
@@ -21,6 +24,7 @@ class IterWrapper(object):
 
     def __iter__(self):
         for doc in self.docs:
+            doc['timestamp'] = arrow.get(doc['timestamp']).to(settings.TIME_ZONE).format("YYYY-MM-DD HH:mm:ss")
             yield doc
 
     def __len__(self):
@@ -87,6 +91,8 @@ class FormOperationLog(DuckForm):
                 docs.sort(params['order'][1:], -1)
             else:
                 docs.sort(params['order'])
+        else:
+            docs.sort('timestamp', -1)
 
         if start or stop:
             docs.skip(start).limit(stop - start)
