@@ -475,7 +475,7 @@ class UnionOwner(UnionJoined):
     def try_auto_transfer(cls, server_id):
         transfer = []
 
-        for doc in MongoUnion.db(server_id).find_one({}, {'owner': 1}):
+        for doc in MongoUnion.db(server_id).find({}, {'owner': 1}):
             if Club.days_since_last_login(server_id, doc['owner']) <= 7:
                 continue
 

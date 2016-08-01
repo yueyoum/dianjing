@@ -43,6 +43,9 @@ class GameRequestMiddleware(object):
         request._operation_log = None
         request._game_error_id = 0
 
+        session = GameSession.empty()
+        request._game_session = session
+
         try:
             # body 格式：  数量 ID 长度 真实数据
             data = request.body[12:]  # 去掉 数量 ID 长度
@@ -57,17 +60,12 @@ class GameRequestMiddleware(object):
             # NOTE
             request._proto = proto
 
-            session = proto.session
-            if msg_name in ["RegisterRequest", "LoginRequest"]:
-                session = GameSession.empty()
-                # NOTE
+            if msg_name not in ["RegisterRequest", "LoginRequest"]:
+                # 除过这两个消息，其他消息都应该有session
+                session = proto.session
                 request._game_session = session
-            else:
-                # 其他消息都应该有session
-                session = GameSession.loads(session)
 
-                # NOTE
-                request._game_session = session
+                session = GameSession.loads(session)
 
                 login_id = LoginID.get(session.account_id)
                 error_id = 0
