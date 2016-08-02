@@ -17,8 +17,8 @@ from core.union import UnionOwner
 from cronjob.log import Logger
 
 @uwsgidecorators.cron(0, 0, -1, -1, -1, target="spooler")
-def union_reset_today_contribution(*args):
-    logger = Logger("union_reset_today_contribution")
+def union_reset(*args):
+    logger = Logger("union_reset")
     logger.write("Start")
 
     try:
@@ -26,7 +26,9 @@ def union_reset_today_contribution(*args):
             MongoUnionMember.db(sid).update_many(
                 {},
                 {'$set': {
-                    'today_contribution': 0
+                    'today_contribution': 0,
+                    'quit_flag': False,
+                    'kick_flag': False,
                 }}
             )
 
