@@ -22,7 +22,7 @@ from core.value_log import (
     ValueLogTerritoryGotHelpTimes,
 )
 
-from core.club import Club
+from core.club import Club, get_club_property
 from core.staff import StaffManger
 from core.friend import FriendManager
 from core.resource import ResourceClassification, TERRITORY_PRODUCT_BUILDING_TABLE, money_text_to_item_id
@@ -721,19 +721,37 @@ class Territory(object):
         resource_classified.bag.append((BUILDING_PRODUCT_ID_TABLE[building_id], reward['product_amount']))
         return resource_classified
 
-    def add_building_exp(self, building_id, exp):
-        building = self.get_building_object(building_id, slots_ids=[])
+    def add_building_exp(self, building_id, exp, help_from_char_id=None):
+        building = self.get_building_object(building_id)
         level_up = building.add_exp(exp)
 
         self.doc['buildings'][str(building_id)]['level'] = building.level
         self.doc['buildings'][str(building_id)]['exp'] = building.exp
 
-        MongoTerritory.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': {
+        operation = {
+            '$set': {
                 'buildings.{0}.level'.format(building_id): building.level,
                 'buildings.{0}.exp'.format(building_id): building.exp,
-            }}
+            }
+        }
+
+        if help_from_char_id:
+            slots = [s for _, s in building.slots.iteritems() if not s.finished]
+            if slots:
+                slot = random.choice(slots)
+
+                log = (
+                    4,
+                    (get_club_property(self.server_id, help_from_char_id, 'name'), str(exp)),
+                    0,
+                )
+                operation['$push'] = {
+                    'buildings.{0}.slots.{1}.report'.format(building_id, slot.id): log
+                }
+
+        MongoTerritory.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            operation
         )
 
         if level_up:
@@ -761,6 +779,10 @@ class Territory(object):
 
         self.send_notify(building_id=building_id)
         return drop
+
+    def got_help(self, from_char_id, building_id, exp):
+        ValueLogTerritoryGotHelpTimes(self.server_id, self.char_id).record()
+        self.add_building_exp(building_id, exp, help_from_char_id=from_char_id)
 
     def send_notify(self, building_id=None, slot_id=None):
         # building_id 和 slot_id 都没有: 全部同步
@@ -950,12 +972,11 @@ class TerritoryFriend(object):
             resource_classified = ResourceClassification.classify(config.reward_win)
             resource_classified.add(self.server_id, self.char_id)
 
-            Territory(self.server_id, friend_id).add_building_exp(building_id, config.target_exp)
-
             # NOTE： 战斗要等到结算的时候再记录次数
             ValueLogTerritoryHelpFriendTimes(self.server_id, self.char_id).record()
-            ValueLogTerritoryGotHelpTimes(self.server_id, friend_id).record()
             self.send_remained_times_notify()
+
+            Territory(self.server_id, friend_id).got_help(self.char_id, building_id, config.target_exp)
 
             return None, resource_classified
 
@@ -999,11 +1020,10 @@ class TerritoryFriend(object):
 
         # NOTE： 战斗要等到结算的时候再记录次数
         ValueLogTerritoryHelpFriendTimes(self.server_id, self.char_id).record()
-        ValueLogTerritoryGotHelpTimes(self.server_id, friend_id).record()
         self.send_remained_times_notify()
 
         config = ConfigTerritoryEvent.get(event_id)
-        Territory(self.server_id, friend_id).add_building_exp(building_id, config.target_exp)
+        Territory(self.server_id, friend_id).got_help(self.char_id, building_id, config.target_exp)
 
         if win:
             drop = config.reward_win
