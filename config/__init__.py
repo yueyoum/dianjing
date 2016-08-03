@@ -41,6 +41,7 @@ from config.formation import ConfigFormationSlot, ConfigFormation
 from config.welfare import ConfigWelfareSignIn, ConfigWelfareLevelReward, ConfigWelfareNewPlayer
 from config.template import ConfigBroadcastTemplate
 from config.union import ConfigUnionSignin, ConfigUnionLevel
+from config.purchase import ConfigPurchaseYueka, ConfigPurchaseGoods
 
 _has_configed = False
 
@@ -219,5 +220,10 @@ def load_config():
             ConfigUnionLevel.initialize(data)
         elif name == 'union_signin.json':
             ConfigUnionSignin.initialize(data)
+
+        elif name == 'purchase_yueka.json':
+            ConfigPurchaseYueka.initialize(data)
+        elif name == 'purchase_goods.json':
+            ConfigPurchaseGoods.initialize(data)
 
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))

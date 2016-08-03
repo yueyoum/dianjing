@@ -613,3 +613,21 @@ class MongoUnionMember(BaseDocument):
 
     COLLECTION = 'union_member'
     INDEXES = ['joined',]
+
+
+# 充值
+class MongoPurchase(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # 商品购买次数
+        'goods': {},
+        'yueka_remained_days': 0,
+
+        # 充值钻石
+        'got': 0,
+        # 充值确切获得钻石，包括翻倍，赠送等等
+        'actual_got': 0,
+    }
+
+    COLLECTION = 'purchase'
+    INDEXES = ['yueka_remained_days',]

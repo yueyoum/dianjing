@@ -227,6 +227,11 @@ MESSAGE_TO_ID = {
     "UnionMyCheckNotify": 4420,
     "UnionSigninRequest": 4421,
     "UnionSigninResponse": 4422,
+    "PurchasePrepareRequest": 4500,
+    "PurchasePrepareResponse": 4501,
+    "PurchaseVerifyRequest": 4502,
+    "PurchaseVerifyResponse": 4503,
+    "PurchaseNotify": 4504,
 }
 
 ID_TO_MESSAGE = {
@@ -457,6 +462,11 @@ ID_TO_MESSAGE = {
     4420: "UnionMyCheckNotify",
     4421: "UnionSigninRequest",
     4422: "UnionSigninResponse",
+    4500: "PurchasePrepareRequest",
+    4501: "PurchasePrepareResponse",
+    4502: "PurchaseVerifyRequest",
+    4503: "PurchaseVerifyResponse",
+    4504: "PurchaseNotify",
 }
 
 PATH_TO_REQUEST = {
@@ -551,6 +561,8 @@ PATH_TO_REQUEST = {
     "/game/union/transfer/": ["union", "UnionTransferRequest"],
     "/game/union/quit/": ["union", "UnionQuitRequest"],
     "/game/union/signin/": ["union", "UnionSigninRequest"],
+    "/game/purchase/prepare/": ["purchase", "PurchasePrepareRequest"],
+    "/game/purchase/verify/": ["purchase", "PurchaseVerifyRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -645,4 +657,6 @@ PATH_TO_RESPONSE = {
     "/game/union/transfer/": ["union", "UnionTransferResponse"],
     "/game/union/quit/": ["union", "UnionQuitResponse"],
     "/game/union/signin/": ["union", "UnionSigninResponse"],
+    "/game/purchase/prepare/": ["purchase", "PurchasePrepareResponse"],
+    "/game/purchase/verify/": ["purchase", "PurchaseVerifyResponse"],
 }

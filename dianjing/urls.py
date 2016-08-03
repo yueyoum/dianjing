@@ -5,6 +5,7 @@ import apps.config.views
 import apps.system.views
 
 import views.admin
+import views.purchase
 
 urlpatterns = [
     # Examples:
@@ -18,4 +19,5 @@ urlpatterns = [
     url(r'^system/bulletin/$', apps.system.views.get_bulletins),
 
     url(r'^flushcache/$', views.admin.flushcache),
+    url(r'^callback/1sdk/$', views.purchase.callback),
 ]

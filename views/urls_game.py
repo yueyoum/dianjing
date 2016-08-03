@@ -33,6 +33,7 @@ import views.vip
 import views.energy
 import views.welfare
 import views.union
+import views.purchase
 
 urlpatterns = [
     url(r'^sync/$', views.common.sync),
@@ -149,4 +150,7 @@ urlpatterns = [
     url(r'^union/transfer/$', views.union.transfer),
     url(r'^union/quit/$', views.union.quit),
     url(r'^union/signin/$', views.union.signin),
+
+    url(r'^purchase/prepare/$', views.purchase.prepare),
+    url(r'^purchase/verify/$', views.purchase.verify),
 ]
