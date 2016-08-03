@@ -8,9 +8,10 @@ from apps.purchase.models import Purchase
 @admin.register(Purchase)
 class AdminPurchase(admin.ModelAdmin):
     list_display = (
-        'id', 'server_id', 'char_id', 'create_at',
-        'channel_id', 'ssid', 'unique_trade_id', 'return_code',
-        'complete_timestamp_parsed'
+        'id', 'server_id', 'char_id', 'goods_id', 'create_at',
+        'fee', 'channel_id', 'ssid', 'unique_trade_id', 'return_code',
+        'complete_timestamp',
+        'complete_timestamp_parsed',
     )
 
     def complete_timestamp_parsed(self, obj):

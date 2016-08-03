@@ -53,6 +53,7 @@ INSTALLED_APPS = (
     'apps.system',
     'apps.statistics',
     'apps.history_record',
+    'apps.purchase',
     'apps.game',
 )
 

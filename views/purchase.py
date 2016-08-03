@@ -18,10 +18,9 @@ def prepare(request):
     char_id = request._game_session.char_id
 
     goods_id = request._proto.goods_id
-    goods_amount = request._proto.goods_amount
 
     p = Purchase(server_id, char_id)
-    receipt = p.prepare(goods_id, goods_amount)
+    receipt = p.prepare(goods_id)
 
     response = PurchasePrepareResponse()
     response.ret = 0
@@ -36,13 +35,12 @@ def verify(request):
     receipt = request._proto.receipt
 
     p = Purchase(server_id, char_id)
-    obj, status = p.verify(receipt)
+    goods_id, status = p.verify(receipt)
 
     response = PurchaseVerifyResponse()
     response.ret = 0
     response.status = status
-    response.goods_id = obj.goods_id
-    response.goods_amount = obj.goods_amount
+    response.goods_id = goods_id
     return ProtobufResponse(response)
 
 

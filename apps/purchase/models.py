@@ -11,7 +11,6 @@ class Purchase(models.Model):
 
     # 1001 是月卡
     goods_id = models.IntegerField()
-    goods_amount = models.IntegerField()
 
     create_at = models.DateTimeField(auto_now_add=True, db_index=True)
 

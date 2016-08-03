@@ -34,7 +34,7 @@ class Purchase(object):
             self.doc['_id'] = self.char_id
             MongoPurchase.db(self.server_id).insert_one(self.doc)
 
-    def prepare(self, goods_id, goods_amount):
+    def prepare(self, goods_id):
         if goods_id != YUEKA_ID:
             if not ConfigPurchaseGoods.get(goods_id):
                 raise GameException(ConfigErrorMessage.get_error_id("PURCHASE_NOT_EXIST"))
@@ -45,7 +45,6 @@ class Purchase(object):
             server_id=self.server_id,
             char_id=self.char_id,
             goods_id=goods_id,
-            goods_amount=goods_amount,
         )
 
         return _id
@@ -66,7 +65,7 @@ class Purchase(object):
         else:
             status = PURCHASE_WAITING
 
-        return p, status
+        return p.goods_id, status
 
 
     def send_notify(self):

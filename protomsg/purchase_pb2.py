@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='purchase.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0epurchase.proto\x12\x11\x44ianjing.protocol\"M\n\x0ePurchaseNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x1b\n\x13yueka_remained_days\x18\x02 \x02(\x05\x12\r\n\x05\x66irst\x18\x03 \x02(\x08\"Q\n\x16PurchasePrepareRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08goods_id\x18\x02 \x02(\x05\x12\x14\n\x0cgoods_amount\x18\x03 \x02(\x05\"H\n\x17PurchasePrepareResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x0f\n\x07receipt\x18\x03 \x01(\t\"9\n\x15PurchaseVerifyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07receipt\x18\x02 \x02(\t\"\x91\x01\n\x16PurchaseVerifyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x31\n\x06status\x18\x03 \x01(\x0e\x32!.Dianjing.protocol.PurchaseStatus\x12\x10\n\x08goods_id\x18\x04 \x01(\x05\x12\x14\n\x0cgoods_amount\x18\x05 \x01(\x05*O\n\x0ePurchaseStatus\x12\x11\n\rPURCHASE_DONE\x10\x01\x12\x14\n\x10PURCHASE_WAITING\x10\x02\x12\x14\n\x10PURCHASE_FAILURE\x10\x03')
+  serialized_pb=_b('\n\x0epurchase.proto\x12\x11\x44ianjing.protocol\"M\n\x0ePurchaseNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x1b\n\x13yueka_remained_days\x18\x02 \x02(\x05\x12\r\n\x05\x66irst\x18\x03 \x02(\x08\";\n\x16PurchasePrepareRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08goods_id\x18\x02 \x02(\x05\"H\n\x17PurchasePrepareResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x0f\n\x07receipt\x18\x03 \x01(\t\"9\n\x15PurchaseVerifyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07receipt\x18\x02 \x02(\t\"{\n\x16PurchaseVerifyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x31\n\x06status\x18\x03 \x01(\x0e\x32!.Dianjing.protocol.PurchaseStatus\x12\x10\n\x08goods_id\x18\x04 \x01(\x05*O\n\x0ePurchaseStatus\x12\x11\n\rPURCHASE_DONE\x10\x01\x12\x14\n\x10PURCHASE_WAITING\x10\x02\x12\x14\n\x10PURCHASE_FAILURE\x10\x03')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -45,8 +45,8 @@ _PURCHASESTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=480,
-  serialized_end=559,
+  serialized_start=435,
+  serialized_end=514,
 )
 _sym_db.RegisterEnumDescriptor(_PURCHASESTATUS)
 
@@ -123,13 +123,6 @@ _PURCHASEPREPAREREQUEST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
-    _descriptor.FieldDescriptor(
-      name='goods_amount', full_name='Dianjing.protocol.PurchasePrepareRequest.goods_amount', index=2,
-      number=3, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
   ],
   extensions=[
   ],
@@ -143,7 +136,7 @@ _PURCHASEPREPAREREQUEST = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=116,
-  serialized_end=197,
+  serialized_end=175,
 )
 
 
@@ -187,8 +180,8 @@ _PURCHASEPREPARERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=199,
-  serialized_end=271,
+  serialized_start=177,
+  serialized_end=249,
 )
 
 
@@ -225,8 +218,8 @@ _PURCHASEVERIFYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=273,
-  serialized_end=330,
+  serialized_start=251,
+  serialized_end=308,
 )
 
 
@@ -265,13 +258,6 @@ _PURCHASEVERIFYRESPONSE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
-    _descriptor.FieldDescriptor(
-      name='goods_amount', full_name='Dianjing.protocol.PurchaseVerifyResponse.goods_amount', index=4,
-      number=5, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
   ],
   extensions=[
   ],
@@ -284,8 +270,8 @@ _PURCHASEVERIFYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=333,
-  serialized_end=478,
+  serialized_start=310,
+  serialized_end=433,
 )
 
 _PURCHASEVERIFYRESPONSE.fields_by_name['status'].enum_type = _PURCHASESTATUS
