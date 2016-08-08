@@ -1,6 +1,5 @@
 # -*- coding:utf-8 -*-
 
-
 from dianjing.exception import GameException
 
 from core.mongo import MongoTaskMain, MongoTaskDaily
@@ -11,6 +10,7 @@ from core.vip import VIP
 from config import ConfigErrorMessage, ConfigTaskMain, ConfigTaskDaily, ConfigTaskCondition
 
 from utils.message import MessagePipe
+from utils.functional import get_start_time_of_today
 
 from protomsg.task_pb2 import TaskNotify, TaskDailyNotify, TASK_DOING, TASK_DONE, TASK_FINISH
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
@@ -73,19 +73,6 @@ class TaskMain(object):
         MessagePipe(self.char_id).put(msg=notify)
 
 
-def get_task_condition_value(server_id, char_id, condition_id):
-    config = ConfigTaskCondition.get(condition_id)
-    if not config or not config.server_module:
-        return 0
-
-    model_name, class_name = config.server_module.rsplit('.', 1)
-    _Model = __import__(model_name, fromlist=[class_name])
-    _Class = getattr(_Model, class_name)
-
-    obj = _Class(server_id, char_id)
-    return obj.count_of_today()
-
-
 class TaskDaily(object):
     __slots__ = ['server_id', 'char_id', 'doc']
 
@@ -134,16 +121,32 @@ class TaskDaily(object):
 
     def trig(self, condition_id):
         task_ids = ConfigTaskDaily.get_task_ids_by_condition_id(condition_id)
+        if not task_ids:
+            return
+
         doing_task_ids = [i for i in task_ids if i in self.doc['tasks']]
         self.send_notify(task_ids=doing_task_ids)
 
-    def get_task_status(self, task_id):
+    def get_task_status(self, task_id, start_at=None, end_at=None):
         """
 
         :rtype: (int, int)
         """
+
+        if not start_at or not end_at:
+            # 日常任务的的时间范围肯定就是当天了
+            start_time = get_start_time_of_today()
+            end_time = start_time.replace(days=1)
+
+            start_at = start_time.timestamp
+            end_at = end_time.timestamp
+
         config = ConfigTaskDaily.get(task_id)
-        current_value = get_task_condition_value(self.server_id, self.char_id, config.condition_id)
+        config_condition = ConfigTaskCondition.get(config.condition_id)
+        if not config_condition:
+            current_value = 0
+        else:
+            current_value = config_condition.get_value(self.server_id, self.char_id, start_at=start_at, end_at=end_at)
 
         if task_id in self.doc['done']:
             return current_value, TASK_DONE
@@ -151,7 +154,7 @@ class TaskDaily(object):
         if task_id not in self.doc['tasks']:
             return None, None
 
-        if current_value >= config.condition_value:
+        if config_condition.compare_value(current_value, config.condition_value):
             return current_value, TASK_FINISH
 
         return current_value, TASK_DOING
@@ -187,6 +190,13 @@ class TaskDaily(object):
         return resource_classified
 
     def send_notify(self, task_ids=None):
+        # 日常任务的的时间范围肯定就是当天了
+        start_time = get_start_time_of_today()
+        end_time = start_time.replace(days=1)
+
+        start_at = start_time.timestamp
+        end_at = end_time.timestamp
+
         if task_ids:
             act = ACT_UPDATE
         else:
@@ -196,7 +206,7 @@ class TaskDaily(object):
         notify = TaskDailyNotify()
         notify.act = act
         for tid in task_ids:
-            current_value, status = self.get_task_status(tid)
+            current_value, status = self.get_task_status(tid, start_at=start_at, end_at=end_at)
 
             notify_task = notify.tasks.add()
             notify_task.id = tid

@@ -14,6 +14,7 @@ from core.mongo import MongoUnit
 from core.club import Club, get_club_property
 from core.resource import ResourceClassification
 from core.value_log import ValueLogUnitLevelUpTimes
+from core.signals import task_condition_trig_signal
 
 from utils.message import MessagePipe
 
@@ -224,6 +225,8 @@ class UnitManager(object):
         if send_notify:
             self.send_notify(ids=unlocked_unit_ids)
 
+        self.after_units_change_for_trig_signal()
+
     def is_unit_unlocked(self, _id):
         doc = MongoUnit.db(self.server_id).find_one(
             {'_id': self.char_id},
@@ -243,6 +246,38 @@ class UnitManager(object):
         )
 
         return {int(k): v for k, v in doc['units'].iteritems()}
+
+    def after_units_change_for_trig_signal(self):
+        task_condition_trig_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            condition_name='core.unit.UnitManager'
+        )
+
+    def get_all_units_step(self):
+        doc = MongoUnit.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'units': 1}
+        )
+
+        value = 0
+        for k, v in doc['units'].iteritems():
+            value += v['step']
+
+        return value
+
+    def get_all_units_level(self):
+        doc = MongoUnit.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'units': 1}
+        )
+
+        value = 0
+        for k, v in doc['units'].iteritems():
+            value += v['level']
+
+        return value
 
     def load_units(self):
         units = []
@@ -311,6 +346,7 @@ class UnitManager(object):
             self.after_change(uid)
             self.try_unlock()
             ValueLogUnitLevelUpTimes(self.server_id, self.char_id).record(value=changed_level)
+            self.after_units_change_for_trig_signal()
 
     def step_up(self, uid):
         unit = self.get_unit_object(uid)
@@ -319,6 +355,7 @@ class UnitManager(object):
 
         unit.step_up()
         self.after_change(uid)
+        self.after_units_change_for_trig_signal()
 
     def after_change(self, uid):
         from core.formation import Formation

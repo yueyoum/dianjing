@@ -34,6 +34,7 @@ import views.energy
 import views.welfare
 import views.union
 import views.purchase
+import views.activity
 
 urlpatterns = [
     url(r'^sync/$', views.common.sync),
@@ -153,4 +154,7 @@ urlpatterns = [
 
     url(r'^purchase/prepare/$', views.purchase.prepare),
     url(r'^purchase/verify/$', views.purchase.verify),
+
+    url(r'^activity/newplayer/getreward/$', views.activity.newplayer_getreward),
+    url(r'^activity/newplayer/dailybuy/$', views.activity.newplayer_dailybuy),
 ]

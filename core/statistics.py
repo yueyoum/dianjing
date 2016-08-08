@@ -11,8 +11,10 @@ import arrow
 from django.conf import settings
 from django.db.models import Q
 
+from core.signals import task_condition_trig_signal
+
 from utils.message import MessagePipe
-from utils.functional import get_arrow_time_of_today
+from utils.functional import get_start_time_of_today
 
 from protomsg.statistics_pb2 import FinanceStatisticsNotify
 
@@ -39,6 +41,14 @@ class FinanceStatistics(object):
         )
 
         self.send_notify()
+
+        condition_name = 'core.statistics.{0}'.format(self.__class__.__name__)
+        task_condition_trig_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            condition_name=condition_name
+        )
 
     def get_gold_statistics(self):
         from apps.statistics.models import Statistics
@@ -75,12 +85,19 @@ class FinanceStatistics(object):
         return income, expense
 
     def count_of_today(self):
-        from apps.statistics.models import Statistics
-        today = get_arrow_time_of_today()
+        today = get_start_time_of_today()
         tomorrow = today.replace(days=1)
+        return self.count(start_at=today.timestamp, end_at=tomorrow.timestamp)
 
-        condition = Q(char_id=self.char_id) & Q(create_at__gte=today.format("YYYY-MM-DD HH:mm:ssZ")) & Q(
-            create_at__lte=tomorrow.format("YYYY-MM-DD HH:mm:ssZ"))
+    def count(self, start_at=None, end_at=None):
+        from apps.statistics.models import Statistics
+
+        condition = Q(char_id=self.char_id)
+
+        if start_at:
+            condition & Q(create_at__gte=arrow.get(start_at).format("YYYY-MM-DD HH:mm:ssZ"))
+        if end_at:
+            condition & Q(create_at__lte=arrow.get(end_at).format("YYYY-MM-DD HH:mm:ssZ"))
 
         value = 0
         for s in Statistics.objects.filter(condition):

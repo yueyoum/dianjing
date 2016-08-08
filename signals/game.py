@@ -40,6 +40,7 @@ from core.purchase import Purchase
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
+from protomsg.club_pb2 import CreateDaysNotify
 
 
 @receiver(game_start_signal, dispatch_uid='signals.game.game_start_handler')
@@ -48,6 +49,10 @@ def game_start_handler(server_id, char_id, **kwargs):
 
     msg = UTCNotify()
     msg.timestamp = arrow.utcnow().timestamp
+    MessagePipe(char_id).put(msg=msg)
+
+    msg = CreateDaysNotify()
+    msg.days = Club.create_days(server_id, char_id)
     MessagePipe(char_id).put(msg=msg)
 
     UnitManager(server_id, char_id).send_notify()

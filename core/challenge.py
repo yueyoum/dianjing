@@ -18,6 +18,7 @@ from core.task import TaskMain
 from core.vip import VIP
 from core.energy import Energy
 from core.formation import Formation
+from core.signals import task_condition_trig_signal
 
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.value_log import ValueLogChallengeMatchTimes, ValueLogAllChallengeWinTimes, ValueLogChallengeResetTimes
@@ -179,6 +180,18 @@ class Challenge(object):
         )
 
         return sum(doc['challenge_star'].values())
+
+    def get_max_passed_challenge_id(self):
+        doc = MongoChallenge.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'challenge_star': 1}
+        )
+
+        ids = [int(k) for k in doc['challenge_star'].keys()]
+        if not ids:
+            return 0
+
+        return max(ids)
 
     def start(self, challenge_id, formation_slots=None):
         config = ConfigChallengeMatch.get(challenge_id)
@@ -346,11 +359,14 @@ class Challenge(object):
             updated_chapter_ids.append(config.chapter)
             updated_challenge_ids.append(challenge_id)
 
+        open_new_challenge = False
+
         # try open challenge, chapter
         for i in config.next:
             if str(i) in doc['challenge_star']:
                 continue
 
+            open_new_challenge = True
             updated_challenge_ids.append(i)
 
             MongoChallenge.db(self.server_id).update_one(
@@ -396,6 +412,15 @@ class Challenge(object):
 
         # task
         TaskMain(self.server_id, self.char_id).trig(challenge_id)
+
+        if open_new_challenge:
+            task_condition_trig_signal.send(
+                sender=None,
+                server_id=self.server_id,
+                char_id=self.char_id,
+                condition_name='core.challenge.Challenge'
+            )
+
         return resource_classified
 
     def get_chapter_reward(self, chapter_id, index):

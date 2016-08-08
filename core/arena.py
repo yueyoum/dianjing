@@ -23,7 +23,7 @@ from core.resource import ResourceClassification, money_text_to_item_id
 from core.vip import VIP
 from core.mail import MailManager
 from core.formation import Formation
-from core.signals import arena_match_signal
+from core.signals import arena_match_signal, task_condition_trig_signal
 from core.value_log import (
     ValueLogArenaMatchTimes,
     ValueLogArenaHonorPoints,
@@ -45,7 +45,7 @@ from config import (
     ConfigArenaRankRewardWeekly,
 )
 
-from utils.functional import make_string_id, get_arrow_time_of_today
+from utils.functional import make_string_id, get_start_time_of_today
 from utils.message import MessagePipe
 
 from protomsg.arena_pb2 import (
@@ -310,7 +310,7 @@ class Arena(object):
             if not honor_rewards:
                 return
 
-            today_key = str(get_arrow_time_of_today().timestamp)
+            today_key = str(get_start_time_of_today().timestamp)
 
             unset = {}
             for k in honor_rewards.keys():
@@ -578,6 +578,8 @@ class Arena(object):
         score_changed = ass.add_score(score_changed)
 
         new_rank = ass.rank
+        max_rank_changed = False
+
         if new_rank > my_max_rank:
             my_max_rank = new_rank
 
@@ -585,6 +587,8 @@ class Arena(object):
                 {'_id': str(self.char_id)},
                 {'$set': {'max_rank': new_rank}}
             )
+
+            max_rank_changed = True
 
         rank_changed = new_rank - my_rank
 
@@ -618,10 +622,18 @@ class Arena(object):
             continue_win=continue_win,
         )
 
+        if max_rank_changed:
+            task_condition_trig_signal.send(
+                sender=None,
+                server_id=self.server_id,
+                char_id=self.char_id,
+                condition_name='core.arena.Arena'
+            )
+
         return resource_classified, score_changed, -rank_changed, my_max_rank, new_rank, ass.score
 
     def get_today_honor_reward_info(self):
-        today_key = str(get_arrow_time_of_today().timestamp)
+        today_key = str(get_start_time_of_today().timestamp)
         doc = MongoArena.db(self.server_id).find_one(
             {'_id': str(self.char_id)},
             {'honor_rewards.{0}'.format(today_key): 1}
@@ -644,7 +656,7 @@ class Arena(object):
         resource_classified = ResourceClassification.classify(config.reward)
         resource_classified.add(self.server_id, self.char_id)
 
-        today_key = str(get_arrow_time_of_today().timestamp)
+        today_key = str(get_start_time_of_today().timestamp)
         MongoArena.db(self.server_id).update_one(
             {'_id': str(self.char_id)},
             {

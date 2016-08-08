@@ -33,6 +33,7 @@ from core.signals import (
     staff_level_up_signal,
     staff_star_up_signal,
     staff_step_up_signal,
+    task_condition_trig_signal,
 )
 
 from config import (
@@ -480,7 +481,6 @@ class Staff(AbstractStaff):
             new_step=self.step
         )
 
-
     def star_up(self, single):
         # single = True,  只升级一次
         # single = False, 尽量升到下一星级
@@ -730,11 +730,6 @@ class StaffManger(object):
             doc['_id'] = self.char_id
             MongoStaff.db(server_id).insert_one(doc)
 
-    @property
-    def staffs_amount(self):
-        # type: () -> int
-        return len(self.get_staffs_data())
-
     def add_exp_pool(self, exp):
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -757,6 +752,41 @@ class StaffManger(object):
 
         doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, projection)
         return doc['staffs']
+
+    def after_staffs_change_for_trig_signal(self):
+        task_condition_trig_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            condition_name='core.staff.StaffManger'
+        )
+
+    def get_staffs_amount_by_level(self, level):
+        staffs = self.get_staffs_data()
+        amount = 0
+        for k, v in staffs.iteritems():
+            if v['level'] == level:
+                amount += 1
+
+        return amount
+
+    def get_staffs_amount_by_step(self, step):
+        staffs = self.get_staffs_data()
+        amount = 0
+        for k, v in staffs.iteritems():
+            if v['step'] == step:
+                amount += 1
+
+        return amount
+
+    def get_staffs_amount_by_star(self, star):
+        staffs = self.get_staffs_data()
+        amount = 0
+        for k, v in staffs.iteritems():
+            if v['star'] == star:
+                amount += 1
+
+        return amount
 
     def find_staff_id_with_equip(self, bag_slot_id):
         keys = ['equip_mouse', 'equip_keyboard', 'equip_monitor', 'equip_decoration']
@@ -850,10 +880,10 @@ class StaffManger(object):
             force_load_staffs=send_notify,
         )
 
+        self.after_staffs_change_for_trig_signal()
         return unique_id
 
     def remove(self, staff_id):
-
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$unset': {'staffs.{0}'.format(staff_id): 1}}
@@ -862,6 +892,7 @@ class StaffManger(object):
         notify = StaffRemoveNotify()
         notify.ids.append(staff_id)
         MessagePipe(self.char_id).put(msg=notify)
+        self.after_staffs_change_for_trig_signal()
 
     def remove_initial_state_staff(self, oid):
         staffs = self.get_all_staff_object().values()
@@ -870,6 +901,8 @@ class StaffManger(object):
             if s.oid == oid and s.is_initial_state():
                 self.remove(s.id)
                 return
+
+        self.after_staffs_change_for_trig_signal()
 
     def find_staff_id_by_equipment_slot_id(self, slot_id):
         # type: (str) -> str
@@ -948,6 +981,8 @@ class StaffManger(object):
             if staff.id in in_formation_staff_ids:
                 self.after_staff_change()
 
+            self.after_staffs_change_for_trig_signal()
+
     def step_up(self, staff_id):
         from core.club import Club
         from core.formation import Formation
@@ -964,6 +999,8 @@ class StaffManger(object):
             staff.make_cache()
             self.send_notify(ids=[staff_id])
 
+        self.after_staffs_change_for_trig_signal()
+
     def star_up(self, staff_id, single):
         from core.formation import Formation
         staff = self.get_staff_object(staff_id)
@@ -977,6 +1014,7 @@ class StaffManger(object):
         in_formation_staff_ids = Formation(self.server_id, self.char_id).in_formation_staffs().keys()
         if _star_up and staff.id in in_formation_staff_ids:
             self.after_staff_change()
+            self.after_staffs_change_for_trig_signal()
 
         return crit, inc_exp, cost_item_id, cost_item_amount
 
@@ -1022,6 +1060,7 @@ class StaffManger(object):
                 staff.make_cache()
                 self.send_notify(ids=[staff_id])
 
+        self.after_staffs_change_for_trig_signal()
         return resource_classified
 
     def send_notify(self, ids=None):

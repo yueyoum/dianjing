@@ -20,7 +20,7 @@ from core.value_log import ValueLogWelfareSignInTimes, ValueLogWelfareEnergyRewa
 from core.resource import ResourceClassification
 
 from utils.message import MessagePipe
-from utils.functional import get_arrow_time_of_today
+from utils.functional import get_start_time_of_today
 
 from config import (
     ConfigWelfareLevelReward,
@@ -173,7 +173,7 @@ class Welfare(object):
 
     def energy_reward_get(self):
         now = arrow.utcnow().to(settings.TIME_ZONE)
-        today = get_arrow_time_of_today()
+        today = get_start_time_of_today()
 
         for index, (start_hour, end_hour) in enumerate(ENERGY_TIME_RANGE):
 

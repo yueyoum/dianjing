@@ -10,10 +10,12 @@ Description:
 import arrow
 
 from core.mongo import MongoTimesLog
-from utils.functional import make_string_id, get_arrow_time_of_today
+from core.signals import task_condition_trig_signal
+from utils.functional import make_string_id, get_start_time_of_today
 from config import ConfigTaskCondition
 
 KEEP_DAYS = 100
+
 
 class ValueLog(object):
     KEY = None
@@ -44,14 +46,17 @@ class ValueLog(object):
         MongoTimesLog.db(self.server_id).insert_one(doc)
 
         # task trig
-        from core.task import TaskDaily
-        task_condition_id = ConfigTaskCondition.get_condition_id_by_server_module('core.value_log.{0}'.format(self.__class__.__name__))
-        if task_condition_id:
-            TaskDaily(self.server_id, self.char_id).trig(task_condition_id)
+        condition_name = 'core.value_log.{0}'.format(self.__class__.__name__)
+        task_condition_trig_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            condition_name=condition_name
+        )
 
     def count_of_today(self, sub_id=None):
         # 今天多少次
-        today = get_arrow_time_of_today()
+        today = get_start_time_of_today()
         tomorrow = today.replace(days=1)
         return self.count(sub_id=sub_id, start_at=today.timestamp, end_at=tomorrow.timestamp)
 
@@ -80,7 +85,7 @@ class CategoryValueLog(ValueLog):
 
         :rtype: dict[str, int]
         """
-        today = get_arrow_time_of_today()
+        today = get_start_time_of_today()
         tomorrow = today.replace(days=1)
         return self.batch_count(start_at=today.timestamp, end_at=tomorrow.timestamp)
 
@@ -188,10 +193,12 @@ class ValueLogArenaMatchTimes(ValueLog):
     KEY = 'arena_match'
     __slots__ = []
 
+
 # 竞技场胜利次数
 class ValueLogArenaWinTimes(ValueLog):
     KEY = 'arena_win'
     __slots__ = []
+
 
 # 竞技场购买次数
 class ValueLogArenaBuyTimes(ValueLog):
@@ -293,6 +300,7 @@ class ValueLogEnergyBuyTimes(ValueLog):
 class ValueLogWelfareSignInTimes(ValueLog):
     KEY = 'welfare_signin'
     __slots__ = []
+
 
 # 福利体力领取
 class ValueLogWelfareEnergyRewardTimes(CategoryValueLog):

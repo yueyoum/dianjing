@@ -1,12 +1,69 @@
 # -*- coding:utf-8 -*-
 
+import operator
 from config.base import ConfigBase
 
+
 class TaskCondition(object):
-    __slots__ = ['id', 'server_module']
+    __slots__ = ['id', 'server_module', 'param', 'compare_type', 'time_limit', 'CLASS', 'FUNCTION']
+
     def __init__(self):
         self.id = 0
         self.server_module = ''
+        self.param = 0
+        self.compare_type = ''
+        self.time_limit = True
+
+        self.CLASS = None
+        self.FUNCTION = None
+
+    def get_server_module(self):
+        if not self.CLASS:
+            cls, fn = self.server_module.split(':')
+
+            model_name, class_name = cls.rsplit('.', 1)
+            _Model = __import__(model_name, fromlist=[class_name])
+            _Class = getattr(_Model, class_name)
+
+            self.CLASS = _Class
+            self.FUNCTION = fn
+
+        return self.CLASS, self.FUNCTION
+
+    def get_value(self, server_id, char_id, start_at=None, end_at=None):
+        if self.time_limit:
+            if not start_at and not end_at:
+                # 对于有 时间范围的 条件， 一定得有 start_at 或者 end_at
+                # 都没有，就直接报错
+                raise RuntimeError("TaskCondition {0} has time_limit, but call it without time limit".format(self.id))
+
+        cls, fn = self.get_server_module()
+        obj = cls(server_id, char_id)
+
+        fn = getattr(obj, fn)
+
+        if self.time_limit:
+            if self.param:
+                return fn(self.param, start_at=start_at, end_at=end_at)
+            return fn(start_at=start_at, end_at=end_at)
+
+        if self.param:
+            return fn(self.param)
+        return fn()
+
+    def compare_value(self, value, target_value):
+        if self.compare_type == '>=':
+            op = operator.ge
+        elif self.compare_type == '<=':
+            op = operator.le
+        else:
+            raise RuntimeError(
+                "Unknown Compare Type {0} of Condition {1}".format(
+                    self.compare_type, self.id)
+            )
+
+        return op(value, target_value)
+
 
 class TaskMain(object):
     __slots__ = [
@@ -17,6 +74,7 @@ class TaskMain(object):
         self.id = None
         self.challenge_id = 0
         self.items = []
+
 
 class TaskDaily(object):
     __slots__ = [
@@ -45,7 +103,11 @@ class ConfigTaskCondition(ConfigBase):
         super(ConfigTaskCondition, cls).initialize(fixture)
         for k, v in cls.INSTANCES.iteritems():
             if v.server_module:
-                cls.SERVER_MODULE_TO_ID_TABLE[v.server_module] = k
+                _module, _ = v.server_module.split(':')
+                if _module in cls.SERVER_MODULE_TO_ID_TABLE:
+                    cls.SERVER_MODULE_TO_ID_TABLE[_module].append(k)
+                else:
+                    cls.SERVER_MODULE_TO_ID_TABLE[_module] = [k]
 
     @classmethod
     def get(cls, _id):
@@ -56,8 +118,8 @@ class ConfigTaskCondition(ConfigBase):
         return super(ConfigTaskCondition, cls).get(_id)
 
     @classmethod
-    def get_condition_id_by_server_module(cls, server_module):
-        return cls.SERVER_MODULE_TO_ID_TABLE.get(server_module, None)
+    def get_condition_ids_by_name(cls, name):
+        return cls.SERVER_MODULE_TO_ID_TABLE.get(name, None)
 
 
 class ConfigTaskMain(ConfigBase):

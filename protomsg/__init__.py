@@ -16,6 +16,7 @@ MESSAGE_TO_ID = {
     "ClubNotify": 400,
     "CreateClubRequest": 401,
     "CreateClubResponse": 402,
+    "CreateDaysNotify": 403,
     "StaffNotify": 500,
     "StaffRemoveNotify": 501,
     "StaffRecruitNotify": 520,
@@ -232,6 +233,12 @@ MESSAGE_TO_ID = {
     "PurchaseVerifyRequest": 4502,
     "PurchaseVerifyResponse": 4503,
     "PurchaseNotify": 4504,
+    "ActivityNewPlayerNotify": 4600,
+    "ActivityNewPlayerDailyBuyNotify": 4601,
+    "ActivityNewPlayerGetRewardRequest": 4602,
+    "ActivityNewPlayerGetRewardResponse": 4603,
+    "ActivityNewPlayerDailyBuyRequest": 4604,
+    "ActivityNewPlayerDailyBuyResponse": 4605,
 }
 
 ID_TO_MESSAGE = {
@@ -251,6 +258,7 @@ ID_TO_MESSAGE = {
     400: "ClubNotify",
     401: "CreateClubRequest",
     402: "CreateClubResponse",
+    403: "CreateDaysNotify",
     500: "StaffNotify",
     501: "StaffRemoveNotify",
     520: "StaffRecruitNotify",
@@ -467,6 +475,12 @@ ID_TO_MESSAGE = {
     4502: "PurchaseVerifyRequest",
     4503: "PurchaseVerifyResponse",
     4504: "PurchaseNotify",
+    4600: "ActivityNewPlayerNotify",
+    4601: "ActivityNewPlayerDailyBuyNotify",
+    4602: "ActivityNewPlayerGetRewardRequest",
+    4603: "ActivityNewPlayerGetRewardResponse",
+    4604: "ActivityNewPlayerDailyBuyRequest",
+    4605: "ActivityNewPlayerDailyBuyResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -563,6 +577,8 @@ PATH_TO_REQUEST = {
     "/game/union/signin/": ["union", "UnionSigninRequest"],
     "/game/purchase/prepare/": ["purchase", "PurchasePrepareRequest"],
     "/game/purchase/verify/": ["purchase", "PurchaseVerifyRequest"],
+    "/game/activity/newplayer/getreward/": ["activity", "ActivityNewPlayerGetRewardRequest"],
+    "/game/activity/newplayer/dailybuy/": ["activity", "ActivityNewPlayerDailyBuyRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -659,4 +675,6 @@ PATH_TO_RESPONSE = {
     "/game/union/signin/": ["union", "UnionSigninResponse"],
     "/game/purchase/prepare/": ["purchase", "PurchasePrepareResponse"],
     "/game/purchase/verify/": ["purchase", "PurchaseVerifyResponse"],
+    "/game/activity/newplayer/getreward/": ["activity", "ActivityNewPlayerGetRewardResponse"],
+    "/game/activity/newplayer/dailybuy/": ["activity", "ActivityNewPlayerDailyBuyResponse"],
 }

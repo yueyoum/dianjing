@@ -70,7 +70,7 @@ def third_login(platform, uid, param):
         # 这是第一次登陆，创建
 
         with transaction.atomic():
-            account = AccountRegular.objects.create(
+            account = AccountThird.objects.create(
                 platform=platform,
                 uid=uid,
             )

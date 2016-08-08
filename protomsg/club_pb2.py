@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='club.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\nclub.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xa6\x01\n\x04\x43lub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\x12\r\n\x05level\x18\x04 \x02(\x05\x12\x0b\n\x03\x65xp\x18\x05 \x02(\x05\x12\x0c\n\x04gold\x18\x06 \x02(\x05\x12\x0f\n\x07\x64iamond\x18\x07 \x02(\x05\x12\x0f\n\x07\x63rystal\x18\x08 \x02(\x05\x12\x0b\n\x03gas\x18\t \x02(\x05\x12\x0e\n\x06renown\x18\n \x02(\x05\x12\r\n\x05power\x18\x0b \x02(\x05\"D\n\nClubNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12%\n\x04\x63lub\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\"@\n\x11\x43reateClubRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\"2\n\x12\x43reateClubResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+  serialized_pb=_b('\n\nclub.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xa6\x01\n\x04\x43lub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\x12\r\n\x05level\x18\x04 \x02(\x05\x12\x0b\n\x03\x65xp\x18\x05 \x02(\x05\x12\x0c\n\x04gold\x18\x06 \x02(\x05\x12\x0f\n\x07\x64iamond\x18\x07 \x02(\x05\x12\x0f\n\x07\x63rystal\x18\x08 \x02(\x05\x12\x0b\n\x03gas\x18\t \x02(\x05\x12\x0e\n\x06renown\x18\n \x02(\x05\x12\r\n\x05power\x18\x0b \x02(\x05\"D\n\nClubNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12%\n\x04\x63lub\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\"1\n\x10\x43reateDaysNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04\x64\x61ys\x18\x02 \x02(\x05\"@\n\x11\x43reateClubRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\"2\n\x12\x43reateClubResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
   ,
   dependencies=[common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -167,6 +167,44 @@ _CLUBNOTIFY = _descriptor.Descriptor(
 )
 
 
+_CREATEDAYSNOTIFY = _descriptor.Descriptor(
+  name='CreateDaysNotify',
+  full_name='Dianjing.protocol.CreateDaysNotify',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.CreateDaysNotify.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='days', full_name='Dianjing.protocol.CreateDaysNotify.days', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=286,
+  serialized_end=335,
+)
+
+
 _CREATECLUBREQUEST = _descriptor.Descriptor(
   name='CreateClubRequest',
   full_name='Dianjing.protocol.CreateClubRequest',
@@ -207,8 +245,8 @@ _CREATECLUBREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=286,
-  serialized_end=350,
+  serialized_start=337,
+  serialized_end=401,
 )
 
 
@@ -245,13 +283,14 @@ _CREATECLUBRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=352,
-  serialized_end=402,
+  serialized_start=403,
+  serialized_end=453,
 )
 
 _CLUBNOTIFY.fields_by_name['club'].message_type = _CLUB
 DESCRIPTOR.message_types_by_name['Club'] = _CLUB
 DESCRIPTOR.message_types_by_name['ClubNotify'] = _CLUBNOTIFY
+DESCRIPTOR.message_types_by_name['CreateDaysNotify'] = _CREATEDAYSNOTIFY
 DESCRIPTOR.message_types_by_name['CreateClubRequest'] = _CREATECLUBREQUEST
 DESCRIPTOR.message_types_by_name['CreateClubResponse'] = _CREATECLUBRESPONSE
 
@@ -268,6 +307,13 @@ ClubNotify = _reflection.GeneratedProtocolMessageType('ClubNotify', (_message.Me
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.ClubNotify)
   ))
 _sym_db.RegisterMessage(ClubNotify)
+
+CreateDaysNotify = _reflection.GeneratedProtocolMessageType('CreateDaysNotify', (_message.Message,), dict(
+  DESCRIPTOR = _CREATEDAYSNOTIFY,
+  __module__ = 'club_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.CreateDaysNotify)
+  ))
+_sym_db.RegisterMessage(CreateDaysNotify)
 
 CreateClubRequest = _reflection.GeneratedProtocolMessageType('CreateClubRequest', (_message.Message,), dict(
   DESCRIPTOR = _CREATECLUBREQUEST,

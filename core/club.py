@@ -15,7 +15,7 @@ from django.conf import settings
 
 from core.mongo import MongoCharacter
 from core.abstract import AbstractClub
-from core.signals import club_level_up_signal
+from core.signals import club_level_up_signal, task_condition_trig_signal
 from core.statistics import FinanceStatistics
 
 from dianjing.exception import GameException
@@ -47,6 +47,17 @@ def get_club_property(server_id, char_id, key, default_value=0):
     )
 
     return doc.get(key, default_value)
+
+# 为了兼容任务条件
+class _ClubProperty(object):
+    __slots__ = ['server_id', 'char_id']
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+
+    def get_level(self):
+        return get_club_property(self.server_id, self.char_id, 'level')
+
 
 
 class Club(AbstractClub):
@@ -295,6 +306,13 @@ class Club(AbstractClub):
                 server_id=self.server_id,
                 char_id=self.char_id,
                 new_level=self.level
+            )
+
+            task_condition_trig_signal.send(
+                sender=None,
+                server_id=self.server_id,
+                char_id=self.char_id,
+                condition_name='core.club._ClubProperty'
             )
 
         self.send_notify()

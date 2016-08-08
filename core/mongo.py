@@ -428,6 +428,9 @@ class MongoTower(BaseDocument):
         'goods': [],
         # 扫荡完成时间 0 没有扫荡
         'sweep_end_at': 0,
+
+        # 历史最高层
+        'history_max_level': 0,
     }
 
     COLLECTION = 'tower'
@@ -631,3 +634,18 @@ class MongoPurchase(BaseDocument):
 
     COLLECTION = 'purchase'
     INDEXES = ['yueka_remained_days',]
+
+
+# 新手活动
+class MongoActivityNewPlayer(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+
+        # 已经完成的
+        'done': [],
+
+        # 新手每日购买，买过的天数
+        'daily_buy': [],
+    }
+
+    COLLECTION = ['activity_new_player']

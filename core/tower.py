@@ -19,6 +19,7 @@ from core.value_log import ValueLogTowerResetTimes, ValueLogTowerWinTimes
 from core.vip import VIP
 from core.mail import MailManager
 from core.formation import Formation
+from core.signals import task_condition_trig_signal
 
 from utils.message import MessagePipe
 
@@ -139,6 +140,9 @@ class Tower(object):
 
         return 0
 
+    def get_history_max_level(self):
+        return self.doc.get('history_max_level', 0)
+
     def get_total_current_star(self):
         # 获得本阶段总星数
         star = 0
@@ -245,18 +249,23 @@ class Tower(object):
             self.doc['levels'][str(level)] = star
             updater['levels.{0}'.format(level)] = star
 
+            # 开启下一关
             if level < MAX_LEVEL:
-                # 开启下一关
                 next_level = level + 1
                 self.doc['levels'][str(next_level)] = 0
 
                 update_levels.append(next_level)
                 updater['levels.{0}'.format(next_level)] = 0
 
+            # 记录连续最大三星
             if star == 3 and level == self.doc['max_star_level'] + 1:
-                # 记录连续最大三星
                 self.doc['max_star_level'] = level
                 updater['max_star_level'] = level
+
+            # 记录最高层
+            if level > self.get_history_max_level():
+                self.doc['history_max_level'] = level
+                updater['history_max_level'] = level
 
             # 转盘信息
             turntable = config.get_turntable()
@@ -300,6 +309,14 @@ class Tower(object):
         self.send_notify(act=ACT_UPDATE, levels=update_levels)
         if goods:
             self.send_goods_notify()
+
+        if 'history_max_level' in updater:
+            task_condition_trig_signal.send(
+                sender=None,
+                server_id=self.server_id,
+                char_id=self.char_id,
+                condition_name='core.tower.Tower'
+            )
 
         return resource_classified, self.doc['current_star'], all_list, bool(goods)
 

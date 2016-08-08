@@ -42,6 +42,7 @@ from config.welfare import ConfigWelfareSignIn, ConfigWelfareLevelReward, Config
 from config.template import ConfigBroadcastTemplate
 from config.union import ConfigUnionSignin, ConfigUnionLevel
 from config.purchase import ConfigPurchaseYueka, ConfigPurchaseGoods
+from config.activity import ConfigActivityDailyBuy, ConfigActivityNewPlayer
 
 _has_configed = False
 
@@ -225,5 +226,10 @@ def load_config():
             ConfigPurchaseYueka.initialize(data)
         elif name == 'purchase_goods.json':
             ConfigPurchaseGoods.initialize(data)
+
+        elif name == 'activity_daily_buy.json':
+            ConfigActivityDailyBuy.initialize(data)
+        elif name == 'activity_new_player.json':
+            ConfigActivityNewPlayer.initialize(data)
 
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))
