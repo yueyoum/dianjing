@@ -852,7 +852,7 @@ class StaffManger(object):
         if oids:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
-    def add(self, staff_original_id, send_notify=True):
+    def add(self, staff_original_id, send_notify=True, trig_signal=True):
         if not ConfigStaffNew.get(staff_original_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
@@ -880,7 +880,8 @@ class StaffManger(object):
             force_load_staffs=send_notify,
         )
 
-        self.after_staffs_change_for_trig_signal()
+        if trig_signal:
+            self.after_staffs_change_for_trig_signal()
         return unique_id
 
     def remove(self, staff_id):

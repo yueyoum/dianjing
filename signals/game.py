@@ -37,6 +37,7 @@ from core.welfare import Welfare
 from core.resource import _Resource
 from core.union import Union
 from core.purchase import Purchase
+from core.activity import ActivityNewPlayer
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
@@ -122,6 +123,10 @@ def game_start_handler(server_id, char_id, **kwargs):
     _Resource.send_notify(server_id, char_id)
 
     Purchase(server_id, char_id).send_notify()
+
+    ac = ActivityNewPlayer(server_id, char_id)
+    ac.send_notify()
+    ac.send_daily_buy_notify()
 
     send_system_notify(char_id)
     BroadCast(server_id, char_id).try_cast_login_notify()

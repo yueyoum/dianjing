@@ -648,4 +648,4 @@ class MongoActivityNewPlayer(BaseDocument):
         'daily_buy': [],
     }
 
-    COLLECTION = ['activity_new_player']
+    COLLECTION = 'activity_new_player'

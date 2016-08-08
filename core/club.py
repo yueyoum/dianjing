@@ -169,7 +169,7 @@ class Club(AbstractClub):
 
         formation_init_data = []
         for staff_id, unit_id in CHAR_INIT_STAFFS:
-            uid = sm.add(staff_id, send_notify=False)
+            uid = sm.add(staff_id, send_notify=False, trig_signal=False)
             formation_init_data.append((uid, unit_id))
 
         fm = Formation(server_id, char_id)
