@@ -96,11 +96,10 @@ class Purchase(object):
         notify.yueka_remained_days = self.doc['yueka_remained_days']
         notify.first = len(self.doc['goods']) == 0
 
-        for k, v in ConfigItemUse.get(FIRST_REWARD_ITEM_ID).using_result():
-            notify_first_reward = notify.first_reward.add()
-            notify_first_reward.id = k
-            notify_first_reward.amount = v
+        drop = ConfigItemUse.get(FIRST_REWARD_ITEM_ID).using_result()
+        rc = ResourceClassification.classify(drop)
 
+        notify.first_reward.MergeFrom(rc.make_protomsg())
         notify.first_reward_got = self.doc.get('first_reward_got', False)
 
         MessagePipe(self.char_id).put(msg=notify)
