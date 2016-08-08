@@ -27,6 +27,11 @@ class Yueka(object):
         self.mail_title = ''
         self.mail_content = ''
 
+class FirstReward(object):
+    __slots__ = ['id', 'rewards']
+    def __init__(self):
+        self.id = 0
+        self.rewards = []
 
 class ConfigPurchaseGoods(ConfigBase):
     EntityClass = Goods
@@ -54,3 +59,13 @@ class ConfigPurchaseYueka(ConfigBase):
         :rtype: Yueka
         """
         return super(ConfigPurchaseYueka, cls).get(_id)
+
+
+class ConfigPurchaseFirstReward(ConfigBase):
+    EntityClass = FirstReward
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get_reward(cls):
+        return cls.INSTANCES.values()[0]

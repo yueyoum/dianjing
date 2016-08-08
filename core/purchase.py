@@ -17,15 +17,16 @@ from core.resource import ResourceClassification
 from utils.message import MessagePipe
 from utils.functional import make_string_id
 
-from config import ConfigPurchaseYueka, ConfigPurchaseGoods, ConfigErrorMessage, ConfigItemUse
+from config import ConfigPurchaseYueka, ConfigPurchaseGoods, ConfigErrorMessage, ConfigPurchaseFirstReward
 
 from protomsg.purchase_pb2 import PurchaseNotify, PURCHASE_DONE, PURCHASE_FAILURE, PURCHASE_WAITING
 
 YUEKA_ID = 1001
-FIRST_REWARD_ITEM_ID = -2
+
 
 class Purchase(object):
     __slots__ = ['server_id', 'char_id', 'doc']
+
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
@@ -76,7 +77,7 @@ class Purchase(object):
         if self.doc.get('first_reward_got', False):
             raise GameException(ConfigErrorMessage.get_error_id("PURCHASE_FIRST_REWARD_HAS_GOT"))
 
-        drop = ConfigItemUse.get(FIRST_REWARD_ITEM_ID).using_result()
+        drop = ConfigPurchaseFirstReward.get_reward()
         rc = ResourceClassification.classify(drop)
         rc.add(self.server_id, self.char_id)
         self.doc['first_reward_got'] = True
@@ -96,10 +97,11 @@ class Purchase(object):
         notify.yueka_remained_days = self.doc['yueka_remained_days']
         notify.first = len(self.doc['goods']) == 0
 
-        drop = ConfigItemUse.get(FIRST_REWARD_ITEM_ID).using_result()
-        rc = ResourceClassification.classify(drop)
+        for _id, _amount in ConfigPurchaseFirstReward.get_reward():
+            reward = notify.frist_reward.items.add()
+            reward.id = _id
+            reward.amount = _amount
 
-        notify.first_reward.MergeFrom(rc.make_protomsg())
         notify.first_reward_got = self.doc.get('first_reward_got', False)
 
         MessagePipe(self.char_id).put(msg=notify)
