@@ -132,7 +132,11 @@ class ActivityNewPlayer(object):
 
     def send_daily_buy_notify(self):
         notify = ActivityNewPlayerDailyBuyNotify()
-        notify.has_bought = self.create_day in self.doc['daily_buy']
+        for i in range(1, self.create_day+1):
+            notify_status = notify.status.add()
+            notify_status.day = i
+            notify_status.has_bought = i in self.doc['daily_buy']
+
         MessagePipe(self.char_id).put(msg=notify)
 
     def send_notify(self, ids=None):
@@ -150,6 +154,10 @@ class ActivityNewPlayer(object):
         notify = ActivityNewPlayerNotify()
         notify.act = act
         for i in ids:
+            # 后面天数的情况不发
+            if ConfigActivityNewPlayer.get(i).day > self.create_day:
+                continue
+
             value, status = self.get_activity_status(i, end_at=end_at)
 
             notify_items = notify.items.add()
