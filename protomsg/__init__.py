@@ -233,6 +233,8 @@ MESSAGE_TO_ID = {
     "PurchaseVerifyRequest": 4502,
     "PurchaseVerifyResponse": 4503,
     "PurchaseNotify": 4504,
+    "PurchaseGetFirstRewardRequest": 4505,
+    "PurchaseGetFirstRewardResponse": 4506,
     "ActivityNewPlayerNotify": 4600,
     "ActivityNewPlayerDailyBuyNotify": 4601,
     "ActivityNewPlayerGetRewardRequest": 4602,
@@ -475,6 +477,8 @@ ID_TO_MESSAGE = {
     4502: "PurchaseVerifyRequest",
     4503: "PurchaseVerifyResponse",
     4504: "PurchaseNotify",
+    4505: "PurchaseGetFirstRewardRequest",
+    4506: "PurchaseGetFirstRewardResponse",
     4600: "ActivityNewPlayerNotify",
     4601: "ActivityNewPlayerDailyBuyNotify",
     4602: "ActivityNewPlayerGetRewardRequest",
@@ -577,6 +581,7 @@ PATH_TO_REQUEST = {
     "/game/union/signin/": ["union", "UnionSigninRequest"],
     "/game/purchase/prepare/": ["purchase", "PurchasePrepareRequest"],
     "/game/purchase/verify/": ["purchase", "PurchaseVerifyRequest"],
+    "/game/purchase/getfirstreward/": ["purchase", "PurchaseGetFirstRewardRequest"],
     "/game/activity/newplayer/getreward/": ["activity", "ActivityNewPlayerGetRewardRequest"],
     "/game/activity/newplayer/dailybuy/": ["activity", "ActivityNewPlayerDailyBuyRequest"],
 }
@@ -675,6 +680,7 @@ PATH_TO_RESPONSE = {
     "/game/union/signin/": ["union", "UnionSigninResponse"],
     "/game/purchase/prepare/": ["purchase", "PurchasePrepareResponse"],
     "/game/purchase/verify/": ["purchase", "PurchaseVerifyResponse"],
+    "/game/purchase/getfirstreward/": ["purchase", "PurchaseGetFirstRewardResponse"],
     "/game/activity/newplayer/getreward/": ["activity", "ActivityNewPlayerGetRewardResponse"],
     "/game/activity/newplayer/dailybuy/": ["activity", "ActivityNewPlayerDailyBuyResponse"],
 }

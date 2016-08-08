@@ -131,6 +131,9 @@ class ActivityNewPlayer(object):
         return rc
 
     def send_daily_buy_notify(self):
+        if self.create_day >= 8:
+            return
+
         notify = ActivityNewPlayerDailyBuyNotify()
         for i in range(1, self.create_day+1):
             notify_status = notify.status.add()

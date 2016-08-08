@@ -12,15 +12,17 @@ from dianjing.exception import GameException
 from apps.purchase.models import Purchase as ModelPurchase
 
 from core.mongo import MongoPurchase
+from core.resource import ResourceClassification
 
 from utils.message import MessagePipe
 from utils.functional import make_string_id
 
-from config import ConfigPurchaseYueka, ConfigPurchaseGoods, ConfigErrorMessage
+from config import ConfigPurchaseYueka, ConfigPurchaseGoods, ConfigErrorMessage, ConfigItemUse
 
 from protomsg.purchase_pb2 import PurchaseNotify, PURCHASE_DONE, PURCHASE_FAILURE, PURCHASE_WAITING
 
 YUEKA_ID = 1001
+FIRST_REWARD_ITEM_ID = -2
 
 class Purchase(object):
     __slots__ = ['server_id', 'char_id', 'doc']
@@ -67,11 +69,40 @@ class Purchase(object):
 
         return p.goods_id, status
 
+    def get_first_reward(self):
+        if len(self.doc['goods']) != 1:
+            raise GameException(ConfigErrorMessage.get_error_id("PURCHASE_NOT_FIRST_REWARD"))
+
+        if self.doc.get('first_reward_got', False):
+            raise GameException(ConfigErrorMessage.get_error_id("PURCHASE_FIRST_REWARD_HAS_GOT"))
+
+        drop = ConfigItemUse.get(FIRST_REWARD_ITEM_ID).using_result()
+        rc = ResourceClassification.classify(drop)
+        rc.add(self.server_id, self.char_id)
+        self.doc['first_reward_got'] = True
+
+        MongoPurchase.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'first_reward_got': True
+            }}
+        )
+
+        self.send_notify()
+        return rc
 
     def send_notify(self):
         notify = PurchaseNotify()
         notify.yueka_remained_days = self.doc['yueka_remained_days']
         notify.first = len(self.doc['goods']) == 0
+
+        for k, v in ConfigItemUse.get(FIRST_REWARD_ITEM_ID).using_result():
+            notify_first_reward = notify.first_reward.add()
+            notify_first_reward.id = k
+            notify_first_reward.amount = v
+
+        notify.first_reward_got = self.doc.get('first_reward_got', False)
+
         MessagePipe(self.char_id).put(msg=notify)
 
 

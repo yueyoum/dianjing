@@ -630,6 +630,8 @@ class MongoPurchase(BaseDocument):
         'got': 0,
         # 充值确切获得钻石，包括翻倍，赠送等等
         'actual_got': 0,
+        # 首充礼品是否已经领取
+        'first_reward_got': False,
     }
 
     COLLECTION = 'purchase'
