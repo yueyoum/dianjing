@@ -651,3 +651,11 @@ class MongoActivityNewPlayer(BaseDocument):
     }
 
     COLLECTION = 'activity_new_player'
+
+# 排行榜
+class MongoLeaderBoard(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'generate_at': 0,
+        'data': []
+    }

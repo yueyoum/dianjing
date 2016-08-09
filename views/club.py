@@ -14,13 +14,14 @@ from dianjing.exception import GameException
 from apps.character.models import Character
 
 from core.club import Club
+from core.leaderboard import ClubLeaderBoard
 
 from utils.http import ProtobufResponse
 from config import ConfigErrorMessage
 
 from core.signals import game_start_signal
 
-from protomsg.club_pb2 import CreateClubResponse
+from protomsg.club_pb2 import CreateClubResponse, ClubLeaderBoardResponse
 
 
 def create(request):
@@ -57,4 +58,32 @@ def create(request):
     response = CreateClubResponse()
     response.ret = 0
     response.session = session.serialize()
+    return ProtobufResponse(response)
+
+
+def get_leaderboard(request):
+    server_id = request._game_session.server_id
+
+    data, next_update_at = ClubLeaderBoard(server_id).get()
+
+    response = ClubLeaderBoardResponse()
+    response.ret = 0
+    response.next_update_at = next_update_at
+
+    for _id, level, power in data['level']:
+        obj = Club(server_id, _id, load_staffs=False)
+
+        response_level = response.clubs_by_level.add()
+        response_level.MergeFrom(obj.make_protomsg())
+        response_level.level = level
+        response_level.power = power
+
+    for _id, level, power in data['power']:
+        obj = Club(server_id, _id, load_staffs=False)
+
+        response_power = response.clubs_by_power.add()
+        response_power.MergeFrom(obj.make_protomsg())
+        response_power.level = level
+        response_power.power = power
+
     return ProtobufResponse(response)

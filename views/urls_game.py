@@ -47,6 +47,7 @@ urlpatterns = [
     url(r'^start/$', views.server.start_game),
 
     url(r'^club/create/$', views.club.create),
+    url(r'^club/leaderboard/$', views.club.get_leaderboard),
 
     url(r'^formation/setstaff/$', views.formation.set_staff),
     url(r'^formation/setunit/$', views.formation.set_unit),

@@ -549,6 +549,7 @@ class Arena(object):
         )
 
         ArenaRefreshCD(self.server_id, self.char_id).clean()
+        ArenaMatchCD(self.server_id, self.char_id, rival_id).set(600)
 
         config_search = ConfigArenaSearchRange.get(doc['search_index'])
         if win:
