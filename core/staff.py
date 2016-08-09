@@ -1022,9 +1022,13 @@ class StaffManger(object):
     def destroy(self, staff_id, tp):
         from core.club import Club
         from core.formation import Formation
+        from core.territory import Territory
 
         if Formation(self.server_id, self.char_id).is_staff_in_formation(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_CANNOT_DESTROY_IN_FORMATION"))
+
+        if Territory(self.server_id, self.char_id).is_staff_training_check_by_unique_id(staff_id):
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_CANNOT_DESTROY_IN_TERRITORY"))
 
         staff = self.get_staff_object(staff_id)
         if not staff:

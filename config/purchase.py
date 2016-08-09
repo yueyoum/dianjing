@@ -64,8 +64,9 @@ class ConfigPurchaseYueka(ConfigBase):
 class ConfigPurchaseFirstReward(ConfigBase):
     EntityClass = FirstReward
     INSTANCES = {}
+    """:type: dict[int, FirstReward]"""
     FILTER_CACHE = {}
 
     @classmethod
     def get_reward(cls):
-        return cls.INSTANCES.values()[0]
+        return cls.INSTANCES.values()[0].rewards

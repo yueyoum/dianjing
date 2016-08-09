@@ -11,12 +11,12 @@ from config.base import ConfigBase
 
 
 class ClubLevel(object):
-    __slots__ = ['id', 'exp',]
+    __slots__ = ['id', 'exp', 'energy']
 
     def __init__(self):
         self.id = 0
         self.exp = 0
-
+        self.energy = 0
 
 class ClubFlag(object):
     __slots__ = ['id', 'flag']

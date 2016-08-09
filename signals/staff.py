@@ -19,6 +19,7 @@ from core.collection import Collection
 from core.system import BroadCast
 
 from config.text import BROADCAST_STAFF_STAR_TEXT
+from config import ConfigItemNew
 
 @receiver(staff_new_add_signal, dispatch_uid='signals.staff.staff_new_add_handler')
 def staff_new_add_handler(server_id, char_id, oid, unique_id, force_load_staffs, **kwargs):
@@ -29,7 +30,8 @@ def staff_new_add_handler(server_id, char_id, oid, unique_id, force_load_staffs,
 def recruit_staff_diamond_handler(server_id, char_id, times, staffs, **kwargs):
     b = BroadCast(server_id, char_id)
     for _sid, _amount in staffs:
-        b.cast_diamond_recruit_staff_notify(_sid)
+        if ConfigItemNew.get(_sid).sub_tp == 1:
+            b.cast_diamond_recruit_staff_notify(_sid)
 
 
 @receiver(staff_star_up_signal, dispatch_uid='signals.staff.star_up_handler')

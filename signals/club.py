@@ -14,11 +14,15 @@ from core.unit import UnitManager
 from core.formation import Formation
 from core.welfare import Welfare
 
+from config import ConfigClubLevel
 
 @receiver(club_level_up_signal, dispatch_uid='signals.club.club_level_up_handler')
 def club_level_up_handler(server_id, char_id, new_level, **kwargs):
     TaskDaily(server_id, char_id).try_open()
-    Energy(server_id, char_id).add(20)
+
+    energy_add = ConfigClubLevel.get(new_level-1).energy
+    Energy(server_id, char_id).add(energy_add)
+
     UnitManager(server_id, char_id).try_unlock()
     Formation(server_id, char_id).try_open_slots(new_level)
     Welfare(server_id, char_id).send_level_reward_notify()
