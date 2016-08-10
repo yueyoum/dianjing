@@ -58,8 +58,8 @@ class CustomerServiceInformation(models.Model):
 
     class Meta:
         db_table = 'customer_service'
-        verbose_name = '客服信息'
-        verbose_name_plural = '客服信息'
+        verbose_name = '自定义信息'
+        verbose_name_plural = '自定义信息'
 
 
 def image_upload_to(instance, filename):
