@@ -49,7 +49,7 @@ class ActivityNewPlayer(object):
         :rtype: (int, int)
         """
 
-        if end_at:
+        if not end_at:
             # 新手任务的时间范围就是创建那一刻到现在
             end_at = arrow.utcnow().timestamp
 
