@@ -20,7 +20,7 @@ from config import ConfigBroadcastTemplate, ConfigItemNew
 
 
 def send_system_notify(char_id):
-    from apps.system.models import Broadcast as ModelBroadcast
+    from apps.config.models import Broadcast as ModelBroadcast
 
     broadcasts = ModelBroadcast.objects.filter(display=True)
     if broadcasts.count() == 0:

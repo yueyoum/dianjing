@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('version', models.CharField(max_length=255)),
-                ('cfgdata', models.FileField(upload_to=apps.config.models.upload_to)),
+                ('cfgdata', models.FileField(upload_to=apps.config.models.config_upload_to)),
                 ('in_use', models.BooleanField(default=False, db_index=True)),
             ],
             options={

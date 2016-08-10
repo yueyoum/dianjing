@@ -50,7 +50,6 @@ INSTALLED_APPS = (
     'apps.account',
     'apps.character',
     'apps.config',
-    'apps.system',
     'apps.statistics',
     'apps.history_record',
     'apps.purchase',
