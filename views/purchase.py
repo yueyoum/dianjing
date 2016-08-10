@@ -10,7 +10,7 @@ from django.http import HttpResponse
 
 from utils.http import ProtobufResponse
 
-from core.purchase import Purchase, platform_callback
+from core.purchase import Purchase, platform_callback_1sdk
 from protomsg.purchase_pb2 import PurchasePrepareResponse, PurchaseVerifyResponse, PurchaseGetFirstRewardResponse
 
 def prepare(request):
@@ -56,7 +56,6 @@ def get_first_reward(request):
     response.drop.MergeFrom(drop.make_protomsg())
     return ProtobufResponse(response)
 
-def callback(request):
-    platform_callback(request.GET)
-
-    return HttpResponse('')
+def callback_1sdk(request):
+    status_code, content = platform_callback_1sdk(request.GET)
+    return HttpResponse(status=status_code, content=content)

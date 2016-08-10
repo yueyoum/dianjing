@@ -18,5 +18,5 @@ urlpatterns = [
     url(r'^system/bulletin/$', apps.config.views.get_bulletins),
 
     url(r'^flushcache/$', views.admin.flushcache),
-    url(r'^callback/1sdk/$', views.purchase.callback),
+    url(r'^callback/1sdk/$', views.purchase.callback_1sdk),
 ]

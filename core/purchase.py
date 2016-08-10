@@ -6,6 +6,7 @@ Date Created:   2016-08-02 17:25
 Description:
 
 """
+import hashlib
 
 from dianjing.exception import GameException
 
@@ -107,5 +108,53 @@ class Purchase(object):
         MessagePipe(self.char_id).put(msg=notify)
 
 
-def platform_callback(params):
+KEY_1SDK = 'II1KEJPVONHA4OB3LV3KOO4G8CFAV3RL'
+APPID = '{E15E4E08-795DB177}'
+
+def platform_callback_1sdk(params):
+    print "PLATFORM CALLBACK 1SDK"
     print params
+
+    app = params.get('app', '')
+    cbi = params.get('cib', '')
+    ct = params.get('ct', '')
+    fee = params.get('fee', '')
+    pt = params.get('pt', '')
+    sdk = params.get('sdk', '')
+
+    ssid = params.get('ssid', '')
+    st = params.get('st', '')
+
+    tcd = params.get('tcd', '')
+
+    uid = params.get('uid', '')
+    ver = params.get('ver', '')
+    sign = params.get('sign', '')
+
+    check_params = {
+        'app': app,
+        'cbi': cbi,
+        'ct': ct,
+        'fee': fee,
+        'pt': pt,
+        'sdk': sdk,
+        'ssid': ssid,
+        'st': st,
+        'tcd': tcd,
+        'uid': uid,
+        'ver': ver,
+    }
+
+    check_params = ['{0}={1}'.format(k, v) for k, v in check_params.iteritems()]
+    check_params.sort()
+
+    check_params = '&'.join(check_params)
+
+    x = hashlib.md5(check_params + KEY_1SDK).hexdigest()
+
+    print x
+    print sign
+    print x == sign
+
+    return 200, 'SUCCESS'
+

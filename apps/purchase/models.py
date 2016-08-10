@@ -23,9 +23,9 @@ class Purchase(models.Model):
     channel_id = models.CharField(db_index=True, max_length=255, blank=True)
     ssid = models.CharField(max_length=255, blank=True)
 
-    # tcd 订单号， 唯一。
+    # 订单号， 唯一。
     # 这里没用unique 是因为 用户支付前，要先到自己服务器上 prepare 一下
-    # 这时候就会创建 Purchase 记录。 而此时 tcd 是没有的
+    # 这时候就会创建 Purchase 记录。 而此时 平台订单号 是没有的
     unique_trade_id = models.CharField(db_index=True, max_length=255, blank=True)
     return_code = models.IntegerField(default=0)
 
