@@ -15,7 +15,7 @@ from dianjing.exception import GameException
 from config import ConfigDungeon, ConfigDungeonGrade, ConfigErrorMessage, ConfigNPCFormation, ConfigDungeonBuyCost
 
 from core.match import ClubMatch
-from core.club import Club
+from core.club import Club, get_club_property
 from core.value_log import ValueLogDungeonMatchTimes, ValueLogDungeonBuyTimes
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.vip import VIP
@@ -88,9 +88,8 @@ class Dungeon(object):
         if not grade_conf:
             raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_NOT_EXIST"))
 
-        club_one = Club(self.server_id, self.char_id)
-
-        if grade_conf.need_level > club_one.level:
+        club_level = get_club_property(self.server_id, self.char_id, 'level')
+        if grade_conf.need_level > club_level:
             raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_CLUB_LEVEL_NOT_ENOUGH"))
 
         if formation_slots:
@@ -103,6 +102,7 @@ class Dungeon(object):
             # 购买
             self.buy_times(grade_conf.belong)
 
+        club_one = Club(self.server_id, self.char_id)
         club_two = ConfigNPCFormation.get(grade_conf.npc)
         msg = ClubMatch(club_one, club_two).start()
         msg.key = str(dungeon_id)

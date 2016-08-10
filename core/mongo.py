@@ -659,3 +659,5 @@ class MongoLeaderBoard(BaseDocument):
         'generate_at': 0,
         'data': []
     }
+
+    COLLECTION = 'leaderboard'
