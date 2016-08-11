@@ -153,7 +153,6 @@ urlpatterns = [
     url(r'^union/quit/$', views.union.quit),
     url(r'^union/signin/$', views.union.signin),
 
-    url(r'^purchase/prepare/$', views.purchase.prepare),
     url(r'^purchase/verify/$', views.purchase.verify),
 
     url(r'^activity/newplayer/getreward/$', views.activity.newplayer_getreward),
