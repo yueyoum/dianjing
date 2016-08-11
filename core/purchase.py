@@ -9,8 +9,11 @@ Description:
 import hashlib
 import arrow
 
+from django.db.models import Q
+
 from dianjing.exception import GameException
 
+from apps.character.models import Character as ModelCharacter
 from apps.purchase.models import (
     Purchase as ModelPurchase,
     Purchase1SDK as ModelPurchase1SDK,
@@ -18,6 +21,7 @@ from apps.purchase.models import (
 
 from core.mongo import MongoPurchase, MongoPurchaseLog
 from core.resource import ResourceClassification, money_text_to_item_id, VIP_EXP_ITEM_ID
+from core.mail import MailManager
 
 from utils.message import MessagePipe
 from utils.functional import make_string_id
@@ -27,8 +31,6 @@ from config import ConfigPurchaseYueka, ConfigPurchaseGoods, ConfigErrorMessage,
 from protomsg.purchase_pb2 import PurchaseNotify, PURCHASE_DONE, PURCHASE_FAILURE, PURCHASE_WAITING
 
 YUEKA_ID = 1001
-
-ALLOW_PLATFORM = ['ios', '1sdk']
 
 
 class Purchase(object):
@@ -44,36 +46,46 @@ class Purchase(object):
             self.doc['_id'] = self.char_id
             MongoPurchase.db(self.server_id).insert_one(self.doc)
 
-    def prepare(self, platform, goods_id):
-        if platform not in ALLOW_PLATFORM:
-            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+    @classmethod
+    def send_yueka_reward(cls, server_id):
+        config = ConfigPurchaseYueka.get(YUEKA_ID)
 
-        if goods_id != YUEKA_ID:
-            if not ConfigPurchaseGoods.get(goods_id):
-                raise GameException(ConfigErrorMessage.get_error_id("PURCHASE_NOT_EXIST"))
-
-        order_id = make_string_id()
-        ModelPurchase.objects.create(
-            id=order_id,
-            server_id=self.server_id,
-            char_id=self.char_id,
-            goods_id=goods_id,
-            platform=platform,
+        docs = MongoPurchase.db(server_id).find({'yueka_remained_days': {'$gt': 0}})
+        MongoPurchase.db(server_id).update_many(
+            {'yueka_remained_days': {'$gt': 0}},
+            {'$inc': {
+                'yueka_remained_days': -1
+            }}
         )
 
-        return order_id
+        rc = ResourceClassification.classify(config.rewards)
+        attachment = rc.to_json()
 
-    def verify(self, order_id, param):
-        try:
-            p = ModelPurchase.objects.get(id=order_id)
-            """:type: ModelPurchase"""
-        except ModelPurchase.DoesNotExist:
-            raise GameException(ConfigErrorMessage.get_error_id("PURCHASE_NOT_FOUND_ORDER_ID"))
+        amount = 0
+        for doc in docs:
+            m = MailManager(server_id, doc['_id'])
+            m.add(config.mail_title, config.mail_content, attachment=attachment)
+            amount += 1
+
+        return amount
+
+    def verify(self, param):
+        condition = Q(char_id=self.char_id) & Q(verified=False)
+        query = ModelPurchase.objects.filter(condition).order_by('-create_at')
+        if query.count() == 0:
+            return 0, PURCHASE_WAITING
+
+        p = query.first()
+        """:type: ModelPurchase"""
 
         if p.platform == '1sdk':
-            status = verify_1sdk(order_id)
+            status = verify_1sdk(p.id)
         else:
-            raise RuntimeError("Platform NOT support!".format(p.platform))
+            raise RuntimeError("Platform {0} NOT support!".format(p.platform))
+
+        if status == PURCHASE_DONE:
+            p.verified = True
+            p.save()
 
         return p.goods_id, status
 
@@ -103,24 +115,47 @@ class Purchase(object):
         self.send_notify()
         return rc
 
-    def complete_and_send_reward(self, order_id, fee):
-        p = ModelPurchase.objects.get(id=order_id)
-        p.fee = fee
-        p.complete_at = arrow.utcnow().format("YYYY-MM-DD HH:mm:ssZ")
-        p.save()
+    def record(self, goods_id, platform, fee):
+        _id = make_string_id()
+        ModelPurchase.objects.create(
+            id=_id,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            goods_id=goods_id,
+            platform=platform,
+            fee=fee,
+            verified=False,
+        )
 
-        config = ConfigPurchaseGoods.get(p.goods_id)
+        return _id
 
-        got = config.diamond
-        actual_got = config.diamond + config.diamond_extra
-        if self.get_purchase_times() == 0:
-            # 首充
-            actual_got = config.diamond * 2 + config.diamond_extra
+    def send_reward(self, goods_id):
+        if goods_id == YUEKA_ID:
+            config = ConfigPurchaseYueka.get(YUEKA_ID)
+            got = 0
+            actual_got = 0
+
+            MongoPurchase.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {
+                    'yueka_remained_days': 30
+                }}
+            )
+
+            self.doc['yueka_remained_days'] = 30
+        else:
+            config = ConfigPurchaseGoods.get(goods_id)
+
+            got = config.diamond
+            actual_got = config.diamond + config.diamond_extra
+            if self.get_purchase_times() == 0:
+                # 首充
+                actual_got = config.diamond * 2 + config.diamond_extra
 
         doc = MongoPurchaseLog.document()
         doc['_id'] = make_string_id()
         doc['char_id'] = self.char_id
-        doc['goods_id'] = p.goods_id
+        doc['goods_id'] = goods_id
         doc['got'] = got
         doc['actual_got'] = actual_got
         doc['timestamp'] = arrow.utcnow().timestamp
@@ -133,6 +168,8 @@ class Purchase(object):
 
         rc = ResourceClassification.classify(reward)
         rc.add(self.server_id, self.char_id)
+
+        self.send_notify()
 
     def send_notify(self):
         notify = PurchaseNotify()
@@ -170,7 +207,7 @@ def platform_callback_1sdk(params):
     print params
 
     app = params.get('app', '')
-    # cbi 就是自定义参数，也就是订单号
+    # cbi 就是自定义参数  char_id,goods_id
     cbi = params.get('cbi', '')
     ct = params.get('ct', '')
     fee = params.get('fee', '')
@@ -193,13 +230,6 @@ def platform_callback_1sdk(params):
 
     if ModelPurchase1SDK.objects.filter(tcd=tcd).exists():
         return 'SUCCESS'
-
-    try:
-        p = ModelPurchase.objects.get(id=cbi)
-    except ModelPurchase.DoesNotExist:
-        print "<< PLATFORM CALLBACK 1SDK >>"
-        print "no order id found. {0)".format(cbi)
-        return 'NO ORDER ID FOUND'
 
     check_params = {
         'app': app,
@@ -225,6 +255,25 @@ def platform_callback_1sdk(params):
         print "sign not match. {0}".format(check_params)
         return 'SIGN NOT MATCH'
 
+    char_id, goods_id = cbi.split(',')
+    char_id = int(char_id)
+    goods_id = int(goods_id)
+
+    try:
+        c = ModelCharacter.objects.get(id=char_id)
+    except ModelCharacter.DoesNotExist:
+        print "<< PLATFORM CALLBACK 1SDK >>"
+        print "char id not found. {0}".format(char_id)
+        return 'CHAR NOT FOUND'
+
+    if goods_id != YUEKA_ID and not ConfigPurchaseGoods.get(goods_id):
+        print "<< PLATFORM CALLBACK 1SDK >>"
+        print "goods id not found. {0}".format(goods_id)
+        return 'GOODS NOT FOUND'
+
+    p = Purchase(c.server_id, char_id)
+    p.record(goods_id, '1sdk', int(fee))
+
     # 记录下来
     ModelPurchase1SDK.objects.create(
         id=cbi,
@@ -238,5 +287,5 @@ def platform_callback_1sdk(params):
         uid=uid,
     )
 
-    Purchase(p.server_id, p.char_id).complete_and_send_reward(cbi, fee)
+    p.send_reward(goods_id)
     return 'SUCCESS'

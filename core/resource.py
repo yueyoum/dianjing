@@ -220,6 +220,9 @@ class ResourceClassification(object):
         resource_data = {}
 
         for _id, _amount in items:
+            if not _amount:
+                continue
+
             if _id == TALENT_ITEM_ID:
                 talent_point += _amount
                 continue

@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 from django.db import models
 
 class Purchase(models.Model):
-    # uuid 订单号
     id = models.CharField(primary_key=True, max_length=255)
     server_id = models.IntegerField(db_index=True)
     char_id = models.IntegerField(db_index=True)
@@ -18,11 +17,10 @@ class Purchase(models.Model):
     # 平台 1sdk, ios ...
     platform = models.CharField(max_length=255)
 
-    # 上面是 prepare 的时候就记录下来的
-    # 下面是充值完成的时候记录的
     # 金额， 分
     fee = models.IntegerField(default=0)
-    complete_at = models.DateTimeField(blank=True, null=True)
+    # 是否客户端来确认过
+    verified = models.BooleanField(default=False, db_index=True)
 
     class Meta:
         db_table = 'purchase'

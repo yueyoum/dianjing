@@ -16,6 +16,7 @@ from core.club import Club
 from core.resource import ResourceClassification, money_text_to_item_id
 
 from utils.message import MessagePipe
+from utils.functional import get_start_time_of_today
 
 from config import ConfigErrorMessage, ConfigActivityNewPlayer, ConfigActivityDailyBuy, ConfigTaskCondition
 
@@ -30,7 +31,7 @@ from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 
 class ActivityNewPlayer(object):
-    __slots__ = ['server_id', 'char_id', 'doc', 'create_day']
+    __slots__ = ['server_id', 'char_id', 'doc', 'create_day', 'activity_end_at', 'reward_end_at']
 
     def __init__(self, server_id, char_id):
         self.server_id = server_id
@@ -42,6 +43,12 @@ class ActivityNewPlayer(object):
             MongoActivityNewPlayer.db(self.server_id).insert_one(self.doc)
 
         self.create_day = Club.create_days(server_id, char_id)
+
+        today = get_start_time_of_today()
+        create_start_day = today.replace(days=-(self.create_day-1))
+
+        self.activity_end_at = create_start_day.replace(days=7).timestamp
+        self.reward_end_at = create_start_day.replace(days=8).timestamp
 
     def get_activity_status(self, _id, end_at=None):
         """
@@ -66,6 +73,9 @@ class ActivityNewPlayer(object):
         return value, ACTIVITY_DOING
 
     def trig(self, condition_id):
+        if arrow.utcnow().timestamp >= self.activity_end_at:
+            return
+
         ids = ConfigActivityNewPlayer.get_activity_ids_by_condition_id(condition_id)
         if not ids:
             return
@@ -73,6 +83,9 @@ class ActivityNewPlayer(object):
         self.send_notify(ids=ids)
 
     def get_reward(self, _id):
+        if arrow.utcnow().timestamp >= self.reward_end_at:
+            raise GameException(ConfigErrorMessage.get_error_id("ACTIVITY_NEW_PLAYER_REWARD_EXPIRE"))
+
         config = ConfigActivityNewPlayer.get(_id)
         if not config:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
@@ -131,7 +144,7 @@ class ActivityNewPlayer(object):
         return rc
 
     def send_daily_buy_notify(self):
-        if self.create_day >= 8:
+        if arrow.utcnow().timestamp >= self.reward_end_at:
             return
 
         notify = ActivityNewPlayerDailyBuyNotify()
@@ -143,7 +156,7 @@ class ActivityNewPlayer(object):
         MessagePipe(self.char_id).put(msg=notify)
 
     def send_notify(self, ids=None):
-        if self.create_day >= 8:
+        if arrow.utcnow().timestamp >= self.reward_end_at:
             return
 
         if ids:
@@ -167,5 +180,8 @@ class ActivityNewPlayer(object):
             notify_items.id = i
             notify_items.current_value = value
             notify_items.status = status
+
+        notify.activity_end_at = self.activity_end_at
+        notify.reward_end_at = self.reward_end_at
 
         MessagePipe(self.char_id).put(msg=notify)

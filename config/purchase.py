@@ -19,11 +19,12 @@ class Goods(object):
         self.diamond_extra = 0
 
 class Yueka(object):
-    __slots__ = ['id', 'rmb', 'vip_exp', 'mail_title', 'mail_content']
+    __slots__ = ['id', 'rmb', 'vip_exp', 'rewards', 'mail_title', 'mail_content']
     def __init__(self):
         self.id = 0
         self.rmb = 0
         self.vip_exp = 0
+        self.rewards = []
         self.mail_title = ''
         self.mail_content = ''
 

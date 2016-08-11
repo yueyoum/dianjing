@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='activity.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0e\x61\x63tivity.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\x82\x02\n\x17\x41\x63tivityNewPlayerNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12G\n\x05items\x18\x03 \x03(\x0b\x32\x38.Dianjing.protocol.ActivityNewPlayerNotify.NewPlayerItem\x1a\x65\n\rNewPlayerItem\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x15\n\rcurrent_value\x18\x02 \x02(\x05\x12\x31\n\x06status\x18\x03 \x02(\x0e\x32!.Dianjing.protocol.ActivityStatus\"\xb8\x01\n\x1f\x41\x63tivityNewPlayerDailyBuyNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12Q\n\x06status\x18\x02 \x03(\x0b\x32\x41.Dianjing.protocol.ActivityNewPlayerDailyBuyNotify.DailyBuyStatus\x1a\x31\n\x0e\x44\x61ilyBuyStatus\x12\x0b\n\x03\x64\x61y\x18\x01 \x02(\x05\x12\x12\n\nhas_bought\x18\x02 \x02(\x08\"@\n!ActivityNewPlayerGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"i\n\"ActivityNewPlayerGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"3\n ActivityNewPlayerDailyBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"h\n!ActivityNewPlayerDailyBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*P\n\x0e\x41\x63tivityStatus\x12\x12\n\x0e\x41\x43TIVITY_DOING\x10\x01\x12\x13\n\x0f\x41\x43TIVITY_REWARD\x10\x02\x12\x15\n\x11\x41\x43TIVITY_COMPLETE\x10\x03')
+  serialized_pb=_b('\n\x0e\x61\x63tivity.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\xb2\x02\n\x17\x41\x63tivityNewPlayerNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12G\n\x05items\x18\x03 \x03(\x0b\x32\x38.Dianjing.protocol.ActivityNewPlayerNotify.NewPlayerItem\x12\x17\n\x0f\x61\x63tivity_end_at\x18\x04 \x02(\x03\x12\x15\n\rreward_end_at\x18\x05 \x02(\x03\x1a\x65\n\rNewPlayerItem\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x15\n\rcurrent_value\x18\x02 \x02(\x05\x12\x31\n\x06status\x18\x03 \x02(\x0e\x32!.Dianjing.protocol.ActivityStatus\"\xb8\x01\n\x1f\x41\x63tivityNewPlayerDailyBuyNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12Q\n\x06status\x18\x02 \x03(\x0b\x32\x41.Dianjing.protocol.ActivityNewPlayerDailyBuyNotify.DailyBuyStatus\x1a\x31\n\x0e\x44\x61ilyBuyStatus\x12\x0b\n\x03\x64\x61y\x18\x01 \x02(\x05\x12\x12\n\nhas_bought\x18\x02 \x02(\x08\"@\n!ActivityNewPlayerGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"i\n\"ActivityNewPlayerGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"3\n ActivityNewPlayerDailyBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"h\n!ActivityNewPlayerDailyBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*P\n\x0e\x41\x63tivityStatus\x12\x12\n\x0e\x41\x43TIVITY_DOING\x10\x01\x12\x13\n\x0f\x41\x43TIVITY_REWARD\x10\x02\x12\x15\n\x11\x41\x43TIVITY_COMPLETE\x10\x03')
   ,
   dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -48,8 +48,8 @@ _ACTIVITYSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=846,
-  serialized_end=926,
+  serialized_start=894,
+  serialized_end=974,
 )
 _sym_db.RegisterEnumDescriptor(_ACTIVITYSTATUS)
 
@@ -100,8 +100,8 @@ _ACTIVITYNEWPLAYERNOTIFY_NEWPLAYERITEM = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=224,
-  serialized_end=325,
+  serialized_start=272,
+  serialized_end=373,
 )
 
 _ACTIVITYNEWPLAYERNOTIFY = _descriptor.Descriptor(
@@ -132,6 +132,20 @@ _ACTIVITYNEWPLAYERNOTIFY = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='activity_end_at', full_name='Dianjing.protocol.ActivityNewPlayerNotify.activity_end_at', index=3,
+      number=4, type=3, cpp_type=2, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='reward_end_at', full_name='Dianjing.protocol.ActivityNewPlayerNotify.reward_end_at', index=4,
+      number=5, type=3, cpp_type=2, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -145,7 +159,7 @@ _ACTIVITYNEWPLAYERNOTIFY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=67,
-  serialized_end=325,
+  serialized_end=373,
 )
 
 
@@ -182,8 +196,8 @@ _ACTIVITYNEWPLAYERDAILYBUYNOTIFY_DAILYBUYSTATUS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=463,
-  serialized_end=512,
+  serialized_start=511,
+  serialized_end=560,
 )
 
 _ACTIVITYNEWPLAYERDAILYBUYNOTIFY = _descriptor.Descriptor(
@@ -219,8 +233,8 @@ _ACTIVITYNEWPLAYERDAILYBUYNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=328,
-  serialized_end=512,
+  serialized_start=376,
+  serialized_end=560,
 )
 
 
@@ -257,8 +271,8 @@ _ACTIVITYNEWPLAYERGETREWARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=514,
-  serialized_end=578,
+  serialized_start=562,
+  serialized_end=626,
 )
 
 
@@ -302,8 +316,8 @@ _ACTIVITYNEWPLAYERGETREWARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=580,
-  serialized_end=685,
+  serialized_start=628,
+  serialized_end=733,
 )
 
 
@@ -333,8 +347,8 @@ _ACTIVITYNEWPLAYERDAILYBUYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=687,
-  serialized_end=738,
+  serialized_start=735,
+  serialized_end=786,
 )
 
 
@@ -378,8 +392,8 @@ _ACTIVITYNEWPLAYERDAILYBUYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=740,
-  serialized_end=844,
+  serialized_start=788,
+  serialized_end=892,
 )
 
 _ACTIVITYNEWPLAYERNOTIFY_NEWPLAYERITEM.fields_by_name['status'].enum_type = _ACTIVITYSTATUS

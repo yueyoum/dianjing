@@ -6,7 +6,7 @@ from apps.purchase.models import Purchase, Purchase1SDK
 class AdminPurchase(admin.ModelAdmin):
     list_display = (
         'id', 'server_id', 'char_id', 'goods_id', 'create_at',
-        'platform', 'fee', 'complete_at',
+        'platform', 'fee', 'verified',
     )
 
     ordering = ('-create_at',)
