@@ -622,20 +622,31 @@ class MongoUnionMember(BaseDocument):
 class MongoPurchase(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        # 商品购买次数
-        'goods': {},
+
         'yueka_remained_days': 0,
 
-        # 充值钻石
-        'got': 0,
-        # 充值确切获得钻石，包括翻倍，赠送等等
-        'actual_got': 0,
         # 首充礼品是否已经领取
         'first_reward_got': False,
     }
 
     COLLECTION = 'purchase'
     INDEXES = ['yueka_remained_days',]
+
+class MongoPurchaseLog(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'char_id': null,
+        'goods_id': 0,
+
+        # 充值钻石
+        'got': 0,
+        # 充值确切获得钻石，包括翻倍，赠送等等
+        'actual_got': 0,
+        'timestamp': 0,
+    }
+
+    COLLECTION = 'purchase_log'
+    INDEXES = ['char_id', 'timestamp']
 
 
 # 新手活动

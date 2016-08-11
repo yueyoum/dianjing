@@ -1,24 +1,21 @@
-import arrow
-
-from django.conf import settings
 from django.contrib import admin
 
-from apps.purchase.models import Purchase
+from apps.purchase.models import Purchase, Purchase1SDK
 
 @admin.register(Purchase)
 class AdminPurchase(admin.ModelAdmin):
     list_display = (
         'id', 'server_id', 'char_id', 'goods_id', 'create_at',
-        'fee', 'channel_id', 'ssid', 'unique_trade_id', 'return_code',
-        'complete_timestamp',
-        'complete_timestamp_parsed',
+        'platform', 'fee', 'complete_at',
     )
 
-    def complete_timestamp_parsed(self, obj):
-        if not obj.complete_timestamp:
-            return 0
+    ordering = ('-create_at',)
 
-        date = arrow.get(obj.complete_timestamp).to(settings.TIME_ZONE)
-        return date.format("YYYY-MM-DD HH:mm:ss")
+@admin.register(Purchase1SDK)
+class AdminPurchase1SDK(admin.ModelAdmin):
+    list_display = (
+        'id', 'ct', 'fee', 'pt', 'sdk', 'ssid',
+        'st', 'tcd', 'uid'
+    )
 
-    ordering = ('create_at',)
+    search_fields = ('id', 'tcd',)

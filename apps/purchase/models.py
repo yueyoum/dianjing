@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from django.db import models
 
 class Purchase(models.Model):
+    # uuid 订单号
     id = models.CharField(primary_key=True, max_length=255)
     server_id = models.IntegerField(db_index=True)
     char_id = models.IntegerField(db_index=True)
@@ -14,25 +15,35 @@ class Purchase(models.Model):
 
     create_at = models.DateTimeField(auto_now_add=True, db_index=True)
 
+    # 平台 1sdk, ios ...
+    platform = models.CharField(max_length=255)
+
     # 上面是 prepare 的时候就记录下来的
-    # 下面是平台回调时记录的信息
-
-    # 金额，分
+    # 下面是充值完成的时候记录的
+    # 金额， 分
     fee = models.IntegerField(default=0)
-
-    channel_id = models.CharField(db_index=True, max_length=255, blank=True)
-    ssid = models.CharField(max_length=255, blank=True)
-
-    # 订单号， 唯一。
-    # 这里没用unique 是因为 用户支付前，要先到自己服务器上 prepare 一下
-    # 这时候就会创建 Purchase 记录。 而此时 平台订单号 是没有的
-    unique_trade_id = models.CharField(db_index=True, max_length=255, blank=True)
-    return_code = models.IntegerField(default=0)
-
-    # 最后需要更新这个 0 表示没有完成 UTC秒
-    complete_timestamp = models.IntegerField(default=0, db_index=True)
+    complete_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = 'purchase'
         verbose_name = '充值'
         verbose_name_plural = '充值'
+
+
+class Purchase1SDK(models.Model):
+    # 这个id 就是 Purchase 中的id
+    id = models.CharField(primary_key=True, max_length=255)
+    ct = models.IntegerField()
+    fee = models.IntegerField()
+    pt = models.IntegerField()
+    sdk = models.CharField(max_length=255, db_index=True)
+    ssid = models.CharField(max_length=255)
+    st = models.IntegerField()
+    # 平台唯一订单号
+    tcd = models.CharField(max_length=255, unique=True)
+    uid = models.CharField(max_length=255)
+
+    class Meta:
+        db_table = 'purchase_1sdk'
+        verbose_name = '充值-1sdk'
+        verbose_name_plural = '充值-1sdk'
