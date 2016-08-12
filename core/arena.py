@@ -368,10 +368,13 @@ class Arena(object):
 
             random.shuffle(char_ids)
 
+            amount = len(char_ids)
+
             # 上面已经按照积分范围选除了 角色id
             # 下面用各种条件过滤
             npc = []
             real = []
+            loop_times = 0
             for cid in char_ids:
                 if cid == str(self.char_id):
                     continue
@@ -393,8 +396,15 @@ class Arena(object):
                     if npc:
                         return npc[0]
                 else:
-                    if real:
-                        return real[0]
+                    if loop_times >= amount / 2:
+                        # 已经跑了一半了，还没玩家， 就返回NPC吧
+                        if npc:
+                            return npc[0]
+                    else:
+                        if real:
+                            return real[0]
+
+                loop_times += 1
 
             # 走到这儿，已经循环完了，原因
             # 1 如果是第一次， 那就没有Npc
