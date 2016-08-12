@@ -118,6 +118,12 @@ class Slot(object):
             self.end_at = self.start_at + self.hour * 3600
         else:
             self.open = False
+            self.staff_id = None
+            self.start_at = None
+            self.hour = None
+            self.report = None
+            self.reward = None
+            self.end_at = None
 
     @property
     def finished(self):
