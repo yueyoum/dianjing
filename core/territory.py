@@ -127,6 +127,9 @@ class Slot(object):
 
     @property
     def finished(self):
+        if not self.open:
+            raise RuntimeError("Territory Slot Not Open. {0}, {1}, {2}".format(self.char_id, self.building_id, self.id))
+
         if not self.staff_id:
             return False
 
@@ -742,7 +745,11 @@ class Territory(object):
         }
 
         if help_from_char_id:
-            slots = [s for _, s in building.slots.iteritems() if not s.finished]
+            slots = []
+            for _, s in building.slots.iteritems():
+                if s.open and not s.finished:
+                    slots.append(s)
+
             if slots:
                 slot = random.choice(slots)
 

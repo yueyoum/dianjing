@@ -31,7 +31,7 @@ class AdminPurchase1SDK(admin.ModelAdmin):
     ordering = ('-ct',)
 
     def ct_date(self, obj):
-        return arrow.get(obj.ct).to(settings.TIME_ZONE).to("YYYY-MM-DD HH:mm:ss")
+        return arrow.get(obj.ct).to(settings.TIME_ZONE).format("YYYY-MM-DD HH:mm:ss")
 
     def pt_date(self, obj):
-        return arrow.get(obj.pt).to(settings.TIME_ZONE).to("YYYY-MM-DD HH:mm:ss")
+        return arrow.get(obj.pt).to(settings.TIME_ZONE).format("YYYY-MM-DD HH:mm:ss")
