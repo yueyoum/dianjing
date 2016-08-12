@@ -761,30 +761,42 @@ class StaffManger(object):
             condition_name='core.staff.StaffManger'
         )
 
-    def get_staffs_amount_by_level(self, level):
+    def get_staffs_amount_by_level(self, level, method='gte'):
         staffs = self.get_staffs_data()
         amount = 0
         for k, v in staffs.iteritems():
-            if v['level'] == level:
-                amount += 1
+            if method == 'gte':
+                if level >= v['level']:
+                    amount += 1
+            else:
+                if level == v['level']:
+                    amount += 1
 
         return amount
 
-    def get_staffs_amount_by_step(self, step):
+    def get_staffs_amount_by_step(self, step, method='gte'):
         staffs = self.get_staffs_data()
         amount = 0
         for k, v in staffs.iteritems():
-            if v['step'] == step:
-                amount += 1
+            if method == 'gte':
+                if step >= v['step']:
+                    amount += 1
+            else:
+                if step == v['step']:
+                    amount += 1
 
         return amount
 
-    def get_staffs_amount_by_star(self, star):
+    def get_staffs_amount_by_star(self, star, method='gte'):
         staffs = self.get_staffs_data()
         amount = 0
         for k, v in staffs.iteritems():
-            if v['star'] == star:
-                amount += 1
+            if method == 'gte':
+                if star >= v['star']:
+                    amount += 1
+            else:
+                if star == v['star']:
+                    amount += 1
 
         return amount
 
