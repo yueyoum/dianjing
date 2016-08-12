@@ -272,11 +272,11 @@ def platform_callback_1sdk(params):
         return 'GOODS NOT FOUND'
 
     p = Purchase(c.server_id, char_id)
-    p.record(goods_id, '1sdk', int(fee))
+    _id = p.record(goods_id, '1sdk', int(fee))
 
     # 记录下来
     ModelPurchase1SDK.objects.create(
-        id=cbi,
+        id=_id,
         ct=int(ct) / 1000,
         fee=int(fee),
         pt=int(pt) / 1000,
