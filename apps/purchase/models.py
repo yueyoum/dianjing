@@ -31,7 +31,7 @@ class Purchase(models.Model):
 class Purchase1SDK(models.Model):
     # 这个id 就是 Purchase 中的id
     id = models.CharField(primary_key=True, max_length=255)
-    ct = models.IntegerField()
+    ct = models.IntegerField(db_index=True)
     fee = models.IntegerField()
     pt = models.IntegerField()
     sdk = models.CharField(max_length=255, db_index=True)
