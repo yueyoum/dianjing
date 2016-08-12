@@ -368,23 +368,53 @@ class Arena(object):
 
             random.shuffle(char_ids)
 
+            # 上面已经按照积分范围选除了 角色id
+            # 下面用各种条件过滤
+            npc = []
+            real = []
             for cid in char_ids:
                 if cid == str(self.char_id):
                     continue
 
+                # 有cd的肯定的就不要了
                 if ArenaMatchCD(self.server_id, self.char_id, cid).get_cd_seconds():
                     continue
 
-                return cid
+                if is_npc_club(cid):
+                    npc.append(cid)
+                else:
+                    # 选出来的真实玩家，需要一次都没打过
+                    _rival_doc = MongoArena.db(self.server_id).find_one({'_id': cid}, {'match_times': 1})
+                    if _rival_doc.get('match_times', 0):
+                        real.append(cid)
+
+                # 第一次，优先给NPC
+                if match_times == 0:
+                    if npc:
+                        return npc[0]
+                else:
+                    if real:
+                        return real[0]
+
+            # 走到这儿，已经循环完了，原因
+            # 1 如果是第一次， 那就没有Npc
+            # 2 如果不是第一次，那就没有 符合条件的 real
+            # 这时候有什么就给什么吧
+            if real:
+                return real[0]
+
+            if npc:
+                return npc[0]
 
             return None
 
         doc = MongoArena.db(self.server_id).find_one(
             {'_id': str(self.char_id)},
-            {'search_index': 1}
+            {'search_index': 1, 'match_times': 1}
         )
 
         search_index = doc['search_index']
+        match_times = doc.get('match_times', 0)
 
         my_score = ArenaScore(self.server_id, self.char_id).score
 
@@ -568,11 +598,16 @@ class Arena(object):
 
         MongoArena.db(self.server_id).update_one(
             {'_id': str(self.char_id)},
-            {'$set': {
-                'search_index': new_search_index,
-                'rival': 0,
-                'continue_win': continue_win,
-            }}
+            {
+                '$set': {
+                    'search_index': new_search_index,
+                    'rival': 0,
+                    'continue_win': continue_win,
+                },
+                '$inc': {
+                    'match_times': 1,
+                }
+            }
         )
 
         ass = ArenaScore(self.server_id, self.char_id)

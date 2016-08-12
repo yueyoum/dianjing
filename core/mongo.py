@@ -358,6 +358,8 @@ class MongoArena(BaseDocument):
 
         # 连胜次数
         'continue_win': 0,
+        # 打的次数
+        'match_times': 0,
     }
 
     COLLECTION = 'arena'
