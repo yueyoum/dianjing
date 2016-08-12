@@ -31,7 +31,7 @@ from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 
 class ActivityNewPlayer(object):
-    __slots__ = ['server_id', 'char_id', 'doc', 'create_day', 'activity_end_at', 'reward_end_at']
+    __slots__ = ['server_id', 'char_id', 'doc', 'create_day', 'create_start_date', 'activity_end_at', 'reward_end_at']
 
     def __init__(self, server_id, char_id):
         self.server_id = server_id
@@ -45,24 +45,25 @@ class ActivityNewPlayer(object):
         self.create_day = Club.create_days(server_id, char_id)
 
         today = get_start_time_of_today()
-        create_start_day = today.replace(days=-(self.create_day-1))
+        self.create_start_date = today.replace(days=-(self.create_day-1))
 
-        self.activity_end_at = create_start_day.replace(days=7).timestamp
-        self.reward_end_at = create_start_day.replace(days=8).timestamp
+        self.activity_end_at = self.create_start_date.replace(days=7).timestamp
+        self.reward_end_at = self.create_start_date.replace(days=8).timestamp
 
-    def get_activity_status(self, _id, end_at=None):
+    def get_activity_status(self, _id):
         """
 
         :rtype: (int, int)
         """
-
-        if not end_at:
-            # 新手任务的时间范围就是创建那一刻到现在
-            end_at = arrow.utcnow().timestamp
-
         config = ConfigActivityNewPlayer.get(_id)
+
+        # NOTE 新手活动是 活动开始的那一天，到第7天结束
+        # 而不是 建立账号就开始算
+
+        start_at = self.create_start_date.replace(days=config.day-1).timestamp
+
         config_condition = ConfigTaskCondition.get(config.condition_id)
-        value = config_condition.get_value(self.server_id, self.char_id, start_at=None, end_at=end_at)
+        value = config_condition.get_value(self.server_id, self.char_id, start_at=start_at, end_at=self.activity_end_at)
 
         if _id in self.doc['done']:
             return value, ACTIVITY_COMPLETE
@@ -165,8 +166,6 @@ class ActivityNewPlayer(object):
             act = ACT_INIT
             ids = ConfigActivityNewPlayer.INSTANCES.keys()
 
-        end_at = arrow.utcnow().timestamp
-
         notify = ActivityNewPlayerNotify()
         notify.act = act
         for i in ids:
@@ -174,7 +173,7 @@ class ActivityNewPlayer(object):
             if ConfigActivityNewPlayer.get(i).day > self.create_day:
                 continue
 
-            value, status = self.get_activity_status(i, end_at=end_at)
+            value, status = self.get_activity_status(i)
 
             notify_items = notify.items.add()
             notify_items.id = i
