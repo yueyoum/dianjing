@@ -20,7 +20,7 @@ def ensure_index(server_id):
 
 class BaseDocument(object):
     DOCUMENT = {}
-    COLLECTION = ""
+    COLLECTION = None
     INDEXES = []
     UNIQUE = []
 
@@ -665,12 +665,13 @@ class MongoActivityNewPlayer(BaseDocument):
 
     COLLECTION = 'activity_new_player'
 
-# 排行榜
-class MongoLeaderBoard(BaseDocument):
+# 俱乐部排行榜
+class MongoClubLeaderboard(BaseDocument):
     DOCUMENT = {
         '_id': null,
-        'generate_at': 0,
-        'data': []
+        'level': 0,
+        'power': 0,
     }
 
-    COLLECTION = 'leaderboard'
+    COLLECTION = 'club_leaderboard'
+    INDEXES = ['level', 'power']

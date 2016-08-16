@@ -8,72 +8,100 @@ Description:
 """
 import arrow
 
-from core.mongo import MongoLeaderBoard
+from core.mongo import MongoClubLeaderboard, MongoCharacter
 from core.club import Club
+from utils import cache
 
-class BaseLeaderBoard(object):
-    __slots__ = ['server_id']
-    # 生成间隔秒数
-    GENERATE_INTERVAL = 0
 
-    def __init__(self, server_id):
+class ClubLeaderBoard(object):
+    __slots__ = ['server_id', 'char_id']
+
+    def __init__(self, server_id, char_id):
         self.server_id = server_id
+        self.char_id = char_id
 
-    def make_id(self):
-        raise NotImplementedError()
+    @classmethod
+    def generate(cls, server_id):
+        docs = MongoCharacter.db(server_id).find({}, {'_id': 1})
 
-    def generate(self):
-        raise NotImplementedError()
+        leaderboard_docs = []
 
-    def get(self):
-        doc = MongoLeaderBoard.db(self.server_id).find_one({'_id': self.make_id()})
-        if not doc or arrow.utcnow().timestamp >= doc['generate_at']:
-            # 没有，或者过期了
-            data, generate_at = self.generate()
+        for doc in docs:
+            obj = Club(server_id, doc['_id'])
+            leaderboard_docs.append({
+                '_id': doc['_id'],
+                'level': obj.level,
+                'power': obj.power,
+            })
+
+        db = MongoClubLeaderboard.db(server_id)
+        db.delete_many({})
+
+        db.insert_many(leaderboard_docs)
+
+    def make_cache_key(self):
+        return 'club_leaderboard:{0}:{1}'.format(self.server_id, self.char_id)
+
+    def get_info(self):
+        info = cache.get(self.make_cache_key())
+        if info:
+            return info
+
+        # 需要获取新数据
+        db = MongoClubLeaderboard.db(self.server_id)
+
+        my_doc = db.find_one({'_id': self.char_id})
+        if not my_doc:
+            ClubLeaderBoard.generate(self.server_id)
+
+        level = []
+        power = []
+        my_level_rank = 0
+        my_power_rank = 0
+
+        rank = 1
+        for doc in db.find({}).sort('level', -1).limit(30):
+            level.append((doc['_id'], doc['level'], doc['power']))
+            if doc['_id'] == self.char_id:
+                my_level_rank = rank
+
+            rank += 1
+
+        rank = 1
+        for doc in db.find({}).sort('power', -1).limit(30):
+            power.append((doc['_id'], doc['level'], doc['power']))
+            if doc['_id'] == self.char_id:
+                my_power_rank = rank
+
+            rank += 1
+
+        if not my_level_rank:
+            my_level_rank = db.find({'level': {'$gte': my_doc['level']}}).count()
+
+        if not my_power_rank:
+            my_power_rank = db.find({'power': {'$gte': my_doc['power']}}).count()
+
+        # 下次更新时间
+        # NOTE， 注意 定时任务也要同步修改
+        now = arrow.utcnow()
+        if now.minute >= 30:
+            # 下一个小时30分更新
+            next_update_at = now.replace(hours=1)
         else:
-            data = doc['data']
-            generate_at = doc['generate_at']
+            next_update_at = now
 
-        return data, generate_at + self.GENERATE_INTERVAL
+        # 虽然定时任务是30分启动的，但是这里设定到35分
+        next_update_at = next_update_at.replace(minute=35).timestamp
 
-
-class ClubLeaderBoard(BaseLeaderBoard):
-    __slots__ = []
-    GENERATE_INTERVAL = 60
-
-    def make_id(self):
-        return 'club'
-
-    def generate(self):
-        char_ids = Club.get_recent_login_char_ids(self.server_id)
-
-        data = []
-        for cid in char_ids:
-            obj = Club(self.server_id, cid)
-            data.append((cid, obj.level, obj.power))
-
-        # level
-        data.sort(key=lambda item: item[1], reverse=True)
-        level_data = data[:30]
-
-        # power
-        data.sort(key=lambda item: item[2], reverse=True)
-        power_data = data[:30]
-
-        data_for_save = {
-            'level': level_data,
-            'power': power_data
+        info = {
+            'level': level,
+            'power': power,
+            'my_level_rank': my_level_rank,
+            'my_power_rank': my_power_rank,
+            'next_update_at': next_update_at
         }
 
-        now = arrow.utcnow().timestamp
+        expire = next_update_at - now.timestamp
+        cache.set(self.make_cache_key(), info, expire=expire)
 
-        MongoLeaderBoard.db(self.server_id).update_one(
-            {'_id': self.make_id()},
-            {'$set': {
-                'generate_at': now,
-                'data': data_for_save
-            }},
-            upsert=True
-        )
-
-        return data_for_save, now
+        return info

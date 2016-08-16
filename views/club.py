@@ -63,14 +63,17 @@ def create(request):
 
 def get_leaderboard(request):
     server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
 
-    data, next_update_at = ClubLeaderBoard(server_id).get()
+    info = ClubLeaderBoard(server_id, char_id).get_info()
 
     response = ClubLeaderBoardResponse()
     response.ret = 0
-    response.next_update_at = next_update_at
+    response.next_update_at = info['next_update_at']
+    response.my_level_rank = info['my_level_rank']
+    response.my_power_rank = info['my_power_rank']
 
-    for _id, level, power in data['level']:
+    for _id, level, power in info['level']:
         obj = Club(server_id, _id, load_staffs=False)
 
         response_level = response.clubs_by_level.add()
@@ -78,7 +81,7 @@ def get_leaderboard(request):
         response_level.level = level
         response_level.power = power
 
-    for _id, level, power in data['power']:
+    for _id, level, power in info['power']:
         obj = Club(server_id, _id, load_staffs=False)
 
         response_power = response.clubs_by_power.add()

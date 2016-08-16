@@ -11,7 +11,7 @@ import base64
 import cPickle
 
 from dianjing.exception import GameException
-from core.mongo import MongoCommon, MongoCharacter
+from core.mongo import MongoCharacter
 from core.common import CommonChat
 from core.signals import chat_signal
 from core.resource import ResourceClassification, item_id_to_money_text
@@ -55,14 +55,7 @@ class Chat(object):
         data = base64.b64encode(msg.SerializeToString())
 
         # TODO union chat
-        MongoCommon.db(self.server_id).update_one(
-            {'_id': CommonChat.ID},
-            {'$push': {'value': {
-                '$each': [data],
-                '$slice': -20
-            }}},
-            upsert=True
-        )
+        CommonChat.push(self.server_id, data, slice=-20)
 
         notify = ChatNotify()
         notify.act = ACT_UPDATE

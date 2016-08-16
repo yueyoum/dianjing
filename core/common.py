@@ -27,21 +27,28 @@ class BaseCommon(object):
         )
 
     @classmethod
+    def push(cls, server_id, value, slice=None):
+        updater = {
+            '$push': {
+                'value': {
+                    '$each': [value],
+                }
+            }
+        }
+
+        if slice:
+            updater['$push']['value']['$slice'] = slice
+
+        MongoCommon.db(server_id).update_one(
+            {'_id': cls.ID},
+            updater,
+            upsert=True
+        )
+
+    @classmethod
     def delete(cls, server_id):
         MongoCommon.db(server_id).delete_one({'_id': cls.ID})
 
 
 class CommonChat(BaseCommon):
     ID = 'chat'
-
-
-class CommonTask(BaseCommon):
-    ID = 'task'
-
-
-class CommonLadderStore(BaseCommon):
-    ID = 'ladder_store'
-
-
-class CommonTrainingMatchStore(BaseCommon):
-    ID = 'training_match_store'
