@@ -792,10 +792,10 @@ class StaffManger(object):
         amount = 0
         for k, v in staffs.iteritems():
             if method == 'gte':
-                if v['star'] >= star:
+                if v['star'] / 10 >= star:
                     amount += 1
             else:
-                if v['star'] == star:
+                if v['star'] / 10 == star:
                     amount += 1
 
         return amount

@@ -119,7 +119,7 @@ def get_leader_board(request):
 
     for _id, name, star in info:
         response_leaders = response.leaders.add()
-        response_leaders.id = _id
+        response_leaders.id = str(_id)
         response_leaders.name = name
         response_leaders.star = star
 
