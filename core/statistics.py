@@ -95,9 +95,9 @@ class FinanceStatistics(object):
         condition = Q(char_id=self.char_id)
 
         if start_at:
-            condition & Q(create_at__gte=arrow.get(start_at).format("YYYY-MM-DD HH:mm:ssZ"))
+            condition = condition & Q(create_at__gte=arrow.get(start_at).format("YYYY-MM-DD HH:mm:ssZ"))
         if end_at:
-            condition & Q(create_at__lte=arrow.get(end_at).format("YYYY-MM-DD HH:mm:ssZ"))
+            condition = condition & Q(create_at__lte=arrow.get(end_at).format("YYYY-MM-DD HH:mm:ssZ"))
 
         value = 0
         for s in Statistics.objects.filter(condition):

@@ -53,6 +53,7 @@ class ClubLeaderBoard(object):
         my_doc = db.find_one({'_id': self.char_id})
         if not my_doc:
             ClubLeaderBoard.generate(self.server_id)
+            my_doc = db.find_one({'_id': self.char_id})
 
         level = []
         power = []
