@@ -253,6 +253,41 @@ class Plunder(object):
             self.doc['_id'] = self.char_id
             MongoPlunder.db(self.server_id).insert_one(self.doc)
 
+    @check_club_level(silence=True)
+    def try_initialize(self):
+        if self.doc['active']:
+            return
+
+        ways = [self.get_way_object(1), self.get_way_object(2), self.get_way_object(3)]
+        club = Club(self.server_id, self.char_id)
+
+        formation_staffs = club.formation_staffs
+        """:type: list[core.staff.Staff]"""
+
+        way_index = 0
+        slot_id = 1
+
+        for s in formation_staffs:
+            ways[way_index].set_staff(slot_id, s.id)
+            if s.unit:
+                ways[way_index].set_unit(slot_id, s.unit.id, staff_calculate=False)
+
+            if way_index == 2:
+                way_index = 0
+                slot_id += 1
+            else:
+                way_index += 1
+
+        self.doc['active'] = True
+        MongoPlunder.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'active': True
+            }}
+        )
+
+        self.send_formation_notify()
+
     def get_way_object(self, way_id):
         """
 
@@ -385,7 +420,7 @@ class Plunder(object):
 
     @check_club_level(silence=False)
     @check_plunder_in_process
-    def plunder_start(self, target_id, tp, formation_slots=None):
+    def plunder_start(self, index, tp, formation_slots=None):
         if tp not in [PLUNDER_TYPE_PLUNDER, PLUNDER_TYPE_REVENGE]:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
@@ -406,7 +441,29 @@ class Plunder(object):
                 if not self.get_revenge_remained_times():
                     raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_REVENGE_NO_TIMES"))
 
+        target_id = self.doc['matching']['id']
+        if not target_id:
+            if tp == PLUNDER_TYPE_PLUNDER:
+                target_id = self.doc['search'][index]['id']
+            else:
+                target_id = self.doc['revenge_list'][index]
+
+        if not self.doc['matching']['id']:
+            self.doc['matching']['id'] = target_id
+            self.doc['matching']['tp'] = tp
+            MongoPlunder.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {
+                    'matching.id': target_id,
+                    'matching.tp': tp,
+                }}
+            )
+
         my_way = self.get_way_object(way)
+        if not my_way.formation_staffs:
+            # 没人，直接输
+            self.plunder_report(way, False)
+            return None
 
         if formation_slots:
             my_way.sync_slots(formation_slots)
@@ -431,16 +488,6 @@ class Plunder(object):
             else:
                 ValueLogPlunderRevengeTimes(self.server_id, self.char_id).record()
 
-        self.doc['matching']['id'] = target_id
-        self.doc['matching']['tp'] = tp
-        MongoPlunder.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': {
-                'matching.id': target_id,
-                'matching.tp': tp,
-            }}
-        )
-
         return msg
 
     @check_club_level(silence=False)
@@ -455,6 +502,7 @@ class Plunder(object):
         result = 1 if win else 2
 
         target_id = self.doc['matching']['id']
+        tp = self.doc['matching']['tp']
 
         if not target_id:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
@@ -467,6 +515,10 @@ class Plunder(object):
                 'matching.result.{0}'.format(way_index): result
             }}
         )
+
+        if tp == PLUNDER_TYPE_PLUNDER and way == 3:
+            win_count = len([i for i in self.doc['matching']['result'] if i == 1])
+            Plunder(self.server_id, target_id).got_plundered(self.char_id, win_count)
 
         self.send_result_notify()
 
@@ -514,6 +566,23 @@ class Plunder(object):
         rc = ResourceClassification.classify(reward)
         rc.add(self.server_id, self.char_id)
         return result, rc
+
+    def got_plundered(self, from_id, win_ways):
+        # TODO real rule
+
+        self.doc['loss_percent'] += 10
+        self.doc['revenge_list'].append(from_id)
+
+        MongoPlunder.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'loss_percent': self.doc['loss_percent'],
+                'revenge_list': self.doc['revenge_list'],
+            }}
+        )
+
+        self.send_revenge_notify()
+        self.send_station_notify()
 
     def get_station_level(self):
         return self.doc['level']

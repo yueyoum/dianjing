@@ -23,7 +23,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='plunder.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\rplunder.proto\x12\x11\x44ianjing.protocol\x1a\rpackage.proto\x1a\x0f\x66ormation.proto\x1a\x0bmatch.proto\"c\n\x10PlunderFormation\x12\x0b\n\x03way\x18\x01 \x02(\x05\x12\x33\n\tformation\x18\x02 \x03(\x0b\x32 .Dianjing.protocol.FormationSlot\x12\r\n\x05power\x18\x03 \x02(\x05\"a\n\x16PlunderFormationNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x36\n\tformation\x18\x02 \x03(\x0b\x32#.Dianjing.protocol.PlunderFormation\"b\n\x1fPlunderFormationSetStaffRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03way\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\x12\x10\n\x08staff_id\x18\x04 \x02(\t\"@\n PlunderFormationSetStaffResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"`\n\x1ePlunderFormationSetUnitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03way\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\x12\x0f\n\x07unit_id\x18\x04 \x02(\x05\"?\n\x1fPlunderFormationSetUnitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\xe4\x01\n\x13PlunderSearchNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x44\n\x06target\x18\x02 \x03(\x0b\x32\x34.Dianjing.protocol.PlunderSearchNotify.PlunderTarget\x12\n\n\x02\x63\x64\x18\x03 \x02(\x05\x1aj\n\rPlunderTarget\x12\n\n\x02id\x18\x01 \x02(\t\x12\x15\n\rstation_level\x18\x02 \x02(\x05\x12\x36\n\tformation\x18\x03 \x03(\x0b\x32#.Dianjing.protocol.PlunderFormation\"\'\n\x14PlunderSearchRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"5\n\x15PlunderSearchResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"0\n\x11PlunderSpyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"j\n\x12PlunderSpyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x36\n\tformation\x18\x03 \x03(\x0b\x32#.Dianjing.protocol.PlunderFormation\"i\n\x12PlunderTimesNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tmax_times\x18\x02 \x02(\x05\x12\x16\n\x0eremained_times\x18\x03 \x02(\x05\x12\x17\n\x0fnext_recover_at\x18\x04 \x02(\x03\"\xb1\x01\n\x14PlunderRevengeNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x16\n\x0eremained_times\x18\x02 \x02(\x05\x12\x45\n\x06target\x18\x03 \x03(\x0b\x32\x35.Dianjing.protocol.PlunderRevengeNotify.RevengeTarget\x1a)\n\rRevengeTarget\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\"\x93\x01\n\x13PlunderStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\x12\x33\n\x05slots\x18\x03 \x03(\x0b\x32$.Dianjing.protocol.SyncFormationSlot\x12*\n\x02tp\x18\x04 \x02(\x0e\x32\x1e.Dianjing.protocol.PlunderType\"a\n\x14PlunderStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"A\n\x14PlunderReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x0b\n\x03win\x18\x03 \x02(\x08\"5\n\x15PlunderReportResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\"*\n\x17PlunderGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\x94\x01\n\x18PlunderGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x33\n\x06result\x18\x03 \x03(\x0e\x32#.Dianjing.protocol.PlunderWayResult\x12%\n\x04\x64rop\x18\x04 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\xb4\x01\n\x11\x42\x61seStationNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0b\n\x03\x65xp\x18\x03 \x02(\x05\x12\x16\n\x0enext_reward_at\x18\x04 \x02(\x03\x12%\n\x04\x64rop\x18\x05 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\x12\x15\n\rproduct_level\x18\x06 \x02(\x05\x12\x1c\n\x14product_lost_percent\x18\x07 \x02(\x05\")\n\x16\x42\x61seStationSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"7\n\x17\x42\x61seStationSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"g\n\x13PlunderResultNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x01(\t\x12\x33\n\x06result\x18\x03 \x03(\x0e\x32#.Dianjing.protocol.PlunderWayResult*A\n\x0bPlunderType\x12\x18\n\x14PLUNDER_TYPE_PLUNDER\x10\x01\x12\x18\n\x14PLUNDER_TYPE_REVENGE\x10\x02*X\n\x10PlunderWayResult\x12\x19\n\x15PLUNDER_WAY_NOT_START\x10\x00\x12\x13\n\x0fPLUNDER_WAY_WIN\x10\x01\x12\x14\n\x10PLUNDER_WAY_LOSE\x10\x02')
+  serialized_pb=_b('\n\rplunder.proto\x12\x11\x44ianjing.protocol\x1a\rpackage.proto\x1a\x0f\x66ormation.proto\x1a\x0bmatch.proto\"c\n\x10PlunderFormation\x12\x0b\n\x03way\x18\x01 \x02(\x05\x12\x33\n\tformation\x18\x02 \x03(\x0b\x32 .Dianjing.protocol.FormationSlot\x12\r\n\x05power\x18\x03 \x02(\x05\"a\n\x16PlunderFormationNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x36\n\tformation\x18\x02 \x03(\x0b\x32#.Dianjing.protocol.PlunderFormation\"b\n\x1fPlunderFormationSetStaffRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03way\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\x12\x10\n\x08staff_id\x18\x04 \x02(\t\"@\n PlunderFormationSetStaffResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"`\n\x1ePlunderFormationSetUnitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03way\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\x12\x0f\n\x07unit_id\x18\x04 \x02(\x05\"?\n\x1fPlunderFormationSetUnitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\xe4\x01\n\x13PlunderSearchNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x44\n\x06target\x18\x02 \x03(\x0b\x32\x34.Dianjing.protocol.PlunderSearchNotify.PlunderTarget\x12\n\n\x02\x63\x64\x18\x03 \x02(\x05\x1aj\n\rPlunderTarget\x12\n\n\x02id\x18\x01 \x02(\t\x12\x15\n\rstation_level\x18\x02 \x02(\x05\x12\x36\n\tformation\x18\x03 \x03(\x0b\x32#.Dianjing.protocol.PlunderFormation\"\'\n\x14PlunderSearchRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"5\n\x15PlunderSearchResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"0\n\x11PlunderSpyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"j\n\x12PlunderSpyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x36\n\tformation\x18\x03 \x03(\x0b\x32#.Dianjing.protocol.PlunderFormation\"i\n\x12PlunderTimesNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tmax_times\x18\x02 \x02(\x05\x12\x16\n\x0eremained_times\x18\x03 \x02(\x05\x12\x17\n\x0fnext_recover_at\x18\x04 \x02(\x03\"\xb1\x01\n\x14PlunderRevengeNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x16\n\x0eremained_times\x18\x02 \x02(\x05\x12\x45\n\x06target\x18\x03 \x03(\x0b\x32\x35.Dianjing.protocol.PlunderRevengeNotify.RevengeTarget\x1a)\n\rRevengeTarget\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\"\x96\x01\n\x13PlunderStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05index\x18\x02 \x02(\x05\x12\x33\n\x05slots\x18\x03 \x03(\x0b\x32$.Dianjing.protocol.SyncFormationSlot\x12*\n\x02tp\x18\x04 \x02(\x0e\x32\x1e.Dianjing.protocol.PlunderType\"a\n\x14PlunderStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\"A\n\x14PlunderReportRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03key\x18\x02 \x02(\t\x12\x0b\n\x03win\x18\x03 \x02(\x08\"5\n\x15PlunderReportResponse\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03ret\x18\x02 \x02(\x05\"*\n\x17PlunderGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\x94\x01\n\x18PlunderGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x33\n\x06result\x18\x03 \x03(\x0e\x32#.Dianjing.protocol.PlunderWayResult\x12%\n\x04\x64rop\x18\x04 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\xb4\x01\n\x11\x42\x61seStationNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0b\n\x03\x65xp\x18\x03 \x02(\x05\x12\x16\n\x0enext_reward_at\x18\x04 \x02(\x03\x12%\n\x04\x64rop\x18\x05 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\x12\x15\n\rproduct_level\x18\x06 \x02(\x05\x12\x1c\n\x14product_lost_percent\x18\x07 \x02(\x05\")\n\x16\x42\x61seStationSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"7\n\x17\x42\x61seStationSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"g\n\x13PlunderResultNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x01(\t\x12\x33\n\x06result\x18\x03 \x03(\x0e\x32#.Dianjing.protocol.PlunderWayResult*A\n\x0bPlunderType\x12\x18\n\x14PLUNDER_TYPE_PLUNDER\x10\x01\x12\x18\n\x14PLUNDER_TYPE_REVENGE\x10\x02*X\n\x10PlunderWayResult\x12\x19\n\x15PLUNDER_WAY_NOT_START\x10\x00\x12\x13\n\x0fPLUNDER_WAY_WIN\x10\x01\x12\x14\n\x10PLUNDER_WAY_LOSE\x10\x02')
   ,
   dependencies=[package__pb2.DESCRIPTOR,formation__pb2.DESCRIPTOR,match__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -45,8 +45,8 @@ _PLUNDERTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=2336,
-  serialized_end=2401,
+  serialized_start=2339,
+  serialized_end=2404,
 )
 _sym_db.RegisterEnumDescriptor(_PLUNDERTYPE)
 
@@ -72,8 +72,8 @@ _PLUNDERWAYRESULT = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=2403,
-  serialized_end=2491,
+  serialized_start=2406,
+  serialized_end=2494,
 )
 _sym_db.RegisterEnumDescriptor(_PLUNDERWAYRESULT)
 
@@ -739,9 +739,9 @@ _PLUNDERSTARTREQUEST = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='id', full_name='Dianjing.protocol.PlunderStartRequest.id', index=1,
-      number=2, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
+      name='index', full_name='Dianjing.protocol.PlunderStartRequest.index', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -772,7 +772,7 @@ _PLUNDERSTARTREQUEST = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=1383,
-  serialized_end=1530,
+  serialized_end=1533,
 )
 
 
@@ -816,8 +816,8 @@ _PLUNDERSTARTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1532,
-  serialized_end=1629,
+  serialized_start=1535,
+  serialized_end=1632,
 )
 
 
@@ -861,8 +861,8 @@ _PLUNDERREPORTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1631,
-  serialized_end=1696,
+  serialized_start=1634,
+  serialized_end=1699,
 )
 
 
@@ -899,8 +899,8 @@ _PLUNDERREPORTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1698,
-  serialized_end=1751,
+  serialized_start=1701,
+  serialized_end=1754,
 )
 
 
@@ -930,8 +930,8 @@ _PLUNDERGETREWARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1753,
-  serialized_end=1795,
+  serialized_start=1756,
+  serialized_end=1798,
 )
 
 
@@ -982,8 +982,8 @@ _PLUNDERGETREWARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1798,
-  serialized_end=1946,
+  serialized_start=1801,
+  serialized_end=1949,
 )
 
 
@@ -1055,8 +1055,8 @@ _BASESTATIONNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1949,
-  serialized_end=2129,
+  serialized_start=1952,
+  serialized_end=2132,
 )
 
 
@@ -1086,8 +1086,8 @@ _BASESTATIONSYNCREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2131,
-  serialized_end=2172,
+  serialized_start=2134,
+  serialized_end=2175,
 )
 
 
@@ -1124,8 +1124,8 @@ _BASESTATIONSYNCRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2174,
-  serialized_end=2229,
+  serialized_start=2177,
+  serialized_end=2232,
 )
 
 
@@ -1169,8 +1169,8 @@ _PLUNDERRESULTNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2231,
-  serialized_end=2334,
+  serialized_start=2234,
+  serialized_end=2337,
 )
 
 _PLUNDERFORMATION.fields_by_name['formation'].message_type = formation__pb2._FORMATIONSLOT

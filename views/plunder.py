@@ -88,12 +88,12 @@ def start(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
-    target_id = int(request._proto.id)
+    index = request._proto.index
     formation_slots = parse_protocol_sync_formation_slots(request._proto.slots, policy=1)
     tp = request._proto.tp
 
     p = Plunder(server_id, char_id)
-    match = p.plunder_start(target_id, tp, formation_slots)
+    match = p.plunder_start(index, tp, formation_slots)
 
     response = PlunderStartResponse()
     response.ret = 0

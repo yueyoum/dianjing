@@ -708,6 +708,8 @@ class MongoPlunderFormationWay3(MongoPlunderFormationWay1):
 class MongoPlunder(BaseDocument):
     DOCUMENT = {
         '_id': null,
+        # 掠夺功能是否激活
+        'active': False,
         # 搜索出的对手, 列表的元素是字典
         'search': [],
 

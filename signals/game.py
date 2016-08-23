@@ -38,6 +38,7 @@ from core.resource import _Resource
 from core.union import Union
 from core.purchase import Purchase
 from core.activity import ActivityNewPlayer
+from core.plunder import Plunder
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
@@ -127,6 +128,15 @@ def game_start_handler(server_id, char_id, **kwargs):
     ac = ActivityNewPlayer(server_id, char_id)
     ac.send_notify()
     ac.send_daily_buy_notify()
+
+    p = Plunder(server_id, char_id)
+
+    p.send_search_notify()
+    p.send_result_notify()
+    p.send_revenge_notify()
+    p.send_station_notify()
+    p.send_formation_notify()
+    p.send_plunder_times_notify()
 
     send_system_notify(char_id)
     BroadCast(server_id, char_id).try_cast_login_notify()
