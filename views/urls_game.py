@@ -35,6 +35,7 @@ import views.welfare
 import views.union
 import views.purchase
 import views.activity
+import views.plunder
 
 urlpatterns = [
     url(r'^sync/$', views.common.sync),
@@ -157,4 +158,13 @@ urlpatterns = [
 
     url(r'^activity/newplayer/getreward/$', views.activity.newplayer_getreward),
     url(r'^activity/newplayer/dailybuy/$', views.activity.newplayer_dailybuy),
+
+    url(r'^plunder/formation/setstaff/$', views.plunder.set_staff),
+    url(r'^plunder/formation/setunit/$', views.plunder.set_unit),
+    url(r'^plunder/search/$', views.plunder.search),
+    url(r'^plunder/spy/$', views.plunder.spy),
+    url(r'^plunder/start/$', views.plunder.start),
+    url(r'^plunder/report/$', views.plunder.report),
+    url(r'^plunder/getreward/$', views.plunder.get_reward),
+    url(r'^plunder/station/sync/$', views.plunder.sync_station),
 ]
