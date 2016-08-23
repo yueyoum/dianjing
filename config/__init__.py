@@ -43,6 +43,7 @@ from config.template import ConfigBroadcastTemplate
 from config.union import ConfigUnionSignin, ConfigUnionLevel
 from config.purchase import ConfigPurchaseYueka, ConfigPurchaseGoods, ConfigPurchaseFirstReward
 from config.activity import ConfigActivityDailyBuy, ConfigActivityNewPlayer
+from config.plunder import ConfigBaseStationLevel, ConfigPlunderBuyTimesCost, ConfigPlunderIncome
 
 _has_configed = False
 
@@ -233,5 +234,12 @@ def load_config():
             ConfigActivityDailyBuy.initialize(data)
         elif name == 'activity_new_player.json':
             ConfigActivityNewPlayer.initialize(data)
+
+        elif name == 'base_station_level.json':
+            ConfigBaseStationLevel.initialize(data)
+        elif name == 'plunder_income.json':
+            ConfigPlunderIncome.initialize(data)
+        elif name == 'plunder_buy_times_cost.json':
+            ConfigPlunderBuyTimesCost.initialize(data)
 
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))

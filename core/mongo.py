@@ -675,3 +675,64 @@ class MongoClubLeaderboard(BaseDocument):
 
     COLLECTION = 'club_leaderboard'
     INDEXES = ['level', 'power']
+
+# 掠夺阵型， 结构和 MongoFormation 一样，为了复用代码
+class MongoPlunderFormationWay1(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # slot_id: data
+        # 只保存开了的， slot_id 从1 递增
+        'slots': {},
+        # slot_id 序列， 0 表示这个位置（index）的 slot 没有开启
+        'position': [],
+    }
+
+    DOCUMENT_SLOT = {
+        'staff_id': "",
+        'unit_id': 0,
+        'policy': 1,
+    }
+
+    @classmethod
+    def document_slot(cls):
+        return copy.deepcopy(cls.DOCUMENT_SLOT)
+
+    COLLECTION = 'plunder_formation_way1'
+
+class MongoPlunderFormationWay2(MongoPlunderFormationWay1):
+    COLLECTION = 'plunder_formation_way2'
+
+class MongoPlunderFormationWay3(MongoPlunderFormationWay1):
+    COLLECTION = 'plunder_formation_way3'
+
+class MongoPlunder(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # 搜索出的对手, 列表的元素是字典
+        'search': [],
+
+        # 正在进行的
+        'matching': {
+            'id': 0,
+            # 三路比赛的结果列表，0 没有开始，1 胜利, 2 失败
+            'result': [0, 0, 0],
+            # 类型 是 掠夺，还是复仇
+            'tp': 0,
+        },
+
+        # 基地的
+        'level': 1,
+        'exp': 0,
+        'product_level': 1,
+        'loss_percent': 0,
+        'revenge_list': [],
+
+    }
+
+    SEARCH_DOCUMENT = {
+        'id': null,
+        # 是否侦查过了
+        'spied': False,
+    }
+
+    COLLECTION = 'plunder'

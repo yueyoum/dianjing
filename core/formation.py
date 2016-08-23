@@ -40,19 +40,18 @@ FORMATION_DEFAULT_POSITION = {
 }
 
 
-class Formation(object):
+class BaseFormation(object):
     __slots__ = ['server_id', 'char_id', 'doc']
+    MONGO_COLLECTION = None
 
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
 
-        self.doc = MongoFormation.db(self.server_id).find_one({'_id': self.char_id})
-        if not self.doc:
-            self.doc = MongoFormation.document()
-            self.doc['_id'] = self.char_id
-            self.doc['position'] = [0] * 30
-            MongoFormation.db(self.server_id).insert_one(self.doc)
+        self.doc = self.get_or_create_doc()
+
+    def get_or_create_doc(self):
+        raise NotImplementedError()
 
     def get_slot_init_position(self, slot_amount):
         for pos in FORMATION_DEFAULT_POSITION[slot_amount]:
@@ -60,59 +59,6 @@ class Formation(object):
                 return pos
 
         raise RuntimeError("Formation set position error. slot_id: {0}".format(slot_amount))
-
-    def initialize(self, init_data):
-        # [(staff_unique_id, unit_id), ...]
-
-        opened_slot_ids = ConfigFormationSlot.get_opened_slot_ids(1)
-
-        updater = {}
-        for index, (staff_unique_id, unit_id) in enumerate(init_data):
-            slot_id = opened_slot_ids[index]
-
-            doc = MongoFormation.document_slot()
-            doc['staff_id'] = staff_unique_id
-            doc['unit_id'] = unit_id
-
-            self.doc['slots'][str(slot_id)] = doc
-
-            position = self.get_slot_init_position(len(self.doc['slots']))
-            self.doc['position'][position] = slot_id
-
-            updater['slots.{0}'.format(slot_id)] = doc
-            updater['position.{0}'.format(position)] = slot_id
-
-        MongoFormation.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': updater}
-        )
-
-    def try_open_slots(self, new_club_level):
-        opened_slot_ids = ConfigFormationSlot.get_opened_slot_ids(new_club_level)
-
-        new_slot_ids = []
-        updater = {}
-
-        for i in opened_slot_ids:
-            if str(i) in self.doc['slots']:
-                continue
-
-            doc = MongoFormation.document_slot()
-            doc['staff_id'] = ""
-            doc['unit_id'] = 0
-
-            self.doc['slots'][str(i)] = doc
-
-            updater['slots.{0}'.format(i)] = doc
-            new_slot_ids.append(i)
-
-        if new_slot_ids:
-            MongoFormation.db(self.server_id).update_one(
-                {'_id': self.char_id},
-                {'$set': updater}
-            )
-
-            self.send_slot_notify(slot_ids=new_slot_ids)
 
     def is_staff_in_formation(self, staff_id):
         for _, v in self.doc['slots'].iteritems():
@@ -143,6 +89,7 @@ class Formation(object):
                     'unit_id': v['unit_id'],
                     'position': position,
                     'policy': v.get('policy', 1),
+                    'slot_id': int(slot_id),
                 }
 
         return staffs
@@ -151,10 +98,19 @@ class Formation(object):
         if str(slot_id) not in self.doc['slots']:
             raise GameException(ConfigErrorMessage.get_error_id("FORMATION_SLOT_NOT_OPEN"))
 
-        StaffManger(self.server_id, self.char_id).check_staff(ids=[staff_id])
+        sm = StaffManger(self.server_id, self.char_id)
+        sm.check_staff(ids=[staff_id])
 
-        if staff_id in self.in_formation_staffs():
-            raise GameException(ConfigErrorMessage.get_error_id("FORMATION_STAFF_ALREADY_IN"))
+        this_staff_obj = sm.get_staff_object(staff_id)
+
+        in_formation_staffs = self.in_formation_staffs()
+        for k, v in in_formation_staffs.iteritems():
+            if k == staff_id:
+                raise GameException(ConfigErrorMessage.get_error_id("FORMATION_STAFF_ALREADY_IN"))
+
+            # 同一个人也不能上
+            if sm.get_staff_object(k).oid == this_staff_obj.oid:
+                raise GameException(ConfigErrorMessage.get_error_id("FORMATION_STAFF_ALREADY_IN"))
 
         old_staff_id = self.doc['slots'][str(slot_id)]['staff_id']
         self.doc['slots'][str(slot_id)]['staff_id'] = staff_id
@@ -174,30 +130,14 @@ class Formation(object):
 
             updater['position.{0}'.format(index)] = 0
 
-        MongoFormation.db(self.server_id).update_one(
+        self.MONGO_COLLECTION.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': updater}
         )
 
-        # 检测阵型是否还可用
-        if self.doc['using'] and not self.is_formation_valid(self.doc['using']):
-            self.use_formation(0)
-        else:
-            self.send_slot_notify(slot_ids=[slot_id])
+        return old_staff_id
 
-            # NOTE 阵型改变，重新load staffs
-            # 这里不直接调用 club.force_load_staffs 的 send_notify
-            # 是因为这里 改变的staff 还可能包括下阵的
-            changed_staff_ids = self.in_formation_staffs().keys()
-            if old_staff_id:
-                changed_staff_ids.append(old_staff_id)
-
-            club = Club(self.server_id, self.char_id, load_staffs=False)
-            club.force_load_staffs()
-            club.send_notify()
-            StaffManger(self.server_id, self.char_id).send_notify(ids=changed_staff_ids)
-
-    def set_unit(self, slot_id, unit_id):
+    def set_unit(self, slot_id, unit_id, staff_calculate=True):
         if str(slot_id) not in self.doc['slots']:
             raise GameException(ConfigErrorMessage.get_error_id("FORMATION_SLOT_NOT_OPEN"))
 
@@ -227,25 +167,15 @@ class Formation(object):
             self.doc['position'][position] = slot_id
             updater['position.{0}'.format(position)] = slot_id
 
-        MongoFormation.db(self.server_id).update_one(
+        self.MONGO_COLLECTION.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': updater}
         )
 
-        s.set_unit(u)
-        s.calculate()
-        s.make_cache()
-
-        # 检测阵型是否还可用
-        if self.doc['using'] and not self.is_formation_valid(self.doc['using']):
-            self.use_formation(0)
-        else:
-            self.send_slot_notify(slot_ids=[slot_id])
-
-            # NOTE 兵种改变可能会导致牵绊改变，从而改变天赋
-            # 所以这里暴力重新加载staffs
-            club = Club(self.server_id, self.char_id, load_staffs=False)
-            club.force_load_staffs(send_notify=True)
+        if staff_calculate:
+            s.set_unit(u)
+            s.calculate()
+            s.make_cache()
 
     def sync_slots(self, slots_data):
         positions = [0] * 30
@@ -285,10 +215,116 @@ class Formation(object):
         for slot_id, index, policy in slots_data:
             self.doc['slots'][str(slot_id)]['policy'] = policy
 
-        MongoFormation.db(self.server_id).update_one(
+        self.MONGO_COLLECTION.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': updater}
         )
+
+
+class Formation(BaseFormation):
+    __slots__ = []
+    MONGO_COLLECTION = MongoFormation
+
+    def get_or_create_doc(self):
+        doc = self.MONGO_COLLECTION.db(self.server_id).find_one({'_id': self.char_id})
+        if not doc:
+            doc = self.MONGO_COLLECTION.document()
+            doc['_id'] = self.char_id
+            doc['position'] = [0] * 30
+            self.MONGO_COLLECTION.db(self.server_id).insert_one(doc)
+
+        return doc
+
+    def initialize(self, init_data):
+        # [(staff_unique_id, unit_id), ...]
+
+        opened_slot_ids = ConfigFormationSlot.get_opened_slot_ids(1)
+
+        updater = {}
+        for index, (staff_unique_id, unit_id) in enumerate(init_data):
+            slot_id = opened_slot_ids[index]
+
+            doc = self.MONGO_COLLECTION.document_slot()
+            doc['staff_id'] = staff_unique_id
+            doc['unit_id'] = unit_id
+
+            self.doc['slots'][str(slot_id)] = doc
+
+            position = self.get_slot_init_position(len(self.doc['slots']))
+            self.doc['position'][position] = slot_id
+
+            updater['slots.{0}'.format(slot_id)] = doc
+            updater['position.{0}'.format(position)] = slot_id
+
+        self.MONGO_COLLECTION.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': updater}
+        )
+
+    def try_open_slots(self, new_club_level):
+        opened_slot_ids = ConfigFormationSlot.get_opened_slot_ids(new_club_level)
+
+        new_slot_ids = []
+        updater = {}
+
+        for i in opened_slot_ids:
+            if str(i) in self.doc['slots']:
+                continue
+
+            doc = self.MONGO_COLLECTION.document_slot()
+            doc['staff_id'] = ""
+            doc['unit_id'] = 0
+
+            self.doc['slots'][str(i)] = doc
+
+            updater['slots.{0}'.format(i)] = doc
+            new_slot_ids.append(i)
+
+        if new_slot_ids:
+            self.MONGO_COLLECTION.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': updater}
+            )
+
+            self.send_slot_notify(slot_ids=new_slot_ids)
+
+    def set_staff(self, slot_id, staff_id):
+        old_staff_id = super(Formation, self).set_staff(slot_id, staff_id)
+        # 检测阵型是否还可用
+        if self.doc['using'] and not self.is_formation_valid(self.doc['using']):
+            self.use_formation(0)
+        else:
+            self.send_slot_notify(slot_ids=[slot_id])
+
+            # NOTE 阵型改变，重新load staffs
+            # 这里不直接调用 club.force_load_staffs 的 send_notify
+            # 是因为这里 改变的staff 还可能包括下阵的
+            changed_staff_ids = self.in_formation_staffs().keys()
+            if old_staff_id:
+                changed_staff_ids.append(old_staff_id)
+
+            club = Club(self.server_id, self.char_id, load_staffs=False)
+            club.force_load_staffs()
+            club.send_notify()
+            StaffManger(self.server_id, self.char_id).send_notify(ids=changed_staff_ids)
+
+        return old_staff_id
+
+    def set_unit(self, slot_id, unit_id, **kwargs):
+        super(Formation, self).set_unit(slot_id, unit_id)
+        # 检测阵型是否还可用
+        if self.doc['using'] and not self.is_formation_valid(self.doc['using']):
+            self.use_formation(0)
+        else:
+            self.send_slot_notify(slot_ids=[slot_id])
+
+            # NOTE 兵种改变可能会导致牵绊改变，从而改变天赋
+            # 所以这里暴力重新加载staffs
+            club = Club(self.server_id, self.char_id, load_staffs=False)
+            club.force_load_staffs(send_notify=True)
+
+    def sync_slots(self, slots_data):
+        super(Formation, self).sync_slots(slots_data)
 
         self.send_slot_notify(slot_ids=self.doc['slots'].keys())
 
@@ -314,7 +350,7 @@ class Formation(object):
         rc.remove(self.server_id, self.char_id)
 
         self.doc['levels'][str(fid)] = 1
-        MongoFormation.db(self.server_id).update_one(
+        self.MONGO_COLLECTION.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
                 'levels.{0}'.format(fid): 1
@@ -344,7 +380,7 @@ class Formation(object):
         rc.remove(self.server_id, self.char_id)
 
         self.doc['levels'][str(fid)] = level + 1
-        MongoFormation.db(self.server_id).update_one(
+        self.MONGO_COLLECTION.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
                 'levels.{0}'.format(fid): level + 1
@@ -408,7 +444,7 @@ class Formation(object):
             self.doc['slots'][k]['policy'] = 1
             updater['slots.{0}.policy'.format(k)] = 1
 
-        MongoFormation.db(self.server_id).update_one(
+        self.MONGO_COLLECTION.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': updater}
         )
@@ -436,6 +472,8 @@ class Formation(object):
             act = ACT_INIT
             slot_ids = range(1, MAX_SLOT_AMOUNT + 1)
 
+        sm = StaffManger(self.server_id, self.char_id)
+
         notify = FormationSlotNotify()
         notify.act = act
 
@@ -458,6 +496,8 @@ class Formation(object):
                         notify_slot.position = self.doc['position'].index(int(_id))
                     else:
                         notify_slot.position = -1
+
+                    notify_slot.staff_oid = sm.get_staff_object(data['staff_id']).oid
 
         MessagePipe(self.char_id).put(msg=notify)
 

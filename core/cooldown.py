@@ -55,3 +55,9 @@ class ArenaMatchCD(CD):
 
     def make_key(self):
         return 'cd:arena_match:{0}:{1}:{2}'.format(self.server_id, self.char_id, self.rival_id)
+
+# 掠夺搜索CD
+class PlunderSearchCD(CD):
+    __slots__ = []
+    def make_key(self):
+        return 'cd:plunder_search:{0}:{1}'.format(self.server_id, self.char_id)

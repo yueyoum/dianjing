@@ -312,3 +312,13 @@ class ValueLogWelfareEnergyRewardTimes(CategoryValueLog):
 class ValueLogUnionSignInTimes(CategoryValueLog):
     KEY = 'union_signin'
     __slots__ = []
+
+# 掠夺次数
+class ValueLogPlunderTimes(ValueLog):
+    KEY = 'plunder_times'
+    __slots__ = []
+
+# 掠夺复仇次数
+class ValueLogPlunderRevengeTimes(ValueLog):
+    KEY = 'plunder_revenge_times'
+    __slots__ = []

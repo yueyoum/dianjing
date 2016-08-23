@@ -188,7 +188,7 @@ class Club(AbstractClub):
             condition.extend(other_conditions)
             condition = {'$and': condition}
 
-        doc = MongoCharacter.db(server_id).find(condition)
+        doc = MongoCharacter.db(server_id).find(condition, {'_id': 1})
         for d in doc:
             yield d['_id']
 
