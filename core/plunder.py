@@ -32,6 +32,7 @@ from core.value_log import ValueLogPlunderRevengeTimes, ValueLogPlunderTimes
 from core.resource import ResourceClassification, money_text_to_item_id
 
 from utils.message import MessagePipe
+from utils.functional import make_string_id
 
 from config import ConfigErrorMessage, ConfigBaseStationLevel, ConfigPlunderBuyTimesCost, ConfigPlunderIncome
 
@@ -349,7 +350,7 @@ class Plunder(object):
 
             return _ids
 
-        level_range = [5, 10, 50, 100]
+        level_range = [5, 10, 50, 100, 1000]
         for i in level_range:
             ids = _query(self.club_level - i, self.club_level + i)
             if len(ids) >= 2:
@@ -387,6 +388,13 @@ class Plunder(object):
 
         raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_CANNOT_FIND_TARGET"))
 
+    def find_revenge_target_index_by_target_id(self, target_id):
+        for index, (unique_id, _) in enumerate(self.doc['revenge_list']):
+            if unique_id == target_id:
+                return index
+
+        raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_CANNOT_FIND_TARGET"))
+
     @check_club_level(silence=False)
     @check_plunder_in_process
     def spy(self, target_id):
@@ -420,7 +428,7 @@ class Plunder(object):
 
     @check_club_level(silence=False)
     @check_plunder_in_process
-    def plunder_start(self, index, tp, formation_slots=None):
+    def plunder_start(self, _id, tp, formation_slots=None, win=None):
         if tp not in [PLUNDER_TYPE_PLUNDER, PLUNDER_TYPE_REVENGE]:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
@@ -444,9 +452,10 @@ class Plunder(object):
         target_id = self.doc['matching']['id']
         if not target_id:
             if tp == PLUNDER_TYPE_PLUNDER:
-                target_id = self.doc['search'][index]['id']
+                target_id = int(_id)
             else:
-                target_id = self.doc['revenge_list'][index]
+                _index = self.find_revenge_target_index_by_target_id(_id)
+                target_id = self.doc['revenge_list'][_index][0]
 
         if not self.doc['matching']['id']:
             self.doc['matching']['id'] = target_id
@@ -459,26 +468,20 @@ class Plunder(object):
                 }}
             )
 
-        my_way = self.get_way_object(way)
-        if not my_way.formation_staffs:
-            # 没人，直接输
-            self.plunder_report(way, False)
+        if win is not None:
+            self.plunder_report(way, win)
             return None
 
+        my_way = self.get_way_object(way)
         if formation_slots:
             my_way.sync_slots(formation_slots)
             my_way.load_formation_staffs()
             self.send_formation_notify()
 
-        target_way = Plunder(self.server_id, target_id).get_way_object(way)
-
         my_club = Club(self.server_id, self.char_id, load_staffs=False)
         my_club.formation_staffs = my_way.formation_staffs
 
-        target_club = Club(self.server_id, self.char_id, load_staffs=False)
-        target_club.formation_staffs = target_way.formation_staffs
-
-        match = ClubMatch(my_club, target_club)
+        match = ClubMatch(my_club, None)
         msg = match.start()
         msg.key = str(way)
 
@@ -569,9 +572,10 @@ class Plunder(object):
 
     def got_plundered(self, from_id, win_ways):
         # TODO real rule
+        item = (make_string_id(), from_id)
 
         self.doc['loss_percent'] += 10
-        self.doc['revenge_list'].append(from_id)
+        self.doc['revenge_list'].append(item)
 
         MongoPlunder.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -606,16 +610,22 @@ class Plunder(object):
         notify.cd = PlunderSearchCD(self.server_id, self.char_id).get_cd_seconds()
 
         for s in self.doc['search']:
+            target_plunder = Plunder(self.server_id, s['id'])
+
             notify_target = notify.target.add()
             notify_target.id = str(s['id'])
-            notify_target.station_level = Plunder(self.server_id, s['id']).get_station_level()
+            notify_target.station_level = target_plunder.get_station_level()
+            notify_target.spied = s['spied']
 
-            if s['spied']:
-                target_plunder = Plunder(self.server_id, s['id'])
-                for way in [1, 2, 3]:
-                    notify_target_formation = notify_target.formation.add()
-                    notify_target_formation.MergeFrom(target_plunder.get_way_object(way).make_protobuf())
+            for way in [1, 2, 3]:
+                notify_target_troop = notify_target.troop.add()
 
+                way_object = target_plunder.get_way_object(way)
+
+                club = Club(self.server_id, s['id'], load_staffs=False)
+                club.formation_staffs = way_object.formation_staffs
+
+                notify_target_troop.MergeFrom(ClubMatch.make_club_troop_msg(club))
         MessagePipe(self.char_id).put(msg=notify)
 
     @check_club_level(silence=True)
@@ -652,10 +662,20 @@ class Plunder(object):
     def send_revenge_notify(self):
         notify = PlunderRevengeNotify()
         notify.remained_times = self.get_plunder_remained_times()
-        for i in self.doc['revenge_list']:
+        for unique_id, real_id in self.doc['revenge_list']:
             notify_target = notify.target.add()
-            notify_target.id = str(i)
-            notify_target.name = get_club_property(self.server_id, i, 'name')
+            notify_target.id = unique_id
+
+            club = Club(self.server_id, real_id, load_staffs=False)
+            target_plunder = Plunder(self.server_id, real_id)
+            notify_target.name = club.name
+
+            for way_id in [1, 2, 3]:
+                way_object = target_plunder.get_way_object(way_id)
+                club.formation_staffs = way_object.formation_staffs
+
+                notify_target_troop = notify_target.troop.add()
+                notify_target_troop.MergeFrom(ClubMatch.make_club_troop_msg(club))
 
         MessagePipe(self.char_id).put(msg=notify)
 

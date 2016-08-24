@@ -727,6 +727,8 @@ class MongoPlunder(BaseDocument):
         'exp': 0,
         'product_level': 1,
         'loss_percent': 0,
+        # 复仇列表， 因为可能列表中有重复的人， 所以还需要一个 unique_id
+        # [(unique_id, real_id), ...]
         'revenge_list': [],
 
     }

@@ -78,22 +78,23 @@ def spy(request):
 
     response = PlunderSpyResponse()
     response.ret = 0
-    for i in [1, 2 ,3]:
-        response_formation = response.formation.add()
-        response_formation.MergeFrom(target_plunder.get_way_object(i).make_protobuf())
-
     return ProtobufResponse(response)
 
 def start(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
-    index = request._proto.index
+    _id = request._proto.id
     formation_slots = parse_protocol_sync_formation_slots(request._proto.slots, policy=1)
     tp = request._proto.tp
 
+    if request._proto.HasField('win'):
+        win = request._proto.win
+    else:
+        win = None
+
     p = Plunder(server_id, char_id)
-    match = p.plunder_start(index, tp, formation_slots)
+    match = p.plunder_start(_id, tp, formation_slots, win)
 
     response = PlunderStartResponse()
     response.ret = 0

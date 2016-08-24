@@ -37,7 +37,8 @@ class ClubLeaderBoard(object):
         db = MongoClubLeaderboard.db(server_id)
         db.delete_many({})
 
-        db.insert_many(leaderboard_docs)
+        if leaderboard_docs:
+            db.insert_many(leaderboard_docs)
 
     def make_cache_key(self):
         return 'club_leaderboard:{0}:{1}'.format(self.server_id, self.char_id)
