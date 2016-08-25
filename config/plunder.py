@@ -6,6 +6,7 @@ Date Created:   2016-08-18 14:36
 Description:
 
 """
+import random
 
 from config.base import ConfigBase
 
@@ -16,13 +17,30 @@ class BaseStationLevel(object):
         self.product = []
         self.exp = 0
 
+    def get_product(self, percent):
+        product = []
+        for _id, _amount in self.product:
+            _amount = int(_amount * 1.0 * percent / 100)
+            product.append((_id, _amount))
+
+        return product
+
+
 class Income(object):
     __slots__ = ['id', 'percent', 'exp', 'extra_income']
     def __init__(self):
         self.id = 0
         self.percent = 0
         self.exp = 0
-        self.extra_income = 0
+        self.extra_income = []
+
+    def get_extra_income(self):
+        prob = random.randint(1, 100)
+        for _id, _amount, _prob in self.extra_income:
+            if _prob >= prob:
+                return [(_id, _amount)]
+
+        return []
 
 class BuyTimesCost(object):
     __slots__ = ['id', 'cost']
@@ -35,6 +53,13 @@ class ConfigBaseStationLevel(ConfigBase):
     EntityClass = BaseStationLevel
     INSTANCES = {}
     FILTER_CACHE = {}
+
+    MAX_LEVEL = 0
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigBaseStationLevel, cls).initialize(fixture)
+        cls.MAX_LEVEL = max(cls.INSTANCES.keys())
 
     @classmethod
     def get(cls, _id):

@@ -74,8 +74,6 @@ def spy(request):
     p = Plunder(server_id, char_id)
     p.spy(target_id)
 
-    target_plunder = Plunder(server_id, target_id)
-
     response = PlunderSpyResponse()
     response.ret = 0
     return ProtobufResponse(response)
@@ -98,7 +96,8 @@ def start(request):
 
     response = PlunderStartResponse()
     response.ret = 0
-    response.match.MergeFrom(match)
+    if match:
+        response.match.MergeFrom(match)
     return ProtobufResponse(response)
 
 

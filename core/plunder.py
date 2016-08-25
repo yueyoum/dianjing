@@ -28,8 +28,8 @@ from core.staff import StaffManger, Staff
 from core.unit import UnitManager
 from core.cooldown import PlunderSearchCD
 from core.match import ClubMatch
-from core.value_log import ValueLogPlunderRevengeTimes, ValueLogPlunderTimes
-from core.resource import ResourceClassification, money_text_to_item_id
+from core.value_log import ValueLogPlunderRevengeTimes, ValueLogPlunderTimes, ValueLogPlunderBuyTimes
+from core.resource import ResourceClassification, STATION_EXP_ID, money_text_to_item_id
 
 from utils.message import MessagePipe
 from utils.functional import make_string_id
@@ -165,7 +165,7 @@ class PlunderFormation(BaseFormation):
 
         for k, v in self.doc['slots'].iteritems():
             msg_slot = msg.formation.add()
-            msg_slot.id = int(k)
+            msg_slot.slot_id = int(k)
             if v['staff_id']:
                 msg_slot.status = FORMATION_SLOT_USE
                 msg_slot.staff_id = v['staff_id']
@@ -237,6 +237,45 @@ def check_plunder_in_process(fun):
         return fun(self, *args, **kwargs)
 
     return deco
+
+
+class PlunderTimesInformation(object):
+    __slots__ = ['server_id', 'char_id', 'current_times', 'remained_times', 'max_times', 'buy_times', 'buy_cost']
+
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+
+        self.max_times = PLUNDER_TIMES_INIT_LIMIT
+        self.current_times = ValueLogPlunderTimes(self.server_id, self.char_id).count_of_today()
+
+        self.remained_times = 0
+        self.buy_times = 0
+        self.buy_cost = 0
+
+        self.update()
+
+    def update(self):
+        self.remained_times = self.max_times - self.current_times
+        if self.remained_times < 0:
+            self.remained_times = 0
+
+        if self.remained_times > 0:
+            self.buy_times = 0
+            self.buy_cost = 0
+        else:
+            self.buy_times = ValueLogPlunderBuyTimes(self.server_id, self.char_id).count_of_today()
+            self.buy_cost = ConfigPlunderBuyTimesCost.get_cost(self.buy_times)
+
+    def add_plunder_times(self):
+        ValueLogPlunderTimes(self.server_id, self.char_id).record()
+        self.current_times += 1
+        self.update()
+
+    def add_buy_times(self):
+        ValueLogPlunderBuyTimes(self.server_id, self.char_id).record()
+        self.buy_times += 1
+        self.update()
 
 
 class Plunder(object):
@@ -410,14 +449,6 @@ class Plunder(object):
 
         self.send_search_notify()
 
-    def get_plunder_remained_times(self):
-        today_times = ValueLogPlunderTimes(self.server_id, self.char_id).count_of_today()
-        remained = PLUNDER_TIMES_INIT_LIMIT - today_times
-        if remained < 0:
-            remained = 0
-
-        return remained
-
     def get_revenge_remained_times(self):
         today_times = ValueLogPlunderRevengeTimes(self.server_id, self.char_id).count_of_today()
         remained = REVENGE_MAX_TIMES - today_times
@@ -427,7 +458,6 @@ class Plunder(object):
         return remained
 
     @check_club_level(silence=False)
-    @check_plunder_in_process
     def plunder_start(self, _id, tp, formation_slots=None, win=None):
         if tp not in [PLUNDER_TYPE_PLUNDER, PLUNDER_TYPE_REVENGE]:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
@@ -443,11 +473,27 @@ class Plunder(object):
         if way == 1:
             # 开始的第一路，这时候要判断次数
             if tp == PLUNDER_TYPE_PLUNDER:
-                if not self.get_plunder_remained_times():
-                    raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_NO_TIMES"))
+                info = PlunderTimesInformation(self.server_id, self.char_id)
+                info.add_plunder_times()
+
+                if not info.remained_times:
+                    cost = [(money_text_to_item_id('diamond'), info.buy_cost)]
+                    rc = ResourceClassification.classify(cost)
+                    rc.check_exist(self.server_id, self.char_id)
+                    rc.remove(self.server_id, self.char_id)
+
+                    info.add_buy_times()
+
+                self.send_plunder_times_notify()
+                #
+                # if not self.get_plunder_remained_times():
+                #     raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_NO_TIMES"))
             else:
                 if not self.get_revenge_remained_times():
                     raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_REVENGE_NO_TIMES"))
+
+                ValueLogPlunderRevengeTimes(self.server_id, self.char_id).record()
+                self.send_revenge_notify()
 
         target_id = self.doc['matching']['id']
         if not target_id:
@@ -485,12 +531,6 @@ class Plunder(object):
         msg = match.start()
         msg.key = str(way)
 
-        if way == 1:
-            if tp == PLUNDER_TYPE_PLUNDER:
-                ValueLogPlunderTimes(self.server_id, self.char_id).record()
-            else:
-                ValueLogPlunderRevengeTimes(self.server_id, self.char_id).record()
-
         return msg
 
     @check_club_level(silence=False)
@@ -505,7 +545,6 @@ class Plunder(object):
         result = 1 if win else 2
 
         target_id = self.doc['matching']['id']
-        tp = self.doc['matching']['tp']
 
         if not target_id:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
@@ -519,10 +558,6 @@ class Plunder(object):
             }}
         )
 
-        if tp == PLUNDER_TYPE_PLUNDER and way == 3:
-            win_count = len([i for i in self.doc['matching']['result'] if i == 1])
-            Plunder(self.server_id, target_id).got_plundered(self.char_id, win_count)
-
         self.send_result_notify()
 
     @check_club_level(silence=False)
@@ -533,8 +568,6 @@ class Plunder(object):
 
         if not target_id:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
-
-        search_index = self.find_search_target_index_by_target_id(target_id)
 
         if 0 in result:
             raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_MATCH_NOT_FINISH_CANNOT_GET_REWARD"))
@@ -549,10 +582,15 @@ class Plunder(object):
             'matching': self.doc['matching']
         }
 
+        # NOTE: real target id
+
         if tp == PLUNDER_TYPE_PLUNDER:
+            real_id = target_id
+            search_index = self.find_search_target_index_by_target_id(target_id)
             self.search(replace_search_index=search_index)
         else:
-            self.doc['revenge_list'].remove(target_id)
+            revenge_index = self.find_revenge_target_index_by_target_id(target_id)
+            _, real_id = self.doc['revenge_list'].pop(revenge_index)
             updater['revenge_list'] = self.doc['revenge_list']
 
             self.send_revenge_notify()
@@ -564,18 +602,32 @@ class Plunder(object):
 
         self.send_result_notify()
 
-        # TODO reward
-        reward = [(money_text_to_item_id('diamond'), 100)]
-        rc = ResourceClassification.classify(reward)
+        win_ways = sum([i for i in result if i == 1])
+
+        plunder_got = []
+        if tp == PLUNDER_TYPE_PLUNDER:
+            target_plunder = Plunder(self.server_id, real_id)
+            _got = target_plunder.got_plundered(self.char_id, win_ways)
+            plunder_got.extend(_got)
+
+        config = ConfigPlunderIncome.get(win_ways)
+        plunder_got.extend(config.get_extra_income())
+
+        plunder_got.append((STATION_EXP_ID, config.exp))
+
+        rc = ResourceClassification.classify(plunder_got)
         rc.add(self.server_id, self.char_id)
         return result, rc
 
     def got_plundered(self, from_id, win_ways):
-        # TODO real rule
-        item = (make_string_id(), from_id)
+        config = ConfigPlunderIncome.get(win_ways)
+        revenge_item = (make_string_id(), from_id)
 
-        self.doc['loss_percent'] += 10
-        self.doc['revenge_list'].append(item)
+        self.doc['loss_percent'] += config.percent
+        if self.doc['loss_percent'] > 60:
+            self.doc['loss_percent'] = 60
+
+        self.doc['revenge_list'].append(revenge_item)
 
         MongoPlunder.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -588,11 +640,41 @@ class Plunder(object):
         self.send_revenge_notify()
         self.send_station_notify()
 
+        config_station = ConfigBaseStationLevel.get(self.doc['product_level'])
+        return config_station.get_product(config.percent)
+
     def get_station_level(self):
         return self.doc['level']
 
     def add_station_exp(self, exp):
-        pass
+        self.doc['exp'] += exp
+
+        old_level = self.doc['level']
+
+        while True:
+            config = ConfigBaseStationLevel.get(self.doc['level'])
+            if self.doc['level'] == ConfigBaseStationLevel.MAX_LEVEL:
+                if self.doc['exp'] > config.exp:
+                    self.doc['exp'] = config.exp
+
+                break
+
+            if self.doc['exp'] < config.exp:
+                break
+
+            self.doc['level'] += 1
+            self.doc['exp'] -= config.exp
+
+        MongoPlunder.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'level': self.doc['level'],
+                'exp': self.doc['exp'],
+            }}
+        )
+
+        self.send_station_notify()
+        return self.doc['level'] - old_level
 
     @check_club_level(silence=True)
     def send_formation_notify(self):
@@ -639,10 +721,13 @@ class Plunder(object):
 
     @check_club_level(silence=True)
     def send_plunder_times_notify(self):
+        info = PlunderTimesInformation(self.server_id, self.char_id)
+
         notify = PlunderTimesNotify()
+        notify.max_times = info.max_times
+        notify.remained_times = info.remained_times
+        notify.buy_cost = info.buy_cost
         # TODO
-        notify.max_times = PLUNDER_TIMES_INIT_LIMIT
-        notify.remained_times = self.get_plunder_remained_times()
         notify.next_recover_at = 0
 
         MessagePipe(self.char_id).put(msg=notify)
@@ -655,13 +740,13 @@ class Plunder(object):
         notify.next_reward_at = get_station_next_reward_at()
 
         notify.product_level = self.doc['product_level']
-        notify.product_lost_percent = self.doc['lost_percent']
+        notify.product_lost_percent = self.doc['loss_percent']
         MessagePipe(self.char_id).put(msg=notify)
 
     @check_club_level(silence=True)
     def send_revenge_notify(self):
         notify = PlunderRevengeNotify()
-        notify.remained_times = self.get_plunder_remained_times()
+        notify.remained_times = self.get_revenge_remained_times()
         for unique_id, real_id in self.doc['revenge_list']:
             notify_target = notify.target.add()
             notify_target.id = unique_id

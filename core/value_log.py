@@ -318,6 +318,11 @@ class ValueLogPlunderTimes(ValueLog):
     KEY = 'plunder_times'
     __slots__ = []
 
+# 掠夺购买次数
+class ValueLogPlunderBuyTimes(ValueLog):
+    KEY = 'plunder_buy_times'
+    __slots__ = []
+
 # 掠夺复仇次数
 class ValueLogPlunderRevengeTimes(ValueLog):
     KEY = 'plunder_revenge_times'

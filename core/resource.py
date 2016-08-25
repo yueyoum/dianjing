@@ -38,6 +38,7 @@ WORK_CARD_ID = 30015
 ARENA_POINT_ID = 30016
 STAFF_EXP_POOL_ID = 30017
 ENERGY_ID = 30018
+STATION_EXP_ID = 30021
 
 # 领地建筑产出ID
 TERRITORY_PRODUCT_BUILDING_TABLE = {
@@ -157,6 +158,7 @@ class ResourceClassification(object):
                  'work_card',
                  'energy',
                  'staff_recruit_score',
+                 'station_exp',
 
                  'resource_data',
                  ]
@@ -178,6 +180,7 @@ class ResourceClassification(object):
         self.work_card = 0
         self.energy = 0
         self.staff_recruit_score = 0
+        self.station_exp = 0
 
         self.resource_data = []
 
@@ -216,6 +219,7 @@ class ResourceClassification(object):
         work_card = 0
         energy = 0
         staff_recruit_score = 0
+        station_exp = 0
 
         resource_data = {}
 
@@ -253,6 +257,10 @@ class ResourceClassification(object):
 
             if _id == RECRUIT_STAFF_SCORE_ID:
                 staff_recruit_score += _amount
+                continue
+
+            if _id == STATION_EXP_ID:
+                station_exp += _amount
                 continue
 
             if _id in TERRITORY_PRODUCT_BUILDING_TABLE:
@@ -301,8 +309,9 @@ class ResourceClassification(object):
         obj.work_card = work_card
         obj.energy = energy
         obj.staff_recruit_score = staff_recruit_score
-        obj.territory_product = territory_product.items()
+        obj.station_exp = station_exp
 
+        obj.territory_product = territory_product.items()
         obj.resource_data = resource_data.items()
 
         return obj
@@ -398,6 +407,7 @@ class ResourceClassification(object):
         from core.vip import VIP
         from core.arena import Arena
         from core.energy import Energy
+        from core.plunder import Plunder
 
         club_property = self.money_as_text_dict()
         if self.club_exp:
@@ -437,6 +447,9 @@ class ResourceClassification(object):
 
         if self.staff_recruit_score:
             StaffRecruit(server_id, char_id).add_score(self.staff_recruit_score)
+
+        if self.station_exp:
+            Plunder(server_id, char_id).add_station_exp(self.station_exp)
 
         if self.resource_data:
             _r = _Resource()
@@ -499,6 +512,11 @@ class ResourceClassification(object):
             msg_item = msg.items.add()
             msg_item.id = ENERGY_ID
             msg_item.amount = self.energy
+
+        if self.station_exp:
+            msg_item = msg.items.add()
+            msg_item.id = STATION_EXP_ID
+            msg_item.amount = self.station_exp
 
         for _id, _amount in self.territory_product:
             msg_item = msg.items.add()
