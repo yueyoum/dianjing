@@ -100,14 +100,16 @@ class PlunderFormation(BaseFormation):
         self.doc['slots'][str(slot_id)]['staff_id'] = ''
         self.doc['slots'][str(slot_id)]['unit_id'] = 0
         self.doc['slots'][str(slot_id)]['policy'] = 1
-        self.doc['position'][position] = 0
 
         updater = {
             'slots.{0}.staff_id'.format(slot_id): '',
             'slots.{0}.unit_id'.format(slot_id): 0,
             'slots.{0}.policy'.format(slot_id): 1,
-            'position.{0}'.format(position): 0,
         }
+
+        if position != -1:
+            self.doc['position'][position] = 0
+            updater['position.{0}'.format(position)] = 0
 
         self.MONGO_COLLECTION.db(self.server_id).update_one(
             {'_id': self.char_id},
