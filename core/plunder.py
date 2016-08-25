@@ -250,24 +250,21 @@ class PlunderTimesInformation(object):
 
         self.max_times = PLUNDER_TIMES_INIT_LIMIT
         self.current_times = ValueLogPlunderTimes(self.server_id, self.char_id).count_of_today()
+        self.buy_times = ValueLogPlunderBuyTimes(self.server_id, self.char_id).count_of_today()
 
         self.remained_times = 0
-        self.buy_times = 0
         self.buy_cost = 0
 
         self.update()
 
     def update(self):
+        self.max_times = PLUNDER_TIMES_INIT_LIMIT + self.buy_times
+
         self.remained_times = self.max_times - self.current_times
         if self.remained_times < 0:
             self.remained_times = 0
 
-        if self.remained_times > 0:
-            self.buy_times = 0
-            self.buy_cost = 0
-        else:
-            self.buy_times = ValueLogPlunderBuyTimes(self.server_id, self.char_id).count_of_today()
-            self.buy_cost = ConfigPlunderBuyTimesCost.get_cost(self.buy_times)
+        self.buy_cost = ConfigPlunderBuyTimesCost.get_cost(self.buy_times + 1)
 
     def add_plunder_times(self):
         ValueLogPlunderTimes(self.server_id, self.char_id).record()
@@ -278,6 +275,16 @@ class PlunderTimesInformation(object):
         ValueLogPlunderBuyTimes(self.server_id, self.char_id).record()
         self.buy_times += 1
         self.update()
+
+    def send_plunder_times_notify(self):
+        notify = PlunderTimesNotify()
+        notify.max_times = self.max_times
+        notify.remained_times = self.remained_times
+        notify.buy_cost = self.buy_cost
+        # TODO
+        notify.next_recover_at = 0
+
+        MessagePipe(self.char_id).put(msg=notify)
 
 
 class Plunder(object):
@@ -466,6 +473,17 @@ class Plunder(object):
 
         return remained
 
+    def buy_plunder_times(self):
+        info = PlunderTimesInformation(self.server_id, self.char_id)
+        cost = [(money_text_to_item_id('diamond'), info.buy_cost), ]
+
+        rc = ResourceClassification.classify(cost)
+        rc.check_exist(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id)
+
+        info.add_buy_times()
+        info.send_plunder_times_notify()
+
     @check_club_level(silence=False)
     def plunder_start(self, _id, tp, formation_slots=None, win=None):
         if tp not in [PLUNDER_TYPE_PLUNDER, PLUNDER_TYPE_REVENGE]:
@@ -493,7 +511,7 @@ class Plunder(object):
 
                     info.add_buy_times()
 
-                self.send_plunder_times_notify()
+                info.send_plunder_times_notify()
                 #
                 # if not self.get_plunder_remained_times():
                 #     raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_NO_TIMES"))
@@ -741,15 +759,7 @@ class Plunder(object):
     @check_club_level(silence=True)
     def send_plunder_times_notify(self):
         info = PlunderTimesInformation(self.server_id, self.char_id)
-
-        notify = PlunderTimesNotify()
-        notify.max_times = info.max_times
-        notify.remained_times = info.remained_times
-        notify.buy_cost = info.buy_cost
-        # TODO
-        notify.next_recover_at = 0
-
-        MessagePipe(self.char_id).put(msg=notify)
+        info.send_plunder_times_notify()
 
     @check_club_level(silence=True)
     def send_station_notify(self):

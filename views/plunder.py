@@ -21,6 +21,7 @@ from protomsg.plunder_pb2 import (
     PlunderStartResponse,
     BaseStationSyncResponse,
     PlunderGetRewardResponse,
+    PlunderBuyTimesResponse,
 )
 
 def set_staff(request):
@@ -132,15 +133,26 @@ def get_reward(request):
     return ProtobufResponse(response)
 
 
+def buy_plunder_times(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    p = Plunder(server_id, char_id)
+    p.buy_plunder_times()
+
+    response = PlunderBuyTimesResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+
 def sync_station(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
     p = Plunder(server_id, char_id)
     p.send_station_notify()
+    p.send_plunder_times_notify()
 
     response = BaseStationSyncResponse()
     response.ret = 0
     return ProtobufResponse(response)
-
-

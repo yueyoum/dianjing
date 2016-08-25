@@ -263,6 +263,8 @@ MESSAGE_TO_ID = {
     "PlunderGetRewardResponse": 4730,
     "BaseStationSyncRequest": 4731,
     "BaseStationSyncResponse": 4732,
+    "PlunderBuyTimesRequest": 4733,
+    "PlunderBuyTimesResponse": 4734,
 }
 
 ID_TO_MESSAGE = {
@@ -529,6 +531,8 @@ ID_TO_MESSAGE = {
     4730: "PlunderGetRewardResponse",
     4731: "BaseStationSyncRequest",
     4732: "BaseStationSyncResponse",
+    4733: "PlunderBuyTimesRequest",
+    4734: "PlunderBuyTimesResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -636,6 +640,7 @@ PATH_TO_REQUEST = {
     "/game/plunder/report/": ["plunder", "PlunderReportRequest"],
     "/game/plunder/getreward/": ["plunder", "PlunderGetRewardRequest"],
     "/game/plunder/station/sync/": ["plunder", "BaseStationSyncRequest"],
+    "/game/plunder/buytimes/": ["plunder", "PlunderBuyTimesRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -743,4 +748,5 @@ PATH_TO_RESPONSE = {
     "/game/plunder/report/": ["plunder", "PlunderReportResponse"],
     "/game/plunder/getreward/": ["plunder", "PlunderGetRewardResponse"],
     "/game/plunder/station/sync/": ["plunder", "BaseStationSyncResponse"],
+    "/game/plunder/buytimes/": ["plunder", "PlunderBuyTimesResponse"],
 }
