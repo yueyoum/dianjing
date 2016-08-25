@@ -740,3 +740,4 @@ class MongoPlunder(BaseDocument):
     }
 
     COLLECTION = 'plunder'
+    INDEXES = ['loss_percent',]

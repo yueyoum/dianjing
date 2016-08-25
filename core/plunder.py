@@ -375,23 +375,30 @@ class Plunder(object):
             if level_low < PLUNDER_ACTIVE_CLUB_LEVEL:
                 level_low = PLUNDER_ACTIVE_CLUB_LEVEL
 
-            condition = {'$and': [
+            _condition = {'$and': [
                 {'_id': {'$ne': self.char_id}},
                 {'level': {'$gte': level_low}},
                 {'level': {'$lte': level_high}}
             ]}
 
-            docs = MongoCharacter.db(self.server_id).find(condition, {'_id': 1})
+            _docs = MongoCharacter.db(self.server_id).find(_condition, {'_id': 1})
             _ids = []
-            for doc in docs:
-                # TODO 掠夺超过60% 就不要被搜出来了
-                _ids.append(doc['_id'])
+            for _doc in _docs:
+                _ids.append(_doc['_id'])
 
             return _ids
 
         level_range = [5, 10, 50, 100, 1000]
         for i in level_range:
             ids = _query(self.club_level - i, self.club_level + i)
+            # filter by loss_percent
+            condition = {'$and': [
+                {'_id': {'$in': ids}},
+                {'loss_percent': {'$lte': 60}}
+            ]}
+
+            docs = MongoPlunder.db(self.server_id).find(condition, {'_id': 1})
+            ids = [doc['_id'] for doc in docs]
             if len(ids) >= 2:
                 break
         else:
@@ -502,6 +509,10 @@ class Plunder(object):
             else:
                 _index = self.find_revenge_target_index_by_target_id(_id)
                 target_id = self.doc['revenge_list'][_index][0]
+        else:
+            # 要保证target_id 一样
+            if str(target_id) != _id:
+                raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_TARGET_ID_NOT_SAME"))
 
         if not self.doc['matching']['id']:
             self.doc['matching']['id'] = target_id
@@ -688,6 +699,12 @@ class Plunder(object):
 
     @check_club_level(silence=True)
     def send_search_notify(self):
+        if not self.doc['search']:
+            try:
+                self.search()
+            except GameException:
+                pass
+
         notify = PlunderSearchNotify()
         notify.cd = PlunderSearchCD(self.server_id, self.char_id).get_cd_seconds()
 
