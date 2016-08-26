@@ -437,6 +437,7 @@ class Plunder(object):
         self.send_search_notify()
 
     def find_search_target_index_by_target_id(self, target_id):
+        target_id = int(target_id)
         for index, s in enumerate(self.doc['search']):
             if s['id'] == target_id:
                 return index
@@ -525,7 +526,8 @@ class Plunder(object):
         target_id = self.doc['matching']['id']
         if not target_id:
             if tp == PLUNDER_TYPE_PLUNDER:
-                target_id = int(_id)
+                _index = self.find_search_target_index_by_target_id(_id)
+                target_id = self.doc['search'][_index]['id']
             else:
                 _index = self.find_revenge_target_index_by_target_id(_id)
                 target_id = self.doc['revenge_list'][_index][0]
