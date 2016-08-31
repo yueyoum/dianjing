@@ -35,8 +35,14 @@ class ClubMatch(object):
 
         :type club_obj: core.abstract.AbstractClub
         """
+        from core.club import Club
         from core.bag import Bag, Equipment
-        bag = Bag(club_obj.server_id, club_obj.char_id)
+
+        if isinstance(club_obj, Club):
+            bag = Bag(club_obj.server_id, club_obj.char_id)
+            slots = bag.doc['slots']
+        else:
+            slots = {}
 
         msg = MessageClubTroop()
         msg.club.MergeFrom(club_obj.make_protomsg())
@@ -92,8 +98,10 @@ class ClubMatch(object):
             msg_troop.policy = fs.policy
 
             if fs.equip_special:
-                equip = Equipment.load_from_slot_data(bag.get_slot(fs.equip_special))
-                msg_troop.special_equipment_skills.extend(equip.get_active_skills_ids())
+                slot_data = slots.get(fs.equip_special, '')
+                if slot_data:
+                    equip = Equipment.load_from_slot_data(slot_data)
+                    msg_troop.special_equipment_skills.extend(equip.get_active_skills_ids())
 
         return msg
 

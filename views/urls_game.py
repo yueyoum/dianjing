@@ -92,8 +92,7 @@ urlpatterns = [
     url(r'^bagitem/merge/$', views.bag.item_merge),
     url(r'^bagitem/destroy/$', views.bag.item_destroy),
     url(r'^bagequipment/destroy/$', views.bag.equipment_destroy),
-    url(r'^bagequipment/levelup/$', views.bag.equipment_level_up_preview),
-    url(r'^bagequipment/levelup/confirm/$', views.bag.equipment_level_up_confirm),
+    url(r'^bagequipment/levelup/$', views.bag.equipment_level_up),
 
     url(r'^unit/levelup/$', views.unit.level_up),
     url(r'^unit/stepup/$', views.unit.step_up),
