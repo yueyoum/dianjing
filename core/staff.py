@@ -15,7 +15,7 @@ from dianjing.exception import GameException
 from core.abstract import AbstractStaff
 from core.mongo import MongoStaff, MongoStaffRecruit
 from core.resource import money_text_to_item_id, ResourceClassification, STAFF_EXP_POOL_ID
-from core.bag import Bag, TYPE_EQUIPMENT, get_item_type
+from core.bag import Bag, Equipment, TYPE_EQUIPMENT, get_item_type
 from core.value_log import (
     ValueLogStaffRecruitTimes,
     ValueLogStaffRecruitScore,
@@ -50,10 +50,22 @@ from config import (
 from utils.functional import make_string_id
 from utils.message import MessagePipe
 
-from protomsg.bag_pb2 import EQUIP_DECORATION, EQUIP_KEYBOARD, EQUIP_MONITOR, EQUIP_MOUSE
+from protomsg.bag_pb2 import EQUIP_DECORATION, EQUIP_KEYBOARD, EQUIP_MONITOR, EQUIP_MOUSE, EQUIP_SPECIAL
 from protomsg.staff_pb2 import StaffRecruitNotify, StaffNotify, StaffRemoveNotify
 from protomsg.staff_pb2 import RECRUIT_DIAMOND, RECRUIT_GOLD, RECRUIT_MODE_1, RECRUIT_MODE_2
-from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
+from protomsg.common_pb2 import (
+    ACT_INIT,
+    ACT_UPDATE,
+
+    PROPERTY_STAFF_ATTACK,
+    PROPERTY_STAFF_ATTACK_PERCENT,
+    PROPERTY_STAFF_DEFENSE,
+    PROPERTY_STAFF_DEFENSE_PERCENT,
+    PROPERTY_STAFF_MANAGE,
+    PROPERTY_STAFF_MANAGE_PERCENT,
+    PROPERTY_STAFF_OPERATION,
+    PROPERTY_STAFF_OPERATION_PERCENT,
+)
 
 GOLD_MAX_FREE_TIMES = 5
 GOLD_CD_SECONDS = 600
@@ -380,6 +392,7 @@ class Staff(AbstractStaff):
         self.equip_keyboard = data['equip_keyboard']
         self.equip_monitor = data['equip_monitor']
         self.equip_decoration = data['equip_decoration']
+        self.equip_special = data.get('equip_special', '')
 
         self.after_init()
 
@@ -602,8 +615,12 @@ class Staff(AbstractStaff):
             key = 'equip_keyboard'
         elif tp == EQUIP_MONITOR:
             key = 'equip_monitor'
-        else:
+        elif tp == EQUIP_DECORATION:
             key = 'equip_decoration'
+        elif tp == EQUIP_SPECIAL:
+            key = 'equip_special'
+        else:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         setattr(self, key, bag_slot_id)
         MongoStaff.db(self.server_id).update_one(
@@ -625,24 +642,23 @@ class Staff(AbstractStaff):
         qualities = []
 
         # 装备本身属性
-        for slot_id in [self.equip_keyboard, self.equip_monitor, self.equip_mouse, self.equip_decoration]:
+        for slot_id in [self.equip_keyboard, self.equip_monitor, self.equip_mouse, self.equip_decoration, self.equip_special]:
             if not slot_id:
                 continue
 
             data = bag.get_slot(slot_id)
             config = ConfigItemNew.get(data['item_id'])
 
-            equip_config = ConfigEquipmentNew.get(data['item_id'])
-            this_level = equip_config.levels[data['level']]
+            equip = Equipment.load_from_slot_data(data)
 
-            self.attack += this_level.attack
-            self.attack_percent += this_level.attack_percent
-            self.defense += this_level.defense
-            self.defense_percent += this_level.defense_percent
-            self.manage += this_level.manage
-            self.manage_percent += this_level.manage_percent
-            self.operation += this_level.operation
-            self.operation_percent += this_level.operation_percent
+            self.attack += equip.staff_attack
+            self.attack_percent += equip.staff_attack_percent
+            self.defense += equip.staff_defense
+            self.defense_percent += equip.staff_defense_percent
+            self.manage += equip.staff_manage
+            self.manage_percent += equip.staff_manage_percent
+            self.operation += equip.staff_operation
+            self.operation_percent += equip.staff_operation_percent
 
             if slot_id != self.equip_decoration:
                 # 装备加成不算 饰品
@@ -801,7 +817,7 @@ class StaffManger(object):
         return amount
 
     def find_staff_id_with_equip(self, bag_slot_id):
-        keys = ['equip_mouse', 'equip_keyboard', 'equip_monitor', 'equip_decoration']
+        keys = ['equip_mouse', 'equip_keyboard', 'equip_monitor', 'equip_decoration', 'equip_special']
 
         staffs = self.get_staffs_data()
         for k, v in staffs.iteritems():
@@ -930,7 +946,8 @@ class StaffManger(object):
             if v['equip_mouse'] == slot_id or \
                             v['equip_keyboard'] == slot_id or \
                             v['equip_monitor'] == slot_id or \
-                            v['equip_decoration'] == slot_id:
+                            v['equip_decoration'] == slot_id or \
+                            v.get('equip_special', '') == slot_id:
                 return k
 
         return ""
@@ -942,7 +959,7 @@ class StaffManger(object):
     def equipment_change(self, staff_id, slot_id, tp):
         from core.formation import Formation
 
-        if tp not in [EQUIP_MOUSE, EQUIP_KEYBOARD, EQUIP_MONITOR, EQUIP_DECORATION]:
+        if tp not in [EQUIP_MOUSE, EQUIP_KEYBOARD, EQUIP_MONITOR, EQUIP_DECORATION, EQUIP_SPECIAL]:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
         staff = self.get_staff_object(staff_id)

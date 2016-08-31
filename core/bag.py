@@ -6,6 +6,9 @@ Date Created:   2016-03-10 10-37
 Description:
 
 """
+import math
+from collections import OrderedDict
+
 from dianjing.exception import GameException
 
 from core.mongo import MongoBag
@@ -23,6 +26,10 @@ from config import (
     ConfigItemUse,
     ConfigItemMerge,
     GlobalConfig,
+
+    ConfigEquipmentSpecial,
+    ConfigEquipmentSpecialGrowingProperty,
+    ConfigEquipmentSpecialLevel,
 )
 
 from config.settings import (
@@ -37,6 +44,66 @@ from protomsg.bag_pb2 import (
     BagSlotsRemoveNotify,
     Equipment as MsgEquipment,
 )
+from protomsg.common_pb2 import (
+    PROPERTY_STAFF_ATTACK,
+    PROPERTY_STAFF_ATTACK_PERCENT,
+    PROPERTY_STAFF_DEFENSE,
+    PROPERTY_STAFF_DEFENSE_PERCENT,
+    PROPERTY_STAFF_MANAGE,
+    PROPERTY_STAFF_MANAGE_PERCENT,
+    PROPERTY_STAFF_OPERATION,
+    PROPERTY_STAFF_OPERATION_PERCENT,
+
+    PROPERTY_UNIT_HP_PERCENT,
+    PROPERTY_UNIT_ATTACK_PERCENT,
+    PROPERTY_UNIT_DEFENSE_PERCENT,
+    PROPERTY_UNIT_HIT_PERCENT,
+    PROPERTY_UNIT_DODGE_PERCENT,
+    PROPERTY_UNIT_CRIT_PERCENT,
+    PROPERTY_UNIT_TOUGHNESS_PERCENT,
+    PROPERTY_UNIT_CRIT_MULTIPLE,
+
+    PROPERTY_UNIT_HURT_ADDIITON_TO_TERRAN,
+    PROPERTY_UNIT_HURT_ADDIITON_TO_PROTOSS,
+    PROPERTY_UNIT_HURT_ADDIITON_TO_ZERG,
+    PROPERTY_UNIT_HURT_ADDIITON_BY_TERRAN,
+    PROPERTY_UNIT_HURT_ADDIITON_BY_PROTOSS,
+    PROPERTY_UNIT_HURT_ADDIITON_BY_ZERG,
+
+    PROPERTY_UNIT_FINAL_HURT_ADDITION,
+    PROPERTY_UNIT_FINAL_HURT_REDUCE,
+)
+
+PROPERTY_TO_NAME_MAP = {
+    PROPERTY_STAFF_ATTACK: 'staff_attack',
+    PROPERTY_STAFF_ATTACK_PERCENT: 'staff_attack_percent',
+    PROPERTY_STAFF_DEFENSE: 'staff_defense',
+    PROPERTY_STAFF_DEFENSE_PERCENT: 'staff_defense_percent',
+    PROPERTY_STAFF_MANAGE: 'staff_manage',
+    PROPERTY_STAFF_MANAGE_PERCENT: 'staff_manage_percent',
+    PROPERTY_STAFF_OPERATION: 'staff_operation',
+    PROPERTY_STAFF_OPERATION_PERCENT: 'staff_operation_percent',
+
+    PROPERTY_UNIT_HP_PERCENT: 'unit_hp_percent',
+    PROPERTY_UNIT_ATTACK_PERCENT: 'unit_attack_percent',
+    PROPERTY_UNIT_DEFENSE_PERCENT: 'unit_defense_percent',
+    PROPERTY_UNIT_HIT_PERCENT: 'unit_hit_percent',
+    PROPERTY_UNIT_DODGE_PERCENT: 'unit_dodge_percent',
+    PROPERTY_UNIT_CRIT_PERCENT: 'unit_crit_percent',
+    PROPERTY_UNIT_TOUGHNESS_PERCENT: 'unit_toughness_percent',
+    PROPERTY_UNIT_CRIT_MULTIPLE: 'unit_crit_multiple',
+
+    PROPERTY_UNIT_HURT_ADDIITON_TO_TERRAN: 'unit_hurt_addition_to_terran',
+    PROPERTY_UNIT_HURT_ADDIITON_TO_PROTOSS: 'unit_hurt_addition_to_protoss',
+    PROPERTY_UNIT_HURT_ADDIITON_TO_ZERG: 'unit_hurt_addition_to_zerg',
+    PROPERTY_UNIT_HURT_ADDIITON_BY_TERRAN: 'unit_hurt_addition_by_terran',
+    PROPERTY_UNIT_HURT_ADDIITON_BY_PROTOSS: 'unit_hurt_addition_by_protoss',
+    PROPERTY_UNIT_HURT_ADDIITON_BY_ZERG: 'unit_hurt_addition_by_zerg',
+    PROPERTY_UNIT_FINAL_HURT_ADDITION: 'unit_final_hurt_addition',
+    PROPERTY_UNIT_FINAL_HURT_REDUCE: 'unit_final_hurt_reduce'
+}
+
+NAME_TO_PROPERTY_MAP = {v: k for k, v in PROPERTY_TO_NAME_MAP.iteritems()}
 
 TYPE_ITEM_NORMAL = 1  # 普通道具
 TYPE_ITEM_CAN_USE = 2  # 可使用道具
@@ -45,11 +112,17 @@ TYPE_EQUIPMENT = 4  # 装备
 TYPE_FRAGMENT = 5  # 碎片
 TYPE_STAFF = 6  # 选手 -- 不会进包裹
 
+TYPE_EQUIPMENT_SUB_TYPE_SPECIAL = 1
+
 BAG_CAN_CONTAINS_TYPE = [
     TYPE_ITEM_NORMAL,
     TYPE_ITEM_CAN_USE,
     TYPE_EQUIPMENT,
     TYPE_FRAGMENT,
+]
+
+SPECIAL_EQUIPMENT_BASE_PROPERTY = [
+    PROPERTY_STAFF_ATTACK, PROPERTY_STAFF_DEFENSE, PROPERTY_STAFF_MANAGE
 ]
 
 
@@ -78,33 +151,204 @@ def get_equipment_level_up_needs_to_level(item_id, level, prob=100):
     return results
 
 
-def make_equipment_msg(item_id, level):
-    """
+class Equipment(object):
+    __slots__ = [
+        'id', 'level',
 
-    :param item_id: Item id
-    :param level: Item current level
-    :return: Equipment Protocol Message
-    :rtype: MsgEquipment
-    """
-    config = ConfigEquipmentNew.get(item_id)
-    this_level = config.levels[level]
+        'growing', 'properties', 'skills', 'is_special',
 
-    msg = MsgEquipment()
-    msg.level = level
-    msg.attack = this_level.attack
-    msg.attack_percent = this_level.attack_percent
-    msg.defense = this_level.defense
-    msg.defense_percent = this_level.defense_percent
-    msg.manage = this_level.manage
-    msg.manage_percent = this_level.manage_percent
-    msg.operation = this_level.operation
-    msg.operation_percent = this_level.operation_percent
+        'staff_attack', 'staff_attack_percent',
+        'staff_defense', 'staff_defense_percent',
+        'staff_manage', 'staff_manage_percent',
+        'staff_operation', 'staff_operation_percent',
 
-    return msg
+        'unit_hp_percent', 'unit_attack_percent',
+        'unit_defense_percent', 'unit_hit_percent',
+        'unit_dodge_percent', 'unit_crit_percent',
+        'unit_toughness_percent', 'unit_crit_multiple',
 
+        'unit_hurt_addition_to_terran',
+        'unit_hurt_addition_to_protoss',
+        'unit_hurt_addition_to_zerg',
+        'unit_hurt_addition_by_terran',
+        'unit_hurt_addition_by_protoss',
+        'unit_hurt_addition_by_zerg',
 
-class EquipmentMaxLevel(GameException):
-    pass
+        'unit_final_hurt_addition',
+        'unit_final_hurt_reduce',
+    ]
+
+    def __init__(self):
+        self.id = 0
+        self.level = 0
+        self.growing = 0
+        self.properties = {}  # tp: level
+        self.skills = {}
+        self.is_special = False
+
+        self.staff_attack = 0
+        self.staff_attack_percent = 0
+        self.staff_defense = 0
+        self.staff_defense_percent = 0
+        self.staff_manage = 0
+        self.staff_manage_percent = 0
+        self.staff_operation = 0
+        self.staff_operation_percent = 0
+
+        self.unit_hp_percent = 0
+        self.unit_attack_percent = 0
+        self.unit_defense_percent = 0
+        self.unit_hit_percent = 0
+        self.unit_dodge_percent = 0
+        self.unit_crit_percent = 0
+        self.unit_toughness_percent = 0
+        self.unit_crit_multiple = 0
+
+        self.unit_hurt_addition_to_terran = 0
+        self.unit_hurt_addition_to_protoss = 0
+        self.unit_hurt_addition_to_zerg = 0
+        self.unit_hurt_addition_by_terran = 0
+        self.unit_hurt_addition_by_protoss = 0
+        self.unit_hurt_addition_by_zerg = 0
+
+        self.unit_final_hurt_addition = 0
+        self.unit_final_hurt_reduce = 0
+
+    @classmethod
+    def load_from_slot_data(cls, data):
+        obj = cls()
+        obj.id = data['item_id']
+        obj.level = data['level']
+
+        if ConfigItemNew.get(obj.id).sub_tp == TYPE_EQUIPMENT_SUB_TYPE_SPECIAL:
+            obj.is_special = True
+            obj.growing = data['growing']
+
+            config = ConfigEquipmentSpecialGrowingProperty.get_by_growing(data['growing'])
+            obj.properties = OrderedDict(zip(data['properties'], config.property_active_levels))
+            obj.skills = OrderedDict(zip(data['skills'], config.skill_active_levels))
+
+        obj.calculate()
+        return obj
+
+    @classmethod
+    def initialize_for_special(cls, _id, growing, properties, skills):
+        config = ConfigEquipmentSpecialGrowingProperty.get_by_growing(growing)
+
+        obj = cls()
+        obj.id = _id
+        obj.level = 0
+        obj.is_special = True
+        obj.properties = OrderedDict(zip(properties, config.property_active_levels))
+        obj.skills = OrderedDict(zip(skills), config.skill_active_levels)
+
+        obj.calculate()
+        return obj
+
+    @classmethod
+    def initialize_for_normal(cls, _id):
+        obj = cls()
+        obj.id = _id
+        obj.level = 0
+        obj.calculate()
+        return obj
+
+    def calculate(self):
+        if self.is_special:
+            config = ConfigEquipmentSpecial.get(self.id)
+            for k in NAME_TO_PROPERTY_MAP:
+                v = getattr(config, k, 0)
+                if v:
+                    setattr(self, k, v)
+
+            self.staff_attack = config.staff_attack + config.staff_attack * self.level * math.pow(self.growing, 1.25)
+            self.staff_defense = config.staff_defense + config.staff_defense * self.level * math.pow(self.growing, 1.25)
+            self.staff_manage = config.staff_manage + config.staff_manage * self.level * math.pow(self.growing, 1.25)
+
+            self.staff_attack = int(round(self.staff_attack))
+            self.staff_defense = int(round(self.staff_defense))
+            self.staff_manage = int(round(self.staff_manage))
+
+        else:
+            config = ConfigEquipmentNew.get(self.id).levels[self.level]
+            self.staff_attack = config.attack
+            self.staff_attack_percent = config.attack_percent
+            self.staff_defense = config.defense
+            self.staff_defense_percent = config.defense_percent
+            self.staff_manage = config.manage
+            self.staff_manage_percent = config.manage_percent
+            self.staff_operation = config.operation
+            self.staff_operation_percent = config.operation_percent
+
+    def get_property_value(self, p):
+        name = PROPERTY_TO_NAME_MAP[p]
+        return getattr(self, name)
+
+    def make_protomsg(self):
+        msg = MsgEquipment()
+
+        msg.id = self.id
+        msg.level = self.level
+
+        if self.is_special:
+            msg.growing = self.growing
+            properties = [(i, 0) for i in SPECIAL_EQUIPMENT_BASE_PROPERTY] + self.properties.items()
+        else:
+            properties = [
+                (PROPERTY_STAFF_ATTACK, 0), (PROPERTY_STAFF_ATTACK_PERCENT, 0),
+                (PROPERTY_STAFF_DEFENSE, 0), (PROPERTY_STAFF_DEFENSE_PERCENT, 0),
+                (PROPERTY_STAFF_MANAGE, 0), (PROPERTY_STAFF_MANAGE_PERCENT, 0),
+                (PROPERTY_STAFF_OPERATION, 0), (PROPERTY_STAFF_OPERATION_PERCENT, 0),
+            ]
+
+        for p, lv in properties:
+            msg_property = msg.properties.add()
+            msg_property.tp = p
+            msg_property.level = lv
+            msg_property.value = self.get_property_value(p)
+
+        for s, lv in self.skills:
+            msg_skill = msg.skills.add()
+            msg_skill.id = s
+            msg_skill.level = lv
+
+        return msg
+
+    def to_doc(self):
+        doc = {
+            'item_id': self.id,
+            'amount': 1,
+            'level': self.level
+        }
+
+        if self.is_special:
+            doc.update({
+                'growing': self.growing,
+                'properties': self.properties.keys(),
+                'skills': self.skills.keys(),
+            })
+
+        return doc
+
+    def get_level_up_needs_items(self, add_level):
+        item_needs = []
+        this_level = self.level
+
+        if self.is_special:
+            for _ in range(add_level):
+                item = ConfigEquipmentSpecialLevel.get(this_level).items
+                item = [(k, int(v * self.growing)) for k, v in item]
+                item_needs.extend(item)
+
+                this_level += 1
+        else:
+            config = ConfigEquipmentNew.get(self.id)
+            for _ in range(add_level):
+                item = config.levels[this_level].update_item_need
+                item_needs.extend(item)
+                this_level += 1
+
+        return item_needs
 
 
 class Bag(object):
@@ -160,11 +404,11 @@ class Bag(object):
 
             level = kwargs.get('level', 0)
             amount = kwargs.get('amount', 1)
-            new_state = self._add_equipment(item_id, level, amount)
+            new_state = self.add_equipment(item_id, level, amount)
         else:
             # 这些是可以堆叠的，先找是否有格子已经是这个物品了，如果有了，再判断是否达到堆叠上限
             amount = kwargs.get('amount', 1)
-            new_state = self._add_stack_item(item_id, amount)
+            new_state = self.add_stack_item(item_id, amount)
 
         slot_ids = []
         updater = {}
@@ -180,7 +424,7 @@ class Bag(object):
 
         self.send_notify(slot_ids=slot_ids)
 
-    def _add_equipment(self, item_id, level, amount):
+    def add_equipment(self, item_id, level, amount):
         new_state = []
         for i in range(amount):
             slot_id = make_string_id()
@@ -193,7 +437,25 @@ class Bag(object):
 
         return new_state
 
-    def _add_stack_item(self, item_id, amount):
+    def add_equipment_object(self, equip):
+        """
+
+        :type equip: Equipment
+        """
+        slot_id = make_string_id()
+        data = equip.to_doc()
+
+        self.doc['slots'][slot_id] = data
+        MongoBag.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'slots.{0}'.format(slot_id): data
+            }}
+        )
+
+        self.send_notify(slot_ids=[slot_id])
+
+    def add_stack_item(self, item_id, amount):
         stack_max = ConfigItemNew.get(item_id).stack_max
         new_state = []
 
@@ -421,32 +683,25 @@ class Bag(object):
         resource_classified.add(self.server_id, self.char_id)
         return resource_classified
 
-    def equipment_level_up_preview(self, slot_id):
-        # 装备升级准备
-        # 客户端请求一下，把计算好的下一级属性发回去， 先不升级
-        this_slot = self.doc['slots'][slot_id]
-        item_id = this_slot['item_id']
-        level = this_slot['level']
-
-        config = ConfigEquipmentNew.get(item_id)
-        max_level = min(config.max_level, get_club_property(self.server_id, self.char_id, 'level') * 2)
-        if level >= max_level:
-            raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_REACH_MAX_LEVEL"))
-
-        return make_equipment_msg(item_id, level + 1)
-
-    def equipment_level_up_confirm(self, slot_id, times=1):
-        # 装备升级确认
-        # 上一步 用户看到下一级属性后， 点击确认升级
+    def equipment_level_up(self, slot_id, times=1):
         from core.staff import StaffManger
         from core.formation import Formation
+        from core.plunder import Plunder
 
         this_slot = self.doc['slots'][slot_id]
         item_id = this_slot['item_id']
-        level = this_slot['level']
 
-        config = ConfigEquipmentNew.get(item_id)
-        max_level = min(config.max_level, get_club_property(self.server_id, self.char_id, 'level') * 2)
+        if get_item_type(item_id) != TYPE_EQUIPMENT:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        equip = Equipment.load_from_slot_data(this_slot)
+        level = equip.level
+
+        if equip.is_special:
+            max_level = Plunder(self.server_id, self.char_id).get_station_level()
+        else:
+            config = ConfigEquipmentNew.get(item_id)
+            max_level = min(config.max_level, get_club_property(self.server_id, self.char_id, 'level') * 2)
 
         if level >= max_level:
             raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_REACH_MAX_LEVEL"))
@@ -456,15 +711,9 @@ class Bag(object):
             times = can_add_level
 
         def do_level_up(_add):
-            item_needs = []
-            this_level = level
+            _item_needs = equip.get_level_up_needs_items(_add)
 
-            for _ in range(_add):
-                item = config.levels[this_level].update_item_need
-                item_needs.extend(item)
-                this_level += 1
-
-            resource_classified = ResourceClassification.classify(item_needs)
+            resource_classified = ResourceClassification.classify(_item_needs)
             resource_classified.check_exist(self.server_id, self.char_id)
             resource_classified.remove(self.server_id, self.char_id)
 
@@ -490,7 +739,7 @@ class Bag(object):
                 }}
             )
 
-            ValueLogEquipmentLevelUpTimes(self.server_id, self.char_id).record(value=level-old_level)
+            ValueLogEquipmentLevelUpTimes(self.server_id, self.char_id).record(value=level - old_level)
             self.send_notify(slot_ids=[slot_id])
 
             sm = StaffManger(self.server_id, self.char_id)
@@ -504,7 +753,7 @@ class Bag(object):
 
                     Club(self.server_id, self.char_id).send_notify()
 
-        return error_code, level!=old_level, make_equipment_msg(item_id, level)
+        return error_code, level != old_level, Equipment.load_from_slot_data(self.doc['slots'][slot_id])
 
     def send_remove_notify(self, slots_ids):
         notify = BagSlotsRemoveNotify()
@@ -534,6 +783,7 @@ class Bag(object):
 
             if get_item_type(this_slot['item_id']) == 4:
                 # 装备
-                notify_slot.equipment.MergeFrom(make_equipment_msg(this_slot['item_id'], this_slot['level']))
+                equip = Equipment.load_from_slot_data(this_slot)
+                notify_slot.equipment.MergeFrom(equip.make_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)

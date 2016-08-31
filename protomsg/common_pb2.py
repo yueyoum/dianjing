@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='common.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0c\x63ommon.proto\x12\x11\x44ianjing.protocol\"/\n\tUTCNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\ttimestamp\x18\x02 \x02(\x03\"-\n\x0bSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05param\x18\x02 \x02(\x05\";\n\x0cSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\r\n\x05param\x18\x03 \x01(\x05\"\x1e\n\x0bPingRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\",\n\x0cPingResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*.\n\x0bNextOperate\x12\n\n\x06OPT_OK\x10\x01\x12\x13\n\x0fOPT_CREATE_CLUB\x10\x02*&\n\x06\x41\x63tion\x12\x0c\n\x08\x41\x43T_INIT\x10\x01\x12\x0e\n\nACT_UPDATE\x10\x02*1\n\x08\x43lubType\x12\x12\n\x0e\x43LUB_TYPE_REAL\x10\x01\x12\x11\n\rCLUB_TYPE_NPC\x10\x02')
+  serialized_pb=_b('\n\x0c\x63ommon.proto\x12\x11\x44ianjing.protocol\"/\n\tUTCNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\ttimestamp\x18\x02 \x02(\x03\"-\n\x0bSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05param\x18\x02 \x02(\x05\";\n\x0cSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\r\n\x05param\x18\x03 \x01(\x05\"\x1e\n\x0bPingRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\",\n\x0cPingResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*.\n\x0bNextOperate\x12\n\n\x06OPT_OK\x10\x01\x12\x13\n\x0fOPT_CREATE_CLUB\x10\x02*&\n\x06\x41\x63tion\x12\x0c\n\x08\x41\x43T_INIT\x10\x01\x12\x0e\n\nACT_UPDATE\x10\x02*\xe3\x06\n\x0cPropertyType\x12\x19\n\x15PROPERTY_STAFF_ATTACK\x10\x01\x12\x1a\n\x16PROPERTY_STAFF_DEFENSE\x10\x02\x12\x19\n\x15PROPERTY_STAFF_MANAGE\x10\x03\x12\x1c\n\x18PROPERTY_STAFF_OPERATION\x10\x04\x12!\n\x1dPROPERTY_STAFF_ATTACK_PERCENT\x10\x05\x12\"\n\x1ePROPERTY_STAFF_DEFENSE_PERCENT\x10\x06\x12!\n\x1dPROPERTY_STAFF_MANAGE_PERCENT\x10\x07\x12$\n PROPERTY_STAFF_OPERATION_PERCENT\x10\x08\x12\x1c\n\x18PROPERTY_UNIT_HP_PERCENT\x10\t\x12 \n\x1cPROPERTY_UNIT_ATTACK_PERCENT\x10\n\x12!\n\x1dPROPERTY_UNIT_DEFENSE_PERCENT\x10\x0b\x12\x1d\n\x19PROPERTY_UNIT_HIT_PERCENT\x10\x0c\x12\x1f\n\x1bPROPERTY_UNIT_DODGE_PERCENT\x10\r\x12\x1e\n\x1aPROPERTY_UNIT_CRIT_PERCENT\x10\x0e\x12#\n\x1fPROPERTY_UNIT_TOUGHNESS_PERCENT\x10\x0f\x12\x1f\n\x1bPROPERTY_UNIT_CRIT_MULTIPLE\x10\x10\x12)\n%PROPERTY_UNIT_HURT_ADDIITON_TO_TERRAN\x10\x11\x12*\n&PROPERTY_UNIT_HURT_ADDIITON_TO_PROTOSS\x10\x12\x12\'\n#PROPERTY_UNIT_HURT_ADDIITON_TO_ZERG\x10\x13\x12)\n%PROPERTY_UNIT_HURT_ADDIITON_BY_TERRAN\x10\x14\x12*\n&PROPERTY_UNIT_HURT_ADDIITON_BY_PROTOSS\x10\x15\x12\'\n#PROPERTY_UNIT_HURT_ADDIITON_BY_ZERG\x10\x16\x12%\n!PROPERTY_UNIT_FINAL_HURT_ADDITION\x10\x17\x12#\n\x1fPROPERTY_UNIT_FINAL_HURT_REDUCE\x10\x18')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -70,35 +70,145 @@ _ACTION = _descriptor.EnumDescriptor(
 _sym_db.RegisterEnumDescriptor(_ACTION)
 
 Action = enum_type_wrapper.EnumTypeWrapper(_ACTION)
-_CLUBTYPE = _descriptor.EnumDescriptor(
-  name='ClubType',
-  full_name='Dianjing.protocol.ClubType',
+_PROPERTYTYPE = _descriptor.EnumDescriptor(
+  name='PropertyType',
+  full_name='Dianjing.protocol.PropertyType',
   filename=None,
   file=DESCRIPTOR,
   values=[
     _descriptor.EnumValueDescriptor(
-      name='CLUB_TYPE_REAL', index=0, number=1,
+      name='PROPERTY_STAFF_ATTACK', index=0, number=1,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='CLUB_TYPE_NPC', index=1, number=2,
+      name='PROPERTY_STAFF_DEFENSE', index=1, number=2,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_STAFF_MANAGE', index=2, number=3,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_STAFF_OPERATION', index=3, number=4,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_STAFF_ATTACK_PERCENT', index=4, number=5,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_STAFF_DEFENSE_PERCENT', index=5, number=6,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_STAFF_MANAGE_PERCENT', index=6, number=7,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_STAFF_OPERATION_PERCENT', index=7, number=8,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_UNIT_HP_PERCENT', index=8, number=9,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_UNIT_ATTACK_PERCENT', index=9, number=10,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_UNIT_DEFENSE_PERCENT', index=10, number=11,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_UNIT_HIT_PERCENT', index=11, number=12,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_UNIT_DODGE_PERCENT', index=12, number=13,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_UNIT_CRIT_PERCENT', index=13, number=14,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_UNIT_TOUGHNESS_PERCENT', index=14, number=15,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_UNIT_CRIT_MULTIPLE', index=15, number=16,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_UNIT_HURT_ADDIITON_TO_TERRAN', index=16, number=17,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_UNIT_HURT_ADDIITON_TO_PROTOSS', index=17, number=18,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_UNIT_HURT_ADDIITON_TO_ZERG', index=18, number=19,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_UNIT_HURT_ADDIITON_BY_TERRAN', index=19, number=20,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_UNIT_HURT_ADDIITON_BY_PROTOSS', index=20, number=21,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_UNIT_HURT_ADDIITON_BY_ZERG', index=21, number=22,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_UNIT_FINAL_HURT_ADDITION', index=22, number=23,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PROPERTY_UNIT_FINAL_HURT_REDUCE', index=23, number=24,
       options=None,
       type=None),
   ],
   containing_type=None,
   options=None,
-  serialized_start=358,
-  serialized_end=407,
+  serialized_start=359,
+  serialized_end=1226,
 )
-_sym_db.RegisterEnumDescriptor(_CLUBTYPE)
+_sym_db.RegisterEnumDescriptor(_PROPERTYTYPE)
 
-ClubType = enum_type_wrapper.EnumTypeWrapper(_CLUBTYPE)
+PropertyType = enum_type_wrapper.EnumTypeWrapper(_PROPERTYTYPE)
 OPT_OK = 1
 OPT_CREATE_CLUB = 2
 ACT_INIT = 1
 ACT_UPDATE = 2
-CLUB_TYPE_REAL = 1
-CLUB_TYPE_NPC = 2
+PROPERTY_STAFF_ATTACK = 1
+PROPERTY_STAFF_DEFENSE = 2
+PROPERTY_STAFF_MANAGE = 3
+PROPERTY_STAFF_OPERATION = 4
+PROPERTY_STAFF_ATTACK_PERCENT = 5
+PROPERTY_STAFF_DEFENSE_PERCENT = 6
+PROPERTY_STAFF_MANAGE_PERCENT = 7
+PROPERTY_STAFF_OPERATION_PERCENT = 8
+PROPERTY_UNIT_HP_PERCENT = 9
+PROPERTY_UNIT_ATTACK_PERCENT = 10
+PROPERTY_UNIT_DEFENSE_PERCENT = 11
+PROPERTY_UNIT_HIT_PERCENT = 12
+PROPERTY_UNIT_DODGE_PERCENT = 13
+PROPERTY_UNIT_CRIT_PERCENT = 14
+PROPERTY_UNIT_TOUGHNESS_PERCENT = 15
+PROPERTY_UNIT_CRIT_MULTIPLE = 16
+PROPERTY_UNIT_HURT_ADDIITON_TO_TERRAN = 17
+PROPERTY_UNIT_HURT_ADDIITON_TO_PROTOSS = 18
+PROPERTY_UNIT_HURT_ADDIITON_TO_ZERG = 19
+PROPERTY_UNIT_HURT_ADDIITON_BY_TERRAN = 20
+PROPERTY_UNIT_HURT_ADDIITON_BY_PROTOSS = 21
+PROPERTY_UNIT_HURT_ADDIITON_BY_ZERG = 22
+PROPERTY_UNIT_FINAL_HURT_ADDITION = 23
+PROPERTY_UNIT_FINAL_HURT_REDUCE = 24
 
 
 
@@ -298,7 +408,7 @@ DESCRIPTOR.message_types_by_name['PingRequest'] = _PINGREQUEST
 DESCRIPTOR.message_types_by_name['PingResponse'] = _PINGRESPONSE
 DESCRIPTOR.enum_types_by_name['NextOperate'] = _NEXTOPERATE
 DESCRIPTOR.enum_types_by_name['Action'] = _ACTION
-DESCRIPTOR.enum_types_by_name['ClubType'] = _CLUBTYPE
+DESCRIPTOR.enum_types_by_name['PropertyType'] = _PROPERTYTYPE
 
 UTCNotify = _reflection.GeneratedProtocolMessageType('UTCNotify', (_message.Message,), dict(
   DESCRIPTOR = _UTCNOTIFY,

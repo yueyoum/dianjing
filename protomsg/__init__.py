@@ -95,8 +95,6 @@ MESSAGE_TO_ID = {
     "BagEquipmentLevelupResponse": 3011,
     "BagEquipmentDestroyRequest": 3012,
     "BagEquipmentDestroyResponse": 3013,
-    "BagEquipmentLevelupConfirmRequest": 3014,
-    "BagEquipmentLevelupConfirmResponse": 3015,
     "UnitNotify": 3100,
     "UnitLevelUpRequest": 3101,
     "UnitLevelUpResponse": 3102,
@@ -265,6 +263,13 @@ MESSAGE_TO_ID = {
     "BaseStationSyncResponse": 4732,
     "PlunderBuyTimesRequest": 4733,
     "PlunderBuyTimesResponse": 4734,
+    "SpecialEquipmentGenerateNotify": 4750,
+    "SpecialEquipmentGenerateRequest": 4751,
+    "SpecialEquipmentGenerateResponse": 4752,
+    "SpecialEquipmentGenerateSpeedUpRequest": 4753,
+    "SpecialEquipmentGenerateSpeedUpResponse": 4754,
+    "SpecialEquipmentGetRequest": 4755,
+    "SpecialEquipmentGetResponse": 4756,
 }
 
 ID_TO_MESSAGE = {
@@ -363,8 +368,6 @@ ID_TO_MESSAGE = {
     3011: "BagEquipmentLevelupResponse",
     3012: "BagEquipmentDestroyRequest",
     3013: "BagEquipmentDestroyResponse",
-    3014: "BagEquipmentLevelupConfirmRequest",
-    3015: "BagEquipmentLevelupConfirmResponse",
     3100: "UnitNotify",
     3101: "UnitLevelUpRequest",
     3102: "UnitLevelUpResponse",
@@ -533,6 +536,13 @@ ID_TO_MESSAGE = {
     4732: "BaseStationSyncResponse",
     4733: "PlunderBuyTimesRequest",
     4734: "PlunderBuyTimesResponse",
+    4750: "SpecialEquipmentGenerateNotify",
+    4751: "SpecialEquipmentGenerateRequest",
+    4752: "SpecialEquipmentGenerateResponse",
+    4753: "SpecialEquipmentGenerateSpeedUpRequest",
+    4754: "SpecialEquipmentGenerateSpeedUpResponse",
+    4755: "SpecialEquipmentGetRequest",
+    4756: "SpecialEquipmentGetResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -573,7 +583,6 @@ PATH_TO_REQUEST = {
     "/game/bagitem/destroy/": ["bag", "BagItemDestroyRequest"],
     "/game/bagequipment/levelup/": ["bag", "BagEquipmentLevelupRequest"],
     "/game/bagequipment/destroy/": ["bag", "BagEquipmentDestroyRequest"],
-    "/game/bagequipment/levelup/confirm/": ["bag", "BagEquipmentLevelupConfirmRequest"],
     "/game/unit/levelup/": ["unit", "UnitLevelUpRequest"],
     "/game/unit/stepup/": ["unit", "UnitStepUpRequest"],
     "/game/formation/setstaff/": ["formation", "FormationSetStaffRequest"],
@@ -641,6 +650,9 @@ PATH_TO_REQUEST = {
     "/game/plunder/getreward/": ["plunder", "PlunderGetRewardRequest"],
     "/game/plunder/station/sync/": ["plunder", "BaseStationSyncRequest"],
     "/game/plunder/buytimes/": ["plunder", "PlunderBuyTimesRequest"],
+    "/game/plunder/specialequip/generate/": ["plunder", "SpecialEquipmentGenerateRequest"],
+    "/game/plunder/specialequip/speedup/": ["plunder", "SpecialEquipmentGenerateSpeedUpRequest"],
+    "/game/plunder/specialequip/get/": ["plunder", "SpecialEquipmentGetRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -681,7 +693,6 @@ PATH_TO_RESPONSE = {
     "/game/bagitem/destroy/": ["bag", "BagItemDestroyResponse"],
     "/game/bagequipment/levelup/": ["bag", "BagEquipmentLevelupResponse"],
     "/game/bagequipment/destroy/": ["bag", "BagEquipmentDestroyResponse"],
-    "/game/bagequipment/levelup/confirm/": ["bag", "BagEquipmentLevelupConfirmResponse"],
     "/game/unit/levelup/": ["unit", "UnitLevelUpResponse"],
     "/game/unit/stepup/": ["unit", "UnitStepUpResponse"],
     "/game/formation/setstaff/": ["formation", "FormationSetStaffResponse"],
@@ -749,4 +760,7 @@ PATH_TO_RESPONSE = {
     "/game/plunder/getreward/": ["plunder", "PlunderGetRewardResponse"],
     "/game/plunder/station/sync/": ["plunder", "BaseStationSyncResponse"],
     "/game/plunder/buytimes/": ["plunder", "PlunderBuyTimesResponse"],
+    "/game/plunder/specialequip/generate/": ["plunder", "SpecialEquipmentGenerateResponse"],
+    "/game/plunder/specialequip/speedup/": ["plunder", "SpecialEquipmentGenerateSpeedUpResponse"],
+    "/game/plunder/specialequip/get/": ["plunder", "SpecialEquipmentGetResponse"],
 }

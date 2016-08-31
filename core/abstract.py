@@ -174,7 +174,7 @@ class AbstractStaff(object):
         'config',
         'server_id', 'char_id', 'id', 'oid', 'level', 'step', 'star', 'level_exp', 'star_exp',
 
-        'equip_mouse', 'equip_keyboard', 'equip_monitor', 'equip_decoration',
+        'equip_mouse', 'equip_keyboard', 'equip_monitor', 'equip_decoration', 'equip_special',
         'attack', 'defense', 'manage', 'operation',
         'attack_percent', 'defense_percent', 'manage_percent', 'operation_percent',
 
@@ -226,6 +226,7 @@ class AbstractStaff(object):
         self.equip_keyboard = ''
         self.equip_monitor = ''
         self.equip_decoration = ''
+        self.equip_special = ''
 
         self.formation_position = None
 
@@ -579,6 +580,7 @@ class AbstractStaff(object):
         msg.equip_keyboard_slot_id = self.equip_keyboard
         msg.equip_monitor_slot_id = self.equip_monitor
         msg.equip_decoration_slot_id = self.equip_decoration
+        msg.equip_special_slot_id = self.equip_special
         msg.qianban_ids.extend(self.active_qianban_ids)
 
         return msg

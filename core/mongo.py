@@ -105,6 +105,7 @@ class MongoStaff(BaseDocument):
         'equip_keyboard': '',
         'equip_monitor': '',
         'equip_decoration': '',
+        'equip_special': '',
     }
 
     @classmethod
@@ -187,10 +188,30 @@ class MongoBag(BaseDocument):
         'amount': 0,
         # 如果是装备，则有下面的属性
         'level': 0,
+        # 如果是特殊装备，还有下面属性
+        'growing': 0,
+        'properties': [],
+        'skills': [],
     }
 
     COLLECTION = 'bag'
 
+# 打造装备
+class MongoSpecialEquipment(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'item_id': 0,
+        'finish_at': 0,
+        'tp': 0,
+
+        # 每种类型的积分
+        'score': {
+            '1': 0,
+            '2': 0,
+        }
+    }
+
+    COLLECTION = 'special_equipment'
 
 # 招募刷新
 class MongoStaffRecruit(BaseDocument):

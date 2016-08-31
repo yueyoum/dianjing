@@ -9,7 +9,7 @@ Description:
 
 from utils.http import ProtobufResponse
 
-from core.plunder import Plunder
+from core.plunder import Plunder, SpecialEquipmentGenerator
 from views.helper import parse_protocol_sync_formation_slots
 
 from protomsg.plunder_pb2 import (
@@ -22,6 +22,10 @@ from protomsg.plunder_pb2 import (
     BaseStationSyncResponse,
     PlunderGetRewardResponse,
     PlunderBuyTimesResponse,
+
+    SpecialEquipmentGenerateResponse,
+    SpecialEquipmentGenerateSpeedUpResponse,
+    SpecialEquipmentGetResponse,
 )
 
 def set_staff(request):
@@ -156,3 +160,40 @@ def sync_station(request):
     response = BaseStationSyncResponse()
     response.ret = 0
     return ProtobufResponse(response)
+
+
+def special_equipment_generate(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    slot_id = request._proto.slot_id
+    tp = request._proto.tp
+
+    s = SpecialEquipmentGenerator(server_id, char_id)
+    s.generate(slot_id, tp)
+
+    response = SpecialEquipmentGenerateResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+def special_equipment_speedup(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    s = SpecialEquipmentGenerator(server_id, char_id)
+    s.speedup()
+
+    response = SpecialEquipmentGenerateSpeedUpResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+def special_equipment_get(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    s = SpecialEquipmentGenerator(server_id, char_id)
+    equip = s.get_result()
+
+    response = SpecialEquipmentGetResponse()
+    response.ret = 0
+    response.equipment.MergeFrom(equip.make_protomsg())

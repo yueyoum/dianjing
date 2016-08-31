@@ -174,3 +174,195 @@ class ConfigEquipmentNew(ConfigBase):
         """
         return super(ConfigEquipmentNew, cls).get(_id)
 
+
+
+class EquipmentSpecial(object):
+    __slots__ = [
+        'id',
+        'staff_attack', 'staff_defense', 'staff_manage',
+        'staff_attack_percent', 'staff_defense_percent', 'staff_manage_percent',
+        'unit_attack_percent', 'unit_defense_percent', 'unit_hp_percent',
+        'unit_hit_rate', 'unit_dodge_rate', 'unit_crit_rate',
+        'unit_toughness_rate', 'unit_crit_multiple',
+
+        'unit_hurt_addition_to_terran',
+        'unit_hurt_addition_to_protoss',
+        'unit_hurt_addition_to_zerg',
+        'unit_hurt_addition_by_terran',
+        'unit_hurt_addition_by_protoss',
+        'unit_hurt_addition_by_zerg',
+
+        'skills',
+    ]
+
+    def __init__(self):
+        self.id = 0
+        self.staff_attack = 0
+        self.staff_defense = 0
+        self.staff_manage = 0
+
+        self.staff_attack_percent = 0
+        self.staff_defense_percent = 0
+        self.staff_manage_percent = 0
+
+        self.unit_attack_percent = 0
+        self.unit_defense_percent = 0
+        self.unit_hp_percent = 0
+        self.unit_hit_rate = 0
+        self.unit_dodge_rate = 0
+        self.unit_crit_rate = 0
+        self.unit_toughness_rate = 0
+        self.unit_crit_multiple = 0
+        self.unit_hurt_addition_to_terran = 0
+        self.unit_hurt_addition_to_protoss = 0
+        self.unit_hurt_addition_to_zerg = 0
+        self.unit_hurt_addition_by_terran = 0
+        self.unit_hurt_addition_by_protoss = 0
+        self.unit_hurt_addition_by_zerg = 0
+        self.skills = []
+
+
+
+class ConfigEquipmentSpecial(ConfigBase):
+    EntityClass = EquipmentSpecial
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: EquipmentSpecial
+        """
+        return super(ConfigEquipmentSpecial, cls).get(_id)
+
+
+class EquipmentSpecialGrowingProperty(object):
+    __slots__ = [
+        'id', 'growing_low', 'growing_high',
+        'property_active_levels',
+        'skill_active_levels'
+    ]
+
+    def __init__(self):
+        self.id = 0
+        self.growing_low = 0
+        self.growing_high = 0
+        self.property_active_levels = []
+        self.skill_active_levels = []
+
+
+class ConfigEquipmentSpecialGrowingProperty(ConfigBase):
+    EntityClass = EquipmentSpecialGrowingProperty
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    MAP = {}
+
+    @classmethod
+    def get_by_growing(cls, value):
+        """
+
+        :rtype: EquipmentSpecialGrowingProperty
+        """
+        if value not in cls.MAP:
+            for _, v in cls.INSTANCES.iteritems():
+                if v.growing_low <= value <= v.growing_high:
+                    cls.MAP[value] = v
+                    break
+            else:
+                raise RuntimeError("ConfigEquipmentSpecialGrowingProperty, can not find config for growing: {0}".format(value))
+
+        return cls.MAP[value]
+
+class EquipmentSpecialGenerate(object):
+    __slots__ = [
+        'id',
+        'normal_cost', 'normal_generate',
+        'advance_cost', 'advance_generate',
+        'minutes'
+    ]
+
+    def __init__(self):
+        self.id = 0
+        self.normal_cost = []
+        self.normal_generate = []
+        self.advance_cost = []
+        self.advance_generate = []
+        self.minutes = 0
+
+
+class ConfigEquipmentSpecialGenerate(ConfigBase):
+    EntityClass = EquipmentSpecialGenerate
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: EquipmentSpecialGenerate
+        """
+        return super(ConfigEquipmentSpecialGenerate, cls).get(_id)
+
+class EquipmentSpecialScoreToGrowing(object):
+    __slots__ = [
+        'id', 'tp',
+        'score_low', 'score_high',
+        'growing_low', 'growing_high'
+    ]
+
+    def __init__(self):
+        self.id = 0
+        self.tp = 0
+        self.score_low = 0
+        self.score_high = 0
+        self.growing_low = 0
+        self.growing_high = 0
+
+
+class ConfigEquipmentSpecialScoreToGrowing(ConfigBase):
+    EntityClass = EquipmentSpecialScoreToGrowing
+    INSTANCES = {}
+    """:type: dict[int, EquipmentSpecialScoreToGrowing]"""
+    FILTER_CACHE = {}
+    MAP = {}
+
+    @classmethod
+    def get_random_growing_by_score(cls, tp, value):
+        """
+
+        :rtype: int
+        """
+        key = "{0}.{1}".format(tp, value)
+
+        if key not in cls.MAP:
+            for _, v in cls.INSTANCES.iteritems():
+                if v.tp == tp and v.score_low <= value <= v.score_high:
+                    cls.MAP[key] = v
+                    break
+            else:
+                raise RuntimeError("ConfigEquipmentSpecialScoreToGrowing, can not find config for score: {0}".format(value))
+
+        obj = cls.MAP[key]
+        return random.randint(obj.growing_low, obj.growing_high)
+
+class EquipmentSpecialLevel(object):
+    __slots__ = ['id', 'items']
+    def __init__(self):
+        self.id = 0
+        self.items = []
+
+
+class ConfigEquipmentSpecialLevel(ConfigBase):
+    EntityClass = EquipmentSpecialLevel
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: EquipmentSpecialLevel
+        """
+        return super(ConfigEquipmentSpecialLevel, cls).get(_id)

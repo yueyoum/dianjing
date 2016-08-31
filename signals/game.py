@@ -38,7 +38,7 @@ from core.resource import _Resource
 from core.union import Union
 from core.purchase import Purchase
 from core.activity import ActivityNewPlayer
-from core.plunder import Plunder
+from core.plunder import Plunder, SpecialEquipmentGenerator
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify
@@ -137,6 +137,8 @@ def game_start_handler(server_id, char_id, **kwargs):
     p.send_station_notify()
     p.send_formation_notify()
     p.send_plunder_times_notify()
+
+    SpecialEquipmentGenerator(server_id, char_id).send_notify()
 
     send_system_notify(char_id)
     BroadCast(server_id, char_id).try_cast_login_notify()

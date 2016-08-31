@@ -19,7 +19,9 @@ from config.staff import ConfigStaffRecruit, ConfigStaffNew, ConfigStaffStar, Co
 from config.challenge import ConfigChallengeMatch, ConfigChapter, ConfigChallengeResetCost
 from config.unit import ConfigUnitNew, ConfigUnitUnLock, ConfigUnitStepAddition, ConfigUnitLevelAddition, \
     ConfigUnitAddition
-from config.item import ConfigItemNew, ConfigItemUse, ConfigItemMerge, ConfigEquipmentNew
+from config.item import ConfigItemNew, ConfigItemUse, ConfigItemMerge, ConfigEquipmentNew, ConfigEquipmentSpecial, \
+    ConfigEquipmentSpecialGenerate, ConfigEquipmentSpecialGrowingProperty, ConfigEquipmentSpecialLevel, \
+    ConfigEquipmentSpecialScoreToGrowing
 from config.skill import ConfigTalentSkill
 from config.task import ConfigTaskMain, ConfigTaskDaily, ConfigTaskCondition
 from config.club import ConfigClubLevel, ConfigClubFlag
@@ -87,6 +89,16 @@ def load_config():
             ConfigItemMerge.initialize(data)
         elif name == 'equipment_new.json':
             ConfigEquipmentNew.initialize(data)
+        elif name == 'equipment_special.json':
+            ConfigEquipmentSpecial.initialize(data)
+        elif name == 'equipment_special_generate.json':
+            ConfigEquipmentSpecialGenerate.initialize(data)
+        elif name == 'equipment_special_growing_property.json':
+            ConfigEquipmentSpecialGrowingProperty.initialize(data)
+        elif name == 'equipment_special_level.json':
+            ConfigEquipmentSpecialLevel.initialize(data)
+        elif name == 'equipment_special_score_to_growing.json':
+            ConfigEquipmentSpecialScoreToGrowing.initialize(data)
 
         elif name == 'staff_new.json':
             ConfigStaffNew.initialize(data)

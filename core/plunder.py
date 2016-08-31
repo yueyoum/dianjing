@@ -20,6 +20,8 @@ from core.mongo import (
     MongoPlunderFormationWay1,
     MongoPlunderFormationWay2,
     MongoPlunderFormationWay3,
+
+    MongoSpecialEquipment,
 )
 
 from core.club import get_club_property, Club
@@ -30,11 +32,24 @@ from core.cooldown import PlunderSearchCD
 from core.match import ClubMatch
 from core.value_log import ValueLogPlunderRevengeTimes, ValueLogPlunderTimes, ValueLogPlunderBuyTimes
 from core.resource import ResourceClassification, STATION_EXP_ID, money_text_to_item_id
+from core.bag import Bag, Equipment, PROPERTY_TO_NAME_MAP, SPECIAL_EQUIPMENT_BASE_PROPERTY
 
 from utils.message import MessagePipe
 from utils.functional import make_string_id
 
-from config import ConfigErrorMessage, ConfigBaseStationLevel, ConfigPlunderBuyTimesCost, ConfigPlunderIncome
+from config import (
+    ConfigErrorMessage,
+    ConfigBaseStationLevel,
+    ConfigPlunderBuyTimesCost,
+    ConfigPlunderIncome,
+    ConfigEquipmentSpecialGrowingProperty,
+    ConfigEquipmentSpecial,
+    ConfigEquipmentSpecialScoreToGrowing,
+    ConfigEquipmentSpecialLevel,
+    ConfigEquipmentSpecialGenerate,
+
+    GlobalConfig,
+)
 
 from protomsg.plunder_pb2 import (
     BaseStationNotify,
@@ -48,6 +63,10 @@ from protomsg.plunder_pb2 import (
 
     PLUNDER_TYPE_PLUNDER,
     PLUNDER_TYPE_REVENGE,
+
+    SpecialEquipmentGenerateNotify,
+    SPECIAL_EQUIPMENT_GENERATE_ADVANCE,
+    SPECIAL_EQUIPMENT_GENERATE_NORMAL,
 )
 
 from protomsg.formation_pb2 import FORMATION_SLOT_EMPTY, FORMATION_SLOT_USE
@@ -813,3 +832,169 @@ def get_station_next_reward_at():
     )
 
     return reward_at.timestamp
+
+
+
+class SpecialEquipmentGenerator(object):
+    __slots__ = ['server_id', 'char_id', 'doc']
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+
+        self.doc = MongoSpecialEquipment.db(self.server_id).find_one({'_id': self.char_id})
+        if not self.doc:
+            self.doc = MongoSpecialEquipment.document()
+            self.doc['_id'] = self.char_id
+            MongoSpecialEquipment.db(self.server_id).insert_one(self.doc)
+
+    def generate(self, bag_slot_id, tp):
+        if self.doc['item_id']:
+            raise GameException(ConfigErrorMessage.get_error_id("SPECIAL_EQUIPMENT_IS_IN_PROCESS"))
+
+        if tp not in [SPECIAL_EQUIPMENT_GENERATE_NORMAL, SPECIAL_EQUIPMENT_GENERATE_ADVANCE]:
+            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
+        bag = Bag(self.server_id, self.char_id)
+        slot = bag.get_slot(bag_slot_id)
+        item_id = slot['item_id']
+        config = ConfigEquipmentSpecialGenerate.get(item_id)
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        if tp == SPECIAL_EQUIPMENT_GENERATE_NORMAL:
+            cost = config.normal_cost
+        else:
+            cost = config.advance_cost
+
+        rc = ResourceClassification.classify(cost)
+        rc.check_exist(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id)
+
+        bag.remove_by_slot_id(slot_id=bag_slot_id, amount=1)
+
+        finish_at = arrow.utcnow().timestamp + config.minutes * 60
+
+        self.doc['item_id'] = item_id
+        self.doc['finish_at'] = finish_at
+        self.doc['tp'] = tp
+
+        MongoSpecialEquipment.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'item_id': self.doc['item_id'],
+                'finish_at': self.doc['finish_at'],
+                'tp': self.doc['tp'],
+            }}
+        )
+
+        self.send_notify()
+
+    def speedup(self):
+        if not self.doc['item_id']:
+            raise GameException(ConfigErrorMessage.get_error_id("SPECIAL_EQUIPMENT_NOT_IN_PROCESS"))
+
+        seconds = self.doc['finish_at'] - arrow.utcnow().timestamp
+        if seconds <= 0:
+            raise GameException(ConfigErrorMessage.get_error_id("SPECIAL_EQUIPMENT_ALREADY_FINISHED"))
+
+        minutes, remained = divmod(seconds, 60)
+        if remained:
+            minutes += 1
+
+        diamond = minutes * GlobalConfig.value("EQUIPMENT_SPECIAL_SPEEDUP_PARAM")
+        cost = [(money_text_to_item_id('diamond'), diamond)]
+
+        rc = ResourceClassification.classify(cost)
+        rc.check_exist(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id)
+
+        # make sure is finished
+        self.doc['finish_at'] = arrow.utcnow().timestamp - 1
+        MongoSpecialEquipment.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'finish_at': self.doc['finish_at']
+            }}
+        )
+
+        self.send_notify()
+
+    def get_result(self):
+        if not self.doc['item_id']:
+            raise GameException(ConfigErrorMessage.get_error_id("SPECIAL_EQUIPMENT_NOT_IN_PROCESS"))
+
+        if arrow.utcnow().timestamp < self.doc['finish_at']:
+            raise GameException(ConfigErrorMessage.get_error_id("SPECIAL_EQUIPMENT_NOT_FINISH"))
+
+        tp = self.doc['tp']
+        score = self.doc['score'][str(tp)]
+        growing = ConfigEquipmentSpecialScoreToGrowing.get_random_growing_by_score(tp, score)
+
+        config_generate = ConfigEquipmentSpecialGenerate.get(self.doc['item_id'])
+
+        if tp == SPECIAL_EQUIPMENT_GENERATE_NORMAL:
+            equip_id = random.choice(config_generate.normal_generate)
+            if growing >= GlobalConfig.value("EQUIPMENT_SPECIAL_NORMAL_SCORE_RESET_AT"):
+                new_score = 0
+            else:
+                new_score = score + 1
+        else:
+            equip_id = random.choice(config_generate.advance_generate)
+            if growing >= GlobalConfig.value("EQUIPMENT_SPECIAL_ADVANCE_SCORE_RESET_AT"):
+                new_score = 0
+            else:
+                new_score = score + 1
+
+        config_property = ConfigEquipmentSpecialGrowingProperty.get_by_growing(growing)
+        config_equipment = ConfigEquipmentSpecial.get(equip_id)
+
+        properties = []
+        for k, v in PROPERTY_TO_NAME_MAP.iteritems():
+            if k in SPECIAL_EQUIPMENT_BASE_PROPERTY:
+                continue
+
+            if getattr(config_equipment, v, 0):
+                properties.append(k)
+
+        equip_properties = []
+        for _ in config_property.property_active_levels:
+            p = random.choice(properties)
+            equip_properties.append(p)
+
+        equip_skills = []
+        for _ in config_property.skill_active_levels:
+            s = random.choice(config_equipment.skills)
+            equip_skills.append(s)
+
+        equip_obj = Equipment.initialize_for_special(self.doc['item_id'], growing, equip_properties, equip_skills)
+        bag = Bag(self.server_id, self.char_id)
+        bag.add_equipment_object(equip_obj)
+
+        self.doc['item_id'] = 0
+        self.doc['finish_at'] = 0
+        self.doc['tp'] = 0
+        self.doc['score'][str(tp)] = new_score
+
+        MongoSpecialEquipment.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'item_id': 0,
+                'finish_at': 0,
+                'tp': 0,
+                'score.{0}'.format(tp): new_score
+            }}
+        )
+
+        self.send_notify()
+
+        return equip_obj
+
+    def send_notify(self):
+        notify = SpecialEquipmentGenerateNotify()
+        notify.id = self.doc['item_id']
+        notify.finish_timestamp = self.doc['finish_at']
+        notify.tp = self.doc['tp']
+        if not notify.tp:
+            notify.tp = SPECIAL_EQUIPMENT_GENERATE_NORMAL
+
+        MessagePipe(self.char_id).put(msg=notify)

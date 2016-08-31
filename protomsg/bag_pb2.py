@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='bag.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\tbag.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\xc2\x01\n\tEquipment\x12\r\n\x05level\x18\x01 \x02(\x05\x12\x0e\n\x06\x61ttack\x18\x02 \x02(\x05\x12\x16\n\x0e\x61ttack_percent\x18\x03 \x02(\x02\x12\x0f\n\x07\x64\x65\x66\x65nse\x18\x04 \x02(\x05\x12\x17\n\x0f\x64\x65\x66\x65nse_percent\x18\x05 \x02(\x02\x12\x0e\n\x06manage\x18\x06 \x02(\x05\x12\x16\n\x0emanage_percent\x18\x07 \x02(\x02\x12\x11\n\toperation\x18\x08 \x02(\x05\x12\x19\n\x11operation_percent\x18\t \x02(\x02\"g\n\x04Slot\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0f\n\x07item_id\x18\x02 \x02(\x05\x12\x11\n\x06\x61mount\x18\x03 \x01(\x05:\x01\x31\x12/\n\tequipment\x18\x04 \x01(\x0b\x32\x1c.Dianjing.protocol.Equipment\"\xc6\x01\n\x0e\x42\x61gSlotsNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12&\n\x05slots\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Slot\x12\x1c\n\x14\x65quipment_max_amount\x18\x04 \x02(\x05\x12\x1b\n\x13\x66ragment_max_amount\x18\x05 \x02(\x05\x12\x18\n\x10other_max_amount\x18\x06 \x02(\x05\"8\n\x14\x42\x61gSlotsRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x03(\t\"E\n\x11\x42\x61gItemUseRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\x12\x0e\n\x06\x61mount\x18\x03 \x02(\x05\"Y\n\x12\x42\x61gItemUseResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"7\n\x13\x42\x61gItemMergeRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\"[\n\x14\x42\x61gItemMergeResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"9\n\x15\x42\x61gItemDestroyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\"]\n\x16\x42\x61gItemDestroyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"Q\n\x1a\x42\x61gEquipmentDestroyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\x12\x11\n\tuse_sycee\x18\x03 \x02(\x08\"b\n\x1b\x42\x61gEquipmentDestroyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\">\n\x1a\x42\x61gEquipmentLevelupRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\"l\n\x1b\x42\x61gEquipmentLevelupResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12/\n\tequipment\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.Equipment\"U\n!BagEquipmentLevelupConfirmRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\x12\x0e\n\x06single\x18\x03 \x02(\x08\"\x84\x01\n\"BagEquipmentLevelupConfirmResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12/\n\tequipment\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.Equipment\x12\x0f\n\x07levelup\x18\x04 \x01(\x08*]\n\rEquipmentType\x12\x0f\n\x0b\x45QUIP_MOUSE\x10\x01\x12\x12\n\x0e\x45QUIP_KEYBOARD\x10\x02\x12\x11\n\rEQUIP_MONITOR\x10\x03\x12\x14\n\x10\x45QUIP_DECORATION\x10\x04')
+  serialized_pb=_b('\n\tbag.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\xc5\x02\n\tEquipment\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0f\n\x07growing\x18\x03 \x01(\x05\x12\x42\n\nproperties\x18\x04 \x03(\x0b\x32..Dianjing.protocol.Equipment.EquipmentProperty\x12;\n\x06skills\x18\x05 \x03(\x0b\x32+.Dianjing.protocol.Equipment.EquipmentSkill\x1a^\n\x11\x45quipmentProperty\x12+\n\x02tp\x18\x01 \x02(\x0e\x32\x1f.Dianjing.protocol.PropertyType\x12\r\n\x05value\x18\x02 \x02(\x02\x12\r\n\x05level\x18\x03 \x01(\x05\x1a+\n\x0e\x45quipmentSkill\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\"g\n\x04Slot\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0f\n\x07item_id\x18\x02 \x02(\x05\x12\x11\n\x06\x61mount\x18\x03 \x01(\x05:\x01\x31\x12/\n\tequipment\x18\x04 \x01(\x0b\x32\x1c.Dianjing.protocol.Equipment\"\xc6\x01\n\x0e\x42\x61gSlotsNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12&\n\x05slots\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Slot\x12\x1c\n\x14\x65quipment_max_amount\x18\x04 \x02(\x05\x12\x1b\n\x13\x66ragment_max_amount\x18\x05 \x02(\x05\x12\x18\n\x10other_max_amount\x18\x06 \x02(\x05\"8\n\x14\x42\x61gSlotsRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x03(\t\"E\n\x11\x42\x61gItemUseRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\x12\x0e\n\x06\x61mount\x18\x03 \x02(\x05\"Y\n\x12\x42\x61gItemUseResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"7\n\x13\x42\x61gItemMergeRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\"[\n\x14\x42\x61gItemMergeResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"9\n\x15\x42\x61gItemDestroyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\"]\n\x16\x42\x61gItemDestroyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"Q\n\x1a\x42\x61gEquipmentDestroyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\x12\x11\n\tuse_sycee\x18\x03 \x02(\x08\"b\n\x1b\x42\x61gEquipmentDestroyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"N\n\x1a\x42\x61gEquipmentLevelupRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\x12\x0e\n\x06single\x18\x03 \x02(\x08\"}\n\x1b\x42\x61gEquipmentLevelupResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12/\n\tequipment\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.Equipment\x12\x0f\n\x07levelup\x18\x04 \x01(\x08*p\n\rEquipmentType\x12\x0f\n\x0b\x45QUIP_MOUSE\x10\x01\x12\x12\n\x0e\x45QUIP_KEYBOARD\x10\x02\x12\x11\n\rEQUIP_MONITOR\x10\x03\x12\x14\n\x10\x45QUIP_DECORATION\x10\x04\x12\x11\n\rEQUIP_SPECIAL\x10\x05')
   ,
   dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -49,11 +49,15 @@ _EQUIPMENTTYPE = _descriptor.EnumDescriptor(
       name='EQUIP_DECORATION', index=3, number=4,
       options=None,
       type=None),
+    _descriptor.EnumValueDescriptor(
+      name='EQUIP_SPECIAL', index=4, number=5,
+      options=None,
+      type=None),
   ],
   containing_type=None,
   options=None,
-  serialized_start=1667,
-  serialized_end=1760,
+  serialized_start=1609,
+  serialized_end=1721,
 )
 _sym_db.RegisterEnumDescriptor(_EQUIPMENTTYPE)
 
@@ -62,76 +66,35 @@ EQUIP_MOUSE = 1
 EQUIP_KEYBOARD = 2
 EQUIP_MONITOR = 3
 EQUIP_DECORATION = 4
+EQUIP_SPECIAL = 5
 
 
 
-_EQUIPMENT = _descriptor.Descriptor(
-  name='Equipment',
-  full_name='Dianjing.protocol.Equipment',
+_EQUIPMENT_EQUIPMENTPROPERTY = _descriptor.Descriptor(
+  name='EquipmentProperty',
+  full_name='Dianjing.protocol.Equipment.EquipmentProperty',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='level', full_name='Dianjing.protocol.Equipment.level', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
+      name='tp', full_name='Dianjing.protocol.Equipment.EquipmentProperty.tp', index=0,
+      number=1, type=14, cpp_type=8, label=2,
+      has_default_value=False, default_value=1,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='attack', full_name='Dianjing.protocol.Equipment.attack', index=1,
-      number=2, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='attack_percent', full_name='Dianjing.protocol.Equipment.attack_percent', index=2,
-      number=3, type=2, cpp_type=6, label=2,
+      name='value', full_name='Dianjing.protocol.Equipment.EquipmentProperty.value', index=1,
+      number=2, type=2, cpp_type=6, label=2,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='defense', full_name='Dianjing.protocol.Equipment.defense', index=3,
-      number=4, type=5, cpp_type=1, label=2,
+      name='level', full_name='Dianjing.protocol.Equipment.EquipmentProperty.level', index=2,
+      number=3, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='defense_percent', full_name='Dianjing.protocol.Equipment.defense_percent', index=4,
-      number=5, type=2, cpp_type=6, label=2,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='manage', full_name='Dianjing.protocol.Equipment.manage', index=5,
-      number=6, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='manage_percent', full_name='Dianjing.protocol.Equipment.manage_percent', index=6,
-      number=7, type=2, cpp_type=6, label=2,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='operation', full_name='Dianjing.protocol.Equipment.operation', index=7,
-      number=8, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='operation_percent', full_name='Dianjing.protocol.Equipment.operation_percent', index=8,
-      number=9, type=2, cpp_type=6, label=2,
-      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -147,8 +110,103 @@ _EQUIPMENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
+  serialized_start=248,
+  serialized_end=342,
+)
+
+_EQUIPMENT_EQUIPMENTSKILL = _descriptor.Descriptor(
+  name='EquipmentSkill',
+  full_name='Dianjing.protocol.Equipment.EquipmentSkill',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.Equipment.EquipmentSkill.id', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='level', full_name='Dianjing.protocol.Equipment.EquipmentSkill.level', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=344,
+  serialized_end=387,
+)
+
+_EQUIPMENT = _descriptor.Descriptor(
+  name='Equipment',
+  full_name='Dianjing.protocol.Equipment',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.Equipment.id', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='level', full_name='Dianjing.protocol.Equipment.level', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='growing', full_name='Dianjing.protocol.Equipment.growing', index=2,
+      number=3, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='properties', full_name='Dianjing.protocol.Equipment.properties', index=3,
+      number=4, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='skills', full_name='Dianjing.protocol.Equipment.skills', index=4,
+      number=5, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[_EQUIPMENT_EQUIPMENTPROPERTY, _EQUIPMENT_EQUIPMENTSKILL, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
   serialized_start=62,
-  serialized_end=256,
+  serialized_end=387,
 )
 
 
@@ -199,8 +257,8 @@ _SLOT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=258,
-  serialized_end=361,
+  serialized_start=389,
+  serialized_end=492,
 )
 
 
@@ -265,8 +323,8 @@ _BAGSLOTSNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=364,
-  serialized_end=562,
+  serialized_start=495,
+  serialized_end=693,
 )
 
 
@@ -303,8 +361,8 @@ _BAGSLOTSREMOVENOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=564,
-  serialized_end=620,
+  serialized_start=695,
+  serialized_end=751,
 )
 
 
@@ -348,8 +406,8 @@ _BAGITEMUSEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=622,
-  serialized_end=691,
+  serialized_start=753,
+  serialized_end=822,
 )
 
 
@@ -393,8 +451,8 @@ _BAGITEMUSERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=693,
-  serialized_end=782,
+  serialized_start=824,
+  serialized_end=913,
 )
 
 
@@ -431,8 +489,8 @@ _BAGITEMMERGEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=784,
-  serialized_end=839,
+  serialized_start=915,
+  serialized_end=970,
 )
 
 
@@ -476,8 +534,8 @@ _BAGITEMMERGERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=841,
-  serialized_end=932,
+  serialized_start=972,
+  serialized_end=1063,
 )
 
 
@@ -514,8 +572,8 @@ _BAGITEMDESTROYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=934,
-  serialized_end=991,
+  serialized_start=1065,
+  serialized_end=1122,
 )
 
 
@@ -559,8 +617,8 @@ _BAGITEMDESTROYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=993,
-  serialized_end=1086,
+  serialized_start=1124,
+  serialized_end=1217,
 )
 
 
@@ -604,8 +662,8 @@ _BAGEQUIPMENTDESTROYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1088,
-  serialized_end=1169,
+  serialized_start=1219,
+  serialized_end=1300,
 )
 
 
@@ -649,8 +707,8 @@ _BAGEQUIPMENTDESTROYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1171,
-  serialized_end=1269,
+  serialized_start=1302,
+  serialized_end=1400,
 )
 
 
@@ -675,6 +733,13 @@ _BAGEQUIPMENTLEVELUPREQUEST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='single', full_name='Dianjing.protocol.BagEquipmentLevelupRequest.single', index=2,
+      number=3, type=8, cpp_type=7, label=2,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -687,8 +752,8 @@ _BAGEQUIPMENTLEVELUPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1271,
-  serialized_end=1333,
+  serialized_start=1402,
+  serialized_end=1480,
 )
 
 
@@ -720,98 +785,8 @@ _BAGEQUIPMENTLEVELUPRESPONSE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1335,
-  serialized_end=1443,
-)
-
-
-_BAGEQUIPMENTLEVELUPCONFIRMREQUEST = _descriptor.Descriptor(
-  name='BagEquipmentLevelupConfirmRequest',
-  full_name='Dianjing.protocol.BagEquipmentLevelupConfirmRequest',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.BagEquipmentLevelupConfirmRequest.session', index=0,
-      number=1, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b(""),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='slot_id', full_name='Dianjing.protocol.BagEquipmentLevelupConfirmRequest.slot_id', index=1,
-      number=2, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='single', full_name='Dianjing.protocol.BagEquipmentLevelupConfirmRequest.single', index=2,
-      number=3, type=8, cpp_type=7, label=2,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1445,
-  serialized_end=1530,
-)
-
-
-_BAGEQUIPMENTLEVELUPCONFIRMRESPONSE = _descriptor.Descriptor(
-  name='BagEquipmentLevelupConfirmResponse',
-  full_name='Dianjing.protocol.BagEquipmentLevelupConfirmResponse',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='ret', full_name='Dianjing.protocol.BagEquipmentLevelupConfirmResponse.ret', index=0,
-      number=1, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.BagEquipmentLevelupConfirmResponse.session', index=1,
-      number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b(""),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='equipment', full_name='Dianjing.protocol.BagEquipmentLevelupConfirmResponse.equipment', index=2,
-      number=3, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='levelup', full_name='Dianjing.protocol.BagEquipmentLevelupConfirmResponse.levelup', index=3,
+      name='levelup', full_name='Dianjing.protocol.BagEquipmentLevelupResponse.levelup', index=3,
       number=4, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
@@ -829,10 +804,15 @@ _BAGEQUIPMENTLEVELUPCONFIRMRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1533,
-  serialized_end=1665,
+  serialized_start=1482,
+  serialized_end=1607,
 )
 
+_EQUIPMENT_EQUIPMENTPROPERTY.fields_by_name['tp'].enum_type = common__pb2._PROPERTYTYPE
+_EQUIPMENT_EQUIPMENTPROPERTY.containing_type = _EQUIPMENT
+_EQUIPMENT_EQUIPMENTSKILL.containing_type = _EQUIPMENT
+_EQUIPMENT.fields_by_name['properties'].message_type = _EQUIPMENT_EQUIPMENTPROPERTY
+_EQUIPMENT.fields_by_name['skills'].message_type = _EQUIPMENT_EQUIPMENTSKILL
 _SLOT.fields_by_name['equipment'].message_type = _EQUIPMENT
 _BAGSLOTSNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _BAGSLOTSNOTIFY.fields_by_name['slots'].message_type = _SLOT
@@ -841,7 +821,6 @@ _BAGITEMMERGERESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 _BAGITEMDESTROYRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 _BAGEQUIPMENTDESTROYRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 _BAGEQUIPMENTLEVELUPRESPONSE.fields_by_name['equipment'].message_type = _EQUIPMENT
-_BAGEQUIPMENTLEVELUPCONFIRMRESPONSE.fields_by_name['equipment'].message_type = _EQUIPMENT
 DESCRIPTOR.message_types_by_name['Equipment'] = _EQUIPMENT
 DESCRIPTOR.message_types_by_name['Slot'] = _SLOT
 DESCRIPTOR.message_types_by_name['BagSlotsNotify'] = _BAGSLOTSNOTIFY
@@ -856,16 +835,30 @@ DESCRIPTOR.message_types_by_name['BagEquipmentDestroyRequest'] = _BAGEQUIPMENTDE
 DESCRIPTOR.message_types_by_name['BagEquipmentDestroyResponse'] = _BAGEQUIPMENTDESTROYRESPONSE
 DESCRIPTOR.message_types_by_name['BagEquipmentLevelupRequest'] = _BAGEQUIPMENTLEVELUPREQUEST
 DESCRIPTOR.message_types_by_name['BagEquipmentLevelupResponse'] = _BAGEQUIPMENTLEVELUPRESPONSE
-DESCRIPTOR.message_types_by_name['BagEquipmentLevelupConfirmRequest'] = _BAGEQUIPMENTLEVELUPCONFIRMREQUEST
-DESCRIPTOR.message_types_by_name['BagEquipmentLevelupConfirmResponse'] = _BAGEQUIPMENTLEVELUPCONFIRMRESPONSE
 DESCRIPTOR.enum_types_by_name['EquipmentType'] = _EQUIPMENTTYPE
 
 Equipment = _reflection.GeneratedProtocolMessageType('Equipment', (_message.Message,), dict(
+
+  EquipmentProperty = _reflection.GeneratedProtocolMessageType('EquipmentProperty', (_message.Message,), dict(
+    DESCRIPTOR = _EQUIPMENT_EQUIPMENTPROPERTY,
+    __module__ = 'bag_pb2'
+    # @@protoc_insertion_point(class_scope:Dianjing.protocol.Equipment.EquipmentProperty)
+    ))
+  ,
+
+  EquipmentSkill = _reflection.GeneratedProtocolMessageType('EquipmentSkill', (_message.Message,), dict(
+    DESCRIPTOR = _EQUIPMENT_EQUIPMENTSKILL,
+    __module__ = 'bag_pb2'
+    # @@protoc_insertion_point(class_scope:Dianjing.protocol.Equipment.EquipmentSkill)
+    ))
+  ,
   DESCRIPTOR = _EQUIPMENT,
   __module__ = 'bag_pb2'
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.Equipment)
   ))
 _sym_db.RegisterMessage(Equipment)
+_sym_db.RegisterMessage(Equipment.EquipmentProperty)
+_sym_db.RegisterMessage(Equipment.EquipmentSkill)
 
 Slot = _reflection.GeneratedProtocolMessageType('Slot', (_message.Message,), dict(
   DESCRIPTOR = _SLOT,
@@ -957,20 +950,6 @@ BagEquipmentLevelupResponse = _reflection.GeneratedProtocolMessageType('BagEquip
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.BagEquipmentLevelupResponse)
   ))
 _sym_db.RegisterMessage(BagEquipmentLevelupResponse)
-
-BagEquipmentLevelupConfirmRequest = _reflection.GeneratedProtocolMessageType('BagEquipmentLevelupConfirmRequest', (_message.Message,), dict(
-  DESCRIPTOR = _BAGEQUIPMENTLEVELUPCONFIRMREQUEST,
-  __module__ = 'bag_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.BagEquipmentLevelupConfirmRequest)
-  ))
-_sym_db.RegisterMessage(BagEquipmentLevelupConfirmRequest)
-
-BagEquipmentLevelupConfirmResponse = _reflection.GeneratedProtocolMessageType('BagEquipmentLevelupConfirmResponse', (_message.Message,), dict(
-  DESCRIPTOR = _BAGEQUIPMENTLEVELUPCONFIRMRESPONSE,
-  __module__ = 'bag_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.BagEquipmentLevelupConfirmResponse)
-  ))
-_sym_db.RegisterMessage(BagEquipmentLevelupConfirmResponse)
 
 
 # @@protoc_insertion_point(module_scope)

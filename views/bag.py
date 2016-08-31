@@ -12,7 +12,6 @@ from core.bag import Bag
 
 from protomsg.bag_pb2 import (
     BagEquipmentLevelupResponse,
-    BagEquipmentLevelupConfirmResponse,
     BagEquipmentDestroyResponse,
     BagItemDestroyResponse,
     BagItemMergeResponse,
@@ -83,23 +82,7 @@ def equipment_destroy(request):
 
     return ProtobufResponse(response)
 
-
-def equipment_level_up_preview(request):
-    server_id = request._game_session.server_id
-    char_id = request._game_session.char_id
-
-    slot_id = request._proto.slot_id
-
-    bag = Bag(server_id, char_id)
-    msg_equip = bag.equipment_level_up_preview(slot_id)
-
-    response = BagEquipmentLevelupResponse()
-    response.ret = 0
-    response.equipment.MergeFrom(msg_equip)
-    return ProtobufResponse(response)
-
-
-def equipment_level_up_confirm(request):
+def equipment_level_up(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
@@ -112,10 +95,10 @@ def equipment_level_up_confirm(request):
         times = 5
 
     bag = Bag(server_id, char_id)
-    error_code, levelup, msg_equip = bag.equipment_level_up_confirm(slot_id, times)
+    error_code, levelup, equip = bag.equipment_level_up(slot_id, times)
 
-    response = BagEquipmentLevelupConfirmResponse()
+    response = BagEquipmentLevelupResponse()
     response.ret = error_code
-    response.equipment.MergeFrom(msg_equip)
+    response.equipment.MergeFrom(equip.make_protomsg())
     response.levelup = levelup
     return ProtobufResponse(response)
