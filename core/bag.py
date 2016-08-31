@@ -113,8 +113,6 @@ TYPE_EQUIPMENT = 4  # 装备
 TYPE_FRAGMENT = 5  # 碎片
 TYPE_STAFF = 6  # 选手 -- 不会进包裹
 
-TYPE_EQUIPMENT_SUB_TYPE_SPECIAL = 1
-
 BAG_CAN_CONTAINS_TYPE = [
     TYPE_ITEM_NORMAL,
     TYPE_ITEM_CAN_USE,
@@ -202,7 +200,7 @@ class Equipment(object):
         obj.id = data['item_id']
         obj.level = data['level']
 
-        if ConfigItemNew.get(obj.id).sub_tp == TYPE_EQUIPMENT_SUB_TYPE_SPECIAL:
+        if ConfigEquipmentNew.get(obj.id).tp == 5:
             obj.is_special = True
             obj.from_id = data['from_id']
             obj.gen_tp = data['gen_tp']
@@ -223,10 +221,11 @@ class Equipment(object):
         obj.id = _id
         obj.from_id = from_id
         obj.gen_tp = gen_tp
+        obj.growing = growing
         obj.level = 0
         obj.is_special = True
         obj.properties = OrderedDict(zip(properties, config.property_active_levels))
-        obj.skills = OrderedDict(zip(skills), config.skill_active_levels)
+        obj.skills = OrderedDict(zip(skills, config.skill_active_levels))
 
         obj.calculate()
         return obj
@@ -282,8 +281,8 @@ class Equipment(object):
 
         return ids
 
-    def get_property_value(self, p):
-        if self.is_special and self.level < self.properties.get(p, 0):
+    def get_property_value(self, p, check_level=True):
+        if check_level and self.is_special and self.level < self.properties.get(p, 0):
             return 0
 
         name = PROPERTY_TO_NAME_MAP[p]
@@ -298,24 +297,32 @@ class Equipment(object):
         if self.is_special:
             msg.growing = self.growing
             properties = [(i, 0) for i in SPECIAL_EQUIPMENT_BASE_PROPERTY] + self.properties.items()
+
+            for p, lv in properties:
+                msg_property = msg.properties.add()
+                msg_property.tp = p
+                msg_property.level = lv
+                msg_property.value = self.get_property_value(p, check_level=False)
+
+            for s, lv in self.skills:
+                msg_skill = msg.skills.add()
+                msg_skill.id = s
+                msg_skill.level = lv
         else:
             properties = [
-                (PROPERTY_STAFF_ATTACK, 0), (PROPERTY_STAFF_ATTACK_PERCENT, 0),
-                (PROPERTY_STAFF_DEFENSE, 0), (PROPERTY_STAFF_DEFENSE_PERCENT, 0),
-                (PROPERTY_STAFF_MANAGE, 0), (PROPERTY_STAFF_MANAGE_PERCENT, 0),
-                (PROPERTY_STAFF_OPERATION, 0), (PROPERTY_STAFF_OPERATION_PERCENT, 0),
+                PROPERTY_STAFF_ATTACK, PROPERTY_STAFF_ATTACK_PERCENT,
+                PROPERTY_STAFF_DEFENSE, PROPERTY_STAFF_DEFENSE_PERCENT,
+                PROPERTY_STAFF_MANAGE, PROPERTY_STAFF_MANAGE_PERCENT,
+                PROPERTY_STAFF_OPERATION, PROPERTY_STAFF_OPERATION_PERCENT,
             ]
 
-        for p, lv in properties:
-            msg_property = msg.properties.add()
-            msg_property.tp = p
-            msg_property.level = lv
-            msg_property.value = self.get_property_value(p)
-
-        for s, lv in self.skills:
-            msg_skill = msg.skills.add()
-            msg_skill.id = s
-            msg_skill.level = lv
+            for p in properties:
+                value = self.get_property_value(p)
+                if value:
+                    msg_property = msg.properties.add()
+                    msg_property.tp = p
+                    msg_property.level = 0
+                    msg_property.value = value
 
         return msg
 
@@ -356,7 +363,6 @@ class Equipment(object):
                 this_level += 1
 
         return item_needs
-
 
     def get_destroy_back_items(self, prob):
         if self.is_special:
@@ -735,7 +741,8 @@ class Bag(object):
         else:
             self.remove_by_slot_id(slot_id, 1)
             results = equip.get_destroy_back_items(0.7)
-            results.append((money_text_to_item_id('renown'), config.renown))
+            if config.renown:
+                results.append((money_text_to_item_id('renown'), config.renown))
 
         resource_classified = ResourceClassification.classify(results)
         resource_classified.add(self.server_id, self.char_id)
