@@ -57,13 +57,9 @@ from protomsg.common_pb2 import (
     ACT_INIT,
     ACT_UPDATE,
 
-    PROPERTY_STAFF_ATTACK,
     PROPERTY_STAFF_ATTACK_PERCENT,
-    PROPERTY_STAFF_DEFENSE,
     PROPERTY_STAFF_DEFENSE_PERCENT,
-    PROPERTY_STAFF_MANAGE,
     PROPERTY_STAFF_MANAGE_PERCENT,
-    PROPERTY_STAFF_OPERATION,
     PROPERTY_STAFF_OPERATION_PERCENT,
 )
 
@@ -642,7 +638,8 @@ class Staff(AbstractStaff):
         qualities = []
 
         # 装备本身属性
-        for slot_id in [self.equip_keyboard, self.equip_monitor, self.equip_mouse, self.equip_decoration, self.equip_special]:
+        for slot_id in [self.equip_keyboard, self.equip_monitor, self.equip_mouse, self.equip_decoration,
+                        self.equip_special]:
             if not slot_id:
                 continue
 
@@ -652,13 +649,14 @@ class Staff(AbstractStaff):
             equip = Equipment.load_from_slot_data(data)
 
             self.attack += equip.staff_attack
-            self.attack_percent += equip.staff_attack_percent
             self.defense += equip.staff_defense
-            self.defense_percent += equip.staff_defense_percent
             self.manage += equip.staff_manage
-            self.manage_percent += equip.staff_manage_percent
             self.operation += equip.staff_operation
-            self.operation_percent += equip.staff_operation_percent
+
+            self.attack_percent += equip.get_property_value(PROPERTY_STAFF_ATTACK_PERCENT)
+            self.defense_percent += equip.get_property_value(PROPERTY_STAFF_DEFENSE_PERCENT)
+            self.manage_percent += equip.get_property_value(PROPERTY_STAFF_MANAGE_PERCENT)
+            self.operation_percent += equip.get_property_value(PROPERTY_STAFF_OPERATION_PERCENT)
 
             if slot_id != self.equip_decoration:
                 # 装备加成不算 饰品

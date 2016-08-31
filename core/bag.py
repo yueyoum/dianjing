@@ -280,7 +280,26 @@ class Equipment(object):
             self.staff_operation = config.operation
             self.staff_operation_percent = config.operation_percent
 
+    def get_active_property_ids(self):
+        ids = []
+        for k, v in self.properties.iteritems():
+            if self.level >= v:
+                ids.append(k)
+
+        return ids
+
+    def get_active_skills_ids(self):
+        ids = []
+        for k, v in self.skills.iteritems():
+            if self.level >= v:
+                ids.append(k)
+
+        return ids
+
     def get_property_value(self, p):
+        if self.is_special and self.level < self.properties.get(p, 0):
+            return 0
+
         name = PROPERTY_TO_NAME_MAP[p]
         return getattr(self, name)
 

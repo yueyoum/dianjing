@@ -35,6 +35,9 @@ class ClubMatch(object):
 
         :type club_obj: core.abstract.AbstractClub
         """
+        from core.bag import Bag, Equipment
+        bag = Bag(club_obj.server_id, club_obj.char_id)
+
         msg = MessageClubTroop()
         msg.club.MergeFrom(club_obj.make_protomsg())
 
@@ -87,6 +90,10 @@ class ClubMatch(object):
             msg_troop.army.finalHurtReduce = fs.unit.final_hurt_reduce
 
             msg_troop.policy = fs.policy
+
+            if fs.equip_special:
+                equip = Equipment.load_from_slot_data(bag.get_slot(fs.equip_special))
+                msg_troop.special_equipment_skills.extend(equip.get_active_skills_ids())
 
         return msg
 
