@@ -28,6 +28,7 @@ from config import (
     GlobalConfig,
 
     ConfigEquipmentSpecial,
+    ConfigEquipmentSpecialGenerate,
     ConfigEquipmentSpecialGrowingProperty,
     ConfigEquipmentSpecialLevel,
 )
@@ -130,32 +131,11 @@ def get_item_type(item_id):
     return ConfigItemNew.get(item_id).tp
 
 
-def get_equipment_level_up_needs_to_level(item_id, level, prob=100):
-    config = ConfigEquipmentNew.get(item_id)
-
-    items = {}
-    for i in range(0, level):
-        this_level = config.levels[i]
-        for _id, _amount in this_level.update_item_need:
-            if _id in items:
-                items[_id] += _amount
-            else:
-                items[_id] = _amount
-
-    results = []
-    for k, v in items.iteritems():
-        v = v * prob / 100
-        if v:
-            results.append((k, v))
-
-    return results
-
-
 class Equipment(object):
     __slots__ = [
         'id', 'level',
 
-        'growing', 'properties', 'skills', 'is_special',
+        'from_id', 'gen_tp', 'growing', 'properties', 'skills', 'is_special',
 
         'staff_attack', 'staff_attack_percent',
         'staff_defense', 'staff_defense_percent',
@@ -181,6 +161,8 @@ class Equipment(object):
     def __init__(self):
         self.id = 0
         self.level = 0
+        self.from_id = 0
+        self.gen_tp = 0
         self.growing = 0
         self.properties = {}  # tp: level
         self.skills = {}
@@ -222,6 +204,8 @@ class Equipment(object):
 
         if ConfigItemNew.get(obj.id).sub_tp == TYPE_EQUIPMENT_SUB_TYPE_SPECIAL:
             obj.is_special = True
+            obj.from_id = data['from_id']
+            obj.gen_tp = data['gen_tp']
             obj.growing = data['growing']
 
             config = ConfigEquipmentSpecialGrowingProperty.get_by_growing(data['growing'])
@@ -232,11 +216,13 @@ class Equipment(object):
         return obj
 
     @classmethod
-    def initialize_for_special(cls, _id, growing, properties, skills):
+    def initialize_for_special(cls, _id, from_id, gen_tp, growing, properties, skills):
         config = ConfigEquipmentSpecialGrowingProperty.get_by_growing(growing)
 
         obj = cls()
         obj.id = _id
+        obj.from_id = from_id
+        obj.gen_tp = gen_tp
         obj.level = 0
         obj.is_special = True
         obj.properties = OrderedDict(zip(properties, config.property_active_levels))
@@ -342,6 +328,8 @@ class Equipment(object):
 
         if self.is_special:
             doc.update({
+                'from_id': self.from_id,
+                'gen_tp': self.gen_tp,
                 'growing': self.growing,
                 'properties': self.properties.keys(),
                 'skills': self.skills.keys(),
@@ -368,6 +356,51 @@ class Equipment(object):
                 this_level += 1
 
         return item_needs
+
+
+    def get_destroy_back_items(self, prob):
+        if self.is_special:
+            items = {}
+
+            config_gen = ConfigEquipmentSpecialGenerate.get(self.from_id)
+            if self.gen_tp == 1:
+                gen_items = config_gen.normal_cost
+            else:
+                gen_items = config_gen.advance_cost
+
+            for _id, _amount in gen_items:
+                _amount = int(_amount * 0.5)
+                if _amount:
+                    if _id in items:
+                        items[_id] += _amount
+                    else:
+                        items[_id] = _amount
+
+            for i in range(0, self.level):
+                for _id, _amount in ConfigEquipmentSpecialLevel.get(i).items:
+                    _amount = int(_amount * prob)
+                    if _amount:
+                        if _id in items:
+                            items[_id] += _amount
+                        else:
+                            items[_id] = _amount
+
+            return items.items()
+
+        # normal
+        config = ConfigEquipmentNew.get(self.id)
+
+        items = {}
+        for i in range(0, self.level):
+            for _id, _amount in config.levels[i].update_item_need:
+                _amount = int(_amount * prob)
+                if _amount:
+                    if _id in items:
+                        items[_id] += _amount
+                    else:
+                        items[_id] = _amount
+
+        return items.items()
 
 
 class Bag(object):
@@ -673,8 +706,14 @@ class Bag(object):
         config = ConfigEquipmentNew.get(item_id)
         level = this_slot['level']
 
+        equip = Equipment.load_from_slot_data(this_slot)
+
         if use_sycee:
-            min_level = min(config.levels.keys())
+            if equip.is_special:
+                min_level = 0
+            else:
+                min_level = min(config.levels.keys())
+
             if level == min_level:
                 raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_CANNOT_DESTROY_NO_LEVEL_UP"))
 
@@ -692,10 +731,10 @@ class Bag(object):
             self.doc['slots'][slot_id]['level'] = 0
             self.send_notify(slot_ids=[slot_id])
 
-            results = get_equipment_level_up_needs_to_level(item_id, level, prob=100)
+            results = equip.get_destroy_back_items(1)
         else:
             self.remove_by_slot_id(slot_id, 1)
-            results = get_equipment_level_up_needs_to_level(item_id, level, prob=70)
+            results = equip.get_destroy_back_items(0.7)
             results.append((money_text_to_item_id('renown'), config.renown))
 
         resource_classified = ResourceClassification.classify(results)

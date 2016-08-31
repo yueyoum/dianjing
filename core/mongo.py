@@ -188,7 +188,12 @@ class MongoBag(BaseDocument):
         'amount': 0,
         # 如果是装备，则有下面的属性
         'level': 0,
+
         # 如果是特殊装备，还有下面属性
+        # 从哪个打造书而来
+        'from_id': 0,
+        # 打造类型
+        'gen_tp': 0,
         'growing': 0,
         'properties': [],
         'skills': [],

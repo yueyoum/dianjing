@@ -45,7 +45,6 @@ from config import (
     ConfigEquipmentSpecialGrowingProperty,
     ConfigEquipmentSpecial,
     ConfigEquipmentSpecialScoreToGrowing,
-    ConfigEquipmentSpecialLevel,
     ConfigEquipmentSpecialGenerate,
 
     GlobalConfig,
@@ -834,9 +833,9 @@ def get_station_next_reward_at():
     return reward_at.timestamp
 
 
-
 class SpecialEquipmentGenerator(object):
     __slots__ = ['server_id', 'char_id', 'doc']
+
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
@@ -966,7 +965,8 @@ class SpecialEquipmentGenerator(object):
             s = random.choice(config_equipment.skills)
             equip_skills.append(s)
 
-        equip_obj = Equipment.initialize_for_special(self.doc['item_id'], growing, equip_properties, equip_skills)
+        equip_obj = Equipment.initialize_for_special(equip_id, self.doc['item_id'], tp, growing, equip_properties,
+                                                     equip_skills)
         bag = Bag(self.server_id, self.char_id)
         bag.add_equipment_object(equip_obj)
 
@@ -993,8 +993,10 @@ class SpecialEquipmentGenerator(object):
         notify = SpecialEquipmentGenerateNotify()
         notify.id = self.doc['item_id']
         notify.finish_timestamp = self.doc['finish_at']
-        notify.tp = self.doc['tp']
-        if not notify.tp:
-            notify.tp = SPECIAL_EQUIPMENT_GENERATE_NORMAL
+        tp = self.doc['tp']
+        if not tp:
+            tp = SPECIAL_EQUIPMENT_GENERATE_NORMAL
+
+        notify.tp = tp
 
         MessagePipe(self.char_id).put(msg=notify)
