@@ -306,7 +306,7 @@ class Equipment(object):
                 msg_property.level = lv
                 msg_property.value = self.get_property_value(p, check_level=False)
 
-            for s, lv in self.skills:
+            for s, lv in self.skills.iteritems():
                 msg_skill = msg.skills.add()
                 msg_skill.id = s
                 msg_skill.level = lv
