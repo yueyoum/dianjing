@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='common.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0c\x63ommon.proto\x12\x11\x44ianjing.protocol\"/\n\tUTCNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\ttimestamp\x18\x02 \x02(\x03\"-\n\x0bSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05param\x18\x02 \x02(\x05\";\n\x0cSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\r\n\x05param\x18\x03 \x01(\x05\"\x1e\n\x0bPingRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\",\n\x0cPingResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*.\n\x0bNextOperate\x12\n\n\x06OPT_OK\x10\x01\x12\x13\n\x0fOPT_CREATE_CLUB\x10\x02*&\n\x06\x41\x63tion\x12\x0c\n\x08\x41\x43T_INIT\x10\x01\x12\x0e\n\nACT_UPDATE\x10\x02*\xe3\x06\n\x0cPropertyType\x12\x19\n\x15PROPERTY_STAFF_ATTACK\x10\x01\x12\x1a\n\x16PROPERTY_STAFF_DEFENSE\x10\x02\x12\x19\n\x15PROPERTY_STAFF_MANAGE\x10\x03\x12\x1c\n\x18PROPERTY_STAFF_OPERATION\x10\x04\x12!\n\x1dPROPERTY_STAFF_ATTACK_PERCENT\x10\x05\x12\"\n\x1ePROPERTY_STAFF_DEFENSE_PERCENT\x10\x06\x12!\n\x1dPROPERTY_STAFF_MANAGE_PERCENT\x10\x07\x12$\n PROPERTY_STAFF_OPERATION_PERCENT\x10\x08\x12\x1c\n\x18PROPERTY_UNIT_HP_PERCENT\x10\t\x12 \n\x1cPROPERTY_UNIT_ATTACK_PERCENT\x10\n\x12!\n\x1dPROPERTY_UNIT_DEFENSE_PERCENT\x10\x0b\x12\x1d\n\x19PROPERTY_UNIT_HIT_PERCENT\x10\x0c\x12\x1f\n\x1bPROPERTY_UNIT_DODGE_PERCENT\x10\r\x12\x1e\n\x1aPROPERTY_UNIT_CRIT_PERCENT\x10\x0e\x12#\n\x1fPROPERTY_UNIT_TOUGHNESS_PERCENT\x10\x0f\x12\x1f\n\x1bPROPERTY_UNIT_CRIT_MULTIPLE\x10\x10\x12)\n%PROPERTY_UNIT_HURT_ADDIITON_TO_TERRAN\x10\x11\x12*\n&PROPERTY_UNIT_HURT_ADDIITON_TO_PROTOSS\x10\x12\x12\'\n#PROPERTY_UNIT_HURT_ADDIITON_TO_ZERG\x10\x13\x12)\n%PROPERTY_UNIT_HURT_ADDIITON_BY_TERRAN\x10\x14\x12*\n&PROPERTY_UNIT_HURT_ADDIITON_BY_PROTOSS\x10\x15\x12\'\n#PROPERTY_UNIT_HURT_ADDIITON_BY_ZERG\x10\x16\x12%\n!PROPERTY_UNIT_FINAL_HURT_ADDITION\x10\x17\x12#\n\x1fPROPERTY_UNIT_FINAL_HURT_REDUCE\x10\x18')
+  serialized_pb=_b('\n\x0c\x63ommon.proto\x12\x11\x44ianjing.protocol\"/\n\tUTCNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\ttimestamp\x18\x02 \x02(\x03\"-\n\x0bSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05param\x18\x02 \x02(\x05\";\n\x0cSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\r\n\x05param\x18\x03 \x01(\x05\"\x1e\n\x0bPingRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\",\n\x0cPingResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*.\n\x0bNextOperate\x12\n\n\x06OPT_OK\x10\x01\x12\x13\n\x0fOPT_CREATE_CLUB\x10\x02*&\n\x06\x41\x63tion\x12\x0c\n\x08\x41\x43T_INIT\x10\x01\x12\x0e\n\nACT_UPDATE\x10\x02*\xe3\x06\n\x0cPropertyType\x12\x19\n\x15PROPERTY_STAFF_ATTACK\x10\x01\x12\x1a\n\x16PROPERTY_STAFF_DEFENSE\x10\x02\x12\x19\n\x15PROPERTY_STAFF_MANAGE\x10\x03\x12\x1c\n\x18PROPERTY_STAFF_OPERATION\x10\x04\x12!\n\x1dPROPERTY_STAFF_ATTACK_PERCENT\x10\x05\x12\"\n\x1ePROPERTY_STAFF_DEFENSE_PERCENT\x10\x06\x12!\n\x1dPROPERTY_STAFF_MANAGE_PERCENT\x10\x07\x12$\n PROPERTY_STAFF_OPERATION_PERCENT\x10\x08\x12\x1c\n\x18PROPERTY_UNIT_HP_PERCENT\x10\t\x12 \n\x1cPROPERTY_UNIT_ATTACK_PERCENT\x10\n\x12!\n\x1dPROPERTY_UNIT_DEFENSE_PERCENT\x10\x0b\x12\x1d\n\x19PROPERTY_UNIT_HIT_PERCENT\x10\x0c\x12\x1f\n\x1bPROPERTY_UNIT_DODGE_PERCENT\x10\r\x12\x1e\n\x1aPROPERTY_UNIT_CRIT_PERCENT\x10\x0e\x12#\n\x1fPROPERTY_UNIT_TOUGHNESS_PERCENT\x10\x0f\x12\x1f\n\x1bPROPERTY_UNIT_CRIT_MULTIPLE\x10\x10\x12)\n%PROPERTY_UNIT_HURT_ADDIITON_TO_TERRAN\x10\x11\x12*\n&PROPERTY_UNIT_HURT_ADDIITON_TO_PROTOSS\x10\x12\x12\'\n#PROPERTY_UNIT_HURT_ADDIITON_TO_ZERG\x10\x13\x12)\n%PROPERTY_UNIT_HURT_ADDIITON_BY_TERRAN\x10\x14\x12*\n&PROPERTY_UNIT_HURT_ADDIITON_BY_PROTOSS\x10\x15\x12\'\n#PROPERTY_UNIT_HURT_ADDIITON_BY_ZERG\x10\x16\x12%\n!PROPERTY_UNIT_FINAL_HURT_ADDITION\x10\x17\x12#\n\x1fPROPERTY_UNIT_FINAL_HURT_REDUCE\x10\x18*m\n\x1cSpecialEquipmentGenerateType\x12%\n!SPECIAL_EQUIPMENT_GENERATE_NORMAL\x10\x01\x12&\n\"SPECIAL_EQUIPMENT_GENERATE_ADVANCE\x10\x02')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -181,6 +181,29 @@ _PROPERTYTYPE = _descriptor.EnumDescriptor(
 _sym_db.RegisterEnumDescriptor(_PROPERTYTYPE)
 
 PropertyType = enum_type_wrapper.EnumTypeWrapper(_PROPERTYTYPE)
+_SPECIALEQUIPMENTGENERATETYPE = _descriptor.EnumDescriptor(
+  name='SpecialEquipmentGenerateType',
+  full_name='Dianjing.protocol.SpecialEquipmentGenerateType',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='SPECIAL_EQUIPMENT_GENERATE_NORMAL', index=0, number=1,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='SPECIAL_EQUIPMENT_GENERATE_ADVANCE', index=1, number=2,
+      options=None,
+      type=None),
+  ],
+  containing_type=None,
+  options=None,
+  serialized_start=1228,
+  serialized_end=1337,
+)
+_sym_db.RegisterEnumDescriptor(_SPECIALEQUIPMENTGENERATETYPE)
+
+SpecialEquipmentGenerateType = enum_type_wrapper.EnumTypeWrapper(_SPECIALEQUIPMENTGENERATETYPE)
 OPT_OK = 1
 OPT_CREATE_CLUB = 2
 ACT_INIT = 1
@@ -209,6 +232,8 @@ PROPERTY_UNIT_HURT_ADDIITON_BY_PROTOSS = 21
 PROPERTY_UNIT_HURT_ADDIITON_BY_ZERG = 22
 PROPERTY_UNIT_FINAL_HURT_ADDITION = 23
 PROPERTY_UNIT_FINAL_HURT_REDUCE = 24
+SPECIAL_EQUIPMENT_GENERATE_NORMAL = 1
+SPECIAL_EQUIPMENT_GENERATE_ADVANCE = 2
 
 
 
@@ -409,6 +434,7 @@ DESCRIPTOR.message_types_by_name['PingResponse'] = _PINGRESPONSE
 DESCRIPTOR.enum_types_by_name['NextOperate'] = _NEXTOPERATE
 DESCRIPTOR.enum_types_by_name['Action'] = _ACTION
 DESCRIPTOR.enum_types_by_name['PropertyType'] = _PROPERTYTYPE
+DESCRIPTOR.enum_types_by_name['SpecialEquipmentGenerateType'] = _SPECIALEQUIPMENTGENERATETYPE
 
 UTCNotify = _reflection.GeneratedProtocolMessageType('UTCNotify', (_message.Message,), dict(
   DESCRIPTOR = _UTCNOTIFY,

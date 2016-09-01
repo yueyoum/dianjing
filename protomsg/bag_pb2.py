@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='bag.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\tbag.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\xc5\x02\n\tEquipment\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0f\n\x07growing\x18\x03 \x01(\x05\x12\x42\n\nproperties\x18\x04 \x03(\x0b\x32..Dianjing.protocol.Equipment.EquipmentProperty\x12;\n\x06skills\x18\x05 \x03(\x0b\x32+.Dianjing.protocol.Equipment.EquipmentSkill\x1a^\n\x11\x45quipmentProperty\x12+\n\x02tp\x18\x01 \x02(\x0e\x32\x1f.Dianjing.protocol.PropertyType\x12\r\n\x05value\x18\x02 \x02(\x02\x12\r\n\x05level\x18\x03 \x01(\x05\x1a+\n\x0e\x45quipmentSkill\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\"g\n\x04Slot\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0f\n\x07item_id\x18\x02 \x02(\x05\x12\x11\n\x06\x61mount\x18\x03 \x01(\x05:\x01\x31\x12/\n\tequipment\x18\x04 \x01(\x0b\x32\x1c.Dianjing.protocol.Equipment\"\xc6\x01\n\x0e\x42\x61gSlotsNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12&\n\x05slots\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Slot\x12\x1c\n\x14\x65quipment_max_amount\x18\x04 \x02(\x05\x12\x1b\n\x13\x66ragment_max_amount\x18\x05 \x02(\x05\x12\x18\n\x10other_max_amount\x18\x06 \x02(\x05\"8\n\x14\x42\x61gSlotsRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x03(\t\"E\n\x11\x42\x61gItemUseRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\x12\x0e\n\x06\x61mount\x18\x03 \x02(\x05\"Y\n\x12\x42\x61gItemUseResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"7\n\x13\x42\x61gItemMergeRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\"[\n\x14\x42\x61gItemMergeResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"9\n\x15\x42\x61gItemDestroyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\"]\n\x16\x42\x61gItemDestroyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"Q\n\x1a\x42\x61gEquipmentDestroyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\x12\x11\n\tuse_sycee\x18\x03 \x02(\x08\"b\n\x1b\x42\x61gEquipmentDestroyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"N\n\x1a\x42\x61gEquipmentLevelupRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\x12\x0e\n\x06single\x18\x03 \x02(\x08\"}\n\x1b\x42\x61gEquipmentLevelupResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12/\n\tequipment\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.Equipment\x12\x0f\n\x07levelup\x18\x04 \x01(\x08*p\n\rEquipmentType\x12\x0f\n\x0b\x45QUIP_MOUSE\x10\x01\x12\x12\n\x0e\x45QUIP_KEYBOARD\x10\x02\x12\x11\n\rEQUIP_MONITOR\x10\x03\x12\x14\n\x10\x45QUIP_DECORATION\x10\x04\x12\x11\n\rEQUIP_SPECIAL\x10\x05')
+  serialized_pb=_b('\n\tbag.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\x86\x03\n\tEquipment\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0f\n\x07growing\x18\x03 \x01(\x05\x12\x42\n\nproperties\x18\x04 \x03(\x0b\x32..Dianjing.protocol.Equipment.EquipmentProperty\x12;\n\x06skills\x18\x05 \x03(\x0b\x32+.Dianjing.protocol.Equipment.EquipmentSkill\x12?\n\x06gen_tp\x18\x06 \x01(\x0e\x32/.Dianjing.protocol.SpecialEquipmentGenerateType\x1a^\n\x11\x45quipmentProperty\x12+\n\x02tp\x18\x01 \x02(\x0e\x32\x1f.Dianjing.protocol.PropertyType\x12\r\n\x05value\x18\x02 \x02(\x02\x12\r\n\x05level\x18\x03 \x01(\x05\x1a+\n\x0e\x45quipmentSkill\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\"g\n\x04Slot\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0f\n\x07item_id\x18\x02 \x02(\x05\x12\x11\n\x06\x61mount\x18\x03 \x01(\x05:\x01\x31\x12/\n\tequipment\x18\x04 \x01(\x0b\x32\x1c.Dianjing.protocol.Equipment\"\xc6\x01\n\x0e\x42\x61gSlotsNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12&\n\x05slots\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Slot\x12\x1c\n\x14\x65quipment_max_amount\x18\x04 \x02(\x05\x12\x1b\n\x13\x66ragment_max_amount\x18\x05 \x02(\x05\x12\x18\n\x10other_max_amount\x18\x06 \x02(\x05\"8\n\x14\x42\x61gSlotsRemoveNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x03(\t\"E\n\x11\x42\x61gItemUseRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\x12\x0e\n\x06\x61mount\x18\x03 \x02(\x05\"Y\n\x12\x42\x61gItemUseResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"7\n\x13\x42\x61gItemMergeRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\"[\n\x14\x42\x61gItemMergeResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"9\n\x15\x42\x61gItemDestroyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\"]\n\x16\x42\x61gItemDestroyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"Q\n\x1a\x42\x61gEquipmentDestroyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\x12\x11\n\tuse_sycee\x18\x03 \x02(\x08\"b\n\x1b\x42\x61gEquipmentDestroyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"N\n\x1a\x42\x61gEquipmentLevelupRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\t\x12\x0e\n\x06single\x18\x03 \x02(\x08\"}\n\x1b\x42\x61gEquipmentLevelupResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12/\n\tequipment\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.Equipment\x12\x0f\n\x07levelup\x18\x04 \x01(\x08*p\n\rEquipmentType\x12\x0f\n\x0b\x45QUIP_MOUSE\x10\x01\x12\x12\n\x0e\x45QUIP_KEYBOARD\x10\x02\x12\x11\n\rEQUIP_MONITOR\x10\x03\x12\x14\n\x10\x45QUIP_DECORATION\x10\x04\x12\x11\n\rEQUIP_SPECIAL\x10\x05')
   ,
   dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -56,8 +56,8 @@ _EQUIPMENTTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1609,
-  serialized_end=1721,
+  serialized_start=1674,
+  serialized_end=1786,
 )
 _sym_db.RegisterEnumDescriptor(_EQUIPMENTTYPE)
 
@@ -110,8 +110,8 @@ _EQUIPMENT_EQUIPMENTPROPERTY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=248,
-  serialized_end=342,
+  serialized_start=313,
+  serialized_end=407,
 )
 
 _EQUIPMENT_EQUIPMENTSKILL = _descriptor.Descriptor(
@@ -147,8 +147,8 @@ _EQUIPMENT_EQUIPMENTSKILL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=344,
-  serialized_end=387,
+  serialized_start=409,
+  serialized_end=452,
 )
 
 _EQUIPMENT = _descriptor.Descriptor(
@@ -193,6 +193,13 @@ _EQUIPMENT = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='gen_tp', full_name='Dianjing.protocol.Equipment.gen_tp', index=5,
+      number=6, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=1,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -206,7 +213,7 @@ _EQUIPMENT = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=62,
-  serialized_end=387,
+  serialized_end=452,
 )
 
 
@@ -257,8 +264,8 @@ _SLOT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=389,
-  serialized_end=492,
+  serialized_start=454,
+  serialized_end=557,
 )
 
 
@@ -323,8 +330,8 @@ _BAGSLOTSNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=495,
-  serialized_end=693,
+  serialized_start=560,
+  serialized_end=758,
 )
 
 
@@ -361,8 +368,8 @@ _BAGSLOTSREMOVENOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=695,
-  serialized_end=751,
+  serialized_start=760,
+  serialized_end=816,
 )
 
 
@@ -406,8 +413,8 @@ _BAGITEMUSEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=753,
-  serialized_end=822,
+  serialized_start=818,
+  serialized_end=887,
 )
 
 
@@ -451,8 +458,8 @@ _BAGITEMUSERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=824,
-  serialized_end=913,
+  serialized_start=889,
+  serialized_end=978,
 )
 
 
@@ -489,8 +496,8 @@ _BAGITEMMERGEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=915,
-  serialized_end=970,
+  serialized_start=980,
+  serialized_end=1035,
 )
 
 
@@ -534,8 +541,8 @@ _BAGITEMMERGERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=972,
-  serialized_end=1063,
+  serialized_start=1037,
+  serialized_end=1128,
 )
 
 
@@ -572,8 +579,8 @@ _BAGITEMDESTROYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1065,
-  serialized_end=1122,
+  serialized_start=1130,
+  serialized_end=1187,
 )
 
 
@@ -617,8 +624,8 @@ _BAGITEMDESTROYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1124,
-  serialized_end=1217,
+  serialized_start=1189,
+  serialized_end=1282,
 )
 
 
@@ -662,8 +669,8 @@ _BAGEQUIPMENTDESTROYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1219,
-  serialized_end=1300,
+  serialized_start=1284,
+  serialized_end=1365,
 )
 
 
@@ -707,8 +714,8 @@ _BAGEQUIPMENTDESTROYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1302,
-  serialized_end=1400,
+  serialized_start=1367,
+  serialized_end=1465,
 )
 
 
@@ -752,8 +759,8 @@ _BAGEQUIPMENTLEVELUPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1402,
-  serialized_end=1480,
+  serialized_start=1467,
+  serialized_end=1545,
 )
 
 
@@ -804,8 +811,8 @@ _BAGEQUIPMENTLEVELUPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1482,
-  serialized_end=1607,
+  serialized_start=1547,
+  serialized_end=1672,
 )
 
 _EQUIPMENT_EQUIPMENTPROPERTY.fields_by_name['tp'].enum_type = common__pb2._PROPERTYTYPE
@@ -813,6 +820,7 @@ _EQUIPMENT_EQUIPMENTPROPERTY.containing_type = _EQUIPMENT
 _EQUIPMENT_EQUIPMENTSKILL.containing_type = _EQUIPMENT
 _EQUIPMENT.fields_by_name['properties'].message_type = _EQUIPMENT_EQUIPMENTPROPERTY
 _EQUIPMENT.fields_by_name['skills'].message_type = _EQUIPMENT_EQUIPMENTSKILL
+_EQUIPMENT.fields_by_name['gen_tp'].enum_type = common__pb2._SPECIALEQUIPMENTGENERATETYPE
 _SLOT.fields_by_name['equipment'].message_type = _EQUIPMENT
 _BAGSLOTSNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _BAGSLOTSNOTIFY.fields_by_name['slots'].message_type = _SLOT

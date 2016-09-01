@@ -296,6 +296,8 @@ class Equipment(object):
 
         if self.is_special:
             msg.growing = self.growing
+            msg.gen_tp = self.gen_tp
+
             properties = [(i, 0) for i in SPECIAL_EQUIPMENT_BASE_PROPERTY] + self.properties.items()
 
             for p, lv in properties:
@@ -763,7 +765,7 @@ class Bag(object):
         level = equip.level
 
         if equip.is_special:
-            max_level = Plunder(self.server_id, self.char_id).get_station_level()
+            max_level = Plunder(self.server_id, self.char_id).get_station_level() * 2
         else:
             config = ConfigEquipmentNew.get(item_id)
             max_level = min(config.max_level, get_club_property(self.server_id, self.char_id, 'level') * 2)
