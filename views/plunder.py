@@ -197,3 +197,4 @@ def special_equipment_get(request):
     response = SpecialEquipmentGetResponse()
     response.ret = 0
     response.equipment.MergeFrom(equip.make_protomsg())
+    return ProtobufResponse(response)
