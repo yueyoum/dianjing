@@ -297,6 +297,7 @@ class Equipment(object):
         if self.is_special:
             msg.growing = self.growing
             msg.gen_tp = self.gen_tp
+            msg.from_id = self.from_id
 
             properties = [(i, 0) for i in SPECIAL_EQUIPMENT_BASE_PROPERTY] + self.properties.items()
 
