@@ -49,6 +49,38 @@ class BuyTimesCost(object):
         self.id = 0
         self.cost = 0
 
+class NPC(object):
+    __slots__ = ['id', 'level_low', 'level_high', 'way_one', 'way_two', 'way_three']
+    def __init__(self):
+        self.id = 0
+        self.level_low = 0
+        self.level_high = 0
+        self.way_one = []
+        self.way_two = []
+        self.way_three = []
+
+    def get_way_info(self):
+        return random.choice(self.way_one), random.choice(self.way_two), random.choice(self.way_three)
+
+    def to_doc(self, station_level):
+        from utils.functional import make_string_id
+        from config import ConfigName
+
+        station_level_range = range(station_level-1, station_level+2)
+        level = random.choice(station_level_range)
+        if level < 1:
+            level = 1
+        if level > ConfigBaseStationLevel.MAX_LEVEL:
+            level = ConfigBaseStationLevel.MAX_LEVEL
+
+        return {
+            'id': 'npc:{0}'.format(make_string_id()),
+            'spied': False,
+            'name': ConfigName.get_random_name(),
+            'station_level': level,
+            'ways_npc': self.get_way_info()
+        }
+
 
 class ConfigBaseStationLevel(ConfigBase):
     EntityClass = BaseStationLevel
@@ -106,3 +138,27 @@ class ConfigPlunderBuyTimesCost(ConfigBase):
                 return cost
 
         raise RuntimeError("ConfigPlunderBuyTimesCost, Error times: {0}".format(times))
+
+
+class ConfigPlunderNPC(ConfigBase):
+    EntityClass = NPC
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    MAP = {}
+
+    @classmethod
+    def get_by_level(cls, lv):
+        """
+
+        :rtype: NPC
+        """
+        if lv not in cls.MAP:
+            for _, v in cls.INSTANCES.iteritems():
+                if v.level_low <= lv <= v.level_high:
+                    cls.MAP[lv] = v
+                    break
+            else:
+                raise RuntimeError("ConfigPlunderNPC, Can not find config for level: {0}".format(lv))
+
+        return cls.MAP[lv]

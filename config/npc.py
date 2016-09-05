@@ -30,6 +30,8 @@ class _Club(AbstractClub):
 
     def load_staffs(self, **kwargs):
         from core.unit import NPCUnit
+
+        self.formation_staffs = []
         for pos, staff_id, unit_id in self.npc_staffs:
             s = _Staff(staff_id)
             s.formation_position = pos

@@ -763,13 +763,17 @@ class MongoPlunder(BaseDocument):
         'drop': '',
         # 恢复掠夺次数
         'recover_times': 0
-
     }
 
     SEARCH_DOCUMENT = {
         'id': null,
         # 是否侦查过了
         'spied': False,
+
+        # NPC才有的属性
+        'name': '',
+        'station_level': 0,
+        'ways_npc': [],
     }
 
     COLLECTION = 'plunder'

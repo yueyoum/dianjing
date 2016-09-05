@@ -47,6 +47,8 @@ from config import (
     ConfigEquipmentSpecial,
     ConfigEquipmentSpecialScoreToGrowing,
     ConfigEquipmentSpecialGenerate,
+    ConfigPlunderNPC,
+    ConfigNPCFormation,
 
     GlobalConfig,
 )
@@ -321,7 +323,32 @@ class PlunderTimesBuyInfo(object):
         if self.remained_buy_times < 0:
             self.remained_buy_times = 0
 
-        self.buy_cost = ConfigPlunderBuyTimesCost.get_cost(self.buy_cost + 1)
+        self.buy_cost = ConfigPlunderBuyTimesCost.get_cost(self.buy_times + 1)
+
+
+class PlunderNPC(object):
+    __slots__ = ['id', 'name', 'station_level', 'ways_npc']
+
+    def __init__(self, _id, name, station_level, ways_npc):
+        self.id = _id
+        self.name = name
+        self.station_level = station_level
+        self.ways_npc = ways_npc
+
+    def get_station_level(self):
+        return self.station_level
+
+    def make_way_club(self, way_id):
+        club = ConfigNPCFormation.get(self.ways_npc[way_id - 1])
+        club.id = self.id
+        club.name = self.name
+
+        return club
+
+    def got_plundered(self, from_id, win_ways):
+        config = ConfigPlunderIncome.get(win_ways)
+        config_station = ConfigBaseStationLevel.get(self.station_level)
+        return config_station.get_product(config.percent)
 
 
 class Plunder(object):
@@ -431,6 +458,17 @@ class Plunder(object):
 
         return way_class(self.server_id, self.char_id, way_id)
 
+    def make_way_club(self, way_id):
+        """
+
+        :rtype: core.abstract.AbstractClub
+        """
+        way = self.get_way_object(way_id)
+
+        club = Club(self.server_id, self.char_id, load_staffs=False)
+        club.formation_staffs = way.formation_staffs
+        return club
+
     @check_club_level(silence=False)
     def set_staff(self, way_id, slot_id, staff_id):
         way_list = [1, 2, 3]
@@ -461,15 +499,12 @@ class Plunder(object):
 
     @check_club_level(silence=False)
     @check_plunder_in_process
-    def search(self, replace_search_index=None):
-        def _query(level_low, level_high):
-            if level_low < PLUNDER_ACTIVE_CLUB_LEVEL:
-                level_low = PLUNDER_ACTIVE_CLUB_LEVEL
-
+    def search(self, replace_search_index=None, send_notify=True):
+        def _query_real(_level_low, _level_high):
             _condition = {'$and': [
                 {'_id': {'$ne': self.char_id}},
-                {'level': {'$gte': level_low}},
-                {'level': {'$lte': level_high}}
+                {'level': {'$gte': _level_low}},
+                {'level': {'$lte': _level_high}}
             ]}
 
             _docs = MongoCharacter.db(self.server_id).find(_condition, {'_id': 1})
@@ -479,44 +514,54 @@ class Plunder(object):
 
             return _ids
 
-        level_range = [5, 10, 50, 100, 1000]
-        for i in level_range:
-            ids = _query(self.club_level - i, self.club_level + i)
-            # filter by loss_percent
-            condition = {'$and': [
-                {'_id': {'$in': ids}},
-                {'loss_percent': {'$lte': 60}}
-            ]}
+        level_low = self.club_level - GlobalConfig.value("PLUNDER_SEARCH_LEVEL_RANGE_LOW")
+        level_high = self.club_level - GlobalConfig.value("PLUNDER_SEARCH_LEVEL_RANGE_HIGH")
 
-            docs = MongoPlunder.db(self.server_id).find(condition, {'_id': 1})
-            ids = [doc['_id'] for doc in docs]
-            if len(ids) >= 2:
+        if level_low < PLUNDER_ACTIVE_CLUB_LEVEL:
+            level_low = PLUNDER_ACTIVE_CLUB_LEVEL
+
+        real_ids = _query_real(level_low, level_high)
+        # filter by loss_percent
+        condition = {'$and': [
+            {'_id': {'$in': real_ids}},
+            {'loss_percent': {'$lt': 60}}
+        ]}
+
+        docs = MongoPlunder.db(self.server_id).find(condition, {'_id': 1})
+        real_ids = [doc['_id'] for doc in docs]
+
+        random.shuffle(real_ids)
+
+        search_docs = []
+        for i in real_ids:
+            search_docs.append({'_id': i, 'spied': False})
+            if len(search_docs) == 2:
                 break
-        else:
-            raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_SEARCH_NO_RESULT"))
 
-        random.shuffle(ids)
+        need_npc_amount = 2 - len(search_docs)
+        if need_npc_amount:
+            for i in range(need_npc_amount):
+                config_plunder_npc = ConfigPlunderNPC.get_by_level(self.club_level)
+                npc_doc = config_plunder_npc.to_doc(self.doc['level'])
+
+                search_docs.append(npc_doc)
 
         if replace_search_index:
-            self.doc['search'][replace_search_index] = {'id': ids[0], 'spied': False}
+            self.doc['search'][replace_search_index] = search_docs[0]
             updater = {
                 'search.{0}'.format(replace_search_index): self.doc['search'][replace_search_index]
             }
         else:
-            result = [
-                {'id': ids[0], 'spied': False},
-                {'id': ids[1], 'spied': False},
-            ]
-
-            self.doc['search'] = result
-            updater = {'search': result}
+            self.doc['search'] = search_docs
+            updater = {'search': search_docs}
 
         MongoPlunder.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': updater}
         )
 
-        self.send_search_notify()
+        if send_notify:
+            self.send_search_notify()
 
     def find_search_target_index_by_target_id(self, target_id):
         target_id = int(target_id)
@@ -568,6 +613,14 @@ class Plunder(object):
         rc.remove(self.server_id, self.char_id)
 
         ValueLogPlunderBuyTimes(self.server_id, self.char_id).record()
+
+        self.doc['plunder_remained_times'] += 1
+        MongoPlunder.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'plunder_remained_times': self.doc['plunder_remained_times']
+            }}
+        )
         self.send_plunder_times_notify()
 
     @check_club_level(silence=False)
@@ -695,11 +748,24 @@ class Plunder(object):
         }
 
         # NOTE: real target id
+        plunder_got = []
+        win_ways = sum([i for i in result if i == 1])
 
         if tp == PLUNDER_TYPE_PLUNDER:
             real_id = target_id
             search_index = self.find_search_target_index_by_target_id(target_id)
+
+            data = self.doc['search'][search_index]
             self.search(replace_search_index=search_index)
+
+            if str(real_id).startswith('npc:'):
+                target_plunder = PlunderNPC(data['id'], data['name'], data['station_level'], data['ways_npc'])
+            else:
+                target_plunder = Plunder(self.server_id, real_id)
+
+            _got = target_plunder.got_plundered(self.char_id, win_ways)
+            plunder_got.extend(_got)
+
         else:
             revenge_index = self.find_revenge_target_index_by_target_id(target_id)
             _, real_id = self.doc['revenge_list'].pop(revenge_index)
@@ -713,14 +779,6 @@ class Plunder(object):
         )
 
         self.send_result_notify()
-
-        win_ways = sum([i for i in result if i == 1])
-
-        plunder_got = []
-        if tp == PLUNDER_TYPE_PLUNDER:
-            target_plunder = Plunder(self.server_id, real_id)
-            _got = target_plunder.got_plundered(self.char_id, win_ways)
-            plunder_got.extend(_got)
 
         config = ConfigPlunderIncome.get(win_ways)
         plunder_got.extend(config.get_extra_income())
@@ -821,7 +879,7 @@ class Plunder(object):
     def send_search_notify(self):
         if not self.doc['search']:
             try:
-                self.search()
+                self.search(send_notify=False)
             except GameException:
                 pass
 
@@ -829,21 +887,20 @@ class Plunder(object):
         notify.cd = PlunderSearchCD(self.server_id, self.char_id).get_cd_seconds()
 
         for s in self.doc['search']:
-            target_plunder = Plunder(self.server_id, s['id'])
-
             notify_target = notify.target.add()
             notify_target.id = str(s['id'])
-            notify_target.station_level = target_plunder.get_station_level()
             notify_target.spied = s['spied']
+
+            if str(s['id']).startswith('npc:'):
+                target_plunder = PlunderNPC(s['id'], s['name'], s['station_level'], s['ways_npc'])
+            else:
+                target_plunder = Plunder(self.server_id, s['id'])
+
+            notify_target.station_level = target_plunder.get_station_level()
 
             for way in [1, 2, 3]:
                 notify_target_troop = notify_target.troop.add()
-
-                way_object = target_plunder.get_way_object(way)
-
-                club = Club(self.server_id, s['id'], load_staffs=False)
-                club.formation_staffs = way_object.formation_staffs
-
+                club = target_plunder.make_way_club(way)
                 notify_target_troop.MergeFrom(ClubMatch.make_club_troop_msg(club))
         MessagePipe(self.char_id).put(msg=notify)
 
