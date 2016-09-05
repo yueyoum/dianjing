@@ -147,3 +147,7 @@ class VIP(object):
     @property
     def arena_search_reset_times(self):
         return ConfigVIP.get(self.doc['vip']).arena_search_reset_times
+
+    @property
+    def plunder_buy_times(self):
+        return ConfigVIP.get(self.doc['vip']).plunder_buy_times

@@ -178,7 +178,7 @@ class Club(AbstractClub):
         MongoCharacter.db(server_id).insert_one(doc)
 
     @classmethod
-    def get_recent_login_char_ids(cls, server_id, recent_days=7, other_conditions=None):
+    def get_recent_login_char_ids(cls, server_id, recent_days=14, other_conditions=None):
         day_limit = arrow.utcnow().replace(days=-recent_days)
         timestamp = day_limit.timestamp
 

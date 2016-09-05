@@ -218,7 +218,7 @@ class Arena(object):
 
     @classmethod
     def send_rank_reward(cls, server_id):
-        char_ids = Club.get_recent_login_char_ids(server_id, recent_days=7)
+        char_ids = Club.get_recent_login_char_ids(server_id)
 
         # 加上一分钟，确保已经到了第二天
         # 定时任务要是 23:59:59 启动，那天数判断就错了

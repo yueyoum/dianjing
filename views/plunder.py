@@ -22,6 +22,7 @@ from protomsg.plunder_pb2 import (
     BaseStationSyncResponse,
     PlunderGetRewardResponse,
     PlunderBuyTimesResponse,
+    BaseStationGetProductResponse,
 
     SpecialEquipmentGenerateResponse,
     SpecialEquipmentGenerateSpeedUpResponse,
@@ -156,11 +157,23 @@ def sync_station(request):
     p = Plunder(server_id, char_id)
     p.send_station_notify()
     p.send_plunder_times_notify()
+    p.send_revenge_notify()
 
     response = BaseStationSyncResponse()
     response.ret = 0
     return ProtobufResponse(response)
 
+def get_station_product(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    p = Plunder(server_id, char_id)
+    drop = p.get_station_product()
+
+    response = BaseStationGetProductResponse()
+    response.ret = 0
+    response.drop.MergeFrom(drop.make_protomsg())
+    return ProtobufResponse(response)
 
 def special_equipment_generate(request):
     server_id = request._game_session.server_id

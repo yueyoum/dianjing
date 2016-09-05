@@ -12,7 +12,6 @@ import arrow
 from core.mongo import MongoTimesLog
 from core.signals import task_condition_trig_signal
 from utils.functional import make_string_id, get_start_time_of_today
-from config import ConfigTaskCondition
 
 KEEP_DAYS = 100
 

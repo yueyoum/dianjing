@@ -19,6 +19,7 @@ class VIP(object):
                  'store_refresh_times',
                  'territory_help_times',
                  'arena_search_reset_times',
+                 'plunder_buy_times',
                  ]
 
     def __init__(self):
@@ -36,6 +37,7 @@ class VIP(object):
         self.store_refresh_times = 0
         self.territory_help_times = 0
         self.arena_search_reset_times = 0
+        self.plunder_buy_times = 0
 
 
 class ConfigVIP(ConfigBase):

@@ -748,6 +748,9 @@ class MongoPlunder(BaseDocument):
             'tp': 0,
         },
 
+        # 掠夺剩余次数
+        'plunder_remained_times': 0,
+
         # 基地的
         'level': 1,
         'exp': 0,
@@ -756,6 +759,10 @@ class MongoPlunder(BaseDocument):
         # 复仇列表， 因为可能列表中有重复的人， 所以还需要一个 unique_id
         # [(unique_id, real_id), ...]
         'revenge_list': [],
+        # 上次的产出， 领了就清空，没领就到下次生成的时候覆盖
+        'drop': '',
+        # 恢复掠夺次数
+        'recover_times': 0
 
     }
 
@@ -766,4 +773,4 @@ class MongoPlunder(BaseDocument):
     }
 
     COLLECTION = 'plunder'
-    INDEXES = ['loss_percent',]
+    INDEXES = ['plunder_remained_times', 'loss_percent',]

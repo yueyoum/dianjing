@@ -416,7 +416,7 @@ class Territory(object):
         level_limit = GlobalConfig.value("TERRITORY_BUILDING_AUTO_INCREASE_LEVEL")
         level_condition = {'level': {'$gte': level_limit}}
 
-        char_ids = Club.get_recent_login_char_ids(server_id, recent_days=14, other_conditions=[level_condition])
+        char_ids = Club.get_recent_login_char_ids(server_id, other_conditions=[level_condition])
         char_ids = [i for i in char_ids]
 
         docs = MongoTerritory.db(server_id).find({'_id': {'$in': char_ids}})

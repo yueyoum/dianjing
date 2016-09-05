@@ -21,7 +21,8 @@ class BaseStationLevel(object):
         product = []
         for _id, _amount in self.product:
             _amount = int(_amount * 1.0 * percent / 100)
-            product.append((_id, _amount))
+            if _amount:
+                product.append((_id, _amount))
 
         return product
 

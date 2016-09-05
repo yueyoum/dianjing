@@ -84,7 +84,7 @@ class Tower(object):
 
     @classmethod
     def send_rank_reward_and_reset_star(cls, server_id):
-        char_ids = Club.get_recent_login_char_ids(server_id, recent_days=14)
+        char_ids = Club.get_recent_login_char_ids(server_id)
         char_ids = [i for i in char_ids]
 
         condition = {'$and': [
