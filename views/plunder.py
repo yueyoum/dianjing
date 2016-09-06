@@ -75,7 +75,7 @@ def spy(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
-    target_id = int(request._proto.id)
+    target_id = request._proto.id
 
     p = Plunder(server_id, char_id)
     p.spy(target_id)

@@ -254,7 +254,7 @@ def get_plunder_times_next_recover_at():
     # 每4小时，也就是 0, 4, 8, 12, 16, 20 这几个点
     for index, hour in enumerate(PLUNDER_AUTO_ADD_HOUR):
         if now.hour >= hour:
-            next_hour = index - 1
+            next_hour = PLUNDER_AUTO_ADD_HOUR[index - 1]
             break
     else:
         raise RuntimeError("Can not be here!")
@@ -564,9 +564,9 @@ class Plunder(object):
             self.send_search_notify()
 
     def find_search_target_index_by_target_id(self, target_id):
-        target_id = int(target_id)
+        target_id = str(target_id)
         for index, s in enumerate(self.doc['search']):
-            if s['id'] == target_id:
+            if str(s['id']) == target_id:
                 return index
 
         raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_CANNOT_FIND_TARGET"))

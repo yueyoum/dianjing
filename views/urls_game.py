@@ -167,6 +167,7 @@ urlpatterns = [
     url(r'^plunder/getreward/$', views.plunder.get_reward),
     url(r'^plunder/buytimes/$', views.plunder.buy_plunder_times),
     url(r'^plunder/station/sync/$', views.plunder.sync_station),
+    url(r'^plunder/station/getproduct/$', views.plunder.get_station_product),
 
     url(r'^plunder/specialequip/generate/$', views.plunder.special_equipment_generate),
     url(r'^plunder/specialequip/speedup/$', views.plunder.special_equipment_speedup),

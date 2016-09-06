@@ -48,4 +48,4 @@ class ConfigName(object):
         a = random.choice(ConfigLastName.NAMES)
         b = random.choice(ConfigFirstName.NAMES)
 
-        return "{0}．{1}".format(a, b)
+        return u"{0}．{1}".format(a, b)
