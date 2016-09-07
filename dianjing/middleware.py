@@ -68,8 +68,13 @@ class GameRequestMiddleware(object):
                 login_id = LoginID.get(session.account_id)
                 error_id = 0
                 if not login_id:
-                    error_id = ConfigErrorMessage.get_error_id("RELOGIN")
-                if session.login_id != login_id:
+                    # cache被清空，或者login_id过期
+                    if not session.login_id:
+                        error_id = ConfigErrorMessage.get_error_id("BAD_MESSAGE")
+                    else:
+                        LoginID.new(session.account_id, value=session.login_id)
+
+                elif session.login_id != login_id:
                     error_id = ConfigErrorMessage.get_error_id("INVALID_LOGIN_ID")
 
                 if error_id:

@@ -52,9 +52,10 @@ class LoginID(object):
     ID_EXPIRE = 3600 * 24 * 2 # 2 days
 
     @classmethod
-    def new(cls, account_id):
+    def new(cls, account_id, value=None):
         key = 'login_id:{0}'.format(account_id)
-        value = make_short_random_string()
+        if not value:
+            value = make_short_random_string()
 
         RedisDB.get().setex(key, value, cls.ID_EXPIRE)
         return value
