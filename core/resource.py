@@ -418,14 +418,13 @@ class ResourceClassification(object):
         if self.vip_exp:
             VIP(server_id, char_id).add_exp(self.vip_exp)
 
-        bag = Bag(server_id, char_id)
-        for _id, _amount in self.bag:
-            bag.add(_id, amount=_amount)
+        if self.bag:
+            bag = Bag(server_id, char_id)
+            bag.batch_add(self.bag)
 
         sm = StaffManger(server_id, char_id)
-        for _id, _amount in self.staff:
-            for _ in range(_amount):
-                sm.add(_id)
+        if self.staff:
+            sm.batch_add(self.staff)
 
         if self.staff_exp_pool:
             sm.add_exp_pool(self.staff_exp_pool)

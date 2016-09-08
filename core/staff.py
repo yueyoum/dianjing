@@ -910,6 +910,33 @@ class StaffManger(object):
             self.after_staffs_change_for_trig_signal()
         return unique_id
 
+    def batch_add(self, staffs):
+        # [(oid, amount), ...]
+
+        updater = {}
+        unique_id_list = []
+        for oid, amount in staffs:
+            if not ConfigStaffNew.get(oid):
+                raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
+
+            quality = ConfigItemNew.get(oid).quality
+
+            unique_id = make_string_id()
+            doc = MongoStaff.document_staff()
+            doc['oid'] = oid
+            doc['star'] = (quality - 1) * 10
+
+            unique_id_list.append(unique_id)
+            updater['staffs.{0}'.format(unique_id)] = doc
+
+        MongoStaff.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': updater}
+        )
+
+        self.send_notify(ids=[unique_id_list])
+        self.after_staffs_change_for_trig_signal()
+
     def remove(self, staff_id):
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},

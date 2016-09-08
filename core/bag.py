@@ -485,6 +485,36 @@ class Bag(object):
 
         self.send_notify(slot_ids=slot_ids)
 
+    def batch_add(self, items):
+        # [(id, amount), ...]
+        updater = {}
+        slots_ids = []
+
+        for item_id, amount in items:
+            config = ConfigItemNew.get(item_id)
+            assert config.tp in BAG_CAN_CONTAINS_TYPE
+
+            if config.tp == TYPE_EQUIPMENT:
+                if not ConfigEquipmentNew.get(item_id).levels:
+                    raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_HAS_NO_LEVEL_CAN_NOT_ADD"))
+
+                new_state = self.add_equipment(item_id, 0, amount)
+            else:
+                # 这些是可以堆叠的，先找是否有格子已经是这个物品了，如果有了，再判断是否达到堆叠上限
+                new_state = self.add_stack_item(item_id, amount)
+
+            for slot_id, state in new_state:
+                slots_ids.append(slot_id)
+                self.doc['slots'][slot_id] = state
+                updater['slots.{0}'.format(slot_id)] = state
+
+        MongoBag.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': updater}
+        )
+
+        self.send_notify(slot_ids=slots_ids)
+
     def add_equipment(self, item_id, level, amount):
         new_state = []
         for i in range(amount):
