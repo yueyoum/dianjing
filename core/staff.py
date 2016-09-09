@@ -665,7 +665,7 @@ class Staff(AbstractStaff):
 
         # 装备加成
         if len(levels) == 3:
-            equip_level_addition = ConfigStaffEquipmentAddition.get_by_level(sum(levels))
+            equip_level_addition = ConfigStaffEquipmentAddition.get_by_level(min(levels))
             if equip_level_addition:
                 self.attack += equip_level_addition.attack
                 self.attack_percent += equip_level_addition.attack_percent
