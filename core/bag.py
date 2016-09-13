@@ -7,7 +7,6 @@ Description:
 
 """
 import math
-from collections import OrderedDict
 
 from dianjing.exception import GameException
 
@@ -162,8 +161,8 @@ class Equipment(object):
         self.from_id = 0
         self.gen_tp = 0
         self.growing = 0
-        self.properties = {}  # tp: level
-        self.skills = {}
+        self.properties = []  # tp, level
+        self.skills = []
         self.is_special = False
 
         self.staff_attack = 0
@@ -207,8 +206,8 @@ class Equipment(object):
             obj.growing = data['growing']
 
             config = ConfigEquipmentSpecialGrowingProperty.get_by_growing(data['growing'])
-            obj.properties = OrderedDict(zip(data['properties'], config.property_active_levels))
-            obj.skills = OrderedDict(zip(data['skills'], config.skill_active_levels))
+            obj.properties = zip(data['properties'], config.property_active_levels)
+            obj.skills = zip(data['skills'], config.skill_active_levels)
 
         obj.calculate()
         return obj
@@ -224,8 +223,8 @@ class Equipment(object):
         obj.growing = growing
         obj.level = 0
         obj.is_special = True
-        obj.properties = OrderedDict(zip(properties, config.property_active_levels))
-        obj.skills = OrderedDict(zip(skills, config.skill_active_levels))
+        obj.properties = zip(properties, config.property_active_levels)
+        obj.skills = zip(skills, config.skill_active_levels)
 
         obj.calculate()
         return obj
@@ -267,7 +266,7 @@ class Equipment(object):
 
     def get_active_property_ids(self):
         ids = []
-        for k, v in self.properties.iteritems():
+        for k, v in self.properties:
             if self.level >= v:
                 ids.append(k)
 
@@ -275,18 +274,27 @@ class Equipment(object):
 
     def get_active_skills_ids(self):
         ids = []
-        for k, v in self.skills.iteritems():
+        for k, v in self.skills:
             if self.level >= v:
                 ids.append(k)
 
         return ids
 
-    def get_property_value(self, p, check_level=True):
-        if check_level and self.is_special and self.level < self.properties.get(p, 0):
-            return 0
+    def get_property_value(self, p, total=True):
+        if total:
+            value = 0
+            for k, v in self.properties:
+                if p != k:
+                    continue
 
-        name = PROPERTY_TO_NAME_MAP[p]
-        return getattr(self, name)
+                if v > self.level:
+                    continue
+
+                value += getattr(self, PROPERTY_TO_NAME_MAP[p])
+
+            return value
+
+        return getattr(self, PROPERTY_TO_NAME_MAP[p])
 
     def make_protomsg(self):
         msg = MsgEquipment()
@@ -299,15 +307,17 @@ class Equipment(object):
             msg.gen_tp = self.gen_tp
             msg.from_id = self.from_id
 
-            properties = [(i, 0) for i in SPECIAL_EQUIPMENT_BASE_PROPERTY] + self.properties.items()
+            properties = [(i, 0) for i in SPECIAL_EQUIPMENT_BASE_PROPERTY] + self.properties
 
             for p, lv in properties:
-                msg_property = msg.properties.add()
-                msg_property.tp = p
-                msg_property.level = lv
-                msg_property.value = self.get_property_value(p, check_level=False)
+                value = self.get_property_value(p, total=False)
+                if value:
+                    msg_property = msg.properties.add()
+                    msg_property.tp = p
+                    msg_property.level = lv
+                    msg_property.value = value
 
-            for s, lv in self.skills.iteritems():
+            for s, lv in self.skills:
                 msg_skill = msg.skills.add()
                 msg_skill.id = s
                 msg_skill.level = lv
@@ -320,7 +330,7 @@ class Equipment(object):
             ]
 
             for p in properties:
-                value = self.get_property_value(p)
+                value = self.get_property_value(p, total=False)
                 if value:
                     msg_property = msg.properties.add()
                     msg_property.tp = p
@@ -341,8 +351,8 @@ class Equipment(object):
                 'from_id': self.from_id,
                 'gen_tp': self.gen_tp,
                 'growing': self.growing,
-                'properties': self.properties.keys(),
-                'skills': self.skills.keys(),
+                'properties': [i for i, _ in self.properties],
+                'skills': [i for i, _ in self.skills],
             })
 
         return doc
