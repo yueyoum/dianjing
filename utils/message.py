@@ -24,11 +24,11 @@ class MessageFactory(object):
 
         data = msg.SerializeToString()
         data_id = MESSAGE_TO_ID[msg.DESCRIPTOR.name]
-        data_len = len(data)
+        data_len = len(data) + 4
 
         packed = '%s%s%s' % (
-            NUM_FILED.pack(data_id),
             NUM_FILED.pack(data_len),
+            NUM_FILED.pack(data_id),
             data
         )
 

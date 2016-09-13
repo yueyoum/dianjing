@@ -47,8 +47,8 @@ class GameRequestMiddleware(object):
         request._game_session = session
 
         try:
-            # body 格式：  数量 ID 长度 真实数据
-            data = request.body[12:]  # 去掉 数量 ID 长度
+            # body 格式：  长度 ID 真实数据
+            data = request.body[8:]  # 去掉 长度 ID
             msg_file, msg_name = PATH_TO_REQUEST[request.path]
             msg_module = __import__('protomsg.{0}_pb2'.format(msg_file), fromlist=['*'])
 
@@ -125,14 +125,7 @@ class GameResponseMiddleware(object):
         print _msg_names
         # END DEBUG
 
-        num_of_msgs = len(all_msgs)
-
-        result = '%s%s' % (
-            NUM_FILED.pack(num_of_msgs),
-            ''.join(all_msgs)
-        )
-
-        return HttpResponse(result, content_type='text/plain')
+        return HttpResponse(''.join(all_msgs), content_type='text/plain')
 
 
 class GameExceptionMiddleware(object):
