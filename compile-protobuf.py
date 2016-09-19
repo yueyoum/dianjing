@@ -7,13 +7,15 @@ Date Created:   2015-04-22 02:36
 Description:
 
 """
+import re
 import os
 import sys
 import subprocess
 import xml.etree.ElementTree as et
 
-def compile_protobuf():
-    cmd = 'protoc --python_out=protomsg -Iprotobuf protobuf/*.proto'
+import arrow
+
+def run_cmd(cmd):
     pipe = subprocess.PIPE
     p = subprocess.Popen(cmd, shell=True, stdout=pipe, stderr=pipe)
     exitcode = p.wait()
@@ -22,6 +24,11 @@ def compile_protobuf():
     if exitcode:
         print stderr
         sys.exit(1)
+
+
+def compile_protobuf():
+    cmd = 'protoc --python_out=protomsg -Iprotobuf protobuf/*.proto'
+    run_cmd(cmd)
 
 
 class Gen(object):
@@ -43,6 +50,7 @@ class Gen(object):
 
                 attr['file'] = file_name
                 self.info.append(attr)
+
 
 
     def generate_message_id_dict(self):
@@ -116,7 +124,9 @@ PATH_TO_RESPONSE = {
             if not reqtype:
                 continue
 
-            path = id_path_dict[reqtype]
+            path = id_path_dict.get(reqtype, "")
+            if not path:
+                continue
 
             path_responses.append('    "{0}": ["{1}", "{2}"],'.format(path, info["file"], info["name"]))
 
@@ -125,20 +135,120 @@ PATH_TO_RESPONSE = {
         with open(self.f, 'a') as f:
             f.write(content)
 
-
-    @classmethod
-    def gen(cls):
-        self = cls()
+    def gen_python_file(self):
         self.generate_message_id_dict()
         self.generate_id_message_dict()
         self.generate_path_request_dict()
         self.generate_path_response_dict()
 
 
+    def generate_erl_protocol(self, *should_generates):
+        pattern_package = re.compile('^\s*package')
+        pattern_import = re.compile('^\s*import')
+
+        content = []
+
+        for s in should_generates:
+            with open('protobuf/{0}'.format(s), 'r') as x:
+                for line in x.readlines():
+                    if pattern_package.search(line) or pattern_import.search(line):
+                        continue
+
+                    content.append(line)
+
+        with open('dj_protocol.proto', 'w') as f:
+            f.writelines(content)
+
+        cmd = 'protoc-erl -I . -o erlang -strbin -msgprefix Proto dj_protocol.proto'
+        run_cmd(cmd)
+
+        os.remove('dj_protocol.proto')
+
+
+    def generate_erl_protocol_mapping(self):
+        template_get_name = """
+get_name(%s) ->
+    %s;"""
+
+        template_get_id = """
+get_id(#'Proto%s'{}) ->
+    %s;"""
+
+        template_file = """%% auto generate at %s.
+
+-module(%s).
+-export([get_name/1,
+    get_id/1]).
+
+-include("dj_protocol.hrl").
+
+%s
+
+%s
+"""
+        get_name = []
+        for info in self.info:
+            if info.get('socket', '') == '1':
+                get_name.append(template_get_name % (info['type'], "'Proto{0}'".format(info['name'])))
+
+        last = template_get_name % ('_', 'undefined')
+        last = last[:-1] + '.'
+        get_name.append(last)
+
+        get_id = []
+        for info in self.info:
+            if info.get('socket', '') == '2':
+                get_id.append(template_get_id % (info['name'], info['type']))
+
+        get_id[-1] = get_id[-1][:-1] + '.'
+
+        file_name = 'dj_protocol_mapping'
+        content = template_file % (
+            arrow.now().format("YYYY-MM-DD HH:mm:ss"),
+            file_name,
+            '\n'.join(get_name),
+            '\n'.join(get_id)
+        )
+
+        with open('erlang/{0}.erl'.format(file_name), 'w') as f:
+            f.write(content)
+
+    # def generate_erl_hrl(self):
+    #     split_pattern = re.compile('([A-Z][^A-Z]*)')
+    #
+    #     def to_macro(name):
+    #         splited = split_pattern.split(name)
+    #         macro = ['PROTO']
+    #         for s in splited:
+    #             if s:
+    #                 macro.append(s.upper())
+    #
+    #         return '_'.join(macro)
+    #
+    #
+    #     template = "-define(%s, '%s')."
+    #
+    #     content = []
+    #     for info in self.info:
+    #         if info.get('socket', '') == '2':
+    #             content.append(template % (to_macro(info['name']), info['name']))
+    #
+    #     with open('erlang/dj_protocol.hrl', 'w') as f:
+    #         f.write('\n'.join(content))
+
+
+    def gen_erlang_file(self, *should_generates):
+        self.generate_erl_protocol(*should_generates)
+        self.generate_erl_protocol_mapping()
+        # self.generate_erl_hrl()
+
+
 if __name__ == "__main__":
     path = os.path.dirname(os.path.realpath(__file__))
     os.chdir(path)
+
     compile_protobuf()
 
-    Gen.gen()
-
+    g = Gen()
+    g.gen_python_file()
+    g.gen_erlang_file('common.proto', 'party.proto')
