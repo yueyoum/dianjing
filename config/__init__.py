@@ -47,6 +47,7 @@ from config.purchase import ConfigPurchaseYueka, ConfigPurchaseGoods, ConfigPurc
 from config.activity import ConfigActivityDailyBuy, ConfigActivityNewPlayer
 from config.plunder import ConfigBaseStationLevel, ConfigPlunderBuyTimesCost, ConfigPlunderIncome, ConfigPlunderNPC
 from config.name import ConfigFirstName, ConfigLastName, ConfigName
+from config.party import ConfigPartyLevel, ConfigPartyBuyItem
 
 _has_configed = False
 
@@ -263,5 +264,9 @@ def load_config():
         elif name == 'plunder_npc.json':
             ConfigPlunderNPC.initialize(data)
 
+        elif name == 'party_level.json':
+            ConfigPartyLevel.initialize(data)
+        elif name == 'party_buy_item.json':
+            ConfigPartyBuyItem.initialize(data)
 
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))

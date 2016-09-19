@@ -784,10 +784,8 @@ class MongoPlunder(BaseDocument):
 class MongoParty(BaseDocument):
     DOCUMENT = {
         '_id': null,
+        # 获得的 天赋 , 定时清理
         'talent_id': 0,
-        # 当前已经进行的 创建/加入 次数
-        'create_times': 0,
-        'join_times': 0,
     }
 
     COLLECTION = 'party'

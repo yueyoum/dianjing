@@ -326,3 +326,14 @@ class ValueLogPlunderBuyTimes(ValueLog):
 class ValueLogPlunderRevengeTimes(ValueLog):
     KEY = 'plunder_revenge_times'
     __slots__ = []
+
+# 创建宴会次数
+class ValueLogPartyCreateTimes(ValueLog):
+    KEY = 'party_create_times'
+    __slots__ = []
+
+# 加入宴会次数
+class ValueLogPartyJoinTimes(ValueLog):
+    KEY = 'party_join_times'
+    __slots__ = []
+    
