@@ -359,6 +359,13 @@ class ConfigEquipmentSpecialLevel(ConfigBase):
     INSTANCES = {}
     FILTER_CACHE = {}
 
+    MAX_LEVEL = 0
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigEquipmentSpecialLevel, cls).initialize(fixture)
+        cls.MAX_LEVEL = max(cls.INSTANCES.keys())
+
     @classmethod
     def get(cls, _id):
         """

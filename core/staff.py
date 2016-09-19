@@ -934,7 +934,7 @@ class StaffManger(object):
             {'$set': updater}
         )
 
-        self.send_notify(ids=[unique_id_list])
+        self.send_notify(ids=unique_id_list)
         self.after_staffs_change_for_trig_signal()
 
     def remove(self, staff_id):

@@ -245,9 +245,9 @@ class Equipment(object):
                 if v:
                     setattr(self, k, v)
 
-            self.staff_attack = config.staff_attack + config.staff_attack * self.level * math.pow(self.growing, 1.25)
-            self.staff_defense = config.staff_defense + config.staff_defense * self.level * math.pow(self.growing, 1.25)
-            self.staff_manage = config.staff_manage + config.staff_manage * self.level * math.pow(self.growing, 1.25)
+            self.staff_attack = config.staff_attack + config.staff_attack * self.level * math.pow(self.growing / 75, 1.25)
+            self.staff_defense = config.staff_defense + config.staff_defense * self.level * math.pow(self.growing / 75, 1.25)
+            self.staff_manage = config.staff_manage + config.staff_manage * self.level * math.pow(self.growing / 75, 1.25)
 
             self.staff_attack = int(round(self.staff_attack))
             self.staff_defense = int(round(self.staff_defense))
@@ -364,7 +364,7 @@ class Equipment(object):
         if self.is_special:
             for _ in range(add_level):
                 item = ConfigEquipmentSpecialLevel.get(this_level).items
-                item = [(k, int(v * self.growing)) for k, v in item]
+                item = [(k, int(v * self.growing / 75)) for k, v in item]
                 item_needs.extend(item)
 
                 this_level += 1
@@ -806,7 +806,8 @@ class Bag(object):
         level = equip.level
 
         if equip.is_special:
-            max_level = Plunder(self.server_id, self.char_id).get_station_level() * 2
+            max_level = min(ConfigEquipmentSpecialLevel.MAX_LEVEL,
+                            Plunder(self.server_id, self.char_id).get_station_level() * 50)
         else:
             config = ConfigEquipmentNew.get(item_id)
             max_level = min(config.max_level, get_club_property(self.server_id, self.char_id, 'level') * 2)
