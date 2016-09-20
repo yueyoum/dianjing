@@ -78,4 +78,10 @@ def start_game(request):
 
     response.next = OPT_OK
     response.session = session.serialize()
+
+    print
+    print "NEW SESSION"
+    print response.session
+    print
+
     return ProtobufResponse(response)

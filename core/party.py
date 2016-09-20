@@ -186,7 +186,7 @@ class Party(object):
         notify_range.close_at = close_at.timestamp
 
         notify.talent_id = self.doc['talent_id']
-        notify.talent_end_at = get_time_of_tomorrow(12)
+        notify.talent_end_at = get_time_of_tomorrow(12).timestamp
         notify.remained_create_times = self.get_remained_create_times()
         notify.remained_join_times = self.get_remained_join_times()
 

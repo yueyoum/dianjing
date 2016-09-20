@@ -15,6 +15,7 @@ from core.party import Party
 
 def create(request):
     data = json.loads(request.body)
+    print "API party create got {0}".format(data)
 
     server_id = data['server_id']
     char_id = data['char_id']
@@ -28,6 +29,8 @@ def create(request):
 
 def start(request):
     data = json.loads(request.body)
+    print "API party start got {0}".format(data)
+
 
     server_id = data['server_id']
     char_id = data['char_id']
@@ -41,6 +44,8 @@ def start(request):
 
 def buy(request):
     data = json.loads(request.body)
+    print "API party buy got {0}".format(data)
+
 
     server_id = data['server_id']
     char_id = data['char_id']
@@ -53,9 +58,9 @@ def buy(request):
 
     return JsonResponse(response)
 
-
 def end(request):
     data = json.loads(request.body)
+    print "API party end got {0}".format(data)
 
     server_id = data['server_id']
     char_id = data['char_id']
