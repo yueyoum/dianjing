@@ -83,6 +83,8 @@ encode_msg(Msg, Opts) ->
 	  e_msg_ProtoPartyCreateRequest(Msg, TrUserData);
       #'ProtoSocketConnectRequest'{} ->
 	  e_msg_ProtoSocketConnectRequest(Msg, TrUserData);
+      #'ProtoPartyInfoNotify'{} ->
+	  e_msg_ProtoPartyInfoNotify(Msg, TrUserData);
       #'ProtoSocketConnectResponse'{} ->
 	  e_msg_ProtoSocketConnectResponse(Msg, TrUserData);
       #'ProtoPartyBuyResponse'{} ->
@@ -93,8 +95,6 @@ encode_msg(Msg, Opts) ->
 	  e_msg_ProtoPartyJoinRequest(Msg, TrUserData);
       #'ProtoTimeRange'{} ->
 	  e_msg_ProtoTimeRange(Msg, TrUserData);
-      #'ProtoPartyOpenTimeNotify'{} ->
-	  e_msg_ProtoPartyOpenTimeNotify(Msg, TrUserData);
       #'ProtoPartyNotify'{} ->
 	  e_msg_ProtoPartyNotify(Msg, TrUserData);
       #'ProtoPartyChatResponse'{} ->
@@ -501,6 +501,45 @@ e_msg_ProtoSocketConnectRequest(#'ProtoSocketConnectRequest'{session
       e_type_bytes(TrF1, <<Bin/binary, 10>>)
     end.
 
+e_msg_ProtoPartyInfoNotify(Msg, TrUserData) ->
+    e_msg_ProtoPartyInfoNotify(Msg, <<>>, TrUserData).
+
+
+e_msg_ProtoPartyInfoNotify(#'ProtoPartyInfoNotify'{session
+						       = F1,
+						   talent_id = F2,
+						   talent_end_at = F3,
+						   remained_create_times = F4,
+						   remained_join_times = F5,
+						   info = F6},
+			   Bin, TrUserData) ->
+    B1 = begin
+	   TrF1 = id(F1, TrUserData),
+	   e_type_bytes(TrF1, <<Bin/binary, 10>>)
+	 end,
+    B2 = begin
+	   TrF2 = id(F2, TrUserData),
+	   e_type_int32(TrF2, <<B1/binary, 16>>)
+	 end,
+    B3 = begin
+	   TrF3 = id(F3, TrUserData),
+	   e_type_int64(TrF3, <<B2/binary, 24>>)
+	 end,
+    B4 = begin
+	   TrF4 = id(F4, TrUserData),
+	   e_type_int32(TrF4, <<B3/binary, 32>>)
+	 end,
+    B5 = begin
+	   TrF5 = id(F5, TrUserData),
+	   e_type_int32(TrF5, <<B4/binary, 40>>)
+	 end,
+    if F6 == undefined -> B5;
+       true ->
+	   TrF6 = id(F6, TrUserData),
+	   e_mfield_ProtoPartyInfoNotify_info(TrF6,
+					      <<B5/binary, 50>>, TrUserData)
+    end.
+
 e_msg_ProtoSocketConnectResponse(Msg, TrUserData) ->
     e_msg_ProtoSocketConnectResponse(Msg, <<>>, TrUserData).
 
@@ -586,35 +625,15 @@ e_msg_ProtoTimeRange(#'ProtoTimeRange'{start_at = F1,
       e_type_int64(TrF2, <<B1/binary, 16>>)
     end.
 
-e_msg_ProtoPartyOpenTimeNotify(Msg, TrUserData) ->
-    e_msg_ProtoPartyOpenTimeNotify(Msg, <<>>, TrUserData).
-
-
-e_msg_ProtoPartyOpenTimeNotify(#'ProtoPartyOpenTimeNotify'{session
-							       = F1,
-							   time_range = F2},
-			       Bin, TrUserData) ->
-    B1 = begin
-	   TrF1 = id(F1, TrUserData),
-	   e_type_bytes(TrF1, <<Bin/binary, 10>>)
-	 end,
-    begin
-      TrF2 = id(F2, TrUserData),
-      if TrF2 == [] -> B1;
-	 true ->
-	     e_field_ProtoPartyOpenTimeNotify_time_range(TrF2, B1,
-							 TrUserData)
-      end
-    end.
-
 e_msg_ProtoPartyNotify(Msg, TrUserData) ->
     e_msg_ProtoPartyNotify(Msg, <<>>, TrUserData).
 
 
 e_msg_ProtoPartyNotify(#'ProtoPartyNotify'{session = F1,
-					   talent_id = F2, talent_end_at = F3,
-					   remained_create_times = F4,
-					   remained_join_times = F5, info = F6},
+					   time_range = F2, talent_id = F3,
+					   talent_end_at = F4,
+					   remained_create_times = F5,
+					   remained_join_times = F6},
 		       Bin, TrUserData) ->
     B1 = begin
 	   TrF1 = id(F1, TrUserData),
@@ -622,25 +641,27 @@ e_msg_ProtoPartyNotify(#'ProtoPartyNotify'{session = F1,
 	 end,
     B2 = begin
 	   TrF2 = id(F2, TrUserData),
-	   e_type_int32(TrF2, <<B1/binary, 16>>)
+	   if TrF2 == [] -> B1;
+	      true ->
+		  e_field_ProtoPartyNotify_time_range(TrF2, B1,
+						      TrUserData)
+	   end
 	 end,
     B3 = begin
 	   TrF3 = id(F3, TrUserData),
-	   e_type_int64(TrF3, <<B2/binary, 24>>)
+	   e_type_int32(TrF3, <<B2/binary, 24>>)
 	 end,
     B4 = begin
 	   TrF4 = id(F4, TrUserData),
-	   e_type_int32(TrF4, <<B3/binary, 32>>)
+	   e_type_int64(TrF4, <<B3/binary, 32>>)
 	 end,
     B5 = begin
 	   TrF5 = id(F5, TrUserData),
 	   e_type_int32(TrF5, <<B4/binary, 40>>)
 	 end,
-    if F6 == undefined -> B5;
-       true ->
-	   TrF6 = id(F6, TrUserData),
-	   e_mfield_ProtoPartyNotify_info(TrF6, <<B5/binary, 50>>,
-					  TrUserData)
+    begin
+      TrF6 = id(F6, TrUserData),
+      e_type_int32(TrF6, <<B5/binary, 48>>)
     end.
 
 e_msg_ProtoPartyChatResponse(Msg, TrUserData) ->
@@ -863,30 +884,29 @@ e_field_ProtoPartyMessageNotify_messages([], Bin,
 					 _TrUserData) ->
     Bin.
 
-e_mfield_ProtoPartyOpenTimeNotify_time_range(Msg, Bin,
-					     TrUserData) ->
+e_mfield_ProtoPartyInfoNotify_info(Msg, Bin,
+				   TrUserData) ->
+    SubBin = e_msg_ProtoPartyInfo(Msg, <<>>, TrUserData),
+    Bin2 = e_varint(byte_size(SubBin), Bin),
+    <<Bin2/binary, SubBin/binary>>.
+
+e_mfield_ProtoPartyNotify_time_range(Msg, Bin,
+				     TrUserData) ->
     SubBin = e_msg_ProtoTimeRange(Msg, <<>>, TrUserData),
     Bin2 = e_varint(byte_size(SubBin), Bin),
     <<Bin2/binary, SubBin/binary>>.
 
-e_field_ProtoPartyOpenTimeNotify_time_range([Elem
-					     | Rest],
-					    Bin, TrUserData) ->
+e_field_ProtoPartyNotify_time_range([Elem | Rest], Bin,
+				    TrUserData) ->
     Bin2 = <<Bin/binary, 18>>,
-    Bin3 =
-	e_mfield_ProtoPartyOpenTimeNotify_time_range(id(Elem,
-							TrUserData),
-						     Bin2, TrUserData),
-    e_field_ProtoPartyOpenTimeNotify_time_range(Rest, Bin3,
-						TrUserData);
-e_field_ProtoPartyOpenTimeNotify_time_range([], Bin,
-					    _TrUserData) ->
+    Bin3 = e_mfield_ProtoPartyNotify_time_range(id(Elem,
+						   TrUserData),
+						Bin2, TrUserData),
+    e_field_ProtoPartyNotify_time_range(Rest, Bin3,
+					TrUserData);
+e_field_ProtoPartyNotify_time_range([], Bin,
+				    _TrUserData) ->
     Bin.
-
-e_mfield_ProtoPartyNotify_info(Msg, Bin, TrUserData) ->
-    SubBin = e_msg_ProtoPartyInfo(Msg, <<>>, TrUserData),
-    Bin2 = e_varint(byte_size(SubBin), Bin),
-    <<Bin2/binary, SubBin/binary>>.
 
 e_mfield_ProtoPartyRoomResponse_rooms(Msg, Bin,
 				      TrUserData) ->
@@ -1008,6 +1028,8 @@ decode_msg(Bin, MsgName, Opts) when is_binary(Bin) ->
 	  d_msg_ProtoPartyCreateRequest(Bin, TrUserData);
       'ProtoSocketConnectRequest' ->
 	  d_msg_ProtoSocketConnectRequest(Bin, TrUserData);
+      'ProtoPartyInfoNotify' ->
+	  d_msg_ProtoPartyInfoNotify(Bin, TrUserData);
       'ProtoSocketConnectResponse' ->
 	  d_msg_ProtoSocketConnectResponse(Bin, TrUserData);
       'ProtoPartyBuyResponse' ->
@@ -1018,8 +1040,6 @@ decode_msg(Bin, MsgName, Opts) when is_binary(Bin) ->
 	  d_msg_ProtoPartyJoinRequest(Bin, TrUserData);
       'ProtoTimeRange' ->
 	  d_msg_ProtoTimeRange(Bin, TrUserData);
-      'ProtoPartyOpenTimeNotify' ->
-	  d_msg_ProtoPartyOpenTimeNotify(Bin, TrUserData);
       'ProtoPartyNotify' ->
 	  d_msg_ProtoPartyNotify(Bin, TrUserData);
       'ProtoPartyChatResponse' ->
@@ -3929,6 +3949,289 @@ skip_64_ProtoSocketConnectRequest(<<_:64, Rest/binary>>,
 						 Z2, F1, TrUserData).
 
 
+d_msg_ProtoPartyInfoNotify(Bin, TrUserData) ->
+    dfp_read_field_def_ProtoPartyInfoNotify(Bin, 0, 0,
+					    id(undefined, TrUserData),
+					    id(undefined, TrUserData),
+					    id(undefined, TrUserData),
+					    id(undefined, TrUserData),
+					    id(undefined, TrUserData),
+					    id(undefined, TrUserData),
+					    TrUserData).
+
+dfp_read_field_def_ProtoPartyInfoNotify(<<10,
+					  Rest/binary>>,
+					Z1, Z2, F1, F2, F3, F4, F5, F6,
+					TrUserData) ->
+    d_field_ProtoPartyInfoNotify_session(Rest, Z1, Z2, F1,
+					 F2, F3, F4, F5, F6, TrUserData);
+dfp_read_field_def_ProtoPartyInfoNotify(<<16,
+					  Rest/binary>>,
+					Z1, Z2, F1, F2, F3, F4, F5, F6,
+					TrUserData) ->
+    d_field_ProtoPartyInfoNotify_talent_id(Rest, Z1, Z2, F1,
+					   F2, F3, F4, F5, F6, TrUserData);
+dfp_read_field_def_ProtoPartyInfoNotify(<<24,
+					  Rest/binary>>,
+					Z1, Z2, F1, F2, F3, F4, F5, F6,
+					TrUserData) ->
+    d_field_ProtoPartyInfoNotify_talent_end_at(Rest, Z1, Z2,
+					       F1, F2, F3, F4, F5, F6,
+					       TrUserData);
+dfp_read_field_def_ProtoPartyInfoNotify(<<32,
+					  Rest/binary>>,
+					Z1, Z2, F1, F2, F3, F4, F5, F6,
+					TrUserData) ->
+    d_field_ProtoPartyInfoNotify_remained_create_times(Rest,
+						       Z1, Z2, F1, F2, F3, F4,
+						       F5, F6, TrUserData);
+dfp_read_field_def_ProtoPartyInfoNotify(<<40,
+					  Rest/binary>>,
+					Z1, Z2, F1, F2, F3, F4, F5, F6,
+					TrUserData) ->
+    d_field_ProtoPartyInfoNotify_remained_join_times(Rest,
+						     Z1, Z2, F1, F2, F3, F4, F5,
+						     F6, TrUserData);
+dfp_read_field_def_ProtoPartyInfoNotify(<<50,
+					  Rest/binary>>,
+					Z1, Z2, F1, F2, F3, F4, F5, F6,
+					TrUserData) ->
+    d_field_ProtoPartyInfoNotify_info(Rest, Z1, Z2, F1, F2,
+				      F3, F4, F5, F6, TrUserData);
+dfp_read_field_def_ProtoPartyInfoNotify(<<>>, 0, 0, F1,
+					F2, F3, F4, F5, F6, _) ->
+    #'ProtoPartyInfoNotify'{session = F1, talent_id = F2,
+			    talent_end_at = F3, remained_create_times = F4,
+			    remained_join_times = F5, info = F6};
+dfp_read_field_def_ProtoPartyInfoNotify(Other, Z1, Z2,
+					F1, F2, F3, F4, F5, F6, TrUserData) ->
+    dg_read_field_def_ProtoPartyInfoNotify(Other, Z1, Z2,
+					   F1, F2, F3, F4, F5, F6, TrUserData).
+
+dg_read_field_def_ProtoPartyInfoNotify(<<1:1, X:7,
+					 Rest/binary>>,
+				       N, Acc, F1, F2, F3, F4, F5, F6,
+				       TrUserData)
+    when N < 32 - 7 ->
+    dg_read_field_def_ProtoPartyInfoNotify(Rest, N + 7,
+					   X bsl N + Acc, F1, F2, F3, F4, F5,
+					   F6, TrUserData);
+dg_read_field_def_ProtoPartyInfoNotify(<<0:1, X:7,
+					 Rest/binary>>,
+				       N, Acc, F1, F2, F3, F4, F5, F6,
+				       TrUserData) ->
+    Key = X bsl N + Acc,
+    case Key of
+      10 ->
+	  d_field_ProtoPartyInfoNotify_session(Rest, 0, 0, F1, F2,
+					       F3, F4, F5, F6, TrUserData);
+      16 ->
+	  d_field_ProtoPartyInfoNotify_talent_id(Rest, 0, 0, F1,
+						 F2, F3, F4, F5, F6,
+						 TrUserData);
+      24 ->
+	  d_field_ProtoPartyInfoNotify_talent_end_at(Rest, 0, 0,
+						     F1, F2, F3, F4, F5, F6,
+						     TrUserData);
+      32 ->
+	  d_field_ProtoPartyInfoNotify_remained_create_times(Rest,
+							     0, 0, F1, F2, F3,
+							     F4, F5, F6,
+							     TrUserData);
+      40 ->
+	  d_field_ProtoPartyInfoNotify_remained_join_times(Rest,
+							   0, 0, F1, F2, F3, F4,
+							   F5, F6, TrUserData);
+      50 ->
+	  d_field_ProtoPartyInfoNotify_info(Rest, 0, 0, F1, F2,
+					    F3, F4, F5, F6, TrUserData);
+      _ ->
+	  case Key band 7 of
+	    0 ->
+		skip_varint_ProtoPartyInfoNotify(Rest, 0, 0, F1, F2, F3,
+						 F4, F5, F6, TrUserData);
+	    1 ->
+		skip_64_ProtoPartyInfoNotify(Rest, 0, 0, F1, F2, F3, F4,
+					     F5, F6, TrUserData);
+	    2 ->
+		skip_length_delimited_ProtoPartyInfoNotify(Rest, 0, 0,
+							   F1, F2, F3, F4, F5,
+							   F6, TrUserData);
+	    5 ->
+		skip_32_ProtoPartyInfoNotify(Rest, 0, 0, F1, F2, F3, F4,
+					     F5, F6, TrUserData)
+	  end
+    end;
+dg_read_field_def_ProtoPartyInfoNotify(<<>>, 0, 0, F1,
+				       F2, F3, F4, F5, F6, _) ->
+    #'ProtoPartyInfoNotify'{session = F1, talent_id = F2,
+			    talent_end_at = F3, remained_create_times = F4,
+			    remained_join_times = F5, info = F6}.
+
+d_field_ProtoPartyInfoNotify_session(<<1:1, X:7,
+				       Rest/binary>>,
+				     N, Acc, F1, F2, F3, F4, F5, F6, TrUserData)
+    when N < 57 ->
+    d_field_ProtoPartyInfoNotify_session(Rest, N + 7,
+					 X bsl N + Acc, F1, F2, F3, F4, F5, F6,
+					 TrUserData);
+d_field_ProtoPartyInfoNotify_session(<<0:1, X:7,
+				       Rest/binary>>,
+				     N, Acc, _, F2, F3, F4, F5, F6,
+				     TrUserData) ->
+    Len = X bsl N + Acc,
+    <<Bytes:Len/binary, Rest2/binary>> = Rest,
+    NewFValue = binary:copy(Bytes),
+    dfp_read_field_def_ProtoPartyInfoNotify(Rest2, 0, 0,
+					    NewFValue, F2, F3, F4, F5, F6,
+					    TrUserData).
+
+
+d_field_ProtoPartyInfoNotify_talent_id(<<1:1, X:7,
+					 Rest/binary>>,
+				       N, Acc, F1, F2, F3, F4, F5, F6,
+				       TrUserData)
+    when N < 57 ->
+    d_field_ProtoPartyInfoNotify_talent_id(Rest, N + 7,
+					   X bsl N + Acc, F1, F2, F3, F4, F5,
+					   F6, TrUserData);
+d_field_ProtoPartyInfoNotify_talent_id(<<0:1, X:7,
+					 Rest/binary>>,
+				       N, Acc, F1, _, F3, F4, F5, F6,
+				       TrUserData) ->
+    <<NewFValue:32/signed-native>> = <<(X bsl N +
+					  Acc):32/unsigned-native>>,
+    dfp_read_field_def_ProtoPartyInfoNotify(Rest, 0, 0, F1,
+					    NewFValue, F3, F4, F5, F6,
+					    TrUserData).
+
+
+d_field_ProtoPartyInfoNotify_talent_end_at(<<1:1, X:7,
+					     Rest/binary>>,
+					   N, Acc, F1, F2, F3, F4, F5, F6,
+					   TrUserData)
+    when N < 57 ->
+    d_field_ProtoPartyInfoNotify_talent_end_at(Rest, N + 7,
+					       X bsl N + Acc, F1, F2, F3, F4,
+					       F5, F6, TrUserData);
+d_field_ProtoPartyInfoNotify_talent_end_at(<<0:1, X:7,
+					     Rest/binary>>,
+					   N, Acc, F1, F2, _, F4, F5, F6,
+					   TrUserData) ->
+    <<NewFValue:64/signed-native>> = <<(X bsl N +
+					  Acc):64/unsigned-native>>,
+    dfp_read_field_def_ProtoPartyInfoNotify(Rest, 0, 0, F1,
+					    F2, NewFValue, F4, F5, F6,
+					    TrUserData).
+
+
+d_field_ProtoPartyInfoNotify_remained_create_times(<<1:1,
+						     X:7, Rest/binary>>,
+						   N, Acc, F1, F2, F3, F4, F5,
+						   F6, TrUserData)
+    when N < 57 ->
+    d_field_ProtoPartyInfoNotify_remained_create_times(Rest,
+						       N + 7, X bsl N + Acc, F1,
+						       F2, F3, F4, F5, F6,
+						       TrUserData);
+d_field_ProtoPartyInfoNotify_remained_create_times(<<0:1,
+						     X:7, Rest/binary>>,
+						   N, Acc, F1, F2, F3, _, F5,
+						   F6, TrUserData) ->
+    <<NewFValue:32/signed-native>> = <<(X bsl N +
+					  Acc):32/unsigned-native>>,
+    dfp_read_field_def_ProtoPartyInfoNotify(Rest, 0, 0, F1,
+					    F2, F3, NewFValue, F5, F6,
+					    TrUserData).
+
+
+d_field_ProtoPartyInfoNotify_remained_join_times(<<1:1,
+						   X:7, Rest/binary>>,
+						 N, Acc, F1, F2, F3, F4, F5, F6,
+						 TrUserData)
+    when N < 57 ->
+    d_field_ProtoPartyInfoNotify_remained_join_times(Rest,
+						     N + 7, X bsl N + Acc, F1,
+						     F2, F3, F4, F5, F6,
+						     TrUserData);
+d_field_ProtoPartyInfoNotify_remained_join_times(<<0:1,
+						   X:7, Rest/binary>>,
+						 N, Acc, F1, F2, F3, F4, _, F6,
+						 TrUserData) ->
+    <<NewFValue:32/signed-native>> = <<(X bsl N +
+					  Acc):32/unsigned-native>>,
+    dfp_read_field_def_ProtoPartyInfoNotify(Rest, 0, 0, F1,
+					    F2, F3, F4, NewFValue, F6,
+					    TrUserData).
+
+
+d_field_ProtoPartyInfoNotify_info(<<1:1, X:7,
+				    Rest/binary>>,
+				  N, Acc, F1, F2, F3, F4, F5, F6, TrUserData)
+    when N < 57 ->
+    d_field_ProtoPartyInfoNotify_info(Rest, N + 7,
+				      X bsl N + Acc, F1, F2, F3, F4, F5, F6,
+				      TrUserData);
+d_field_ProtoPartyInfoNotify_info(<<0:1, X:7,
+				    Rest/binary>>,
+				  N, Acc, F1, F2, F3, F4, F5, F6, TrUserData) ->
+    Len = X bsl N + Acc,
+    <<Bs:Len/binary, Rest2/binary>> = Rest,
+    NewFValue = id(d_msg_ProtoPartyInfo(Bs, TrUserData),
+		   TrUserData),
+    dfp_read_field_def_ProtoPartyInfoNotify(Rest2, 0, 0, F1,
+					    F2, F3, F4, F5,
+					    if F6 == undefined -> NewFValue;
+					       true ->
+						   merge_msg_ProtoPartyInfo(F6,
+									    NewFValue,
+									    TrUserData)
+					    end,
+					    TrUserData).
+
+
+skip_varint_ProtoPartyInfoNotify(<<1:1, _:7,
+				   Rest/binary>>,
+				 Z1, Z2, F1, F2, F3, F4, F5, F6, TrUserData) ->
+    skip_varint_ProtoPartyInfoNotify(Rest, Z1, Z2, F1, F2,
+				     F3, F4, F5, F6, TrUserData);
+skip_varint_ProtoPartyInfoNotify(<<0:1, _:7,
+				   Rest/binary>>,
+				 Z1, Z2, F1, F2, F3, F4, F5, F6, TrUserData) ->
+    dfp_read_field_def_ProtoPartyInfoNotify(Rest, Z1, Z2,
+					    F1, F2, F3, F4, F5, F6, TrUserData).
+
+
+skip_length_delimited_ProtoPartyInfoNotify(<<1:1, X:7,
+					     Rest/binary>>,
+					   N, Acc, F1, F2, F3, F4, F5, F6,
+					   TrUserData)
+    when N < 57 ->
+    skip_length_delimited_ProtoPartyInfoNotify(Rest, N + 7,
+					       X bsl N + Acc, F1, F2, F3, F4,
+					       F5, F6, TrUserData);
+skip_length_delimited_ProtoPartyInfoNotify(<<0:1, X:7,
+					     Rest/binary>>,
+					   N, Acc, F1, F2, F3, F4, F5, F6,
+					   TrUserData) ->
+    Length = X bsl N + Acc,
+    <<_:Length/binary, Rest2/binary>> = Rest,
+    dfp_read_field_def_ProtoPartyInfoNotify(Rest2, 0, 0, F1,
+					    F2, F3, F4, F5, F6, TrUserData).
+
+
+skip_32_ProtoPartyInfoNotify(<<_:32, Rest/binary>>, Z1,
+			     Z2, F1, F2, F3, F4, F5, F6, TrUserData) ->
+    dfp_read_field_def_ProtoPartyInfoNotify(Rest, Z1, Z2,
+					    F1, F2, F3, F4, F5, F6, TrUserData).
+
+
+skip_64_ProtoPartyInfoNotify(<<_:64, Rest/binary>>, Z1,
+			     Z2, F1, F2, F3, F4, F5, F6, TrUserData) ->
+    dfp_read_field_def_ProtoPartyInfoNotify(Rest, Z1, Z2,
+					    F1, F2, F3, F4, F5, F6, TrUserData).
+
+
 d_msg_ProtoSocketConnectResponse(Bin, TrUserData) ->
     dfp_read_field_def_ProtoSocketConnectResponse(Bin, 0, 0,
 						  id(undefined, TrUserData),
@@ -4597,150 +4900,10 @@ skip_64_ProtoTimeRange(<<_:64, Rest/binary>>, Z1, Z2,
 				      TrUserData).
 
 
-d_msg_ProtoPartyOpenTimeNotify(Bin, TrUserData) ->
-    dfp_read_field_def_ProtoPartyOpenTimeNotify(Bin, 0, 0,
-						id(undefined, TrUserData),
-						id([], TrUserData), TrUserData).
-
-dfp_read_field_def_ProtoPartyOpenTimeNotify(<<10,
-					      Rest/binary>>,
-					    Z1, Z2, F1, F2, TrUserData) ->
-    d_field_ProtoPartyOpenTimeNotify_session(Rest, Z1, Z2,
-					     F1, F2, TrUserData);
-dfp_read_field_def_ProtoPartyOpenTimeNotify(<<18,
-					      Rest/binary>>,
-					    Z1, Z2, F1, F2, TrUserData) ->
-    d_field_ProtoPartyOpenTimeNotify_time_range(Rest, Z1,
-						Z2, F1, F2, TrUserData);
-dfp_read_field_def_ProtoPartyOpenTimeNotify(<<>>, 0, 0,
-					    F1, F2, TrUserData) ->
-    #'ProtoPartyOpenTimeNotify'{session = F1,
-				time_range = lists_reverse(F2, TrUserData)};
-dfp_read_field_def_ProtoPartyOpenTimeNotify(Other, Z1,
-					    Z2, F1, F2, TrUserData) ->
-    dg_read_field_def_ProtoPartyOpenTimeNotify(Other, Z1,
-					       Z2, F1, F2, TrUserData).
-
-dg_read_field_def_ProtoPartyOpenTimeNotify(<<1:1, X:7,
-					     Rest/binary>>,
-					   N, Acc, F1, F2, TrUserData)
-    when N < 32 - 7 ->
-    dg_read_field_def_ProtoPartyOpenTimeNotify(Rest, N + 7,
-					       X bsl N + Acc, F1, F2,
-					       TrUserData);
-dg_read_field_def_ProtoPartyOpenTimeNotify(<<0:1, X:7,
-					     Rest/binary>>,
-					   N, Acc, F1, F2, TrUserData) ->
-    Key = X bsl N + Acc,
-    case Key of
-      10 ->
-	  d_field_ProtoPartyOpenTimeNotify_session(Rest, 0, 0, F1,
-						   F2, TrUserData);
-      18 ->
-	  d_field_ProtoPartyOpenTimeNotify_time_range(Rest, 0, 0,
-						      F1, F2, TrUserData);
-      _ ->
-	  case Key band 7 of
-	    0 ->
-		skip_varint_ProtoPartyOpenTimeNotify(Rest, 0, 0, F1, F2,
-						     TrUserData);
-	    1 ->
-		skip_64_ProtoPartyOpenTimeNotify(Rest, 0, 0, F1, F2,
-						 TrUserData);
-	    2 ->
-		skip_length_delimited_ProtoPartyOpenTimeNotify(Rest, 0,
-							       0, F1, F2,
-							       TrUserData);
-	    5 ->
-		skip_32_ProtoPartyOpenTimeNotify(Rest, 0, 0, F1, F2,
-						 TrUserData)
-	  end
-    end;
-dg_read_field_def_ProtoPartyOpenTimeNotify(<<>>, 0, 0,
-					   F1, F2, TrUserData) ->
-    #'ProtoPartyOpenTimeNotify'{session = F1,
-				time_range = lists_reverse(F2, TrUserData)}.
-
-d_field_ProtoPartyOpenTimeNotify_session(<<1:1, X:7,
-					   Rest/binary>>,
-					 N, Acc, F1, F2, TrUserData)
-    when N < 57 ->
-    d_field_ProtoPartyOpenTimeNotify_session(Rest, N + 7,
-					     X bsl N + Acc, F1, F2, TrUserData);
-d_field_ProtoPartyOpenTimeNotify_session(<<0:1, X:7,
-					   Rest/binary>>,
-					 N, Acc, _, F2, TrUserData) ->
-    Len = X bsl N + Acc,
-    <<Bytes:Len/binary, Rest2/binary>> = Rest,
-    NewFValue = binary:copy(Bytes),
-    dfp_read_field_def_ProtoPartyOpenTimeNotify(Rest2, 0, 0,
-						NewFValue, F2, TrUserData).
-
-
-d_field_ProtoPartyOpenTimeNotify_time_range(<<1:1, X:7,
-					      Rest/binary>>,
-					    N, Acc, F1, F2, TrUserData)
-    when N < 57 ->
-    d_field_ProtoPartyOpenTimeNotify_time_range(Rest, N + 7,
-						X bsl N + Acc, F1, F2,
-						TrUserData);
-d_field_ProtoPartyOpenTimeNotify_time_range(<<0:1, X:7,
-					      Rest/binary>>,
-					    N, Acc, F1, F2, TrUserData) ->
-    Len = X bsl N + Acc,
-    <<Bs:Len/binary, Rest2/binary>> = Rest,
-    NewFValue = id(d_msg_ProtoTimeRange(Bs, TrUserData),
-		   TrUserData),
-    dfp_read_field_def_ProtoPartyOpenTimeNotify(Rest2, 0, 0,
-						F1,
-						cons(NewFValue, F2, TrUserData),
-						TrUserData).
-
-
-skip_varint_ProtoPartyOpenTimeNotify(<<1:1, _:7,
-				       Rest/binary>>,
-				     Z1, Z2, F1, F2, TrUserData) ->
-    skip_varint_ProtoPartyOpenTimeNotify(Rest, Z1, Z2, F1,
-					 F2, TrUserData);
-skip_varint_ProtoPartyOpenTimeNotify(<<0:1, _:7,
-				       Rest/binary>>,
-				     Z1, Z2, F1, F2, TrUserData) ->
-    dfp_read_field_def_ProtoPartyOpenTimeNotify(Rest, Z1,
-						Z2, F1, F2, TrUserData).
-
-
-skip_length_delimited_ProtoPartyOpenTimeNotify(<<1:1,
-						 X:7, Rest/binary>>,
-					       N, Acc, F1, F2, TrUserData)
-    when N < 57 ->
-    skip_length_delimited_ProtoPartyOpenTimeNotify(Rest,
-						   N + 7, X bsl N + Acc, F1, F2,
-						   TrUserData);
-skip_length_delimited_ProtoPartyOpenTimeNotify(<<0:1,
-						 X:7, Rest/binary>>,
-					       N, Acc, F1, F2, TrUserData) ->
-    Length = X bsl N + Acc,
-    <<_:Length/binary, Rest2/binary>> = Rest,
-    dfp_read_field_def_ProtoPartyOpenTimeNotify(Rest2, 0, 0,
-						F1, F2, TrUserData).
-
-
-skip_32_ProtoPartyOpenTimeNotify(<<_:32, Rest/binary>>,
-				 Z1, Z2, F1, F2, TrUserData) ->
-    dfp_read_field_def_ProtoPartyOpenTimeNotify(Rest, Z1,
-						Z2, F1, F2, TrUserData).
-
-
-skip_64_ProtoPartyOpenTimeNotify(<<_:64, Rest/binary>>,
-				 Z1, Z2, F1, F2, TrUserData) ->
-    dfp_read_field_def_ProtoPartyOpenTimeNotify(Rest, Z1,
-						Z2, F1, F2, TrUserData).
-
-
 d_msg_ProtoPartyNotify(Bin, TrUserData) ->
     dfp_read_field_def_ProtoPartyNotify(Bin, 0, 0,
 					id(undefined, TrUserData),
-					id(undefined, TrUserData),
+					id([], TrUserData),
 					id(undefined, TrUserData),
 					id(undefined, TrUserData),
 					id(undefined, TrUserData),
@@ -4751,38 +4914,39 @@ dfp_read_field_def_ProtoPartyNotify(<<10, Rest/binary>>,
 				    TrUserData) ->
     d_field_ProtoPartyNotify_session(Rest, Z1, Z2, F1, F2,
 				     F3, F4, F5, F6, TrUserData);
-dfp_read_field_def_ProtoPartyNotify(<<16, Rest/binary>>,
+dfp_read_field_def_ProtoPartyNotify(<<18, Rest/binary>>,
+				    Z1, Z2, F1, F2, F3, F4, F5, F6,
+				    TrUserData) ->
+    d_field_ProtoPartyNotify_time_range(Rest, Z1, Z2, F1,
+					F2, F3, F4, F5, F6, TrUserData);
+dfp_read_field_def_ProtoPartyNotify(<<24, Rest/binary>>,
 				    Z1, Z2, F1, F2, F3, F4, F5, F6,
 				    TrUserData) ->
     d_field_ProtoPartyNotify_talent_id(Rest, Z1, Z2, F1, F2,
 				       F3, F4, F5, F6, TrUserData);
-dfp_read_field_def_ProtoPartyNotify(<<24, Rest/binary>>,
+dfp_read_field_def_ProtoPartyNotify(<<32, Rest/binary>>,
 				    Z1, Z2, F1, F2, F3, F4, F5, F6,
 				    TrUserData) ->
     d_field_ProtoPartyNotify_talent_end_at(Rest, Z1, Z2, F1,
 					   F2, F3, F4, F5, F6, TrUserData);
-dfp_read_field_def_ProtoPartyNotify(<<32, Rest/binary>>,
+dfp_read_field_def_ProtoPartyNotify(<<40, Rest/binary>>,
 				    Z1, Z2, F1, F2, F3, F4, F5, F6,
 				    TrUserData) ->
     d_field_ProtoPartyNotify_remained_create_times(Rest, Z1,
 						   Z2, F1, F2, F3, F4, F5, F6,
 						   TrUserData);
-dfp_read_field_def_ProtoPartyNotify(<<40, Rest/binary>>,
+dfp_read_field_def_ProtoPartyNotify(<<48, Rest/binary>>,
 				    Z1, Z2, F1, F2, F3, F4, F5, F6,
 				    TrUserData) ->
     d_field_ProtoPartyNotify_remained_join_times(Rest, Z1,
 						 Z2, F1, F2, F3, F4, F5, F6,
 						 TrUserData);
-dfp_read_field_def_ProtoPartyNotify(<<50, Rest/binary>>,
-				    Z1, Z2, F1, F2, F3, F4, F5, F6,
-				    TrUserData) ->
-    d_field_ProtoPartyNotify_info(Rest, Z1, Z2, F1, F2, F3,
-				  F4, F5, F6, TrUserData);
 dfp_read_field_def_ProtoPartyNotify(<<>>, 0, 0, F1, F2,
-				    F3, F4, F5, F6, _) ->
-    #'ProtoPartyNotify'{session = F1, talent_id = F2,
-			talent_end_at = F3, remained_create_times = F4,
-			remained_join_times = F5, info = F6};
+				    F3, F4, F5, F6, TrUserData) ->
+    #'ProtoPartyNotify'{session = F1,
+			time_range = lists_reverse(F2, TrUserData),
+			talent_id = F3, talent_end_at = F4,
+			remained_create_times = F5, remained_join_times = F6};
 dfp_read_field_def_ProtoPartyNotify(Other, Z1, Z2, F1,
 				    F2, F3, F4, F5, F6, TrUserData) ->
     dg_read_field_def_ProtoPartyNotify(Other, Z1, Z2, F1,
@@ -4804,24 +4968,24 @@ dg_read_field_def_ProtoPartyNotify(<<0:1, X:7,
       10 ->
 	  d_field_ProtoPartyNotify_session(Rest, 0, 0, F1, F2, F3,
 					   F4, F5, F6, TrUserData);
-      16 ->
+      18 ->
+	  d_field_ProtoPartyNotify_time_range(Rest, 0, 0, F1, F2,
+					      F3, F4, F5, F6, TrUserData);
+      24 ->
 	  d_field_ProtoPartyNotify_talent_id(Rest, 0, 0, F1, F2,
 					     F3, F4, F5, F6, TrUserData);
-      24 ->
+      32 ->
 	  d_field_ProtoPartyNotify_talent_end_at(Rest, 0, 0, F1,
 						 F2, F3, F4, F5, F6,
 						 TrUserData);
-      32 ->
+      40 ->
 	  d_field_ProtoPartyNotify_remained_create_times(Rest, 0,
 							 0, F1, F2, F3, F4, F5,
 							 F6, TrUserData);
-      40 ->
+      48 ->
 	  d_field_ProtoPartyNotify_remained_join_times(Rest, 0, 0,
 						       F1, F2, F3, F4, F5, F6,
 						       TrUserData);
-      50 ->
-	  d_field_ProtoPartyNotify_info(Rest, 0, 0, F1, F2, F3,
-					F4, F5, F6, TrUserData);
       _ ->
 	  case Key band 7 of
 	    0 ->
@@ -4840,10 +5004,11 @@ dg_read_field_def_ProtoPartyNotify(<<0:1, X:7,
 	  end
     end;
 dg_read_field_def_ProtoPartyNotify(<<>>, 0, 0, F1, F2,
-				   F3, F4, F5, F6, _) ->
-    #'ProtoPartyNotify'{session = F1, talent_id = F2,
-			talent_end_at = F3, remained_create_times = F4,
-			remained_join_times = F5, info = F6}.
+				   F3, F4, F5, F6, TrUserData) ->
+    #'ProtoPartyNotify'{session = F1,
+			time_range = lists_reverse(F2, TrUserData),
+			talent_id = F3, talent_end_at = F4,
+			remained_create_times = F5, remained_join_times = F6}.
 
 d_field_ProtoPartyNotify_session(<<1:1, X:7,
 				   Rest/binary>>,
@@ -4863,6 +5028,26 @@ d_field_ProtoPartyNotify_session(<<0:1, X:7,
 					TrUserData).
 
 
+d_field_ProtoPartyNotify_time_range(<<1:1, X:7,
+				      Rest/binary>>,
+				    N, Acc, F1, F2, F3, F4, F5, F6, TrUserData)
+    when N < 57 ->
+    d_field_ProtoPartyNotify_time_range(Rest, N + 7,
+					X bsl N + Acc, F1, F2, F3, F4, F5, F6,
+					TrUserData);
+d_field_ProtoPartyNotify_time_range(<<0:1, X:7,
+				      Rest/binary>>,
+				    N, Acc, F1, F2, F3, F4, F5, F6,
+				    TrUserData) ->
+    Len = X bsl N + Acc,
+    <<Bs:Len/binary, Rest2/binary>> = Rest,
+    NewFValue = id(d_msg_ProtoTimeRange(Bs, TrUserData),
+		   TrUserData),
+    dfp_read_field_def_ProtoPartyNotify(Rest2, 0, 0, F1,
+					cons(NewFValue, F2, TrUserData), F3, F4,
+					F5, F6, TrUserData).
+
+
 d_field_ProtoPartyNotify_talent_id(<<1:1, X:7,
 				     Rest/binary>>,
 				   N, Acc, F1, F2, F3, F4, F5, F6, TrUserData)
@@ -4872,11 +5057,11 @@ d_field_ProtoPartyNotify_talent_id(<<1:1, X:7,
 				       TrUserData);
 d_field_ProtoPartyNotify_talent_id(<<0:1, X:7,
 				     Rest/binary>>,
-				   N, Acc, F1, _, F3, F4, F5, F6, TrUserData) ->
+				   N, Acc, F1, F2, _, F4, F5, F6, TrUserData) ->
     <<NewFValue:32/signed-native>> = <<(X bsl N +
 					  Acc):32/unsigned-native>>,
-    dfp_read_field_def_ProtoPartyNotify(Rest, 0, 0, F1,
-					NewFValue, F3, F4, F5, F6, TrUserData).
+    dfp_read_field_def_ProtoPartyNotify(Rest, 0, 0, F1, F2,
+					NewFValue, F4, F5, F6, TrUserData).
 
 
 d_field_ProtoPartyNotify_talent_end_at(<<1:1, X:7,
@@ -4889,12 +5074,12 @@ d_field_ProtoPartyNotify_talent_end_at(<<1:1, X:7,
 					   F6, TrUserData);
 d_field_ProtoPartyNotify_talent_end_at(<<0:1, X:7,
 					 Rest/binary>>,
-				       N, Acc, F1, F2, _, F4, F5, F6,
+				       N, Acc, F1, F2, F3, _, F5, F6,
 				       TrUserData) ->
     <<NewFValue:64/signed-native>> = <<(X bsl N +
 					  Acc):64/unsigned-native>>,
     dfp_read_field_def_ProtoPartyNotify(Rest, 0, 0, F1, F2,
-					NewFValue, F4, F5, F6, TrUserData).
+					F3, NewFValue, F5, F6, TrUserData).
 
 
 d_field_ProtoPartyNotify_remained_create_times(<<1:1,
@@ -4907,12 +5092,12 @@ d_field_ProtoPartyNotify_remained_create_times(<<1:1,
 						   F3, F4, F5, F6, TrUserData);
 d_field_ProtoPartyNotify_remained_create_times(<<0:1,
 						 X:7, Rest/binary>>,
-					       N, Acc, F1, F2, F3, _, F5, F6,
+					       N, Acc, F1, F2, F3, F4, _, F6,
 					       TrUserData) ->
     <<NewFValue:32/signed-native>> = <<(X bsl N +
 					  Acc):32/unsigned-native>>,
     dfp_read_field_def_ProtoPartyNotify(Rest, 0, 0, F1, F2,
-					F3, NewFValue, F5, F6, TrUserData).
+					F3, F4, NewFValue, F6, TrUserData).
 
 
 d_field_ProtoPartyNotify_remained_join_times(<<1:1, X:7,
@@ -4925,35 +5110,12 @@ d_field_ProtoPartyNotify_remained_join_times(<<1:1, X:7,
 						 F3, F4, F5, F6, TrUserData);
 d_field_ProtoPartyNotify_remained_join_times(<<0:1, X:7,
 					       Rest/binary>>,
-					     N, Acc, F1, F2, F3, F4, _, F6,
+					     N, Acc, F1, F2, F3, F4, F5, _,
 					     TrUserData) ->
     <<NewFValue:32/signed-native>> = <<(X bsl N +
 					  Acc):32/unsigned-native>>,
     dfp_read_field_def_ProtoPartyNotify(Rest, 0, 0, F1, F2,
-					F3, F4, NewFValue, F6, TrUserData).
-
-
-d_field_ProtoPartyNotify_info(<<1:1, X:7, Rest/binary>>,
-			      N, Acc, F1, F2, F3, F4, F5, F6, TrUserData)
-    when N < 57 ->
-    d_field_ProtoPartyNotify_info(Rest, N + 7,
-				  X bsl N + Acc, F1, F2, F3, F4, F5, F6,
-				  TrUserData);
-d_field_ProtoPartyNotify_info(<<0:1, X:7, Rest/binary>>,
-			      N, Acc, F1, F2, F3, F4, F5, F6, TrUserData) ->
-    Len = X bsl N + Acc,
-    <<Bs:Len/binary, Rest2/binary>> = Rest,
-    NewFValue = id(d_msg_ProtoPartyInfo(Bs, TrUserData),
-		   TrUserData),
-    dfp_read_field_def_ProtoPartyNotify(Rest2, 0, 0, F1, F2,
-					F3, F4, F5,
-					if F6 == undefined -> NewFValue;
-					   true ->
-					       merge_msg_ProtoPartyInfo(F6,
-									NewFValue,
-									TrUserData)
-					end,
-					TrUserData).
+					F3, F4, F5, NewFValue, TrUserData).
 
 
 skip_varint_ProtoPartyNotify(<<1:1, _:7, Rest/binary>>,
@@ -6229,6 +6391,8 @@ merge_msgs(Prev, New, Opts)
       #'ProtoSocketConnectRequest'{} ->
 	  merge_msg_ProtoSocketConnectRequest(Prev, New,
 					      TrUserData);
+      #'ProtoPartyInfoNotify'{} ->
+	  merge_msg_ProtoPartyInfoNotify(Prev, New, TrUserData);
       #'ProtoSocketConnectResponse'{} ->
 	  merge_msg_ProtoSocketConnectResponse(Prev, New,
 					       TrUserData);
@@ -6241,9 +6405,6 @@ merge_msgs(Prev, New, Opts)
 	  merge_msg_ProtoPartyJoinRequest(Prev, New, TrUserData);
       #'ProtoTimeRange'{} ->
 	  merge_msg_ProtoTimeRange(Prev, New, TrUserData);
-      #'ProtoPartyOpenTimeNotify'{} ->
-	  merge_msg_ProtoPartyOpenTimeNotify(Prev, New,
-					     TrUserData);
       #'ProtoPartyNotify'{} ->
 	  merge_msg_ProtoPartyNotify(Prev, New, TrUserData);
       #'ProtoPartyChatResponse'{} ->
@@ -6635,6 +6796,57 @@ merge_msg_ProtoSocketConnectRequest(#'ProtoSocketConnectRequest'{session
 					true -> NFsession
 				     end}.
 
+merge_msg_ProtoPartyInfoNotify(#'ProtoPartyInfoNotify'{session
+							   = PFsession,
+						       talent_id = PFtalent_id,
+						       talent_end_at =
+							   PFtalent_end_at,
+						       remained_create_times =
+							   PFremained_create_times,
+						       remained_join_times =
+							   PFremained_join_times,
+						       info = PFinfo},
+			       #'ProtoPartyInfoNotify'{session = NFsession,
+						       talent_id = NFtalent_id,
+						       talent_end_at =
+							   NFtalent_end_at,
+						       remained_create_times =
+							   NFremained_create_times,
+						       remained_join_times =
+							   NFremained_join_times,
+						       info = NFinfo},
+			       TrUserData) ->
+    #'ProtoPartyInfoNotify'{session =
+				if NFsession =:= undefined -> PFsession;
+				   true -> NFsession
+				end,
+			    talent_id =
+				if NFtalent_id =:= undefined -> PFtalent_id;
+				   true -> NFtalent_id
+				end,
+			    talent_end_at =
+				if NFtalent_end_at =:= undefined ->
+				       PFtalent_end_at;
+				   true -> NFtalent_end_at
+				end,
+			    remained_create_times =
+				if NFremained_create_times =:= undefined ->
+				       PFremained_create_times;
+				   true -> NFremained_create_times
+				end,
+			    remained_join_times =
+				if NFremained_join_times =:= undefined ->
+				       PFremained_join_times;
+				   true -> NFremained_join_times
+				end,
+			    info =
+				if PFinfo /= undefined, NFinfo /= undefined ->
+				       merge_msg_ProtoPartyInfo(PFinfo, NFinfo,
+								TrUserData);
+				   PFinfo == undefined -> NFinfo;
+				   NFinfo == undefined -> PFinfo
+				end}.
+
 merge_msg_ProtoSocketConnectResponse(#'ProtoSocketConnectResponse'{ret
 								       = PFret,
 								   session =
@@ -6716,45 +6928,30 @@ merge_msg_ProtoTimeRange(#'ProtoTimeRange'{start_at =
 			     true -> NFclose_at
 			  end}.
 
-merge_msg_ProtoPartyOpenTimeNotify(#'ProtoPartyOpenTimeNotify'{session
-								   = PFsession,
-							       time_range =
-								   PFtime_range},
-				   #'ProtoPartyOpenTimeNotify'{session =
-								   NFsession,
-							       time_range =
-								   NFtime_range},
-				   TrUserData) ->
-    #'ProtoPartyOpenTimeNotify'{session =
-				    if NFsession =:= undefined -> PFsession;
-				       true -> NFsession
-				    end,
-				time_range =
-				    'erlang_++'(PFtime_range, NFtime_range,
-						TrUserData)}.
-
 merge_msg_ProtoPartyNotify(#'ProtoPartyNotify'{session =
 						   PFsession,
+					       time_range = PFtime_range,
 					       talent_id = PFtalent_id,
 					       talent_end_at = PFtalent_end_at,
 					       remained_create_times =
 						   PFremained_create_times,
 					       remained_join_times =
-						   PFremained_join_times,
-					       info = PFinfo},
+						   PFremained_join_times},
 			   #'ProtoPartyNotify'{session = NFsession,
+					       time_range = NFtime_range,
 					       talent_id = NFtalent_id,
 					       talent_end_at = NFtalent_end_at,
 					       remained_create_times =
 						   NFremained_create_times,
 					       remained_join_times =
-						   NFremained_join_times,
-					       info = NFinfo},
+						   NFremained_join_times},
 			   TrUserData) ->
     #'ProtoPartyNotify'{session =
 			    if NFsession =:= undefined -> PFsession;
 			       true -> NFsession
 			    end,
+			time_range =
+			    'erlang_++'(PFtime_range, NFtime_range, TrUserData),
 			talent_id =
 			    if NFtalent_id =:= undefined -> PFtalent_id;
 			       true -> NFtalent_id
@@ -6772,13 +6969,6 @@ merge_msg_ProtoPartyNotify(#'ProtoPartyNotify'{session =
 			    if NFremained_join_times =:= undefined ->
 				   PFremained_join_times;
 			       true -> NFremained_join_times
-			    end,
-			info =
-			    if PFinfo /= undefined, NFinfo /= undefined ->
-				   merge_msg_ProtoPartyInfo(PFinfo, NFinfo,
-							    TrUserData);
-			       PFinfo == undefined -> NFinfo;
-			       NFinfo == undefined -> PFinfo
 			    end}.
 
 merge_msg_ProtoPartyChatResponse(#'ProtoPartyChatResponse'{ret
@@ -6983,6 +7173,9 @@ verify_msg(Msg, Opts) ->
 	  v_msg_ProtoSocketConnectRequest(Msg,
 					  ['ProtoSocketConnectRequest'],
 					  TrUserData);
+      #'ProtoPartyInfoNotify'{} ->
+	  v_msg_ProtoPartyInfoNotify(Msg,
+				     ['ProtoPartyInfoNotify'], TrUserData);
       #'ProtoSocketConnectResponse'{} ->
 	  v_msg_ProtoSocketConnectResponse(Msg,
 					   ['ProtoSocketConnectResponse'],
@@ -7000,10 +7193,6 @@ verify_msg(Msg, Opts) ->
       #'ProtoTimeRange'{} ->
 	  v_msg_ProtoTimeRange(Msg, ['ProtoTimeRange'],
 			       TrUserData);
-      #'ProtoPartyOpenTimeNotify'{} ->
-	  v_msg_ProtoPartyOpenTimeNotify(Msg,
-					 ['ProtoPartyOpenTimeNotify'],
-					 TrUserData);
       #'ProtoPartyNotify'{} ->
 	  v_msg_ProtoPartyNotify(Msg, ['ProtoPartyNotify'],
 				 TrUserData);
@@ -7284,6 +7473,26 @@ v_msg_ProtoSocketConnectRequest(#'ProtoSocketConnectRequest'{session
 				Path, _) ->
     v_type_bytes(F1, [session | Path]), ok.
 
+-dialyzer({nowarn_function,v_msg_ProtoPartyInfoNotify/3}).
+v_msg_ProtoPartyInfoNotify(#'ProtoPartyInfoNotify'{session
+						       = F1,
+						   talent_id = F2,
+						   talent_end_at = F3,
+						   remained_create_times = F4,
+						   remained_join_times = F5,
+						   info = F6},
+			   Path, TrUserData) ->
+    v_type_bytes(F1, [session | Path]),
+    v_type_int32(F2, [talent_id | Path]),
+    v_type_int64(F3, [talent_end_at | Path]),
+    v_type_int32(F4, [remained_create_times | Path]),
+    v_type_int32(F5, [remained_join_times | Path]),
+    if F6 == undefined -> ok;
+       true ->
+	   v_msg_ProtoPartyInfo(F6, [info | Path], TrUserData)
+    end,
+    ok.
+
 -dialyzer({nowarn_function,v_msg_ProtoSocketConnectResponse/3}).
 v_msg_ProtoSocketConnectResponse(#'ProtoSocketConnectResponse'{ret
 								   = F1,
@@ -7331,11 +7540,13 @@ v_msg_ProtoTimeRange(X, Path, _TrUserData) ->
     mk_type_error({expected_msg, 'ProtoTimeRange'}, X,
 		  Path).
 
--dialyzer({nowarn_function,v_msg_ProtoPartyOpenTimeNotify/3}).
-v_msg_ProtoPartyOpenTimeNotify(#'ProtoPartyOpenTimeNotify'{session
-							       = F1,
-							   time_range = F2},
-			       Path, TrUserData) ->
+-dialyzer({nowarn_function,v_msg_ProtoPartyNotify/3}).
+v_msg_ProtoPartyNotify(#'ProtoPartyNotify'{session = F1,
+					   time_range = F2, talent_id = F3,
+					   talent_end_at = F4,
+					   remained_create_times = F5,
+					   remained_join_times = F6},
+		       Path, TrUserData) ->
     v_type_bytes(F1, [session | Path]),
     if is_list(F2) ->
 	   _ = [v_msg_ProtoTimeRange(Elem, [time_range | Path],
@@ -7347,23 +7558,10 @@ v_msg_ProtoPartyOpenTimeNotify(#'ProtoPartyOpenTimeNotify'{session
 			  {msg, 'ProtoTimeRange'}},
 			 F2, Path)
     end,
-    ok.
-
--dialyzer({nowarn_function,v_msg_ProtoPartyNotify/3}).
-v_msg_ProtoPartyNotify(#'ProtoPartyNotify'{session = F1,
-					   talent_id = F2, talent_end_at = F3,
-					   remained_create_times = F4,
-					   remained_join_times = F5, info = F6},
-		       Path, TrUserData) ->
-    v_type_bytes(F1, [session | Path]),
-    v_type_int32(F2, [talent_id | Path]),
-    v_type_int64(F3, [talent_end_at | Path]),
-    v_type_int32(F4, [remained_create_times | Path]),
-    v_type_int32(F5, [remained_join_times | Path]),
-    if F6 == undefined -> ok;
-       true ->
-	   v_msg_ProtoPartyInfo(F6, [info | Path], TrUserData)
-    end,
+    v_type_int32(F3, [talent_id | Path]),
+    v_type_int64(F4, [talent_end_at | Path]),
+    v_type_int32(F5, [remained_create_times | Path]),
+    v_type_int32(F6, [remained_join_times | Path]),
     ok.
 
 -dialyzer({nowarn_function,v_msg_ProtoPartyChatResponse/3}).
@@ -7715,6 +7913,20 @@ get_msg_defs() ->
      {{msg, 'ProtoSocketConnectRequest'},
       [#field{name = session, fnum = 1, rnum = 2,
 	      type = bytes, occurrence = required, opts = []}]},
+     {{msg, 'ProtoPartyInfoNotify'},
+      [#field{name = session, fnum = 1, rnum = 2,
+	      type = bytes, occurrence = required, opts = []},
+       #field{name = talent_id, fnum = 2, rnum = 3,
+	      type = int32, occurrence = required, opts = []},
+       #field{name = talent_end_at, fnum = 3, rnum = 4,
+	      type = int64, occurrence = required, opts = []},
+       #field{name = remained_create_times, fnum = 4, rnum = 5,
+	      type = int32, occurrence = required, opts = []},
+       #field{name = remained_join_times, fnum = 5, rnum = 6,
+	      type = int32, occurrence = required, opts = []},
+       #field{name = info, fnum = 6, rnum = 7,
+	      type = {msg, 'ProtoPartyInfo'}, occurrence = optional,
+	      opts = []}]},
      {{msg, 'ProtoSocketConnectResponse'},
       [#field{name = ret, fnum = 1, rnum = 2, type = int32,
 	      occurrence = required, opts = []},
@@ -7740,26 +7952,20 @@ get_msg_defs() ->
 	      type = int64, occurrence = required, opts = []},
        #field{name = close_at, fnum = 2, rnum = 3,
 	      type = int64, occurrence = required, opts = []}]},
-     {{msg, 'ProtoPartyOpenTimeNotify'},
+     {{msg, 'ProtoPartyNotify'},
       [#field{name = session, fnum = 1, rnum = 2,
 	      type = bytes, occurrence = required, opts = []},
        #field{name = time_range, fnum = 2, rnum = 3,
 	      type = {msg, 'ProtoTimeRange'}, occurrence = repeated,
-	      opts = []}]},
-     {{msg, 'ProtoPartyNotify'},
-      [#field{name = session, fnum = 1, rnum = 2,
-	      type = bytes, occurrence = required, opts = []},
-       #field{name = talent_id, fnum = 2, rnum = 3,
+	      opts = []},
+       #field{name = talent_id, fnum = 3, rnum = 4,
 	      type = int32, occurrence = required, opts = []},
-       #field{name = talent_end_at, fnum = 3, rnum = 4,
+       #field{name = talent_end_at, fnum = 4, rnum = 5,
 	      type = int64, occurrence = required, opts = []},
-       #field{name = remained_create_times, fnum = 4, rnum = 5,
+       #field{name = remained_create_times, fnum = 5, rnum = 6,
 	      type = int32, occurrence = required, opts = []},
-       #field{name = remained_join_times, fnum = 5, rnum = 6,
-	      type = int32, occurrence = required, opts = []},
-       #field{name = info, fnum = 6, rnum = 7,
-	      type = {msg, 'ProtoPartyInfo'}, occurrence = optional,
-	      opts = []}]},
+       #field{name = remained_join_times, fnum = 6, rnum = 7,
+	      type = int32, occurrence = required, opts = []}]},
      {{msg, 'ProtoPartyChatResponse'},
       [#field{name = ret, fnum = 1, rnum = 2, type = int32,
 	      occurrence = required, opts = []},
@@ -7818,15 +8024,15 @@ get_msg_names() ->
      'ProtoPingResponse', 'ProtoSyncResponse',
      'ProtoPartyDismissResponse', 'ProtoPartyStartRequest',
      'ProtoPartyKickRequest', 'ProtoPartyCreateRequest',
-     'ProtoSocketConnectRequest',
+     'ProtoSocketConnectRequest', 'ProtoPartyInfoNotify',
      'ProtoSocketConnectResponse', 'ProtoPartyBuyResponse',
      'ProtoPartyDismissRequest', 'ProtoPartyJoinRequest',
-     'ProtoTimeRange', 'ProtoPartyOpenTimeNotify',
-     'ProtoPartyNotify', 'ProtoPartyChatResponse',
-     'ProtoPartyKickResponse', 'ProtoPartyQuitResponse',
-     'ProtoPartyJoinResponse', 'ProtoPartyRoomResponse',
-     'ProtoPartyStartResponse', 'ProtoPartyRoomRequest',
-     'ProtoSyncRequest', 'ProtoPingRequest'].
+     'ProtoTimeRange', 'ProtoPartyNotify',
+     'ProtoPartyChatResponse', 'ProtoPartyKickResponse',
+     'ProtoPartyQuitResponse', 'ProtoPartyJoinResponse',
+     'ProtoPartyRoomResponse', 'ProtoPartyStartResponse',
+     'ProtoPartyRoomRequest', 'ProtoSyncRequest',
+     'ProtoPingRequest'].
 
 
 get_enum_names() ->
@@ -7960,6 +8166,20 @@ find_msg_def('ProtoPartyCreateRequest') ->
 find_msg_def('ProtoSocketConnectRequest') ->
     [#field{name = session, fnum = 1, rnum = 2,
 	    type = bytes, occurrence = required, opts = []}];
+find_msg_def('ProtoPartyInfoNotify') ->
+    [#field{name = session, fnum = 1, rnum = 2,
+	    type = bytes, occurrence = required, opts = []},
+     #field{name = talent_id, fnum = 2, rnum = 3,
+	    type = int32, occurrence = required, opts = []},
+     #field{name = talent_end_at, fnum = 3, rnum = 4,
+	    type = int64, occurrence = required, opts = []},
+     #field{name = remained_create_times, fnum = 4, rnum = 5,
+	    type = int32, occurrence = required, opts = []},
+     #field{name = remained_join_times, fnum = 5, rnum = 6,
+	    type = int32, occurrence = required, opts = []},
+     #field{name = info, fnum = 6, rnum = 7,
+	    type = {msg, 'ProtoPartyInfo'}, occurrence = optional,
+	    opts = []}];
 find_msg_def('ProtoSocketConnectResponse') ->
     [#field{name = ret, fnum = 1, rnum = 2, type = int32,
 	    occurrence = required, opts = []},
@@ -7985,26 +8205,20 @@ find_msg_def('ProtoTimeRange') ->
 	    type = int64, occurrence = required, opts = []},
      #field{name = close_at, fnum = 2, rnum = 3,
 	    type = int64, occurrence = required, opts = []}];
-find_msg_def('ProtoPartyOpenTimeNotify') ->
+find_msg_def('ProtoPartyNotify') ->
     [#field{name = session, fnum = 1, rnum = 2,
 	    type = bytes, occurrence = required, opts = []},
      #field{name = time_range, fnum = 2, rnum = 3,
 	    type = {msg, 'ProtoTimeRange'}, occurrence = repeated,
-	    opts = []}];
-find_msg_def('ProtoPartyNotify') ->
-    [#field{name = session, fnum = 1, rnum = 2,
-	    type = bytes, occurrence = required, opts = []},
-     #field{name = talent_id, fnum = 2, rnum = 3,
+	    opts = []},
+     #field{name = talent_id, fnum = 3, rnum = 4,
 	    type = int32, occurrence = required, opts = []},
-     #field{name = talent_end_at, fnum = 3, rnum = 4,
+     #field{name = talent_end_at, fnum = 4, rnum = 5,
 	    type = int64, occurrence = required, opts = []},
-     #field{name = remained_create_times, fnum = 4, rnum = 5,
+     #field{name = remained_create_times, fnum = 5, rnum = 6,
 	    type = int32, occurrence = required, opts = []},
-     #field{name = remained_join_times, fnum = 5, rnum = 6,
-	    type = int32, occurrence = required, opts = []},
-     #field{name = info, fnum = 6, rnum = 7,
-	    type = {msg, 'ProtoPartyInfo'}, occurrence = optional,
-	    opts = []}];
+     #field{name = remained_join_times, fnum = 6, rnum = 7,
+	    type = int32, occurrence = required, opts = []}];
 find_msg_def('ProtoPartyChatResponse') ->
     [#field{name = ret, fnum = 1, rnum = 2, type = int32,
 	    occurrence = required, opts = []},

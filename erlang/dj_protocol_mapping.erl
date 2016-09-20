@@ -1,4 +1,4 @@
-% auto generate at 2016-09-20 15:08:12.
+% auto generate at 2016-09-20 16:26:05.
 
 -module(dj_protocol_mapping).
 -export([get_name/1,
@@ -44,7 +44,7 @@ get_name(_) ->
 get_id(#'ProtoSocketConnectResponse'{}) ->
     51;
 
-get_id(#'ProtoPartyNotify'{}) ->
+get_id(#'ProtoPartyInfoNotify'{}) ->
     4800;
 
 get_id(#'ProtoPartyMessageNotify'{}) ->

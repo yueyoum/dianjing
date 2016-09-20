@@ -275,7 +275,7 @@ MESSAGE_TO_ID = {
     "SpecialEquipmentGenerateSpeedUpResponse": 4754,
     "SpecialEquipmentGetRequest": 4755,
     "SpecialEquipmentGetResponse": 4756,
-    "PartyNotify": 4800,
+    "PartyInfoNotify": 4800,
     "PartyMessageNotify": 4801,
     "PartyRoomRequest": 4802,
     "PartyRoomResponse": 4803,
@@ -295,7 +295,7 @@ MESSAGE_TO_ID = {
     "PartyStartResponse": 4817,
     "PartyDismissRequest": 4818,
     "PartyDismissResponse": 4819,
-    "PartyOpenTimeNotify": 4820,
+    "PartyNotify": 4820,
 }
 
 ID_TO_MESSAGE = {
@@ -574,7 +574,7 @@ ID_TO_MESSAGE = {
     4754: "SpecialEquipmentGenerateSpeedUpResponse",
     4755: "SpecialEquipmentGetRequest",
     4756: "SpecialEquipmentGetResponse",
-    4800: "PartyNotify",
+    4800: "PartyInfoNotify",
     4801: "PartyMessageNotify",
     4802: "PartyRoomRequest",
     4803: "PartyRoomResponse",
@@ -594,7 +594,7 @@ ID_TO_MESSAGE = {
     4817: "PartyStartResponse",
     4818: "PartyDismissRequest",
     4819: "PartyDismissResponse",
-    4820: "PartyOpenTimeNotify",
+    4820: "PartyNotify",
 }
 
 PATH_TO_REQUEST = {

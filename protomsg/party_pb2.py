@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='party.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0bparty.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"X\n\x13PartyOpenTimeNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x30\n\ntime_range\x18\x02 \x03(\x0b\x32\x1c.Dianjing.protocol.TimeRange\"\xe2\x01\n\x12PartyMessageNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x44\n\x08messages\x18\x03 \x03(\x0b\x32\x32.Dianjing.protocol.PartyMessageNotify.PartyMessage\x1aM\n\x0cPartyMessage\x12/\n\x02tp\x18\x01 \x02(\x0e\x32#.Dianjing.protocol.PartyMessageType\x12\x0c\n\x04\x61rgs\x18\x02 \x03(\t\"\xa0\x02\n\tPartyInfo\x12\r\n\x05level\x18\x01 \x02(\x05\x12\x0e\n\x06\x65nd_at\x18\x02 \x02(\x03\x12\x39\n\x07members\x18\x03 \x03(\x0b\x32(.Dianjing.protocol.PartyInfo.PartyMember\x1a\xb8\x01\n\x0bPartyMember\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04\x66lag\x18\x02 \x02(\x05\x12\x0c\n\x04name\x18\x03 \x02(\t\x12\x0f\n\x07seat_id\x18\x04 \x02(\x05\x12\x42\n\x08\x62uy_info\x18\x05 \x03(\x0b\x32\x30.Dianjing.protocol.PartyInfo.PartyMember.BuyInfo\x1a,\n\x07\x42uyInfo\x12\x0e\n\x06\x62uy_id\x18\x01 \x02(\x05\x12\x11\n\tbuy_times\x18\x02 \x02(\x05\"\xb0\x01\n\x0bPartyNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\ttalent_id\x18\x02 \x02(\x05\x12\x15\n\rtalent_end_at\x18\x03 \x02(\x03\x12\x1d\n\x15remained_create_times\x18\x04 \x02(\x05\x12\x1b\n\x13remained_join_times\x18\x05 \x02(\x05\x12*\n\x04info\x18\x06 \x01(\x0b\x32\x1c.Dianjing.protocol.PartyInfo\"#\n\x10PartyRoomRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\xca\x01\n\x11PartyRoomResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12=\n\x05rooms\x18\x03 \x03(\x0b\x32..Dianjing.protocol.PartyRoomResponse.PartyRoom\x1aX\n\tPartyRoom\x12\x10\n\x08owner_id\x18\x01 \x02(\t\x12\x12\n\nowner_name\x18\x02 \x02(\t\x12\r\n\x05level\x18\x03 \x02(\x05\x12\x16\n\x0e\x63urrent_amount\x18\x04 \x02(\x05\"1\n\x12PartyCreateRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"3\n\x13PartyCreateResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"5\n\x10PartyJoinRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08owner_id\x18\x02 \x02(\t\"1\n\x11PartyJoinResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"#\n\x10PartyQuitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"1\n\x11PartyQuitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"/\n\x10PartyKickRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"1\n\x11PartyKickResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"1\n\x10PartyChatRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04text\x18\x02 \x02(\t\"1\n\x11PartyChatResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"2\n\x0fPartyBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0e\n\x06\x62uy_id\x18\x02 \x02(\x05\"0\n\x10PartyBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"$\n\x11PartyStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"2\n\x12PartyStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"&\n\x13PartyDismissRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"4\n\x14PartyDismissResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*\x86\x01\n\x10PartyMessageType\x12\x1b\n\x17PARTY_MESSAGE_TYPE_CHAT\x10\x01\x12\x1a\n\x16PARTY_MESSAGE_TYPE_BUY\x10\x02\x12\x1b\n\x17PARTY_MESSAGE_TYPE_JOIN\x10\x03\x12\x1c\n\x18PARTY_MESSAGE_TYPE_LEAVE\x10\x04')
+  serialized_pb=_b('\n\x0bparty.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xb6\x01\n\x0bPartyNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x30\n\ntime_range\x18\x02 \x03(\x0b\x32\x1c.Dianjing.protocol.TimeRange\x12\x11\n\ttalent_id\x18\x03 \x02(\x05\x12\x15\n\rtalent_end_at\x18\x04 \x02(\x03\x12\x1d\n\x15remained_create_times\x18\x05 \x02(\x05\x12\x1b\n\x13remained_join_times\x18\x06 \x02(\x05\"\xe2\x01\n\x12PartyMessageNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x44\n\x08messages\x18\x03 \x03(\x0b\x32\x32.Dianjing.protocol.PartyMessageNotify.PartyMessage\x1aM\n\x0cPartyMessage\x12/\n\x02tp\x18\x01 \x02(\x0e\x32#.Dianjing.protocol.PartyMessageType\x12\x0c\n\x04\x61rgs\x18\x02 \x03(\t\"\xa0\x02\n\tPartyInfo\x12\r\n\x05level\x18\x01 \x02(\x05\x12\x0e\n\x06\x65nd_at\x18\x02 \x02(\x03\x12\x39\n\x07members\x18\x03 \x03(\x0b\x32(.Dianjing.protocol.PartyInfo.PartyMember\x1a\xb8\x01\n\x0bPartyMember\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04\x66lag\x18\x02 \x02(\x05\x12\x0c\n\x04name\x18\x03 \x02(\t\x12\x0f\n\x07seat_id\x18\x04 \x02(\x05\x12\x42\n\x08\x62uy_info\x18\x05 \x03(\x0b\x32\x30.Dianjing.protocol.PartyInfo.PartyMember.BuyInfo\x1a,\n\x07\x42uyInfo\x12\x0e\n\x06\x62uy_id\x18\x01 \x02(\x05\x12\x11\n\tbuy_times\x18\x02 \x02(\x05\"\xb4\x01\n\x0fPartyInfoNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\ttalent_id\x18\x02 \x02(\x05\x12\x15\n\rtalent_end_at\x18\x03 \x02(\x03\x12\x1d\n\x15remained_create_times\x18\x04 \x02(\x05\x12\x1b\n\x13remained_join_times\x18\x05 \x02(\x05\x12*\n\x04info\x18\x06 \x01(\x0b\x32\x1c.Dianjing.protocol.PartyInfo\"#\n\x10PartyRoomRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\xca\x01\n\x11PartyRoomResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12=\n\x05rooms\x18\x03 \x03(\x0b\x32..Dianjing.protocol.PartyRoomResponse.PartyRoom\x1aX\n\tPartyRoom\x12\x10\n\x08owner_id\x18\x01 \x02(\t\x12\x12\n\nowner_name\x18\x02 \x02(\t\x12\r\n\x05level\x18\x03 \x02(\x05\x12\x16\n\x0e\x63urrent_amount\x18\x04 \x02(\x05\"1\n\x12PartyCreateRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"3\n\x13PartyCreateResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"5\n\x10PartyJoinRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08owner_id\x18\x02 \x02(\t\"1\n\x11PartyJoinResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"#\n\x10PartyQuitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"1\n\x11PartyQuitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"/\n\x10PartyKickRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\"1\n\x11PartyKickResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"1\n\x10PartyChatRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04text\x18\x02 \x02(\t\"1\n\x11PartyChatResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"2\n\x0fPartyBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0e\n\x06\x62uy_id\x18\x02 \x02(\x05\"0\n\x10PartyBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"$\n\x11PartyStartRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"2\n\x12PartyStartResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"&\n\x13PartyDismissRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"4\n\x14PartyDismissResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*\x86\x01\n\x10PartyMessageType\x12\x1b\n\x17PARTY_MESSAGE_TYPE_CHAT\x10\x01\x12\x1a\n\x16PARTY_MESSAGE_TYPE_BUY\x10\x02\x12\x1b\n\x17PARTY_MESSAGE_TYPE_JOIN\x10\x03\x12\x1c\n\x18PARTY_MESSAGE_TYPE_LEAVE\x10\x04')
   ,
   dependencies=[common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -51,8 +51,8 @@ _PARTYMESSAGETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1866,
-  serialized_end=2000,
+  serialized_start=1965,
+  serialized_end=2099,
 )
 _sym_db.RegisterEnumDescriptor(_PARTYMESSAGETYPE)
 
@@ -64,24 +64,52 @@ PARTY_MESSAGE_TYPE_LEAVE = 4
 
 
 
-_PARTYOPENTIMENOTIFY = _descriptor.Descriptor(
-  name='PartyOpenTimeNotify',
-  full_name='Dianjing.protocol.PartyOpenTimeNotify',
+_PARTYNOTIFY = _descriptor.Descriptor(
+  name='PartyNotify',
+  full_name='Dianjing.protocol.PartyNotify',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.PartyOpenTimeNotify.session', index=0,
+      name='session', full_name='Dianjing.protocol.PartyNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='time_range', full_name='Dianjing.protocol.PartyOpenTimeNotify.time_range', index=1,
+      name='time_range', full_name='Dianjing.protocol.PartyNotify.time_range', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='talent_id', full_name='Dianjing.protocol.PartyNotify.talent_id', index=2,
+      number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='talent_end_at', full_name='Dianjing.protocol.PartyNotify.talent_end_at', index=3,
+      number=4, type=3, cpp_type=2, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='remained_create_times', full_name='Dianjing.protocol.PartyNotify.remained_create_times', index=4,
+      number=5, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='remained_join_times', full_name='Dianjing.protocol.PartyNotify.remained_join_times', index=5,
+      number=6, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -97,8 +125,8 @@ _PARTYOPENTIMENOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=48,
-  serialized_end=136,
+  serialized_start=49,
+  serialized_end=231,
 )
 
 
@@ -135,8 +163,8 @@ _PARTYMESSAGENOTIFY_PARTYMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=288,
-  serialized_end=365,
+  serialized_start=383,
+  serialized_end=460,
 )
 
 _PARTYMESSAGENOTIFY = _descriptor.Descriptor(
@@ -179,8 +207,8 @@ _PARTYMESSAGENOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=139,
-  serialized_end=365,
+  serialized_start=234,
+  serialized_end=460,
 )
 
 
@@ -217,8 +245,8 @@ _PARTYINFO_PARTYMEMBER_BUYINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=612,
-  serialized_end=656,
+  serialized_start=707,
+  serialized_end=751,
 )
 
 _PARTYINFO_PARTYMEMBER = _descriptor.Descriptor(
@@ -275,8 +303,8 @@ _PARTYINFO_PARTYMEMBER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=472,
-  serialized_end=656,
+  serialized_start=567,
+  serialized_end=751,
 )
 
 _PARTYINFO = _descriptor.Descriptor(
@@ -319,55 +347,55 @@ _PARTYINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=368,
-  serialized_end=656,
+  serialized_start=463,
+  serialized_end=751,
 )
 
 
-_PARTYNOTIFY = _descriptor.Descriptor(
-  name='PartyNotify',
-  full_name='Dianjing.protocol.PartyNotify',
+_PARTYINFONOTIFY = _descriptor.Descriptor(
+  name='PartyInfoNotify',
+  full_name='Dianjing.protocol.PartyInfoNotify',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='session', full_name='Dianjing.protocol.PartyNotify.session', index=0,
+      name='session', full_name='Dianjing.protocol.PartyInfoNotify.session', index=0,
       number=1, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='talent_id', full_name='Dianjing.protocol.PartyNotify.talent_id', index=1,
+      name='talent_id', full_name='Dianjing.protocol.PartyInfoNotify.talent_id', index=1,
       number=2, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='talent_end_at', full_name='Dianjing.protocol.PartyNotify.talent_end_at', index=2,
+      name='talent_end_at', full_name='Dianjing.protocol.PartyInfoNotify.talent_end_at', index=2,
       number=3, type=3, cpp_type=2, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='remained_create_times', full_name='Dianjing.protocol.PartyNotify.remained_create_times', index=3,
+      name='remained_create_times', full_name='Dianjing.protocol.PartyInfoNotify.remained_create_times', index=3,
       number=4, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='remained_join_times', full_name='Dianjing.protocol.PartyNotify.remained_join_times', index=4,
+      name='remained_join_times', full_name='Dianjing.protocol.PartyInfoNotify.remained_join_times', index=4,
       number=5, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='info', full_name='Dianjing.protocol.PartyNotify.info', index=5,
+      name='info', full_name='Dianjing.protocol.PartyInfoNotify.info', index=5,
       number=6, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -385,8 +413,8 @@ _PARTYNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=659,
-  serialized_end=835,
+  serialized_start=754,
+  serialized_end=934,
 )
 
 
@@ -416,8 +444,8 @@ _PARTYROOMREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=837,
-  serialized_end=872,
+  serialized_start=936,
+  serialized_end=971,
 )
 
 
@@ -468,8 +496,8 @@ _PARTYROOMRESPONSE_PARTYROOM = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=989,
-  serialized_end=1077,
+  serialized_start=1088,
+  serialized_end=1176,
 )
 
 _PARTYROOMRESPONSE = _descriptor.Descriptor(
@@ -512,8 +540,8 @@ _PARTYROOMRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=875,
-  serialized_end=1077,
+  serialized_start=974,
+  serialized_end=1176,
 )
 
 
@@ -550,8 +578,8 @@ _PARTYCREATEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1079,
-  serialized_end=1128,
+  serialized_start=1178,
+  serialized_end=1227,
 )
 
 
@@ -588,8 +616,8 @@ _PARTYCREATERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1130,
-  serialized_end=1181,
+  serialized_start=1229,
+  serialized_end=1280,
 )
 
 
@@ -626,8 +654,8 @@ _PARTYJOINREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1183,
-  serialized_end=1236,
+  serialized_start=1282,
+  serialized_end=1335,
 )
 
 
@@ -664,8 +692,8 @@ _PARTYJOINRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1238,
-  serialized_end=1287,
+  serialized_start=1337,
+  serialized_end=1386,
 )
 
 
@@ -695,8 +723,8 @@ _PARTYQUITREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1289,
-  serialized_end=1324,
+  serialized_start=1388,
+  serialized_end=1423,
 )
 
 
@@ -733,8 +761,8 @@ _PARTYQUITRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1326,
-  serialized_end=1375,
+  serialized_start=1425,
+  serialized_end=1474,
 )
 
 
@@ -771,8 +799,8 @@ _PARTYKICKREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1377,
-  serialized_end=1424,
+  serialized_start=1476,
+  serialized_end=1523,
 )
 
 
@@ -809,8 +837,8 @@ _PARTYKICKRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1426,
-  serialized_end=1475,
+  serialized_start=1525,
+  serialized_end=1574,
 )
 
 
@@ -847,8 +875,8 @@ _PARTYCHATREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1477,
-  serialized_end=1526,
+  serialized_start=1576,
+  serialized_end=1625,
 )
 
 
@@ -885,8 +913,8 @@ _PARTYCHATRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1528,
-  serialized_end=1577,
+  serialized_start=1627,
+  serialized_end=1676,
 )
 
 
@@ -923,8 +951,8 @@ _PARTYBUYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1579,
-  serialized_end=1629,
+  serialized_start=1678,
+  serialized_end=1728,
 )
 
 
@@ -961,8 +989,8 @@ _PARTYBUYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1631,
-  serialized_end=1679,
+  serialized_start=1730,
+  serialized_end=1778,
 )
 
 
@@ -992,8 +1020,8 @@ _PARTYSTARTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1681,
-  serialized_end=1717,
+  serialized_start=1780,
+  serialized_end=1816,
 )
 
 
@@ -1030,8 +1058,8 @@ _PARTYSTARTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1719,
-  serialized_end=1769,
+  serialized_start=1818,
+  serialized_end=1868,
 )
 
 
@@ -1061,8 +1089,8 @@ _PARTYDISMISSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1771,
-  serialized_end=1809,
+  serialized_start=1870,
+  serialized_end=1908,
 )
 
 
@@ -1099,11 +1127,11 @@ _PARTYDISMISSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1811,
-  serialized_end=1863,
+  serialized_start=1910,
+  serialized_end=1962,
 )
 
-_PARTYOPENTIMENOTIFY.fields_by_name['time_range'].message_type = common__pb2._TIMERANGE
+_PARTYNOTIFY.fields_by_name['time_range'].message_type = common__pb2._TIMERANGE
 _PARTYMESSAGENOTIFY_PARTYMESSAGE.fields_by_name['tp'].enum_type = _PARTYMESSAGETYPE
 _PARTYMESSAGENOTIFY_PARTYMESSAGE.containing_type = _PARTYMESSAGENOTIFY
 _PARTYMESSAGENOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
@@ -1112,13 +1140,13 @@ _PARTYINFO_PARTYMEMBER_BUYINFO.containing_type = _PARTYINFO_PARTYMEMBER
 _PARTYINFO_PARTYMEMBER.fields_by_name['buy_info'].message_type = _PARTYINFO_PARTYMEMBER_BUYINFO
 _PARTYINFO_PARTYMEMBER.containing_type = _PARTYINFO
 _PARTYINFO.fields_by_name['members'].message_type = _PARTYINFO_PARTYMEMBER
-_PARTYNOTIFY.fields_by_name['info'].message_type = _PARTYINFO
+_PARTYINFONOTIFY.fields_by_name['info'].message_type = _PARTYINFO
 _PARTYROOMRESPONSE_PARTYROOM.containing_type = _PARTYROOMRESPONSE
 _PARTYROOMRESPONSE.fields_by_name['rooms'].message_type = _PARTYROOMRESPONSE_PARTYROOM
-DESCRIPTOR.message_types_by_name['PartyOpenTimeNotify'] = _PARTYOPENTIMENOTIFY
+DESCRIPTOR.message_types_by_name['PartyNotify'] = _PARTYNOTIFY
 DESCRIPTOR.message_types_by_name['PartyMessageNotify'] = _PARTYMESSAGENOTIFY
 DESCRIPTOR.message_types_by_name['PartyInfo'] = _PARTYINFO
-DESCRIPTOR.message_types_by_name['PartyNotify'] = _PARTYNOTIFY
+DESCRIPTOR.message_types_by_name['PartyInfoNotify'] = _PARTYINFONOTIFY
 DESCRIPTOR.message_types_by_name['PartyRoomRequest'] = _PARTYROOMREQUEST
 DESCRIPTOR.message_types_by_name['PartyRoomResponse'] = _PARTYROOMRESPONSE
 DESCRIPTOR.message_types_by_name['PartyCreateRequest'] = _PARTYCREATEREQUEST
@@ -1139,12 +1167,12 @@ DESCRIPTOR.message_types_by_name['PartyDismissRequest'] = _PARTYDISMISSREQUEST
 DESCRIPTOR.message_types_by_name['PartyDismissResponse'] = _PARTYDISMISSRESPONSE
 DESCRIPTOR.enum_types_by_name['PartyMessageType'] = _PARTYMESSAGETYPE
 
-PartyOpenTimeNotify = _reflection.GeneratedProtocolMessageType('PartyOpenTimeNotify', (_message.Message,), dict(
-  DESCRIPTOR = _PARTYOPENTIMENOTIFY,
+PartyNotify = _reflection.GeneratedProtocolMessageType('PartyNotify', (_message.Message,), dict(
+  DESCRIPTOR = _PARTYNOTIFY,
   __module__ = 'party_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.PartyOpenTimeNotify)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.PartyNotify)
   ))
-_sym_db.RegisterMessage(PartyOpenTimeNotify)
+_sym_db.RegisterMessage(PartyNotify)
 
 PartyMessageNotify = _reflection.GeneratedProtocolMessageType('PartyMessageNotify', (_message.Message,), dict(
 
@@ -1184,12 +1212,12 @@ _sym_db.RegisterMessage(PartyInfo)
 _sym_db.RegisterMessage(PartyInfo.PartyMember)
 _sym_db.RegisterMessage(PartyInfo.PartyMember.BuyInfo)
 
-PartyNotify = _reflection.GeneratedProtocolMessageType('PartyNotify', (_message.Message,), dict(
-  DESCRIPTOR = _PARTYNOTIFY,
+PartyInfoNotify = _reflection.GeneratedProtocolMessageType('PartyInfoNotify', (_message.Message,), dict(
+  DESCRIPTOR = _PARTYINFONOTIFY,
   __module__ = 'party_pb2'
-  # @@protoc_insertion_point(class_scope:Dianjing.protocol.PartyNotify)
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.PartyInfoNotify)
   ))
-_sym_db.RegisterMessage(PartyNotify)
+_sym_db.RegisterMessage(PartyInfoNotify)
 
 PartyRoomRequest = _reflection.GeneratedProtocolMessageType('PartyRoomRequest', (_message.Message,), dict(
   DESCRIPTOR = _PARTYROOMREQUEST,

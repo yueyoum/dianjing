@@ -22,9 +22,29 @@ from utils.functional import get_start_time_of_today
 
 from config import ConfigErrorMessage, ConfigPartyLevel, ConfigPartyBuyItem, ConfigItemNew
 
-from protomsg.party_pb2 import PartyOpenTimeNotify
+from protomsg.party_pb2 import PartyNotify
 
 # 这部分功能都是 socket 发来的调用
+
+MAX_CREATE_TIMES = 100
+MAX_JOIN_TIMES = 100
+
+
+def get_party_open_time_range(h1, h2):
+    today = get_start_time_of_today()
+
+    time1 = today.replace(hours=h1)
+    time2 = today.replace(hours=h2)
+
+    return time1, time2
+
+
+def get_time_of_tomorrow(h):
+    today = get_start_time_of_today()
+    today = today.replace(days=1)
+    today = today.replace(hour=h)
+    return today
+
 
 class Party(object):
     __slots__ = ['server_id', 'char_id', 'doc']
@@ -39,10 +59,26 @@ class Party(object):
             self.doc['_id'] = self.char_id
             MongoParty.db(self.server_id).insert_one(self.doc)
 
+    def get_remained_create_times(self):
+        times = ValueLogPartyCreateTimes(self.server_id, self.char_id).count_of_today()
+        remained = MAX_CREATE_TIMES - times
+        if remained < 0:
+            remained = 0
+
+        return remained
+
+    def get_remained_join_times(self):
+        times = ValueLogPartyJoinTimes(self.server_id, self.char_id).count_of_today()
+        remained = MAX_JOIN_TIMES - times
+        if remained < 0:
+            remained = 0
+
+        return remained
+
     def get_info(self):
         return {
-            'create_times': ValueLogPartyCreateTimes(self.server_id, self.char_id).count_of_today(),
-            'join_times': ValueLogPartyJoinTimes(self.server_id, self.char_id).count_of_today(),
+            'remained_create_times': self.get_remained_create_times(),
+            'remained_join_times': self.get_remained_join_times(),
             'talent_id': self.doc['talent_id'],
         }
 
@@ -66,8 +102,7 @@ class Party(object):
 
         return ret.normalize()
 
-
-    def start(self, party_level, member_ids):
+    def start(self, member_ids):
         # member_ids 只是组员， 不包括创建者自己
         ret = APIReturn(self.char_id)
 
@@ -141,9 +176,8 @@ class Party(object):
         ret.set_data('talent_id', talent_id)
         return ret.normalize()
 
-
     def send_notify(self):
-        notify = PartyOpenTimeNotify()
+        notify = PartyNotify()
         start_at, close_at = get_party_open_time_range(1, 23)
 
         notify_range = notify.time_range.add()
@@ -151,13 +185,9 @@ class Party(object):
         notify_range.start_at = start_at.timestamp
         notify_range.close_at = close_at.timestamp
 
+        notify.talent_id = self.doc['talent_id']
+        notify.talent_end_at = get_time_of_tomorrow(12)
+        notify.remained_create_times = self.get_remained_create_times()
+        notify.remained_join_times = self.get_remained_join_times()
+
         MessagePipe(self.char_id).put(msg=notify)
-
-
-def get_party_open_time_range(h1, h2):
-    today = get_start_time_of_today()
-
-    time1 = today.replace(hours=h1)
-    time2 = today.replace(hours=h2)
-
-    return time1, time2
