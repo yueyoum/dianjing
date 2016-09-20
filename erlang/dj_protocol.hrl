@@ -197,12 +197,19 @@
         }).
 -endif.
 
+-ifndef('PROTOTIMERANGE_PB_H').
+-define('PROTOTIMERANGE_PB_H', true).
+-record('ProtoTimeRange',
+        {start_at,                      % = 1, int64
+         close_at                       % = 2, int64
+        }).
+-endif.
+
 -ifndef('PROTOPARTYOPENTIMENOTIFY_PB_H').
 -define('PROTOPARTYOPENTIMENOTIFY_PB_H', true).
 -record('ProtoPartyOpenTimeNotify',
         {session,                       % = 1, bytes
-         start_at,                      % = 2, int64
-         close_at                       % = 3, int64
+         time_range = []                % = 2, [{msg,'ProtoTimeRange'}]
         }).
 -endif.
 

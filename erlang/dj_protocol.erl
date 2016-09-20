@@ -91,6 +91,8 @@ encode_msg(Msg, Opts) ->
 	  e_msg_ProtoPartyDismissRequest(Msg, TrUserData);
       #'ProtoPartyJoinRequest'{} ->
 	  e_msg_ProtoPartyJoinRequest(Msg, TrUserData);
+      #'ProtoTimeRange'{} ->
+	  e_msg_ProtoTimeRange(Msg, TrUserData);
       #'ProtoPartyOpenTimeNotify'{} ->
 	  e_msg_ProtoPartyOpenTimeNotify(Msg, TrUserData);
       #'ProtoPartyNotify'{} ->
@@ -568,26 +570,41 @@ e_msg_ProtoPartyJoinRequest(#'ProtoPartyJoinRequest'{session
       e_type_string(TrF2, <<B1/binary, 18>>)
     end.
 
+e_msg_ProtoTimeRange(Msg, TrUserData) ->
+    e_msg_ProtoTimeRange(Msg, <<>>, TrUserData).
+
+
+e_msg_ProtoTimeRange(#'ProtoTimeRange'{start_at = F1,
+				       close_at = F2},
+		     Bin, TrUserData) ->
+    B1 = begin
+	   TrF1 = id(F1, TrUserData),
+	   e_type_int64(TrF1, <<Bin/binary, 8>>)
+	 end,
+    begin
+      TrF2 = id(F2, TrUserData),
+      e_type_int64(TrF2, <<B1/binary, 16>>)
+    end.
+
 e_msg_ProtoPartyOpenTimeNotify(Msg, TrUserData) ->
     e_msg_ProtoPartyOpenTimeNotify(Msg, <<>>, TrUserData).
 
 
 e_msg_ProtoPartyOpenTimeNotify(#'ProtoPartyOpenTimeNotify'{session
 							       = F1,
-							   start_at = F2,
-							   close_at = F3},
+							   time_range = F2},
 			       Bin, TrUserData) ->
     B1 = begin
 	   TrF1 = id(F1, TrUserData),
 	   e_type_bytes(TrF1, <<Bin/binary, 10>>)
 	 end,
-    B2 = begin
-	   TrF2 = id(F2, TrUserData),
-	   e_type_int64(TrF2, <<B1/binary, 16>>)
-	 end,
     begin
-      TrF3 = id(F3, TrUserData),
-      e_type_int64(TrF3, <<B2/binary, 24>>)
+      TrF2 = id(F2, TrUserData),
+      if TrF2 == [] -> B1;
+	 true ->
+	     e_field_ProtoPartyOpenTimeNotify_time_range(TrF2, B1,
+							 TrUserData)
+      end
     end.
 
 e_msg_ProtoPartyNotify(Msg, TrUserData) ->
@@ -846,6 +863,26 @@ e_field_ProtoPartyMessageNotify_messages([], Bin,
 					 _TrUserData) ->
     Bin.
 
+e_mfield_ProtoPartyOpenTimeNotify_time_range(Msg, Bin,
+					     TrUserData) ->
+    SubBin = e_msg_ProtoTimeRange(Msg, <<>>, TrUserData),
+    Bin2 = e_varint(byte_size(SubBin), Bin),
+    <<Bin2/binary, SubBin/binary>>.
+
+e_field_ProtoPartyOpenTimeNotify_time_range([Elem
+					     | Rest],
+					    Bin, TrUserData) ->
+    Bin2 = <<Bin/binary, 18>>,
+    Bin3 =
+	e_mfield_ProtoPartyOpenTimeNotify_time_range(id(Elem,
+							TrUserData),
+						     Bin2, TrUserData),
+    e_field_ProtoPartyOpenTimeNotify_time_range(Rest, Bin3,
+						TrUserData);
+e_field_ProtoPartyOpenTimeNotify_time_range([], Bin,
+					    _TrUserData) ->
+    Bin.
+
 e_mfield_ProtoPartyNotify_info(Msg, Bin, TrUserData) ->
     SubBin = e_msg_ProtoPartyInfo(Msg, <<>>, TrUserData),
     Bin2 = e_varint(byte_size(SubBin), Bin),
@@ -979,6 +1016,8 @@ decode_msg(Bin, MsgName, Opts) when is_binary(Bin) ->
 	  d_msg_ProtoPartyDismissRequest(Bin, TrUserData);
       'ProtoPartyJoinRequest' ->
 	  d_msg_ProtoPartyJoinRequest(Bin, TrUserData);
+      'ProtoTimeRange' ->
+	  d_msg_ProtoTimeRange(Bin, TrUserData);
       'ProtoPartyOpenTimeNotify' ->
 	  d_msg_ProtoPartyOpenTimeNotify(Bin, TrUserData);
       'ProtoPartyNotify' ->
@@ -4435,168 +4474,267 @@ skip_64_ProtoPartyJoinRequest(<<_:64, Rest/binary>>, Z1,
 					     F1, F2, TrUserData).
 
 
+d_msg_ProtoTimeRange(Bin, TrUserData) ->
+    dfp_read_field_def_ProtoTimeRange(Bin, 0, 0,
+				      id(undefined, TrUserData),
+				      id(undefined, TrUserData), TrUserData).
+
+dfp_read_field_def_ProtoTimeRange(<<8, Rest/binary>>,
+				  Z1, Z2, F1, F2, TrUserData) ->
+    d_field_ProtoTimeRange_start_at(Rest, Z1, Z2, F1, F2,
+				    TrUserData);
+dfp_read_field_def_ProtoTimeRange(<<16, Rest/binary>>,
+				  Z1, Z2, F1, F2, TrUserData) ->
+    d_field_ProtoTimeRange_close_at(Rest, Z1, Z2, F1, F2,
+				    TrUserData);
+dfp_read_field_def_ProtoTimeRange(<<>>, 0, 0, F1, F2,
+				  _) ->
+    #'ProtoTimeRange'{start_at = F1, close_at = F2};
+dfp_read_field_def_ProtoTimeRange(Other, Z1, Z2, F1, F2,
+				  TrUserData) ->
+    dg_read_field_def_ProtoTimeRange(Other, Z1, Z2, F1, F2,
+				     TrUserData).
+
+dg_read_field_def_ProtoTimeRange(<<1:1, X:7,
+				   Rest/binary>>,
+				 N, Acc, F1, F2, TrUserData)
+    when N < 32 - 7 ->
+    dg_read_field_def_ProtoTimeRange(Rest, N + 7,
+				     X bsl N + Acc, F1, F2, TrUserData);
+dg_read_field_def_ProtoTimeRange(<<0:1, X:7,
+				   Rest/binary>>,
+				 N, Acc, F1, F2, TrUserData) ->
+    Key = X bsl N + Acc,
+    case Key of
+      8 ->
+	  d_field_ProtoTimeRange_start_at(Rest, 0, 0, F1, F2,
+					  TrUserData);
+      16 ->
+	  d_field_ProtoTimeRange_close_at(Rest, 0, 0, F1, F2,
+					  TrUserData);
+      _ ->
+	  case Key band 7 of
+	    0 ->
+		skip_varint_ProtoTimeRange(Rest, 0, 0, F1, F2,
+					   TrUserData);
+	    1 ->
+		skip_64_ProtoTimeRange(Rest, 0, 0, F1, F2, TrUserData);
+	    2 ->
+		skip_length_delimited_ProtoTimeRange(Rest, 0, 0, F1, F2,
+						     TrUserData);
+	    5 ->
+		skip_32_ProtoTimeRange(Rest, 0, 0, F1, F2, TrUserData)
+	  end
+    end;
+dg_read_field_def_ProtoTimeRange(<<>>, 0, 0, F1, F2,
+				 _) ->
+    #'ProtoTimeRange'{start_at = F1, close_at = F2}.
+
+d_field_ProtoTimeRange_start_at(<<1:1, X:7,
+				  Rest/binary>>,
+				N, Acc, F1, F2, TrUserData)
+    when N < 57 ->
+    d_field_ProtoTimeRange_start_at(Rest, N + 7,
+				    X bsl N + Acc, F1, F2, TrUserData);
+d_field_ProtoTimeRange_start_at(<<0:1, X:7,
+				  Rest/binary>>,
+				N, Acc, _, F2, TrUserData) ->
+    <<NewFValue:64/signed-native>> = <<(X bsl N +
+					  Acc):64/unsigned-native>>,
+    dfp_read_field_def_ProtoTimeRange(Rest, 0, 0, NewFValue,
+				      F2, TrUserData).
+
+
+d_field_ProtoTimeRange_close_at(<<1:1, X:7,
+				  Rest/binary>>,
+				N, Acc, F1, F2, TrUserData)
+    when N < 57 ->
+    d_field_ProtoTimeRange_close_at(Rest, N + 7,
+				    X bsl N + Acc, F1, F2, TrUserData);
+d_field_ProtoTimeRange_close_at(<<0:1, X:7,
+				  Rest/binary>>,
+				N, Acc, F1, _, TrUserData) ->
+    <<NewFValue:64/signed-native>> = <<(X bsl N +
+					  Acc):64/unsigned-native>>,
+    dfp_read_field_def_ProtoTimeRange(Rest, 0, 0, F1,
+				      NewFValue, TrUserData).
+
+
+skip_varint_ProtoTimeRange(<<1:1, _:7, Rest/binary>>,
+			   Z1, Z2, F1, F2, TrUserData) ->
+    skip_varint_ProtoTimeRange(Rest, Z1, Z2, F1, F2,
+			       TrUserData);
+skip_varint_ProtoTimeRange(<<0:1, _:7, Rest/binary>>,
+			   Z1, Z2, F1, F2, TrUserData) ->
+    dfp_read_field_def_ProtoTimeRange(Rest, Z1, Z2, F1, F2,
+				      TrUserData).
+
+
+skip_length_delimited_ProtoTimeRange(<<1:1, X:7,
+				       Rest/binary>>,
+				     N, Acc, F1, F2, TrUserData)
+    when N < 57 ->
+    skip_length_delimited_ProtoTimeRange(Rest, N + 7,
+					 X bsl N + Acc, F1, F2, TrUserData);
+skip_length_delimited_ProtoTimeRange(<<0:1, X:7,
+				       Rest/binary>>,
+				     N, Acc, F1, F2, TrUserData) ->
+    Length = X bsl N + Acc,
+    <<_:Length/binary, Rest2/binary>> = Rest,
+    dfp_read_field_def_ProtoTimeRange(Rest2, 0, 0, F1, F2,
+				      TrUserData).
+
+
+skip_32_ProtoTimeRange(<<_:32, Rest/binary>>, Z1, Z2,
+		       F1, F2, TrUserData) ->
+    dfp_read_field_def_ProtoTimeRange(Rest, Z1, Z2, F1, F2,
+				      TrUserData).
+
+
+skip_64_ProtoTimeRange(<<_:64, Rest/binary>>, Z1, Z2,
+		       F1, F2, TrUserData) ->
+    dfp_read_field_def_ProtoTimeRange(Rest, Z1, Z2, F1, F2,
+				      TrUserData).
+
+
 d_msg_ProtoPartyOpenTimeNotify(Bin, TrUserData) ->
     dfp_read_field_def_ProtoPartyOpenTimeNotify(Bin, 0, 0,
 						id(undefined, TrUserData),
-						id(undefined, TrUserData),
-						id(undefined, TrUserData),
-						TrUserData).
+						id([], TrUserData), TrUserData).
 
 dfp_read_field_def_ProtoPartyOpenTimeNotify(<<10,
 					      Rest/binary>>,
-					    Z1, Z2, F1, F2, F3, TrUserData) ->
+					    Z1, Z2, F1, F2, TrUserData) ->
     d_field_ProtoPartyOpenTimeNotify_session(Rest, Z1, Z2,
-					     F1, F2, F3, TrUserData);
-dfp_read_field_def_ProtoPartyOpenTimeNotify(<<16,
+					     F1, F2, TrUserData);
+dfp_read_field_def_ProtoPartyOpenTimeNotify(<<18,
 					      Rest/binary>>,
-					    Z1, Z2, F1, F2, F3, TrUserData) ->
-    d_field_ProtoPartyOpenTimeNotify_start_at(Rest, Z1, Z2,
-					      F1, F2, F3, TrUserData);
-dfp_read_field_def_ProtoPartyOpenTimeNotify(<<24,
-					      Rest/binary>>,
-					    Z1, Z2, F1, F2, F3, TrUserData) ->
-    d_field_ProtoPartyOpenTimeNotify_close_at(Rest, Z1, Z2,
-					      F1, F2, F3, TrUserData);
+					    Z1, Z2, F1, F2, TrUserData) ->
+    d_field_ProtoPartyOpenTimeNotify_time_range(Rest, Z1,
+						Z2, F1, F2, TrUserData);
 dfp_read_field_def_ProtoPartyOpenTimeNotify(<<>>, 0, 0,
-					    F1, F2, F3, _) ->
-    #'ProtoPartyOpenTimeNotify'{session = F1, start_at = F2,
-				close_at = F3};
+					    F1, F2, TrUserData) ->
+    #'ProtoPartyOpenTimeNotify'{session = F1,
+				time_range = lists_reverse(F2, TrUserData)};
 dfp_read_field_def_ProtoPartyOpenTimeNotify(Other, Z1,
-					    Z2, F1, F2, F3, TrUserData) ->
+					    Z2, F1, F2, TrUserData) ->
     dg_read_field_def_ProtoPartyOpenTimeNotify(Other, Z1,
-					       Z2, F1, F2, F3, TrUserData).
+					       Z2, F1, F2, TrUserData).
 
 dg_read_field_def_ProtoPartyOpenTimeNotify(<<1:1, X:7,
 					     Rest/binary>>,
-					   N, Acc, F1, F2, F3, TrUserData)
+					   N, Acc, F1, F2, TrUserData)
     when N < 32 - 7 ->
     dg_read_field_def_ProtoPartyOpenTimeNotify(Rest, N + 7,
-					       X bsl N + Acc, F1, F2, F3,
+					       X bsl N + Acc, F1, F2,
 					       TrUserData);
 dg_read_field_def_ProtoPartyOpenTimeNotify(<<0:1, X:7,
 					     Rest/binary>>,
-					   N, Acc, F1, F2, F3, TrUserData) ->
+					   N, Acc, F1, F2, TrUserData) ->
     Key = X bsl N + Acc,
     case Key of
       10 ->
 	  d_field_ProtoPartyOpenTimeNotify_session(Rest, 0, 0, F1,
-						   F2, F3, TrUserData);
-      16 ->
-	  d_field_ProtoPartyOpenTimeNotify_start_at(Rest, 0, 0,
-						    F1, F2, F3, TrUserData);
-      24 ->
-	  d_field_ProtoPartyOpenTimeNotify_close_at(Rest, 0, 0,
-						    F1, F2, F3, TrUserData);
+						   F2, TrUserData);
+      18 ->
+	  d_field_ProtoPartyOpenTimeNotify_time_range(Rest, 0, 0,
+						      F1, F2, TrUserData);
       _ ->
 	  case Key band 7 of
 	    0 ->
 		skip_varint_ProtoPartyOpenTimeNotify(Rest, 0, 0, F1, F2,
-						     F3, TrUserData);
+						     TrUserData);
 	    1 ->
-		skip_64_ProtoPartyOpenTimeNotify(Rest, 0, 0, F1, F2, F3,
+		skip_64_ProtoPartyOpenTimeNotify(Rest, 0, 0, F1, F2,
 						 TrUserData);
 	    2 ->
 		skip_length_delimited_ProtoPartyOpenTimeNotify(Rest, 0,
-							       0, F1, F2, F3,
+							       0, F1, F2,
 							       TrUserData);
 	    5 ->
-		skip_32_ProtoPartyOpenTimeNotify(Rest, 0, 0, F1, F2, F3,
+		skip_32_ProtoPartyOpenTimeNotify(Rest, 0, 0, F1, F2,
 						 TrUserData)
 	  end
     end;
 dg_read_field_def_ProtoPartyOpenTimeNotify(<<>>, 0, 0,
-					   F1, F2, F3, _) ->
-    #'ProtoPartyOpenTimeNotify'{session = F1, start_at = F2,
-				close_at = F3}.
+					   F1, F2, TrUserData) ->
+    #'ProtoPartyOpenTimeNotify'{session = F1,
+				time_range = lists_reverse(F2, TrUserData)}.
 
 d_field_ProtoPartyOpenTimeNotify_session(<<1:1, X:7,
 					   Rest/binary>>,
-					 N, Acc, F1, F2, F3, TrUserData)
+					 N, Acc, F1, F2, TrUserData)
     when N < 57 ->
     d_field_ProtoPartyOpenTimeNotify_session(Rest, N + 7,
-					     X bsl N + Acc, F1, F2, F3,
-					     TrUserData);
+					     X bsl N + Acc, F1, F2, TrUserData);
 d_field_ProtoPartyOpenTimeNotify_session(<<0:1, X:7,
 					   Rest/binary>>,
-					 N, Acc, _, F2, F3, TrUserData) ->
+					 N, Acc, _, F2, TrUserData) ->
     Len = X bsl N + Acc,
     <<Bytes:Len/binary, Rest2/binary>> = Rest,
     NewFValue = binary:copy(Bytes),
     dfp_read_field_def_ProtoPartyOpenTimeNotify(Rest2, 0, 0,
-						NewFValue, F2, F3, TrUserData).
+						NewFValue, F2, TrUserData).
 
 
-d_field_ProtoPartyOpenTimeNotify_start_at(<<1:1, X:7,
-					    Rest/binary>>,
-					  N, Acc, F1, F2, F3, TrUserData)
+d_field_ProtoPartyOpenTimeNotify_time_range(<<1:1, X:7,
+					      Rest/binary>>,
+					    N, Acc, F1, F2, TrUserData)
     when N < 57 ->
-    d_field_ProtoPartyOpenTimeNotify_start_at(Rest, N + 7,
-					      X bsl N + Acc, F1, F2, F3,
-					      TrUserData);
-d_field_ProtoPartyOpenTimeNotify_start_at(<<0:1, X:7,
-					    Rest/binary>>,
-					  N, Acc, F1, _, F3, TrUserData) ->
-    <<NewFValue:64/signed-native>> = <<(X bsl N +
-					  Acc):64/unsigned-native>>,
-    dfp_read_field_def_ProtoPartyOpenTimeNotify(Rest, 0, 0,
-						F1, NewFValue, F3, TrUserData).
-
-
-d_field_ProtoPartyOpenTimeNotify_close_at(<<1:1, X:7,
-					    Rest/binary>>,
-					  N, Acc, F1, F2, F3, TrUserData)
-    when N < 57 ->
-    d_field_ProtoPartyOpenTimeNotify_close_at(Rest, N + 7,
-					      X bsl N + Acc, F1, F2, F3,
-					      TrUserData);
-d_field_ProtoPartyOpenTimeNotify_close_at(<<0:1, X:7,
-					    Rest/binary>>,
-					  N, Acc, F1, F2, _, TrUserData) ->
-    <<NewFValue:64/signed-native>> = <<(X bsl N +
-					  Acc):64/unsigned-native>>,
-    dfp_read_field_def_ProtoPartyOpenTimeNotify(Rest, 0, 0,
-						F1, F2, NewFValue, TrUserData).
+    d_field_ProtoPartyOpenTimeNotify_time_range(Rest, N + 7,
+						X bsl N + Acc, F1, F2,
+						TrUserData);
+d_field_ProtoPartyOpenTimeNotify_time_range(<<0:1, X:7,
+					      Rest/binary>>,
+					    N, Acc, F1, F2, TrUserData) ->
+    Len = X bsl N + Acc,
+    <<Bs:Len/binary, Rest2/binary>> = Rest,
+    NewFValue = id(d_msg_ProtoTimeRange(Bs, TrUserData),
+		   TrUserData),
+    dfp_read_field_def_ProtoPartyOpenTimeNotify(Rest2, 0, 0,
+						F1,
+						cons(NewFValue, F2, TrUserData),
+						TrUserData).
 
 
 skip_varint_ProtoPartyOpenTimeNotify(<<1:1, _:7,
 				       Rest/binary>>,
-				     Z1, Z2, F1, F2, F3, TrUserData) ->
+				     Z1, Z2, F1, F2, TrUserData) ->
     skip_varint_ProtoPartyOpenTimeNotify(Rest, Z1, Z2, F1,
-					 F2, F3, TrUserData);
+					 F2, TrUserData);
 skip_varint_ProtoPartyOpenTimeNotify(<<0:1, _:7,
 				       Rest/binary>>,
-				     Z1, Z2, F1, F2, F3, TrUserData) ->
+				     Z1, Z2, F1, F2, TrUserData) ->
     dfp_read_field_def_ProtoPartyOpenTimeNotify(Rest, Z1,
-						Z2, F1, F2, F3, TrUserData).
+						Z2, F1, F2, TrUserData).
 
 
 skip_length_delimited_ProtoPartyOpenTimeNotify(<<1:1,
 						 X:7, Rest/binary>>,
-					       N, Acc, F1, F2, F3, TrUserData)
+					       N, Acc, F1, F2, TrUserData)
     when N < 57 ->
     skip_length_delimited_ProtoPartyOpenTimeNotify(Rest,
 						   N + 7, X bsl N + Acc, F1, F2,
-						   F3, TrUserData);
+						   TrUserData);
 skip_length_delimited_ProtoPartyOpenTimeNotify(<<0:1,
 						 X:7, Rest/binary>>,
-					       N, Acc, F1, F2, F3,
-					       TrUserData) ->
+					       N, Acc, F1, F2, TrUserData) ->
     Length = X bsl N + Acc,
     <<_:Length/binary, Rest2/binary>> = Rest,
     dfp_read_field_def_ProtoPartyOpenTimeNotify(Rest2, 0, 0,
-						F1, F2, F3, TrUserData).
+						F1, F2, TrUserData).
 
 
 skip_32_ProtoPartyOpenTimeNotify(<<_:32, Rest/binary>>,
-				 Z1, Z2, F1, F2, F3, TrUserData) ->
+				 Z1, Z2, F1, F2, TrUserData) ->
     dfp_read_field_def_ProtoPartyOpenTimeNotify(Rest, Z1,
-						Z2, F1, F2, F3, TrUserData).
+						Z2, F1, F2, TrUserData).
 
 
 skip_64_ProtoPartyOpenTimeNotify(<<_:64, Rest/binary>>,
-				 Z1, Z2, F1, F2, F3, TrUserData) ->
+				 Z1, Z2, F1, F2, TrUserData) ->
     dfp_read_field_def_ProtoPartyOpenTimeNotify(Rest, Z1,
-						Z2, F1, F2, F3, TrUserData).
+						Z2, F1, F2, TrUserData).
 
 
 d_msg_ProtoPartyNotify(Bin, TrUserData) ->
@@ -6101,6 +6239,8 @@ merge_msgs(Prev, New, Opts)
 					     TrUserData);
       #'ProtoPartyJoinRequest'{} ->
 	  merge_msg_ProtoPartyJoinRequest(Prev, New, TrUserData);
+      #'ProtoTimeRange'{} ->
+	  merge_msg_ProtoTimeRange(Prev, New, TrUserData);
       #'ProtoPartyOpenTimeNotify'{} ->
 	  merge_msg_ProtoPartyOpenTimeNotify(Prev, New,
 					     TrUserData);
@@ -6561,31 +6701,37 @@ merge_msg_ProtoPartyJoinRequest(#'ProtoPartyJoinRequest'{session
 				    true -> NFowner_id
 				 end}.
 
+merge_msg_ProtoTimeRange(#'ProtoTimeRange'{start_at =
+					       PFstart_at,
+					   close_at = PFclose_at},
+			 #'ProtoTimeRange'{start_at = NFstart_at,
+					   close_at = NFclose_at},
+			 _) ->
+    #'ProtoTimeRange'{start_at =
+			  if NFstart_at =:= undefined -> PFstart_at;
+			     true -> NFstart_at
+			  end,
+		      close_at =
+			  if NFclose_at =:= undefined -> PFclose_at;
+			     true -> NFclose_at
+			  end}.
+
 merge_msg_ProtoPartyOpenTimeNotify(#'ProtoPartyOpenTimeNotify'{session
 								   = PFsession,
-							       start_at =
-								   PFstart_at,
-							       close_at =
-								   PFclose_at},
+							       time_range =
+								   PFtime_range},
 				   #'ProtoPartyOpenTimeNotify'{session =
 								   NFsession,
-							       start_at =
-								   NFstart_at,
-							       close_at =
-								   NFclose_at},
-				   _) ->
+							       time_range =
+								   NFtime_range},
+				   TrUserData) ->
     #'ProtoPartyOpenTimeNotify'{session =
 				    if NFsession =:= undefined -> PFsession;
 				       true -> NFsession
 				    end,
-				start_at =
-				    if NFstart_at =:= undefined -> PFstart_at;
-				       true -> NFstart_at
-				    end,
-				close_at =
-				    if NFclose_at =:= undefined -> PFclose_at;
-				       true -> NFclose_at
-				    end}.
+				time_range =
+				    'erlang_++'(PFtime_range, NFtime_range,
+						TrUserData)}.
 
 merge_msg_ProtoPartyNotify(#'ProtoPartyNotify'{session =
 						   PFsession,
@@ -6851,6 +6997,9 @@ verify_msg(Msg, Opts) ->
       #'ProtoPartyJoinRequest'{} ->
 	  v_msg_ProtoPartyJoinRequest(Msg,
 				      ['ProtoPartyJoinRequest'], TrUserData);
+      #'ProtoTimeRange'{} ->
+	  v_msg_ProtoTimeRange(Msg, ['ProtoTimeRange'],
+			       TrUserData);
       #'ProtoPartyOpenTimeNotify'{} ->
 	  v_msg_ProtoPartyOpenTimeNotify(Msg,
 					 ['ProtoPartyOpenTimeNotify'],
@@ -7171,15 +7320,33 @@ v_msg_ProtoPartyJoinRequest(#'ProtoPartyJoinRequest'{session
     v_type_string(F2, [owner_id | Path]),
     ok.
 
+-dialyzer({nowarn_function,v_msg_ProtoTimeRange/3}).
+v_msg_ProtoTimeRange(#'ProtoTimeRange'{start_at = F1,
+				       close_at = F2},
+		     Path, _) ->
+    v_type_int64(F1, [start_at | Path]),
+    v_type_int64(F2, [close_at | Path]),
+    ok;
+v_msg_ProtoTimeRange(X, Path, _TrUserData) ->
+    mk_type_error({expected_msg, 'ProtoTimeRange'}, X,
+		  Path).
+
 -dialyzer({nowarn_function,v_msg_ProtoPartyOpenTimeNotify/3}).
 v_msg_ProtoPartyOpenTimeNotify(#'ProtoPartyOpenTimeNotify'{session
 							       = F1,
-							   start_at = F2,
-							   close_at = F3},
-			       Path, _) ->
+							   time_range = F2},
+			       Path, TrUserData) ->
     v_type_bytes(F1, [session | Path]),
-    v_type_int64(F2, [start_at | Path]),
-    v_type_int64(F3, [close_at | Path]),
+    if is_list(F2) ->
+	   _ = [v_msg_ProtoTimeRange(Elem, [time_range | Path],
+				     TrUserData)
+		|| Elem <- F2],
+	   ok;
+       true ->
+	   mk_type_error({invalid_list_of,
+			  {msg, 'ProtoTimeRange'}},
+			 F2, Path)
+    end,
     ok.
 
 -dialyzer({nowarn_function,v_msg_ProtoPartyNotify/3}).
@@ -7568,13 +7735,17 @@ get_msg_defs() ->
 	      type = bytes, occurrence = required, opts = []},
        #field{name = owner_id, fnum = 2, rnum = 3,
 	      type = string, occurrence = required, opts = []}]},
+     {{msg, 'ProtoTimeRange'},
+      [#field{name = start_at, fnum = 1, rnum = 2,
+	      type = int64, occurrence = required, opts = []},
+       #field{name = close_at, fnum = 2, rnum = 3,
+	      type = int64, occurrence = required, opts = []}]},
      {{msg, 'ProtoPartyOpenTimeNotify'},
       [#field{name = session, fnum = 1, rnum = 2,
 	      type = bytes, occurrence = required, opts = []},
-       #field{name = start_at, fnum = 2, rnum = 3,
-	      type = int64, occurrence = required, opts = []},
-       #field{name = close_at, fnum = 3, rnum = 4,
-	      type = int64, occurrence = required, opts = []}]},
+       #field{name = time_range, fnum = 2, rnum = 3,
+	      type = {msg, 'ProtoTimeRange'}, occurrence = repeated,
+	      opts = []}]},
      {{msg, 'ProtoPartyNotify'},
       [#field{name = session, fnum = 1, rnum = 2,
 	      type = bytes, occurrence = required, opts = []},
@@ -7650,12 +7821,12 @@ get_msg_names() ->
      'ProtoSocketConnectRequest',
      'ProtoSocketConnectResponse', 'ProtoPartyBuyResponse',
      'ProtoPartyDismissRequest', 'ProtoPartyJoinRequest',
-     'ProtoPartyOpenTimeNotify', 'ProtoPartyNotify',
-     'ProtoPartyChatResponse', 'ProtoPartyKickResponse',
-     'ProtoPartyQuitResponse', 'ProtoPartyJoinResponse',
-     'ProtoPartyRoomResponse', 'ProtoPartyStartResponse',
-     'ProtoPartyRoomRequest', 'ProtoSyncRequest',
-     'ProtoPingRequest'].
+     'ProtoTimeRange', 'ProtoPartyOpenTimeNotify',
+     'ProtoPartyNotify', 'ProtoPartyChatResponse',
+     'ProtoPartyKickResponse', 'ProtoPartyQuitResponse',
+     'ProtoPartyJoinResponse', 'ProtoPartyRoomResponse',
+     'ProtoPartyStartResponse', 'ProtoPartyRoomRequest',
+     'ProtoSyncRequest', 'ProtoPingRequest'].
 
 
 get_enum_names() ->
@@ -7809,13 +7980,17 @@ find_msg_def('ProtoPartyJoinRequest') ->
 	    type = bytes, occurrence = required, opts = []},
      #field{name = owner_id, fnum = 2, rnum = 3,
 	    type = string, occurrence = required, opts = []}];
+find_msg_def('ProtoTimeRange') ->
+    [#field{name = start_at, fnum = 1, rnum = 2,
+	    type = int64, occurrence = required, opts = []},
+     #field{name = close_at, fnum = 2, rnum = 3,
+	    type = int64, occurrence = required, opts = []}];
 find_msg_def('ProtoPartyOpenTimeNotify') ->
     [#field{name = session, fnum = 1, rnum = 2,
 	    type = bytes, occurrence = required, opts = []},
-     #field{name = start_at, fnum = 2, rnum = 3,
-	    type = int64, occurrence = required, opts = []},
-     #field{name = close_at, fnum = 3, rnum = 4,
-	    type = int64, occurrence = required, opts = []}];
+     #field{name = time_range, fnum = 2, rnum = 3,
+	    type = {msg, 'ProtoTimeRange'}, occurrence = repeated,
+	    opts = []}];
 find_msg_def('ProtoPartyNotify') ->
     [#field{name = session, fnum = 1, rnum = 2,
 	    type = bytes, occurrence = required, opts = []},

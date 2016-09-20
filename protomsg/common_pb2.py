@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='common.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0c\x63ommon.proto\x12\x11\x44ianjing.protocol\"/\n\tUTCNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\ttimestamp\x18\x02 \x02(\x03\"-\n\x0bSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05param\x18\x02 \x02(\x05\";\n\x0cSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\r\n\x05param\x18\x03 \x01(\x05\"\x1e\n\x0bPingRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\",\n\x0cPingResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"?\n\x12SocketServerNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02ip\x18\x02 \x02(\t\x12\x0c\n\x04port\x18\x03 \x02(\x05\"\'\n\x14SocketConnectRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"J\n\x15SocketConnectResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x13\n\x0bnext_try_at\x18\x03 \x02(\x03*.\n\x0bNextOperate\x12\n\n\x06OPT_OK\x10\x01\x12\x13\n\x0fOPT_CREATE_CLUB\x10\x02*&\n\x06\x41\x63tion\x12\x0c\n\x08\x41\x43T_INIT\x10\x01\x12\x0e\n\nACT_UPDATE\x10\x02*\xe3\x06\n\x0cPropertyType\x12\x19\n\x15PROPERTY_STAFF_ATTACK\x10\x01\x12\x1a\n\x16PROPERTY_STAFF_DEFENSE\x10\x02\x12\x19\n\x15PROPERTY_STAFF_MANAGE\x10\x03\x12\x1c\n\x18PROPERTY_STAFF_OPERATION\x10\x04\x12!\n\x1dPROPERTY_STAFF_ATTACK_PERCENT\x10\x05\x12\"\n\x1ePROPERTY_STAFF_DEFENSE_PERCENT\x10\x06\x12!\n\x1dPROPERTY_STAFF_MANAGE_PERCENT\x10\x07\x12$\n PROPERTY_STAFF_OPERATION_PERCENT\x10\x08\x12\x1c\n\x18PROPERTY_UNIT_HP_PERCENT\x10\t\x12 \n\x1cPROPERTY_UNIT_ATTACK_PERCENT\x10\n\x12!\n\x1dPROPERTY_UNIT_DEFENSE_PERCENT\x10\x0b\x12\x1d\n\x19PROPERTY_UNIT_HIT_PERCENT\x10\x0c\x12\x1f\n\x1bPROPERTY_UNIT_DODGE_PERCENT\x10\r\x12\x1e\n\x1aPROPERTY_UNIT_CRIT_PERCENT\x10\x0e\x12#\n\x1fPROPERTY_UNIT_TOUGHNESS_PERCENT\x10\x0f\x12\x1f\n\x1bPROPERTY_UNIT_CRIT_MULTIPLE\x10\x10\x12)\n%PROPERTY_UNIT_HURT_ADDIITON_TO_TERRAN\x10\x11\x12*\n&PROPERTY_UNIT_HURT_ADDIITON_TO_PROTOSS\x10\x12\x12\'\n#PROPERTY_UNIT_HURT_ADDIITON_TO_ZERG\x10\x13\x12)\n%PROPERTY_UNIT_HURT_ADDIITON_BY_TERRAN\x10\x14\x12*\n&PROPERTY_UNIT_HURT_ADDIITON_BY_PROTOSS\x10\x15\x12\'\n#PROPERTY_UNIT_HURT_ADDIITON_BY_ZERG\x10\x16\x12%\n!PROPERTY_UNIT_FINAL_HURT_ADDITION\x10\x17\x12#\n\x1fPROPERTY_UNIT_FINAL_HURT_REDUCE\x10\x18*m\n\x1cSpecialEquipmentGenerateType\x12%\n!SPECIAL_EQUIPMENT_GENERATE_NORMAL\x10\x01\x12&\n\"SPECIAL_EQUIPMENT_GENERATE_ADVANCE\x10\x02')
+  serialized_pb=_b('\n\x0c\x63ommon.proto\x12\x11\x44ianjing.protocol\"/\n\tUTCNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\ttimestamp\x18\x02 \x02(\x03\"/\n\tTimeRange\x12\x10\n\x08start_at\x18\x01 \x02(\x03\x12\x10\n\x08\x63lose_at\x18\x02 \x02(\x03\"-\n\x0bSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05param\x18\x02 \x02(\x05\";\n\x0cSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\r\n\x05param\x18\x03 \x01(\x05\"\x1e\n\x0bPingRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\",\n\x0cPingResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"?\n\x12SocketServerNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02ip\x18\x02 \x02(\t\x12\x0c\n\x04port\x18\x03 \x02(\x05\"\'\n\x14SocketConnectRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"J\n\x15SocketConnectResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x13\n\x0bnext_try_at\x18\x03 \x02(\x03*.\n\x0bNextOperate\x12\n\n\x06OPT_OK\x10\x01\x12\x13\n\x0fOPT_CREATE_CLUB\x10\x02*&\n\x06\x41\x63tion\x12\x0c\n\x08\x41\x43T_INIT\x10\x01\x12\x0e\n\nACT_UPDATE\x10\x02*\xe3\x06\n\x0cPropertyType\x12\x19\n\x15PROPERTY_STAFF_ATTACK\x10\x01\x12\x1a\n\x16PROPERTY_STAFF_DEFENSE\x10\x02\x12\x19\n\x15PROPERTY_STAFF_MANAGE\x10\x03\x12\x1c\n\x18PROPERTY_STAFF_OPERATION\x10\x04\x12!\n\x1dPROPERTY_STAFF_ATTACK_PERCENT\x10\x05\x12\"\n\x1ePROPERTY_STAFF_DEFENSE_PERCENT\x10\x06\x12!\n\x1dPROPERTY_STAFF_MANAGE_PERCENT\x10\x07\x12$\n PROPERTY_STAFF_OPERATION_PERCENT\x10\x08\x12\x1c\n\x18PROPERTY_UNIT_HP_PERCENT\x10\t\x12 \n\x1cPROPERTY_UNIT_ATTACK_PERCENT\x10\n\x12!\n\x1dPROPERTY_UNIT_DEFENSE_PERCENT\x10\x0b\x12\x1d\n\x19PROPERTY_UNIT_HIT_PERCENT\x10\x0c\x12\x1f\n\x1bPROPERTY_UNIT_DODGE_PERCENT\x10\r\x12\x1e\n\x1aPROPERTY_UNIT_CRIT_PERCENT\x10\x0e\x12#\n\x1fPROPERTY_UNIT_TOUGHNESS_PERCENT\x10\x0f\x12\x1f\n\x1bPROPERTY_UNIT_CRIT_MULTIPLE\x10\x10\x12)\n%PROPERTY_UNIT_HURT_ADDIITON_TO_TERRAN\x10\x11\x12*\n&PROPERTY_UNIT_HURT_ADDIITON_TO_PROTOSS\x10\x12\x12\'\n#PROPERTY_UNIT_HURT_ADDIITON_TO_ZERG\x10\x13\x12)\n%PROPERTY_UNIT_HURT_ADDIITON_BY_TERRAN\x10\x14\x12*\n&PROPERTY_UNIT_HURT_ADDIITON_BY_PROTOSS\x10\x15\x12\'\n#PROPERTY_UNIT_HURT_ADDIITON_BY_ZERG\x10\x16\x12%\n!PROPERTY_UNIT_FINAL_HURT_ADDITION\x10\x17\x12#\n\x1fPROPERTY_UNIT_FINAL_HURT_REDUCE\x10\x18*m\n\x1cSpecialEquipmentGenerateType\x12%\n!SPECIAL_EQUIPMENT_GENERATE_NORMAL\x10\x01\x12&\n\"SPECIAL_EQUIPMENT_GENERATE_ADVANCE\x10\x02')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -41,8 +41,8 @@ _NEXTOPERATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=452,
-  serialized_end=498,
+  serialized_start=501,
+  serialized_end=547,
 )
 _sym_db.RegisterEnumDescriptor(_NEXTOPERATE)
 
@@ -64,8 +64,8 @@ _ACTION = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=500,
-  serialized_end=538,
+  serialized_start=549,
+  serialized_end=587,
 )
 _sym_db.RegisterEnumDescriptor(_ACTION)
 
@@ -175,8 +175,8 @@ _PROPERTYTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=541,
-  serialized_end=1408,
+  serialized_start=590,
+  serialized_end=1457,
 )
 _sym_db.RegisterEnumDescriptor(_PROPERTYTYPE)
 
@@ -198,8 +198,8 @@ _SPECIALEQUIPMENTGENERATETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1410,
-  serialized_end=1519,
+  serialized_start=1459,
+  serialized_end=1568,
 )
 _sym_db.RegisterEnumDescriptor(_SPECIALEQUIPMENTGENERATETYPE)
 
@@ -275,6 +275,44 @@ _UTCNOTIFY = _descriptor.Descriptor(
 )
 
 
+_TIMERANGE = _descriptor.Descriptor(
+  name='TimeRange',
+  full_name='Dianjing.protocol.TimeRange',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='start_at', full_name='Dianjing.protocol.TimeRange.start_at', index=0,
+      number=1, type=3, cpp_type=2, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='close_at', full_name='Dianjing.protocol.TimeRange.close_at', index=1,
+      number=2, type=3, cpp_type=2, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=84,
+  serialized_end=131,
+)
+
+
 _SYNCREQUEST = _descriptor.Descriptor(
   name='SyncRequest',
   full_name='Dianjing.protocol.SyncRequest',
@@ -308,8 +346,8 @@ _SYNCREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=84,
-  serialized_end=129,
+  serialized_start=133,
+  serialized_end=178,
 )
 
 
@@ -353,8 +391,8 @@ _SYNCRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=131,
-  serialized_end=190,
+  serialized_start=180,
+  serialized_end=239,
 )
 
 
@@ -384,8 +422,8 @@ _PINGREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=192,
-  serialized_end=222,
+  serialized_start=241,
+  serialized_end=271,
 )
 
 
@@ -422,8 +460,8 @@ _PINGRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=224,
-  serialized_end=268,
+  serialized_start=273,
+  serialized_end=317,
 )
 
 
@@ -467,8 +505,8 @@ _SOCKETSERVERNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=270,
-  serialized_end=333,
+  serialized_start=319,
+  serialized_end=382,
 )
 
 
@@ -498,8 +536,8 @@ _SOCKETCONNECTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=335,
-  serialized_end=374,
+  serialized_start=384,
+  serialized_end=423,
 )
 
 
@@ -543,11 +581,12 @@ _SOCKETCONNECTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=376,
-  serialized_end=450,
+  serialized_start=425,
+  serialized_end=499,
 )
 
 DESCRIPTOR.message_types_by_name['UTCNotify'] = _UTCNOTIFY
+DESCRIPTOR.message_types_by_name['TimeRange'] = _TIMERANGE
 DESCRIPTOR.message_types_by_name['SyncRequest'] = _SYNCREQUEST
 DESCRIPTOR.message_types_by_name['SyncResponse'] = _SYNCRESPONSE
 DESCRIPTOR.message_types_by_name['PingRequest'] = _PINGREQUEST
@@ -566,6 +605,13 @@ UTCNotify = _reflection.GeneratedProtocolMessageType('UTCNotify', (_message.Mess
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.UTCNotify)
   ))
 _sym_db.RegisterMessage(UTCNotify)
+
+TimeRange = _reflection.GeneratedProtocolMessageType('TimeRange', (_message.Message,), dict(
+  DESCRIPTOR = _TIMERANGE,
+  __module__ = 'common_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.TimeRange)
+  ))
+_sym_db.RegisterMessage(TimeRange)
 
 SyncRequest = _reflection.GeneratedProtocolMessageType('SyncRequest', (_message.Message,), dict(
   DESCRIPTOR = _SYNCREQUEST,

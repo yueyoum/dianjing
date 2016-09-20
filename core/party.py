@@ -145,8 +145,11 @@ class Party(object):
     def send_notify(self):
         notify = PartyOpenTimeNotify()
         start_at, close_at = get_party_open_time_range(1, 23)
-        notify.start_at = start_at.timestamp
-        notify.close_at = close_at.timestamp
+
+        notify_range = notify.time_range.add()
+
+        notify_range.start_at = start_at.timestamp
+        notify_range.close_at = close_at.timestamp
 
         MessagePipe(self.char_id).put(msg=notify)
 
