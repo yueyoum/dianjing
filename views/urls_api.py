@@ -17,4 +17,5 @@ urlpatterns = [
     url(r'^party/create/$', views.api.party.create),
     url(r'^party/start/$', views.api.party.start),
     url(r'^party/buy/$', views.api.party.buy),
+    url(r'^party/end/$', views.api.party.end),
 ]
