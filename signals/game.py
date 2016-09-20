@@ -6,9 +6,11 @@ Date Created:   2015-04-30 15:23
 Description:
 
 """
+import random
 
 import arrow
 from django.dispatch import receiver
+from django.conf import settings
 
 from core.signals import game_start_signal
 from core.club import Club
@@ -39,9 +41,10 @@ from core.union import Union
 from core.purchase import Purchase
 from core.activity import ActivityNewPlayer
 from core.plunder import Plunder, SpecialEquipmentGenerator
+from core.party import Party
 
 from utils.message import MessagePipe
-from protomsg.common_pb2 import UTCNotify
+from protomsg.common_pb2 import UTCNotify, SocketServerNotify
 from protomsg.club_pb2 import CreateDaysNotify
 
 
@@ -55,6 +58,12 @@ def game_start_handler(server_id, char_id, **kwargs):
 
     msg = CreateDaysNotify()
     msg.days = Club.create_days(server_id, char_id)
+    MessagePipe(char_id).put(msg=msg)
+
+    msg = SocketServerNotify()
+    ss = random.choice(settings.SOCKET_SERVERS)
+    msg.ip = ss['host']
+    msg.port = ss['tcp']
     MessagePipe(char_id).put(msg=msg)
 
     UnitManager(server_id, char_id).send_notify()
@@ -139,6 +148,8 @@ def game_start_handler(server_id, char_id, **kwargs):
     p.send_plunder_times_notify()
 
     SpecialEquipmentGenerator(server_id, char_id).send_notify()
+
+    Party(server_id, char_id).send_notify()
 
     send_system_notify(char_id)
     BroadCast(server_id, char_id).try_cast_login_notify()

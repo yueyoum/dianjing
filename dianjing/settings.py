@@ -190,6 +190,13 @@ TIME_ZONE = doc.find('timezone').text
 DUTY_SERVER_MIN = int( doc.find('duty-server/min').text )
 DUTY_SERVER_MAX = int( doc.find('duty-server/max').text )
 
+SOCKET_SERVERS = []
+for _s in doc.find('sockets').getchildren():
+    attrib = _s.attrib
+    attrib['http'] = int(attrib['http'])
+    attrib['tcp'] = int(attrib['tcp'])
+    SOCKET_SERVERS.append(attrib)
+
 AES_KEY = doc.find('crypto/key').text
 AES_CBC_IV = doc.find('crypto/iv').text
 

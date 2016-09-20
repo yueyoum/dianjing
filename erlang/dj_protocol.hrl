@@ -93,6 +93,15 @@
         }).
 -endif.
 
+-ifndef('PROTOSOCKETSERVERNOTIFY_PB_H').
+-define('PROTOSOCKETSERVERNOTIFY_PB_H', true).
+-record('ProtoSocketServerNotify',
+        {session,                       % = 1, bytes
+         ip,                            % = 2, string
+         port                           % = 3, int32
+        }).
+-endif.
+
 -ifndef('PROTOUTCNOTIFY_PB_H').
 -define('PROTOUTCNOTIFY_PB_H', true).
 -record('ProtoUTCNotify',

@@ -65,6 +65,8 @@ encode_msg(Msg, Opts) ->
       #'ProtoPartyRoomResponse.PartyRoom'{} ->
 	  'e_msg_ProtoPartyRoomResponse.PartyRoom'(Msg,
 						   TrUserData);
+      #'ProtoSocketServerNotify'{} ->
+	  e_msg_ProtoSocketServerNotify(Msg, TrUserData);
       #'ProtoUTCNotify'{} ->
 	  e_msg_ProtoUTCNotify(Msg, TrUserData);
       #'ProtoPingResponse'{} ->
@@ -344,6 +346,27 @@ e_msg_ProtoPartyQuitRequest(#'ProtoPartyQuitRequest'{session
     begin
       TrF4 = id(F4, TrUserData),
       e_type_int32(TrF4, <<B3/binary, 32>>)
+    end.
+
+e_msg_ProtoSocketServerNotify(Msg, TrUserData) ->
+    e_msg_ProtoSocketServerNotify(Msg, <<>>, TrUserData).
+
+
+e_msg_ProtoSocketServerNotify(#'ProtoSocketServerNotify'{session
+							     = F1,
+							 ip = F2, port = F3},
+			      Bin, TrUserData) ->
+    B1 = begin
+	   TrF1 = id(F1, TrUserData),
+	   e_type_bytes(TrF1, <<Bin/binary, 10>>)
+	 end,
+    B2 = begin
+	   TrF2 = id(F2, TrUserData),
+	   e_type_string(TrF2, <<B1/binary, 18>>)
+	 end,
+    begin
+      TrF3 = id(F3, TrUserData),
+      e_type_int32(TrF3, <<B2/binary, 24>>)
     end.
 
 e_msg_ProtoUTCNotify(Msg, TrUserData) ->
@@ -915,6 +938,8 @@ decode_msg(Bin, MsgName, Opts) when is_binary(Bin) ->
       'ProtoPartyRoomResponse.PartyRoom' ->
 	  'd_msg_ProtoPartyRoomResponse.PartyRoom'(Bin,
 						   TrUserData);
+      'ProtoSocketServerNotify' ->
+	  d_msg_ProtoSocketServerNotify(Bin, TrUserData);
       'ProtoUTCNotify' ->
 	  d_msg_ProtoUTCNotify(Bin, TrUserData);
       'ProtoPingResponse' ->
@@ -2664,6 +2689,168 @@ skip_64_ProtoPartyQuitRequest(<<_:64, Rest/binary>>, Z1,
     'dfp_read_field_def_ProtoPartyRoomResponse.PartyRoom'(Rest,
 							  Z1, Z2, F1, F2, F3,
 							  F4, TrUserData).
+
+
+d_msg_ProtoSocketServerNotify(Bin, TrUserData) ->
+    dfp_read_field_def_ProtoSocketServerNotify(Bin, 0, 0,
+					       id(undefined, TrUserData),
+					       id(undefined, TrUserData),
+					       id(undefined, TrUserData),
+					       TrUserData).
+
+dfp_read_field_def_ProtoSocketServerNotify(<<10,
+					     Rest/binary>>,
+					   Z1, Z2, F1, F2, F3, TrUserData) ->
+    d_field_ProtoSocketServerNotify_session(Rest, Z1, Z2,
+					    F1, F2, F3, TrUserData);
+dfp_read_field_def_ProtoSocketServerNotify(<<18,
+					     Rest/binary>>,
+					   Z1, Z2, F1, F2, F3, TrUserData) ->
+    d_field_ProtoSocketServerNotify_ip(Rest, Z1, Z2, F1, F2,
+				       F3, TrUserData);
+dfp_read_field_def_ProtoSocketServerNotify(<<24,
+					     Rest/binary>>,
+					   Z1, Z2, F1, F2, F3, TrUserData) ->
+    d_field_ProtoSocketServerNotify_port(Rest, Z1, Z2, F1,
+					 F2, F3, TrUserData);
+dfp_read_field_def_ProtoSocketServerNotify(<<>>, 0, 0,
+					   F1, F2, F3, _) ->
+    #'ProtoSocketServerNotify'{session = F1, ip = F2,
+			       port = F3};
+dfp_read_field_def_ProtoSocketServerNotify(Other, Z1,
+					   Z2, F1, F2, F3, TrUserData) ->
+    dg_read_field_def_ProtoSocketServerNotify(Other, Z1, Z2,
+					      F1, F2, F3, TrUserData).
+
+dg_read_field_def_ProtoSocketServerNotify(<<1:1, X:7,
+					    Rest/binary>>,
+					  N, Acc, F1, F2, F3, TrUserData)
+    when N < 32 - 7 ->
+    dg_read_field_def_ProtoSocketServerNotify(Rest, N + 7,
+					      X bsl N + Acc, F1, F2, F3,
+					      TrUserData);
+dg_read_field_def_ProtoSocketServerNotify(<<0:1, X:7,
+					    Rest/binary>>,
+					  N, Acc, F1, F2, F3, TrUserData) ->
+    Key = X bsl N + Acc,
+    case Key of
+      10 ->
+	  d_field_ProtoSocketServerNotify_session(Rest, 0, 0, F1,
+						  F2, F3, TrUserData);
+      18 ->
+	  d_field_ProtoSocketServerNotify_ip(Rest, 0, 0, F1, F2,
+					     F3, TrUserData);
+      24 ->
+	  d_field_ProtoSocketServerNotify_port(Rest, 0, 0, F1, F2,
+					       F3, TrUserData);
+      _ ->
+	  case Key band 7 of
+	    0 ->
+		skip_varint_ProtoSocketServerNotify(Rest, 0, 0, F1, F2,
+						    F3, TrUserData);
+	    1 ->
+		skip_64_ProtoSocketServerNotify(Rest, 0, 0, F1, F2, F3,
+						TrUserData);
+	    2 ->
+		skip_length_delimited_ProtoSocketServerNotify(Rest, 0,
+							      0, F1, F2, F3,
+							      TrUserData);
+	    5 ->
+		skip_32_ProtoSocketServerNotify(Rest, 0, 0, F1, F2, F3,
+						TrUserData)
+	  end
+    end;
+dg_read_field_def_ProtoSocketServerNotify(<<>>, 0, 0,
+					  F1, F2, F3, _) ->
+    #'ProtoSocketServerNotify'{session = F1, ip = F2,
+			       port = F3}.
+
+d_field_ProtoSocketServerNotify_session(<<1:1, X:7,
+					  Rest/binary>>,
+					N, Acc, F1, F2, F3, TrUserData)
+    when N < 57 ->
+    d_field_ProtoSocketServerNotify_session(Rest, N + 7,
+					    X bsl N + Acc, F1, F2, F3,
+					    TrUserData);
+d_field_ProtoSocketServerNotify_session(<<0:1, X:7,
+					  Rest/binary>>,
+					N, Acc, _, F2, F3, TrUserData) ->
+    Len = X bsl N + Acc,
+    <<Bytes:Len/binary, Rest2/binary>> = Rest,
+    NewFValue = binary:copy(Bytes),
+    dfp_read_field_def_ProtoSocketServerNotify(Rest2, 0, 0,
+					       NewFValue, F2, F3, TrUserData).
+
+
+d_field_ProtoSocketServerNotify_ip(<<1:1, X:7,
+				     Rest/binary>>,
+				   N, Acc, F1, F2, F3, TrUserData)
+    when N < 57 ->
+    d_field_ProtoSocketServerNotify_ip(Rest, N + 7,
+				       X bsl N + Acc, F1, F2, F3, TrUserData);
+d_field_ProtoSocketServerNotify_ip(<<0:1, X:7,
+				     Rest/binary>>,
+				   N, Acc, F1, _, F3, TrUserData) ->
+    Len = X bsl N + Acc,
+    <<Bytes:Len/binary, Rest2/binary>> = Rest,
+    NewFValue = binary:copy(Bytes),
+    dfp_read_field_def_ProtoSocketServerNotify(Rest2, 0, 0,
+					       F1, NewFValue, F3, TrUserData).
+
+
+d_field_ProtoSocketServerNotify_port(<<1:1, X:7,
+				       Rest/binary>>,
+				     N, Acc, F1, F2, F3, TrUserData)
+    when N < 57 ->
+    d_field_ProtoSocketServerNotify_port(Rest, N + 7,
+					 X bsl N + Acc, F1, F2, F3, TrUserData);
+d_field_ProtoSocketServerNotify_port(<<0:1, X:7,
+				       Rest/binary>>,
+				     N, Acc, F1, F2, _, TrUserData) ->
+    <<NewFValue:32/signed-native>> = <<(X bsl N +
+					  Acc):32/unsigned-native>>,
+    dfp_read_field_def_ProtoSocketServerNotify(Rest, 0, 0,
+					       F1, F2, NewFValue, TrUserData).
+
+
+skip_varint_ProtoSocketServerNotify(<<1:1, _:7,
+				      Rest/binary>>,
+				    Z1, Z2, F1, F2, F3, TrUserData) ->
+    skip_varint_ProtoSocketServerNotify(Rest, Z1, Z2, F1,
+					F2, F3, TrUserData);
+skip_varint_ProtoSocketServerNotify(<<0:1, _:7,
+				      Rest/binary>>,
+				    Z1, Z2, F1, F2, F3, TrUserData) ->
+    dfp_read_field_def_ProtoSocketServerNotify(Rest, Z1, Z2,
+					       F1, F2, F3, TrUserData).
+
+
+skip_length_delimited_ProtoSocketServerNotify(<<1:1,
+						X:7, Rest/binary>>,
+					      N, Acc, F1, F2, F3, TrUserData)
+    when N < 57 ->
+    skip_length_delimited_ProtoSocketServerNotify(Rest,
+						  N + 7, X bsl N + Acc, F1, F2,
+						  F3, TrUserData);
+skip_length_delimited_ProtoSocketServerNotify(<<0:1,
+						X:7, Rest/binary>>,
+					      N, Acc, F1, F2, F3, TrUserData) ->
+    Length = X bsl N + Acc,
+    <<_:Length/binary, Rest2/binary>> = Rest,
+    dfp_read_field_def_ProtoSocketServerNotify(Rest2, 0, 0,
+					       F1, F2, F3, TrUserData).
+
+
+skip_32_ProtoSocketServerNotify(<<_:32, Rest/binary>>,
+				Z1, Z2, F1, F2, F3, TrUserData) ->
+    dfp_read_field_def_ProtoSocketServerNotify(Rest, Z1, Z2,
+					       F1, F2, F3, TrUserData).
+
+
+skip_64_ProtoSocketServerNotify(<<_:64, Rest/binary>>,
+				Z1, Z2, F1, F2, F3, TrUserData) ->
+    dfp_read_field_def_ProtoSocketServerNotify(Rest, Z1, Z2,
+					       F1, F2, F3, TrUserData).
 
 
 d_msg_ProtoUTCNotify(Bin, TrUserData) ->
@@ -5777,6 +5964,9 @@ merge_msgs(Prev, New, Opts)
       #'ProtoPartyRoomResponse.PartyRoom'{} ->
 	  'merge_msg_ProtoPartyRoomResponse.PartyRoom'(Prev, New,
 						       TrUserData);
+      #'ProtoSocketServerNotify'{} ->
+	  merge_msg_ProtoSocketServerNotify(Prev, New,
+					    TrUserData);
       #'ProtoUTCNotify'{} ->
 	  merge_msg_ProtoUTCNotify(Prev, New, TrUserData);
       #'ProtoPingResponse'{} ->
@@ -6055,6 +6245,28 @@ merge_msg_ProtoPartyQuitRequest(#'ProtoPartyQuitRequest'{session
 						   PFcurrent_amount;
 					       true -> NFcurrent_amount
 					    end}.
+
+merge_msg_ProtoSocketServerNotify(#'ProtoSocketServerNotify'{session
+								 = PFsession,
+							     ip = PFip,
+							     port = PFport},
+				  #'ProtoSocketServerNotify'{session =
+								 NFsession,
+							     ip = NFip,
+							     port = NFport},
+				  _) ->
+    #'ProtoSocketServerNotify'{session =
+				   if NFsession =:= undefined -> PFsession;
+				      true -> NFsession
+				   end,
+			       ip =
+				   if NFip =:= undefined -> PFip;
+				      true -> NFip
+				   end,
+			       port =
+				   if NFport =:= undefined -> PFport;
+				      true -> NFport
+				   end}.
 
 merge_msg_ProtoUTCNotify(#'ProtoUTCNotify'{session =
 					       PFsession,
@@ -6472,6 +6684,10 @@ verify_msg(Msg, Opts) ->
 	  'v_msg_ProtoPartyRoomResponse.PartyRoom'(Msg,
 						   ['ProtoPartyRoomResponse.PartyRoom'],
 						   TrUserData);
+      #'ProtoSocketServerNotify'{} ->
+	  v_msg_ProtoSocketServerNotify(Msg,
+					['ProtoSocketServerNotify'],
+					TrUserData);
       #'ProtoUTCNotify'{} ->
 	  v_msg_ProtoUTCNotify(Msg, ['ProtoUTCNotify'],
 			       TrUserData);
@@ -6716,6 +6932,16 @@ v_msg_ProtoPartyQuitRequest(#'ProtoPartyQuitRequest'{session
     mk_type_error({expected_msg,
 		   'ProtoPartyRoomResponse.PartyRoom'},
 		  X, Path).
+
+-dialyzer({nowarn_function,v_msg_ProtoSocketServerNotify/3}).
+v_msg_ProtoSocketServerNotify(#'ProtoSocketServerNotify'{session
+							     = F1,
+							 ip = F2, port = F3},
+			      Path, _) ->
+    v_type_bytes(F1, [session | Path]),
+    v_type_string(F2, [ip | Path]),
+    v_type_int32(F3, [port | Path]),
+    ok.
 
 -dialyzer({nowarn_function,v_msg_ProtoUTCNotify/3}).
 v_msg_ProtoUTCNotify(#'ProtoUTCNotify'{session = F1,
@@ -7143,6 +7369,13 @@ get_msg_defs() ->
 	      occurrence = required, opts = []},
        #field{name = current_amount, fnum = 4, rnum = 5,
 	      type = int32, occurrence = required, opts = []}]},
+     {{msg, 'ProtoSocketServerNotify'},
+      [#field{name = session, fnum = 1, rnum = 2,
+	      type = bytes, occurrence = required, opts = []},
+       #field{name = ip, fnum = 2, rnum = 3, type = string,
+	      occurrence = required, opts = []},
+       #field{name = port, fnum = 3, rnum = 4, type = int32,
+	      occurrence = required, opts = []}]},
      {{msg, 'ProtoUTCNotify'},
       [#field{name = session, fnum = 1, rnum = 2,
 	      type = bytes, occurrence = required, opts = []},
@@ -7272,7 +7505,8 @@ get_msg_names() ->
      'ProtoPartyMessageNotify', 'ProtoPartyCreateResponse',
      'ProtoPartyBuyRequest', 'ProtoPartyChatRequest',
      'ProtoPartyQuitRequest',
-     'ProtoPartyRoomResponse.PartyRoom', 'ProtoUTCNotify',
+     'ProtoPartyRoomResponse.PartyRoom',
+     'ProtoSocketServerNotify', 'ProtoUTCNotify',
      'ProtoPingResponse', 'ProtoSyncResponse',
      'ProtoPartyDismissResponse', 'ProtoPartyStartRequest',
      'ProtoPartyKickRequest', 'ProtoPartyCreateRequest',
@@ -7372,6 +7606,13 @@ find_msg_def('ProtoPartyRoomResponse.PartyRoom') ->
 	    occurrence = required, opts = []},
      #field{name = current_amount, fnum = 4, rnum = 5,
 	    type = int32, occurrence = required, opts = []}];
+find_msg_def('ProtoSocketServerNotify') ->
+    [#field{name = session, fnum = 1, rnum = 2,
+	    type = bytes, occurrence = required, opts = []},
+     #field{name = ip, fnum = 2, rnum = 3, type = string,
+	    occurrence = required, opts = []},
+     #field{name = port, fnum = 3, rnum = 4, type = int32,
+	    occurrence = required, opts = []}];
 find_msg_def('ProtoUTCNotify') ->
     [#field{name = session, fnum = 1, rnum = 2,
 	    type = bytes, occurrence = required, opts = []},

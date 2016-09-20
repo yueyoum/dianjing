@@ -7,6 +7,12 @@ Description:
 
 """
 
+import json
+import random
+from django.conf import settings
+
+import requests
+
 from dianjing.exception import GameException
 
 from core.mongo import MongoParty
@@ -16,6 +22,7 @@ from core.mail import MailManager
 from core.value_log import ValueLogPartyCreateTimes, ValueLogPartyJoinTimes
 
 from utils.api import APIReturn
+from utils.message import MessagePipe, NUM_FILED
 
 from config import ConfigErrorMessage, ConfigPartyLevel, ConfigPartyBuyItem, ConfigItemNew
 
@@ -106,3 +113,20 @@ class Party(object):
         ret.set_data('buy_name', config_buy.name)
         ret.set_data('item_name', ConfigItemNew.get(item_id).name)
         return ret.normalize()
+
+
+    def send_notify(self):
+        data = json.dumps({'char_id': self.char_id})
+        ss = random.choice(settings.SOCKET_SERVERS)
+
+        url = "http://{0}:{1}/getpartynotify/".format(ss['host'], ss['http'])
+        req = requests.post(url, data=data)
+
+        notify_data = req.content
+
+        packed = '%s%s' % (
+            NUM_FILED.pack(len(notify_data)),
+            notify_data
+        )
+
+        MessagePipe(self.char_id).put(data=packed)
