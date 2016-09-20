@@ -50,3 +50,16 @@ def buy(request):
     response = p.buy_item(party_level, buy_id, member_ids)
 
     return JsonResponse(response)
+
+def end(request):
+    data = json.loads(request.body)
+
+    server_id = data['server_id']
+    char_id = data['char_id']
+    party_level = data['party_level']
+    member_ids = data['member_ids']
+
+    p = Party(server_id, char_id)
+    response = p.end(party_level, member_ids)
+
+    return JsonResponse(response)

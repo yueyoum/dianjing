@@ -295,6 +295,7 @@ MESSAGE_TO_ID = {
     "PartyStartResponse": 4817,
     "PartyDismissRequest": 4818,
     "PartyDismissResponse": 4819,
+    "PartyOpenTimeNotify": 4820,
 }
 
 ID_TO_MESSAGE = {
@@ -593,6 +594,7 @@ ID_TO_MESSAGE = {
     4817: "PartyStartResponse",
     4818: "PartyDismissRequest",
     4819: "PartyDismissResponse",
+    4820: "PartyOpenTimeNotify",
 }
 
 PATH_TO_REQUEST = {

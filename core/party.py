@@ -6,12 +6,7 @@ Date Created:   2016-09-19 13:36
 Description:
 
 """
-
-import json
 import random
-from django.conf import settings
-
-import requests
 
 from dianjing.exception import GameException
 
@@ -22,10 +17,12 @@ from core.mail import MailManager
 from core.value_log import ValueLogPartyCreateTimes, ValueLogPartyJoinTimes
 
 from utils.api import APIReturn
-from utils.message import MessagePipe, NUM_FILED
+from utils.message import MessagePipe
+from utils.functional import get_start_time_of_today
 
 from config import ConfigErrorMessage, ConfigPartyLevel, ConfigPartyBuyItem, ConfigItemNew
 
+from protomsg.party_pb2 import PartyOpenTimeNotify
 
 # 这部分功能都是 socket 发来的调用
 
@@ -45,7 +42,8 @@ class Party(object):
     def get_info(self):
         return {
             'create_times': ValueLogPartyCreateTimes(self.server_id, self.char_id).count_of_today(),
-            'join_times': ValueLogPartyJoinTimes(self.server_id, self.char_id).count_of_today()
+            'join_times': ValueLogPartyJoinTimes(self.server_id, self.char_id).count_of_today(),
+            'talent_id': self.doc['talent_id'],
         }
 
     def create(self, party_level):
@@ -114,19 +112,49 @@ class Party(object):
         ret.set_data('item_name', ConfigItemNew.get(item_id).name)
         return ret.normalize()
 
+    def end(self, party_level, member_ids):
+        ret = APIReturn(self.char_id)
 
-    def send_notify(self):
-        data = json.dumps({'char_id': self.char_id})
-        ss = random.choice(settings.SOCKET_SERVERS)
+        config = ConfigPartyLevel.get(party_level)
+        talent_id = random.choice(config.talent_skills)
+        self.doc['talent_id'] = talent_id
 
-        url = "http://{0}:{1}/getpartynotify/".format(ss['host'], ss['http'])
-        req = requests.post(url, data=data)
-
-        notify_data = req.content
-
-        packed = '%s%s' % (
-            NUM_FILED.pack(len(notify_data)),
-            notify_data
+        MongoParty.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'talent_id': talent_id
+            }}
         )
 
-        MessagePipe(self.char_id).put(data=packed)
+        reward = [(config.item_id, 1), ]
+        rc = ResourceClassification.classify([reward])
+        attachment = rc.to_json()
+
+        char_ids = member_ids.append(self.char_id)
+        for c in char_ids:
+            m = MailManager(self.server_id, c)
+            m.add(config.mail_title, config.mail_content, attachment=attachment)
+
+        for c in member_ids:
+            ret.add_other_char(c)
+
+        ret.set_data('talent_id', talent_id)
+        return ret.normalize()
+
+
+    def send_notify(self):
+        notify = PartyOpenTimeNotify()
+        start_at, close_at = get_party_open_time_range(1, 23)
+        notify.start_at = start_at.timestamp
+        notify.close_at = close_at.timestamp
+
+        MessagePipe(self.char_id).put(msg=notify)
+
+
+def get_party_open_time_range(h1, h2):
+    today = get_start_time_of_today()
+
+    time1 = today.replace(hours=h1)
+    time2 = today.replace(hours=h2)
+
+    return time1, time2

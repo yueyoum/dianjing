@@ -197,17 +197,24 @@
         }).
 -endif.
 
+-ifndef('PROTOPARTYOPENTIMENOTIFY_PB_H').
+-define('PROTOPARTYOPENTIMENOTIFY_PB_H', true).
+-record('ProtoPartyOpenTimeNotify',
+        {session,                       % = 1, bytes
+         start_at,                      % = 2, int64
+         close_at                       % = 3, int64
+        }).
+-endif.
+
 -ifndef('PROTOPARTYNOTIFY_PB_H').
 -define('PROTOPARTYNOTIFY_PB_H', true).
 -record('ProtoPartyNotify',
         {session,                       % = 1, bytes
-         open_at,                       % = 2, int64
-         close_at,                      % = 3, int64
-         talent_id,                     % = 4, int32
-         talent_end_at,                 % = 5, int64
-         remained_create_times,         % = 6, int32
-         remained_join_times,           % = 7, int32
-         info                           % = 8, {msg,'ProtoPartyInfo'} (optional)
+         talent_id,                     % = 2, int32
+         talent_end_at,                 % = 3, int64
+         remained_create_times,         % = 4, int32
+         remained_join_times,           % = 5, int32
+         info                           % = 6, {msg,'ProtoPartyInfo'} (optional)
         }).
 -endif.
 
