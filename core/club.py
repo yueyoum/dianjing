@@ -70,6 +70,7 @@ class Club(AbstractClub):
         self.char_id = char_id
 
         doc = MongoCharacter.db(self.server_id).find_one({'_id': self.char_id})
+        assert doc is not None, "can not find char_id: {0}".format(self.char_id)
 
         self.id = self.char_id  # 玩家ID
         self.name = doc['name']  # 俱乐部名

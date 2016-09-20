@@ -26,7 +26,13 @@ def parse_session(request):
         ret.code = ConfigErrorMessage.get_error_id("INVALID_OPERATE")
         return JsonResponse(ret.normalize())
 
-    club = Club(session.server_id, session.char_id)
+    try:
+        club = Club(session.server_id, session.char_id)
+    except AssertionError as e:
+        print "API error. {0}".format(e.message)
+        ret = APIReturn(None)
+        ret.code = ConfigErrorMessage.get_error_id("INVALID_OPERATE")
+        return JsonResponse(ret.normalize())
 
     ret = APIReturn(session.char_id)
     ret.set_data('server_id', club.server_id)
