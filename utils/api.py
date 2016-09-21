@@ -17,15 +17,15 @@ def get_extra_msgs(char_id):
         return ''
 
     extra_msgs = MessagePipe(char_id).get()
-    extra_msgs = ''.join(extra_msgs)
-    return base64.b64encode(extra_msgs)
-
+    # 去掉头部4字节长度， erlang发送的时候会自己添加
+    extra_msgs = [base64.b64encode(msg[4:]) for msg in extra_msgs]
+    return extra_msgs
 
 # API return
 # {
 #     'code': 0,            0 正常， 其他 错误码
 #     'data': {},           数据
-#     'extra': '',          额外需要socket发送给客户端的字节
+#     'extra': [],          额外需要socket发送给客户端的字节
 #     'others': [Other],    其他角色信息
 # }
 #
@@ -33,7 +33,7 @@ def get_extra_msgs(char_id):
 # {
 #     'char_id': 0,         角色id
 #     'data': {},           数据
-#     'extra': ''           额外发送
+#     'extra': []           额外发送
 # }
 #
 
