@@ -162,10 +162,11 @@ class Party(object):
         )
 
         reward = [(config.item_id, 1), ]
-        rc = ResourceClassification.classify([reward])
+        rc = ResourceClassification.classify(reward)
         attachment = rc.to_json()
 
-        char_ids = member_ids.append(self.char_id)
+        char_ids = [self.char_id]
+        char_ids.extend(member_ids)
         for c in char_ids:
             m = MailManager(self.server_id, c)
             m.add(config.mail_title, config.mail_content, attachment=attachment)

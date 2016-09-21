@@ -6,6 +6,7 @@ Date Created:   2015-07-02 18:20
 Description:
 
 """
+import base64
 from utils.http import ProtobufResponse
 
 from dianjing.exception import GameException
@@ -80,8 +81,8 @@ def start_game(request):
     response.session = session.serialize()
 
     print
-    print "NEW SESSION"
-    print response.session
+    print "NEW SESSION (base64 encoded)"
+    print base64.b64encode(response.session)
     print
 
     return ProtobufResponse(response)
