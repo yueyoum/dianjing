@@ -515,7 +515,7 @@ class Plunder(object):
             return _ids
 
         level_low = self.club_level - GlobalConfig.value("PLUNDER_SEARCH_LEVEL_RANGE_LOW")
-        level_high = self.club_level - GlobalConfig.value("PLUNDER_SEARCH_LEVEL_RANGE_HIGH")
+        level_high = self.club_level + GlobalConfig.value("PLUNDER_SEARCH_LEVEL_RANGE_HIGH")
 
         if level_low < PLUNDER_ACTIVE_CLUB_LEVEL:
             level_low = PLUNDER_ACTIVE_CLUB_LEVEL
@@ -534,7 +534,7 @@ class Plunder(object):
 
         search_docs = []
         for i in real_ids:
-            search_docs.append({'_id': i, 'spied': False})
+            search_docs.append({'id': i, 'spied': False})
             if len(search_docs) == 2:
                 break
 
@@ -627,6 +627,9 @@ class Plunder(object):
     def plunder_start(self, _id, tp, formation_slots=None, win=None):
         if tp not in [PLUNDER_TYPE_PLUNDER, PLUNDER_TYPE_REVENGE]:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
+        if formation_slots:
+            raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_MATCH_CANNOT_SET_FORMATION"))
 
         for i in [0, 1, 2]:
             if self.doc['matching']['result'][i] == 0:
