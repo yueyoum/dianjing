@@ -382,12 +382,8 @@ class Equipment(object):
             items = {}
 
             config_gen = ConfigEquipmentSpecialGenerate.get(self.from_id)
-            if self.gen_tp == 1:
-                gen_items = config_gen.normal_cost
-            else:
-                gen_items = config_gen.advance_cost
-
-            for _id, _amount in gen_items:
+            # 不管哪种方式，都用普通打造消耗返还
+            for _id, _amount in config_gen.normal_cost:
                 _amount = int(_amount * 0.5)
                 if _amount:
                     if _id in items:

@@ -108,8 +108,9 @@ class BaseFormation(object):
             if k == staff_id:
                 raise GameException(ConfigErrorMessage.get_error_id("FORMATION_STAFF_ALREADY_IN"))
 
-            # 同一个人也不能上
-            if sm.get_staff_object(k).oid == this_staff_obj.oid:
+            if v['slot_id'] != slot_id and sm.get_staff_object(k).oid == this_staff_obj.oid:
+                # 其他位置 不能上 oid 一样的人
+                # 但是这个slot替换就可以
                 raise GameException(ConfigErrorMessage.get_error_id("FORMATION_STAFF_ALREADY_IN"))
 
         old_staff_id = self.doc['slots'][str(slot_id)]['staff_id']
