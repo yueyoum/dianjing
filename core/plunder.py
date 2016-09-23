@@ -73,7 +73,7 @@ from protomsg.formation_pb2 import FORMATION_SLOT_EMPTY, FORMATION_SLOT_USE
 from protomsg.common_pb2 import SPECIAL_EQUIPMENT_GENERATE_NORMAL, SPECIAL_EQUIPMENT_GENERATE_ADVANCE
 
 PLUNDER_ACTIVE_CLUB_LEVEL = 15
-REVENGE_MAX_TIMES = 10
+REVENGE_MAX_TIMES = 3
 PLUNDER_TIMES_INIT_TIMES = 3
 
 
@@ -754,6 +754,9 @@ class Plunder(object):
         plunder_got = []
         win_ways = sum([i for i in result if i == 1])
 
+        config = ConfigPlunderIncome.get(win_ways)
+        plunder_got.append((STATION_EXP_ID, config.exp))
+
         if tp == PLUNDER_TYPE_PLUNDER:
             real_id = target_id
             search_index = self.find_search_target_index_by_target_id(target_id)
@@ -768,6 +771,7 @@ class Plunder(object):
 
             _got = target_plunder.got_plundered(self.char_id, win_ways)
             plunder_got.extend(_got)
+            plunder_got.extend(config.get_extra_income())
 
         else:
             revenge_index = self.find_revenge_target_index_by_target_id(target_id)
@@ -783,10 +787,7 @@ class Plunder(object):
 
         self.send_result_notify()
 
-        config = ConfigPlunderIncome.get(win_ways)
-        plunder_got.extend(config.get_extra_income())
 
-        plunder_got.append((STATION_EXP_ID, config.exp))
 
         rc = ResourceClassification.classify(plunder_got)
         rc.add(self.server_id, self.char_id)
@@ -794,24 +795,26 @@ class Plunder(object):
 
     def got_plundered(self, from_id, win_ways):
         config = ConfigPlunderIncome.get(win_ways)
-        revenge_item = (make_string_id(), from_id)
 
-        self.doc['loss_percent'] += config.percent
-        if self.doc['loss_percent'] > 60:
-            self.doc['loss_percent'] = 60
+        if win_ways > 0:
+            revenge_item = (make_string_id(), from_id)
 
-        self.doc['revenge_list'].append(revenge_item)
+            self.doc['loss_percent'] += config.percent
+            if self.doc['loss_percent'] > 60:
+                self.doc['loss_percent'] = 60
 
-        MongoPlunder.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': {
-                'loss_percent': self.doc['loss_percent'],
-                'revenge_list': self.doc['revenge_list'],
-            }}
-        )
+            self.doc['revenge_list'].append(revenge_item)
 
-        self.send_revenge_notify()
-        self.send_station_notify()
+            MongoPlunder.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {
+                    'loss_percent': self.doc['loss_percent'],
+                    'revenge_list': self.doc['revenge_list'],
+                }}
+            )
+
+            self.send_revenge_notify()
+            self.send_station_notify()
 
         config_station = ConfigBaseStationLevel.get(self.doc['product_level'])
         return config_station.get_product(config.percent)
