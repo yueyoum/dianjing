@@ -470,6 +470,7 @@ class Plunder(object):
         return club
 
     @check_club_level(silence=False)
+    @check_plunder_in_process
     def set_staff(self, way_id, slot_id, staff_id):
         way_list = [1, 2, 3]
         if way_id not in way_list:
@@ -489,6 +490,7 @@ class Plunder(object):
         self.send_formation_notify()
 
     @check_club_level(silence=False)
+    @check_plunder_in_process
     def set_unit(self, way_id, slot_id, unit_id):
         if slot_id not in [1, 2, 3]:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
@@ -501,8 +503,11 @@ class Plunder(object):
     @check_plunder_in_process
     def search(self, replace_search_index=None, send_notify=True):
         def _query_real(_level_low, _level_high):
+            _skip_char_ids = [_s['id'] for _s in self.doc['search']]
+            _skip_char_ids.append(self.char_id)
+
             _condition = {'$and': [
-                {'_id': {'$ne': self.char_id}},
+                {'_id': {'$nin': _skip_char_ids}},
                 {'level': {'$gte': _level_low}},
                 {'level': {'$lte': _level_high}}
             ]}
