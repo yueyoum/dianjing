@@ -105,6 +105,7 @@ class Club(AbstractClub):
         from core.unit import UnitManager
         from core.talent import TalentManager
         from core.collection import Collection
+        from core.party import Party
 
         self.formation_staffs = []
 
@@ -133,13 +134,15 @@ class Club(AbstractClub):
         for k in in_formation_staffs:
             staff_objs[k].add_self_talent_effect(self)
 
-        talent_effects_1 = TalentManager(self.server_id, self.char_id).get_talent_effect()
+        talent_effects_1 = TalentManager(self.server_id, self.char_id).get_talent_effects()
         talent_effects_2 = Collection(self.server_id, self.char_id).get_talent_effects()
         talent_effects_3 = fm.get_talent_effects()
+        talent_effects_4 = Party(self.server_id, self.char_id).get_talent_effects()
 
         self.add_talent_effects(talent_effects_1)
         self.add_talent_effects(talent_effects_2)
         self.add_talent_effects(talent_effects_3)
+        self.add_talent_effects(talent_effects_4)
 
         for _, v in staff_objs.iteritems():
             v.calculate()

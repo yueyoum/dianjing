@@ -87,10 +87,10 @@ PROPERTY_TO_NAME_MAP = {
     PROPERTY_UNIT_HP_PERCENT: 'unit_hp_percent',
     PROPERTY_UNIT_ATTACK_PERCENT: 'unit_attack_percent',
     PROPERTY_UNIT_DEFENSE_PERCENT: 'unit_defense_percent',
-    PROPERTY_UNIT_HIT_PERCENT: 'unit_hit_percent',
-    PROPERTY_UNIT_DODGE_PERCENT: 'unit_dodge_percent',
-    PROPERTY_UNIT_CRIT_PERCENT: 'unit_crit_percent',
-    PROPERTY_UNIT_TOUGHNESS_PERCENT: 'unit_toughness_percent',
+    PROPERTY_UNIT_HIT_PERCENT: 'unit_hit_rate',
+    PROPERTY_UNIT_DODGE_PERCENT: 'unit_dodge_rate',
+    PROPERTY_UNIT_CRIT_PERCENT: 'unit_crit_rate',
+    PROPERTY_UNIT_TOUGHNESS_PERCENT: 'unit_toughness_rate',
     PROPERTY_UNIT_CRIT_MULTIPLE: 'unit_crit_multiple',
 
     PROPERTY_UNIT_HURT_ADDIITON_TO_TERRAN: 'unit_hurt_addition_to_terran',
@@ -245,9 +245,14 @@ class Equipment(object):
                 if v:
                     setattr(self, k, v)
 
-            self.staff_attack = config.staff_attack + config.staff_attack * self.level * math.pow(self.growing / 75, 1.25)
-            self.staff_defense = config.staff_defense + config.staff_defense * self.level * math.pow(self.growing / 75, 1.25)
-            self.staff_manage = config.staff_manage + config.staff_manage * self.level * math.pow(self.growing / 75, 1.25)
+            self.staff_attack = config.staff_attack + \
+                                config.staff_attack * self.level * math.pow(self.growing / 75, 1.25)
+
+            self.staff_defense = config.staff_defense + \
+                                 config.staff_defense * self.level * math.pow(self.growing / 75, 1.25)
+
+            self.staff_manage = config.staff_manage + \
+                                config.staff_manage * self.level * math.pow(self.growing / 75, 1.25)
 
             self.staff_attack = int(round(self.staff_attack))
             self.staff_defense = int(round(self.staff_defense))
@@ -377,19 +382,23 @@ class Equipment(object):
 
         return item_needs
 
-    def get_destroy_back_items(self, prob):
+    def get_destroy_back_items(self, is_normal_destroy):
         if self.is_special:
             items = {}
 
-            config_gen = ConfigEquipmentSpecialGenerate.get(self.from_id)
-            # 不管哪种方式，都用普通打造消耗返还
-            for _id, _amount in config_gen.normal_cost:
-                _amount = int(_amount * 0.5)
-                if _amount:
-                    if _id in items:
-                        items[_id] += _amount
-                    else:
-                        items[_id] = _amount
+            if is_normal_destroy:
+                prob = 0.7
+
+                config_gen = ConfigEquipmentSpecialGenerate.get(self.from_id)
+                for _id, _amount in config_gen.normal_cost:
+                    _amount = int(_amount * 0.5)
+                    if _amount:
+                        if _id in items:
+                            items[_id] += _amount
+                        else:
+                            items[_id] = _amount
+            else:
+                prob = 1
 
             for i in range(0, self.level):
                 for _id, _amount in ConfigEquipmentSpecialLevel.get(i).items:
@@ -403,6 +412,11 @@ class Equipment(object):
             return items.items()
 
         # normal
+        if is_normal_destroy:
+            prob = 0.7
+        else:
+            prob = 1
+
         config = ConfigEquipmentNew.get(self.id)
 
         items = {}

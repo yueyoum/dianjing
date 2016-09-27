@@ -143,7 +143,7 @@ class TestTalentManager(object):
         assert _id in doc_af['talent']
 
     def test_get_talent_effect(self):
-        assert TalentManager(self.server_id, self.char_id).get_talent_effect()
+        assert TalentManager(self.server_id, self.char_id).get_talent_effects()
 
     def test_send_notify(self):
         TalentManager(self.server_id, self.char_id).send_notify()

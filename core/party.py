@@ -11,6 +11,7 @@ import random
 from dianjing.exception import GameException
 
 from core.mongo import MongoParty
+from core.club import Club
 from core.union import Union
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.mail import MailManager
@@ -19,6 +20,7 @@ from core.value_log import ValueLogPartyCreateTimes, ValueLogPartyJoinTimes, Val
 from utils.api import APIReturn
 from utils.message import MessagePipe
 from utils.functional import get_start_time_of_today
+from utils.operation_log import OperationLog
 
 from config import ConfigErrorMessage, ConfigPartyLevel, ConfigPartyBuyItem, ConfigItemNew
 
@@ -58,6 +60,31 @@ class Party(object):
             self.doc = MongoParty.document()
             self.doc['_id'] = self.char_id
             MongoParty.db(self.server_id).insert_one(self.doc)
+
+    @classmethod
+    def clean_talent_id(cls, server_id):
+        char_ids = OperationLog.get_recent_action_char_ids(server_id)
+
+        condition = {'$and': [
+            {'_id': {'$in': char_ids}},
+            {'talent_id': {'$gt': 0}}
+        ]}
+
+        docs = MongoParty.db(server_id).find(condition)
+        for doc in docs:
+            # 天赋过期,删除加成
+            Club(server_id, doc['_id']).force_load_staffs(send_notify=True)
+
+        MongoParty.db(server_id).update_many(
+            {},
+            {'$set': {'talent_id': 0}}
+        )
+
+
+    def get_talent_effects(self):
+        if self.doc['talent_id']:
+            return [self.doc['talent_id']]
+        return []
 
     def get_remained_create_times(self):
         times = ValueLogPartyCreateTimes(self.server_id, self.char_id).count_of_today()
@@ -162,6 +189,9 @@ class Party(object):
                 'talent_id': talent_id
             }}
         )
+
+        # apply talent_id to club
+        Club(self.server_id, self.char_id).force_load_staffs(send_notify=True)
 
         reward = [(config.item_id, 1), ]
         rc = ResourceClassification.classify(reward)

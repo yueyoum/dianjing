@@ -119,7 +119,7 @@ class TalentManager(object):
             unlocked.append(i)
             self.try_unlock(i, unlocked)
 
-    def get_talent_effect(self):
+    def get_talent_effects(self):
         effect = []
         for _id in self.doc['talents']:
             eid = ConfigTalent.get(_id).effect_id

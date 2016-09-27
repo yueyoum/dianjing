@@ -61,6 +61,24 @@ from protomsg.common_pb2 import (
     PROPERTY_STAFF_DEFENSE_PERCENT,
     PROPERTY_STAFF_MANAGE_PERCENT,
     PROPERTY_STAFF_OPERATION_PERCENT,
+
+    PROPERTY_UNIT_HP_PERCENT,
+    PROPERTY_UNIT_ATTACK_PERCENT,
+    PROPERTY_UNIT_DEFENSE_PERCENT,
+    PROPERTY_UNIT_HIT_PERCENT,
+    PROPERTY_UNIT_DODGE_PERCENT,
+    PROPERTY_UNIT_CRIT_PERCENT,
+    PROPERTY_UNIT_TOUGHNESS_PERCENT,
+    PROPERTY_UNIT_CRIT_MULTIPLE,
+
+    PROPERTY_UNIT_HURT_ADDIITON_TO_TERRAN,
+    PROPERTY_UNIT_HURT_ADDIITON_TO_PROTOSS,
+    PROPERTY_UNIT_HURT_ADDIITON_TO_ZERG,
+    PROPERTY_UNIT_HURT_ADDIITON_BY_TERRAN,
+    PROPERTY_UNIT_HURT_ADDIITON_BY_PROTOSS,
+    PROPERTY_UNIT_HURT_ADDIITON_BY_ZERG,
+    PROPERTY_UNIT_FINAL_HURT_ADDITION,
+    PROPERTY_UNIT_FINAL_HURT_REDUCE,
 )
 
 GOLD_MAX_FREE_TIMES = 5
@@ -631,7 +649,7 @@ class Staff(AbstractStaff):
 
         return other_staff_id
 
-    def add_equipment_property(self):
+    def add_equipment_property_for_staff(self):
         bag = Bag(self.server_id, self.char_id)
 
         levels = []
@@ -683,6 +701,38 @@ class Staff(AbstractStaff):
                 self.defense_percent += equip_quality_addition.defense_percent
                 self.manage += equip_quality_addition.manage
                 self.manage_percent += equip_quality_addition.manage_percent
+
+    def add_equipment_property_for_unit(self):
+        if not self.__unit:
+            return
+
+        if not self.equip_special:
+            return
+
+        bag = Bag(self.server_id, self.char_id)
+        data = bag.get_slot(self.equip_special)
+
+        equip = Equipment.load_from_slot_data(data)
+
+        self.__unit.hp_percent += equip.get_property_value(PROPERTY_UNIT_HP_PERCENT)
+        self.__unit.attack_percent += equip.get_property_value(PROPERTY_UNIT_ATTACK_PERCENT)
+        self.__unit.defense_percent += equip.get_property_value(PROPERTY_UNIT_DEFENSE_PERCENT)
+        self.__unit.hit_rate += equip.get_property_value(PROPERTY_UNIT_HIT_PERCENT)
+        self.__unit.dodge_rate += equip.get_property_value(PROPERTY_UNIT_DODGE_PERCENT)
+        self.__unit.crit_rate += equip.get_property_value(PROPERTY_UNIT_CRIT_PERCENT)
+        self.__unit.toughness_rate += equip.get_property_value(PROPERTY_UNIT_TOUGHNESS_PERCENT)
+        self.__unit.crit_multiple += equip.get_property_value(PROPERTY_UNIT_CRIT_MULTIPLE)
+
+        self.__unit.hurt_addition_to_terran += equip.get_property_value(PROPERTY_UNIT_HURT_ADDIITON_TO_TERRAN)
+        self.__unit.hurt_addition_to_protoss += equip.get_property_value(PROPERTY_UNIT_HURT_ADDIITON_TO_PROTOSS)
+        self.__unit.hurt_addition_to_zerg += equip.get_property_value(PROPERTY_UNIT_HURT_ADDIITON_TO_ZERG)
+
+        self.__unit.hurt_addition_by_terran += equip.get_property_value(PROPERTY_UNIT_HURT_ADDIITON_BY_TERRAN)
+        self.__unit.hurt_addition_by_protoss += equip.get_property_value(PROPERTY_UNIT_HURT_ADDIITON_BY_PROTOSS)
+        self.__unit.hurt_addition_by_zerg += equip.get_property_value(PROPERTY_UNIT_HURT_ADDIITON_BY_ZERG)
+
+        self.__unit.final_hurt_addition += equip.get_property_value(PROPERTY_UNIT_FINAL_HURT_ADDITION)
+        self.__unit.final_hurt_reduce += equip.get_property_value(PROPERTY_UNIT_FINAL_HURT_REDUCE)
 
     def get_cost_items(self, percent=100):
         # 得到一路升级过来所消耗的物品

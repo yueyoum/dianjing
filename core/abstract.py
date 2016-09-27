@@ -316,7 +316,7 @@ class AbstractStaff(object):
         self.operation_percent += star_config.operation_percent
 
         # 装备
-        self.add_equipment_property()
+        self.add_equipment_property_for_staff()
 
         # 天赋
         for tid in self.get_active_talent_ids():
@@ -349,6 +349,8 @@ class AbstractStaff(object):
         unit = UnitManager(self.server_id, self.char_id).get_unit_object(self.__unit.id)
         self.__unit = unit.clone()
 
+        self.add_equipment_property_for_unit()
+
         for tid in self.get_active_talent_ids():
             config_talent = ConfigTalentSkill.get(tid)
             if config_talent.target <= 5:
@@ -364,8 +366,11 @@ class AbstractStaff(object):
 
         self.__unit.final_calculate()
 
-    def add_equipment_property(self):
+    def add_equipment_property_for_staff(self):
         # 加上装备属性
+        pass
+
+    def add_equipment_property_for_unit(self):
         pass
 
     def get_self_talent_skill_ids(self):
@@ -496,6 +501,7 @@ class AbstractStaff(object):
         self.__unit.crit_rate += config.unit_crit_rate
         self.__unit.toughness_rate += config.unit_toughness_rate
         self.__unit.crit_multiple += config.unit_crit_multiple
+
         self.__unit.hurt_addition_to_terran += config.unit_hurt_addition_to_terran
         self.__unit.hurt_addition_to_protoss += config.unit_hurt_addition_to_protoss
         self.__unit.hurt_addition_to_zerg += config.unit_hurt_addition_to_zerg

@@ -29,7 +29,7 @@ class OperationLog(object):
         MongoOperationLog.db(server_id).delete_many({'timestamp': {'$lte': limit.timestamp}})
 
     @classmethod
-    def get_recent_action_char_ids(cls, server_id, recent_minutes=10, keep_order=False):
+    def get_recent_action_char_ids(cls, server_id, recent_minutes=30, keep_order=False):
         limit = arrow.utcnow().replace(minutes=-recent_minutes)
 
         if keep_order:
@@ -41,7 +41,7 @@ class OperationLog(object):
 
             for doc in docs:
                 if doc['char_id'] not in char_ids:
-                    char_ids.append(doc['_id'])
+                    char_ids.append(doc['char_id'])
         else:
             char_ids = MongoOperationLog.db(server_id).distinct(
                 'char_id',

@@ -789,3 +789,4 @@ class MongoParty(BaseDocument):
     }
 
     COLLECTION = 'party'
+    INDEXES = ['talent_id',]
