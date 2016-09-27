@@ -703,10 +703,12 @@ class Staff(AbstractStaff):
                 self.manage_percent += equip_quality_addition.manage_percent
 
     def add_equipment_property_for_unit(self):
-        if not self.__unit:
+        if not self.equip_special:
             return
 
-        if not self.equip_special:
+        # NOTE !!!
+        unit = self.unit
+        if not unit:
             return
 
         bag = Bag(self.server_id, self.char_id)
@@ -714,25 +716,25 @@ class Staff(AbstractStaff):
 
         equip = Equipment.load_from_slot_data(data)
 
-        self.__unit.hp_percent += equip.get_property_value(PROPERTY_UNIT_HP_PERCENT)
-        self.__unit.attack_percent += equip.get_property_value(PROPERTY_UNIT_ATTACK_PERCENT)
-        self.__unit.defense_percent += equip.get_property_value(PROPERTY_UNIT_DEFENSE_PERCENT)
-        self.__unit.hit_rate += equip.get_property_value(PROPERTY_UNIT_HIT_PERCENT)
-        self.__unit.dodge_rate += equip.get_property_value(PROPERTY_UNIT_DODGE_PERCENT)
-        self.__unit.crit_rate += equip.get_property_value(PROPERTY_UNIT_CRIT_PERCENT)
-        self.__unit.toughness_rate += equip.get_property_value(PROPERTY_UNIT_TOUGHNESS_PERCENT)
-        self.__unit.crit_multiple += equip.get_property_value(PROPERTY_UNIT_CRIT_MULTIPLE)
+        unit.hp_percent += equip.get_property_value(PROPERTY_UNIT_HP_PERCENT)
+        unit.attack_percent += equip.get_property_value(PROPERTY_UNIT_ATTACK_PERCENT)
+        unit.defense_percent += equip.get_property_value(PROPERTY_UNIT_DEFENSE_PERCENT)
+        unit.hit_rate += equip.get_property_value(PROPERTY_UNIT_HIT_PERCENT)
+        unit.dodge_rate += equip.get_property_value(PROPERTY_UNIT_DODGE_PERCENT)
+        unit.crit_rate += equip.get_property_value(PROPERTY_UNIT_CRIT_PERCENT)
+        unit.toughness_rate += equip.get_property_value(PROPERTY_UNIT_TOUGHNESS_PERCENT)
+        unit.crit_multiple += equip.get_property_value(PROPERTY_UNIT_CRIT_MULTIPLE)
 
-        self.__unit.hurt_addition_to_terran += equip.get_property_value(PROPERTY_UNIT_HURT_ADDIITON_TO_TERRAN)
-        self.__unit.hurt_addition_to_protoss += equip.get_property_value(PROPERTY_UNIT_HURT_ADDIITON_TO_PROTOSS)
-        self.__unit.hurt_addition_to_zerg += equip.get_property_value(PROPERTY_UNIT_HURT_ADDIITON_TO_ZERG)
+        unit.hurt_addition_to_terran += equip.get_property_value(PROPERTY_UNIT_HURT_ADDIITON_TO_TERRAN)
+        unit.hurt_addition_to_protoss += equip.get_property_value(PROPERTY_UNIT_HURT_ADDIITON_TO_PROTOSS)
+        unit.hurt_addition_to_zerg += equip.get_property_value(PROPERTY_UNIT_HURT_ADDIITON_TO_ZERG)
 
-        self.__unit.hurt_addition_by_terran += equip.get_property_value(PROPERTY_UNIT_HURT_ADDIITON_BY_TERRAN)
-        self.__unit.hurt_addition_by_protoss += equip.get_property_value(PROPERTY_UNIT_HURT_ADDIITON_BY_PROTOSS)
-        self.__unit.hurt_addition_by_zerg += equip.get_property_value(PROPERTY_UNIT_HURT_ADDIITON_BY_ZERG)
+        unit.hurt_addition_by_terran += equip.get_property_value(PROPERTY_UNIT_HURT_ADDIITON_BY_TERRAN)
+        unit.hurt_addition_by_protoss += equip.get_property_value(PROPERTY_UNIT_HURT_ADDIITON_BY_PROTOSS)
+        unit.hurt_addition_by_zerg += equip.get_property_value(PROPERTY_UNIT_HURT_ADDIITON_BY_ZERG)
 
-        self.__unit.final_hurt_addition += equip.get_property_value(PROPERTY_UNIT_FINAL_HURT_ADDITION)
-        self.__unit.final_hurt_reduce += equip.get_property_value(PROPERTY_UNIT_FINAL_HURT_REDUCE)
+        unit.final_hurt_addition += equip.get_property_value(PROPERTY_UNIT_FINAL_HURT_ADDITION)
+        unit.final_hurt_reduce += equip.get_property_value(PROPERTY_UNIT_FINAL_HURT_REDUCE)
 
     def get_cost_items(self, percent=100):
         # 得到一路升级过来所消耗的物品
