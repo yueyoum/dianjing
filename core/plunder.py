@@ -30,7 +30,7 @@ from core.staff import StaffManger, Staff
 from core.unit import UnitManager
 from core.cooldown import PlunderSearchCD
 from core.match import ClubMatch
-from core.value_log import ValueLogPlunderRevengeTimes, ValueLogPlunderTimes, ValueLogPlunderBuyTimes
+from core.value_log import ValueLogPlunderRevengeTimes, ValueLogPlunderTimes, ValueLogPlunderBuyTimes, ValueLogSpecialEquipmentGenerateTimes
 from core.resource import ResourceClassification, STATION_EXP_ID, money_text_to_item_id
 from core.bag import Bag, Equipment, PROPERTY_TO_NAME_MAP, SPECIAL_EQUIPMENT_BASE_PROPERTY
 from core.vip import VIP
@@ -673,12 +673,10 @@ class Plunder(object):
                     self.doc['plunder_remained_times'] -= 1
                     updater['plunder_remained_times'] = self.doc['plunder_remained_times']
 
-                ValueLogPlunderTimes(self.server_id, self.char_id).record()
             else:
                 if not self.get_revenge_remained_times():
                     raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_REVENGE_NO_TIMES"))
 
-                ValueLogPlunderRevengeTimes(self.server_id, self.char_id).record()
                 self.send_revenge_notify()
 
         if updater:
@@ -778,11 +776,13 @@ class Plunder(object):
             plunder_got.extend(_got)
             plunder_got.extend(config.get_extra_income())
 
+            ValueLogPlunderTimes(self.server_id, self.char_id).record()
         else:
             revenge_index = self.find_revenge_target_index_by_target_id(target_id)
             _, real_id = self.doc['revenge_list'].pop(revenge_index)
             updater['revenge_list'] = self.doc['revenge_list']
 
+            ValueLogPlunderRevengeTimes(self.server_id, self.char_id).record()
             self.send_revenge_notify()
 
         MongoPlunder.db(self.server_id).update_one(
@@ -1123,6 +1123,7 @@ class SpecialEquipmentGenerator(object):
             }}
         )
 
+        ValueLogSpecialEquipmentGenerateTimes(self.server_id, self.char_id).record()
         self.send_notify()
 
         return equip_obj

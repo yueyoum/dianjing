@@ -14,7 +14,7 @@ from core.mongo import MongoParty
 from core.union import Union
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.mail import MailManager
-from core.value_log import ValueLogPartyCreateTimes, ValueLogPartyJoinTimes
+from core.value_log import ValueLogPartyCreateTimes, ValueLogPartyJoinTimes, ValueLogPartyEngageTimes
 
 from utils.api import APIReturn
 from utils.message import MessagePipe
@@ -107,8 +107,10 @@ class Party(object):
         ret = APIReturn(self.char_id)
 
         ValueLogPartyCreateTimes(self.server_id, self.char_id).record()
+        ValueLogPartyEngageTimes(self.server_id, self.char_id).record()
         for mid in member_ids:
             ValueLogPartyJoinTimes(self.server_id, mid).record()
+            ValueLogPartyEngageTimes(self.server_id, self.char_id).record()
 
         return ret.normalize()
 

@@ -327,6 +327,11 @@ class ValueLogPlunderRevengeTimes(ValueLog):
     KEY = 'plunder_revenge_times'
     __slots__ = []
 
+# 打造特殊装备
+class ValueLogSpecialEquipmentGenerateTimes(ValueLog):
+    KEY = 'special_equipment_generate'
+    __slots__ = []
+
 # 创建宴会次数
 class ValueLogPartyCreateTimes(ValueLog):
     KEY = 'party_create_times'
@@ -336,4 +341,8 @@ class ValueLogPartyCreateTimes(ValueLog):
 class ValueLogPartyJoinTimes(ValueLog):
     KEY = 'party_join_times'
     __slots__ = []
-    
+
+# 参与宴会次数, 不管创建还是加入
+class ValueLogPartyEngageTimes(ValueLog):
+    KEY = 'party_engage_times'
+    __slots__ = []
