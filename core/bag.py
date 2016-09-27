@@ -140,9 +140,11 @@ class Equipment(object):
         'staff_operation', 'staff_operation_percent',
 
         'unit_hp_percent', 'unit_attack_percent',
-        'unit_defense_percent', 'unit_hit_percent',
-        'unit_dodge_percent', 'unit_crit_percent',
-        'unit_toughness_percent', 'unit_crit_multiple',
+        'unit_defense_percent',
+
+        'unit_hit_rate',
+        'unit_dodge_rate', 'unit_crit_rate',
+        'unit_toughness_rate', 'unit_crit_multiple',
 
         'unit_hurt_addition_to_terran',
         'unit_hurt_addition_to_protoss',
