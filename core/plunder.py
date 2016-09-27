@@ -649,9 +649,6 @@ class Plunder(object):
         if tp not in [PLUNDER_TYPE_PLUNDER, PLUNDER_TYPE_REVENGE]:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-        if formation_slots:
-            raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_MATCH_CANNOT_SET_FORMATION"))
-
         for i in [0, 1, 2]:
             if self.doc['matching']['result'][i] == 0:
                 way = i + 1
