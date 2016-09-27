@@ -179,10 +179,10 @@ class Equipment(object):
         self.unit_hp_percent = 0
         self.unit_attack_percent = 0
         self.unit_defense_percent = 0
-        self.unit_hit_percent = 0
-        self.unit_dodge_percent = 0
-        self.unit_crit_percent = 0
-        self.unit_toughness_percent = 0
+        self.unit_hit_rate = 0
+        self.unit_dodge_rate = 0
+        self.unit_crit_rate = 0
+        self.unit_toughness_rate = 0
         self.unit_crit_multiple = 0
 
         self.unit_hurt_addition_to_terran = 0
