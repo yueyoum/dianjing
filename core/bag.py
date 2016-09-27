@@ -393,7 +393,7 @@ class Equipment(object):
 
             for i in range(0, self.level):
                 for _id, _amount in ConfigEquipmentSpecialLevel.get(i).items:
-                    _amount = int(_amount * prob)
+                    _amount = int(_amount * self.growing / 75 * prob)
                     if _amount:
                         if _id in items:
                             items[_id] += _amount
