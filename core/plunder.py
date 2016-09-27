@@ -470,6 +470,13 @@ class Plunder(object):
         club.formation_staffs = way.formation_staffs
         return club
 
+    def find_way_id_by_staff_id(self, staff_id):
+        for i in [1, 2, 3]:
+            if self.get_way_object(i).is_staff_in_formation(staff_id):
+                return i
+
+        return 0
+
     @check_club_level(silence=False)
     @check_plunder_in_process
     def set_staff(self, way_id, slot_id, staff_id):

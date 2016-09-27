@@ -792,10 +792,10 @@ class Bag(object):
             self.doc['slots'][slot_id]['level'] = 0
             self.send_notify(slot_ids=[slot_id])
 
-            results = equip.get_destroy_back_items(1)
+            results = equip.get_destroy_back_items(is_normal_destroy=False)
         else:
             self.remove_by_slot_id(slot_id, 1)
-            results = equip.get_destroy_back_items(0.7)
+            results = equip.get_destroy_back_items(is_normal_destroy=True)
             if config.renown:
                 results.append((money_text_to_item_id('renown'), config.renown))
 
