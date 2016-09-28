@@ -937,10 +937,13 @@ class Plunder(object):
 
     @check_club_level(silence=True)
     def send_plunder_times_notify(self):
+        ti = PlunderTimesBuyInfo(self.server_id, self.char_id)
+
         notify = PlunderTimesNotify()
         notify.max_times = 10
         notify.remained_times = self.doc['plunder_remained_times']
-        notify.buy_cost = PlunderTimesBuyInfo(self.server_id, self.char_id).buy_cost
+        notify.buy_cost = ti.buy_cost
+        notify.remained_buy_times = ti.remained_buy_times
         notify.next_recover_at = get_plunder_times_next_recover_at()
 
         MessagePipe(self.char_id).put(msg=notify)
