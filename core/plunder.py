@@ -507,9 +507,19 @@ class Plunder(object):
         w.set_unit(slot_id, unit_id, staff_calculate=False)
         self.send_formation_notify()
 
+    def get_search_cd(self):
+        return PlunderSearchCD(self.server_id, self.char_id).get_cd_seconds()
+
+    def set_search_cd(self):
+        cd = GlobalConfig.value("PLUNDER_SEARCH_CD")
+        PlunderSearchCD(self.server_id, self.char_id).set(cd)
+
     @check_club_level(silence=False)
     @check_plunder_in_process
     def search(self, replace_search_index=None, send_notify=True):
+        if self.get_search_cd():
+            raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_SEARCH_IN_CD"))
+
         def _query_real(_level_low, _level_high):
             _skip_char_ids = [_s['id'] for _s in self.doc['search']]
             _skip_char_ids.append(self.char_id)
@@ -572,6 +582,8 @@ class Plunder(object):
             {'_id': self.char_id},
             {'$set': updater}
         )
+
+        self.set_search_cd()
 
         if send_notify:
             self.send_search_notify()
@@ -906,7 +918,7 @@ class Plunder(object):
                 pass
 
         notify = PlunderSearchNotify()
-        notify.cd = PlunderSearchCD(self.server_id, self.char_id).get_cd_seconds()
+        notify.cd = self.get_search_cd()
 
         for s in self.doc['search']:
             notify_target = notify.target.add()
@@ -1052,7 +1064,7 @@ class SpecialEquipmentGenerator(object):
         if remained:
             minutes += 1
 
-        diamond = minutes * GlobalConfig.value("EQUIPMENT_SPECIAL_SPEEDUP_PARAM")
+        diamond = minutes * GlobalConfig.value("EQUIPMENT_SPECIAL_SPEEDUP_PARAM") * 0.1
         cost = [(money_text_to_item_id('diamond'), diamond)]
 
         rc = ResourceClassification.classify(cost)
