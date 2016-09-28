@@ -1065,6 +1065,7 @@ class SpecialEquipmentGenerator(object):
             minutes += 1
 
         diamond = minutes * GlobalConfig.value("EQUIPMENT_SPECIAL_SPEEDUP_PARAM") * 0.1
+        diamond = int(diamond)
         cost = [(money_text_to_item_id('diamond'), diamond)]
 
         rc = ResourceClassification.classify(cost)
