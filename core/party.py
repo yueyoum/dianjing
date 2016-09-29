@@ -71,14 +71,15 @@ class Party(object):
         ]}
 
         docs = MongoParty.db(server_id).find(condition)
-        for doc in docs:
-            # 天赋过期,删除加成
-            Club(server_id, doc['_id']).force_load_staffs(send_notify=True)
 
         MongoParty.db(server_id).update_many(
             {},
             {'$set': {'talent_id': 0}}
         )
+
+        for doc in docs:
+            # 天赋过期,删除加成
+            Club(server_id, doc['_id']).force_load_staffs(send_notify=True)
 
 
     def get_talent_effects(self):

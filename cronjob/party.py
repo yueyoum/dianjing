@@ -16,7 +16,7 @@ from core.party import Party
 
 from cronjob.log import Logger
 
-@uwsgidecorators.cron(0, 12, -1, -1, -1, target="spooler")
+@uwsgidecorators.cron(59, 11, -1, -1, -1, target="spooler")
 def party_clean_talent_id(*args):
     logger = Logger("party_clean_talent_id")
     logger.write("Start")
@@ -31,4 +31,3 @@ def party_clean_talent_id(*args):
         logger.write("Done")
     finally:
         logger.close()
-
