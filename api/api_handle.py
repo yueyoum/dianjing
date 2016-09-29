@@ -1,4 +1,4 @@
-# Auto generate at 2016-09-29T15:04:20.402185.
+# Auto generate at 2016-09-29T18:05:27.406533.
 # By proto-ext
 # DO NOT EDIT
 
@@ -156,6 +156,21 @@ class API(_Package):
                 return f.get_content()
         
     class Session(_Package):
+        class PartyInfo(_Message):
+            __slots__ = ["max_buy_times", "remained_create_times", "remained_join_times", "talent_id", ]
+            FULL_NAME = "API.Session.PartyInfo"
+            
+            def __init__(self):
+                self.max_buy_times = None
+                self.remained_create_times = None
+                self.remained_join_times = None
+                self.talent_id = None
+                
+            def __str__(self):
+                f = _Formatter()
+                f.format_message(self)
+                return f.get_content()
+        
         class Parse(_Message):
             __slots__ = ["session", ]
             FULL_NAME = "API.Session.Parse"
@@ -180,21 +195,6 @@ class API(_Package):
                 self.flag = None
                 self.name = None
                 self.partyinfo = None
-                
-            def __str__(self):
-                f = _Formatter()
-                f.format_message(self)
-                return f.get_content()
-        
-        class PartyInfo(_Message):
-            __slots__ = ["max_buy_times", "remained_create_times", "remained_join_times", "talent_id", ]
-            FULL_NAME = "API.Session.PartyInfo"
-            
-            def __init__(self):
-                self.max_buy_times = None
-                self.remained_create_times = None
-                self.remained_join_times = None
-                self.talent_id = None
                 
             def __str__(self):
                 f = _Formatter()
@@ -487,6 +487,9 @@ def _encode_float(value):
 
 
 def _encode_binary(value):
+    if isinstance(value, unicode):
+        value = value.encode('utf-8')
+
     length = len(value)
     return [
         int_1_byte.pack(109),

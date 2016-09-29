@@ -26,6 +26,7 @@ def parse_session(request):
     print msg
 
     ret = api_handle.API.Session.ParseDone()
+    ret.ret = 0
 
     try:
         session = GameSession.loads(msg.session)

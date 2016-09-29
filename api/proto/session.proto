@@ -4,6 +4,13 @@ package API.Session;
 
 import "common.proto";
 
+message PartyInfo {
+    int32 max_buy_times = 1;
+    int32 remained_create_times = 2;
+    int32 remained_join_times = 3;
+    int32 talent_id = 4;
+}
+
 message Parse {
     bytes session = 1;
 }
@@ -20,9 +27,3 @@ message ParseDone {
     PartyInfo partyinfo = 7;
 }
 
-message PartyInfo {
-    int32 max_buy_times = 1;
-    int32 remained_create_times = 2;
-    int32 remained_join_times = 3;
-    int32 talent_id = 4;
-}

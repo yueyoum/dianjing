@@ -113,6 +113,7 @@ class Party(object):
 
     def create(self, party_level):
         ret = api_handle.API.Party.CreateDone()
+        ret.ret = 0
 
         config = ConfigPartyLevel.get(party_level)
         if not config:
@@ -133,6 +134,7 @@ class Party(object):
     def start(self, party_level, member_ids):
         # member_ids 只是组员， 不包括创建者自己
         ret = api_handle.API.Party.StartDone()
+        ret.ret = 0
 
         config = ConfigPartyLevel.get(party_level)
         try:
@@ -154,6 +156,7 @@ class Party(object):
 
     def buy_item(self, party_level, buy_id, member_ids):
         ret = api_handle.API.Party.BuyDone()
+        ret.ret = 0
 
         config = ConfigPartyLevel.get(party_level)
         if buy_id not in [config.buy_one, config.buy_two]:
@@ -188,6 +191,7 @@ class Party(object):
 
     def end(self, party_level, member_ids):
         ret = api_handle.API.Party.EndDone()
+        ret.ret = 0
 
         config = ConfigPartyLevel.get(party_level)
         talent_id = random.choice(config.talent_skills)
