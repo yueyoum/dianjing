@@ -248,13 +248,13 @@ class Equipment(object):
                     setattr(self, k, v)
 
             self.staff_attack = config.staff_attack + \
-                                config.staff_attack * self.level * math.pow(self.growing / 75, 1.25)
+                                int(config.staff_attack * self.level * math.pow(self.growing / 75.0, 1.25))
 
             self.staff_defense = config.staff_defense + \
-                                 config.staff_defense * self.level * math.pow(self.growing / 75, 1.25)
+                                 int(config.staff_defense * self.level * math.pow(self.growing / 75.0, 1.25))
 
             self.staff_manage = config.staff_manage + \
-                                config.staff_manage * self.level * math.pow(self.growing / 75, 1.25)
+                                int(config.staff_manage * self.level * math.pow(self.growing / 75.0, 1.25))
 
             self.staff_attack = int(round(self.staff_attack))
             self.staff_defense = int(round(self.staff_defense))
