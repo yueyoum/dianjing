@@ -48,8 +48,12 @@ def parse_session(request):
 
     party_info = Party(session.server_id, session.char_id).get_info()
 
-    ret.partyinfo.max_buy_times = party_info['max_buy_times']
-    ret.partyinfo.remained_create_times = party_info['remained_create_times']
-    ret.partyinfo.remained_join_times = party_info['remained_join_times']
-    ret.partyinfo.talent_id = party_info['talent_id']
+    pi = api_handle.API.Session.PartyInfo()
+
+    pi.max_buy_times = party_info['max_buy_times']
+    pi.remained_create_times = party_info['remained_create_times']
+    pi.remained_join_times = party_info['remained_join_times']
+    pi.talent_id = party_info['talent_id']
+
+    ret.partyinfo = pi
     return ret
