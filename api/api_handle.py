@@ -1,4 +1,4 @@
-# Auto generate at 2016-09-29T18:05:27.406533.
+# Auto generate at 2016-09-29T18:39:05.086818.
 # By proto-ext
 # DO NOT EDIT
 
@@ -344,10 +344,10 @@ class _Decoder(object):
             self.index += 2
             value = []
             for i in range(length):
-                value.append(struct.unpack('>c', self.message[self.index])[0])
+                value.append(int_1_byte.unpack(self.message[self.index])[0])
                 self.index += 1
 
-            return ''.join(value)
+            return value
 
         if tag == 109:
             length = int_4_byte.unpack(self.message[self.index: self.index + 4])[0]
