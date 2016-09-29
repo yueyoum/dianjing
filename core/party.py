@@ -17,14 +17,15 @@ from core.resource import ResourceClassification, money_text_to_item_id
 from core.mail import MailManager
 from core.value_log import ValueLogPartyCreateTimes, ValueLogPartyJoinTimes, ValueLogPartyEngageTimes
 
-from utils.api import APIReturn
 from utils.message import MessagePipe
 from utils.functional import get_start_time_of_today
 from utils.operation_log import OperationLog
 
-from config import ConfigErrorMessage, ConfigPartyLevel, ConfigPartyBuyItem, ConfigItemNew
+from config import GlobalConfig, ConfigErrorMessage, ConfigPartyLevel, ConfigPartyBuyItem, ConfigItemNew
 
 from protomsg.party_pb2 import PartyNotify
+
+from api import api_handle
 
 # 这部分功能都是 socket 发来的调用
 
@@ -81,7 +82,6 @@ class Party(object):
             # 天赋过期,删除加成
             Club(server_id, doc['_id']).force_load_staffs(send_notify=True)
 
-
     def get_talent_effects(self):
         if self.doc['talent_id']:
             return [self.doc['talent_id']]
@@ -105,34 +105,44 @@ class Party(object):
 
     def get_info(self):
         return {
+            'max_buy_times': GlobalConfig.value("PARTY_BUY_MAX_TIMES"),
             'remained_create_times': self.get_remained_create_times(),
             'remained_join_times': self.get_remained_join_times(),
             'talent_id': self.doc['talent_id'],
         }
 
     def create(self, party_level):
-        ret = APIReturn(self.char_id)
+        ret = api_handle.API.Party.CreateDone()
 
         config = ConfigPartyLevel.get(party_level)
         if not config:
-            ret.code = ConfigErrorMessage.get_error_id("INVALID_OPERATE")
-            return ret.normalize()
+            ret.ret = ConfigErrorMessage.get_error_id("INVALID_OPERATE")
+            return ret
 
         try:
             Union(self.server_id, self.char_id).check_level(config.need_union_level)
             cost = [(money_text_to_item_id('diamond'), config.need_diamond), ]
             rc = ResourceClassification.classify(cost)
             rc.check_exist(self.server_id, self.char_id)
+        except GameException as e:
+            ret.ret = e.error_id
+            return ret
+
+        return ret
+
+    def start(self, party_level, member_ids):
+        # member_ids 只是组员， 不包括创建者自己
+        ret = api_handle.API.Party.StartDone()
+
+        config = ConfigPartyLevel.get(party_level)
+        try:
+            cost = [(money_text_to_item_id('diamond'), config.need_diamond), ]
+            rc = ResourceClassification.classify(cost)
+            rc.check_exist(self.server_id, self.char_id)
             rc.remove(self.server_id, self.char_id)
         except GameException as e:
-            ret.code = e.error_id
-            return ret.normalize()
-
-        return ret.normalize()
-
-    def start(self, member_ids):
-        # member_ids 只是组员， 不包括创建者自己
-        ret = APIReturn(self.char_id)
+            ret.ret = e.error_id
+            return ret
 
         ValueLogPartyCreateTimes(self.server_id, self.char_id).record()
         ValueLogPartyEngageTimes(self.server_id, self.char_id).record()
@@ -140,15 +150,15 @@ class Party(object):
             ValueLogPartyJoinTimes(self.server_id, mid).record()
             ValueLogPartyEngageTimes(self.server_id, self.char_id).record()
 
-        return ret.normalize()
+        return ret
 
     def buy_item(self, party_level, buy_id, member_ids):
-        ret = APIReturn(self.char_id)
+        ret = api_handle.API.Party.BuyDone()
 
         config = ConfigPartyLevel.get(party_level)
         if buy_id not in [config.buy_one, config.buy_two]:
-            ret.code = ConfigErrorMessage.get_error_id("PARTY_BUY_ITEM_NOT_EXIST")
-            return ret.normalize()
+            ret.ret = ConfigErrorMessage.get_error_id("PARTY_BUY_ITEM_NOT_EXIST")
+            return ret
 
         config_buy = ConfigPartyBuyItem.get(buy_id)
 
@@ -158,8 +168,8 @@ class Party(object):
             rc.remove(self.server_id, self.char_id)
         except GameException as e:
 
-            ret.code = e.error_id
-            return ret.normalize()
+            ret.ret = e.error_id
+            return ret
 
         # 把购买的物品加给所有人
         item_id, item_amount = config_buy.buy_result()
@@ -171,14 +181,13 @@ class Party(object):
         for mid in member_ids:
             rc.add(self.server_id, mid)
 
-            ret.add_other_char(mid)
-
-        ret.set_data('buy_name', config_buy.name)
-        ret.set_data('item_name', ConfigItemNew.get(item_id).name)
-        return ret.normalize()
+        ret.buy_name = config_buy.name
+        ret.item_name = ConfigItemNew.get(item_id).name
+        ret.item_amount = item_amount
+        return ret
 
     def end(self, party_level, member_ids):
-        ret = APIReturn(self.char_id)
+        ret = api_handle.API.Party.EndDone()
 
         config = ConfigPartyLevel.get(party_level)
         talent_id = random.choice(config.talent_skills)
@@ -204,11 +213,8 @@ class Party(object):
             m = MailManager(self.server_id, c)
             m.add(config.mail_title, config.mail_content, attachment=attachment)
 
-        for c in member_ids:
-            ret.add_other_char(c)
-
-        ret.set_data('talent_id', talent_id)
-        return ret.normalize()
+        ret.talent_id = talent_id
+        return ret
 
     def send_notify(self):
         notify = PartyNotify()

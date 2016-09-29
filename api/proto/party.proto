@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package API.Party;
+
+import "common.proto";
+
+message Create {
+    int32 server_id = 1;
+    int32 char_id = 2;
+    int32 party_level = 3;
+}
+
+message CreateDone {
+    int32 ret = 1;
+    repeated API.Common.ExtraReturn extras = 2;
+}
+
+message Start {
+    int32 server_id = 1;
+    int32 char_id = 2;
+    int32 party_level = 3;
+    repeated int32 members = 4;
+}
+
+message StartDone {
+    int32 ret = 1;
+    repeated API.Common.ExtraReturn extras = 2;
+}
+
+message Buy {
+    int32 server_id = 1;
+    int32 char_id = 2;
+    int32 party_level = 3;
+    int32 buy_id = 4;
+    repeated int32 members = 5;
+}
+
+message BuyDone {
+    int32 ret = 1;
+    repeated API.Common.ExtraReturn extras = 2;
+
+    string buy_name = 3;
+    string item_name = 4;
+    int32 item_amount = 5;
+}
+
+message End {
+    int32 server_id = 1;
+    int32 char_id = 2;
+    int32 party_level = 3;
+    repeated int32 members = 4;
+}
+
+message EndDone {
+    int32 ret = 1;
+    repeated API.Common.ExtraReturn extras = 2;
+
+    int32 talent_id = 3;
+}
+

@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package API.Session;
+
+import "common.proto";
+
+message Parse {
+    bytes session = 1;
+}
+
+message ParseDone {
+    int32 ret = 1;
+    repeated API.Common.ExtraReturn extras = 2;
+
+    int32 server_id = 3;
+    int32 char_id = 4;
+    int32 flag = 5;
+    string name = 6;
+
+    PartyInfo partyinfo = 7;
+}
+
+message PartyInfo {
+    int32 max_buy_times = 1;
+    int32 remained_create_times = 2;
+    int32 remained_join_times = 3;
+    int32 talent_id = 4;
+}
