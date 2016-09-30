@@ -141,6 +141,12 @@ class IUnion(object):
         self.member_doc = member_doc
         self.union_doc = union_doc
 
+    def get_joined_union_id(self):
+        raise NotImplementedError()
+
+    def get_joined_union_owner_id(self):
+        raise NotImplementedError()
+
     def create(self, name):
         raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
@@ -184,6 +190,12 @@ class IUnion(object):
 # 没有加入公会
 class UnionNotJoined(IUnion):
     __slots__ = []
+
+    def get_joined_union_id(self):
+        return ''
+
+    def get_joined_union_owner_id(self):
+        return 0
 
     def create(self, name):
         cost = [(money_text_to_item_id('diamond'), GlobalConfig.value("UNION_CREATE_COST"))]
@@ -269,6 +281,12 @@ class UnionNotJoined(IUnion):
 
 class UnionJoined(IUnion):
     __slots__ = []
+
+    def get_joined_union_id(self):
+        return self.member_doc['joined']
+
+    def get_joined_union_owner_id(self):
+        return self.union_doc['owner']
 
     def create(self, name):
         raise GameException(ConfigErrorMessage.get_error_id("UNION_CANNOT_CREATE_ALREADY_IN"))

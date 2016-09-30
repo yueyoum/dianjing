@@ -126,14 +126,33 @@ class Party(object):
             ret.ret = ConfigErrorMessage.get_error_id("INVALID_OPERATE")
             return ret
 
+        union = Union(self.server_id, self.char_id)
+        union_id = union.get_joined_union_id()
+        if not union_id:
+            ret.ret = ConfigErrorMessage.get_error_id("PARTY_CANNOT_CREATE_NO_UNION")
+
         try:
-            Union(self.server_id, self.char_id).check_level(config.need_union_level)
+            union.check_level(config.need_union_level)
             cost = [(money_text_to_item_id('diamond'), config.need_diamond), ]
             rc = ResourceClassification.classify(cost)
             rc.check_exist(self.server_id, self.char_id)
         except GameException as e:
             ret.ret = e.error_id
             return ret
+
+        ret.union_id = union_id
+        return ret
+
+    def join(self, owner_id):
+        ret = api_handle.API.Party.JoinDone()
+        ret.ret = 0
+
+        union = Union(self.server_id, self.char_id)
+        if not union.get_joined_union_id():
+            ret.ret = ConfigErrorMessage.get_error_id("PARTY_CANNOT_JOIN_NO_UNION")
+
+        if union.get_joined_union_owner_id() != owner_id:
+            ret.ret = ConfigErrorMessage.get_error_id("PARTY_CANNOT_JOIN_NOT_SAME_PARTY")
 
         return ret
 

@@ -1,4 +1,4 @@
-# Auto generate at 2016-09-29T18:39:05.086818.
+# Auto generate at 2016-09-30T11:46:57.843232.
 # By proto-ext
 # DO NOT EDIT
 
@@ -54,8 +54,36 @@ class API(_Package):
                 return f.get_content()
         
         class CreateDone(_Message):
-            __slots__ = ["ret", "extras", ]
+            __slots__ = ["ret", "extras", "union_id", ]
             FULL_NAME = "API.Party.CreateDone"
+            
+            def __init__(self):
+                self.ret = None
+                self.extras = None
+                self.union_id = None
+                
+            def __str__(self):
+                f = _Formatter()
+                f.format_message(self)
+                return f.get_content()
+        
+        class Join(_Message):
+            __slots__ = ["server_id", "char_id", "owner_id", ]
+            FULL_NAME = "API.Party.Join"
+            
+            def __init__(self):
+                self.server_id = None
+                self.char_id = None
+                self.owner_id = None
+                
+            def __str__(self):
+                f = _Formatter()
+                f.format_message(self)
+                return f.get_content()
+        
+        class JoinDone(_Message):
+            __slots__ = ["ret", "extras", ]
+            FULL_NAME = "API.Party.JoinDone"
             
             def __init__(self):
                 self.ret = None
@@ -195,6 +223,35 @@ class API(_Package):
                 self.flag = None
                 self.name = None
                 self.partyinfo = None
+                
+            def __str__(self):
+                f = _Formatter()
+                f.format_message(self)
+                return f.get_content()
+        
+    class Union(_Package):
+        class GetInfo(_Message):
+            __slots__ = ["server_id", "char_id", ]
+            FULL_NAME = "API.Union.GetInfo"
+            
+            def __init__(self):
+                self.server_id = None
+                self.char_id = None
+                
+            def __str__(self):
+                f = _Formatter()
+                f.format_message(self)
+                return f.get_content()
+        
+        class GetInfoDone(_Message):
+            __slots__ = ["ret", "extras", "union_id", "owner_id", ]
+            FULL_NAME = "API.Union.GetInfoDone"
+            
+            def __init__(self):
+                self.ret = None
+                self.extras = None
+                self.union_id = None
+                self.owner_id = None
                 
             def __str__(self):
                 f = _Formatter()

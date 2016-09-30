@@ -24,6 +24,17 @@ def create(request):
     ret.extras = get_extra_msgs([msg.char_id])
     return ret
 
+@ext_return
+def join(request):
+    msg = api_handle.decode(request.body)
+    """:type: api_handle.API.Party.Join"""
+
+    print msg
+
+    p = Party(msg.server_id, msg.char_id)
+    ret = p.join(msg.owner_id)
+    ret.extras = get_extra_msgs([msg.char_id])
+    return ret
 
 @ext_return
 def start(request):

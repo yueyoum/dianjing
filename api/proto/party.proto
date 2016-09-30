@@ -13,6 +13,18 @@ message Create {
 message CreateDone {
     int32 ret = 1;
     repeated API.Common.ExtraReturn extras = 2;
+    string union_id = 3;
+}
+
+message Join {
+    int32 server_id = 1;
+    int32 char_id = 2;
+    int32 owner_id = 3;
+}
+
+message JoinDone {
+    int32 ret = 1;
+    repeated API.Common.ExtraReturn extras = 2;
 }
 
 message Start {
