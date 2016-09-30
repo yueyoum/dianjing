@@ -32,8 +32,8 @@ from api import api_handle
 
 # 这部分功能都是 socket 发来的调用
 
-MAX_CREATE_TIMES = 100
-MAX_JOIN_TIMES = 100
+MAX_CREATE_TIMES = 1
+MAX_JOIN_TIMES = 1
 
 
 def get_party_open_time_range(h1, h2):
@@ -247,7 +247,7 @@ class Party(object):
 
     def send_notify(self):
         notify = PartyNotify()
-        start_at, close_at = get_party_open_time_range(1, 23)
+        start_at, close_at = get_party_open_time_range(12, 13)
 
         notify_range = notify.time_range.add()
 
