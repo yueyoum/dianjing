@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^union/info/$', views_api.union.get_info),
 
     url(r'^party/create/$', views_api.party.create),
+    url(r'^party/join/$', views_api.party.join),
     url(r'^party/start/$', views_api.party.start),
     url(r'^party/buy/$', views_api.party.buy),
     url(r'^party/end/$', views_api.party.end),

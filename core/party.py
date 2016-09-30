@@ -143,7 +143,7 @@ class Party(object):
         ret.union_id = union_id
         return ret
 
-    def join(self, owner_id):
+    def join(self, party_owner_id):
         ret = api_handle.API.Party.JoinDone()
         ret.ret = 0
 
@@ -151,7 +151,7 @@ class Party(object):
         if not union.get_joined_union_id():
             ret.ret = ConfigErrorMessage.get_error_id("PARTY_CANNOT_JOIN_NO_UNION")
 
-        if union.get_joined_union_owner_id() != owner_id:
+        if union.get_joined_union_owner_id() != Union(self.server_id, party_owner_id).get_joined_union_owner_id():
             ret.ret = ConfigErrorMessage.get_error_id("PARTY_CANNOT_JOIN_NOT_SAME_PARTY")
 
         return ret
