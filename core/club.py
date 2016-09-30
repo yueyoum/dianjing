@@ -21,6 +21,7 @@ from core.statistics import FinanceStatistics
 from dianjing.exception import GameException
 
 from utils.message import MessagePipe
+from utils.stdvalue import MAX_INT
 
 from config import (
     ConfigClubLevel,
@@ -263,6 +264,19 @@ class Club(AbstractClub):
         self.crystal += crystal
         self.gas += gas
         self.renown += renown
+
+        if self.gold > MAX_INT:
+            self.gold = MAX_INT
+        if self.diamond > MAX_INT:
+            self.diamond = MAX_INT
+        if self.exp > MAX_INT:
+            self.exp = MAX_INT
+        if self.crystal > MAX_INT:
+            self.crystal = MAX_INT
+        if self.gas > MAX_INT:
+            self.gas = MAX_INT
+        if self.renown > MAX_INT:
+            self.renown = MAX_INT
 
         if self.gold < 0:
             raise GameException(ConfigErrorMessage.get_error_id("GOLD_NOT_ENOUGH"))

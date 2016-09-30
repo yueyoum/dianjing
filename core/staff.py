@@ -49,6 +49,7 @@ from config import (
 
 from utils.functional import make_string_id
 from utils.message import MessagePipe
+from utils.stdvalue import MAX_INT
 
 from protomsg.bag_pb2 import EQUIP_DECORATION, EQUIP_KEYBOARD, EQUIP_MONITOR, EQUIP_MOUSE, EQUIP_SPECIAL
 from protomsg.staff_pb2 import StaffRecruitNotify, StaffNotify, StaffRemoveNotify
@@ -797,10 +798,19 @@ class StaffManger(object):
             MongoStaff.db(server_id).insert_one(doc)
 
     def add_exp_pool(self, exp):
+        doc = MongoStaff.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'exp_pool': 1}
+        )
+
+        new_exp = doc.get('exp_pool', 0) + exp
+        if new_exp > MAX_INT:
+            new_exp = MAX_INT
+
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$inc': {
-                'exp_pool': exp
+            {'$set': {
+                'exp_pool': new_exp
             }}
         )
 
