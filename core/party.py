@@ -7,6 +7,9 @@ Description:
 
 """
 import random
+import arrow
+
+from django.conf import settings
 
 from dianjing.exception import GameException
 
@@ -42,11 +45,14 @@ def get_party_open_time_range(h1, h2):
     return time1, time2
 
 
-def get_time_of_tomorrow(h):
-    today = get_start_time_of_today()
-    today = today.replace(days=1)
-    today = today.replace(hour=h)
-    return today
+def get_next_hour_time(h):
+    now = arrow.utcnow().to(settings.TIME_ZONE)
+    this_time = arrow.Arrow(year=now.year, month=now.month, day=now.day, hour=h, tzinfo=now.tzinfo)
+
+    if now.hour >= h:
+        this_time.replace(days=1)
+
+    return this_time
 
 
 class Party(object):
@@ -230,7 +236,7 @@ class Party(object):
         notify_range.close_at = close_at.timestamp
 
         notify.talent_id = self.doc['talent_id']
-        notify.talent_end_at = get_time_of_tomorrow(12).timestamp
+        notify.talent_end_at = get_next_hour_time(12).timestamp
         notify.remained_create_times = self.get_remained_create_times()
         notify.remained_join_times = self.get_remained_join_times()
 
