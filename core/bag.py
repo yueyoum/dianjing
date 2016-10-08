@@ -671,7 +671,7 @@ class Bag(object):
         for slot_id, amount in slot_amount:
             self.remove_by_slot_id(slot_id, amount)
 
-    def item_use(self, slot_id, amount):
+    def item_use(self, slot_id, amount, index=None):
         # 道具使用
         """
 
@@ -688,14 +688,19 @@ class Bag(object):
             raise GameException(ConfigErrorMessage.get_error_id("ITEM_CANNOT_USE"))
 
         if config.use_item_id:
-            cost = [(config.use_item_id, config.use_item_amount * amount)]
-            rc = ResourceClassification.classify(cost)
-            rc.check_exist(self.server_id, self.char_id)
-            rc.remove(self.server_id, self.char_id)
+            if config.use_item_id == -1:
+                if index is None or index > len(config.result)-1:
+                    raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+            else:
+                cost = [(config.use_item_id, config.use_item_amount * amount)]
+                rc = ResourceClassification.classify(cost)
+                rc.check_exist(self.server_id, self.char_id)
+                rc.remove(self.server_id, self.char_id)
 
         result = {}
         for i in range(amount):
-            for _id, _amount in config.using_result():
+            for _id, _amount in config.using_result(index=index):
                 if _id in result:
                     result[_id] += _amount
                 else:

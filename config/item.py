@@ -36,15 +36,18 @@ class ItemUse(object):
         self.use_item_amount = 0
         self.result = []
 
-    def using_result(self):
+    def using_result(self, index=None):
+        if self.use_item_id == -1:
+            if index is None:
+                raise RuntimeError("ItemUse id: {0}, index is None".format(self.id))
+
+            _id, _amount, _ = self.result[0][index]
+            return [(_id, _amount),]
+
         result = {}
         for group in self.result:
-            item = copy.deepcopy(group)
-            for i in range(1, len(item)):
-                item[i][2] += item[i-1][2]
-
             prob = random.randint(1, 1000)
-            for _id, _amount, _prob in item:
+            for _id, _amount, _prob in group:
                 if _prob >= prob:
                     if _id in result:
                         result[_id] += _amount

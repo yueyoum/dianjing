@@ -25,9 +25,10 @@ def item_use(request):
 
     slot_id = request._proto.slot_id
     amount = request._proto.amount
+    index = request._proto.index
 
     bag = Bag(server_id, char_id)
-    resource_classified = bag.item_use(slot_id, amount)
+    resource_classified = bag.item_use(slot_id, amount, index=index)
 
     response = BagItemUseResponse()
     response.ret = 0
