@@ -95,8 +95,7 @@ class MongoStaff(BaseDocument):
         'oid': null,
         'level': 1,
         'step': 0,
-        # star 是根据 quality 算出来的
-        'star': null,
+        'star': 0,
         'level_exp': 0,
         'star_exp': 0,
 

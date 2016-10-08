@@ -548,7 +548,7 @@ class AbstractStaff(object):
 
     @property
     def quality(self):
-        return self.star / 10 + 1
+        return ConfigItemNew.get(self.oid).quality
 
     def is_initial_state(self):
         # type: () -> bool
@@ -558,16 +558,13 @@ class AbstractStaff(object):
         if self.step != 0:
             return False
 
-        if self.get_initial_star() != self.star:
+        if self.star != 0:
             return False
 
         if self.level_exp > 0 or self.star_exp > 0:
             return False
 
         return True
-
-    def get_initial_star(self):
-        return (ConfigItemNew.get(self.oid).quality - 1) * 10
 
     def make_protomsg(self):
         msg = MessageStaff()

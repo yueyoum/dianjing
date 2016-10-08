@@ -677,8 +677,8 @@ class Staff(AbstractStaff):
             self.manage_percent += equip.get_property_value(PROPERTY_STAFF_MANAGE_PERCENT)
             self.operation_percent += equip.get_property_value(PROPERTY_STAFF_OPERATION_PERCENT)
 
-            if slot_id != self.equip_decoration:
-                # 装备加成不算 饰品
+            if slot_id not in [self.equip_decoration, self.equip_special]:
+                # 装备加成不算 饰品，神器
                 levels.append(data['level'])
                 qualities.append(config.quality)
 
@@ -756,7 +756,7 @@ class Staff(AbstractStaff):
         _add_to_items(STAFF_EXP_POOL_ID, int(exp))
 
         # 升星道具
-        for i in range(self.star - 1, self.get_initial_star() - 1, -1):
+        for i in range(self.star-1, -1, -1):
             config = ConfigStaffStar.get(i)
             amount = config.exp * percent / 100.0 / AVG_STAR_EXP * config.need_item_amount
             if amount:
@@ -944,12 +944,9 @@ class StaffManger(object):
         if not ConfigStaffNew.get(staff_original_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
-        quality = ConfigItemNew.get(staff_original_id).quality
-
         unique_id = make_string_id()
         doc = MongoStaff.document_staff()
         doc['oid'] = staff_original_id
-        doc['star'] = (quality - 1) * 10
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
