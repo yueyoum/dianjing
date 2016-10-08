@@ -28,7 +28,7 @@ from core.club import get_club_property, Club
 from core.formation import BaseFormation
 from core.staff import StaffManger, Staff
 from core.unit import UnitManager
-from core.cooldown import PlunderSearchCD
+from core.cooldown import PlunderSearchCD, PlunderMatchCD
 from core.match import ClubMatch
 from core.value_log import ValueLogPlunderRevengeTimes, ValueLogPlunderTimes, ValueLogPlunderBuyTimes, \
     ValueLogSpecialEquipmentGenerateTimes
@@ -551,12 +551,17 @@ class Plunder(object):
         ]}
 
         docs = MongoPlunder.db(self.server_id).find(condition, {'_id': 1})
-        real_ids = [doc['_id'] for doc in docs]
+        result_ids = []
+        for doc in docs:
+            if PlunderMatchCD(self.server_id, self.char_id, doc['_id']).get_cd_seconds():
+                continue
 
-        random.shuffle(real_ids)
+            result_ids.append(doc['_id'])
+
+        random.shuffle(result_ids)
 
         search_docs = []
-        for i in real_ids:
+        for i in result_ids:
             search_docs.append({'id': i, 'spied': False})
             if len(search_docs) == 2:
                 break
@@ -694,9 +699,8 @@ class Plunder(object):
             if tp == PLUNDER_TYPE_PLUNDER:
                 if not self.doc['plunder_remained_times']:
                     self.buy_plunder_times()
-                else:
-                    self.doc['plunder_remained_times'] -= 1
-                    updater['plunder_remained_times'] = self.doc['plunder_remained_times']
+
+                PlunderMatchCD(self.server_id, self.char_id, target_id).set(GlobalConfig.value("PLUNDER_MATCH_CD"))
 
             else:
                 if not self.get_revenge_remained_times():
@@ -802,6 +806,9 @@ class Plunder(object):
             plunder_got.extend(config.get_extra_income())
 
             ValueLogPlunderTimes(self.server_id, self.char_id).record()
+            self.doc['plunder_remained_times'] -= 1
+            updater['plunder_remained_times'] = self.doc['plunder_remained_times']
+
         else:
             revenge_index = self.find_revenge_target_index_by_target_id(target_id)
             _, real_id = self.doc['revenge_list'].pop(revenge_index)
@@ -816,6 +823,7 @@ class Plunder(object):
         )
 
         self.send_result_notify()
+        self.send_plunder_times_notify()
 
         rc = ResourceClassification.classify(plunder_got)
         rc.add(self.server_id, self.char_id)

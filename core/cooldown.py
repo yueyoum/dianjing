@@ -61,3 +61,13 @@ class PlunderSearchCD(CD):
     __slots__ = []
     def make_key(self):
         return 'cd:plunder_search:{0}:{1}'.format(self.server_id, self.char_id)
+
+# 掠夺挑战CD
+class PlunderMatchCD(CD):
+    __slots__ = ['rival_id']
+    def __init__(self, server_id, char_id, rival_id):
+        super(PlunderMatchCD, self).__init__(server_id, char_id)
+        self.rival_id = rival_id
+
+    def make_key(self):
+        return 'cd:plunder_match:{0}:{1}:{2}'.format(self.server_id, self.char_id, self.rival_id)

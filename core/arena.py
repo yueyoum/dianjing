@@ -33,6 +33,7 @@ from core.value_log import (
 )
 
 from config import (
+    GlobalConfig,
     ConfigErrorMessage,
     ConfigArenaNPC,
     ConfigNPCFormation,
@@ -589,7 +590,7 @@ class Arena(object):
         )
 
         ArenaRefreshCD(self.server_id, self.char_id).clean()
-        ArenaMatchCD(self.server_id, self.char_id, rival_id).set(600)
+        ArenaMatchCD(self.server_id, self.char_id, rival_id).set(GlobalConfig.value("ARENA_MATCH_CD"))
 
         config_search = ConfigArenaSearchRange.get(doc['search_index'])
         if win:
