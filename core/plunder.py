@@ -516,8 +516,8 @@ class Plunder(object):
 
     @check_club_level(silence=False)
     @check_plunder_in_process
-    def search(self, replace_search_index=None, send_notify=True):
-        if self.get_search_cd():
+    def search(self, check_cd=True, replace_search_index=None, send_notify=True):
+        if check_cd and self.get_search_cd():
             raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_SEARCH_IN_CD"))
 
         def _query_real(_level_low, _level_high):
@@ -588,7 +588,8 @@ class Plunder(object):
             {'$set': updater}
         )
 
-        self.set_search_cd()
+        if check_cd:
+            self.set_search_cd()
 
         if send_notify:
             self.send_search_notify()
@@ -794,7 +795,7 @@ class Plunder(object):
             search_index = self.find_search_target_index_by_target_id(target_id)
 
             data = self.doc['search'][search_index]
-            self.search(replace_search_index=search_index)
+            self.search(check_cd=False, replace_search_index=search_index)
 
             if str(real_id).startswith('npc:'):
                 target_plunder = PlunderNPC(data['id'], data['name'], data['station_level'], data['ways_npc'])
