@@ -522,7 +522,7 @@ class Tower(object):
         try:
             goods_id, bought = goods[goods_index]
         except IndexError:
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
         if bought:
             raise GameException(ConfigErrorMessage.get_error_id("TOWER_GOODS_HAS_BOUGHT"))
@@ -542,6 +542,18 @@ class Tower(object):
         rc.add(self.server_id, self.char_id)
 
         self.doc['goods'][goods_index][1] = 1
+
+        # NOTE　这里要把买完的那一组删掉
+        if goods_index % 2 == 0:
+            # 0, 2, 4 的情况，这组下一个的index是　goods_index+1
+            other_index = goods_index + 1
+        else:
+            other_index = goods_index - 1
+
+        if self.doc['goods'][other_index][1] == 1:
+            _index = min(other_index, goods_index)
+            self.doc['goods'].pop(_index)
+            self.doc['goods'].pop(_index)
 
         MongoTower.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -610,18 +622,9 @@ class Tower(object):
         notify = TowerGoodsNotify()
         goods = self.doc.get('goods', [])
 
-        for i in range(0, len(goods) - 1, 2):
-            id1, b1 = goods[i]
-            id2, b2 = goods[i + 1]
-            if b1 and b2:
-                continue
-
+        for _id, b in goods:
             notify_goods = notify.goods.add()
-            notify_goods.id = id1
-            notify_goods.has_bought = b1
-
-            notify_goods = notify.goods.add()
-            notify_goods.id = id2
-            notify_goods.has_bought = b2
+            notify_goods.id = _id
+            notify_goods.has_bought = b
 
         MessagePipe(self.char_id).put(msg=notify)
