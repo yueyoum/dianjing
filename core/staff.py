@@ -976,12 +976,9 @@ class StaffManger(object):
             if not ConfigStaffNew.get(oid):
                 raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
-            quality = ConfigItemNew.get(oid).quality
-
             unique_id = make_string_id()
             doc = MongoStaff.document_staff()
             doc['oid'] = oid
-            doc['star'] = (quality - 1) * 10
 
             unique_id_list.append(unique_id)
             updater['staffs.{0}'.format(unique_id)] = doc
