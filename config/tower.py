@@ -99,6 +99,13 @@ class ConfigTowerLevel(ConfigBase):
     EntityClass = TowerLevel
     INSTANCES = {}
     FILTER_CACHE = {}
+
+    MAX_LEVEL = None
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigTowerLevel, cls).initialize(fixture)
+        cls.MAX_LEVEL = max(cls.INSTANCES.keys())
     
     @classmethod
     def get(cls, _id):

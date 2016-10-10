@@ -379,8 +379,6 @@ class StaffRecruit(object):
 
 
 ###################################
-STAFF_MAX_LEVEL = max(ConfigStaffLevelNew.INSTANCES.keys())
-STAFF_MAX_STAR = max(ConfigStaffStar.INSTANCES.keys())
 MIN_STAR_EXP = 1
 MAX_STAR_EXP = 3
 AVG_STAR_EXP = 3.2
@@ -432,7 +430,7 @@ class Staff(AbstractStaff):
 
     def level_up(self, exp_pool, up_level):
         from core.club import get_club_property
-        max_level = min(STAFF_MAX_LEVEL, get_club_property(self.server_id, self.char_id, 'level') * 2)
+        max_level = min(ConfigStaffLevelNew.MAX_LEVEL, get_club_property(self.server_id, self.char_id, 'level') * 2)
         if self.level >= max_level:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_ALREADY_MAX_LEVEL"))
 
@@ -512,7 +510,7 @@ class Staff(AbstractStaff):
     def star_up(self, single):
         # single = True,  只升级一次
         # single = False, 尽量升到下一星级
-        if self.star >= STAFF_MAX_STAR:
+        if self.star >= ConfigStaffStar.MAX_STAR:
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_ALREADY_MAX_STAR"))
 
         old_star = self.star
@@ -535,7 +533,7 @@ class Staff(AbstractStaff):
             exp = self.star_exp + _exp
 
             while True:
-                if self.star == STAFF_MAX_STAR:
+                if self.star == ConfigStaffStar.MAX_STAR:
                     if exp >= ConfigStaffStar.get(self.star).exp:
                         exp = ConfigStaffStar.get(self.star).exp - 1
 

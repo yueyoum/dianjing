@@ -15,8 +15,6 @@ from utils.functional import get_start_time_of_today
 from protomsg.task_pb2 import TaskNotify, TaskDailyNotify, TASK_DOING, TASK_DONE, TASK_FINISH
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
-MAX_TASK_MAIN_ID = max(ConfigTaskMain.INSTANCES.keys())
-
 
 class TaskMain(object):
     __slots__ = ['server_id', 'char_id', 'doing']
@@ -44,7 +42,7 @@ class TaskMain(object):
         if challenge_id < config.challenge_id:
             return
 
-        if self.doing >= MAX_TASK_MAIN_ID:
+        if self.doing >= ConfigTaskMain.MAX_ID:
             self.doing = 0
         else:
             self.doing += 1

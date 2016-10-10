@@ -43,8 +43,6 @@ from protomsg.tower_pb2 import (
 
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
-MAX_LEVEL = max(ConfigTowerLevel.INSTANCES.keys())
-
 
 def get_tower_talent_effects(server_id, char_id):
     # 这里单独提供一个方法是为了 统一处理的时候
@@ -154,7 +152,7 @@ class Tower(object):
 
     def is_all_complete(self):
         # 0　表示可以打，　-1 表示失败，　不能打的没有记录，　这里就用-2表示
-        return self.doc['levels'].get(str(MAX_LEVEL), -2) > 0
+        return self.doc['levels'].get(str(ConfigTowerLevel.MAX_LEVEL), -2) > 0
 
     def set_today_max_star(self):
         # 今天重置后的最高星数，
@@ -250,7 +248,7 @@ class Tower(object):
             updater['levels.{0}'.format(level)] = star
 
             # 开启下一关
-            if level < MAX_LEVEL:
+            if level < ConfigTowerLevel.MAX_LEVEL:
                 next_level = level + 1
                 self.doc['levels'][str(next_level)] = 0
 
@@ -463,7 +461,7 @@ class Tower(object):
 
         # 扫荡完下一关要可打
         next_level = self.doc['max_star_level'] + 1
-        if next_level < MAX_LEVEL:
+        if next_level < ConfigTowerLevel.MAX_LEVEL:
             self.doc['levels'][str(next_level)] = 0
             updater['levels.{0}'.format(next_level)] = 0
 

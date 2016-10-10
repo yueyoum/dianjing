@@ -44,6 +44,13 @@ class ConfigVIP(ConfigBase):
     EntityClass = VIP
     INSTANCES = {}
     FILTER_CACHE = {}
+
+    MAX_LEVEL = None
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigVIP, cls).initialize(fixture)
+        cls.MAX_LEVEL = max(cls.INSTANCES.keys())
     
     @classmethod
     def get(cls, _id):

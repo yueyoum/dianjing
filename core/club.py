@@ -38,8 +38,6 @@ from config.settings import (
 
 from protomsg.club_pb2 import ClubNotify
 
-MAX_CLUB_LEVEL = max(ConfigClubLevel.INSTANCES.keys())
-
 
 def get_club_property(server_id, char_id, key, default_value=0):
     doc = MongoCharacter.db(server_id).find_one(
@@ -49,16 +47,17 @@ def get_club_property(server_id, char_id, key, default_value=0):
 
     return doc.get(key, default_value)
 
+
 # 为了兼容任务条件
 class _ClubProperty(object):
     __slots__ = ['server_id', 'char_id']
+
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
 
     def get_level(self):
         return get_club_property(self.server_id, self.char_id, 'level')
-
 
 
 class Club(AbstractClub):
@@ -293,7 +292,7 @@ class Club(AbstractClub):
         level_changed = False
         while True:
             need_exp = ConfigClubLevel.get(self.level).exp
-            if self.level >= MAX_CLUB_LEVEL:
+            if self.level >= ConfigClubLevel.MAX_LEVEL:
                 if self.exp >= need_exp:
                     self.exp = need_exp
                     break

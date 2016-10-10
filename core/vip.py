@@ -19,8 +19,6 @@ from config import ConfigVIP, ConfigErrorMessage
 
 from protomsg.vip_pb2 import VIPNotify
 
-MAX_VIP_LEVEL = max(ConfigVIP.INSTANCES.keys())
-
 
 class VIP(object):
     __slots__ = ['server_id', 'char_id', 'doc']
@@ -48,10 +46,10 @@ class VIP(object):
         self.doc['exp'] += exp
 
         while True:
-            if self.doc['vip'] >= MAX_VIP_LEVEL:
-                self.doc['vip'] = MAX_VIP_LEVEL
-                if self.doc['exp'] >= ConfigVIP.get(MAX_VIP_LEVEL).exp:
-                    self.doc['exp'] = ConfigVIP.get(MAX_VIP_LEVEL).exp - 1
+            if self.doc['vip'] >= ConfigVIP.MAX_LEVEL:
+                self.doc['vip'] = ConfigVIP.MAX_LEVEL
+                if self.doc['exp'] >= ConfigVIP.get(ConfigVIP.MAX_LEVEL).exp:
+                    self.doc['exp'] = ConfigVIP.get(ConfigVIP.MAX_LEVEL).exp - 1
 
                 break
 

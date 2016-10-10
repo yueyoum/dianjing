@@ -13,15 +13,6 @@ from protomsg.club_pb2 import Club as MessageClub
 from protomsg.staff_pb2 import Staff as MessageStaff
 from protomsg.unit_pb2 import Unit as MessageUnit
 
-from config import (
-    ConfigStaffStar,
-    ConfigStaffNew,
-    ConfigUnitNew,
-    ConfigItemNew,
-    ConfigTalentSkill,
-    ConfigQianBan,
-)
-
 
 class DummyConfig(object):
     def __getattr__(self, _):
@@ -97,6 +88,7 @@ class AbstractUnit(object):
         cache.set(key, self)
 
     def after_init(self):
+        from config import ConfigUnitNew
         self.config = ConfigUnitNew.get(self.id)
 
     def calculate(self):
@@ -251,9 +243,11 @@ class AbstractStaff(object):
         cache.set(key, self)
 
     def after_init(self):
+        from config import ConfigStaffNew
         self.config = ConfigStaffNew.get(self.oid)
 
     def check_active_qianban_ids(self):
+        from config import ConfigQianBan
         config = ConfigQianBan.get(self.oid)
         if not config:
             return
@@ -281,6 +275,8 @@ class AbstractStaff(object):
         return self.self_talent_ids + self.other_talent_ids + self.qianban_talent_ids
 
     def calculate(self):
+        from config import ConfigStaffStar, ConfigTalentSkill
+
         # 等级
         self.attack = self.config.attack + (self.level - 1) * self.config.attack_grow
         self.defense = self.config.defense + (self.level - 1) * self.config.defense_grow
@@ -339,6 +335,8 @@ class AbstractStaff(object):
         self.check_active_qianban_ids()
 
     def calculate_unit(self):
+        from config import ConfigTalentSkill
+
         if not self.server_id:
             return
 
@@ -388,6 +386,8 @@ class AbstractStaff(object):
         :param club:
         :type club: AbstractClub
         """
+        from config import ConfigTalentSkill
+
         # 天赋影响
         for tid in self.get_self_talent_skill_ids():
             config_talent = ConfigTalentSkill.get(tid)
@@ -454,6 +454,8 @@ class AbstractStaff(object):
                 raise RuntimeError("Unknown talent {0} target {1}".format(tid, config_talent.target))
 
     def add_other_talent_effects(self, effect_ids):
+        from config import ConfigTalentSkill
+
         # NOTE 这个方法必须在 club 里调用。
         # 因为 可能有 要加给 敌方 的 talents
         # 这里如果给敌方加，就重复了
@@ -548,6 +550,7 @@ class AbstractStaff(object):
 
     @property
     def quality(self):
+        from config import ConfigItemNew
         return ConfigItemNew.get(self.oid).quality
 
     def is_initial_state(self):
@@ -640,6 +643,8 @@ class AbstractClub(object):
         return p
 
     def get_talents_ids_for_rival(self):
+        from config import ConfigTalentSkill
+
         # club instance 并没有缓存起来
         # 所以 staff.talent_effects 里如果给 club 添加了 talents_for_rival
         # 那么当时上下文销毁了，这些talents_for_rival就没有了
@@ -653,6 +658,8 @@ class AbstractClub(object):
         return self.talents_for_rival + ids
 
     def add_talent_effects(self, talent_effect_ids):
+        from config import ConfigTalentSkill
+
         if not talent_effect_ids:
             return
 

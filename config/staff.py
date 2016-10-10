@@ -244,6 +244,13 @@ class ConfigStaffLevelNew(ConfigBase):
     INSTANCES = {}
     FILTER_CACHE = {}
 
+    MAX_LEVEL = None
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigStaffLevelNew, cls).initialize(fixture)
+        cls.MAX_LEVEL = max(cls.INSTANCES.keys())
+
     @classmethod
     def get(cls, _id):
         # type: (int) -> StaffLevelNew
@@ -254,6 +261,13 @@ class ConfigStaffStar(ConfigBase):
     EntityClass = StaffStar
     INSTANCES = {}
     FILTER_CACHE = {}
+
+    MAX_STAR = None
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigStaffStar, cls).initialize(fixture)
+        cls.MAX_STAR = max(cls.INSTANCES.keys())
 
     @classmethod
     def get(cls, _id):

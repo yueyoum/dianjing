@@ -127,6 +127,13 @@ class ConfigTaskMain(ConfigBase):
     INSTANCES = {}
     FILTER_CACHE = {}
 
+    MAX_ID = None
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigTaskMain, cls).initialize(fixture)
+        cls.MAX_ID = max(cls.INSTANCES.keys())
+
     @classmethod
     def get(cls, _id):
         """
