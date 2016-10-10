@@ -56,18 +56,19 @@ INSTALLED_APPS = (
     'apps.game',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'dianjing.middleware.GameLazyInitializeMiddleware',
-    'dianjing.middleware.GameRequestMiddleware',
-    'dianjing.middleware.GameResponseMiddleware',
-    'dianjing.middleware.GameExceptionMiddleware',
-)
+    'dianjing.middleware.RequestMiddleware',
+    'dianjing.middleware.LoginIDMiddleware',
+    'dianjing.middleware.ResponseMiddleware',
+]
 
 ROOT_URLCONF = 'dianjing.urls'
 

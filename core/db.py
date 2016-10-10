@@ -24,6 +24,7 @@ class RedisDB(object):
         db = 1 if settings.TEST else 0
         pool = redis.ConnectionPool(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=db)
         cls.DB = redis.Redis(connection_pool=pool)
+        cls.DB.ping()
 
     @classmethod
     def get(cls):
