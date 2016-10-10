@@ -14,10 +14,6 @@ class ProjectConfig(AppConfig):
     name = 'apps.helper'
 
     def ready(self):
-        from core.db import RedisDB, MongoDB
-        RedisDB.connect()
-        MongoDB.connect()
-
         from config import load_config
         load_config()
 

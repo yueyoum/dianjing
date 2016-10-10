@@ -13,6 +13,7 @@ from django.http import HttpResponse
 
 from dianjing.exception import GameException
 
+from core.db import RedisDB, MongoDB
 from utils.http import ProtobufResponse
 from utils.session import GameSession, LoginID
 from utils.message import NUM_FILED, MessagePipe
@@ -21,6 +22,17 @@ from utils.operation_log import OperationLog
 from config import ConfigErrorMessage
 
 from protomsg import PATH_TO_REQUEST, PATH_TO_RESPONSE, ID_TO_MESSAGE
+
+
+class LazyMiddleware(object):
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        RedisDB.connect()
+        MongoDB.connect()
+
+        return self.get_response(request)
 
 
 class RequestMiddleware(object):
@@ -42,12 +54,11 @@ class RequestMiddleware(object):
             traceback.print_exc()
             return HttpResponse(status=403)
 
+        request._game_session = session
         request._proto = proto
-        if session is None:
-            request._game_session = GameSession.empty()
+        if not session.account_id:
             request._operation_log = None
         else:
-            request._game_session = session
             request._operation_log = OperationLog(session.server_id, session.char_id)
 
         print proto
@@ -68,7 +79,7 @@ class RequestMiddleware(object):
         proto.ParseFromString(data)
 
         if msg_name in ["RegisterRequest", "LoginRequest"]:
-            session = None
+            session = GameSession.empty()
         else:
             # 除过上面两个消息，其他消息都应该有session
             session = GameSession.loads(proto.session)
@@ -110,9 +121,11 @@ class ResponseMiddleware(object):
         if not request.path.startswith('/game/'):
             return self.get_response(request)
 
+        error_id = 0
         try:
             response = self.get_response(request)
         except GameException as e:
+            error_id = e.error_id
             char_id = request._game_session.char_id
 
             print "==== WARNING ===="
@@ -121,8 +134,11 @@ class ResponseMiddleware(object):
             proto = make_response_with_error_id(request.path, e.error_id)
             response = ProtobufResponse(proto)
 
+        if response.status_code != 200:
+            return response
+
         if request._operation_log:
-            request._operation_log.record(request.path, request._game_error_id)
+            request._operation_log.record(request.path, error_id)
             request._operation_log = None
 
         char_id = request._game_session.char_id
