@@ -365,7 +365,7 @@ class Arena(object):
 
             _char_ids = []
             for _doc in _docs:
-                _char_ids.extend(_doc['_char_ids'])
+                _char_ids.extend(_doc['char_ids'])
 
             random.shuffle(_char_ids)
 
