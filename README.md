@@ -1,81 +1,108 @@
-    nginx 安装 
-        从官网 http://nginx.org/  下载stable version(稳定版本)
-        解压     tar -xzf nginx-1.8.0.tar.gz
-                    cd nginx- 1.8.0
-                    ./configure
-                    make
-                    sudo make install
+## 依赖
+*   nginx
+*   uwsgi
+*   mysql
+*   redis
+*   mongodb
 
-        启动nginx
-            sudo /usr/local/nginx/sbin/nginx 
-            关闭nginx
-            /usr/local/nginx/sbin/nginx -s stop
 
-        添加配置
-            cd /usr/local/nginx/conf/
-            mkdir sites
-            cd sites
-            vim dianjing.conf
-            cd ../
-            vim nginx.conf
-            
-    install mongodb
+```
+mongodb 配置文件
 
-    install mysql 
+systemLog:
+    destination: file
+    path: "/tmp/mongo.log"
+    logAppend: true
+
+storage:
+    dbPath: /opt/db
+    journal:
+        enabled: true
+    engine: wiredTiger
+
+processManagement:
+    fork: true
+
+net:
+    bindIp: 127.0.0.1
+    port: 27017
+
+```
+
+## 开发环境部署
+1.  `git clone https://muzhishidai@bitbucket.org/muzhi/dianjing-server.git server`
+2.   `cd server && git submodule update --init --recrusive`
+3.  创建虚拟环境并安装依赖
+    ```
+    virtualenv env
+    source env/bin/activate
+    pip install -r requirements.txt
+    ```
     
-    install redis
-
-    下载文件
-        git clone https://said696@bitbucket.org/muzhi/dianjing-server.git  需要bitbucket账号
-
-    下载子模块文件
-        cd dianjing-server
-        git submodule update --init --recursive
-        cd c_src
-        git checkout master
-        cd ../protobuf
-        git checkout master
-        cd ../
-
-    建立虚拟环境
-        virtualenv env
-    进入虚拟环境
-        source env/bin/active
-    安装第三方依赖
-        pip install -r requirements.txt
-        make ext
+    **注意** `protobuf` 库要用 cpp implementation.
     
-    修改配置
-        cp setting.xml.example setting.xml
-        vim settting.xml
-
-    创建数据库 
-        mysql -u username -p 
-     
-    构建数据库表 
-        DIANJING_TEST=1 python manage.py migrate
+    所以要编译 安装 protobuf,并设置 `LD_LIBRARY_PATH`
     
-    进入数据库
-        DIANJING_TEST=1 python manage.py dbshell
+4.  编辑配置文件
+    ```
+    cp settings.xml.example settings.xml
+    ```
 
-    收集静态文件 
-        DIANJING_TEST=1 python manage.py collectstatic
+5.  编辑 `uwsgi.ini`
+6.  配置并运行 `nginx`, `mysql`, `redis`, `mongodb`. 
 
-    创建后台用户
-        DIANJING_TEST=1 python manage.py createsuperuser
+7.  初始化. (首次运行的时候需要读取本地的 config.zip)
+    ```
+    创建数据库 create database XXX default charset=utf8;
+    DIANJIG_CONFIG=local = python manage.py migrate
+    DIANJIG_CONFIG=local = python manage.py collectstatic
+    DIANJIG_CONFIG=local = python manage.py createsuperuser
+    ```
+
+8.  进入admin 配置 version, config, servers 信息
+
+## 生产环境部署
+去掉上面第二步
+
+
+## 管理命令
+
+*   `python manage.py game reset` 重置
+*   `python manage.py game empty_cache` 清空缓存
     
-    启动服务器
-        DIANJING_TEST=1 uwsgi dianjing-uwsgi.ini
+    主要是 staff, unit 的计算结果都缓存起来的.
+    
+    如果调整了公式,或者配置参数,为了及时生效,需要清空缓存
+*   `python manage.py mongodb createindex` 建立mongodb索引
 
-    登陆admin 
-        服务器地址:8000/admin/
+    其实在admin添加server的时候,这个server对应的mongodb是自动创建索引的.
+    
+    但如果部署完毕后,更改了mongodb 结构,那么这条命令可以对所有的servers再次创建index
 
-    添加配置文件
-        version    为版本号
-        config    为配置
+*   `python manage.py nginx` 输出 nginx 配置
 
-    添加servers
-        mongo port     27017
-        mongodb    一个服务器对应一个
-       
-       --------------------------------> end!! <----------------------------------
+
+## settings.xml
+
+##### duty-server
+本组服务器cronjob要处理的 servers
+
+考虑这种情况, 开了1 到 100 这100个 游戏逻辑服(区), 
+并且 代码是通过负载均衡跑在两台计算上的.
+
+当跑cronjob的时候, 要是这台计算机都对同一个server跑了一遍,
+那么就相当于跑了两边,这肯定是不对的.
+所以需要这个duty-server. 上面的情况可以这么配置:
+
+第一个机器上 是 1-50 , 第二个是 50-999 
+
+第二个的结束范围是999,而不是100的原因是, 要是后面开了101区, 
+那么101的cronjob自然就在第二台 计算机上跑了.
+
+只要开服数块到 999 的时候, 修改一下配置文件 即可
+
+##### sockets
+sockets 服务器地址, 可以配置多个, 以负载均衡
+
+##### mongodb
+可以配置多个, sid-min 和 sid-max 的设置是指 这一个 mongodb 要承载的 游戏区

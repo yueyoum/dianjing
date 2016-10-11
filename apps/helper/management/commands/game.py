@@ -8,14 +8,10 @@ Description:
 """
 from django.core.management.base import BaseCommand
 
-from apps.server.models import Server
 from apps.account.models import Account, AccountBan, AccountLoginLog, AccountRegular, AccountThird
 from apps.character.models import Character
 from apps.statistics.models import Statistics
 from core.db import MongoDB, RedisDB
-from core.mongo import ensure_index
-
-from core.arena import Arena
 
 
 class Command(BaseCommand):
@@ -36,8 +32,6 @@ class Command(BaseCommand):
             self._reset()
         elif options['cmd'] == 'empty_cache':
             self._empty_cache()
-        elif options['cmd'] == 'init':
-            self._init()
         else:
             self.stderr.write("unknown command!")
 
@@ -55,21 +49,9 @@ class Command(BaseCommand):
 
         RedisDB.get().flushall()
 
-        # TODO fix this
-        db_names = []
-        for s in Server.objects.all():
-            db_names.append(s.mongo_db)
-            db_names.append(s.mongo_db + "test")
-
-        for mc in MongoDB.INSTANCES.values():
-            for name in db_names:
-                mc.drop_database(name)
+        for mc in MongoDB.DBS.values():
+            mc.client.drop_database(mc.name)
 
     def _empty_cache(self):
         RedisDB.connect()
         RedisDB.get().flushall()
-
-    def _init(self):
-        for sid in Server.duty_server_ids():
-            ensure_index(sid)
-            Arena.try_create_arena_npc(sid)

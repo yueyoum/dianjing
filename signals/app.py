@@ -9,8 +9,12 @@ Description:
 
 
 from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 
 from apps.config.models import Config
+from apps.server.models import Server
+
+from core.mongo import ensure_index
 
 
 def config_change(**kwargs):
@@ -29,4 +33,8 @@ post_delete.connect(
     sender=Config,
     dispatch_uid='Config.post_delete'
 )
+
+@receiver(post_save, sender=Server, dispatch_uid='Server.post_save')
+def server_save(instance, **kwargs):
+    ensure_index(instance.id)
 
