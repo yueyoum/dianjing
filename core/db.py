@@ -55,7 +55,7 @@ class MongoDB(object):
                 )
             else:
                 mongo_url = "mongodb://{0}:{1}".format(
-                    mongo_config['user'], mongo_config['password'],
+                    mongo_config['host'], mongo_config['port'],
                 )
 
             client = MongoClient(mongo_url)
