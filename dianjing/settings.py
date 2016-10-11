@@ -64,9 +64,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
+    'dianjing.middleware.LazyMiddleware',
     'dianjing.middleware.RequestMiddleware',
     'dianjing.middleware.LoginIDMiddleware',
     'dianjing.middleware.ResponseMiddleware',
+    'dianjing.middleware.ExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'dianjing.urls'
@@ -180,7 +182,7 @@ DATABASES = {
         'PASSWORD': MYSQL_PASSWORD,
         'HOST': MYSQL_HOST,
         'PORT': MYSQL_PORT,
-        'CONN_MAX_AGE': 3600,
+        'CONN_MAX_AGE': 0,
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         }

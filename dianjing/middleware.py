@@ -56,7 +56,7 @@ class RequestMiddleware(object):
 
         request._game_session = session
         request._proto = proto
-        if not session.account_id:
+        if not session.char_id:
             request._operation_log = None
         else:
             request._operation_log = OperationLog(session.server_id, session.char_id)
@@ -121,24 +121,11 @@ class ResponseMiddleware(object):
         if not request.path.startswith('/game/'):
             return self.get_response(request)
 
-        error_id = 0
-        try:
-            response = self.get_response(request)
-        except GameException as e:
-            error_id = e.error_id
-            char_id = request._game_session.char_id
-
-            print "==== WARNING ===="
-            print "Char: {0}, Error: {1}, {2}".format(char_id, e.error_id, e.error_msg)
-
-            proto = make_response_with_error_id(request.path, e.error_id)
-            response = ProtobufResponse(proto)
-
-        if response.status_code != 200:
-            return response
+        request._game_error_id = 0
+        response = self.get_response(request)
 
         if request._operation_log:
-            request._operation_log.record(request.path, error_id)
+            request._operation_log.record(request.path, request._game_error_id)
             request._operation_log = None
 
         char_id = request._game_session.char_id
@@ -159,6 +146,27 @@ class ResponseMiddleware(object):
         # END DEBUG
 
         return HttpResponse(''.join(all_msgs), content_type='text/plain')
+
+
+class ExceptionMiddleware(object):
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        return self.get_response(request)
+
+    def process_exception(self, request, exception):
+        if not isinstance(exception, GameException):
+            return None
+
+        request._game_error_id = exception.error_id
+        char_id = request._game_session.char_id
+
+        print "==== WARNING ===="
+        print "Char: {0}, Error: {1}, {2}".format(char_id, exception.error_id, exception.error_msg)
+
+        proto = make_response_with_error_id(request.path, exception.error_id)
+        return ProtobufResponse(proto)
 
 
 def make_response_with_error_id(request_path, error_id):
