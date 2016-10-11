@@ -13,7 +13,7 @@ from utils.functional import make_string_id
 from core.mongo import MongoOperationLog
 
 
-KEEP_DAYS = 7
+KEEP_DAYS = 3
 
 class OperationLog(object):
     __slots__ = ['server_id', 'char_id',  'start_at']

@@ -76,6 +76,7 @@ from protomsg.common_pb2 import SPECIAL_EQUIPMENT_GENERATE_NORMAL, SPECIAL_EQUIP
 PLUNDER_ACTIVE_CLUB_LEVEL = 23
 REVENGE_MAX_TIMES = 3
 PLUNDER_TIMES_INIT_TIMES = 3
+PLUNDER_TIMES_RECOVER_LIMIT = 6
 
 
 class PlunderFormation(BaseFormation):
@@ -247,18 +248,17 @@ def get_station_next_reward_at():
     return reward_at.timestamp
 
 
-PLUNDER_AUTO_ADD_HOUR = [20, 16, 12, 8, 4, 0]
+PLUNDER_AUTO_ADD_HOUR = [21, 18, 15, 12, 9, 6]
 
 
 def get_plunder_times_next_recover_at():
     now = arrow.utcnow().to(settings.TIME_ZONE)
-    # 每4小时，也就是 0, 4, 8, 12, 16, 20 这几个点
     for index, hour in enumerate(PLUNDER_AUTO_ADD_HOUR):
         if now.hour >= hour:
             next_hour = PLUNDER_AUTO_ADD_HOUR[index - 1]
             break
     else:
-        raise RuntimeError("Can not be here!")
+        next_hour = PLUNDER_AUTO_ADD_HOUR[-1]
 
     recover_at = arrow.Arrow(
         year=now.year,
@@ -271,7 +271,7 @@ def get_plunder_times_next_recover_at():
         tzinfo=now.tzinfo
     )
 
-    if next_hour == 0:
+    if now.hour > next_hour:
         # next day
         recover_at = recover_at.replace(days=1)
 
@@ -311,6 +311,10 @@ def check_plunder_in_process(fun):
         return fun(self, *args, **kwargs)
 
     return deco
+
+
+def is_npc(_id):
+    return str(_id).startswith('npc:')
 
 
 class PlunderTimesBuyInfo(object):
@@ -404,7 +408,7 @@ class Plunder(object):
 
         condition = {'$and': [
             {'_id': {'$in': char_ids}},
-            {'plunder_remained_times': {'$lt': 10}}
+            {'plunder_remained_times': {'$lt': PLUNDER_TIMES_RECOVER_LIMIT}}
         ]}
 
         MongoPlunder.db(server_id).update_many(
@@ -797,14 +801,14 @@ class Plunder(object):
             data = self.doc['search'][search_index]
             self.search(check_cd=False, replace_search_index=search_index)
 
-            if str(real_id).startswith('npc:'):
+            if is_npc(real_id):
                 target_plunder = PlunderNPC(data['id'], data['name'], data['station_level'], data['ways_npc'])
             else:
                 target_plunder = Plunder(self.server_id, real_id)
+                plunder_got.extend(config.get_extra_income())
 
             _got = target_plunder.got_plundered(self.char_id, win_ways)
             plunder_got.extend(_got)
-            plunder_got.extend(config.get_extra_income())
 
             ValueLogPlunderTimes(self.server_id, self.char_id).record()
             self.doc['plunder_remained_times'] -= 1
@@ -933,6 +937,7 @@ class Plunder(object):
             notify_target = notify.target.add()
             notify_target.id = str(s['id'])
             notify_target.spied = s['spied']
+            notify_target.is_npc = is_npc(s['id'])
 
             if str(s['id']).startswith('npc:'):
                 target_plunder = PlunderNPC(s['id'], s['name'], s['station_level'], s['ways_npc'])

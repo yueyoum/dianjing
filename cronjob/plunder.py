@@ -42,7 +42,7 @@ def plunder_reset_station(*args):
     finally:
         logger.close()
 
-@uwsgidecorators.cron(55, -1, -1, -1, -1, target="spooler")
+@uwsgidecorators.cron(58, -1, -1, -1, -1, target="spooler")
 def plunder_auto_add_times(*args):
     now = arrow.utcnow().to(settings.TIME_ZONE)
     if now.hour not in AUTO_CRON_HOUR:
