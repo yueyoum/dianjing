@@ -123,7 +123,7 @@ class ResponseMiddleware(object):
 
         request._game_error_id = 0
         response = self.get_response(request)
-        
+
         if response.status_code != 200:
             return response
 

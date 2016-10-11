@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-TEST = os.environ.get('DIANJING_TEST', '0') == '1'
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 UPLOAD_DIR = os.path.join(BASE_DIR, 'upload')
@@ -208,12 +207,13 @@ AES_CBC_IV = doc.find('crypto/iv').text
 REDIS_HOST = doc.find('redis/host').text
 REDIS_PORT = int( doc.find('redis/port').text )
 
-if doc.find('mongodb/user') is not None:
-    MONGODB_USER = doc.find('mongodb/user').text
-    MONGODB_PASSWORD = doc.find('mongodb/password').text
-else:
-    MONGODB_USER = None
-    MONGODB_PASSWORD = None
+MONGODB = []
+for _m in doc.find('mongodb').getchildren():
+    attrib = _m.attrib
+    attrib['port'] = int(attrib['port'])
+    attrib['sid-min'] = int(attrib['sid-min'])
+    attrib['sid-max'] = int(attrib['sid-max'])
+    MONGODB.append(attrib)
 
 # MAILGUN
 ANYMAIL = {

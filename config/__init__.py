@@ -60,213 +60,211 @@ def load_config():
     if _has_configed:
         return
 
-    _has_configed = True
-
-    if settings.TEST:
-        z_file = os.path.join(settings.BASE_DIR, 'config', 'config.zip')
-    else:
+    z_file = os.path.join(settings.BASE_DIR, 'config', 'config.zip')
+    if os.environ.get('DIANJING_CONFIG', '') != 'local':
         c = ModelConfig.get_config()
         if c:
             z_file = c.config.path
         else:
-            z_file = os.path.join(settings.BASE_DIR, 'config', 'config.zip')
+            raise Exception("No config in db. Should set env: DIANJING_CONFIG=local")
 
     z = zipfile.ZipFile(z_file)
-    for name in z.namelist():
-        content = z.open(name).read()
+    for fname in z.namelist():
+        content = z.open(fname).read()
         if not content:
             continue
 
         data = json.loads(content)
 
-        if name == 'global_config.json':
+        if fname == 'global_config.json':
             GlobalConfig.initialize(data)
-        elif name == 'errormsg.json':
+        elif fname == 'errormsg.json':
             ConfigErrorMessage.initialize(data)
 
-        elif name == 'first_name.json':
+        elif fname == 'first_name.json':
             ConfigFirstName.initialize(data)
-        elif name == 'last_name.json':
+        elif fname == 'last_name.json':
             ConfigLastName.initialize(data)
 
-        elif name == 'item_new.json':
+        elif fname == 'item_new.json':
             ConfigItemNew.initialize(data)
-        elif name == 'item_use.json':
+        elif fname == 'item_use.json':
             ConfigItemUse.initialize(data)
-        elif name == 'item_merge.json':
+        elif fname == 'item_merge.json':
             ConfigItemMerge.initialize(data)
-        elif name == 'equipment_new.json':
+        elif fname == 'equipment_new.json':
             ConfigEquipmentNew.initialize(data)
-        elif name == 'equipment_special.json':
+        elif fname == 'equipment_special.json':
             ConfigEquipmentSpecial.initialize(data)
-        elif name == 'equipment_special_generate.json':
+        elif fname == 'equipment_special_generate.json':
             ConfigEquipmentSpecialGenerate.initialize(data)
-        elif name == 'equipment_special_growing_property.json':
+        elif fname == 'equipment_special_growing_property.json':
             ConfigEquipmentSpecialGrowingProperty.initialize(data)
-        elif name == 'equipment_special_level.json':
+        elif fname == 'equipment_special_level.json':
             ConfigEquipmentSpecialLevel.initialize(data)
-        elif name == 'equipment_special_score_to_growing.json':
+        elif fname == 'equipment_special_score_to_growing.json':
             ConfigEquipmentSpecialScoreToGrowing.initialize(data)
 
-        elif name == 'staff_new.json':
+        elif fname == 'staff_new.json':
             ConfigStaffNew.initialize(data)
-        elif name == 'staff_level_new.json':
+        elif fname == 'staff_level_new.json':
             ConfigStaffLevelNew.initialize(data)
-        elif name == 'staff_star.json':
+        elif fname == 'staff_star.json':
             ConfigStaffStar.initialize(data)
-        elif name == 'staff_equip_level_addition.json':
+        elif fname == 'staff_equip_level_addition.json':
             ConfigStaffEquipmentLevelAddition.initialize(data)
-        elif name == 'staff_equip_quality_addition.json':
+        elif fname == 'staff_equip_quality_addition.json':
             ConfigStaffEquipmentQualityAddition.initialize(data)
-        elif name == 'staff_recruit.json':
+        elif fname == 'staff_recruit.json':
             ConfigStaffRecruit.initialize(data)
 
-        elif name == 'challenge_chapter.json':
+        elif fname == 'challenge_chapter.json':
             ConfigChapter.initialize(data)
-        elif name == 'challenge_match.json':
+        elif fname == 'challenge_match.json':
             ConfigChallengeMatch.initialize(data)
-        elif name == 'challenge_buy_cost.json':
+        elif fname == 'challenge_buy_cost.json':
             ConfigChallengeResetCost.initialize(data)
 
-        elif name == 'unit_new.json':
+        elif fname == 'unit_new.json':
             ConfigUnitNew.initialize(data)
-        elif name == 'unit_unlock.json':
+        elif fname == 'unit_unlock.json':
             ConfigUnitUnLock.initialize(data)
-        elif name == 'unit_level_addition.json':
+        elif fname == 'unit_level_addition.json':
             ConfigUnitLevelAddition.initialize(data)
-        elif name == 'unit_step_addition.json':
+        elif fname == 'unit_step_addition.json':
             ConfigUnitStepAddition.initialize(data)
 
-        elif name == 'talent_skill.json':
+        elif fname == 'talent_skill.json':
             ConfigTalentSkill.initialize(data)
 
-        elif name == 'task_condition.json':
+        elif fname == 'task_condition.json':
             ConfigTaskCondition.initialize(data)
-        elif name == 'task_main.json':
+        elif fname == 'task_main.json':
             ConfigTaskMain.initialize(data)
-        elif name == 'task_daily.json':
+        elif fname == 'task_daily.json':
             ConfigTaskDaily.initialize(data)
 
-        elif name == 'club_level.json':
+        elif fname == 'club_level.json':
             ConfigClubLevel.initialize(data)
-        elif name == 'club_flag.json':
+        elif fname == 'club_flag.json':
             ConfigClubFlag.initialize(data)
 
-        elif name == 'qianban.json':
+        elif fname == 'qianban.json':
             ConfigQianBan.initialize(data)
 
-        elif name == 'activity_signin.json':
+        elif fname == 'activity_signin.json':
             ConfigSignIn.initialize(data)
 
-        elif name == 'talent.json':
+        elif fname == 'talent.json':
             ConfigTalent.initialize(data)
-        elif name == 'dungeon.json':
+        elif fname == 'dungeon.json':
             ConfigDungeon.initialize(data)
-        elif name == 'dungeon_grade.json':
+        elif fname == 'dungeon_grade.json':
             ConfigDungeonGrade.initialize(data)
-        elif name == 'dungeon_reset_cost.json':
+        elif fname == 'dungeon_reset_cost.json':
             ConfigDungeonBuyCost.initialize(data)
 
-        elif name == 'npc_formation.json':
+        elif fname == 'npc_formation.json':
             ConfigNPCFormation.initialize(data)
 
-        elif name == 'arena_npc.json':
+        elif fname == 'arena_npc.json':
             ConfigArenaNPC.initialize(data)
-        elif name == 'arena_honor_reward.json':
+        elif fname == 'arena_honor_reward.json':
             ConfigArenaHonorReward.initialize(data)
-        elif name == 'arena_rank_reward.json':
+        elif fname == 'arena_rank_reward.json':
             ConfigArenaRankReward.initialize(data)
-        elif name == 'arena_rank_reward_weekly.json':
+        elif fname == 'arena_rank_reward_weekly.json':
             ConfigArenaRankRewardWeekly.initialize(data)
-        elif name == 'arena_match_reward.json':
+        elif fname == 'arena_match_reward.json':
             ConfigArenaMatchReward.initialize(data)
-        elif name == 'arena_buy_times_cost.json':
+        elif fname == 'arena_buy_times_cost.json':
             ConfigArenaBuyTimesCost.initialize(data)
-        elif name == 'arena_search_range.json':
+        elif fname == 'arena_search_range.json':
             ConfigArenaSearchRange.initialize(data)
-        elif name == 'arena_reset_cost.json':
+        elif fname == 'arena_reset_cost.json':
             ConfigArenaSearchResetCost.initialize(data)
 
-        elif name == 'tower_level.json':
+        elif fname == 'tower_level.json':
             ConfigTowerLevel.initialize(data)
-        elif name == 'tower_reset_cost.json':
+        elif fname == 'tower_reset_cost.json':
             ConfigTowerResetCost.initialize(data)
-        elif name == 'tower_sale_goods.json':
+        elif fname == 'tower_sale_goods.json':
             ConfigTowerSaleGoods.initialize(data)
-        elif name == 'tower_rank_reward.json':
+        elif fname == 'tower_rank_reward.json':
             ConfigTowerRankReward.initialize(data)
 
-        elif name == 'territory_building.json':
+        elif fname == 'territory_building.json':
             ConfigTerritoryBuilding.initialize(data)
-        elif name == 'territory_inspire_cost.json':
+        elif fname == 'territory_inspire_cost.json':
             ConfigInspireCost.initialize(data)
-        elif name == 'territory_staff_special_product.json':
+        elif fname == 'territory_staff_special_product.json':
             ConfigTerritoryStaffProduct.initialize(data)
-        elif name == 'territory_event.json':
+        elif fname == 'territory_event.json':
             ConfigTerritoryEvent.initialize(data)
-        elif name == 'territory_store.json':
+        elif fname == 'territory_store.json':
             ConfigTerritoryStore.initialize(data)
 
-        elif name == 'store_type.json':
+        elif fname == 'store_type.json':
             ConfigStoreType.initialize(data)
-        elif name == 'store.json':
+        elif fname == 'store.json':
             ConfigStore.initialize(data)
-        elif name == 'store_refresh_cost.json':
+        elif fname == 'store_refresh_cost.json':
             ConfigStoreRefreshCost.initialize(data)
 
-        elif name == 'vip.json':
+        elif fname == 'vip.json':
             ConfigVIP.initialize(data)
 
-        elif name == 'collection.json':
+        elif fname == 'collection.json':
             ConfigCollection.initialize(data)
 
-        elif name == 'energy_buy_cost.json':
+        elif fname == 'energy_buy_cost.json':
             ConfigEnergyBuyCost.initialize(data)
 
-        elif name == 'formation.json':
+        elif fname == 'formation.json':
             ConfigFormation.initialize(data)
-        elif name == 'formation_slot.json':
+        elif fname == 'formation_slot.json':
             ConfigFormationSlot.initialize(data)
 
-        elif name == 'welfare_level_reward.json':
+        elif fname == 'welfare_level_reward.json':
             ConfigWelfareLevelReward.initialize(data)
-        elif name == 'welfare_new_player.json':
+        elif fname == 'welfare_new_player.json':
             ConfigWelfareNewPlayer.initialize(data)
-        elif name == 'welfare_signin.json':
+        elif fname == 'welfare_signin.json':
             ConfigWelfareSignIn.initialize(data)
 
-        elif name == 'broadcast_template.json':
+        elif fname == 'broadcast_template.json':
             ConfigBroadcastTemplate.initialize(data)
 
-        elif name == 'union_level.json':
+        elif fname == 'union_level.json':
             ConfigUnionLevel.initialize(data)
-        elif name == 'union_signin.json':
+        elif fname == 'union_signin.json':
             ConfigUnionSignin.initialize(data)
 
-        elif name == 'purchase_yueka.json':
+        elif fname == 'purchase_yueka.json':
             ConfigPurchaseYueka.initialize(data)
-        elif name == 'purchase_goods.json':
+        elif fname == 'purchase_goods.json':
             ConfigPurchaseGoods.initialize(data)
-        elif name == 'purchase_first_reward.json':
+        elif fname == 'purchase_first_reward.json':
             ConfigPurchaseFirstReward.initialize(data)
 
-        elif name == 'activity_daily_buy.json':
+        elif fname == 'activity_daily_buy.json':
             ConfigActivityDailyBuy.initialize(data)
-        elif name == 'activity_new_player.json':
+        elif fname == 'activity_new_player.json':
             ConfigActivityNewPlayer.initialize(data)
 
-        elif name == 'base_station_level.json':
+        elif fname == 'base_station_level.json':
             ConfigBaseStationLevel.initialize(data)
-        elif name == 'plunder_income.json':
+        elif fname == 'plunder_income.json':
             ConfigPlunderIncome.initialize(data)
-        elif name == 'plunder_buy_times_cost.json':
+        elif fname == 'plunder_buy_times_cost.json':
             ConfigPlunderBuyTimesCost.initialize(data)
-        elif name == 'plunder_npc.json':
+        elif fname == 'plunder_npc.json':
             ConfigPlunderNPC.initialize(data)
 
-        elif name == 'party_level.json':
+        elif fname == 'party_level.json':
             ConfigPartyLevel.initialize(data)
-        elif name == 'party_buy_item.json':
+        elif fname == 'party_buy_item.json':
             ConfigPartyBuyItem.initialize(data)
 
+    _has_configed = True
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))

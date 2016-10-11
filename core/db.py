@@ -7,7 +7,6 @@ Description:
 
 """
 
-
 import redis
 from pymongo import MongoClient
 from django.conf import settings
@@ -21,8 +20,7 @@ class RedisDB(object):
         if cls.DB:
             return
 
-        db = 1 if settings.TEST else 0
-        pool = redis.ConnectionPool(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=db)
+        pool = redis.ConnectionPool(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
         cls.DB = redis.Redis(connection_pool=pool)
         cls.DB.ping()
 
@@ -40,45 +38,30 @@ class RedisDB(object):
 
 
 class MongoDB(object):
-    # 记录 host:port 和 db 之间的关系，为了去重复
-    INSTANCES = {}
-    """:type: dict[str, MongoClient]"""
     # id: db
     DBS = {}
     """:type: dict[int, pymongo.database.Database]"""
 
     @classmethod
     def connect(cls):
-        from apps.server.models import Server
-
         if cls.DBS:
             return
 
-        servers = Server.opened_servers()
-        for s in servers:
-            host = s.mongo_host.strip()
-            port = int(s.mongo_port)
-            mongo_instance_key = "{0}:{1}".format(host, port)
-            if mongo_instance_key not in cls.INSTANCES:
-
-                if settings.MONGODB_USER:
-                    mongo_url = "mongodb://{0}:{1}@{2}:{3}".format(
-                        settings.MONGODB_USER, settings.MONGODB_PASSWORD, host, port
-                    )
-                else:
-                    mongo_url = "mongodb://{0}:{1}".format(host, port)
-
-                cls.INSTANCES[mongo_instance_key] = MongoClient(mongo_url)
-
-            instance = cls.INSTANCES[mongo_instance_key]
-
-            if not settings.TEST:
-                db_name = s.mongo_db
+        for mongo_config in settings.MONGODB:
+            if mongo_config['user']:
+                mongo_url = "mongodb://{0}:{1}@{2}:{3}".format(
+                    mongo_config['user'], mongo_config['password'],
+                    mongo_config['host'], mongo_config['port']
+                )
             else:
-                db_name = "{0}test".format(s.mongo_db)
+                mongo_url = "mongodb://{0}:{1}".format(
+                    mongo_config['user'], mongo_config['password'],
+                )
 
-            cls.DBS[s.id] = instance[db_name]
-
+            client = MongoClient(mongo_url)
+            for i in range(mongo_config['sid-min'], mongo_config['sid-max'] + 1):
+                db = 'dianjing{0}'.format(i)
+                cls.DBS[i] = client[db]
 
     @classmethod
     def get(cls, server_id):

@@ -28,10 +28,6 @@ class FinanceStatistics(object):
 
     def add_log(self, gold=0, diamond=0, message=""):
         from apps.statistics.models import Statistics
-
-        if settings.TEST:
-            return
-
         Statistics.objects.create(
             server_id=self.server_id,
             char_id=self.char_id,

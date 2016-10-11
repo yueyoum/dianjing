@@ -20,20 +20,16 @@
         <password>root</password>
     </mysql>
 
-    <crypto>
-        <key>1234567890abcdef</key>
-        <iv>1234567890abcdef</iv>
-    </crypto>
-
     <redis>
         <host>127.0.0.1</host>
         <port>6379</port>
         <cache-seconds>3600</cache-seconds>
     </redis>
 
+    <!-- mongodb 组, 每组的 sid-min 和 sid-max 表示这个范围内的 server 连接的都是这个 instance -->
+    <!-- db的名字就是 dianjingN N就是 server id -->
     <mongodb>
-        <user></user>
-        <password></password>
+        <instance user="" password="" host="127.0.0.1" port="27017" sid-min="1" sid-max="100" />
     </mongodb>
 
     <mailgun>
@@ -41,6 +37,11 @@
         <key></key>
         <domain></domain>
     </mailgun>
+
+    <crypto>
+        <key>1234567890abcdef</key>
+        <iv>1234567890abcdef</iv>
+    </crypto>
 
     <!-- admin 是服务器报错后要发送的人. 如果有多个，就写多个admin-->
     <admins>

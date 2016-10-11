@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import arrow
 
-from django.conf import settings
-
 from django.db import models
 from django.db import connection
 
@@ -31,9 +29,6 @@ class MailHistoryRecord(models.Model):
 
     @classmethod
     def create(cls, _id, from_id, to_id, title, content, attachment, function, create_at):
-        if settings.TEST:
-            return
-
         cls.objects.create(
             id=_id,
             from_id=from_id,
@@ -48,14 +43,11 @@ class MailHistoryRecord(models.Model):
 
     @classmethod
     def set_read(cls, _id):
-        if settings.TEST:
-            return
-
         cls.objects.filter(id=_id).update(has_read=True)
 
     @classmethod
     def cronjob(cls):
         connection.close()
 
-        limit = arrow.utcnow().replace(days=-30).format("YYYY-MM-DD HH:mm:ssZ")
+        limit = arrow.utcnow().replace(days=-15).format("YYYY-MM-DD HH:mm:ssZ")
         cls.objects.filter(create_at__lte=limit).delete()
