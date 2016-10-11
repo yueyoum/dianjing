@@ -363,20 +363,20 @@ class Arena(object):
 
             _docs = MongoArenaScore.db(self.server_id).find({'$and': condition})
 
-            char_ids = []
+            _char_ids = []
             for _doc in _docs:
-                char_ids.extend(_doc['char_ids'])
+                _char_ids.extend(_doc['_char_ids'])
 
-            random.shuffle(char_ids)
+            random.shuffle(_char_ids)
 
-            amount = len(char_ids)
+            amount = len(_char_ids)
 
             # 上面已经按照积分范围选除了 角色id
             # 下面用各种条件过滤
             npc = []
             real = []
             loop_times = 0
-            for cid in char_ids:
+            for cid in _char_ids:
                 if cid == str(self.char_id):
                     continue
 
@@ -455,7 +455,17 @@ class Arena(object):
             _search_times += 1
 
         if not rival_id:
-            raise GameException(ConfigErrorMessage.get_error_id("ARENA_SEARCH_NO_RIVAL"))
+            # 找不到人的情况就是 第一名的, 积分太高, 实在找不到. 就随机选一个
+            docs = MongoArena.db(self.server_id).find(
+                {'_id': {'$ne': str(self.char_id)}},
+                {'_id': 1}
+            ).limit(200)
+
+            char_ids = []
+            for doc in docs:
+                char_ids.append(doc['_id'])
+
+            rival_id = random.choice(char_ids)
 
         return rival_id
 

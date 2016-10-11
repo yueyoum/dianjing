@@ -7,17 +7,6 @@ Description:
 
 """
 
-BROADCAST_STAFF_STAR_TEXT = {
-    5 : u'白色+5',
-    10: u'绿色',
-    15: u'绿色+5',
-    20: u'蓝色',
-    25: u'蓝色+5',
-    30: u'紫色',
-    35: u'紫色+5',
-    40: u'橙色',
-}
-
 UNION_AUTO_TRANSFER_OLD_OWNER_MAIL_TITLE = u"公会会长资格取消"
 UNION_AUTO_TRANSFER_OLD_OWNER_MAIL_CONTENT = u"你已经连续7天没有登陆，已经取消你的会长资格。"
 UNION_AUTO_TRANSFER_NEW_OWNER_MAIL_TITLE = u"公会会长自动转移"

@@ -58,9 +58,9 @@ class BroadCast(object):
         text = template.format(self.name, ConfigItemNew.get(staff_original_id).name, step_level)
         self.do_cast(text)
 
-    def cast_staff_star_up_notify(self, staff_original_id, star_text):
+    def cast_staff_star_up_notify(self, staff_original_id, star):
         template = ConfigBroadcastTemplate.get(2).template
-        text = template.format(self.name, ConfigItemNew.get(staff_original_id).name, star_text)
+        text = template.format(self.name, ConfigItemNew.get(staff_original_id).name, star)
         self.do_cast(text)
 
     def cast_arena_match_notify(self, continue_win):
