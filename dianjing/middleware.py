@@ -83,6 +83,9 @@ class RequestMiddleware(object):
         else:
             # 除过上面两个消息，其他消息都应该有session
             session = GameSession.loads(proto.session)
+            if msg_name == "SyncRequest":
+                if not session.account_id or not session.server_id or not session.char_id:
+                    raise Exception("SyncRequest, But session is incomplete")
 
         return session, proto
 

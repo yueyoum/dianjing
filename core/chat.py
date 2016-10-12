@@ -93,10 +93,11 @@ class Chat(object):
 
                     _id, _amount = x.split(',')
                     items.append((int(_id), int(_amount)))
+
+                resource_classified = ResourceClassification.classify(items)
             except:
                 raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-            resource_classified = ResourceClassification.classify(items)
             resource_classified.add(self.server_id, self.char_id)
 
         elif tp == ChatSendRequest.SET_MONEY:
