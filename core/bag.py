@@ -689,7 +689,7 @@ class Bag(object):
 
         if config.use_item_id:
             if config.use_item_id == -1:
-                if index is None or index > len(config.result)-1:
+                if index is None or index > len(config.result[0])-1:
                     raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
             else:
@@ -825,12 +825,14 @@ class Bag(object):
         if equip.is_special:
             max_level = min(ConfigEquipmentSpecialLevel.MAX_LEVEL,
                             Plunder(self.server_id, self.char_id).get_station_level() * 50)
+            if level >= max_level:
+                raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_SPECIAL_REACH_MAX_LEVEL"))
         else:
             config = ConfigEquipmentNew.get(item_id)
             max_level = min(config.max_level, get_club_property(self.server_id, self.char_id, 'level') * 2)
 
-        if level >= max_level:
-            raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_REACH_MAX_LEVEL"))
+            if level >= max_level:
+                raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_REACH_MAX_LEVEL"))
 
         can_add_level = max_level - level
         if times > can_add_level:
