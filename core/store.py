@@ -119,8 +119,8 @@ class Store(object):
             # 爬塔历史最高星
             Tower(self.server_id, self.char_id).check_history_max_star(config.condition_value)
         elif config.condition_id == 3:
-            # 竞技场历史最高排名
-            Arena(self.server_id, self.char_id).check_max_rank(config.condition_value)
+            # 竞技场当前排名
+            Arena(self.server_id, self.char_id).check_current_rank(config.condition_value)
         elif config.condition_id == 4:
             # 当前公会等级
             Union(self.server_id, self.char_id).check_level(config.condition_value)

@@ -205,7 +205,10 @@ class Tower(object):
             club_two.load_staffs()
 
         club_one.add_tower_temporary_talent_effects()
+        club_one.make_temporary_staff_calculate()
+
         club_two.add_tower_temporary_talent_effects()
+        club_two.make_temporary_staff_calculate()
 
         club_match = ClubMatch(club_one, club_two)
         msg = club_match.start()
