@@ -966,7 +966,7 @@ class Plunder(object):
         ti = PlunderTimesBuyInfo(self.server_id, self.char_id)
 
         notify = PlunderTimesNotify()
-        notify.max_times = 10
+        notify.max_times = PLUNDER_TIMES_RECOVER_LIMIT
         notify.remained_times = self.doc['plunder_remained_times']
         notify.buy_cost = ti.buy_cost
         notify.remained_buy_times = ti.remained_buy_times
