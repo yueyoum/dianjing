@@ -282,13 +282,14 @@ class UnitManager(object):
     def load_units(self):
         from core.formation import Formation
 
-        units = []
+        units = {}
         """:type: dict[int, Unit]"""
 
         doc = MongoUnit.db(self.server_id).find_one({'_id': self.char_id})
         for _id, _data in doc['units'].iteritems():
             u = Unit(self.server_id, self.char_id, int(_id), _data)
             u.calculate()
+            u.make_cache()
             units[int(_id)] = u
 
         race = {
