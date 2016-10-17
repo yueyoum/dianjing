@@ -105,15 +105,15 @@ class Unit(AbstractUnit):
                 add_level = can_add_level
 
             def _try_up(_add):
-                using_items = []
+                _using_items = []
                 this_level = self.level
 
                 for _ in range(_add):
                     items = self.config.levels[this_level].update_item_need
-                    using_items.extend(items)
+                    _using_items.extend(items)
                     this_level += 1
 
-                rc = ResourceClassification.classify(using_items)
+                rc = ResourceClassification.classify(_using_items)
                 rc.check_exist(self.server_id, self.char_id)
                 rc.remove(self.server_id, self.char_id)
 
@@ -280,13 +280,16 @@ class UnitManager(object):
         return value
 
     def load_units(self):
+        from core.formation import Formation
+
         units = []
-        """:type: list[Unit]"""
+        """:type: dict[int, Unit]"""
 
         doc = MongoUnit.db(self.server_id).find_one({'_id': self.char_id})
         for _id, _data in doc['units'].iteritems():
             u = Unit(self.server_id, self.char_id, int(_id), _data)
-            units.append(u)
+            u.calculate()
+            units[int(_id)] = u
 
         race = {
             1: {'level': 0, 'step': 0},
@@ -294,7 +297,7 @@ class UnitManager(object):
             3: {'level': 0, 'step': 0},
         }
 
-        for u in units:
+        for _, u in units.iteritems():
             race[u.config.race]['level'] += u.level
             race[u.config.race]['step'] += u.step
 
@@ -313,14 +316,22 @@ class UnitManager(object):
 
             if _step_addition:
                 for attr in UnitAddition.__slots__:
-                    v.add_property(attr, getattr(_level_addition, attr))
+                    v.add_property(attr, getattr(_step_addition, attr))
 
-        for u in units:
+        # 只作用于上阵兵种
+        in_format_staffs = Formation(self.server_id, self.char_id).in_formation_staffs()
+        for k, v in in_format_staffs.iteritems():
+            if not v['unit_id']:
+                continue
+
+            u = units[v['unit_id']]
             _add = additions[u.config.race]
-            for attr in UnitAddition.__slots__:
-                setattr(u, attr, getattr(_add, attr))
 
-            u.calculate()
+            for attr in UnitAddition.__slots__:
+                _old_value = getattr(u, attr)
+                _new_value = _old_value + getattr(_add, attr)
+                setattr(u, attr, _new_value)
+
             u.make_cache()
 
     def get_unit_object(self, _id):
@@ -367,14 +378,13 @@ class UnitManager(object):
 
         all_units_object = [self.get_unit_object(k) for k, _ in all_units.iteritems()]
 
-        changed_unit_ids = []
+        changed_units = {}
+
         for u in all_units_object:
             if u.config.race == unit.config.race:
-                u.calculate()
-                u.make_cache()
-                changed_unit_ids.append(u.id)
+                changed_units[u.id] = u
 
-        self.send_notify(ids=changed_unit_ids)
+        self.send_notify_with_unit_objs(changed_units.values())
 
         # !!!
         fm = Formation(self.server_id, self.char_id)
@@ -383,15 +393,13 @@ class UnitManager(object):
         _changed = False
         for sid in fm.in_formation_staffs():
             s_obj = sm.get_staff_object(sid)
-            if s_obj.unit and s_obj.unit.id == uid:
-                s_obj.set_unit(unit)
+            if s_obj.unit and s_obj.unit.id in changed_units:
+                s_obj.set_unit(changed_units[s_obj.unit.id])
                 _changed = True
 
         if _changed:
-            # 这里不用发送 staff notify ，所以也不用 force_load_staffs 的 send_notify
             club = Club(self.server_id, self.char_id, load_staffs=False)
-            club.force_load_staffs()
-            club.send_notify()
+            club.force_load_staffs(send_notify=True)
 
     def send_notify(self, ids=None):
         if not ids:
@@ -407,5 +415,19 @@ class UnitManager(object):
             notify_unit = notify.units.add()
             unit = self.get_unit_object(_id)
             notify_unit.MergeFrom(unit.make_protomsg())
+
+        MessagePipe(self.char_id).put(msg=notify)
+
+    def send_notify_with_unit_objs(self, unit_objs):
+        """
+
+        :type unit_objs: list[Unit]
+        """
+
+        notify = UnitNotify()
+        notify.act = ACT_UPDATE
+        for u in unit_objs:
+            notify_unit = notify.units.add()
+            notify_unit.MergeFrom(u.make_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)
