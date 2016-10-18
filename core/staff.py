@@ -413,7 +413,7 @@ class Staff(AbstractStaff):
         # 重置到初始状态
         self.level = 1
         self.step = 0
-        self.star = (ConfigItemNew.get(self.oid).quality - 1) * 10
+        self.star = 0
         self.level_exp = 0
         self.star_exp = 0
 
