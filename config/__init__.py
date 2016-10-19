@@ -45,7 +45,8 @@ from config.template import ConfigBroadcastTemplate
 from config.union import ConfigUnionSignin, ConfigUnionLevel
 from config.purchase import ConfigPurchaseYueka, ConfigPurchaseGoods, ConfigPurchaseFirstReward
 from config.activity import ConfigActivityDailyBuy, ConfigActivityNewPlayer
-from config.plunder import ConfigBaseStationLevel, ConfigPlunderBuyTimesCost, ConfigPlunderIncome, ConfigPlunderNPC
+from config.plunder import ConfigBaseStationLevel, ConfigPlunderBuyTimesCost, ConfigPlunderIncome, ConfigPlunderNPC, \
+    ConfigPlunderDailyReward
 from config.name import ConfigFirstName, ConfigLastName, ConfigName
 from config.party import ConfigPartyLevel, ConfigPartyBuyItem
 
@@ -260,6 +261,8 @@ def load_config():
             ConfigPlunderBuyTimesCost.initialize(data)
         elif fname == 'plunder_npc.json':
             ConfigPlunderNPC.initialize(data)
+        elif fname == 'plunder_daily_reward.json':
+            ConfigPlunderDailyReward.initialize(data)
 
         elif fname == 'party_level.json':
             ConfigPartyLevel.initialize(data)

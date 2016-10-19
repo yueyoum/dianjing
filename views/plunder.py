@@ -24,6 +24,8 @@ from protomsg.plunder_pb2 import (
     PlunderBuyTimesResponse,
     BaseStationGetProductResponse,
 
+    PlunderDailyRewardGetResponse,
+
     SpecialEquipmentGenerateResponse,
     SpecialEquipmentGenerateSpeedUpResponse,
     SpecialEquipmentGetResponse,
@@ -147,6 +149,21 @@ def buy_plunder_times(request):
 
     response = PlunderBuyTimesResponse()
     response.ret = 0
+    return ProtobufResponse(response)
+
+
+def get_daily_reward(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    _id = request._proto.id
+
+    p = Plunder(server_id, char_id)
+    drop = p.daily_reward_get(_id)
+
+    response = PlunderDailyRewardGetResponse()
+    response.ret = 0
+    response.drop.MergeFrom(drop.make_protomsg())
     return ProtobufResponse(response)
 
 

@@ -275,6 +275,9 @@ MESSAGE_TO_ID = {
     "SpecialEquipmentGenerateSpeedUpResponse": 4754,
     "SpecialEquipmentGetRequest": 4755,
     "SpecialEquipmentGetResponse": 4756,
+    "PlunderDailyRewardNotify": 4757,
+    "PlunderDailyRewardGetRequest": 4758,
+    "PlunderDailyRewardGetResponse": 4759,
     "PartyInfoNotify": 4800,
     "PartyMessageNotify": 4801,
     "PartyRoomRequest": 4802,
@@ -574,6 +577,9 @@ ID_TO_MESSAGE = {
     4754: "SpecialEquipmentGenerateSpeedUpResponse",
     4755: "SpecialEquipmentGetRequest",
     4756: "SpecialEquipmentGetResponse",
+    4757: "PlunderDailyRewardNotify",
+    4758: "PlunderDailyRewardGetRequest",
+    4759: "PlunderDailyRewardGetResponse",
     4800: "PartyInfoNotify",
     4801: "PartyMessageNotify",
     4802: "PartyRoomRequest",
@@ -706,6 +712,7 @@ PATH_TO_REQUEST = {
     "/game/plunder/specialequip/generate/": ["plunder", "SpecialEquipmentGenerateRequest"],
     "/game/plunder/specialequip/speedup/": ["plunder", "SpecialEquipmentGenerateSpeedUpRequest"],
     "/game/plunder/specialequip/get/": ["plunder", "SpecialEquipmentGetRequest"],
+    "/game/plunder/dailyreward/get/": ["plunder", "PlunderDailyRewardGetRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -817,4 +824,5 @@ PATH_TO_RESPONSE = {
     "/game/plunder/specialequip/generate/": ["plunder", "SpecialEquipmentGenerateResponse"],
     "/game/plunder/specialequip/speedup/": ["plunder", "SpecialEquipmentGenerateSpeedUpResponse"],
     "/game/plunder/specialequip/get/": ["plunder", "SpecialEquipmentGetResponse"],
+    "/game/plunder/dailyreward/get/": ["plunder", "PlunderDailyRewardGetResponse"],
 }

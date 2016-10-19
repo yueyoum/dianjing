@@ -146,6 +146,7 @@ def game_start_handler(server_id, char_id, **kwargs):
     p.send_station_notify()
     p.send_formation_notify()
     p.send_plunder_times_notify()
+    p.send_plunder_daily_reward_notify()
 
     SpecialEquipmentGenerator(server_id, char_id).send_notify()
 

@@ -37,7 +37,7 @@ from core.bag import Bag, Equipment, PROPERTY_TO_NAME_MAP, SPECIAL_EQUIPMENT_BAS
 from core.vip import VIP
 
 from utils.message import MessagePipe
-from utils.functional import make_string_id
+from utils.functional import make_string_id, get_start_time_of_today
 
 from config import (
     ConfigErrorMessage,
@@ -50,6 +50,7 @@ from config import (
     ConfigEquipmentSpecialGenerate,
     ConfigPlunderNPC,
     ConfigNPCFormation,
+    ConfigPlunderDailyReward,
 
     GlobalConfig,
 )
@@ -66,6 +67,8 @@ from protomsg.plunder_pb2 import (
 
     PLUNDER_TYPE_PLUNDER,
     PLUNDER_TYPE_REVENGE,
+
+    PlunderDailyRewardNotify,
 
     SpecialEquipmentGenerateNotify,
 )
@@ -371,6 +374,17 @@ class Plunder(object):
             self.doc['_id'] = self.char_id
             self.doc['plunder_remained_times'] = PLUNDER_TIMES_INIT_TIMES
             MongoPlunder.db(self.server_id).insert_one(self.doc)
+
+        _, today_daily_reward_info = self.get_daily_reward_info()
+        if not today_daily_reward_info:
+            # 可以清理数据
+            self.doc['daily_reward'] = {}
+            MongoPlunder.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {
+                    'daily_reward': {}
+                }}
+            )
 
     @classmethod
     def make_product(cls, server_id):
@@ -893,6 +907,40 @@ class Plunder(object):
         self.send_station_notify()
         return self.doc['level'] - old_level
 
+    def get_daily_reward_info(self):
+        key = get_start_time_of_today().format("YYYY-MM-DD")
+        return key, self.doc.get('daily_reward', {}).get(key, {})
+
+    def daily_reward_get(self, _id):
+        config = ConfigPlunderDailyReward.get(_id)
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        key, info = self.get_daily_reward_info()
+        win_ways = info.get('win_ways', 0)
+        got_list = info.get('got_list', [])
+
+        if _id in got_list:
+            raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_DAILY_REWARD_ALREADY_GOT"))
+
+        if win_ways < _id:
+            raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_DAILY_REWARD_NOT_ENOUGH"))
+
+        rc = ResourceClassification.classify(config.reward)
+        rc.add(self.server_id, self.char_id)
+
+        got_list.append(_id)
+        info['got_list'] = got_list
+        MongoPlunder.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'daily_reward': {key: info}
+            }}
+        )
+
+        self.send_plunder_daily_reward_notify(info=info)
+        return rc
+
     @check_club_level(silence=False)
     def get_station_product(self):
         drop = self.doc.get('drop', '')
@@ -971,6 +1019,29 @@ class Plunder(object):
         notify.buy_cost = ti.buy_cost
         notify.remained_buy_times = ti.remained_buy_times
         notify.next_recover_at = get_plunder_times_next_recover_at()
+
+        MessagePipe(self.char_id).put(msg=notify)
+
+    @check_club_level(silence=True)
+    def send_plunder_daily_reward_notify(self, info=None):
+        if info is None:
+            _, info = self.get_daily_reward_info()
+
+        win_ways = info.get('win_ways', 0)
+        got_list = info.get('got_list', [])
+
+        notify = PlunderDailyRewardNotify()
+
+        notify.win_ways = win_ways
+        for i in ConfigPlunderDailyReward.INSTANCES.keys():
+            notify_reward = notify.reward.add()
+            notify_reward.id = i
+            if i in got_list:
+                notify_reward.status = 2
+            elif win_ways >= i:
+                notify_reward.status = 1
+            else:
+                notify_reward.status = 0
 
         MessagePipe(self.char_id).put(msg=notify)
 

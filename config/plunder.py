@@ -82,6 +82,12 @@ class NPC(object):
         }
 
 
+class DailyReward(object):
+    __slots__ = ['id', 'reward']
+    def __init__(self):
+        self.id = 0
+        self.reward = []
+
 class ConfigBaseStationLevel(ConfigBase):
     EntityClass = BaseStationLevel
     INSTANCES = {}
@@ -162,3 +168,16 @@ class ConfigPlunderNPC(ConfigBase):
                 raise RuntimeError("ConfigPlunderNPC, Can not find config for level: {0}".format(lv))
 
         return cls.MAP[lv]
+
+class ConfigPlunderDailyReward(ConfigBase):
+    EntityClass = DailyReward
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: DailyReward
+        """
+        return super(ConfigPlunderDailyReward, cls).get(_id)

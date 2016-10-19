@@ -761,7 +761,11 @@ class MongoPlunder(BaseDocument):
         # 上次的产出， 领了就清空，没领就到下次生成的时候覆盖
         'drop': '',
         # 恢复掠夺次数
-        'recover_times': 0
+        'recover_times': 0,
+
+        # 每日奖励情况
+        # 这里用日期做key，这样第二天就自然更新了， 但是要清除以前的key
+        'daily_reward': {}
     }
 
     SEARCH_DOCUMENT = {
