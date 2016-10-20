@@ -8,6 +8,7 @@ Description:
 """
 
 import cPickle
+from django.db.models import Q
 
 from core.club import get_club_property
 
@@ -19,16 +20,24 @@ from protomsg.broadcast_pb2 import BroadcastNotify
 from config import ConfigBroadcastTemplate, ConfigItemNew
 
 
-def send_system_notify(char_id):
+def send_system_notify(server_id, char_id):
     from apps.config.models import Broadcast as ModelBroadcast
 
-    broadcasts = ModelBroadcast.objects.filter(display=True)
+    condition = Q(server_min__lte=server_id) & Q(server_max__gte=server_id)
+    broadcasts = ModelBroadcast.objects.filter(condition)
     if broadcasts.count() == 0:
-        return
+        # get defaults
+        condition = Q(server_min=0) & Q(server_max=0)
+        broadcasts = ModelBroadcast.objects.filter(condition)
+        if broadcasts.count() == 0:
+            return
 
     notify = BroadcastNotify()
     notify.act = ACT_INIT
     for cast in broadcasts:
+        if not cast.display:
+            continue
+
         b = notify.broadcast.add()
         b.text = cast.content
         b.repeat_times = cast.repeat_times

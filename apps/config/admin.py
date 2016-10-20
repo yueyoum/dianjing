@@ -23,4 +23,4 @@ class BulletinAdmin(admin.ModelAdmin):
 
 @admin.register(Broadcast)
 class BroadcastAdmin(admin.ModelAdmin):
-    list_display = ('content', 'repeat_times', 'display')
+    list_display = ('server_min', 'server_max', 'content', 'repeat_times')

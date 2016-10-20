@@ -90,12 +90,14 @@ class Bulletin(models.Model):
 
 
 class Broadcast(models.Model):
+    server_min = models.IntegerField(default=0, db_index=True)
+    server_max = models.IntegerField(default=0, db_index=True)
     content = models.CharField(max_length=255, verbose_name="内容")
     repeat_times = models.IntegerField(default=0, verbose_name="重复次数",
                                          help_text='0表示一直重复'
                                          )
 
-    display = models.BooleanField(default=True, db_index=True, verbose_name="显示")
+    display = models.BooleanField(default=True, verbose_name="显示")
 
     class Meta:
         db_table = 'broadcast'

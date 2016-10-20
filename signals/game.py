@@ -152,5 +152,5 @@ def game_start_handler(server_id, char_id, **kwargs):
 
     Party(server_id, char_id).send_notify()
 
-    send_system_notify(char_id)
+    send_system_notify(server_id, char_id)
     BroadCast(server_id, char_id).try_cast_login_notify()
