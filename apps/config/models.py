@@ -14,6 +14,8 @@ from django.core.validators import validate_comma_separated_integer_list
 from apps.server.models import Server
 from apps.character.models import Character
 
+from core.resource import ResourceClassification
+
 
 def config_upload_to(instance, filename):
     now = arrow.utcnow().to(settings.TIME_ZONE).format("YYYY-MM-DD-HH-mm-ss")
@@ -170,6 +172,26 @@ class Mail(models.Model):
         except:
             return None
 
+    def get_parsed_items(self):
+        if not self.items:
+            return []
+
+        try:
+            result = []
+            for x in self.items.split(';'):
+                if not x:
+                    continue
+
+                a, b = x.split(',')
+                result.append((int(a), int(b)))
+
+            ResourceClassification.classify(result)
+
+            return result
+        except:
+            return None
+
+
     def clean(self):
         def clean_condition():
             if (self.condition_login_at_1 and not self.condition_login_at_2) or \
@@ -187,6 +209,9 @@ class Mail(models.Model):
             for i in char_ids:
                 if not Character.objects.filter(id=i).exists():
                     raise ValidationError("角色ID {0} 不存在".format(i))
+
+        if self.get_parsed_items() is None:
+            raise ValidationError("附件填写错误")
 
         condition_values = self.get_parsed_condition_value()
         if condition_values is None:

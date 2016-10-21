@@ -88,7 +88,7 @@ class AdminMailManager(object):
         m.save()
 
         if m.items:
-            rc = ResourceClassification.classify(m.items)
+            rc = ResourceClassification.classify(m.get_parsed_items())
             attachment = rc.to_json()
         else:
             attachment = ""
