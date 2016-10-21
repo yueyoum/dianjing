@@ -79,6 +79,7 @@ class VIP(object):
             )
 
     def buy_reward(self, vip_level):
+        self.check(vip_level)
         config = ConfigVIP.get(vip_level)
         if not config:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
