@@ -151,17 +151,24 @@ class Mail(models.Model):
     def has_condition(self):
         return self.condition_club_level is not None or self.condition_vip_level is not None or \
                 self.condition_login_at_1 is not None or self.condition_login_at_2 is not None or \
-                self.condition_exclude_chars is not None
+                self.condition_exclude_chars != ''
 
     def get_parsed_condition_value(self):
         if not self.condition_value:
             return []
-        return [int(_i) for _i in self.condition_value.split(',')]
+        try:
+            return [int(_i) for _i in self.condition_value.split(',')]
+        except:
+            return None
 
     def get_parsed_condition_exclude_chars(self):
         if not self.condition_exclude_chars:
             return []
-        return [int(_i) for _i in self.condition_exclude_chars.split(',')]
+
+        try:
+            return [int(_i) for _i in self.condition_exclude_chars.split(',')]
+        except:
+            return None
 
     def clean(self):
         def clean_condition():
@@ -173,22 +180,29 @@ class Mail(models.Model):
                 if self.condition_login_at_2 <= self.condition_login_at_1:
                     raise ValidationError("登陆时间范围第二个值必须大于第一个值")
 
-            for i in self.get_parsed_condition_exclude_chars():
+            char_ids = self.get_parsed_condition_exclude_chars()
+            if char_ids is None:
+                raise ValidationError("ID列表应该填写数字")
+
+            for i in char_ids:
                 if not Character.objects.filter(id=i).exists():
                     raise ValidationError("角色ID {0} 不存在".format(i))
 
+        condition_values = self.get_parsed_condition_value()
+        if condition_values is None:
+            raise ValidationError("ID列表应该填写数字")
+
         if self.condition_type == 1:
-            if self.condition_value:
+            if condition_values:
                 raise ValidationError("全部服务器不用填写 条件值")
 
             clean_condition()
 
         elif self.condition_type in [2, 3]:
-            values = self.get_parsed_condition_value()
-            if not values:
+            if not condition_values:
                 raise ValidationError("应当填写 服务器ID")
 
-            for i in values:
+            for i in condition_values:
                 if not Server.objects.filter(id=i).exists():
                     raise ValidationError("服务器 {0} 不存在".format(i))
 
@@ -198,11 +212,10 @@ class Mail(models.Model):
             if self.has_condition():
                 raise ValidationError("指定角色时 不用填写条件")
 
-            values = self.get_parsed_condition_value()
-            if not values:
+            if not condition_values:
                 raise ValidationError("应当填写 角色ID")
-            
-            for i in values:
+
+            for i in condition_values:
                 if not Character.objects.filter(id=i).exists():
                     raise ValidationError("角色ID {0} 不存在".format(i))
 

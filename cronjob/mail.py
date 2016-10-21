@@ -20,7 +20,7 @@ from core.mail import MailManager, AdminMailManager
 
 clean_time = get_mail_clean_time().to(settings.TIME_ZONE)
 
-@uwsgidecorators.cron(-10, 0, 0, 0, 0, target="spooler")
+@uwsgidecorators.cron(-10, -1, -1, -1, -1, target="spooler")
 def send_gm_mail(*args):
     logger = Logger("send_gm_mail")
     logger.write("Start")
