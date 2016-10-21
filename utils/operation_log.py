@@ -29,7 +29,7 @@ class OperationLog(object):
         MongoOperationLog.db(server_id).delete_many({'timestamp': {'$lte': limit.timestamp}})
 
     @classmethod
-    def get_recent_action_char_ids(cls, server_id, recent_minutes=30, keep_order=False):
+    def get_recent_action_char_ids(cls, server_id, recent_minutes=15, keep_order=False):
         limit = arrow.utcnow().replace(minutes=-recent_minutes)
 
         if keep_order:

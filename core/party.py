@@ -70,6 +70,7 @@ class Party(object):
 
     @classmethod
     def clean_talent_id(cls, server_id):
+        # 把最近在线的人选出来， 要发送通知， 其他的直接清理
         char_ids = OperationLog.get_recent_action_char_ids(server_id)
 
         condition = {'$and': [

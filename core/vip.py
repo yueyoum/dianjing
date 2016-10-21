@@ -33,6 +33,11 @@ class VIP(object):
             self.doc['_id'] = self.char_id
             MongoVIP.db(self.server_id).insert_one(self.doc)
 
+    @classmethod
+    def query_char_ids(cls, server_id, min_level):
+        docs = MongoVIP.db(server_id).find({'vip': {'$gte': min_level}}, {'_id': 1})
+        return [d['_id'] for d in docs]
+
     @property
     def level(self):
         return self.doc['vip']

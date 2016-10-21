@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django.contrib import admin
 
 from apps.config.models import (
@@ -5,6 +7,7 @@ from apps.config.models import (
     CustomerServiceInformation,
     Bulletin,
     Broadcast,
+    Mail,
 )
 
 @admin.register(Config)
@@ -24,3 +27,34 @@ class BulletinAdmin(admin.ModelAdmin):
 @admin.register(Broadcast)
 class BroadcastAdmin(admin.ModelAdmin):
     list_display = ('server_min', 'server_max', 'content', 'repeat_times')
+
+@admin.register(Mail)
+class AdminMail(admin.ModelAdmin):
+    list_display = (
+        'id', 'title', 'send_at',
+        'condition_type', 'condition_value',
+        'condition_club_level', 'condition_vip_level',
+        'condition_login_at_1', 'condition_login_at_2',
+        'condition_exclude_chars',
+        'create_at', 'status'
+    )
+
+    fieldsets = (
+        (None, {
+            'fields': (
+                'title', 'content', 'items', 'send_at',
+                'condition_type', 'condition_value',
+            )
+        }),
+
+        ('条件', {
+            'classes': ('collapse', ),
+            'fields': (
+                'condition_club_level', 'condition_vip_level',
+                'condition_login_at_1', 'condition_login_at_2',
+                'condition_exclude_chars',
+            )
+        })
+    )
+
+    list_filter = ('status',)

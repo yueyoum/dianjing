@@ -13,7 +13,7 @@ import arrow
 
 from django.conf import settings
 
-from core.mongo import MongoCharacter
+from core.mongo import MongoCharacter, MongoCharacterLoginLog
 from core.abstract import AbstractClub
 from core.signals import club_level_up_signal, task_condition_trig_signal
 from core.statistics import FinanceStatistics
@@ -22,6 +22,7 @@ from dianjing.exception import GameException
 
 from utils.message import MessagePipe
 from utils.stdvalue import MAX_INT
+from utils.functional import make_string_id
 
 from config import (
     ConfigClubLevel,
@@ -182,6 +183,40 @@ class Club(AbstractClub):
         MongoCharacter.db(server_id).insert_one(doc)
 
     @classmethod
+    def query_char_ids(cls, server_id, min_level=None, login_range=None):
+        # 根据各种条件查询
+        result_list = []
+
+        if min_level:
+            docs = MongoCharacter.db(server_id).find({'level': {'$gte': min_level}}, {'_id': 1})
+            char_ids_1 = [d['_id'] for d in docs]
+
+            result_list.append(char_ids_1)
+
+        if login_range:
+            condition = {'$and': [
+                {'timestamp': {'$gte': login_range[0]}},
+                {'timestamp': {'$lte': login_range[1]}}
+            ]}
+
+            char_ids_2 = MongoCharacterLoginLog.db(server_id).distinct(
+                'char_id',
+                condition
+            )
+
+            result_list.append(char_ids_2)
+
+        if not result_list:
+            raise RuntimeError("Club.query_char_ids with no condition")
+
+        result = set(result_list[0])
+        for i in range(1, len(result_list)):
+            result &= set(result_list[i])
+
+        return list(result)
+
+
+    @classmethod
     def get_recent_login_char_ids(cls, server_id, recent_days=14, other_conditions=None):
         day_limit = arrow.utcnow().replace(days=-recent_days)
         timestamp = day_limit.timestamp
@@ -235,6 +270,14 @@ class Club(AbstractClub):
             {'_id': self.char_id},
             {'$set': {'last_login': now.timestamp}}
         )
+
+        login_doc = MongoCharacterLoginLog.document()
+        login_doc['_id'] = make_string_id()
+        login_doc['char_id'] = self.char_id
+        login_doc['timestamp'] = now.timestamp
+
+        MongoCharacterLoginLog.db(self.server_id).insert_one(login_doc)
+
 
     def check_money(self, diamond=0, gold=0, crystal=0, gas=0, renown=0):
         if diamond > self.diamond:

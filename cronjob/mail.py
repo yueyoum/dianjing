@@ -16,9 +16,30 @@ from apps.history_record.models import MailHistoryRecord
 
 from cronjob.log import Logger
 from core.mail import get_mail_clean_time
-from core.mail import MailManager
+from core.mail import MailManager, AdminMailManager
 
 clean_time = get_mail_clean_time().to(settings.TIME_ZONE)
+
+@uwsgidecorators.cron(-10, 0, 0, 0, 0, target="spooler")
+def send_gm_mail(*args):
+    logger = Logger("send_gm_mail")
+    logger.write("Start")
+
+    gm = AdminMailManager()
+    gm.fetch()
+
+    logger.write("Send ids: {0}".format(gm.send_ids))
+
+    try:
+        gm.start_send()
+    except:
+        logger.write("Done ids: {0}".format(gm.done_ids))
+        logger.error(traceback.format_exc())
+    else:
+        logger.write("Done ids: {0}".format(gm.done_ids))
+        logger.write("Done")
+    finally:
+        logger.close()
 
 
 @uwsgidecorators.cron(0, clean_time.hour, -1, -1, -1, target="spooler")

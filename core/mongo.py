@@ -83,6 +83,18 @@ class MongoCharacter(BaseDocument):
     COLLECTION = "character"
     INDEXES = ['name', 'last_login', 'level',]
 
+# 登陆某一个服 日志
+class MongoCharacterLoginLog(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'char_id': null,
+        'timestamp': null,
+    }
+
+    COLLECTION = 'character_login_log'
+    INDEXES = ['char_id', 'timestamp',]
+
+
 class MongoStaff(BaseDocument):
     DOCUMENT = {
         '_id': null,
@@ -268,6 +280,20 @@ class MongoMail(BaseDocument):
     @classmethod
     def document_mail(cls):
         return copy.deepcopy(cls.MAIL_DOCUMENT)
+
+# 共享邮件
+# 一般用于全服发送的邮件
+class MongoSharedMail(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # 这邮件是给谁的
+        'for_char_ids': [],
+
+        # 其他字段就是上面的 MAIL_DOCUMENT
+    }
+
+    COLLECTION = "shared_mail"
+    INDEXES = ['for_char_ids', 'create_at']
 
 
 # 任务

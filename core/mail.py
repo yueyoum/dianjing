@@ -9,19 +9,29 @@ Description:
 
 import arrow
 import base64
+import contextlib
 
 from django.conf import settings
+from django.db.models import Q
+
+from apps.server.models import Server as ModelServer
+from apps.character.models import Character as ModelCharacter
+from apps.config.models import Mail as GMMail
+from apps.history_record.models import MailHistoryRecord
+
 from dianjing.exception import GameException
 
-from core.mongo import MongoMail, MongoCharacter
+from core.mongo import MongoMail, MongoSharedMail, MongoCharacter
 from core.resource import ResourceClassification
 from core.club import Club
+from core.vip import VIP
 
 from config import ConfigErrorMessage
 from config.settings import MAIL_KEEP_DAYS, MAIL_CLEAN_AT
 
 from utils.functional import make_string_id
 from utils.message import MessagePipe
+from utils.operation_log import OperationLog
 
 from protomsg.mail_pb2 import (
     MailNotify,
@@ -31,6 +41,165 @@ from protomsg.mail_pb2 import (
 )
 
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
+
+
+class AdminMailManager(object):
+    __slots__ = ['send_ids', 'done_ids', 'mails']
+
+    def __init__(self):
+        self.send_ids = []
+        self.done_ids = []
+        self.mails = []
+
+    def fetch(self, mail_id=None):
+        if mail_id:
+            condition = Q(id=mail_id)
+        else:
+            now = arrow.utcnow().format("YYYY-MM-DD HH:mm:ssZ")
+            condition = Q(send_at__lte=now) & Q(status=0)
+
+        self.mails = GMMail.objects.filter(condition)
+        self.mails = list(self.mails)
+        self.send_ids = [m.id for m in self.mails]
+
+    def start_send(self):
+        for m in self.mails:
+            # lock
+            m.status = 1
+            m.save()
+
+            try:
+                self._send_one_mail(m)
+            except:
+                m.status = 3
+                m.save()
+                raise
+            else:
+                m.status = 2
+                m.save()
+                self.done_ids.append(m.id)
+
+    def _send_one_mail(self, m):
+        # lock
+        m.status = 1
+        m.save()
+
+        if m.items:
+            rc = ResourceClassification.classify(m.items)
+            attachment = rc.to_json()
+        else:
+            attachment = ""
+
+        if m.condition_type == 1:
+            # 全部服务器
+            for s in ModelServer.objects.all():
+                self._send_to_one_server(s.id, m, attachment)
+        elif m.condition_type == 2:
+            # 指定服务器
+            for sid in m.get_parsed_condition_value():
+                self._send_to_one_server(sid, m, attachment)
+        elif m.condition_type == 3:
+            # 指定排除服务器
+            values = m.get_parsed_condition_value()
+            for s in ModelServer.objects.exclude(id__in=values):
+                self._send_to_one_server(s.id, m, attachment)
+        elif m.condition_type == 11:
+            # 指定角色ID
+            values = m.get_parsed_condition_value()
+            chars = ModelCharacter.objects.filter(id__in=values)
+            for c in chars:
+                self._send_to_one_char(c.server_id, c.id, m, attachment)
+
+    @staticmethod
+    def _send_to_one_server(sid, m, attachment):
+        if m.has_condition():
+            club_level = m.condition_club_level
+            vip_level = m.condition_vip_level
+
+            if m.condition_login_at_1:
+                login_range = [arrow.get(m.condition_login_at_1), arrow.get(m.condition_login_at_2)]
+            else:
+                login_range = None
+
+            exclude_char_ids = m.get_parsed_condition_exclude_chars()
+
+            result_list = []
+            if club_level or login_range:
+                result_list.append(Club.query_char_ids(sid, min_level=club_level, login_range=login_range))
+
+            if vip_level:
+                result_list.append(VIP.query_char_ids(sid, vip_level))
+
+            if not result_list:
+                return
+
+            result = set(result_list[0])
+            for i in range(1, len(result_list)):
+                result &= set(result_list[i])
+
+            result -= set(exclude_char_ids)
+
+            to_char_ids = list(result)
+            if not to_char_ids:
+                return
+        else:
+            to_char_ids = ModelCharacter.objects.filter(server_id=sid).values_list('id', flat=True)
+            to_char_ids = list(to_char_ids)
+
+        SharedMail(sid).add(to_char_ids, m.title, m.content, attachment=attachment)
+
+    @staticmethod
+    def _send_to_one_char(sid, cid, m, attachment):
+        mail = MailManager(sid, cid)
+        mail.add(m.title, m.content, attachment=attachment)
+
+
+class SharedMail(object):
+    __slots__ = ['server_id']
+
+    def __init__(self, server_id):
+        self.server_id = server_id
+
+    def add(self, for_char_ids, title, content, attachment="", from_id=0, function=0):
+        doc = MongoMail.document_mail()
+
+        doc['id'] = make_string_id()
+        doc['for_char_ids'] = for_char_ids
+
+        doc['from_id'] = from_id
+        doc['title'] = title
+        doc['content'] = content
+        doc['attachment'] = attachment
+        doc['create_at'] = arrow.utcnow().timestamp
+        doc['function'] = function
+
+        MongoSharedMail.db(self.server_id).insert_one(doc)
+
+        # 立即给最近登陆操作的人发送通知
+        recent_char_ids = OperationLog.get_recent_action_char_ids(self.server_id)
+        for cid in recent_char_ids:
+            MailManager(self.server_id, cid).send_notify()
+
+    def fetch(self, char_id):
+        return MongoSharedMail.db(self.server_id).find({'for_char_ids': {'$in': char_id}})
+
+    @contextlib.contextmanager
+    def fetch_and_clean(self, char_id):
+        docs = self.fetch(char_id)
+
+        ids = []
+        mails = []
+        for doc in docs:
+            ids.append(doc['_id'])
+            mails.append(doc)
+
+        yield mails
+
+        if ids:
+            MongoSharedMail.db(self.server_id).update_many(
+                {'_id': {'$in': ids}},
+                {'for_char_ids': {'$pull': char_id}}
+            )
 
 
 def get_mail_clean_time():
@@ -54,6 +223,24 @@ class MailManager(object):
             doc = MongoMail.document()
             doc['_id'] = char_id
             MongoMail.db(server_id).insert_one(doc)
+
+        # try get shared mail
+        with SharedMail(server_id).fetch_and_clean(char_id) as shared_mails:
+            for sm in shared_mails:
+                if sm['_id'] in doc['mails']:
+                    # 防止因为不确定原因导致的 重复添加邮件问题
+                    continue
+
+                self.add(
+                    title=sm['title'],
+                    content=sm['content'],
+                    mail_id=sm['_id'],
+                    attachment=sm['attachment'],
+                    create_at=sm['create_at'],
+                    from_id=sm['from_id'],
+                    function=sm['function'],
+                    send_notify=False
+                )
 
     @staticmethod
     def cronjob(server_id):
@@ -86,10 +273,11 @@ class MailManager(object):
         title = u"来自 {0} 的邮件".format(self_doc['name'])
         MailManager(self.server_id, to_id).add(title, content, from_id=self.char_id)
 
-    def add(self, title, content, attachment="", from_id=0, function=0):
-        from apps.history_record.models import MailHistoryRecord
-
-        now = arrow.utcnow()
+    def add(self, title, content, mail_id=None, attachment="", create_at=None, from_id=0, function=0, send_notify=True):
+        if create_at:
+            now = arrow.get(create_at)
+        else:
+            now = arrow.utcnow()
 
         doc = MongoMail.document_mail()
         doc['from_id'] = from_id
@@ -101,7 +289,8 @@ class MailManager(object):
 
         # doc['data'] = base64.b64encode(data)
 
-        mail_id = make_string_id()
+        if not mail_id:
+            mail_id = make_string_id()
 
         MongoMail.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -119,7 +308,8 @@ class MailManager(object):
             create_at=now.format("YYYY-MM-DD HH:mm:ssZ")
         )
 
-        self.send_notify(ids=[mail_id])
+        if send_notify:
+            self.send_notify(ids=[mail_id])
 
     def delete(self, mail_id):
         key = "mails.{0}".format(mail_id)
