@@ -79,11 +79,10 @@ class ArenaClub(object):
         :rtype: core.abstract.AbstractClub
         """
         if is_npc_club(arena_club_id):
-            _, npc_id, _ = arena_club_id.split(':')
+            _, npc_id, unique_id = arena_club_id.split(':')
             npc_club = ConfigNPCFormation.get(int(npc_id))
-            # TODO
             npc_club.id = arena_club_id
-            npc_club.name = "NPC-{0}".format(npc_id)
+            npc_club.name = u"指挥官-{0}-{1}".format(npc_id, int(unique_id[:3], 16))
 
             return npc_club
 
