@@ -166,7 +166,7 @@ class SharedMail(object):
     def add(self, for_char_ids, title, content, attachment="", from_id=0, function=0):
         doc = MongoMail.document_mail()
 
-        doc['id'] = make_string_id()
+        doc['_id'] = make_string_id()
         doc['for_char_ids'] = for_char_ids
 
         doc['from_id'] = from_id
@@ -201,7 +201,7 @@ class SharedMail(object):
         if ids:
             MongoSharedMail.db(self.server_id).update_many(
                 {'_id': {'$in': ids}},
-                {'for_char_ids': {'$pull': char_id}}
+                {'$pull': {'for_char_ids': char_id}}
             )
 
 
@@ -221,7 +221,7 @@ class MailManager(object):
         self.server_id = server_id
         self.char_id = char_id
 
-        doc = MongoMail.db(server_id).find_one({'_id': char_id}, {'_id': 1})
+        doc = MongoMail.db(server_id).find_one({'_id': char_id})
         if not doc:
             doc = MongoMail.document()
             doc['_id'] = char_id
