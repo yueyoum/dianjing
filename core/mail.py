@@ -181,7 +181,7 @@ class SharedMail(object):
             MailManager(self.server_id, cid).send_notify()
 
     def fetch(self, char_id):
-        return MongoSharedMail.db(self.server_id).find({'for_char_ids': {'$in': char_id}})
+        return MongoSharedMail.db(self.server_id).find({'for_char_ids': {'$in': [char_id]}})
 
     @contextlib.contextmanager
     def fetch_and_clean(self, char_id):

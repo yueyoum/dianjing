@@ -184,7 +184,11 @@ class Mail(models.Model):
             clean_condition()
 
         elif self.condition_type in [2, 3]:
-            for i in self.get_parsed_condition_value():
+            values = self.get_parsed_condition_value()
+            if not values:
+                raise ValidationError("应当填写 服务器ID")
+
+            for i in values:
                 if not Server.objects.filter(id=i).exists():
                     raise ValidationError("服务器 {0} 不存在".format(i))
 
@@ -194,7 +198,11 @@ class Mail(models.Model):
             if self.has_condition():
                 raise ValidationError("指定角色时 不用填写条件")
 
-            for i in self.get_parsed_condition_value():
+            values = self.get_parsed_condition_value()
+            if not values:
+                raise ValidationError("应当填写 角色ID")
+            
+            for i in values:
                 if not Character.objects.filter(id=i).exists():
                     raise ValidationError("角色ID {0} 不存在".format(i))
 
