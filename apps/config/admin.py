@@ -33,9 +33,6 @@ class AdminMail(admin.ModelAdmin):
     list_display = (
         'id', 'title', 'send_at',
         'condition_type', 'condition_value',
-        'condition_club_level', 'condition_vip_level',
-        'condition_login_at_1', 'condition_login_at_2',
-        'condition_exclude_chars',
         'create_at', 'status'
     )
 

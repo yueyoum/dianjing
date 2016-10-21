@@ -13,6 +13,7 @@ import contextlib
 
 from django.conf import settings
 from django.db.models import Q
+from django.db import connection
 
 from apps.server.models import Server as ModelServer
 from apps.character.models import Character as ModelCharacter
@@ -52,6 +53,8 @@ class AdminMailManager(object):
         self.mails = []
 
     def fetch(self, mail_id=None):
+        connection.close()
+
         if mail_id:
             condition = Q(id=mail_id)
         else:
