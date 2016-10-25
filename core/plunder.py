@@ -775,7 +775,7 @@ class Plunder(object):
         if win:
             daily_key, info = self.get_daily_reward_info()
             win_ways = info.get('win_ways', 0)
-            info['win_ways'] = win_ways
+            info['win_ways'] = win_ways + 1
             self.doc['daily_reward'] = {daily_key: info}
             updater['daily_reward'] = {daily_key: info}
 
@@ -784,6 +784,7 @@ class Plunder(object):
             {'$set': updater}
         )
 
+        self.send_plunder_daily_reward_notify()
         self.send_result_notify()
 
     @check_club_level(silence=False)
