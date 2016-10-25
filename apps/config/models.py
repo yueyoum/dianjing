@@ -142,7 +142,8 @@ class Mail(models.Model):
     condition_login_at_1 = models.DateTimeField(blank=True, null=True, verbose_name='登陆时间大于等于')
     condition_login_at_2 = models.DateTimeField(blank=True, null=True, verbose_name='登陆时间小于等于')
     condition_exclude_chars = models.CharField(max_length=255, blank=True, null=True,
-                                               validators=[validate_comma_separated_integer_list], verbose_name='排除角色ID列表')
+                                               validators=[validate_comma_separated_integer_list],
+                                               verbose_name='排除角色ID列表')
 
     create_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     status = models.IntegerField(choices=STATUS, default=0, db_index=True, verbose_name='状态')
@@ -152,8 +153,8 @@ class Mail(models.Model):
 
     def has_condition(self):
         return self.condition_club_level is not None or self.condition_vip_level is not None or \
-                self.condition_login_at_1 is not None or self.condition_login_at_2 is not None or \
-                self.condition_exclude_chars != ''
+               self.condition_login_at_1 is not None or self.condition_login_at_2 is not None or \
+               self.condition_exclude_chars != ''
 
     def get_parsed_condition_value(self):
         if not self.condition_value:
@@ -190,7 +191,6 @@ class Mail(models.Model):
             return result
         except:
             return None
-
 
     def clean(self):
         def clean_condition():

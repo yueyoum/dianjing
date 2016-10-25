@@ -83,10 +83,6 @@ class AdminMailManager(object):
                 self.done_ids.append(m.id)
 
     def _send_one_mail(self, m):
-        # lock
-        m.status = 1
-        m.save()
-
         if m.items:
             rc = ResourceClassification.classify(m.get_parsed_items())
             attachment = rc.to_json()
@@ -230,18 +226,18 @@ class MailManager(object):
         # try get shared mail
         with SharedMail(server_id).fetch_and_clean(char_id) as shared_mails:
             for sm in shared_mails:
-                if sm['_id'] in doc['mails']:
+                if self.is_unique_id_exists(sm['_id'], doc=doc):
                     # 防止因为不确定原因导致的 重复添加邮件问题
                     continue
 
                 self.add(
                     title=sm['title'],
                     content=sm['content'],
-                    mail_id=sm['_id'],
                     attachment=sm['attachment'],
                     create_at=sm['create_at'],
                     from_id=sm['from_id'],
                     function=sm['function'],
+                    unique_id=sm['_id'],
                     send_notify=False
                 )
 
@@ -264,6 +260,18 @@ class MailManager(object):
 
         return doc['mails'].get(mail_id, None)
 
+    def is_unique_id_exists(self, unique_id, doc=None):
+        if not doc:
+            doc = MongoMail.db(self.server_id).find_one(
+                {'_id': self.char_id},
+            )
+
+        for m in doc['mails']:
+            if m.get('unique_id', '') == unique_id:
+                return True
+
+        return False
+
     def send(self, to_id, content):
         # 聊天
         to_id = int(to_id)
@@ -276,7 +284,7 @@ class MailManager(object):
         title = u"来自 {0} 的邮件".format(self_doc['name'])
         MailManager(self.server_id, to_id).add(title, content, from_id=self.char_id)
 
-    def add(self, title, content, mail_id=None, attachment="", create_at=None, from_id=0, function=0, send_notify=True):
+    def add(self, title, content, attachment="", create_at=None, from_id=0, function=0, unique_id='', send_notify=True):
         if create_at:
             now = arrow.get(create_at)
         else:
@@ -289,11 +297,11 @@ class MailManager(object):
         doc['attachment'] = attachment
         doc['create_at'] = now.timestamp
         doc['function'] = function
+        doc['unique_id'] = unique_id
 
         # doc['data'] = base64.b64encode(data)
 
-        if not mail_id:
-            mail_id = make_string_id()
+        mail_id = make_string_id()
 
         MongoMail.db(self.server_id).update_one(
             {'_id': self.char_id},

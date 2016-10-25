@@ -273,6 +273,8 @@ class MongoMail(BaseDocument):
         'attachment': "",
         'function': 0,
         'data': None,
+        # 有些类型的邮件，只要一个。 这里用unique_id来标示
+        'unique_id': '',
     }
 
     COLLECTION = "mail"
