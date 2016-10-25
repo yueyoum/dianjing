@@ -266,8 +266,8 @@ class MailManager(object):
                 {'_id': self.char_id},
             )
 
-        for m in doc['mails']:
-            if m.get('unique_id', '') == unique_id:
+        for k, v in doc['mails'].iteritems():
+            if v.get('unique_id', '') == unique_id:
                 return True
 
         return False
