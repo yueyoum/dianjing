@@ -57,7 +57,7 @@ class MailHistoryRecordAdmin(admin.ModelAdmin):
         return MailRecordChangeList
 
     def Id(self, obj):
-        return '{0}...'.format(obj.id[:8])
+        return '{0}...'.format(str(obj.id)[:8])
 
     def has_attachment(self, obj):
         return bool(obj.attachment)
