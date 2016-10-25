@@ -46,8 +46,8 @@ class MailRecordChangeList(ChangeList):
 @admin.register(MailHistoryRecord)
 class MailHistoryRecordAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'from_id', 'to_id', 'title', 'content', 'has_read',
-        'has_attachment', 'function', 'create_at',
+        'Id', 'from_id', 'to_id', 'title', 'content', 'has_read',
+        'has_attachment', 'create_at',
     )
 
     search_fields = ['from_id', 'to_id']
@@ -56,5 +56,10 @@ class MailHistoryRecordAdmin(admin.ModelAdmin):
     def get_changelist(self, request, **kwargs):
         return MailRecordChangeList
 
+    def Id(self, obj):
+        return '{0}...'.format(obj.id[:8])
+
     def has_attachment(self, obj):
         return bool(obj.attachment)
+    has_attachment.short_description = 'Has?'
+    has_attachment.boolean = True

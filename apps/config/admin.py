@@ -55,3 +55,8 @@ class AdminMail(admin.ModelAdmin):
     )
 
     list_filter = ('status',)
+    actions = ['action_make_status_waiting',]
+
+    def action_make_status_waiting(self, request, queryset):
+        queryset.update(status=0)
+    action_make_status_waiting.short_description = u'重置为等待发送状态'
