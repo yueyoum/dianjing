@@ -768,13 +768,20 @@ class Plunder(object):
         if not target_id:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
+        updater = {}
         self.doc['matching']['result'][way_index] = result
+        updater['matching.result.{0}'.format(way_index)] = result
+
+        if win:
+            daily_key, info = self.get_daily_reward_info()
+            win_ways = info.get('win_ways', 0)
+            info['win_ways'] = win_ways
+            self.doc['daily_reward'] = {daily_key: info}
+            updater['daily_reward'] = {daily_key: info}
 
         MongoPlunder.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$set': {
-                'matching.result.{0}'.format(way_index): result
-            }}
+            {'$set': updater}
         )
 
         self.send_result_notify()
@@ -931,6 +938,8 @@ class Plunder(object):
 
         got_list.append(_id)
         info['got_list'] = got_list
+
+        self.doc['daily_reward'] = {key: info}
         MongoPlunder.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
