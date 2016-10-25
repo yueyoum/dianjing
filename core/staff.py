@@ -993,13 +993,19 @@ class StaffManger(object):
         self.after_staffs_change_for_trig_signal()
 
     def remove(self, staff_id):
+        if isinstance(staff_id, list):
+            staff_ids = staff_id
+        else:
+            staff_ids = [staff_id]
+
+        updater = {'staffs.{0}'.format(i): 1 for i in staff_ids}
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$unset': {'staffs.{0}'.format(staff_id): 1}}
+            {'$unset': updater}
         )
 
         notify = StaffRemoveNotify()
-        notify.ids.append(staff_id)
+        notify.ids.extend(staff_ids)
         MessagePipe(self.char_id).put(msg=notify)
         self.after_staffs_change_for_trig_signal()
 
@@ -1128,8 +1134,7 @@ class StaffManger(object):
 
         return crit, inc_exp, cost_item_id, cost_item_amount
 
-    def destroy(self, staff_id, tp):
-        from core.club import Club
+    def _destroy_check(self, staff_id):
         from core.formation import Formation
         from core.plunder import Plunder
         from core.territory import Territory
@@ -1142,6 +1147,12 @@ class StaffManger(object):
 
         if Territory(self.server_id, self.char_id).is_staff_training_check_by_unique_id(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_CANNOT_DESTROY_IN_TERRITORY"))
+
+    def destroy(self, staff_id, tp):
+        from core.club import Club
+        from core.formation import Formation
+
+        self._destroy_check(staff_id)
 
         staff = self.get_staff_object(staff_id)
         if not staff:
@@ -1180,6 +1191,34 @@ class StaffManger(object):
 
         self.after_staffs_change_for_trig_signal()
         return resource_classified
+
+    def batch_destroy(self, staff_ids):
+        total_items = {}
+
+        for sid in staff_ids:
+            self._destroy_check(sid)
+
+            staff = self.get_staff_object(sid)
+            if not staff:
+                raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
+
+            _items = staff.get_cost_items(70)
+            _crystal = ConfigStaffNew.get(staff.oid).crystal
+            _items.append((money_text_to_item_id('crystal'), _crystal))
+
+            for _id, _amount in _items:
+                if _id in total_items:
+                    total_items[_id] += _amount
+                else:
+                    total_items[_id] = _amount
+
+        rc = ResourceClassification.classify(total_items.items())
+        rc.add(self.server_id, self.char_id)
+
+        self.remove(staff_ids)
+        self.after_staffs_change_for_trig_signal()
+        return rc
+
 
     def send_notify(self, ids=None):
         if ids is None:

@@ -18,6 +18,7 @@ from protomsg.staff_pb2 import (
     StaffLevelUpResponse,
     StaffStarUpResponse,
     StaffStepUpResponse,
+    StaffBatchDestroyResponse,
 )
 
 
@@ -111,4 +112,17 @@ def destroy(request):
     response = StaffDestroyResponse()
     response.ret = 0
     response.drop.MergeFrom(resource_classified.make_protomsg())
+    return ProtobufResponse(response)
+
+def batch_destroy(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    staff_ids = request._proto.staff_ids
+
+    rc = StaffManger(server_id, char_id).batch_destroy(staff_ids)
+
+    response = StaffBatchDestroyResponse()
+    response.ret = 0
+    response.drop.MergeFrom(rc.make_protomsg())
     return ProtobufResponse(response)

@@ -63,6 +63,7 @@ urlpatterns = [
     url(r'^staff/stepup/$', views.staff.step_up),
     url(r'^staff/starup/$', views.staff.star_up),
     url(r'^staff/destroy/$', views.staff.destroy),
+    url(r'^staff/batchdestroy/$', views.staff.batch_destroy),
 
     url(r'^challenge/start/$', views.challenge.start),
     url(r'^challenge/sweep/$', views.challenge.sweep),
@@ -92,6 +93,7 @@ urlpatterns = [
     url(r'^bagitem/merge/$', views.bag.item_merge),
     url(r'^bagitem/destroy/$', views.bag.item_destroy),
     url(r'^bagequipment/destroy/$', views.bag.equipment_destroy),
+    url(r'^bagequipment/batchdestroy/$', views.bag.equipment_batch_destroy),
     url(r'^bagequipment/levelup/$', views.bag.equipment_level_up),
 
     url(r'^unit/levelup/$', views.unit.level_up),

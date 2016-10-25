@@ -16,6 +16,7 @@ from protomsg.bag_pb2 import (
     BagItemDestroyResponse,
     BagItemMergeResponse,
     BagItemUseResponse,
+    BagEquipmentBatchDestroyResponse,
 )
 
 
@@ -81,6 +82,20 @@ def equipment_destroy(request):
     response.ret = 0
     response.drop.MergeFrom(resource_classified.make_protomsg())
 
+    return ProtobufResponse(response)
+
+def equipment_batch_destroy(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    slot_ids = request._proto.slot_ids
+
+    bag = Bag(server_id, char_id)
+    rc = bag.equipment_batch_destroy(slot_ids)
+
+    response = BagEquipmentBatchDestroyResponse()
+    response.ret = 0
+    response.drop.MergeFrom(rc.make_protomsg())
     return ProtobufResponse(response)
 
 def equipment_level_up(request):

@@ -689,7 +689,7 @@ class Bag(object):
 
         if config.use_item_id:
             if config.use_item_id == -1:
-                if index is None or index > len(config.result[0])-1:
+                if index is None or index > len(config.result[0]) - 1:
                     raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
             else:
@@ -752,22 +752,30 @@ class Bag(object):
         resource_classified.add(self.server_id, self.char_id)
         return resource_classified
 
-    def equipment_destroy(self, slot_id, use_sycee):
-        # 装备销毁
-        """
-
-        :rtype: ResourceClassification
-        """
+    def _equipment_destroy_check(self, slot_id):
         from core.staff import StaffManger
 
-        this_slot = self.doc['slots'][slot_id]
-        item_id = this_slot['item_id']
+        try:
+            item_id = self.doc['slots'][slot_id]['item_id']
+        except KeyError:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
         if get_item_type(item_id) != TYPE_EQUIPMENT:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
         if StaffManger(self.server_id, self.char_id).find_staff_id_with_equip(slot_id):
             raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_CANNOT_DESTROY_ON_STAFF"))
+
+    def equipment_destroy(self, slot_id, use_sycee):
+        # 装备销毁
+        """
+
+        :rtype: ResourceClassification
+        """
+        self._equipment_destroy_check(slot_id)
+
+        this_slot = self.doc['slots'][slot_id]
+        item_id = this_slot['item_id']
 
         config = ConfigEquipmentNew.get(item_id)
         level = this_slot['level']
@@ -807,6 +815,35 @@ class Bag(object):
         resource_classified = ResourceClassification.classify(results)
         resource_classified.add(self.server_id, self.char_id)
         return resource_classified
+
+    def equipment_batch_destroy(self, slot_ids):
+        total_items = {}
+
+        for slot_id in slot_ids:
+            self._equipment_destroy_check(slot_id)
+            this_slot = self.doc['slots'][slot_id]
+            item_id = this_slot['item_id']
+
+            config = ConfigEquipmentNew.get(item_id)
+            equip = Equipment.load_from_slot_data(this_slot)
+
+            items = equip.get_destroy_back_items(is_normal_destroy=True)
+            if config.renown:
+                items.append((money_text_to_item_id('renown'), config.renown))
+
+            for _id, _amount in items:
+                if _id in total_items:
+                    total_items[_id] += _amount
+                else:
+                    total_items[_id] = _amount
+
+        rc = ResourceClassification.classify(total_items.items())
+        rc.add(self.server_id, self.char_id)
+
+        for slot_id in slot_ids:
+            self.remove_by_slot_id(slot_id, 1)
+
+        return rc
 
     def equipment_level_up(self, slot_id, times=1):
         from core.staff import StaffManger
