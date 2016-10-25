@@ -537,14 +537,14 @@ class AbstractStaff(object):
         unit_amount = self.operation / self.__unit.config.operation
         t1 = attack * math.pow(unit_amount, 0.6) * self.__unit.attack_speed * 1 * \
              (1 + self.__unit.hit_rate - 0.9 + self.__unit.crit_rate * (self.__unit.crit_multiple - 1) * 0.85 +
-              self.__unit.hurt_addition_to_terran * 0.2 + self.__unit.hurt_addition_to_zerg * 0.2 +
-              self.__unit.hurt_addition_to_protoss * 0.2)
+              self.__unit.hurt_addition_to_terran * 0.3 + self.__unit.hurt_addition_to_zerg * 0.3 +
+              self.__unit.hurt_addition_to_protoss * 0.3)
 
-        t2 = (defense * math.pow(unit_amount, 0.6) * 0.4 + hp * unit_amount * 0.1) * \
+        t2 = (defense * math.pow(unit_amount, 0.6) * 0.48 + hp * unit_amount * 0.12) * \
              (1 + self.__unit.dodge_rate + self.__unit.toughness_rate * 0.6 -
-              self.__unit.hurt_addition_by_terran * 0.2 -
-              self.__unit.hurt_addition_by_protoss * 0.2 -
-              self.__unit.hurt_addition_by_zerg * 0.2)
+              self.__unit.hurt_addition_by_terran * 0.3 -
+              self.__unit.hurt_addition_by_protoss * 0.3 -
+              self.__unit.hurt_addition_by_zerg * 0.3)
 
         return int(t1 + t2)
 
