@@ -116,7 +116,10 @@ class AdminMailManager(object):
             vip_level = m.condition_vip_level
 
             if m.condition_login_at_1:
-                login_range = [arrow.get(m.condition_login_at_1), arrow.get(m.condition_login_at_2)]
+                login_range = [
+                    arrow.get(m.condition_login_at_1).timestamp,
+                    arrow.get(m.condition_login_at_2).timestamp,
+                ]
             else:
                 login_range = None
 
