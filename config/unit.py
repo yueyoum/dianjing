@@ -86,10 +86,15 @@ class UnitNew(object):
         'final_hurt_addition',
         'final_hurt_reduce',
 
+        'param_a',
+        'param_b',
+        'param_c',
+
         'levels',
         'max_level',
         'steps',
         'max_step',
+
     ]
 
     def __init__(self):
@@ -120,6 +125,10 @@ class UnitNew(object):
         self.hurt_addition_by_zerg = 0
         self.final_hurt_addition = 0
         self.final_hurt_reduce = 0
+
+        self.param_a = 0
+        self.param_b = 0
+        self.param_c = 0
 
         self.levels = {}
         """:type: dict[int, UnitLevel]"""
