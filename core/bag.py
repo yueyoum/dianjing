@@ -288,7 +288,7 @@ class Equipment(object):
         return ids
 
     def get_property_value(self, p, total=True):
-        if total:
+        if self.is_special and total:
             value = 0
             for k, v in self.properties:
                 if p != k:
