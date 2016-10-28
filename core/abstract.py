@@ -255,13 +255,17 @@ class AbstractStaff(object):
         qianban_ids = []
         talent_effect_ids = []
         for k, v in config.info.iteritems():
+            if not v.talent_effect_id:
+                continue
+
             if v.condition_tp == 1:
                 # 装备兵种
                 if self.__unit and self.__unit.id in v.condition_value:
                     qianban_ids.append(k)
                     talent_effect_ids.append(v.talent_effect_id)
             else:
-                raise RuntimeError("Unknown qianban condition tp: {0}".format(v.condition_tp))
+                # raise RuntimeError("Unknown qianban condition tp: {0}".format(v.condition_tp))
+                pass
 
         self.active_qianban_ids = qianban_ids
         self.qianban_talent_ids = talent_effect_ids

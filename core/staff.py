@@ -36,6 +36,8 @@ from core.signals import (
     task_condition_trig_signal,
 )
 
+from core import checker
+
 from config import (
     ConfigStaffRecruit,
     ConfigErrorMessage,
@@ -754,7 +756,7 @@ class Staff(AbstractStaff):
         _add_to_items(STAFF_EXP_POOL_ID, int(exp))
 
         # 升星道具
-        for i in range(self.star-1, -1, -1):
+        for i in range(self.star - 1, -1, -1):
             config = ConfigStaffStar.get(i)
             amount = config.exp * percent / 100.0 / AVG_STAR_EXP * config.need_item_amount
             if amount:
@@ -1135,15 +1137,8 @@ class StaffManger(object):
         return crit, inc_exp, cost_item_id, cost_item_amount
 
     def _destroy_check(self, staff_id):
-        from core.formation import Formation
-        from core.plunder import Plunder
         from core.territory import Territory
-
-        if Formation(self.server_id, self.char_id).is_staff_in_formation(staff_id):
-            raise GameException(ConfigErrorMessage.get_error_id("STAFF_CANNOT_DESTROY_IN_FORMATION"))
-
-        if Plunder(self.server_id, self.char_id).find_way_id_by_staff_id(staff_id):
-            raise GameException(ConfigErrorMessage.get_error_id("STAFF_CANNOT_DESTROY_IN_FORMATION"))
+        checker.check_staff_in_formation(self.server_id, self.char_id, staff_id)
 
         if Territory(self.server_id, self.char_id).is_staff_training_check_by_unique_id(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_CANNOT_DESTROY_IN_TERRITORY"))
@@ -1218,7 +1213,6 @@ class StaffManger(object):
         self.remove(staff_ids)
         self.after_staffs_change_for_trig_signal()
         return rc
-
 
     def send_notify(self, ids=None):
         if ids is None:

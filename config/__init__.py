@@ -25,7 +25,7 @@ from config.item import ConfigItemNew, ConfigItemUse, ConfigItemMerge, ConfigEqu
 from config.skill import ConfigTalentSkill
 from config.task import ConfigTaskMain, ConfigTaskDaily, ConfigTaskCondition
 from config.club import ConfigClubLevel, ConfigClubFlag
-from config.qianban import ConfigQianBan
+from config.qianban import ConfigQianBan, ConfigInspire, ConfigInspireLevelAddition, ConfigInspireStepAddition, ConfigInspireAddition
 from config.signin import ConfigSignIn
 from config.talent import ConfigTalent
 from config.dungeon import ConfigDungeon, ConfigDungeonGrade, ConfigDungeonBuyCost
@@ -152,6 +152,12 @@ def load_config():
 
         elif fname == 'qianban.json':
             ConfigQianBan.initialize(data)
+        elif fname == 'inspire.json':
+            ConfigInspire.initialize(data)
+        elif fname == 'inspire_level_addition.json':
+            ConfigInspireLevelAddition.initialize(data)
+        elif fname == 'inspire_step_addition.json':
+            ConfigInspireStepAddition.initialize(data)
 
         elif fname == 'activity_signin.json':
             ConfigSignIn.initialize(data)

@@ -36,6 +36,7 @@ import views.union
 import views.purchase
 import views.activity
 import views.plunder
+import views.inspire
 
 urlpatterns = [
     url(r'^sync/$', views.common.sync),
@@ -175,4 +176,6 @@ urlpatterns = [
     url(r'^plunder/specialequip/generate/$', views.plunder.special_equipment_generate),
     url(r'^plunder/specialequip/speedup/$', views.plunder.special_equipment_speedup),
     url(r'^plunder/specialequip/get/$', views.plunder.special_equipment_get),
+
+    url(r'^inspire/setstaff/$', views.inspire.set_staff)
 ]

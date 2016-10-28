@@ -303,6 +303,9 @@ MESSAGE_TO_ID = {
     "PartyDismissRequest": 4818,
     "PartyDismissResponse": 4819,
     "PartyNotify": 4820,
+    "InspireNotify": 4900,
+    "InspireSetStaffRequest": 4901,
+    "InspireSetStaffResponse": 4902,
 }
 
 ID_TO_MESSAGE = {
@@ -609,6 +612,9 @@ ID_TO_MESSAGE = {
     4818: "PartyDismissRequest",
     4819: "PartyDismissResponse",
     4820: "PartyNotify",
+    4900: "InspireNotify",
+    4901: "InspireSetStaffRequest",
+    4902: "InspireSetStaffResponse",
 }
 
 PATH_TO_REQUEST = {
@@ -723,6 +729,7 @@ PATH_TO_REQUEST = {
     "/game/plunder/specialequip/speedup/": ["plunder", "SpecialEquipmentGenerateSpeedUpRequest"],
     "/game/plunder/specialequip/get/": ["plunder", "SpecialEquipmentGetRequest"],
     "/game/plunder/dailyreward/get/": ["plunder", "PlunderDailyRewardGetRequest"],
+    "/game/inspire/setstaff/": ["inspire", "InspireSetStaffRequest"],
 }
 
 PATH_TO_RESPONSE = {
@@ -837,4 +844,5 @@ PATH_TO_RESPONSE = {
     "/game/plunder/specialequip/speedup/": ["plunder", "SpecialEquipmentGenerateSpeedUpResponse"],
     "/game/plunder/specialequip/get/": ["plunder", "SpecialEquipmentGetResponse"],
     "/game/plunder/dailyreward/get/": ["plunder", "PlunderDailyRewardGetResponse"],
+    "/game/inspire/setstaff/": ["inspire", "InspireSetStaffResponse"],
 }

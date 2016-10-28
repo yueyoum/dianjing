@@ -821,3 +821,14 @@ class MongoParty(BaseDocument):
 
     COLLECTION = 'party'
     INDEXES = ['talent_id',]
+
+# 助威
+class MongoInspire(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # slot id 从配置中来, value 是 staff_id
+        # 只记录开启的
+        'slots': {}
+    }
+
+    COLLECTION = 'inspire'

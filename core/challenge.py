@@ -199,6 +199,16 @@ class Challenge(object):
 
         return max(ids)
 
+    def is_challenge_id_passed(self, challenge_id):
+        doc = MongoChallenge.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'challenge_star.{0}'.format(challenge_id): 1}
+        )
+
+        star = doc['challenge_star'].get(str(challenge_id), 0)
+        return star > 0
+
+
     def start(self, challenge_id, formation_slots=None):
         config = ConfigChallengeMatch.get(challenge_id)
         if not config:

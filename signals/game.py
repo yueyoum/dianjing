@@ -42,6 +42,7 @@ from core.purchase import Purchase
 from core.activity import ActivityNewPlayer
 from core.plunder import Plunder, SpecialEquipmentGenerator
 from core.party import Party
+from core.inspire import Inspire
 
 from utils.message import MessagePipe
 from protomsg.common_pb2 import UTCNotify, SocketServerNotify
@@ -151,6 +152,8 @@ def game_start_handler(server_id, char_id, **kwargs):
     SpecialEquipmentGenerator(server_id, char_id).send_notify()
 
     Party(server_id, char_id).send_notify()
+
+    Inspire(server_id, char_id).send_notify()
 
     send_system_notify(server_id, char_id)
     BroadCast(server_id, char_id).try_cast_login_notify()
