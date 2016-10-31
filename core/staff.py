@@ -387,7 +387,7 @@ AVG_STAR_EXP = 3.2
 
 
 class Staff(AbstractStaff):
-    __slots__ = []
+    __slots__ = ['config_inspire_level_addition', 'config_inspire_step_addition']
 
     def __init__(self, server_id, char_id, unique_id, data):
         super(Staff, self).__init__()
@@ -408,6 +408,9 @@ class Staff(AbstractStaff):
         self.equip_monitor = data['equip_monitor']
         self.equip_decoration = data['equip_decoration']
         self.equip_special = data.get('equip_special', '')
+
+        self.config_inspire_level_addition = None
+        self.config_inspire_step_addition = None
 
         self.after_init()
 
@@ -736,6 +739,49 @@ class Staff(AbstractStaff):
 
         unit.final_hurt_addition += equip.get_property_value(PROPERTY_UNIT_FINAL_HURT_ADDITION)
         unit.final_hurt_reduce += equip.get_property_value(PROPERTY_UNIT_FINAL_HURT_REDUCE)
+
+    def add_inspire_addition_for_staff(self):
+        addition = getattr(self, 'config_inspire_level_addition', None)
+        """:type: config.qianban.InspireLevelAddition | None"""
+        if not addition:
+            return
+
+        self.attack += addition.attack
+        self.attack_percent += addition.attack_percent
+        self.defense += addition.defense
+        self.defense_percent += addition.defense_percent
+        self.manage += addition.manage
+        self.manage_percent += addition.manage_percent
+        self.operation += addition.operation
+        self.operation_percent += addition.operation_percent
+
+    def add_inspire_addition_for_unit(self):
+        addition = getattr(self, 'config_inspire_step_addition', None)
+        """:type: config.qianban.InspireStepAddition | None"""
+
+        if not addition:
+            return
+
+        unit = self.unit
+        if not unit:
+            return
+
+        unit.hp_percent += addition.hp_percent
+        unit.attack_percent += addition.attack_percent
+        unit.defense_percent += addition.defense_percent
+        unit.hit_rate += addition.hit_rate
+        unit.dodge_rate += addition.dodge_rate
+        unit.crit_rate += addition.crit_rate
+        unit.toughness_rate += addition.toughness_rate
+        unit.crit_multiple += addition.crit_multiple
+
+        unit.hurt_addition_to_terran += addition.hurt_addition_to_terran
+        unit.hurt_addition_to_protoss += addition.hurt_addition_to_protoss
+        unit.hurt_addition_to_zerg += addition.hurt_addition_to_zerg
+
+        unit.hurt_addition_by_terran += addition.hurt_addition_by_terran
+        unit.hurt_addition_by_protoss += addition.hurt_addition_by_protoss
+        unit.hurt_addition_by_zerg += addition.hurt_addition_by_zerg
 
     def get_cost_items(self, percent=100):
         # 得到一路升级过来所消耗的物品

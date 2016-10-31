@@ -343,6 +343,7 @@ class AbstractStaff(object):
 
         # 装备
         self.add_equipment_property_for_staff()
+        self.add_inspire_addition_for_staff()
 
         # 天赋
         for tid in self.get_active_talent_ids():
@@ -377,6 +378,7 @@ class AbstractStaff(object):
         self.__unit = unit.clone()
 
         self.add_equipment_property_for_unit()
+        self.add_inspire_addition_for_unit()
 
         for tid in self.get_active_talent_ids():
             config_talent = ConfigTalentSkill.get(tid)
@@ -398,6 +400,12 @@ class AbstractStaff(object):
         pass
 
     def add_equipment_property_for_unit(self):
+        pass
+
+    def add_inspire_addition_for_staff(self):
+        pass
+
+    def add_inspire_addition_for_unit(self):
         pass
 
     def get_self_talent_skill_ids(self):

@@ -107,12 +107,14 @@ class Club(AbstractClub):
         from core.talent import TalentManager
         from core.collection import Collection
         from core.party import Party
+        from core.inspire import Inspire
 
         self.formation_staffs = []
 
         sm = StaffManger(self.server_id, self.char_id)
         fm = Formation(self.server_id, self.char_id)
         um = UnitManager(self.server_id, self.char_id)
+        ins = Inspire(self.server_id, self.char_id)
 
         staffs = sm.get_staffs_data()
         in_formation_staffs = fm.in_formation_staffs()
@@ -148,7 +150,11 @@ class Club(AbstractClub):
         self.add_talent_effects(talent_effects_3)
         self.add_talent_effects(talent_effects_4)
 
+        config_inspire_level_addition, config_inspire_step_addition = ins.get_addition_config()
+
         for _, v in staff_objs.iteritems():
+            v.config_inspire_level_addition = config_inspire_level_addition
+            v.config_inspire_step_addition = config_inspire_step_addition
             v.calculate()
             v.make_cache()
 

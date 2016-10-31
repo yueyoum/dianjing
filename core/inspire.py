@@ -11,7 +11,9 @@ from dianjing.exception import GameException
 from core.mongo import MongoInspire
 
 from core.challenge import Challenge
+from core.staff import StaffManger
 from core import checker
+from core.signals import inspire_staff_changed_signal
 
 from utils.message import MessagePipe
 
@@ -118,6 +120,28 @@ class Inspire(object):
         )
 
         self.send_notify(ids=[int(slot_id)])
+
+        inspire_staff_changed_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            staff_id=staff_id
+        )
+
+    def get_addition_config(self):
+        sm = StaffManger(self.server_id, self.char_id)
+        levels = 0
+        steps = 0
+
+        for s in self.all_staffs():
+            obj = sm.get_staff_object(s)
+            levels += obj.level
+            steps += obj.step
+
+        config_level_addition = ConfigInspireAddition.get_by_level(levels)
+        config_step_addition = ConfigInspireAddition.get_by_step(steps)
+
+        return config_level_addition, config_step_addition
 
     def send_notify(self, ids=None):
         if ids:

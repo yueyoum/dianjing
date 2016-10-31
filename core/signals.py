@@ -53,3 +53,6 @@ purchase_done_signal = Signal(providing_args=['server_id', 'char_id', 'diamond']
 
 # 任务条件触发
 task_condition_trig_signal = Signal(providing_args=['server_id', 'char_id', 'condition_name'])
+
+# 助威选手变化
+inspire_staff_changed_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'])
