@@ -42,8 +42,6 @@ class Inspire(object):
             self.doc['_id'] = self.char_id
             MongoInspire.db(self.server_id).insert_one(self.doc)
 
-        self.try_open_slots(send_notify=False)
-
     def try_open_slots(self, send_notify=True):
         opened = []
         updater = {}
@@ -56,9 +54,9 @@ class Inspire(object):
             if str(slot_id) in self.doc['slots']:
                 continue
 
-            self.doc['slots'][str(slot_id)] = 0
+            self.doc['slots'][str(slot_id)] = ""
             opened.append(slot_id)
-            updater['slots.{0}'.format(slot_id)] = 0
+            updater['slots.{0}'.format(slot_id)] = ""
 
         if updater:
             MongoInspire.db(self.server_id).update_one(
