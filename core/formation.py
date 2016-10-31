@@ -13,7 +13,6 @@ from core.mongo import MongoFormation
 from core.staff import StaffManger
 from core.unit import UnitManager
 from core.club import Club
-from core.inspire import Inspire
 
 from core.resource import ResourceClassification
 
@@ -97,16 +96,21 @@ class BaseFormation(object):
         return staffs
 
     def working_staff_oids(self):
+        from core.inspire import Inspire
         oids = []
 
         sm = StaffManger(self.server_id, self.char_id)
+        # XXX: 这里不能用 get_staff_object
+        # 因为get_staff_obj 可能用调用到 Club.force_load_staffs
+        # 在 Club.force_load_staffs 中又会调用 这个方法
+        # 然后就死循环了
+        all_staffs = sm.get_staffs_data()
 
         working_staffs = self.in_formation_staffs().keys()
         working_staffs.extend(Inspire(self.server_id, self.char_id).all_staffs())
 
         for s in working_staffs:
-            obj = sm.get_staff_object(s)
-            oids.append(obj.oid)
+            oids.append(all_staffs[s]['oid'])
 
         return oids
 
