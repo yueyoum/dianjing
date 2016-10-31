@@ -7,6 +7,8 @@ Description:
 
 """
 import math
+import itertools
+
 from utils import cache
 
 from protomsg.club_pb2 import Club as MessageClub
@@ -225,6 +227,19 @@ class AbstractStaff(object):
         self.__unit = None
         """:type: AbstractUnit"""
 
+        # 这里把 自身天赋， 其他天赋 分的这么清楚， 是因为
+        # self_talent_ids 就是选手自己带的天赋，
+        # other_talent_ids 是其他地方，比如buff带来的全局天赋。
+        # 这里面可能有对 对方的 天赋效果，
+        # self_talent_ids 在初始化staff自身的 设置好
+        # other_talent_ids 则在club中统一设置
+        # 在club统一设置的时候，就 记录了 全局的 对对方的 天赋
+        # 但是 self_talent_ids 选手自身也可能有对 对方的天赋效果
+        # 这时候 从club取 对 对方效果的时候，除了 club统一设置时 记录的天赋以外，
+        # 还要从每个 staff 中找 对对方的天赋效果
+        # 所以这里要分开来
+        # 至于 qianban_talent_ids，道理是一样的
+        # 并且还要记录 active_qianban_ids
         self.self_talent_ids = []
         self.other_talent_ids = []
         self.active_qianban_ids = []
@@ -246,7 +261,7 @@ class AbstractStaff(object):
         from config import ConfigStaffNew
         self.config = ConfigStaffNew.get(self.oid)
 
-    def check_active_qianban_ids(self):
+    def check_qianban(self, working_staff_oids):
         from config import ConfigQianBan
         config = ConfigQianBan.get(self.oid)
         if not config:
@@ -263,9 +278,20 @@ class AbstractStaff(object):
                 if self.__unit and self.__unit.id in v.condition_value:
                     qianban_ids.append(k)
                     talent_effect_ids.append(v.talent_effect_id)
+            elif v.condition_tp == 2:
+                # 选手同时上阵
+                if not self.oid in working_staff_oids:
+                    continue
+
+                for i in v.condition_value:
+                    if not i in working_staff_oids:
+                        continue
+
+                qianban_ids.append(k)
+                talent_effect_ids.append(v.talent_effect_id)
+
             else:
-                # raise RuntimeError("Unknown qianban condition tp: {0}".format(v.condition_tp))
-                pass
+                raise RuntimeError("Unknown qianban condition tp: {0}".format(v.condition_tp))
 
         self.active_qianban_ids = qianban_ids
         self.qianban_talent_ids = talent_effect_ids
@@ -336,7 +362,6 @@ class AbstractStaff(object):
     def set_unit(self, unit):
         # type: (AbstractUnit) -> None
         self.__unit = unit.clone()
-        self.check_active_qianban_ids()
 
     def calculate_unit(self):
         from config import ConfigTalentSkill
@@ -655,7 +680,7 @@ class AbstractClub(object):
         # 所以这里要每次都重新获取
         ids = []
         for s in self.formation_staffs:
-            for i in s.self_talent_ids:
+            for i in itertools.chain(s.self_talent_ids, s.qianban_talent_ids):
                 if ConfigTalentSkill.get(i).target in [14, 15]:
                     ids.append(i)
 

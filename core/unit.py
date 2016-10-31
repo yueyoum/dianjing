@@ -387,16 +387,13 @@ class UnitManager(object):
 
         self.send_notify_with_unit_objs(changed_units.values())
 
-        # !!!
         fm = Formation(self.server_id, self.char_id)
-        sm = StaffManger(self.server_id, self.char_id)
 
         _changed = False
-        for sid in fm.in_formation_staffs():
-            s_obj = sm.get_staff_object(sid)
-            if s_obj.unit and s_obj.unit.id in changed_units:
-                s_obj.set_unit(changed_units[s_obj.unit.id])
+        for k, v in fm.in_formation_staffs().iteritems():
+            if v['unit_id'] in changed_units:
                 _changed = True
+                break
 
         if _changed:
             club = Club(self.server_id, self.char_id, load_staffs=False)

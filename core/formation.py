@@ -13,6 +13,8 @@ from core.mongo import MongoFormation
 from core.staff import StaffManger
 from core.unit import UnitManager
 from core.club import Club
+from core.inspire import Inspire
+
 from core.resource import ResourceClassification
 
 from utils.message import MessagePipe
@@ -94,6 +96,20 @@ class BaseFormation(object):
 
         return staffs
 
+    def working_staff_oids(self):
+        oids = []
+
+        sm = StaffManger(self.server_id, self.char_id)
+
+        working_staffs = self.in_formation_staffs().keys()
+        working_staffs.extend(Inspire(self.server_id, self.char_id).all_staffs())
+
+        for s in working_staffs:
+            obj = sm.get_staff_object(s)
+            oids.append(obj.oid)
+
+        return oids
+
     def set_staff(self, slot_id, staff_id):
         if str(slot_id) not in self.doc['slots']:
             raise GameException(ConfigErrorMessage.get_error_id("FORMATION_SLOT_NOT_OPEN"))
@@ -138,7 +154,7 @@ class BaseFormation(object):
 
         return old_staff_id
 
-    def set_unit(self, slot_id, unit_id, staff_calculate=True):
+    def set_unit(self, slot_id, unit_id):
         if str(slot_id) not in self.doc['slots']:
             raise GameException(ConfigErrorMessage.get_error_id("FORMATION_SLOT_NOT_OPEN"))
 
@@ -172,11 +188,6 @@ class BaseFormation(object):
             {'_id': self.char_id},
             {'$set': updater}
         )
-
-        if staff_calculate:
-            s.set_unit(u)
-            s.calculate()
-            s.make_cache()
 
     def sync_slots(self, slots_data):
         positions = [0] * 30
@@ -311,7 +322,7 @@ class Formation(BaseFormation):
 
         return old_staff_id
 
-    def set_unit(self, slot_id, unit_id, **kwargs):
+    def set_unit(self, slot_id, unit_id):
         super(Formation, self).set_unit(slot_id, unit_id)
         # 检测阵型是否还可用
         if self.doc['using'] and not self.is_formation_valid(self.doc['using']):

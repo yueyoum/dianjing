@@ -11,11 +11,11 @@ from dianjing.exception import GameException
 
 from config import ConfigErrorMessage
 
-def check_staff_exists(server_id, char_id, staff_id):
+def staff_exists(server_id, char_id, staff_id):
     from core.staff import StaffManger
     StaffManger(server_id, char_id).check_staff(ids=[staff_id])
 
-def check_staff_in_formation(server_id, char_id, staff_id):
+def staff_not_in_formation(server_id, char_id, staff_id):
     from core.formation import Formation
     from core.plunder import Plunder
 

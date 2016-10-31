@@ -16,7 +16,7 @@ account_login_signal = Signal(providing_args=['account_id', 'ip', 'to_server_id'
 game_start_signal = Signal(providing_args=['server_id', 'char_id'])
 
 # 进行了一场挑战赛
-challenge_match_signal = Signal(providing_args=['server_id', 'char_id', 'challenge_id', 'win'])
+challenge_match_signal = Signal(providing_args=['server_id', 'char_id', 'challenge_id', 'star'])
 # 好友切磋比赛
 friend_match_signal = Signal(providing_args=['server_id', 'char_id', 'target_id', 'win'])
 

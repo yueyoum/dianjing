@@ -1138,7 +1138,7 @@ class StaffManger(object):
 
     def _destroy_check(self, staff_id):
         from core.territory import Territory
-        checker.check_staff_in_formation(self.server_id, self.char_id, staff_id)
+        checker.staff_not_in_formation(self.server_id, self.char_id, staff_id)
 
         if Territory(self.server_id, self.char_id).is_staff_training_check_by_unique_id(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_CANNOT_DESTROY_IN_TERRITORY"))

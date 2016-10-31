@@ -78,6 +78,14 @@ class Inspire(object):
         if self.is_staff_in(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("INSPIRE_STAFF_IN"))
 
+    def all_staffs(self):
+        staffs = []
+        for k, v in self.doc['slots'].iteritems():
+            if v:
+                staffs.append(v)
+
+        return staffs
+
     def set_staff(self, slot_id, staff_id):
         slot_id = str(slot_id)
 
@@ -92,12 +100,12 @@ class Inspire(object):
                 raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
             # TODO 加成计算
-            self.doc['slots'][slot_id] = 0
-            updater['slots.{0}'.format(slot_id)] = 0
+            self.doc['slots'][slot_id] = ""
+            updater['slots.{0}'.format(slot_id)] = ""
         else:
             # 上人
-            checker.check_staff_exists(self.server_id, self.char_id, staff_id)
-            checker.check_staff_in_formation(self.server_id, self.char_id, staff_id)
+            checker.staff_exists(self.server_id, self.char_id, staff_id)
+            checker.staff_not_in_formation(self.server_id, self.char_id, staff_id)
 
             self.check_staff_in(staff_id)
 

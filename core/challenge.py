@@ -14,11 +14,10 @@ from core.mongo import MongoChallenge
 from core.club import Club
 from core.match import ClubMatch
 from core.unit import NPCUnit
-from core.task import TaskMain
 from core.vip import VIP
 from core.energy import Energy
 from core.formation import Formation
-from core.signals import task_condition_trig_signal
+from core.signals import challenge_match_signal, task_condition_trig_signal
 
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.value_log import ValueLogChallengeMatchTimes, ValueLogAllChallengeWinTimes, ValueLogChallengeResetTimes
@@ -426,8 +425,13 @@ class Challenge(object):
             }}
         )
 
-        # task
-        TaskMain(self.server_id, self.char_id).trig(challenge_id)
+        challenge_match_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            challenge_id=challenge_id,
+            star=star
+        )
 
         if open_new_challenge:
             task_condition_trig_signal.send(

@@ -147,8 +147,8 @@ class PlunderFormation(BaseFormation):
         super(PlunderFormation, self).set_staff(slot_id, staff_id)
         self.load_formation_staffs()
 
-    def set_unit(self, slot_id, unit_id, staff_calculate=True):
-        super(PlunderFormation, self).set_unit(slot_id, unit_id, staff_calculate=staff_calculate)
+    def set_unit(self, slot_id, unit_id):
+        super(PlunderFormation, self).set_unit(slot_id, unit_id)
         self.load_formation_staffs()
 
     def load_formation_staffs(self):
@@ -159,6 +159,7 @@ class PlunderFormation(BaseFormation):
         um = UnitManager(self.server_id, self.char_id)
 
         in_formation_staffs = self.in_formation_staffs()
+        working_staff_oids = self.working_staff_oids()
 
         staffs = sm.get_staffs_data()
 
@@ -170,6 +171,7 @@ class PlunderFormation(BaseFormation):
             unit_id = in_formation_staffs[k]['unit_id']
             if unit_id:
                 obj.set_unit(um.get_unit_object(unit_id))
+                obj.check_qianban(working_staff_oids)
 
             obj.calculate()
             self.formation_staffs.append(obj)
@@ -447,7 +449,7 @@ class Plunder(object):
         for s in formation_staffs:
             ways[way_index].set_staff(slot_id, s.id)
             if s.unit:
-                ways[way_index].set_unit(slot_id, s.unit.id, staff_calculate=False)
+                ways[way_index].set_unit(slot_id, s.unit.id)
 
             if way_index == 2:
                 way_index = 0
@@ -522,7 +524,7 @@ class Plunder(object):
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
         w = self.get_way_object(way_id)
-        w.set_unit(slot_id, unit_id, staff_calculate=False)
+        w.set_unit(slot_id, unit_id)
         self.send_formation_notify()
 
     def get_search_cd(self):

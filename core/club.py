@@ -132,7 +132,10 @@ class Club(AbstractClub):
                 if unit_id:
                     v.set_unit(um.get_unit_object(unit_id))
 
+        working_staff_oids = fm.working_staff_oids()
+
         for k in in_formation_staffs:
+            staff_objs[k].check_qianban(working_staff_oids)
             staff_objs[k].add_self_talent_effect(self)
 
         talent_effects_1 = TalentManager(self.server_id, self.char_id).get_talent_effects()
