@@ -101,7 +101,6 @@ class Inspire(object):
             if not self.doc['slots'][slot_id]:
                 raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
-            # TODO 加成计算
             self.doc['slots'][slot_id] = ""
             updater['slots.{0}'.format(slot_id)] = ""
         else:
@@ -130,13 +129,16 @@ class Inspire(object):
 
     def get_addition_config(self):
         sm = StaffManger(self.server_id, self.char_id)
+        # XXX 不能用 get_staff_object
+        all_staffs = sm.get_staffs_data()
+
         levels = 0
         steps = 0
 
         for s in self.all_staffs():
-            obj = sm.get_staff_object(s)
-            levels += obj.level
-            steps += obj.step
+            data = all_staffs[s]
+            levels += data['level']
+            steps += data['step']
 
         config_level_addition = ConfigInspireAddition.get_by_level(levels)
         config_step_addition = ConfigInspireAddition.get_by_step(steps)
