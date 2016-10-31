@@ -91,7 +91,7 @@ def equipment_batch_destroy(request):
     slot_ids = request._proto.slot_ids
 
     bag = Bag(server_id, char_id)
-    rc = bag.equipment_batch_destroy(slot_ids)
+    rc = bag.equipment_batch_destroy([i for i in slot_ids])
 
     response = BagEquipmentBatchDestroyResponse()
     response.ret = 0

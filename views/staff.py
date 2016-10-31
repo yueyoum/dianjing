@@ -120,7 +120,7 @@ def batch_destroy(request):
 
     staff_ids = request._proto.staff_ids
 
-    rc = StaffManger(server_id, char_id).batch_destroy(staff_ids)
+    rc = StaffManger(server_id, char_id).batch_destroy([i for i in staff_ids])
 
     response = StaffBatchDestroyResponse()
     response.ret = 0
