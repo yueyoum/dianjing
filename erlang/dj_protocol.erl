@@ -13,6 +13,7 @@
 -export([find_msg_def/1, fetch_msg_def/1]).
 -export([find_enum_def/1, fetch_enum_def/1]).
 -export([enum_symbol_by_value/2, enum_value_by_symbol/2]).
+-export([enum_symbol_by_value_GamePlatform/1, enum_value_by_symbol_GamePlatform/1]).
 -export([enum_symbol_by_value_NextOperate/1, enum_value_by_symbol_NextOperate/1]).
 -export([enum_symbol_by_value_Action/1, enum_value_by_symbol_Action/1]).
 -export([enum_symbol_by_value_PropertyType/1, enum_value_by_symbol_PropertyType/1]).
@@ -7764,7 +7765,9 @@ cons(Elem, Acc, _TrUserData) -> [Elem | Acc].
 
 
 get_msg_defs() ->
-    [{{enum, 'NextOperate'},
+    [{{enum, 'GamePlatform'},
+      [{'PLATFORM_1SDK', 1}, {'PLATFORM_IOS', 2}]},
+     {{enum, 'NextOperate'},
       [{'OPT_OK', 1}, {'OPT_CREATE_CLUB', 2}]},
      {{enum, 'Action'},
       [{'ACT_INIT', 1}, {'ACT_UPDATE', 2}]},
@@ -8036,8 +8039,9 @@ get_msg_names() ->
 
 
 get_enum_names() ->
-    ['NextOperate', 'Action', 'PropertyType',
-     'SpecialEquipmentGenerateType', 'PartyMessageType'].
+    ['GamePlatform', 'NextOperate', 'Action',
+     'PropertyType', 'SpecialEquipmentGenerateType',
+     'PartyMessageType'].
 
 
 fetch_msg_def(MsgName) ->
@@ -8266,6 +8270,8 @@ find_msg_def('ProtoPingRequest') ->
 find_msg_def(_) -> error.
 
 
+find_enum_def('GamePlatform') ->
+    [{'PLATFORM_1SDK', 1}, {'PLATFORM_IOS', 2}];
 find_enum_def('NextOperate') ->
     [{'OPT_OK', 1}, {'OPT_CREATE_CLUB', 2}];
 find_enum_def('Action') ->
@@ -8306,6 +8312,8 @@ find_enum_def('PartyMessageType') ->
 find_enum_def(_) -> error.
 
 
+enum_symbol_by_value('GamePlatform', Value) ->
+    enum_symbol_by_value_GamePlatform(Value);
 enum_symbol_by_value('NextOperate', Value) ->
     enum_symbol_by_value_NextOperate(Value);
 enum_symbol_by_value('Action', Value) ->
@@ -8319,6 +8327,8 @@ enum_symbol_by_value('PartyMessageType', Value) ->
     enum_symbol_by_value_PartyMessageType(Value).
 
 
+enum_value_by_symbol('GamePlatform', Sym) ->
+    enum_value_by_symbol_GamePlatform(Sym);
 enum_value_by_symbol('NextOperate', Sym) ->
     enum_value_by_symbol_NextOperate(Sym);
 enum_value_by_symbol('Action', Sym) ->
@@ -8331,6 +8341,13 @@ enum_value_by_symbol('SpecialEquipmentGenerateType',
 enum_value_by_symbol('PartyMessageType', Sym) ->
     enum_value_by_symbol_PartyMessageType(Sym).
 
+
+enum_symbol_by_value_GamePlatform(1) -> 'PLATFORM_1SDK';
+enum_symbol_by_value_GamePlatform(2) -> 'PLATFORM_IOS'.
+
+
+enum_value_by_symbol_GamePlatform('PLATFORM_1SDK') -> 1;
+enum_value_by_symbol_GamePlatform('PLATFORM_IOS') -> 2.
 
 enum_symbol_by_value_NextOperate(1) -> 'OPT_OK';
 enum_symbol_by_value_NextOperate(2) ->

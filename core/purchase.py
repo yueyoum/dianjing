@@ -6,8 +6,11 @@ Date Created:   2016-08-02 17:25
 Description:
 
 """
+import json
 import hashlib
+
 import arrow
+import requests
 
 from django.db.models import Q
 
@@ -17,6 +20,7 @@ from apps.character.models import Character as ModelCharacter
 from apps.purchase.models import (
     Purchase as ModelPurchase,
     Purchase1SDK as ModelPurchase1SDK,
+    PurchaseIOS as ModelPurchaseIOS,
 )
 
 from core.mongo import MongoPurchase, MongoPurchaseLog
@@ -28,9 +32,30 @@ from utils.functional import make_string_id
 
 from config import ConfigPurchaseYueka, ConfigPurchaseGoods, ConfigErrorMessage, ConfigPurchaseFirstReward
 
-from protomsg.purchase_pb2 import PurchaseNotify, PURCHASE_DONE, PURCHASE_FAILURE, PURCHASE_WAITING
+from protomsg.purchase_pb2 import (
+    PurchaseNotify,
+    PURCHASE_DONE,
+    PURCHASE_FAILURE,
+    PURCHASE_WAITING,
+)
 
 YUEKA_ID = 1001
+
+IOS_VERIFY_URL = 'https://buy.itunes.apple.com/verifyReceipt'
+IOS_VERIFY_URL_TEST = 'https://sandbox.itunes.apple.com/verifyReceipt'
+
+IOS_PRODUCT_ID_TO_GOODS_ID_TABLE = {
+    ConfigPurchaseYueka.get(YUEKA_ID).ios_product_id: YUEKA_ID
+}
+
+for k, v in ConfigPurchaseGoods.INSTANCES.iteritems():
+    IOS_PRODUCT_ID_TO_GOODS_ID_TABLE[v.ios_product_id] = k
+
+
+def get_fee(goods_id):
+    if goods_id == YUEKA_ID:
+        return ConfigPurchaseYueka.get(YUEKA_ID).rmb
+    return ConfigPurchaseGoods.get(goods_id).rmb
 
 
 class Purchase(object):
@@ -69,7 +94,62 @@ class Purchase(object):
 
         return amount
 
-    def verify(self, param):
+    def verify_ios(self, param):
+        def _do_error_record(_status):
+            ModelPurchaseIOS.objects.create(
+                id=make_string_id(),
+                transaction_id='',
+                product_id='',
+                quantity=0,
+                status=_status,
+                environment='',
+                application_version='',
+                receipt_data=param
+            )
+
+        res = verify_ios(param)
+        if not res:
+            _do_error_record(-1)
+            return 0, PURCHASE_FAILURE
+
+        status = res['status']
+        if status != 0:
+            _do_error_record(status)
+            return 0, PURCHASE_FAILURE
+
+        environment = res['environment']
+        application_version = res['receipt']['application_version']
+
+        in_app = res['receipt']['in_app'][-1]
+        product_id = in_app['product_id']
+        quantity = int(in_app['quantity'])
+        transaction_id = in_app['transaction_id']
+
+        this_record = ModelPurchaseIOS.objects.filter(transaction_id=transaction_id)
+        if this_record.exists():
+            pid = this_record.first().id
+            pobj = ModelPurchase.objects.get(id=pid)
+            return pobj.goods_id, PURCHASE_DONE
+
+        goods_id = IOS_PRODUCT_ID_TO_GOODS_ID_TABLE[product_id]
+
+        _id = self.record('ios', goods_id, amount=quantity)
+
+        ModelPurchaseIOS.objects.create(
+            id=_id,
+            transaction_id=transaction_id,
+            product_id=product_id,
+            quantity=quantity,
+            status=0,
+            environment=environment,
+            application_version=application_version,
+            receipt_data=param
+        )
+
+        self.send_reward(goods_id)
+        return goods_id, PURCHASE_DONE
+
+    def verify_other(self, param):
         condition = Q(char_id=self.char_id) & Q(verified=False)
         query = ModelPurchase.objects.filter(condition).order_by('-create_at')
         if query.count() == 0:
@@ -115,8 +195,10 @@ class Purchase(object):
         self.send_notify()
         return rc
 
-    def record(self, goods_id, platform, fee):
+    def record(self, platform, goods_id, amount=1):
         _id = make_string_id()
+        fee = get_fee(goods_id) * amount
+
         ModelPurchase.objects.create(
             id=_id,
             server_id=self.server_id,
@@ -183,6 +265,37 @@ class Purchase(object):
 
         notify.first_reward_got = self.doc.get('first_reward_got', False)
         MessagePipe(self.char_id).put(msg=notify)
+
+
+def verify_ios(receipt):
+    data = json.dumps({
+        'receipt-data': receipt
+    })
+
+    def _do(url):
+        try:
+            req = requests.post(url, data=data, timeout=10)
+            assert req.ok
+        except Exception as e:
+            print "==== IOS VERIFY ERROR ===="
+            print e
+            raise e
+
+        return req.json()
+
+    try:
+        res = _do(IOS_VERIFY_URL)
+    except:
+        return None
+
+    if res['status'] == 21007:
+        # 测试的交易凭证，却发到了正式服务器去验证
+        try:
+            res = _do(IOS_VERIFY_URL_TEST)
+        except:
+            return None
+
+    return res
 
 
 def verify_1sdk(order_id):
@@ -272,7 +385,7 @@ def platform_callback_1sdk(params):
         return 'GOODS NOT FOUND'
 
     p = Purchase(c.server_id, char_id)
-    _id = p.record(goods_id, '1sdk', int(fee))
+    _id = p.record('1sdk', goods_id)
 
     # 记录下来
     ModelPurchase1SDK.objects.create(

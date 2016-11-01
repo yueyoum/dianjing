@@ -10,16 +10,19 @@ Description:
 from config.base import ConfigBase
 
 class Goods(object):
-    __slots__ = ['id', 'rmb', 'vip_exp', 'diamond', 'diamond_extra']
+    __slots__ = ['id', 'rmb', 'vip_exp', 'diamond', 'diamond_extra',
+                 'ios_product_id']
     def __init__(self):
         self.id = 0
         self.rmb = 0
         self.vip_exp = 0
         self.diamond = 0
         self.diamond_extra = 0
+        self.ios_product_id = ''
 
 class Yueka(object):
-    __slots__ = ['id', 'rmb', 'vip_exp', 'rewards', 'mail_title', 'mail_content']
+    __slots__ = ['id', 'rmb', 'vip_exp', 'rewards', 'mail_title', 'mail_content',
+                 'ios_product_id']
     def __init__(self):
         self.id = 0
         self.rmb = 0
@@ -27,6 +30,7 @@ class Yueka(object):
         self.rewards = []
         self.mail_title = ''
         self.mail_content = ''
+        self.ios_product_id = ''
 
 class FirstReward(object):
     __slots__ = ['id', 'rewards']

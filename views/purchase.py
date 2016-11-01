@@ -12,16 +12,22 @@ from utils.http import ProtobufResponse
 
 from core.purchase import Purchase, platform_callback_1sdk
 from protomsg.purchase_pb2 import PurchaseVerifyResponse, PurchaseGetFirstRewardResponse
+from protomsg.common_pb2 import PLATFORM_1SDK, PLATFORM_IOS
 
 
 def verify(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
+    platform = request._proto.platform
     param = request._proto.param
 
     p = Purchase(server_id, char_id)
-    goods_id, status = p.verify(param)
+
+    if platform == PLATFORM_IOS:
+        goods_id, status = p.verify_ios(param)
+    else:
+        goods_id, status = p.verify_other(param)
 
     response = PurchaseVerifyResponse()
     response.ret = 0
