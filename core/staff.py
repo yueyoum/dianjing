@@ -1006,8 +1006,7 @@ class StaffManger(object):
             sender=None,
             server_id=self.server_id,
             char_id=self.char_id,
-            oid=staff_original_id,
-            unique_id=unique_id,
+            staffs_info=[(staff_original_id, unique_id),],
             force_load_staffs=send_notify,
         )
 
@@ -1020,6 +1019,9 @@ class StaffManger(object):
 
         updater = {}
         unique_id_list = []
+
+        info = []
+
         for oid, amount in staffs:
             if not ConfigStaffNew.get(oid):
                 raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
@@ -1031,6 +1033,7 @@ class StaffManger(object):
 
                 unique_id_list.append(unique_id)
                 updater['staffs.{0}'.format(unique_id)] = doc
+                info.append((oid, unique_id))
 
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -1038,6 +1041,15 @@ class StaffManger(object):
         )
 
         self.send_notify(ids=unique_id_list)
+
+        staff_new_add_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            staffs_info=info,
+            force_load_staffs=True,
+        )
+
         self.after_staffs_change_for_trig_signal()
 
     def remove(self, staff_id):

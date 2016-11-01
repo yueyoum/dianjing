@@ -38,7 +38,7 @@ staff_step_up_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id'
 staff_star_up_signal = Signal(providing_args=['server_id', 'char_id', 'staff_id', 'staff_oid', 'new_star'])
 
 # 获得新员工
-staff_new_add_signal = Signal(providing_args=['server_id', 'char_id', 'oid', 'unique_id', 'force_load_staffs'])
+staff_new_add_signal = Signal(providing_args=['server_id', 'char_id', 'staffs_info', 'force_load_staffs'])
 
 # VIP
 vip_level_up_signal = Signal(providing_args=['server_id', 'char_id', 'new_level'])

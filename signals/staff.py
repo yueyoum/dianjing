@@ -21,8 +21,9 @@ from core.system import BroadCast
 from config import ConfigItemNew
 
 @receiver(staff_new_add_signal, dispatch_uid='signals.staff.staff_new_add_handler')
-def staff_new_add_handler(server_id, char_id, oid, unique_id, force_load_staffs, **kwargs):
-    Collection(server_id, char_id).add(oid, force_load_staffs=force_load_staffs)
+def staff_new_add_handler(server_id, char_id, staffs_info, force_load_staffs, **kwargs):
+    oids = [o for o, _ in staffs_info]
+    Collection(server_id, char_id).add(oids, force_load_staffs=force_load_staffs)
 
 
 @receiver(recruit_staff_diamond_signal, dispatch_uid='signals.staff.recruit_diamond')

@@ -30,24 +30,34 @@ class Collection(object):
             self.doc['_id'] = self.char_id
             MongoStaffCollection.db(self.server_id).insert_one(self.doc)
 
-    def add(self, staff_id, force_load_staffs=True):
+    def add(self, staff_oid, force_load_staffs=True):
         from core.club import Club
 
-        if staff_id in self.doc['staffs']:
-            return
+        if isinstance(staff_oid, (list, tuple)):
+            staff_oids = staff_oid
+        else:
+            staff_oids = [staff_oid]
 
-        if staff_id not in ConfigCollection.INSTANCES:
-            return
+        new_add = []
+        for i in staff_oids:
+            if i in self.doc['staffs']:
+                continue
 
-        self.doc['staffs'].append(staff_id)
-        MongoStaffCollection.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$push': {'staffs': staff_id}}
-        )
+            if i not in ConfigCollection.INSTANCES:
+                continue
 
-        self.send_notify(staff_ids=[staff_id])
-        if force_load_staffs:
-            Club(self.server_id, self.char_id, load_staffs=False).force_load_staffs()
+            self.doc['staffs'].append(i)
+            new_add.append(i)
+
+        if new_add:
+            MongoStaffCollection.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {'staffs': self.doc['staffs']}}
+            )
+
+            self.send_notify(staff_ids=new_add)
+            if force_load_staffs:
+                Club(self.server_id, self.char_id, load_staffs=False).force_load_staffs()
 
     def get_talent_effects(self):
         return [ConfigCollection.get(i).talent_effect_id for i in self.doc['staffs']]
