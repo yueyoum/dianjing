@@ -5,6 +5,7 @@ import apps.config.views
 
 import views.admin
 import views.purchase
+import views.statistics
 
 urlpatterns = [
     # Examples:
@@ -20,4 +21,8 @@ urlpatterns = [
 
     url(r'^flushcache/$', views.admin.flushcache),
     url(r'^callback/1sdk/$', views.purchase.callback_1sdk),
+
+    url(r'^statistics/$', views.statistics.index),
+    url(r'^statistics/purchase/$', views.statistics.purchase_info),
+    url(r'^statistics/retained/$', views.statistics.retained_info),
 ]

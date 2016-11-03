@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>电竞统计</title>
+
+    <link href="//cdn.bootcss.com/pure/0.6.0/pure-min.css" rel="stylesheet">
+	<link href="//cdn.bootcss.com/pikaday/1.4.0/css/pikaday.min.css" rel="stylesheet">
+
+	<script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+	<script src="//cdn.bootcss.com/moment.js/2.15.2/moment.min.js"></script>
+	<script src="//cdn.bootcss.com/pikaday/1.4.0/pikaday.min.js"></script>
+
+    <style type="text/css">
+        #left {
+            position: fixed;
+            height: 100%;
+            width: 160px;
+            background: #191818;
+        }
+
+        #left ul li.pure-menu-selected a {
+            color: white;
+            background: #1f8dd6;
+        }
+
+        #right {
+            margin-left: 170px;
+        }
+
+        #header {
+            border-bottom: 1px solid gray;
+            margin-bottom: 10px;
+        }
+
+        .pure-table th {
+            font-weight: normal;
+        }
+
+        {% block style %}
+        {% endblock %}
+    </style>
+</head>
+<body>
+    <div id="left">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item {% if current == 'index' %} pure-menu-selected {% endif %}">
+                <a href="/statistics/" class="pure-menu-link">基本信息</a>
+            </li>
+
+            <li class="pure-menu-item {% if current == 'purchase' %} pure-menu-selected {% endif %}">
+                <a href="/statistics/purchase/" class="pure-menu-link">充值记录</a>
+            </li>
+
+            <li class="pure-menu-item {% if current == 'retained' %} pure-menu-selected {% endif %}">
+                <a href="/statistics/retained/" class="pure-menu-link">留存</a>
+            </li>
+        </ul>
+	</div>
+
+	<div id="right">
+        {% block content %}
+        {% endblock %}
+	</div>
+
+</body>
+</html>

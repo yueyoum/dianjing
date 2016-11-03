@@ -1,0 +1,82 @@
+{% extends "dianjing_statistics_base.html" %}
+
+{% block content %}
+
+{% include "dianjing_form1.html" %}
+
+<div>
+    <table class="pure-table pure-table-bordered">
+        <thead>
+        <tr>
+            <th>服务器ID</th>
+            <th>账号ID</th>
+            <th>角色ID</th>
+            <th>角色名字</th>
+            <th>商品ID</th>
+            <th>充值金额</th>
+            <th>充值时间</th>
+            <th>渠道</th>
+        </tr>
+        </thead>
+
+        <tbody id="purchase_tbody">
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+{% include "dianjing_datepicker_js.html" %}
+
+var tbody = $('#purchase_tbody');
+
+$('#queryBtn').click(function(){
+
+    if(picker2.getMoment() < picker1.getMoment())
+    {
+        alert("请选择正确的日期");
+        return false;
+    }
+
+    $.ajax({
+        type: "POST",
+        url: window.location.pathname,
+        data: {
+            sid: $('serverSelect').val(),
+            date1: picker1.getMoment().format("YYYY-MM-DD"),
+            date2: picker2.getMoment().format("YYYY-MM-DD"),
+        },
+        dataType: "json",
+        success: function(data){
+            if(data.ret!=0){
+                alert(data.msg);
+                return false;
+            }
+
+            tbody.empty();
+            for(i=0; i<data.info.length; i++){
+                tr_html = "<tr><td>" +
+                data.info[i].sid + "</td><td>" +
+                data.info[i].account_id + "</td><td>" +
+                data.info[i].char_id + "</td><td>" +
+                data.info[i].char_name + "</td><td>" +
+                data.info[i].goods_id + "</td><td>" +
+                data.info[i].fee + "</td><td>" +
+                data.info[i].purchase_at + "</td><td>" +
+                data.info[i].platform + "</td><tr>";
+
+                tbody.append(tr_html);
+            }
+
+            return false;
+        },
+        error: function(r, s, e){
+            alert("Error!");
+            return false;
+        }
+    });
+});
+
+
+</script>
+
+{% endblock %}

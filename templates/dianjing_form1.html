@@ -1,0 +1,15 @@
+<div id="header">
+    <form class="pure-form">
+        <fieldset>
+            <select id="serverSelect">
+                {% for s in servers_select %}
+                    <option value="{{ s.value }}">{{ s.display }}</option>
+                {% endfor %}
+
+            </select>
+            <input type="text" id="datePicker1" />
+            <input type="text" id="datePicker2" />
+            <a class="pure-button pure-button-primary" href="#" id="queryBtn">查询</a>
+        </fieldset>
+    </form>
+</div>

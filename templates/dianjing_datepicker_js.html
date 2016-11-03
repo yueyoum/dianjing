@@ -1,0 +1,28 @@
+    var i18n = {
+        previousMonth: "上月",
+        nextMonth: "下月",
+        months: ["一月", "二月", "三月", "四月", "五月", "六月","七月", "八月", "九月","十月", "十一月", "十二月"],
+        weekdays: ["周一","周二","周三","周四","周五","周六","周日"],
+        weekdaysShort: ["周一","周二","周三","周四","周五","周六","周日"]
+    };
+
+    var picker1 = new Pikaday({
+        field: $("#datePicker1")[0],
+        format: "YYYY-MM-DD",
+        firstDay: 1,
+        i18n: i18n
+    });
+
+    var picker2 = new Pikaday({
+        field: $("#datePicker2")[0],
+        format: "YYYY-MM-DD",
+        firstDay: 1,
+        i18n: i18n
+    });
+
+    var date1 = moment(moment().format("YYYY-MM-DD"), "YYYY-MM-DD");
+    date1.add(-7, 'days');
+    var date2 = moment(moment().format("YYYY-MM-DD"), "YYYY-MM-DD");
+
+    picker1.setMoment(date1);
+    picker2.setMoment(date2);

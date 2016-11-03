@@ -1,0 +1,58 @@
+{% extends "dianjing_statistics_base.html" %}
+
+{% block style %}
+#index1 {
+    margin-bottom: 10px;
+}
+{% endblock %}
+
+
+{% block content %}
+
+<div id="index1">
+    <table class="pure-table pure-table-bordered">
+        <thead>
+        <tr>
+            <th>账号数</th>
+            <th>角色数</th>
+            <th>总充值金额</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th>{{ account_amount }}</th>
+            <th>{{ char_amount }}</th>
+            <th>{{ total_purchase }}</th>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <table class="pure-table pure-table-bordered">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>服务器名</th>
+            <th>开服时间</th>
+            <th>角色数</th>
+            <th>充值金额</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for info in server_info %}
+        <tr>
+            <th>{{ info.sid }}</th>
+            <th>{{ info.server_name }}</th>
+            <th>{{ info.opened_at }}</th>
+            <th>{{ info.char_amount }}</th>
+            <th>{{ info.total_purchase }}</th>
+        </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
