@@ -79,8 +79,8 @@
 
                 for(i=0; i<data.rows.length; i++){
                     content = "<tr>";
-                    for(j=0; i<i.length; j++){
-                        content += "<td>" + data.rows[i] + "</td>";
+                    for(j=0; j<data.rows[i].length; j++){
+                        content += "<td>" + data.rows[i][j] + "</td>";
                     }
 
                     content += "</tr>";
