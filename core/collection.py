@@ -57,7 +57,7 @@ class Collection(object):
 
             self.send_notify(staff_ids=new_add)
             if force_load_staffs:
-                Club(self.server_id, self.char_id, load_staffs=False).force_load_staffs()
+                Club(self.server_id, self.char_id, load_staffs=False).force_load_staffs(send_notify=True)
 
     def get_talent_effects(self):
         return [ConfigCollection.get(i).talent_effect_id for i in self.doc['staffs']]
