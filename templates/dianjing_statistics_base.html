@@ -66,8 +66,8 @@
 
     <script type="text/javascript">
         $(document).on("click", "a.downloadFile", function(){
-            $.fileDownload(window.location.pathname + "/download/");
-
+            $.fileDownload(window.location.pathname + "download/");
+            return false;
         });
     </script>
 

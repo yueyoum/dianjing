@@ -7,12 +7,13 @@ Description:
 
 """
 
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render_to_response
 from django.db.models import Q, Sum
 from django.conf import settings
 
 import arrow
+import openpyxl
 
 from apps.account.models import Account as ModelAccount
 from apps.character.models import Character as ModelCharacter
@@ -119,6 +120,17 @@ def purchase_info(request):
 
     return JsonResponse(ret)
 
+
+def purchase_info_download(request):
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment;filename=purchase.xlsx'
+
+    wb = openpyxl.Workbook()
+    ws = wb.worksheets[0]
+    ws.append([1,2,3,4])
+
+    wb.save(response)
+    return response
 
 def retained_info(request):
     return render_to_response('dianjing_statistics_retained.html')

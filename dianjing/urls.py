@@ -24,5 +24,6 @@ urlpatterns = [
 
     url(r'^statistics/$', views.statistics.index),
     url(r'^statistics/purchase/$', views.statistics.purchase_info),
+    url(r'^statistics/purchase/download/$', views.statistics.purchase_info_download),
     url(r'^statistics/retained/$', views.statistics.retained_info),
 ]

@@ -13,3 +13,4 @@ requests==2.11.1
 six==1.10.0
 sqlparse==0.2.1
 uwsgidecorators==1.1.0
+openpyxl==2.4.0
