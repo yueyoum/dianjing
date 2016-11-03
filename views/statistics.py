@@ -29,7 +29,7 @@ def index(request):
 
     server_info = []
     for s in ModelServer.opened_servers():
-        this_total_purchase = ModelCharacter.objects.filter(server_id=s.id).aggregate(Sum('fee'))['fee__sum']
+        this_total_purchase = ModelPurchase.objects.filter(server_id=s.id).aggregate(Sum('fee'))['fee__sum']
         if not this_total_purchase:
             this_total_purchase = 0
 
@@ -79,7 +79,7 @@ def purchase_info(request):
         date2 = request.POST['date2']
 
         date1 = arrow.get(date1).format("YYYY-MM-DD HH:mm:ssZ")
-        date2 = arrow.get(date2).format("YYYY-MM-DD HH:mm:ssZ")
+        date2 = arrow.get(date2).replace(days=1).format("YYYY-MM-DD HH:mm:ssZ")
     except:
         ret = {
             'ret': 1,

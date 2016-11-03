@@ -41,9 +41,9 @@ $('#queryBtn').click(function(){
         type: "POST",
         url: window.location.pathname,
         data: {
-            sid: $('serverSelect').val(),
+            sid: $('#serverSelect').val(),
             date1: picker1.getMoment().format("YYYY-MM-DD"),
-            date2: picker2.getMoment().format("YYYY-MM-DD"),
+            date2: picker2.getMoment().format("YYYY-MM-DD")
         },
         dataType: "json",
         success: function(data){
