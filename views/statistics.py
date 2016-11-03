@@ -58,6 +58,72 @@ def index(request):
     )
 
 
+
+class PurchaseInfo(object):
+    HEADERS = ['sid', 'account_id', 'char_id', 'char_name',
+               'goods_id', 'fee', 'purchase_at', 'platform']
+
+    HEADER_NAME_TABLE = {
+        'sid': '服务器ID',
+        'account_id': '账号ID',
+        'char_id': '角色ID',
+        'char_name': '角色名字',
+        'goods_id': '商品ID',
+        'fee': '充值金额',
+        'purchase_at': '充值时间',
+        'platform': '渠道',
+    }
+
+    def __init__(self):
+        self.headers = [self.HEADER_NAME_TABLE[h] for h in self.HEADERS]
+        self.rows = []
+
+    def query(self, sid, date1, date2):
+        info = []
+        condition = Q(create_at__gte=date1) & Q(create_at__lte=date2)
+        if sid != 0:
+            condition &= Q(server_id=sid)
+
+        _char_info_table = {}
+
+        for p in ModelPurchase.objects.filter(condition).order_by('-create_at'):
+            row = {
+                'sid': p.server_id,
+                'char_id': p.char_id,
+                'goods_id': p.goods_id,
+                'fee': p.fee,
+                'purchase_at': arrow.get(p.create_at).to(settings.TIME_ZONE).format("YYYY-MM-DD HH:mm:ss"),
+                'platform': p.platform
+            }
+
+            info.append(row)
+            if p.char_id in _char_info_table:
+                _char_info_table[p.char_id].append(row)
+            else:
+                _char_info_table[p.char_id] = [row]
+
+        for c in ModelCharacter.objects.filter(id__in=_char_info_table.keys()):
+            for _row in _char_info_table[c.id]:
+                _row['account_id'] = c.account_id
+                _row['char_name'] = c.name
+
+        for row in info:
+            self.add_row(row)
+
+    def add_row(self, data):
+        row = [data[h] for h in self.HEADERS]
+        self.rows.append(row)
+
+    def to_excel_workbook(self):
+        wb = openpyxl.Workbook()
+        ws = wb.worksheets[0]
+        ws.append(self.headers)
+        for row in self.rows:
+            ws.append(row)
+
+        return wb
+
+
 def purchase_info(request):
     if request.method == 'GET':
         servers_select = [{'display': '全部', 'value': 0}]
@@ -89,46 +155,40 @@ def purchase_info(request):
 
         return JsonResponse(ret)
 
-    info = []
-    condition = Q(create_at__gte=date1) & Q(create_at__lte=date2)
-    if sid != 0:
-        condition &= Q(server_id=sid)
-
-    _char_info_table = {}
-
-    for p in ModelPurchase.objects.filter(condition).order_by('-create_at'):
-        row = {
-            'sid': p.server_id,
-            'char_id': p.char_id,
-            'goods_id': p.goods_id,
-            'fee': p.fee,
-            'purchase_at': arrow.get(p.create_at).to(settings.TIME_ZONE).format("YYYY-MM-DD HH:mm:ss"),
-            'platform': p.platform
-        }
-
-        info.append(row)
-        _char_info_table[p.char_id] = row
-
-    for c in ModelCharacter.objects.filter(id__in=_char_info_table.keys()):
-        _char_info_table[c.id]['account_id'] = c.account_id
-        _char_info_table[c.id]['char_name'] = c.name
+    pi = PurchaseInfo()
+    pi.query(sid, date1, date2)
 
     ret = {
         'ret': 0,
-        'info': info
+        'header': pi.headers,
+        'rows': pi.rows
     }
 
     return JsonResponse(ret)
 
-
 def purchase_info_download(request):
+    try:
+        sid = int(request.GET['sid'])
+        date1 = request.GET['date1']
+        date2 = request.GET['date2']
+
+        date1 = arrow.get(date1).format("YYYY-MM-DD HH:mm:ssZ")
+        date2 = arrow.get(date2).replace(days=1).format("YYYY-MM-DD HH:mm:ssZ")
+    except:
+        ret = {
+            'ret': 1,
+            'msg': '请求数据错误'
+        }
+
+        return JsonResponse(ret)
+
     response = HttpResponse(content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment;filename=purchase.xlsx'
 
-    wb = openpyxl.Workbook()
-    ws = wb.worksheets[0]
-    ws.append([1,2,3,4])
+    pi = PurchaseInfo()
+    pi.query(sid, date1, date2)
 
+    wb = pi.to_excel_workbook()
     wb.save(response)
     return response
 

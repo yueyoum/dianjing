@@ -14,3 +14,86 @@
         </fieldset>
     </form>
 </div>
+
+
+<div>
+    <table class="pure-table pure-table-bordered">
+        <thead id="thead">
+        </thead>
+
+        <tbody id="tbody">
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(document).on("click", "a.downloadFile", function(){
+
+        var sid = $('#serverSelect').val();
+        var date1 = picker1.getMoment().format("YYYY-MM-DD");
+        var date2 = picker2.getMoment().format("YYYY-MM-DD");
+        var url = window.location.pathname + "download/?sid=" + sid + "&date1=" + date1 + "&date2=" + date2;
+
+        $.fileDownload(url);
+        return false;
+    });
+
+
+    {% include "dianjing_datepicker_js.html" %}
+
+    var thead = $('#thead');
+    var tbody = $('#tbody');
+
+    $('#queryBtn').click(function(){
+        if(picker2.getMoment() < picker1.getMoment())
+        {
+            alert("请选择正确的日期");
+            return false;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: window.location.pathname,
+            data: {
+                sid: $('#serverSelect').val(),
+                date1: picker1.getMoment().format("YYYY-MM-DD"),
+                date2: picker2.getMoment().format("YYYY-MM-DD")
+            },
+            dataType: "json",
+            success: function(data){
+                if(data.ret!=0){
+                    alert(data.msg);
+                    return false;
+                }
+
+                thead.empty();
+                tbody.empty();
+
+                var content = "<tr>";
+                for(i=0; i<data.header.length; i++){
+                    content+= "<th>" + data.header[i] + "</th>";
+                }
+
+                content += "</tr>"
+                thead.append(content);
+
+                for(i=0; i<data.rows.length; i++){
+                    content = "<tr>";
+                    for(j=0; i<i.length; j++){
+                        content += "<td>" + data.rows[i] + "</td>";
+                    }
+
+                    content += "</tr>";
+                    tbody.append(content);
+                }
+
+                return false;
+            },
+            error: function(r, s, e){
+                alert("Error!");
+                return false;
+            }
+        });
+    });
+
+</script>
