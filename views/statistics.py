@@ -82,7 +82,7 @@ def purchase_info(request):
         date2 = request.POST['date2']
 
         date1 = arrow.get(date1).replace(tzinfo=settings.TIME_ZONE)
-        date2 = arrow.get(date2).replace(tzinfo=settings.TIME_ZONE)
+        date2 = arrow.get(date2).replace(tzinfo=settings.TIME_ZONE).replace(days=1)
     except:
         ret = {
             'ret': 1,
@@ -110,7 +110,7 @@ def purchase_info_download(request):
         date2 = request.GET['date2']
 
         date1 = arrow.get(date1).replace(tzinfo=settings.TIME_ZONE)
-        date2 = arrow.get(date2).replace(tzinfo=settings.TIME_ZONE)
+        date2 = arrow.get(date2).replace(tzinfo=settings.TIME_ZONE).replace(days=1)
     except:
         ret = {
             'ret': 1,
@@ -152,7 +152,7 @@ def retained_info(request):
         date2 = request.POST['date2']
 
         date1 = arrow.get(date1).replace(tzinfo=settings.TIME_ZONE)
-        date2 = arrow.get(date2).replace(tzinfo=settings.TIME_ZONE)
+        date2 = arrow.get(date2).replace(tzinfo=settings.TIME_ZONE).replace(days=1)
     except:
         ret = {
             'ret': 1,
@@ -180,7 +180,7 @@ def retained_info_download(request):
         date2 = request.GET['date2']
 
         date1 = arrow.get(date1).replace(tzinfo=settings.TIME_ZONE)
-        date2 = arrow.get(date2).replace(tzinfo=settings.TIME_ZONE)
+        date2 = arrow.get(date2).replace(tzinfo=settings.TIME_ZONE).replace(days=1)
     except:
         ret = {
             'ret': 1,
@@ -297,7 +297,7 @@ class RetainedInfo(BaseInfo):
         'retained_3day': '3日留存',
         'retained_7day': '7日留存',
         'retained_15day': '15次日留存',
-        'purchase_char_amount': '总充值人数',
+        'purchase_char_amount': '充值人数',
         'purchase_fee': '总充值金额',
     }
 
@@ -320,6 +320,8 @@ class RetainedInfo(BaseInfo):
             char_create_info[date_text] = []
             purchase_create_info[date_text] = set()
             purchase_fee_info[date_text] = 0
+
+            start = start.replace(days=1)
 
         condition = Q(server_id=sid) & Q(create_at__lt=date1.format(DATE_FORMAT))
         char_create_amount_before_date1 = ModelCharacter.objects.filter(condition).count()
@@ -383,8 +385,13 @@ class RetainedInfo(BaseInfo):
             {'timestamp': {'$lte': end.timestamp}}
         ]}
 
-        login_amount = MongoCharacterLoginLog.db(sid).find(condition).count()
-        return login_amount
+        docs = MongoCharacterLoginLog.db(sid).find(condition)
+
+        char_ids = set()
+        for doc in docs:
+            char_ids.add(doc['char_id'])
+
+        return len(char_ids)
 
     def get_retained_for_date(self, sid, char_ids, date_text, days):
         # 找这个date的 days留存
@@ -392,6 +399,7 @@ class RetainedInfo(BaseInfo):
             return 0
 
         date = arrow.get(date_text).replace(tzinfo=settings.TIME_ZONE).replace(days=days)
+
         login_amount = self.get_login_amount_for_date(sid, date, char_ids)
         retained = float(login_amount) / len(char_ids)
         return round(retained, 4)
