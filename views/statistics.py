@@ -400,9 +400,9 @@ class RetainedInfo(BaseInfo):
             return '?'
 
         if not char_ids:
-            return 0
+            return '0.0%'
 
         login_amount = self.get_login_amount_for_date(sid, date, char_ids)
         retained = float(login_amount) / len(char_ids)
-        value = '%.2f' % retained * 100 + '%'
+        value = '%.1f' % (retained * 100) + '%'
         return value
