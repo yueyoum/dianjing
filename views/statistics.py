@@ -21,7 +21,7 @@ from apps.server.models import Server as ModelServer
 from apps.purchase.models import Purchase as ModelPurchase
 
 from core.mongo import MongoCharacterLoginLog
-
+from utils.functional import get_start_time_of_today
 
 def index(request):
     account_amount = ModelAccount.objects.count()
@@ -314,7 +314,7 @@ class RetainedInfo(BaseInfo):
         purchase_fee_info = {}
 
         start = date1
-        while start <= date2:
+        while start < date2:
             date_text = start.format("YYYY-MM-DD")
             dates.append(date_text)
             char_create_info[date_text] = []
@@ -395,11 +395,14 @@ class RetainedInfo(BaseInfo):
 
     def get_retained_for_date(self, sid, char_ids, date_text, days):
         # 找这个date的 days留存
+        date = arrow.get(date_text).replace(tzinfo=settings.TIME_ZONE).replace(days=days)
+        if date > get_start_time_of_today():
+            return '?'
+
         if not char_ids:
             return 0
 
-        date = arrow.get(date_text).replace(tzinfo=settings.TIME_ZONE).replace(days=days)
-
         login_amount = self.get_login_amount_for_date(sid, date, char_ids)
         retained = float(login_amount) / len(char_ids)
-        return round(retained, 4)
+        value = '%.2f' % retained * 100 + '%'
+        return value
