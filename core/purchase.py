@@ -75,12 +75,23 @@ class Purchase(object):
     def send_yueka_reward(cls, server_id):
         config = ConfigPurchaseYueka.get(YUEKA_ID)
 
-        docs = MongoPurchase.db(server_id).find({'yueka_remained_days': {'$gt': 0}})
-        MongoPurchase.db(server_id).update_many(
+        condition = {'$and': [
             {'yueka_remained_days': {'$gt': 0}},
+            {'yueka_new': False}
+        ]}
+
+        docs = MongoPurchase.db(server_id).find(condition)
+        MongoPurchase.db(server_id).update_many(
+            condition,
             {'$inc': {
                 'yueka_remained_days': -1
             }}
+        )
+
+        # 把今天新购买的，设置为False,以便后面的定时任务好发送月卡
+        MongoPurchase.db(server_id).update_many(
+            {'yueka_new': True},
+            {'$set': {'yueka_new': False}}
         )
 
         rc = ResourceClassification.classify(config.rewards)
@@ -213,6 +224,8 @@ class Purchase(object):
 
     def send_reward(self, goods_id):
         if goods_id == YUEKA_ID:
+            # 月卡买了就立即发送
+            # 后面的再定时发送
             config = ConfigPurchaseYueka.get(YUEKA_ID)
             got = 0
             actual_got = 0
@@ -220,11 +233,19 @@ class Purchase(object):
             MongoPurchase.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {'$set': {
-                    'yueka_remained_days': 30
+                    'yueka_remained_days': 29,
+                    'yueka_new': True
                 }}
             )
 
-            self.doc['yueka_remained_days'] = 30
+            self.doc['yueka_remained_days'] = 29
+            self.doc['yueka_new'] = True
+
+            rc = ResourceClassification.classify(config.rewards)
+            attachment = rc.to_json()
+
+            m = MailManager(self.server_id, self.char_id)
+            m.add(config.mail_title, config.mail_content, attachment=attachment)
         else:
             config = ConfigPurchaseGoods.get(goods_id)
 

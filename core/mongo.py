@@ -679,13 +679,15 @@ class MongoPurchase(BaseDocument):
         '_id': null,
 
         'yueka_remained_days': 0,
+        # 是不是新买的月卡，  因为要立即发送，这个标识用来过滤
+        'yueka_new': True,
 
         # 首充礼品是否已经领取
         'first_reward_got': False,
     }
 
     COLLECTION = 'purchase'
-    INDEXES = ['yueka_remained_days',]
+    INDEXES = ['yueka_remained_days', 'yueka_new']
 
 class MongoPurchaseLog(BaseDocument):
     DOCUMENT = {
