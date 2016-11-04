@@ -147,6 +147,9 @@ class IUnion(object):
     def get_joined_union_owner_id(self):
         raise NotImplementedError()
 
+    def get_member_ids(self):
+        raise NotImplementedError()
+
     def create(self, name):
         raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
@@ -196,6 +199,9 @@ class UnionNotJoined(IUnion):
 
     def get_joined_union_owner_id(self):
         return 0
+
+    def get_member_ids(self):
+        return []
 
     def create(self, name):
         cost = [(money_text_to_item_id('diamond'), GlobalConfig.value("UNION_CREATE_COST"))]
@@ -287,6 +293,14 @@ class UnionJoined(IUnion):
 
     def get_joined_union_owner_id(self):
         return self.union_doc['owner']
+
+    def get_member_ids(self):
+        docs = MongoUnionMember.db(self.server_id).find(
+            {'joined': self.union_doc['_id']},
+            {'_id': 1}
+        )
+
+        return [d['_id'] for d in docs]
 
     def create(self, name):
         raise GameException(ConfigErrorMessage.get_error_id("UNION_CANNOT_CREATE_ALREADY_IN"))

@@ -71,3 +71,9 @@ class PlunderMatchCD(CD):
 
     def make_key(self):
         return 'cd:plunder_match:{0}:{1}:{2}'.format(self.server_id, self.char_id, self.rival_id)
+
+# 聊天CD
+class ChatCD(CD):
+    __slots__ = []
+    def make_key(self):
+        return 'cd:chat:{0}:{1}'.format(self.server_id, self.char_id)
