@@ -15,7 +15,7 @@ from apps.server.models import Server
 from cronjob.log import Logger
 from core.purchase import Purchase
 
-@uwsgidecorators.cron(59, 23, -1, -1, -1, target='spooler')
+@uwsgidecorators.cron(0, 0, -1, -1, -1, target='spooler')
 def send_yueka_reward(*args):
     logger = Logger("send_yueka_reward")
     logger.write("Start")
