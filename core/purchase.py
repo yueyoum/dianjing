@@ -185,7 +185,7 @@ class Purchase(object):
         return MongoPurchaseLog.db(self.server_id).find({'char_id': self.char_id}).count()
 
     def get_first_reward(self):
-        if self.get_purchase_times() != 1:
+        if self.get_purchase_times() == 0:
             raise GameException(ConfigErrorMessage.get_error_id("PURCHASE_NOT_FIRST_REWARD"))
 
         if self.doc.get('first_reward_got', False):
@@ -277,7 +277,7 @@ class Purchase(object):
     def send_notify(self):
         notify = PurchaseNotify()
         notify.yueka_remained_days = self.doc['yueka_remained_days']
-        notify.first = self.get_purchase_times() == 0
+        notify.first = self.get_purchase_times() > 0
 
         for _id, _amount in ConfigPurchaseFirstReward.get_reward():
             reward = notify.frist_reward.items.add()
