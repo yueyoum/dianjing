@@ -9,7 +9,7 @@ def get_config(request):
     c = Config.get_config()
     data = {
         'version': c.version,
-        'url': "http://{0}/upload/{1}".format(request.get_host(), os.path.basename(c.config.path))
+        'url': "http://{0}/upload/{1}".format(request.get_host(), os.path.basename(c.client_config.path))
     }
 
     for cs in CustomerServiceInformation.objects.all():

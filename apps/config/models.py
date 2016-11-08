@@ -23,9 +23,16 @@ def config_upload_to(instance, filename):
     return os.path.join(settings.UPLOAD_DIR, name)
 
 
+def client_config_upload_to(instance, filename):
+    now = arrow.utcnow().to(settings.TIME_ZONE).format("YYYY-MM-DD-HH-mm-ss")
+    name = "client-config-{0}-{1}.zip".format(instance.version, now)
+    return os.path.join(settings.UPLOAD_DIR, name)
+
+
 class Config(models.Model):
     version = models.CharField(max_length=255, primary_key=True)
-    config = models.FileField(upload_to=config_upload_to)
+    config = models.FileField(upload_to=config_upload_to, verbose_name='服务器配置')
+    client_config = models.FileField(upload_to=client_config_upload_to, verbose_name='客户端配置')
     des = models.TextField(blank=True)
     in_use = models.BooleanField(default=False, db_index=True)
 

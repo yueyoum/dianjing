@@ -12,7 +12,7 @@ from apps.config.models import (
 
 @admin.register(Config)
 class ConfigAdmin(admin.ModelAdmin):
-    list_display = ('version', 'config', 'des', 'in_use')
+    list_display = ('version', 'config', 'client_config', 'des', 'in_use')
 
 @admin.register(CustomerServiceInformation)
 class CustomerServiceInformationAdmin(admin.ModelAdmin):

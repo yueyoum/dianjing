@@ -18,7 +18,7 @@ storage:
     dbPath: /opt/db
     journal:
         enabled: true
-    engine: wiredTiger
+    engine: mmapv1
 
 processManagement:
     fork: true
@@ -60,6 +60,14 @@ net:
     ```
 
 8.  进入admin 配置 version, config, servers 信息
+
+    config 需要一下配置:
+    
+    *   qq: 客服QQ号
+    *   qq_group: 玩家QQ群
+    *   email:  客服邮箱
+    *   1sdk_callback: 1sdk 支付回调地址  HOST:PORT/callback/1sdk/
+
 
 ## 生产环境部署
 去掉上面第二步
