@@ -277,7 +277,7 @@ class Purchase(object):
     def send_notify(self):
         notify = PurchaseNotify()
         notify.yueka_remained_days = self.doc['yueka_remained_days']
-        notify.first = self.get_purchase_times() > 0
+        notify.first = self.get_purchase_times() == 0
 
         for _id, _amount in ConfigPurchaseFirstReward.get_reward():
             reward = notify.frist_reward.items.add()

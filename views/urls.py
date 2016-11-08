@@ -157,6 +157,7 @@ urlpatterns = [
     url(r'^union/signin/$', views.union.signin),
 
     url(r'^purchase/verify/$', views.purchase.verify),
+    url(r'^purchase/getfirstreward/$', views.purchase.get_first_reward),
 
     url(r'^activity/newplayer/getreward/$', views.activity.newplayer_getreward),
     url(r'^activity/newplayer/dailybuy/$', views.activity.newplayer_dailybuy),
