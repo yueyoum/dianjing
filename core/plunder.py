@@ -80,7 +80,7 @@ PLUNDER_ACTIVE_CLUB_LEVEL = 23
 REVENGE_MAX_TIMES = 3
 PLUNDER_TIMES_INIT_TIMES = 3
 PLUNDER_TIMES_RECOVER_LIMIT = 6
-
+PLUNDER_MAX_LOST = 75
 
 class PlunderFormation(BaseFormation):
     __slots__ = ['way_id', 'formation_staffs']
@@ -567,7 +567,7 @@ class Plunder(object):
         # filter by loss_percent
         condition = {'$and': [
             {'_id': {'$in': real_ids}},
-            {'loss_percent': {'$lt': 60}}
+            {'loss_percent': {'$lt': PLUNDER_MAX_LOST}}
         ]}
 
         docs = MongoPlunder.db(self.server_id).find(condition, {'_id': 1})
@@ -865,8 +865,8 @@ class Plunder(object):
             revenge_item = (make_string_id(), from_id)
 
             self.doc['loss_percent'] += config.percent
-            if self.doc['loss_percent'] > 60:
-                self.doc['loss_percent'] = 60
+            if self.doc['loss_percent'] > PLUNDER_MAX_LOST:
+                self.doc['loss_percent'] = PLUNDER_MAX_LOST
 
             self.doc['revenge_list'].append(revenge_item)
 
