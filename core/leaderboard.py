@@ -8,7 +8,7 @@ Description:
 """
 import arrow
 
-from core.mongo import MongoClubLeaderboard, MongoCharacter
+from core.mongo import MongoClubLeaderboard
 from core.club import Club
 from utils import cache
 
@@ -22,14 +22,14 @@ class ClubLeaderBoard(object):
 
     @classmethod
     def generate(cls, server_id):
-        docs = MongoCharacter.db(server_id).find({}, {'_id': 1})
+        char_ids = Club.get_recent_login_char_ids(server_id)
 
         leaderboard_docs = []
 
-        for doc in docs:
-            obj = Club(server_id, doc['_id'])
+        for cid in char_ids:
+            obj = Club(server_id, cid)
             leaderboard_docs.append({
-                '_id': doc['_id'],
+                '_id': cid,
                 'level': obj.level,
                 'power': obj.power,
             })

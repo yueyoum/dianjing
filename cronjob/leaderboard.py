@@ -15,7 +15,7 @@ from core.leaderboard import ClubLeaderBoard
 
 from cronjob.log import Logger
 
-@uwsgidecorators.cron(30, -1, -1, -1, -1, target='spooler')
+@uwsgidecorators.cron(0, -2, -1, -1, -1, target='spooler')
 def generate_club_leaderboard(*args):
     logger = Logger('generate_club_leaderboard')
     logger.write('Start')

@@ -132,6 +132,12 @@ class Club(AbstractClub):
                 v.formation_position = in_formation_staffs[k]['position']
                 unit_id = in_formation_staffs[k]['unit_id']
                 if unit_id:
+                    unit_obj = um.get_unit_object(unit_id)
+                    if not unit_obj:
+                        raise RuntimeError(
+                            "Can not get unit object. server: {0}, char: {1}, staff: {2}, unit: {3}".format(
+                                self.server_id, self.char_id, k, unit_id
+                            ))
                     v.set_unit(um.get_unit_object(unit_id))
 
         working_staff_oids = fm.working_staff_oids()
@@ -224,7 +230,6 @@ class Club(AbstractClub):
 
         return list(result)
 
-
     @classmethod
     def get_recent_login_char_ids(cls, server_id, recent_days=14, other_conditions=None):
         day_limit = arrow.utcnow().replace(days=-recent_days)
@@ -286,7 +291,6 @@ class Club(AbstractClub):
         login_doc['timestamp'] = now.timestamp
 
         MongoCharacterLoginLog.db(self.server_id).insert_one(login_doc)
-
 
     def check_money(self, diamond=0, gold=0, crystal=0, gas=0, renown=0):
         if diamond > self.diamond:
