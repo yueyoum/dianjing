@@ -24,6 +24,7 @@ def create(request):
     ret.extras = get_extra_msgs([msg.char_id])
     return ret
 
+
 @ext_return
 def join(request):
     msg = api_handle.decode(request.body)
@@ -35,6 +36,7 @@ def join(request):
     ret = p.join(msg.owner_id)
     ret.extras = get_extra_msgs([msg.char_id])
     return ret
+
 
 @ext_return
 def start(request):
@@ -60,9 +62,9 @@ def buy(request):
     p = Party(msg.server_id, msg.char_id)
     ret = p.buy_item(msg.party_level, msg.buy_id, msg.members)
 
-    all_char_ids = [msg.char_id]
-    all_char_ids.extend(msg.members)
-    ret.extras = get_extra_msgs(all_char_ids)
+    # all_char_ids = [msg.char_id]
+    # all_char_ids.extend(msg.members)
+    ret.extras = get_extra_msgs([msg.char_id])
     return ret
 
 
@@ -76,7 +78,8 @@ def end(request):
     p = Party(msg.server_id, msg.char_id)
     ret = p.end(msg.party_level, msg.members)
 
-    all_char_ids = [msg.char_id]
-    all_char_ids.extend(msg.members)
-    ret.extras = get_extra_msgs(all_char_ids)
+    # all_char_ids = [msg.char_id]
+    # all_char_ids.extend(msg.members)
+    # ret.extras = get_extra_msgs([msg.char_id])
+    ret.extras = []
     return ret
