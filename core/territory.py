@@ -489,6 +489,9 @@ class Territory(object):
 
             self.send_notify()
 
+    def get_work_card_amount(self):
+        return self.doc['work_card']
+
     def add_work_card(self, amount):
         self.doc['work_card'] += amount
 

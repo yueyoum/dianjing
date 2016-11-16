@@ -16,12 +16,24 @@ import arrow
 import openpyxl
 
 from apps.account.models import Account as ModelAccount
+from apps.account.models import AccountRegular as ModelAccountRegular
 from apps.character.models import Character as ModelCharacter
 from apps.server.models import Server as ModelServer
 from apps.purchase.models import Purchase as ModelPurchase
 
-from core.mongo import MongoCharacterLoginLog
+from core.mongo import MongoCharacterLoginLog, MongoResource
+from core.club import Club
+from core.staff import StaffManger
+from core.formation import Formation
+from core.bag import Bag
+from core.vip import VIP
+from core.territory import Territory
+from core.union import Union
+
 from utils.functional import get_start_time_of_today
+
+from config import ConfigItemNew
+
 
 def index(request):
     account_amount = ModelAccount.objects.count()
@@ -200,6 +212,169 @@ def retained_info_download(request):
     return response
 
 
+def char_info(request):
+    context = {
+        'error': '',
+        'multi': [],
+        'show': False,
+    }
+
+    def _fast_response(err=u''):
+        context['error'] = err
+        return render_to_response(
+            'dianjing_statistics_char.html',
+            context=context
+        )
+
+    def _multi_response(_chars):
+        multi = []
+        for _c in _chars:
+            multi.append({
+                'char_id': _c.id,
+                'char_name': _c.name,
+                'account_id': _c.account_id,
+                'server_id': _c.server_id
+            })
+
+        context['multi'] = multi
+        return render_to_response(
+            'dianjing_statistics_char.html',
+            context=context
+        )
+
+    def _single_response(_char):
+        context['show'] = True
+        context['char_id'] = _char.id
+        context['char_name'] = _char.name
+        context['server_id'] = _char.server_id
+
+        _club = Club(_char.server_id, _char.id)
+        _bag = Bag(_char.server_id, _char.id)
+        _vip = VIP(_char.server_id, _char.id)
+        _sm = StaffManger(_char.server_id, _char.id)
+        _fm = Formation(_char.server_id, _char.id)
+        _te = Territory(_char.server_id, _char.id)
+        _union = Union(_char.server_id, _char.id)
+
+        context['last_login'] = arrow.get(_club.last_login).to(settings.TIME_ZONE).format("YYYY-MM-DD HH:mm:ss")
+        context['club_level'] = _club.level
+        context['vip_level'] = _vip.doc['vip']
+        context['vip_exp'] = _vip.doc['exp']
+        context['power'] = _club.power
+
+        context['diamond'] = _club.diamond
+        context['gold'] = _club.gold
+        context['crystal'] = _club.crystal
+        context['gas'] = _club.gas
+        context['item_30007'] = _bag.get_amount_by_item_id(30007)
+        context['item_30008'] = _bag.get_amount_by_item_id(30008)
+        context['item_30009'] = _bag.get_amount_by_item_id(30009)
+        context['item_30015'] = _te.get_work_card_amount()
+
+        _res = MongoResource.db(_char.server_id).find_one({'_id': _char.id})
+        context['item_30022'] = _res['resource'].get('30022', 0)
+        context['item_30023'] = _res['resource'].get('30023', 0)
+        context['item_30019'] = _res['resource'].get('30019', 0)
+
+        _union_id = _union.get_joined_union_id()
+        if not _union_id:
+            context['union'] = {}
+        else:
+            context['union'] = {
+                'id': _union_id,
+                'name': _union.union_doc['name'],
+                'joined_at': arrow.get(_union.member_doc['joined_at']).to(settings.TIME_ZONE).format(
+                    "YYYY-MM-DD HH:mm:ss"),
+                'contribution': _union.member_doc['contribution']
+            }
+
+        in_formation_staffs = _fm.in_formation_staffs()
+        staffs_data = []
+        equip_data = []
+
+        for k, v in in_formation_staffs.iteritems():
+            staff_obj = _sm.get_staff_object(k)
+            staff_name = ConfigItemNew.get(staff_obj.oid).name
+
+            staffs_data.append({
+                'id': staff_obj.id,
+                'oid': staff_obj.oid,
+                'name': staff_name,
+                'level': staff_obj.level,
+                'step': staff_obj.step,
+                'star': staff_obj.star,
+                'power': staff_obj.power,
+                'unit_id': v['unit_id'],
+                'position': v['position'],
+            })
+
+            for bag_slot_id in [staff_obj.equip_special, staff_obj.equip_decoration, staff_obj.equip_keyboard,
+                                staff_obj.equip_monitor, staff_obj.equip_mouse]:
+                equip = _bag.get_slot(bag_slot_id)
+                equip_data.append({
+                    'oid': equip['item_id'],
+                    'level': equip['level'],
+                    'name': ConfigItemNew.get(equip['item_id']).name,
+                    'staff_name': staff_name
+                })
+
+        context['staffs'] = staffs_data
+        context['equips'] = equip_data
+
+        return render_to_response(
+            'dianjing_statistics_char.html',
+            context=context
+        )
+
+    value = request.GET.get('value', '')
+    if not value:
+        return _fast_response()
+
+    tp = request.GET.get('tp', 3)
+    try:
+        tp = int(tp)
+        assert tp in [1, 2, 3]
+        if tp == 3:
+            value = int(value)
+    except:
+        return _fast_response(u"请求数据错误")
+
+    if tp == 1:
+        # 账号名
+        accounts = ModelAccountRegular.objects.filter(name__icontains=value)
+        count = accounts.count()
+        if count == 0:
+            return _fast_response(u"查询无结果")
+
+        if count > 1:
+            account_ids = [a.account.id for a in accounts]
+            chars = ModelCharacter.objects.filter(account__in=account_ids)
+            return _multi_response(chars)
+
+        acc_id = accounts.first().account.id
+        char = ModelCharacter.objects.filter(account_id=acc_id)
+        return _single_response(char)
+
+    if tp == 2:
+        # 角色名
+        chars = ModelCharacter.objects.filter(name__icontains=value)
+        count = chars.count()
+        if count == 0:
+            return _fast_response(u"查询无结果")
+
+        if count > 1:
+            return _multi_response(chars)
+
+        return _single_response(chars.first())
+
+    # 角色ID
+    try:
+        char = ModelCharacter.objects.get(id=value)
+    except ModelCharacter.DoesNotExist:
+        return _fast_response(u"查询无结果")
+
+    return _single_response(char)
+
 
 ###########################
 
@@ -296,7 +471,7 @@ class RetainedInfo(BaseInfo):
         'retained_1day': '次日留存',
         'retained_3day': '3日留存',
         'retained_7day': '7日留存',
-        'retained_15day': '15次日留存',
+        'retained_15day': '15日留存',
         'purchase_char_amount': '充值人数',
         'purchase_fee': '总充值金额',
     }

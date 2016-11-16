@@ -452,25 +452,19 @@ class Bag(object):
 
     def has(self, items):
         # items [(item_id, amount)...]
-
-        # 把堆叠的加好， 这里算出每个物品的全部数量
-        bag_items = {}
-        for k, v in self.doc['slots'].iteritems():
-            item_id = v['item_id']
-            amount = v.get('amount', 1)
-            if item_id in bag_items:
-                bag_items[item_id] += amount
-            else:
-                bag_items[item_id] = amount
-
-        for item_id, amount in items:
-            for bag_item_id, bag_item_amount in bag_items.iteritems():
-                if bag_item_id == item_id and bag_item_amount >= amount:
-                    break
-            else:
+        for _id, _amount in items:
+            if self.get_amount_by_item_id(_id) < _amount:
                 return False
 
         return True
+
+    def get_amount_by_item_id(self, item_id):
+        amount = 0
+        for k, v in self.doc['slots'].iteritems():
+            if v['item_id'] == item_id:
+                amount += v.get('amount', 1)
+
+        return amount
 
     def get_slot(self, slot_id):
         return self.doc['slots'][slot_id]

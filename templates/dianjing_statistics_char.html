@@ -1,0 +1,225 @@
+{% extends "dianjing_statistics_base.html" %}
+
+{% block style %}
+{% endblock %}
+
+
+{% block content %}
+<div>
+    <div id="header">
+    <form class="pure-form">
+        <fieldset>
+            <select id="queryTypeSelect">
+                <option value="1">账号名</option>
+                <option value="2">角色名</option>
+                <option value="3">角色ID</option>
+            </select>
+
+            <input type="text" id="queryInput" />
+            <a class="pure-button pure-button-primary" href="#" id="queryBtn">查询</a>
+        </fieldset>
+    </form>
+    </div>
+
+    <script type="text/javascript">
+        $('#queryBtn').click(function(){
+            var tp = $('#queryTypeSelect').val();
+            var value = $('#queryInput').val();
+            var url = window.location.pathname + "?tp=" + tp + "&value=" + value;
+            window.location.href = url;
+        });
+    </script>
+
+    {% if error %}
+        {{ error }}
+    {% endif %}
+
+
+    {% if multi %}
+    <table class="pure-table pure-table-bordered">
+        <thead>
+        <tr>
+            <th>角色ID</th>
+            <th>角色名</th>
+            <th>账号ID</th>
+            <th>服务器ID</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for m in multi %}
+        <tr>
+            <th>{{ m.char_id }}</th>
+            <th>{{ m.char_name }}</th>
+            <th>{{ m.account_id }}</th>
+            <th>{{ m.server_id }}</th>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% endif %}
+
+
+    {% if show %}
+
+    <h3>基本信息</h3>
+    <table class="pure-table pure-table-bordered">
+        <thead>
+        <tr>
+            <th>角色ID</th>
+            <th>角色名</th>
+            <th>游戏服</th>
+            <th>最近登陆</th>
+            <th>俱乐部等级</th>
+            <th>VIP等级</th>
+            <th>VIP经验</th>
+            <th>战力</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr>
+            <th>{{ char_id }}</th>
+            <th>{{ char_name }}</th>
+            <th>{{ server_id }}</th>
+            <th>{{ last_login }}</th>
+            <th>{{ club_level }}</th>
+            <th>{{ vip_level }}</th>
+            <th>{{ vip_exp }}</th>
+            <th>{{ power }}</th>
+        </tr>
+        </tbody>
+    </table>
+
+    <h3>资源</h3>
+    <table class="pure-table pure-table-bordered">
+        <thead>
+        <tr>
+            <th>钻石</th>
+            <th>金币</th>
+            <th>水晶</th>
+            <th>气矿</th>
+            <th>低级升星石</th>
+            <th>高级升星石</th>
+            <th>能量石</th>
+            <th>工作证</th>
+            <th>绿色晶体</th>
+            <th>红色晶体</th>
+            <th>荣誉奖杯</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr>
+            <th>{{ diamond }}</th>
+            <th>{{ gold }}</th>
+            <th>{{ crystal }}</th>
+            <th>{{ gas }}</th>
+            <th>{{ item_30007 }}</th>
+            <th>{{ item_30008 }}</th>
+            <th>{{ item_30009 }}</th>
+            <th>{{ item_30015 }}</th>
+            <th>{{ item_30022 }}</th>
+            <th>{{ item_30023 }}</th>
+            <th>{{ item_30019 }}</th>
+        </tr>
+        </tbody>
+    </table>
+
+    <h3>公会</h3>
+    <table class="pure-table pure-table-bordered">
+        <thead>
+        <tr>
+            <th>公会ID</th>
+            <th>公会名字</th>
+            <th>加入时间</th>
+            <th>个人公会币</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr>
+            {% if union %}
+
+            <th><a href="/statistics/union/{{ union.id }}/">{{ union.id }}</a></th>
+            <th>{{ union.name }}</th>
+            <th>{{ union.joined_at }}</th>
+            <th>{{ union.contribution }}</th>
+
+            {% else %}
+
+            <th>/</th>
+            <th>/</th>
+            <th>/</th>
+            <th>/</th>
+
+            {% endif %}
+        </tr>
+        </tbody>
+    </table>
+
+    <h3>上阵选手</h3>
+    <table class="pure-table pure-table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>原始ID</th>
+            <th>名字</th>
+            <th>等级</th>
+            <th>等阶</th>
+            <th>星数</th>
+            <th>战力</th>
+            <th>兵种ID</th>
+            <th>位置</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for staff in staffs %}
+        <tr>
+            <th>{{ staff.id }}</th>
+            <th>{{ staff.oid }}</th>
+            <th>{{ staff.name }}</th>
+            <th>{{ staff.level }}</th>
+            <th>{{ staff.step }}</th>
+            <th>{{ staff.star }}</th>
+            <th>{{ staff.power }}</th>
+            <th>{{ staff.unit_id }}</th>
+            <th>{{ staff.position }}</th>
+        </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+    <h3>上阵选手装备</h3>
+    <table class="pure-table pure-table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>原始ID</th>
+            <th>名字</th>
+            <th>等级</th>
+            <th>选手</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for equip in equips %}
+        <tr>
+            <th>{{ equip.oid }}</th>
+            <th>{{ equip.name }}</th>
+            <th>{{ equip.level }}</th>
+            <th>{{ equip.staff_name }}</th>
+        </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+
+    {% endif %}
+</div>
+
+{% endblock %}

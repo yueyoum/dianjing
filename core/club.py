@@ -62,7 +62,7 @@ class _ClubProperty(object):
 
 
 class Club(AbstractClub):
-    __slots__ = []
+    __slots__ = ['last_login']
 
     def __init__(self, server_id, char_id, load_staffs=True):
         super(Club, self).__init__()
@@ -84,6 +84,8 @@ class Club(AbstractClub):
 
         self.crystal = doc['crystal']
         self.gas = doc['gas']
+
+        self.last_login = doc['last_login']
 
         if load_staffs:
             self.load_staffs()
