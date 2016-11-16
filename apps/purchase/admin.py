@@ -47,4 +47,4 @@ class AdminPurchaseIOS(admin.ModelAdmin):
     )
 
     search_fields = ('id',)
-    readonly_fields = list_display
+    readonly_fields = list_display + ('receipt_data', )

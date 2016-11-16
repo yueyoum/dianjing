@@ -10,6 +10,8 @@ Description:
 import base64
 import cPickle
 
+from django.conf import settings
+
 from dianjing.exception import GameException
 from core.mongo import MongoCharacter
 from core.common import CommonPublicChat, CommonUnionChat
@@ -28,6 +30,7 @@ from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 
 CHAT_MAX_SIZE = 2000
 
+
 class Chat(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
@@ -37,6 +40,9 @@ class Chat(object):
         from tasks import world
 
         if tp != ChatSendRequest.NORMAL:
+            if not settings.GM_CMD_OPEN:
+                raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
             self.command(tp, text)
             return
 
@@ -128,6 +134,9 @@ class Chat(object):
                     items.append((int(_id), int(_amount)))
 
                 resource_classified = ResourceClassification.classify(items)
+                for _id, _amount in resource_classified.staff:
+                    # GM命令可能会添加大量的staff, 这是错误情况
+                    assert _amount < 1000
             except:
                 raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 

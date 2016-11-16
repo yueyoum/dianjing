@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
     <timezone>Asia/Shanghai</timezone>
+    <!-- 是否开启gm 命令， 1 开启, 其他 关闭 -->
+    <gm-cmd open="1" />
 
     <!-- 这组uwsgi跑起来后， 一些任务要处理的服务器。 比如cronjob-->
     <duty-server>
@@ -23,7 +25,6 @@
     <redis>
         <host>127.0.0.1</host>
         <port>6379</port>
-        <cache-seconds>3600</cache-seconds>
     </redis>
 
     <!-- mongodb 组, 每组的 sid-min 和 sid-max 表示这个范围内的 server 连接的都是这个 instance -->
