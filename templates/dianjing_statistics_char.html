@@ -142,7 +142,7 @@
         <tr>
             {% if union %}
 
-            <td><a href="/statistics/union/{{ union.id }}/" class="link">{{ union.id }}</a></td>
+            <td><a href="/statistics/union/?sid={{ server_id }}&uid={{ union.id }}" class="link">{{ union.id }}</a></td>
             <td>{{ union.name }}</td>
             <td>{{ union.joined_at }}</td>
             <td>{{ union.contribution }}</td>

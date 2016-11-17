@@ -28,7 +28,7 @@
             <td>{{ u.name }}</td>
             <td>{{ u.bulletin }}</td>
             <td>{{ u.create_at }}</td>
-            <td><a href="/statistics/char/{{ u.owner }}" class="link">{{ u.owner }}</a></td>
+            <td><a href="/statistics/char/?value={{ u.owner }}" class="link">{{ u.owner }}</a></td>
             <td>{{ u.level }}</td>
             <td>{{ u.contribution }}</td>
             <td>{{ u.members_amount }}</td>
@@ -57,8 +57,8 @@
 
         <tr>
             <td><a href="/statistics/char/?value={{ m.id }}" class="link">{{ m.id }}</a></td>
-            <td>{{ u.joined_at }}</td>
-            <td>{{ u.contribution }}</td>
+            <td>{{ m.joined_at }}</td>
+            <td>{{ m.contribution }}</td>
         </tr>
 
         {% endfor %}

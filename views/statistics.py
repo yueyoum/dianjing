@@ -29,12 +29,13 @@ from core.bag import Bag
 from core.vip import VIP
 from core.territory import Territory
 from core.union import Union
+from core.arena import Arena, ArenaScore
 
 from utils.functional import get_start_time_of_today
 
 from config import ConfigItemNew
 
-def get_server_select_context(show_all=False):
+def get_servers_select_context(show_all=False):
     if show_all:
         servers_select = [{'display': '全部', 'value': 0}]
     else:
@@ -85,7 +86,7 @@ def index(request):
 
 def purchase_info(request):
     if request.method == 'GET':
-        servers_select = get_server_select_context(show_all=True)
+        servers_select = get_servers_select_context(show_all=True)
         context = {
             'current': 'purchase',
             'servers_select': servers_select,
@@ -152,7 +153,7 @@ def purchase_info_download(request):
 
 def retained_info(request):
     if request.method == 'GET':
-        servers_select = get_server_select_context()
+        servers_select = get_servers_select_context()
         context = {
             'current': 'retained',
             'servers_select': servers_select,
@@ -389,16 +390,16 @@ def char_info(request):
 
 
 def union_info(request):
-    server_select = get_server_select_context()
+    servers_select = get_servers_select_context()
 
     context = {
         'current': 'union',
-        'server_select': server_select,
+        'servers_select': servers_select,
         'unions': [],
         'members': [],
     }
 
-    sid = request.GET.get('sid', '')
+    sid = request.GET.get('sid', 0)
     if not sid:
         return render_to_response(
             'dianjing_statistics_union.html',
@@ -450,6 +451,42 @@ def union_info(request):
         context=context
     )
 
+
+def arena_info(request):
+    context = {
+        'current': 'arena',
+        'clubs': []
+    }
+
+    sid = request.GET.get('sid', 0)
+    if not sid:
+        return render_to_response(
+            'dianjing_statistics_arena.html',
+            context=context
+        )
+
+    try:
+        sid = int(sid)
+    except:
+        raise Http404()
+
+    clubs = Arena.get_leader_board(sid)
+    data = []
+    for _index, c in enumerate(clubs):
+        data.append({
+            'rank': _index+1,
+            'id': c.id,
+            'name': c.name,
+            'level': c.level,
+            'power': c.power,
+            'score': ArenaScore(sid, c.id).score
+        })
+
+    context['clubs'] = data
+    return render_to_response(
+        'dianjing_statistics_arena.html',
+        context=context
+    )
 
 
 ###########################

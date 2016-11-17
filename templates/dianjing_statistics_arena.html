@@ -1,0 +1,40 @@
+{% extends "dianjing_statistics_base.html" %}
+
+{% block content %}
+
+{% include "dianjing_form2.html" %}
+
+{% if clubs %}
+<div>
+    <table class="pure-table pure-table-bordered">
+        <thead>
+        <tr>
+            <th>排名</th>
+            <th>俱乐部ID</th>
+            <th>名字</th>
+            <th>等级</th>
+            <th>战力</th>
+            <th>积分</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for c in clubs %}
+
+        <tr>
+            <td>{{ c.rank }}</td>
+            <td><a href="/statistics/char/?value={{ c.id }}" class="link">{{ c.id }}</a></td>
+            <td>{{ c.name }}</td>
+            <td>{{ c.level }}</td>
+            <td>{{ c.power }}</td>
+            <td>{{ c.score }}</td>
+        </tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+
+{% endblock %}
