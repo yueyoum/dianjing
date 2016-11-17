@@ -20,9 +20,9 @@
         </thead>
         <tbody>
         <tr>
-            <th>{{ account_amount }}</th>
-            <th>{{ char_amount }}</th>
-            <th>{{ total_purchase }}</th>
+            <td>{{ account_amount }}</td>
+            <td>{{ char_amount }}</td>
+            <td>{{ total_purchase }}</td>
         </tr>
         </tbody>
     </table>
@@ -43,11 +43,11 @@
 
         {% for info in server_info %}
         <tr>
-            <th>{{ info.sid }}</th>
-            <th>{{ info.server_name }}</th>
-            <th>{{ info.opened_at }}</th>
-            <th>{{ info.char_amount }}</th>
-            <th>{{ info.total_purchase }}</th>
+            <td>{{ info.sid }}</td>
+            <td>{{ info.server_name }}</td>
+            <td>{{ info.opened_at }}</td>
+            <td>{{ info.char_amount }}</td>
+            <td>{{ info.total_purchase }}</td>
         </tr>
         {% endfor %}
 

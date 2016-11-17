@@ -1,0 +1,71 @@
+{% extends "dianjing_statistics_base.html" %}
+
+{% block content %}
+
+{% include "dianjing_form2.html" %}
+
+{% if unions %}
+<div>
+    <table class="pure-table pure-table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>名字</th>
+            <th>公告</th>
+            <th>创建时间</th>
+            <th>会长</th>
+            <th>等级</th>
+            <th>公会币</th>
+            <th>成员数量</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for u in unions %}
+
+        <tr>
+            <td><a href="/statistics/union/?sid={{ sid }}&uid={{ u.id }}" class="link">{{ u.id }}</a></td>
+            <td>{{ u.name }}</td>
+            <td>{{ u.bulletin }}</td>
+            <td>{{ u.create_at }}</td>
+            <td><a href="/statistics/char/{{ u.owner }}" class="link">{{ u.owner }}</a></td>
+            <td>{{ u.level }}</td>
+            <td>{{ u.contribution }}</td>
+            <td>{{ u.members_amount }}</td>
+        </tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+
+{% if members %}
+<div>
+    <table class="pure-table pure-table-bordered">
+        <thead>
+        <tr>
+            <th>角色ID</th>
+            <th>加入时间</th>
+            <th>个人公会币</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for m in members %}
+
+        <tr>
+            <td><a href="/statistics/char/?value={{ m.id }}" class="link">{{ m.id }}</a></td>
+            <td>{{ u.joined_at }}</td>
+            <td>{{ u.contribution }}</td>
+        </tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endif %}
+
+{% endblock %}

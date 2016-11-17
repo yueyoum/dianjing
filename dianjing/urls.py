@@ -28,4 +28,5 @@ urlpatterns = [
     url(r'^statistics/retained/$', views.statistics.retained_info),
     url(r'^statistics/retained/download/$', views.statistics.retained_info_download),
     url(r'^statistics/char/$', views.statistics.char_info),
+    url(r'^statistics/union/$', views.statistics.union_info),
 ]

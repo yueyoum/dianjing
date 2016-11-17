@@ -7,7 +7,7 @@ Description:
 
 """
 
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from django.shortcuts import render_to_response
 from django.db.models import Q, Sum
 from django.conf import settings
@@ -21,7 +21,7 @@ from apps.character.models import Character as ModelCharacter
 from apps.server.models import Server as ModelServer
 from apps.purchase.models import Purchase as ModelPurchase
 
-from core.mongo import MongoCharacterLoginLog, MongoResource
+from core.mongo import MongoCharacterLoginLog, MongoResource, MongoUnion, MongoUnionMember
 from core.club import Club
 from core.staff import StaffManger
 from core.formation import Formation
@@ -274,7 +274,7 @@ def char_info(request):
 
         _res = MongoResource.db(_char.server_id).find_one({'_id': _char.id})
         if not _res:
-            _res = {'resource', {}}
+            _res = {'resource': {}}
         context['item_30022'] = _res['resource'].get('30022', 0)
         context['item_30023'] = _res['resource'].get('30023', 0)
         context['item_30019'] = _res['resource'].get('30019', 0)
@@ -381,6 +381,67 @@ def char_info(request):
         return _fast_response(u"查询无结果")
 
     return _single_response(char)
+
+
+def union_info(request):
+    context = {
+        'current': 'union',
+        'unions': [],
+        'members': [],
+    }
+
+    sid = request.GET.get('sid', '')
+    if not sid:
+        return render_to_response(
+            'dianjing_statistics_union.html',
+            context=context
+        )
+
+    try:
+        sid = int(sid)
+    except:
+        raise Http404()
+
+    context['sid'] = sid
+
+    uid = request.GET.get('uid', '')
+    if not uid:
+        docs = MongoUnion.db(sid).find({}).sort('create_at', -1)
+
+        for doc in docs:
+            union_data = {
+                'id': doc['_id'],
+                'name': doc['name'],
+                'bulletin': doc['bulletin'],
+                'create_at': arrow.get(doc['create_at']).to(settings.TIME_ZONE).format("YYYY-MM-DD HH:mm:ss"),
+                'owner': doc['owner'],
+                'level': doc['level'],
+                'contribution': doc['contribution'],
+                'members_amount': MongoUnionMember.db(sid).find({'joined': doc['_id']}).count(),
+            }
+
+            context['unions'].append(union_data)
+
+        return render_to_response(
+            'dianjing_statistics_union.html',
+            context=context
+        )
+
+    docs = MongoUnionMember.db(sid).find({'joined': uid})
+    for doc in docs:
+        member_data = {
+            'id': doc['_id'],
+            'joined_at': arrow.get(doc['create_at']).to(settings.TIME_ZONE).format("YYYY-MM-DD HH:mm:ss"),
+            'contribution': doc['contribution'],
+        }
+
+        context['members'].append(member_data)
+
+    return render_to_response(
+        'dianjing_statistics_union.html',
+        context=context
+    )
+
 
 
 ###########################

@@ -1,0 +1,22 @@
+<div id="header">
+    <form class="pure-form">
+        <fieldset>
+            <select id="serverSelect">
+                {% for s in servers_select %}
+                    <option value="{{ s.value }}">{{ s.display }}</option>
+                {% endfor %}
+
+            </select>
+            <a class="pure-button pure-button-primary" href="#" id="queryBtn">查询</a>
+        </fieldset>
+    </form>
+</div>
+
+<script type="text/javascript">
+    $('#queryBtn').click(function(){
+        var sid = $('#serverSelect').val();
+
+        var url = window.location.pathname + "?sid=" + sid;
+        window.location.href = url;
+    });
+</script>
