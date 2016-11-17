@@ -29,7 +29,7 @@ from core.bag import Bag
 from core.vip import VIP
 from core.territory import Territory
 from core.union import Union
-from core.arena import Arena, ArenaScore
+from core.arena import Arena, ArenaScore, is_npc_club
 
 from utils.functional import get_start_time_of_today
 
@@ -453,8 +453,10 @@ def union_info(request):
 
 
 def arena_info(request):
+    servers_select = get_servers_select_context()
     context = {
         'current': 'arena',
+        'servers_select': servers_select,
         'clubs': []
     }
 
@@ -479,7 +481,8 @@ def arena_info(request):
             'name': c.name,
             'level': c.level,
             'power': c.power,
-            'score': ArenaScore(sid, c.id).score
+            'score': ArenaScore(sid, c.id).score,
+            'is_npc': is_npc_club(str(c.id)),
         })
 
     context['clubs'] = data

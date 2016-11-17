@@ -23,7 +23,13 @@
 
         <tr>
             <td>{{ c.rank }}</td>
-            <td><a href="/statistics/char/?value={{ c.id }}" class="link">{{ c.id }}</a></td>
+            <td>
+                {% if c.is_npc %}
+                {{ c.id }}
+                {% else %}
+                <a href="/statistics/char/?value={{ c.id }}" class="link">{{ c.id }}</a>
+                {% endif %}
+            </td>
             <td>{{ c.name }}</td>
             <td>{{ c.level }}</td>
             <td>{{ c.power }}</td>
