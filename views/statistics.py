@@ -436,6 +436,21 @@ def union_info(request):
             context=context
         )
 
+    doc = MongoUnion.db(sid).find_one({'_id': uid})
+    if not doc:
+        raise Http404()
+
+    context['unions'] = [{
+        'id': doc['_id'],
+        'name': doc['name'],
+        'bulletin': doc['bulletin'],
+        'create_at': arrow.get(doc['create_at']).to(settings.TIME_ZONE).format("YYYY-MM-DD HH:mm:ss"),
+        'owner': doc['owner'],
+        'level': doc['level'],
+        'contribution': doc['contribution'],
+        'members_amount': MongoUnionMember.db(sid).find({'joined': doc['_id']}).count(),
+    }]
+
     docs = MongoUnionMember.db(sid).find({'joined': uid})
     for doc in docs:
         member_data = {
