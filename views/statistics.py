@@ -34,6 +34,17 @@ from utils.functional import get_start_time_of_today
 
 from config import ConfigItemNew
 
+def get_server_select_context(show_all=False):
+    if show_all:
+        servers_select = [{'display': '全部', 'value': 0}]
+    else:
+        servers_select = []
+
+    for s in ModelServer.opened_servers():
+        servers_select.append({'display': s.id, 'value': s.id})
+
+    return servers_select
+
 
 def index(request):
     account_amount = ModelAccount.objects.count()
@@ -74,10 +85,7 @@ def index(request):
 
 def purchase_info(request):
     if request.method == 'GET':
-        servers_select = [{'display': '全部', 'value': 0}]
-        for s in ModelServer.opened_servers():
-            servers_select.append({'display': s.id, 'value': s.id})
-
+        servers_select = get_server_select_context(show_all=True)
         context = {
             'current': 'purchase',
             'servers_select': servers_select,
@@ -144,10 +152,7 @@ def purchase_info_download(request):
 
 def retained_info(request):
     if request.method == 'GET':
-        servers_select = []
-        for s in ModelServer.opened_servers():
-            servers_select.append({'display': s.id, 'value': s.id})
-
+        servers_select = get_server_select_context()
         context = {
             'current': 'retained',
             'servers_select': servers_select,
@@ -384,8 +389,11 @@ def char_info(request):
 
 
 def union_info(request):
+    server_select = get_server_select_context()
+
     context = {
         'current': 'union',
+        'server_select': server_select,
         'unions': [],
         'members': [],
     }
@@ -431,7 +439,7 @@ def union_info(request):
     for doc in docs:
         member_data = {
             'id': doc['_id'],
-            'joined_at': arrow.get(doc['create_at']).to(settings.TIME_ZONE).format("YYYY-MM-DD HH:mm:ss"),
+            'joined_at': arrow.get(doc['joined_at']).to(settings.TIME_ZONE).format("YYYY-MM-DD HH:mm:ss"),
             'contribution': doc['contribution'],
         }
 
