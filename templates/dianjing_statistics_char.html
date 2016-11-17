@@ -49,10 +49,10 @@
 
         {% for m in multi %}
         <tr>
-            <th>{{ m.char_id }}</th>
-            <th>{{ m.char_name }}</th>
-            <th>{{ m.account_id }}</th>
-            <th>{{ m.server_id }}</th>
+            <td><a href="/statistics/char/?value={{ m.char_id }}" class="link">{{ m.char_id }}</a></td>
+            <td>{{ m.char_name }}</td>
+            <td>{{ m.account_id }}</td>
+            <td>{{ m.server_id }}</td>
         </tr>
         {% endfor %}
         </tbody>
@@ -80,14 +80,14 @@
         <tbody>
 
         <tr>
-            <th>{{ char_id }}</th>
-            <th>{{ char_name }}</th>
-            <th>{{ server_id }}</th>
-            <th>{{ last_login }}</th>
-            <th>{{ club_level }}</th>
-            <th>{{ vip_level }}</th>
-            <th>{{ vip_exp }}</th>
-            <th>{{ power }}</th>
+            <td>{{ char_id }}</td>
+            <td>{{ char_name }}</td>
+            <td>{{ server_id }}</td>
+            <td>{{ last_login }}</td>
+            <td>{{ club_level }}</td>
+            <td>{{ vip_level }}</td>
+            <td>{{ vip_exp }}</td>
+            <td>{{ power }}</td>
         </tr>
         </tbody>
     </table>
@@ -112,17 +112,17 @@
         <tbody>
 
         <tr>
-            <th>{{ diamond }}</th>
-            <th>{{ gold }}</th>
-            <th>{{ crystal }}</th>
-            <th>{{ gas }}</th>
-            <th>{{ item_30007 }}</th>
-            <th>{{ item_30008 }}</th>
-            <th>{{ item_30009 }}</th>
-            <th>{{ item_30015 }}</th>
-            <th>{{ item_30022 }}</th>
-            <th>{{ item_30023 }}</th>
-            <th>{{ item_30019 }}</th>
+            <td>{{ diamond }}</td>
+            <td>{{ gold }}</td>
+            <td>{{ crystal }}</td>
+            <td>{{ gas }}</td>
+            <td>{{ item_30007 }}</td>
+            <td>{{ item_30008 }}</td>
+            <td>{{ item_30009 }}</td>
+            <td>{{ item_30015 }}</td>
+            <td>{{ item_30022 }}</td>
+            <td>{{ item_30023 }}</td>
+            <td>{{ item_30019 }}</td>
         </tr>
         </tbody>
     </table>
@@ -142,17 +142,17 @@
         <tr>
             {% if union %}
 
-            <th><a href="/statistics/union/{{ union.id }}/">{{ union.id }}</a></th>
-            <th>{{ union.name }}</th>
-            <th>{{ union.joined_at }}</th>
-            <th>{{ union.contribution }}</th>
+            <td><a href="/statistics/union/{{ union.id }}/" class="link">{{ union.id }}</a></td>
+            <td>{{ union.name }}</td>
+            <td>{{ union.joined_at }}</td>
+            <td>{{ union.contribution }}</td>
 
             {% else %}
 
-            <th>/</th>
-            <th>/</th>
-            <th>/</th>
-            <th>/</th>
+            <td>/</td>
+            <td>/</td>
+            <td>/</td>
+            <td>/</td>
 
             {% endif %}
         </tr>
@@ -178,15 +178,15 @@
 
         {% for staff in staffs %}
         <tr>
-            <th>{{ staff.id }}</th>
-            <th>{{ staff.oid }}</th>
-            <th>{{ staff.name }}</th>
-            <th>{{ staff.level }}</th>
-            <th>{{ staff.step }}</th>
-            <th>{{ staff.star }}</th>
-            <th>{{ staff.power }}</th>
-            <th>{{ staff.unit_id }}</th>
-            <th>{{ staff.position }}</th>
+            <td>{{ staff.id }}</td>
+            <td>{{ staff.oid }}</td>
+            <td>{{ staff.name | safe }}</td>
+            <td>{{ staff.level }}</td>
+            <td>{{ staff.step }}</td>
+            <td>{{ staff.star }}</td>
+            <td>{{ staff.power }}</td>
+            <td>{{ staff.unit_id }}</td>
+            <td>{{ staff.position }}</td>
         </tr>
         {% endfor %}
 
@@ -197,7 +197,6 @@
     <table class="pure-table pure-table-bordered">
         <thead>
         <tr>
-            <th>ID</th>
             <th>原始ID</th>
             <th>名字</th>
             <th>等级</th>
@@ -208,10 +207,10 @@
 
         {% for equip in equips %}
         <tr>
-            <th>{{ equip.oid }}</th>
-            <th>{{ equip.name }}</th>
-            <th>{{ equip.level }}</th>
-            <th>{{ equip.staff_name }}</th>
+            <td>{{ equip.oid }}</td>
+            <td>{{ equip.name }}</td>
+            <td>{{ equip.level }}</td>
+            <td>{{ equip.staff_name | safe }}</td>
         </tr>
         {% endfor %}
 

@@ -214,6 +214,7 @@ def retained_info_download(request):
 
 def char_info(request):
     context = {
+        'current': 'char',
         'error': '',
         'multi': [],
         'show': False,
@@ -272,6 +273,8 @@ def char_info(request):
         context['item_30015'] = _te.get_work_card_amount()
 
         _res = MongoResource.db(_char.server_id).find_one({'_id': _char.id})
+        if not _res:
+            _res = {'resource', {}}
         context['item_30022'] = _res['resource'].get('30022', 0)
         context['item_30023'] = _res['resource'].get('30023', 0)
         context['item_30019'] = _res['resource'].get('30019', 0)
@@ -310,6 +313,10 @@ def char_info(request):
 
             for bag_slot_id in [staff_obj.equip_special, staff_obj.equip_decoration, staff_obj.equip_keyboard,
                                 staff_obj.equip_monitor, staff_obj.equip_mouse]:
+
+                if not bag_slot_id:
+                    continue
+
                 equip = _bag.get_slot(bag_slot_id)
                 equip_data.append({
                     'oid': equip['item_id'],
@@ -348,7 +355,7 @@ def char_info(request):
 
         if count > 1:
             account_ids = [a.account.id for a in accounts]
-            chars = ModelCharacter.objects.filter(account__in=account_ids)
+            chars = ModelCharacter.objects.filter(account_id__in=account_ids)
             return _multi_response(chars)
 
         acc_id = accounts.first().account.id
