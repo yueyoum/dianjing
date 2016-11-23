@@ -91,7 +91,7 @@ def start(request):
     char_id = request._game_session.char_id
 
     _id = request._proto.id
-    formation_slots = parse_protocol_sync_formation_slots(request._proto.slots, policy=1)
+    formation_slots = parse_protocol_sync_formation_slots(request._proto.slots)
     tp = request._proto.tp
 
     if request._proto.HasField('win'):

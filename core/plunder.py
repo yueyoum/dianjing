@@ -27,7 +27,6 @@ from core.mongo import (
 from core.club import get_club_property, Club
 from core.formation import BaseFormation
 from core.staff import StaffManger, Staff
-from core.unit import UnitManager
 from core.cooldown import PlunderSearchCD, PlunderMatchCD
 from core.match import ClubMatch
 from core.value_log import ValueLogPlunderRevengeTimes, ValueLogPlunderTimes, ValueLogPlunderBuyTimes, \
@@ -81,6 +80,7 @@ REVENGE_MAX_TIMES = 3
 PLUNDER_TIMES_INIT_TIMES = 3
 PLUNDER_TIMES_RECOVER_LIMIT = 6
 PLUNDER_MAX_LOST = 75
+
 
 class PlunderFormation(BaseFormation):
     __slots__ = ['way_id', 'formation_staffs']
@@ -152,29 +152,66 @@ class PlunderFormation(BaseFormation):
         self.load_formation_staffs()
 
     def load_formation_staffs(self):
-        # TODO talents
+        # NOTE: 这段代码其实是从 Club.force_load_staffs 抄来的
+        from core.formation import Formation
+        from core.unit import UnitManager
+        from core.talent import TalentManager
+        from core.collection import Collection
+        from core.party import Party
+        from core.inspire import Inspire
+
         self.formation_staffs = []
+        """:type: list[core.staff.Staff]"""
 
         sm = StaffManger(self.server_id, self.char_id)
+        fm = Formation(self.server_id, self.char_id)
         um = UnitManager(self.server_id, self.char_id)
-
-        in_formation_staffs = self.in_formation_staffs()
-        working_staff_oids = self.working_staff_oids()
+        ins = Inspire(self.server_id, self.char_id)
 
         staffs = sm.get_staffs_data()
+        in_formation_staffs = self.in_formation_staffs()
 
         for k, v in in_formation_staffs.iteritems():
             obj = Staff(self.server_id, self.char_id, k, staffs[k])
+            self.formation_staffs.append(obj)
+
             obj.policy = in_formation_staffs[k]['policy']
             obj.formation_position = in_formation_staffs[k]['position']
-
             unit_id = in_formation_staffs[k]['unit_id']
             if unit_id:
+                unit_obj = um.get_unit_object(unit_id)
+                if not unit_obj:
+                    raise RuntimeError(
+                        "Plunder Formation NO unit_obj. server: {0}, char: {1}, staff: {2}, unit: {3}".format(
+                            self.server_id, self.char_id, k, unit_id
+                        ))
                 obj.set_unit(um.get_unit_object(unit_id))
-                obj.check_qianban(working_staff_oids)
 
+        club = Club(self.server_id, self.char_id, load_staffs=False)
+        club.formation_staffs = self.formation_staffs
+
+        working_staff_oids = self.working_staff_oids()
+
+        for obj in self.formation_staffs:
+            obj.check_qianban(working_staff_oids)
+            obj.add_self_talent_effect(club)
+
+        talent_effects_1 = TalentManager(self.server_id, self.char_id).get_talent_effects()
+        talent_effects_2 = Collection(self.server_id, self.char_id).get_talent_effects()
+        talent_effects_3 = fm.get_talent_effects()
+        talent_effects_4 = Party(self.server_id, self.char_id).get_talent_effects()
+
+        club.add_talent_effects(talent_effects_1)
+        club.add_talent_effects(talent_effects_2)
+        club.add_talent_effects(talent_effects_3)
+        club.add_talent_effects(talent_effects_4)
+
+        config_inspire_level_addition, config_inspire_step_addition = ins.get_addition_config()
+
+        for obj in self.formation_staffs:
+            obj.config_inspire_level_addition = config_inspire_level_addition
+            obj.config_inspire_step_addition = config_inspire_step_addition
             obj.calculate()
-            self.formation_staffs.append(obj)
 
     @property
     def power(self):
