@@ -227,7 +227,7 @@ class UnionNotJoined(IUnion):
             }}
         )
 
-        rc.remove(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id, message="Union.create")
 
         u = Union(self.server_id, self.char_id)
         u.send_notify()
@@ -352,12 +352,12 @@ class UnionJoined(IUnion):
 
         rc = ResourceClassification.classify(config.cost)
         rc.check_exist(self.server_id, self.char_id)
-        rc.remove(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id, message="Union.sign_in")
 
         self.add_contribution(config.contribution, send_notify=False)
 
         rc = ResourceClassification.classify(config.rewards)
-        rc.add(self.server_id, self.char_id)
+        rc.add(self.server_id, self.char_id, message="Union.sign_in")
 
         ValueLogUnionSignInTimes(self.server_id, self.char_id).record(sub_id=_id)
 

@@ -11,6 +11,7 @@ from django.core.management.base import BaseCommand
 from apps.account.models import Account, AccountBan, AccountLoginLog, AccountRegular, AccountThird
 from apps.character.models import Character
 from apps.statistics.models import Statistics
+from apps.history_record.models import MailHistoryRecord
 from core.db import MongoDB, RedisDB
 
 
@@ -39,6 +40,7 @@ class Command(BaseCommand):
         RedisDB.connect()
         MongoDB.connect()
 
+        MailHistoryRecord.objects.all().delete()
         Statistics.objects.all().delete()
         Character.objects.all().delete()
         AccountBan.objects.all().delete()

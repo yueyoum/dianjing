@@ -292,7 +292,7 @@ class Tower(object):
                 updater['goods'] = self.doc['goods']
 
             resource_classified = ResourceClassification.classify(config.get_star_reward(star))
-            resource_classified.add(self.server_id, self.char_id)
+            resource_classified.add(self.server_id, self.char_id, message="Tower.report:{0},{1}".format(level, star))
 
             ValueLogTowerWinTimes(self.server_id, self.char_id).record()
 
@@ -339,7 +339,7 @@ class Tower(object):
             cost = [(money_text_to_item_id('diamond'), ri.reset_cost)]
             resource_classified = ResourceClassification.classify(cost)
             resource_classified.check_exist(self.server_id, self.char_id)
-            resource_classified.remove(self.server_id, self.char_id)
+            resource_classified.remove(self.server_id, self.char_id, message="Tower.reset")
 
         self.doc['levels'] = {'1': 0}
         self.doc['talents'] = []
@@ -417,7 +417,7 @@ class Tower(object):
             need_diamond = levels_amount * GlobalConfig.value("TOWER_SWEEP_DIAMOND_PER_LEVEL")
             resource_classified = ResourceClassification.classify([(money_text_to_item_id('diamond'), need_diamond)])
             resource_classified.check_exist(self.server_id, self.char_id)
-            resource_classified.remove(self.server_id, self.char_id)
+            resource_classified.remove(self.server_id, self.char_id, message="Tower.sweep_finish")
 
         drops = {}
         updater = {}
@@ -481,7 +481,7 @@ class Tower(object):
         )
 
         resource_classified = ResourceClassification.classify(drops.items())
-        resource_classified.add(self.server_id, self.char_id)
+        resource_classified.add(self.server_id, self.char_id, message="Tower.sweep_finish")
 
         self.send_notify(act=ACT_UPDATE)
         self.send_goods_notify()
@@ -536,11 +536,11 @@ class Tower(object):
         cost = [(money_text_to_item_id('diamond'), config.price_now)]
         rc = ResourceClassification.classify(cost)
         rc.check_exist(self.server_id, self.char_id)
-        rc.remove(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id, message="Tower.buy_goods")
 
         got = [(config.item_id, config.amount)]
         rc = ResourceClassification.classify(got)
-        rc.add(self.server_id, self.char_id)
+        rc.add(self.server_id, self.char_id, message="Tower.buy_goods")
 
         self.doc['goods'][goods_index][1] = 1
 

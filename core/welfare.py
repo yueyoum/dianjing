@@ -80,7 +80,7 @@ class Welfare(object):
             reward.extend(config.vip_reward)
 
         rc = ResourceClassification.classify(reward)
-        rc.add(self.server_id, self.char_id)
+        rc.add(self.server_id, self.char_id, message="Welfare.signin")
 
         MongoWelfare.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -132,7 +132,7 @@ class Welfare(object):
         self.doc['new_player'].append(_id)
 
         rc = ResourceClassification.classify(config.reward)
-        rc.add(self.server_id, self.char_id)
+        rc.add(self.server_id, self.char_id, message="Welfare.new_player_get:{0}".format(_id))
 
         MongoWelfare.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -159,7 +159,7 @@ class Welfare(object):
         self.doc['level_reward'].append(_id)
 
         rc = ResourceClassification.classify(config.reward)
-        rc.add(self.server_id, self.char_id)
+        rc.add(self.server_id, self.char_id, message="Welfare.level_reward_get:{0}".format(_id))
 
         MongoWelfare.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -189,7 +189,7 @@ class Welfare(object):
                 config = ConfigItemUse.get(-1)
                 items = config.using_result()
                 rc = ResourceClassification.classify(items)
-                rc.add(self.server_id, self.char_id)
+                rc.add(self.server_id, self.char_id, message="Welfare.energy_reward_get")
 
                 self.send_energy_reward_notify()
                 return rc

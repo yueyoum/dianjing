@@ -432,7 +432,7 @@ class Plunder(object):
             items = config.get_product(100 - doc['loss_percent'])
 
             rc = ResourceClassification.classify(items)
-            rc.add(server_id, doc['_id'])
+            rc.add(server_id, doc['_id'], message="Plunder.make_product")
 
             MongoPlunder.db(server_id).update_one(
                 {'_id': doc['_id']},
@@ -677,7 +677,7 @@ class Plunder(object):
 
         rc = ResourceClassification.classify(cost)
         rc.check_exist(self.server_id, self.char_id)
-        rc.remove(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id, message="Plunder.spy")
 
         self.doc['search'][index]['spied'] = True
         MongoPlunder.db(self.server_id).update_one(
@@ -706,7 +706,7 @@ class Plunder(object):
 
         rc = ResourceClassification.classify(cost)
         rc.check_exist(self.server_id, self.char_id)
-        rc.remove(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id, message="Plunder.buy_plunder_times")
 
         ValueLogPlunderBuyTimes(self.server_id, self.char_id).record()
 
@@ -892,7 +892,7 @@ class Plunder(object):
         self.send_plunder_times_notify()
 
         rc = ResourceClassification.classify(plunder_got)
-        rc.add(self.server_id, self.char_id)
+        rc.add(self.server_id, self.char_id, message="Plunder.get_reward")
         return result, rc
 
     def got_plundered(self, from_id, win_ways):
@@ -974,7 +974,7 @@ class Plunder(object):
             raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_DAILY_REWARD_NOT_ENOUGH"))
 
         rc = ResourceClassification.classify(config.reward)
-        rc.add(self.server_id, self.char_id)
+        rc.add(self.server_id, self.char_id, message="Plunder.daily_reward_get:{0}".format(_id))
 
         got_list.append(_id)
         info['got_list'] = got_list
@@ -997,7 +997,7 @@ class Plunder(object):
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
         rc = ResourceClassification.load_from_json(drop)
-        rc.add(self.server_id, self.char_id)
+        rc.add(self.server_id, self.char_id, message="Plunder.get_station_product")
         self.doc['drop'] = ''
         MongoPlunder.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -1165,7 +1165,7 @@ class SpecialEquipmentGenerator(object):
 
         rc = ResourceClassification.classify(cost)
         rc.check_exist(self.server_id, self.char_id)
-        rc.remove(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id, message="SpecialEquipmentGenerator.generate:{0}".format(tp))
 
         bag.remove_by_slot_id(slot_id=bag_slot_id, amount=1)
 
@@ -1204,7 +1204,7 @@ class SpecialEquipmentGenerator(object):
 
         rc = ResourceClassification.classify(cost)
         rc.check_exist(self.server_id, self.char_id)
-        rc.remove(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id, message="SpecialEquipmentGenerator.speedup")
 
         # make sure is finished
         self.doc['finish_at'] = arrow.utcnow().timestamp - 1

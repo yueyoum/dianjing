@@ -25,11 +25,11 @@ def clean_statistics(*args):
     logger.write("Start")
 
     try:
-        Statistics.cronjob()
+        num = Statistics.cronjob()
     except:
         logger.error(traceback.format_exc())
     else:
-        logger.write("Done")
+        logger.write("Done. Delete {0}".format(num))
     finally:
         logger.close()
 

@@ -363,7 +363,7 @@ class Formation(BaseFormation):
 
         rc = ResourceClassification.classify(config.active_need_items)
         rc.check_exist(self.server_id, self.char_id)
-        rc.remove(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id, message="Formation.active_formation:{0}".format(fid))
 
         self.doc['levels'][str(fid)] = 1
         self.MONGO_COLLECTION.db(self.server_id).update_one(
@@ -393,7 +393,7 @@ class Formation(BaseFormation):
 
         rc = ResourceClassification.classify(config.levels[level].level_up_need_items)
         rc.check_exist(self.server_id, self.char_id)
-        rc.remove(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id, message="Formation.levelup_formation:{0}".format(fid))
 
         self.doc['levels'][str(fid)] = level + 1
         self.MONGO_COLLECTION.db(self.server_id).update_one(

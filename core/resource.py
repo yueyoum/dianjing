@@ -354,7 +354,7 @@ class ResourceClassification(object):
             _r.resource = dict(self.resource_data)
             _r.check_exists(server_id, char_id)
 
-    def remove(self, server_id, char_id):
+    def remove(self, server_id, char_id, message=""):
         from core.club import Club
         from core.bag import Bag
         from core.staff import StaffManger, StaffRecruit
@@ -365,6 +365,7 @@ class ResourceClassification(object):
         money_text = self.money_as_text_dict()
         if money_text:
             money_text = {k: -v for k, v in money_text.iteritems()}
+            money_text['message'] = message
             Club(server_id, char_id).update(**money_text)
 
         if self.bag:
@@ -398,7 +399,7 @@ class ResourceClassification(object):
             _r.resource = dict(self.resource_data)
             _r.remove(server_id, char_id)
 
-    def add(self, server_id, char_id):
+    def add(self, server_id, char_id, message=""):
         from core.club import Club
         from core.bag import Bag
         from core.staff import StaffManger, StaffRecruit
@@ -413,6 +414,7 @@ class ResourceClassification(object):
         if self.club_exp:
             club_property['exp'] = self.club_exp
         if club_property:
+            club_property['message'] = message
             Club(server_id, char_id).update(**club_property)
 
         if self.vip_exp:

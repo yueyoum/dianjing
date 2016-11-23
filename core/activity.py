@@ -102,7 +102,7 @@ class ActivityNewPlayer(object):
             raise GameException(ConfigErrorMessage.get_error_id("ACTIVITY_NEW_PLAYER_CONDITION_NOT_SATISFY"))
 
         rc = ResourceClassification.classify(config.rewards)
-        rc.add(self.server_id, self.char_id)
+        rc.add(self.server_id, self.char_id, message="ActivityNewPlayer.get_reward:{0}".format(_id))
 
         self.doc['done'].append(_id)
         MongoActivityNewPlayer.db(self.server_id).update_one(
@@ -128,10 +128,10 @@ class ActivityNewPlayer(object):
 
         rc = ResourceClassification.classify(cost)
         rc.check_exist(self.server_id, self.char_id)
-        rc.remove(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id, message="ActivityNewPlayer.daily_buy")
 
         rc = ResourceClassification.classify(config.items)
-        rc.add(self.server_id, self.char_id)
+        rc.add(self.server_id, self.char_id, message="ActivityNewPlayer.daily_buy")
 
         self.doc['daily_buy'].append(self.create_day)
         MongoActivityNewPlayer.db(self.server_id).update_one(

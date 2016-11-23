@@ -167,7 +167,7 @@ class Party(object):
             cost = [(money_text_to_item_id('diamond'), config.need_diamond), ]
             rc = ResourceClassification.classify(cost)
             rc.check_exist(self.server_id, self.char_id)
-            rc.remove(self.server_id, self.char_id)
+            rc.remove(self.server_id, self.char_id, message="Party.start:{0}".format(party_level))
         except GameException as e:
             ret.ret = e.error_id
             return ret
@@ -194,7 +194,7 @@ class Party(object):
         try:
             rc = ResourceClassification.classify(config_buy.cost)
             rc.check_exist(self.server_id, self.char_id)
-            rc.remove(self.server_id, self.char_id)
+            rc.remove(self.server_id, self.char_id, message="Party.buy_item:{0},{1}".format(party_level, buy_id))
         except GameException as e:
 
             ret.ret = e.error_id
@@ -208,7 +208,7 @@ class Party(object):
         rc.add(self.server_id, self.char_id)
 
         for mid in member_ids:
-            rc.add(self.server_id, mid)
+            rc.add(self.server_id, mid, message="Party.buy_item:{0},{1}".format(party_level, buy_id))
 
         ret.buy_name = config_buy.name
         ret.item_name = ConfigItemNew.get(item_id).name

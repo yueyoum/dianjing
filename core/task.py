@@ -55,7 +55,7 @@ class TaskMain(object):
         )
 
         resource_classified = ResourceClassification.classify(config.items)
-        resource_classified.add(self.server_id, self.char_id)
+        resource_classified.add(self.server_id, self.char_id, message="TaskMain.trig:{0}".format(challenge_id))
 
         self.send_notify(update=True)
 
@@ -173,7 +173,7 @@ class TaskDaily(object):
         self.doc['done'].append(task_id)
 
         resource_classified = ResourceClassification.classify(config.rewards)
-        resource_classified.add(self.server_id, self.char_id)
+        resource_classified.add(self.server_id, self.char_id, message="TaskDaily.get_reward:{0}".format(task_id))
 
         MongoTaskDaily.db(self.server_id).update_one(
             {'_id': self.char_id},

@@ -95,11 +95,11 @@ class VIP(object):
         needs = [(money_text_to_item_id('diamond'), config.diamond_now)]
         rc = ResourceClassification.classify(needs)
         rc.check_exist(self.server_id, self.char_id)
-        rc.remove(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id, message="VIP.buy_reward:{0}".format(vip_level))
 
         got = [(config.item_id, 1)]
         rc = ResourceClassification.classify(got)
-        rc.add(self.server_id, self.char_id)
+        rc.add(self.server_id, self.char_id, message="VIP.buy_reward:{0}".format(vip_level))
 
         self.doc['rewards'].append(vip_level)
         MongoVIP.db(self.server_id).update_one(

@@ -193,7 +193,7 @@ class Purchase(object):
 
         drop = ConfigPurchaseFirstReward.get_reward()
         rc = ResourceClassification.classify(drop)
-        rc.add(self.server_id, self.char_id)
+        rc.add(self.server_id, self.char_id, message="Purchase.get_first_reward")
         self.doc['first_reward_got'] = True
 
         MongoPurchase.db(self.server_id).update_one(
@@ -270,7 +270,7 @@ class Purchase(object):
         ]
 
         rc = ResourceClassification.classify(reward)
-        rc.add(self.server_id, self.char_id)
+        rc.add(self.server_id, self.char_id, message="Purchase.send_reward:{0}".format(goods_id))
 
         self.send_notify()
 

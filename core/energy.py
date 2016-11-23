@@ -143,7 +143,7 @@ class Energy(object):
         cost = [(money_text_to_item_id('diamond'), ri.buy_cost), ]
         rc = ResourceClassification.classify(cost)
         rc.check_exist(self.server_id, self.char_id)
-        rc.remove(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id, message="Energy.buy")
 
         ValueLogEnergyBuyTimes(self.server_id, self.char_id).record()
         self.add(60)

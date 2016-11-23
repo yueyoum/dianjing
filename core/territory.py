@@ -283,7 +283,7 @@ class Building(object):
         cost = [(money_text_to_item_id('diamond'), self.inspire_cost()), ]
         rc = ResourceClassification.classify(cost)
         rc.check_exist(self.server_id, self.char_id)
-        rc.remove(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id, message="Building.make_inspire")
 
         ValueLogTerritoryBuildingInspireTimes(self.server_id, self.char_id).record(sub_id=self.id)
 
@@ -293,7 +293,7 @@ class Building(object):
         reward = config.get_reward()
         if reward:
             rc = ResourceClassification.classify(reward)
-            rc.add(self.server_id, self.char_id)
+            rc.add(self.server_id, self.char_id, message="Building.make_inspire")
             return rc, level_up
 
         return None, level_up
@@ -727,7 +727,8 @@ class Territory(object):
         self.send_notify(building_id=building_id, slot_id=slot_id)
 
         resource_classified = ResourceClassification.classify(reward['items'])
-        resource_classified.add(self.server_id, self.char_id)
+        resource_classified.add(self.server_id, self.char_id,
+                                message="Territory.training_get_reward:{0}".format(building_id))
 
         # 把建筑产出也要发回到客户端
         resource_classified.bag.append((BUILDING_PRODUCT_ID_TABLE[building_id], reward['product_amount']))
@@ -875,11 +876,11 @@ class TerritoryStore(object):
 
         resource_classified = ResourceClassification.classify(config.needs)
         resource_classified.check_exist(self.server_id, self.char_id)
-        resource_classified.remove(self.server_id, self.char_id)
+        resource_classified.remove(self.server_id, self.char_id, message="TerritoryStore.buy:{0}".format(item_id))
 
         got = [(config.item_id, config.item_amount), ]
         resource_classified = ResourceClassification.classify(got)
-        resource_classified.add(self.server_id, self.char_id)
+        resource_classified.add(self.server_id, self.char_id, message="TerritoryStore.buy:{0}".format(item_id))
 
         if str(item_id) in self.times:
             self.times[str(item_id)] += 1
@@ -986,7 +987,7 @@ class TerritoryFriend(object):
         config = ConfigTerritoryEvent.get(event_id)
         if not config.npc:
             resource_classified = ResourceClassification.classify(config.reward_win)
-            resource_classified.add(self.server_id, self.char_id)
+            resource_classified.add(self.server_id, self.char_id, message="TerritoryFriend.help")
 
             # NOTE： 战斗要等到结算的时候再记录次数
             ValueLogTerritoryHelpFriendTimes(self.server_id, self.char_id).record()
@@ -1047,7 +1048,7 @@ class TerritoryFriend(object):
             drop = config.reward_lose
 
         resource_classified = ResourceClassification.classify(drop)
-        resource_classified.add(self.server_id, self.char_id)
+        resource_classified.add(self.server_id, self.char_id, message="TerritoryFriend.match_report:{0}".format(win))
         return resource_classified
 
     def send_remained_times_notify(self):

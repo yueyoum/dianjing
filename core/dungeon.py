@@ -76,7 +76,7 @@ class Dungeon(object):
         cost = [(money_text_to_item_id('diamond'), ri.buy_cost), ]
         rc = ResourceClassification.classify(cost)
         rc.check_exist(self.server_id, self.char_id)
-        rc.remove(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id, message="Dungeon.buy_times:{0}".format(category_id))
 
         ValueLogDungeonBuyTimes(self.server_id, self.char_id).record(sub_id=category_id)
 
@@ -116,7 +116,7 @@ class Dungeon(object):
             ValueLogDungeonMatchTimes(self.server_id, self.char_id).record(sub_id=conf.belong, value=1)
 
             resource_classified = ResourceClassification.classify(conf.get_drop())
-            resource_classified.add(self.server_id, self.char_id)
+            resource_classified.add(self.server_id, self.char_id, message="Dungeon.report:{0}".format(grade_id))
             ret = resource_classified
         else:
             ret = None

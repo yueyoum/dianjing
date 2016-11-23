@@ -487,7 +487,7 @@ class Arena(object):
         cost = [(money_text_to_item_id('diamond'), ti.buy_cost), ]
         rc = ResourceClassification.classify(cost)
         rc.check_exist(self.server_id, self.char_id)
-        rc.remove(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id, message="Arena.buy_times")
 
         ValueLogArenaBuyTimes(self.server_id, self.char_id).record()
 
@@ -535,7 +535,7 @@ class Arena(object):
             cost = [(money_text_to_item_id('diamond'), ti.reset_cost), ]
             rc = ResourceClassification.classify(cost)
             rc.check_exist(self.server_id, self.char_id)
-            rc.remove(self.server_id, self.char_id)
+            rc.remove(self.server_id, self.char_id, message="Arena.refresh")
 
             ValueLogArenaSearchResetTimes(self.server_id, self.char_id).record()
         else:
@@ -555,16 +555,7 @@ class Arena(object):
     def check_and_buy_times(self):
         ti = TimesInfo(self.server_id, self.char_id)
         if not ti.remained_match_times:
-            if not ti.remained_buy_times:
-                raise GameException(ConfigErrorMessage.get_error_id("ARENA_NO_BUY_TIMES"))
-
-            cost = [(money_text_to_item_id('diamond'), ti.buy_cost), ]
-            rc = ResourceClassification.classify(cost)
-            rc.check_exist(self.server_id, self.char_id)
-            rc.remove(self.server_id, self.char_id)
-            ValueLogArenaBuyTimes(self.server_id, self.char_id).record()
-
-            self.send_notify()
+            self.buy_times()
 
     def match(self, formation_slots=None):
         doc = MongoArena.db(self.server_id).find_one(
@@ -666,7 +657,7 @@ class Arena(object):
 
         drop = config_reward.get_drop()
         resource_classified = ResourceClassification.classify(drop)
-        resource_classified.add(self.server_id, self.char_id)
+        resource_classified.add(self.server_id, self.char_id, message="Arena.report:{0}".format(win))
 
         self.send_honor_notify()
         self.send_notify()
@@ -715,7 +706,7 @@ class Arena(object):
             raise GameException(ConfigErrorMessage.get_error_id("ARENA_HONOR_REWARD_ALREADY_GOT"))
 
         resource_classified = ResourceClassification.classify(config.reward)
-        resource_classified.add(self.server_id, self.char_id)
+        resource_classified.add(self.server_id, self.char_id, message="Arena.get_honor_reward:{0}".format(honor_id))
 
         today_key = str(get_start_time_of_today().timestamp)
         MongoArena.db(self.server_id).update_one(

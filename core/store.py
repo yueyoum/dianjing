@@ -156,7 +156,7 @@ class Store(object):
         cost = [(money_text_to_item_id('diamond'), ri.refresh_cost), ]
         resource_classified = ResourceClassification.classify(cost)
         resource_classified.check_exist(self.server_id, self.char_id)
-        resource_classified.remove(self.server_id, self.char_id)
+        resource_classified.remove(self.server_id, self.char_id, message="Store.refresh:{0}".format(tp))
 
         ValueLogStoreRefreshTimes(self.server_id, self.char_id).record(sub_id=tp)
         self.make_refresh(tp)

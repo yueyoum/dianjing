@@ -73,9 +73,9 @@ class ChallengeNPCClub(AbstractClub):
 
 
 INIT_CHALLENGE_IDS = []
-for k, v in ConfigChallengeMatch.INSTANCES.iteritems():
-    if not v.condition_challenge:
-        INIT_CHALLENGE_IDS.append(k)
+for _xk, _xv in ConfigChallengeMatch.INSTANCES.iteritems():
+    if not _xv.condition_challenge:
+        INIT_CHALLENGE_IDS.append(_xk)
 
 
 class RemainedTimes(object):
@@ -207,7 +207,6 @@ class Challenge(object):
         star = doc['challenge_star'].get(str(challenge_id), 0)
         return star > 0
 
-
     def start(self, challenge_id, formation_slots=None):
         config = ConfigChallengeMatch.get(challenge_id)
         if not config:
@@ -253,7 +252,7 @@ class Challenge(object):
         cost = [(money_text_to_item_id('diamond'), rt.reset_cost), ]
         rc = ResourceClassification.classify(cost)
         rc.check_exist(self.server_id, self.char_id)
-        rc.remove(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id, message="Challenge.reset:{0}".format(challenge_id))
 
         ValueLogChallengeResetTimes(self.server_id, self.char_id).record(sub_id=challenge_id)
 
@@ -324,7 +323,7 @@ class Challenge(object):
         ValueLogAllChallengeWinTimes(self.server_id, self.char_id).record(value=sweep_times)
 
         resource_classified = ResourceClassification.classify(drops.items())
-        resource_classified.add(self.server_id, self.char_id)
+        resource_classified.add(self.server_id, self.char_id, message="Challenge.sweep:{0}".format(challenge_id))
 
         self.send_challenge_notify(ids=[challenge_id])
         return resource_classified_list
@@ -416,7 +415,7 @@ class Challenge(object):
         drop = config.get_drop(drop_times)
 
         resource_classified = ResourceClassification.classify(drop)
-        resource_classified.add(self.server_id, self.char_id)
+        resource_classified.add(self.server_id, self.char_id, message="Challenge.report:{0},{1}".format(key, star))
 
         MongoChallenge.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -470,7 +469,8 @@ class Challenge(object):
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_CHAPTER_REWARD_STAR_NOT_ENOUGH"))
 
         resource_classified = ResourceClassification.classify([(item_id, item_amount)])
-        resource_classified.add(self.server_id, self.char_id)
+        resource_classified.add(self.server_id, self.char_id,
+                                message="Challenge.get_chapter_reward:{0},{1}".format(chapter_id, index))
 
         MongoChallenge.db(self.server_id).update_one(
             {'_id': self.char_id},
@@ -558,7 +558,6 @@ class Challenge(object):
 
         def _get_buy_cost(_id):
             return ConfigChallengeResetCost.get_cost(reset_times.get(_id, 0) + 1)
-
 
         notify = ChallengeNotify()
         notify.act = act

@@ -46,7 +46,7 @@ class TalentManager(object):
         using_items = [(money_text_to_item_id('diamond'), RESET_TALENT_TREE_COST)]
         resource_classified = ResourceClassification.classify(using_items)
         resource_classified.check_exist(self.server_id, self.char_id)
-        resource_classified.remove(self.server_id, self.char_id)
+        resource_classified.remove(self.server_id, self.char_id, message="TalentManager.reset")
 
         self.doc['talents'] = ConfigTalent.INIT_TALENT_IDS
         self.doc['cost_point'] = 0

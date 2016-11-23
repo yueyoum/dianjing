@@ -17,7 +17,7 @@ class Statistics(models.Model):
     club_gold = models.IntegerField(default=0, verbose_name='金币')
     club_diamond = models.IntegerField(default=0, verbose_name='钻石')
 
-    message = models.CharField(max_length=255, blank=True)
+    message = models.CharField(max_length=255, blank=True, db_index=True)
 
     class Meta:
         db_table = 'statistics'
@@ -30,4 +30,5 @@ class Statistics(models.Model):
         connection.close()
 
         limit = arrow.utcnow().replace(days=-30).format("YYYY-MM-DD HH:mm:ssZ")
-        cls.objects.filter(create_at__lte=limit).delete()
+        num, _ = cls.objects.filter(create_at__lte=limit).delete()
+        return num

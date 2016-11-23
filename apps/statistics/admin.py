@@ -11,4 +11,5 @@ class StatisticsAdmin(admin.ModelAdmin):
         'message'
     )
 
+    readonly_fields = list_display
     search_fields = ['char_id',]

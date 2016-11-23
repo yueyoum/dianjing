@@ -676,7 +676,8 @@ class Bag(object):
         if amount > item_amount:
             raise GameException(ConfigErrorMessage.get_error_id("ITEM_NOT_ENOUGH"))
 
-        config = ConfigItemUse.get(this_slot['item_id'])
+        item_id = this_slot['item_id']
+        config = ConfigItemUse.get(item_id)
 
         if not config:
             raise GameException(ConfigErrorMessage.get_error_id("ITEM_CANNOT_USE"))
@@ -690,7 +691,7 @@ class Bag(object):
                 cost = [(config.use_item_id, config.use_item_amount * amount)]
                 rc = ResourceClassification.classify(cost)
                 rc.check_exist(self.server_id, self.char_id)
-                rc.remove(self.server_id, self.char_id)
+                rc.remove(self.server_id, self.char_id, message="Bag.item_use:{0}".format(item_id))
 
         result = {}
         for i in range(amount):
@@ -703,7 +704,7 @@ class Bag(object):
         self.remove_by_slot_id(slot_id, amount)
 
         resource_classified = ResourceClassification.classify(result.items())
-        resource_classified.add(self.server_id, self.char_id)
+        resource_classified.add(self.server_id, self.char_id, message="Bag.item_use:{0}".format(item_id))
         return resource_classified
 
     def item_merge(self, slot_id):
@@ -723,7 +724,7 @@ class Bag(object):
         self.remove_by_slot_id(slot_id, config.amount)
 
         resource_classified = ResourceClassification.classify([(config.to_id, 1)])
-        resource_classified.add(self.server_id, self.char_id)
+        resource_classified.add(self.server_id, self.char_id, message="Bag.item_merge:{0}".format(item_id))
         return resource_classified
 
     def item_destroy(self, slot_id):
@@ -743,7 +744,7 @@ class Bag(object):
             drop.append((money_text_to_item_id('crystal'), config.crystal * amount))
 
         resource_classified = ResourceClassification.classify(drop)
-        resource_classified.add(self.server_id, self.char_id)
+        resource_classified.add(self.server_id, self.char_id, message="Bag.item_destroy:{0}".format(item_id))
         return resource_classified
 
     def _equipment_destroy_check(self, slot_id):
@@ -807,7 +808,7 @@ class Bag(object):
                 results.append((money_text_to_item_id('renown'), config.renown))
 
         resource_classified = ResourceClassification.classify(results)
-        resource_classified.add(self.server_id, self.char_id)
+        resource_classified.add(self.server_id, self.char_id, message="Bag.equipment_destroy:{0}".format(item_id))
         return resource_classified
 
     def equipment_batch_destroy(self, slot_ids):
@@ -832,7 +833,7 @@ class Bag(object):
                     total_items[_id] = _amount
 
         rc = ResourceClassification.classify(total_items.items())
-        rc.add(self.server_id, self.char_id)
+        rc.add(self.server_id, self.char_id, message="Bag.equipment_batch_destroy")
 
         for slot_id in slot_ids:
             self.remove_by_slot_id(slot_id, 1)
@@ -874,7 +875,7 @@ class Bag(object):
 
             resource_classified = ResourceClassification.classify(_item_needs)
             resource_classified.check_exist(self.server_id, self.char_id)
-            resource_classified.remove(self.server_id, self.char_id)
+            resource_classified.remove(self.server_id, self.char_id, message="Bag.equipment_level_up:{0}".format(item_id))
 
         old_level = level
         error_code = 0

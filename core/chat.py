@@ -140,7 +140,7 @@ class Chat(object):
             except:
                 raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-            resource_classified.add(self.server_id, self.char_id)
+            resource_classified.add(self.server_id, self.char_id, message="Chat.command")
 
         elif tp == ChatSendRequest.SET_MONEY:
             setter = {}

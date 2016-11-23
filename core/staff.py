@@ -258,7 +258,7 @@ class StaffRecruit(object):
         )
 
         rc = ResourceClassification.classify(result.items)
-        rc.add(self.server_id, self.char_id)
+        rc.add(self.server_id, self.char_id, message="StaffRecruit.recruit:{0},{1}".format(tp, mode))
 
         if tp == RECRUIT_GOLD:
             recruit_staff_gold_signal.send(
@@ -489,7 +489,7 @@ class Staff(AbstractStaff):
         using_items = self.config.steps[self.step].update_item_need
         resource_classified = ResourceClassification.classify(using_items)
         resource_classified.check_exist(self.server_id, self.char_id)
-        resource_classified.remove(self.server_id, self.char_id)
+        resource_classified.remove(self.server_id, self.char_id, message="Staff.step_up:{0}".format(self.oid))
 
         self.step += 1
         MongoStaff.db(self.server_id).update_one(
@@ -526,7 +526,7 @@ class Staff(AbstractStaff):
 
             resource_classified = ResourceClassification.classify(using_items)
             resource_classified.check_exist(self.server_id, self.char_id)
-            resource_classified.remove(self.server_id, self.char_id)
+            resource_classified.remove(self.server_id, self.char_id, message="Staff.star_up:{0}".format(self.oid))
 
             if random.randint(1, 100) <= 20:
                 _exp = 6
@@ -1006,7 +1006,7 @@ class StaffManger(object):
             sender=None,
             server_id=self.server_id,
             char_id=self.char_id,
-            staffs_info=[(staff_original_id, unique_id),],
+            staffs_info=[(staff_original_id, unique_id), ],
             force_load_staffs=send_notify,
         )
 
@@ -1223,12 +1223,14 @@ class StaffManger(object):
             # TODO diamond count
             resource_classified = ResourceClassification.classify([(money_text_to_item_id('diamond'), 50)])
             resource_classified.check_exist(self.server_id, self.char_id)
-            resource_classified.remove(self.server_id, self.char_id)
+            resource_classified.remove(self.server_id, self.char_id,
+                                       message="StaffManger.destroy:{0},{1}".format(staff.oid, tp))
 
             items = staff.get_cost_items(100)
 
         resource_classified = ResourceClassification.classify(items)
-        resource_classified.add(self.server_id, self.char_id)
+        resource_classified.add(self.server_id, self.char_id,
+                                message="StaffManger.destroy:{0},{1}".format(staff.oid, tp))
 
         if tp == 0:
             self.remove(staff_id)
@@ -1266,7 +1268,7 @@ class StaffManger(object):
                     total_items[_id] = _amount
 
         rc = ResourceClassification.classify(total_items.items())
-        rc.add(self.server_id, self.char_id)
+        rc.add(self.server_id, self.char_id, message="StaffManger.batch_destroy")
 
         self.remove(staff_ids)
         self.after_staffs_change_for_trig_signal()

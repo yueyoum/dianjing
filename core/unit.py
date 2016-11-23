@@ -94,7 +94,7 @@ class Unit(AbstractUnit):
             using_items = self.config.levels[self.level].update_item_need
             resource_classified = ResourceClassification.classify(using_items)
             resource_classified.check_exist(self.server_id, self.char_id)
-            resource_classified.remove(self.server_id, self.char_id)
+            resource_classified.remove(self.server_id, self.char_id, message="Unit.level_up:{0}".format(self.id))
 
             self.level += 1
         else:
@@ -115,7 +115,7 @@ class Unit(AbstractUnit):
 
                 rc = ResourceClassification.classify(_using_items)
                 rc.check_exist(self.server_id, self.char_id)
-                rc.remove(self.server_id, self.char_id)
+                rc.remove(self.server_id, self.char_id, message="Unit.level_up:{0}".format(self.id))
 
             for i in range(add_level, 0, -1):
                 try:
@@ -151,7 +151,7 @@ class Unit(AbstractUnit):
         using_items = self.config.steps[self.step].update_item_need
         resource_classified = ResourceClassification.classify(using_items)
         resource_classified.check_exist(self.server_id, self.char_id)
-        resource_classified.remove(self.server_id, self.char_id)
+        resource_classified.remove(self.server_id, self.char_id, message="Unit.step_up:{0}".format(self.id))
 
         self.step += 1
 
@@ -371,7 +371,6 @@ class UnitManager(object):
 
     def after_change(self, uid):
         from core.formation import Formation
-        from core.staff import StaffManger
 
         self.load_units()
         unit = self.get_unit_object(uid)
