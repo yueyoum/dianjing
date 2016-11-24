@@ -105,12 +105,13 @@ class ClubMatch(object):
 
         return msg
 
-    def start(self):
-        if self.club_one and not self.club_one.formation_staffs:
-            self.club_one.load_staffs()
+    def start(self, auto_load_staffs=True):
+        if auto_load_staffs:
+            if self.club_one and not self.club_one.formation_staffs:
+                self.club_one.load_staffs()
 
-        if self.club_two and not self.club_two.formation_staffs:
-            self.club_two.load_staffs()
+            if self.club_two and not self.club_two.formation_staffs:
+                self.club_two.load_staffs()
 
         if self.club_one and self.club_two:
             two_for_one_talents = self.club_two.get_talents_ids_for_rival()

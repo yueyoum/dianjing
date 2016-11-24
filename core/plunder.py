@@ -786,7 +786,7 @@ class Plunder(object):
         my_club.formation_staffs = my_way.formation_staffs
 
         match = ClubMatch(my_club, None)
-        msg = match.start()
+        msg = match.start(auto_load_staffs=False)
         msg.key = str(way)
 
         return msg
