@@ -36,6 +36,7 @@ from utils.functional import get_start_time_of_today
 
 from config import ConfigItemNew
 
+
 def get_servers_select_context(show_all=False):
     if show_all:
         servers_select = [{'display': '全部', 'value': 0}]
@@ -294,7 +295,7 @@ def diamond_info(request):
     if request.method == 'GET':
         servers_select = get_servers_select_context()
         context = {
-            'current': 'gold',
+            'current': 'diamond',
             'servers_select': servers_select,
         }
 
@@ -634,7 +635,7 @@ def arena_info(request):
     data = []
     for _index, c in enumerate(clubs):
         data.append({
-            'rank': _index+1,
+            'rank': _index + 1,
             'id': c.id,
             'name': c.name,
             'level': c.level,
@@ -682,7 +683,7 @@ class PurchaseInfo(BaseInfo):
                'goods_id', 'fee', 'purchase_at', 'platform']
 
     HEADER_NAME_TABLE = {
-        'sid': '服务器ID',
+        'sid': '服',
         'account_id': '账号ID',
         'char_id': '角色ID',
         'char_name': '角色名字',
@@ -738,7 +739,7 @@ class RetainedInfo(BaseInfo):
                'purchase_fee']
 
     HEADER_NAME_TABLE = {
-        'sid': '服务器ID',
+        'sid': '服',
         'date': '日期',
         'char_increase': '新增用户数',
         'total_char_increase': '总新增用户',
@@ -864,7 +865,7 @@ class GoldInfo(BaseInfo):
     ]
 
     HEADER_NAME_TABLE = {
-        'sid': '服务器ID',
+        'sid': '服',
         'date': '日期',
         'spawn': '产生',
         'cost': '消耗',
@@ -873,6 +874,17 @@ class GoldInfo(BaseInfo):
         'cost_by_unit_level_up': '兵种升级',
     }
 
+    def make_empty_data(self, sid, date):
+        return {
+            'sid': sid,
+            'date': date,
+            'spawn': 0,
+            'cost': 0,
+            'cost_by_staff_recruit': 0,
+            'cost_by_equip_level_up': 0,
+            'cost_by_unit_level_up': 0,
+        }
+
     def query(self, sid, date1, date2):
         """
 
@@ -880,14 +892,9 @@ class GoldInfo(BaseInfo):
         :type date1: arrow.Arrow
         :type date2: arrow.Arrow
         """
-        def make_data(_s):
-            _data = {
-                'spawn': 0,
-                'cost': 0,
-                'cost_by_staff_recruit': 0,
-                'cost_by_equip_level_up': 0,
-                'cost_by_unit_level_up': 0,
-            }
+
+        def make_data(_s, date_str):
+            _data = self.make_empty_data(sid, date_str)
 
             if _s.club_gold == 0:
                 return _data
@@ -906,34 +913,31 @@ class GoldInfo(BaseInfo):
 
             return _data
 
+        dates_list = []
         dates = {}
+        start = date1
+        while start < date2:
+            date_str = start.format("YYYY-MM-DD")
+            dates[date_str] = self.make_empty_data(sid, date_str)
+            dates_list.append(date_str)
+            start = start.replace(days=1)
 
         condition = Q(server_id=sid) & Q(create_at__gte=date1.format(DATE_FORMAT)) & \
                     Q(create_at__lte=date2.format(DATE_FORMAT))
 
         statistics = ModelStatistics.objects.filter(condition).order_by('create_at')
         for s in statistics:
-            create_at = arrow.get(s.create_at).to(settings.TIME_ZONE)
-            create_at_str = create_at.format("YYYY-MM-DD")
+            create_at_str = arrow.get(s.create_at).to(settings.TIME_ZONE).format("YYYY-MM-DD")
+            data = make_data(s, create_at_str)
 
-            data = make_data(s)
-            if create_at_str not in dates:
-                data['sid'] = sid
-                data['date'] = create_at_str
-                data['timestamp'] = create_at.timestamp
-                dates[create_at_str] = data
-            else:
-                dates[create_at_str]['spawn'] += data['spawn']
-                dates[create_at_str]['cost'] += data['cost']
-                dates[create_at_str]['cost_by_staff_recruit'] += data['cost_by_staff_recruit']
-                dates[create_at_str]['cost_by_equip_level_up'] += data['cost_by_equip_level_up']
-                dates[create_at_str]['cost_by_unit_level_up'] += data['cost_by_unit_level_up']
+            dates[create_at_str]['spawn'] += data['spawn']
+            dates[create_at_str]['cost'] += data['cost']
+            dates[create_at_str]['cost_by_staff_recruit'] += data['cost_by_staff_recruit']
+            dates[create_at_str]['cost_by_equip_level_up'] += data['cost_by_equip_level_up']
+            dates[create_at_str]['cost_by_unit_level_up'] += data['cost_by_unit_level_up']
 
-        rows = dates.values()
-        rows.sort(key=lambda item: item['timestamp'])
-        for row in rows:
-            self.add_row(row)
-
+        for k in dates_list:
+            self.add_row(dates[k])
 
 
 class DiamondInfo(BaseInfo):
@@ -945,12 +949,12 @@ class DiamondInfo(BaseInfo):
     ]
 
     HEADER_NAME_TABLE = {
-        'sid': '服务器ID',
+        'sid': '服',
         'date': '日期',
         'spawn': '产生',
         'cost': '消耗',
         'cost_by_staff_recruit': '抽卡',
-        'cost_by_store_buy': '神秘商店购买',
+        'cost_by_store_buy': '神秘商店',
         'cost_by_energy_buy': '体力购买',
         'cost_by_dungeon_buy': '日常副本购买',
         'cost_by_tower_reset': '挑战塔重置',
@@ -960,6 +964,23 @@ class DiamondInfo(BaseInfo):
         'cost_by_party_create': '宴会创建',
     }
 
+    def make_empty_data(self, sid, date):
+        return {
+            'sid': sid,
+            'date': date,
+            'spawn': 0,
+            'cost': 0,
+            'cost_by_staff_recruit': 0,
+            'cost_by_store_buy': 0,
+            'cost_by_energy_buy': 0,
+            'cost_by_dungeon_buy': 0,
+            'cost_by_tower_reset': 0,
+            'cost_by_arena_buy': 0,
+            'cost_by_plunder_buy': 0,
+            'cost_by_union_signin': 0,
+            'cost_by_party_create': 0,
+        }
+
     def query(self, sid, date1, date2):
         """
 
@@ -967,20 +988,9 @@ class DiamondInfo(BaseInfo):
         :type date1: arrow.Arrow
         :type date2: arrow.Arrow
         """
-        def make_data(_s):
-            _data = {
-                'spawn': 0,
-                'cost': 0,
-                'cost_by_staff_recruit': 0,
-                'cost_by_store_buy': 0,
-                'cost_by_energy_buy': 0,
-                'cost_by_dungeon_buy': 0,
-                'cost_by_tower_reset': 0,
-                'cost_by_arena_buy': 0,
-                'cost_by_plunder_buy': 0,
-                'cost_by_union_signin': 0,
-                'cost_by_party_create': 0,
-            }
+
+        def make_data(_s, date_str):
+            _data = self.make_empty_data(sid, date_str)
 
             if _s.club_diamond == 0:
                 return _data
@@ -1011,36 +1021,34 @@ class DiamondInfo(BaseInfo):
 
             return _data
 
+        dates_list = []
         dates = {}
+        start = date1
+        while start < date2:
+            date_str = start.format("YYYY-MM-DD")
+            dates[date_str] = self.make_empty_data(sid, date_str)
+            dates_list.append(date_str)
+            start = start.replace(days=1)
 
         condition = Q(server_id=sid) & Q(create_at__gte=date1.format(DATE_FORMAT)) & \
                     Q(create_at__lte=date2.format(DATE_FORMAT))
 
         statistics = ModelStatistics.objects.filter(condition).order_by('create_at')
         for s in statistics:
-            create_at = arrow.get(s.create_at).to(settings.TIME_ZONE)
-            create_at_str = create_at.format("YYYY-MM-DD")
+            create_at_str = arrow.get(s.create_at).to(settings.TIME_ZONE).format("YYYY-MM-DD")
 
-            data = make_data(s)
-            if create_at_str not in dates:
-                data['sid'] = sid
-                data['date'] = create_at_str
-                data['timestamp'] = create_at.timestamp
-                dates[create_at_str] = data
-            else:
-                dates[create_at_str]['spawn'] += data['spawn']
-                dates[create_at_str]['cost'] += data['cost']
-                dates[create_at_str]['cost_by_staff_recruit'] += data['cost_by_staff_recruit']
-                dates[create_at_str]['cost_by_store_buy'] += data['cost_by_store_buy']
-                dates[create_at_str]['cost_by_energy_buy'] += data['cost_by_energy_buy']
-                dates[create_at_str]['cost_by_dungeon_buy'] += data['cost_by_dungeon_buy']
-                dates[create_at_str]['cost_by_tower_reset'] += data['cost_by_tower_reset']
-                dates[create_at_str]['cost_by_arena_buy'] += data['cost_by_arena_buy']
-                dates[create_at_str]['cost_by_plunder_buy'] += data['cost_by_plunder_buy']
-                dates[create_at_str]['cost_by_union_signin'] += data['cost_by_union_signin']
-                dates[create_at_str]['cost_by_party_create'] += data['cost_by_party_create']
+            data = make_data(s, create_at_str)
+            dates[create_at_str]['spawn'] += data['spawn']
+            dates[create_at_str]['cost'] += data['cost']
+            dates[create_at_str]['cost_by_staff_recruit'] += data['cost_by_staff_recruit']
+            dates[create_at_str]['cost_by_store_buy'] += data['cost_by_store_buy']
+            dates[create_at_str]['cost_by_energy_buy'] += data['cost_by_energy_buy']
+            dates[create_at_str]['cost_by_dungeon_buy'] += data['cost_by_dungeon_buy']
+            dates[create_at_str]['cost_by_tower_reset'] += data['cost_by_tower_reset']
+            dates[create_at_str]['cost_by_arena_buy'] += data['cost_by_arena_buy']
+            dates[create_at_str]['cost_by_plunder_buy'] += data['cost_by_plunder_buy']
+            dates[create_at_str]['cost_by_union_signin'] += data['cost_by_union_signin']
+            dates[create_at_str]['cost_by_party_create'] += data['cost_by_party_create']
 
-        rows = dates.values()
-        rows.sort(key=lambda item: item['timestamp'])
-        for row in rows:
-            self.add_row(row)
+        for k in dates_list:
+            self.add_row(dates[k])
