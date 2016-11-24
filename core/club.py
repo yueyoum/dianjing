@@ -39,6 +39,20 @@ from config.settings import (
 
 from protomsg.club_pb2 import ClubNotify
 
+def get_total_property(server_id, key):
+    q = MongoCharacter.db(server_id).aggregate([
+        {'$group': {
+            '_id': 'null',
+            'total': {'$sum': '$'+key}
+        }}
+    ])
+
+    q = list(q)
+    if not q:
+        return 0
+
+    return q[0]['total']
+
 
 def get_club_property(server_id, char_id, key, default_value=0):
     doc = MongoCharacter.db(server_id).find_one(

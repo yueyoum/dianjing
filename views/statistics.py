@@ -20,9 +20,10 @@ from apps.account.models import AccountRegular as ModelAccountRegular
 from apps.character.models import Character as ModelCharacter
 from apps.server.models import Server as ModelServer
 from apps.purchase.models import Purchase as ModelPurchase
+from apps.statistics.models import Statistics as ModelStatistics
 
 from core.mongo import MongoCharacterLoginLog, MongoResource, MongoUnion, MongoUnionMember
-from core.club import Club
+from core.club import Club, get_total_property
 from core.staff import StaffManger
 from core.formation import Formation
 from core.bag import Bag
@@ -214,6 +215,148 @@ def retained_info_download(request):
     pi.query(sid, date1, date2)
 
     wb = pi.to_excel_workbook()
+    wb.save(response)
+    return response
+
+
+def gold_info(request):
+    if request.method == 'GET':
+        servers_select = get_servers_select_context()
+        context = {
+            'current': 'gold',
+            'servers_select': servers_select,
+        }
+
+        return render_to_response(
+            'dianjing_statistics_money.html',
+            context=context
+        )
+
+    try:
+        sid = int(request.POST['sid'])
+        date1 = request.POST['date1']
+        date2 = request.POST['date2']
+
+        date1 = arrow.get(date1).replace(tzinfo=settings.TIME_ZONE)
+        date2 = arrow.get(date2).replace(tzinfo=settings.TIME_ZONE).replace(days=1)
+    except:
+        ret = {
+            'ret': 1,
+            'msg': '请求数据错误'
+        }
+
+        return JsonResponse(ret)
+
+    total_gold = get_total_property(sid, 'gold')
+    extra_content = u"<h3>全服金币数量: {0}</h3>".format(total_gold)
+
+    gi = GoldInfo()
+    gi.query(sid, date1, date2)
+
+    ret = {
+        'ret': 0,
+        'header': gi.headers,
+        'rows': gi.rows,
+        'extra_content': extra_content,
+    }
+
+    return JsonResponse(ret)
+
+
+def gold_info_download(request):
+    try:
+        sid = int(request.GET['sid'])
+        date1 = request.GET['date1']
+        date2 = request.GET['date2']
+
+        date1 = arrow.get(date1).replace(tzinfo=settings.TIME_ZONE)
+        date2 = arrow.get(date2).replace(tzinfo=settings.TIME_ZONE).replace(days=1)
+    except:
+        ret = {
+            'ret': 1,
+            'msg': '请求数据错误'
+        }
+
+        return JsonResponse(ret)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment;filename=gold.xlsx'
+
+    gi = GoldInfo()
+    gi.query(sid, date1, date2)
+
+    wb = gi.to_excel_workbook()
+    wb.save(response)
+    return response
+
+
+def diamond_info(request):
+    if request.method == 'GET':
+        servers_select = get_servers_select_context()
+        context = {
+            'current': 'gold',
+            'servers_select': servers_select,
+        }
+
+        return render_to_response(
+            'dianjing_statistics_money.html',
+            context=context
+        )
+
+    try:
+        sid = int(request.POST['sid'])
+        date1 = request.POST['date1']
+        date2 = request.POST['date2']
+
+        date1 = arrow.get(date1).replace(tzinfo=settings.TIME_ZONE)
+        date2 = arrow.get(date2).replace(tzinfo=settings.TIME_ZONE).replace(days=1)
+    except:
+        ret = {
+            'ret': 1,
+            'msg': '请求数据错误'
+        }
+
+        return JsonResponse(ret)
+
+    total_gold = get_total_property(sid, 'diamond')
+    extra_content = u"<h3>全服钻石数量: {0}</h3>".format(total_gold)
+
+    di = DiamondInfo()
+    di.query(sid, date1, date2)
+
+    ret = {
+        'ret': 0,
+        'header': di.headers,
+        'rows': di.rows,
+        'extra_content': extra_content,
+    }
+
+    return JsonResponse(ret)
+
+
+def diamond_info_download(request):
+    try:
+        sid = int(request.GET['sid'])
+        date1 = request.GET['date1']
+        date2 = request.GET['date2']
+
+        date1 = arrow.get(date1).replace(tzinfo=settings.TIME_ZONE)
+        date2 = arrow.get(date2).replace(tzinfo=settings.TIME_ZONE).replace(days=1)
+    except:
+        ret = {
+            'ret': 1,
+            'msg': '请求数据错误'
+        }
+
+        return JsonResponse(ret)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment;filename=diamond.xlsx'
+
+    di = DiamondInfo()
+    di.query(sid, date1, date2)
+
+    wb = di.to_excel_workbook()
     wb.save(response)
     return response
 
@@ -712,3 +855,192 @@ class RetainedInfo(BaseInfo):
         retained = float(login_amount) / len(char_ids)
         value = '%.1f' % (retained * 100) + '%'
         return value
+
+
+class GoldInfo(BaseInfo):
+    HEADERS = [
+        'sid', 'date', 'spawn', 'cost', 'cost_by_staff_recruit',
+        'cost_by_equip_level_up', 'cost_by_unit_level_up'
+    ]
+
+    HEADER_NAME_TABLE = {
+        'sid': '服务器ID',
+        'date': '日期',
+        'spawn': '产生',
+        'cost': '消耗',
+        'cost_by_staff_recruit': '抽卡',
+        'cost_by_equip_level_up': '装备升级',
+        'cost_by_unit_level_up': '兵种升级',
+    }
+
+    def query(self, sid, date1, date2):
+        """
+
+        :type sid: int
+        :type date1: arrow.Arrow
+        :type date2: arrow.Arrow
+        """
+        def make_data(_s):
+            _data = {
+                'spawn': 0,
+                'cost': 0,
+                'cost_by_staff_recruit': 0,
+                'cost_by_equip_level_up': 0,
+                'cost_by_unit_level_up': 0,
+            }
+
+            if _s.club_gold == 0:
+                return _data
+
+            if _s.club_gold > 0:
+                _data['spawn'] = _s.club_gold
+                return _data
+
+            _data['cost'] = _s.club_gold
+            if _s.message.startswith('StaffRecruit.recruit'):
+                _data['cost_by_staff_recruit'] = _s.club_gold
+            elif _s.message.startswith('Bag.equipment_level_up'):
+                _data['cost_by_equip_level_up'] = _s.club_gold
+            elif _s.message.startswith('Unit.level_up'):
+                _data['cost_by_unit_level_up'] = _s.club_gold
+
+            return _data
+
+        dates = {}
+
+        condition = Q(server_id=sid) & Q(create_at__gte=date1.format(DATE_FORMAT)) & \
+                    Q(create_at__lte=date2.format(DATE_FORMAT))
+
+        statistics = ModelStatistics.objects.filter(condition).order_by('create_at')
+        for s in statistics:
+            create_at = arrow.get(s.create_at).to(settings.TIME_ZONE)
+            create_at_str = create_at.format("YYYY-MM-DD")
+
+            data = make_data(s)
+            if create_at_str not in dates:
+                data['sid'] = sid
+                data['date'] = create_at_str
+                data['timestamp'] = create_at.timestamp
+                dates[create_at_str] = data
+            else:
+                dates[create_at_str]['spawn'] += data['spawn']
+                dates[create_at_str]['cost'] += data['cost']
+                dates[create_at_str]['cost_by_staff_recruit'] += data['cost_by_staff_recruit']
+                dates[create_at_str]['cost_by_equip_level_up'] += data['cost_by_equip_level_up']
+                dates[create_at_str]['cost_by_unit_level_up'] += data['cost_by_unit_level_up']
+
+        rows = dates.values()
+        rows.sort(key=lambda item: item['timestamp'])
+        for row in rows:
+            self.add_row(row)
+
+
+
+class DiamondInfo(BaseInfo):
+    HEADERS = [
+        'sid', 'date', 'spawn', 'cost', 'cost_by_staff_recruit',
+        'cost_by_store_buy', 'cost_by_energy_buy', 'cost_by_dungeon_buy',
+        'cost_by_tower_reset', 'cost_by_arena_buy', 'cost_by_plunder_buy',
+        'cost_by_union_signin', 'cost_by_party_create',
+    ]
+
+    HEADER_NAME_TABLE = {
+        'sid': '服务器ID',
+        'date': '日期',
+        'spawn': '产生',
+        'cost': '消耗',
+        'cost_by_staff_recruit': '抽卡',
+        'cost_by_store_buy': '神秘商店购买',
+        'cost_by_energy_buy': '体力购买',
+        'cost_by_dungeon_buy': '日常副本购买',
+        'cost_by_tower_reset': '挑战塔重置',
+        'cost_by_arena_buy': '竞技场购买',
+        'cost_by_plunder_buy': '掠夺购买',
+        'cost_by_union_signin': '公会签到',
+        'cost_by_party_create': '宴会创建',
+    }
+
+    def query(self, sid, date1, date2):
+        """
+
+        :type sid: int
+        :type date1: arrow.Arrow
+        :type date2: arrow.Arrow
+        """
+        def make_data(_s):
+            _data = {
+                'spawn': 0,
+                'cost': 0,
+                'cost_by_staff_recruit': 0,
+                'cost_by_store_buy': 0,
+                'cost_by_energy_buy': 0,
+                'cost_by_dungeon_buy': 0,
+                'cost_by_tower_reset': 0,
+                'cost_by_arena_buy': 0,
+                'cost_by_plunder_buy': 0,
+                'cost_by_union_signin': 0,
+                'cost_by_party_create': 0,
+            }
+
+            if _s.club_diamond == 0:
+                return _data
+
+            if _s.club_diamond > 0:
+                _data['spawn'] = _s.club_diamond
+                return _data
+
+            _data['cost'] = _s.club_diamond
+            if _s.message.startswith('StaffRecruit.recruit'):
+                _data['cost_by_staff_recruit'] = _s.club_diamond
+            elif _s.message.startswith('Store.buy'):
+                _data['cost_by_store_buy'] = _s.club_diamond
+            elif _s.message.startswith('Energy.buy'):
+                _data['cost_by_energy_buy'] = _s.club_diamond
+            elif _s.message.startswith('Dungeon.buy_times'):
+                _data['cost_by_dungeon_buy'] = _s.club_diamond
+            elif _s.message.startswith('Tower.reset'):
+                _data['cost_by_tower_reset'] = _s.club_diamond
+            elif _s.message.startswith('Arena.buy_times'):
+                _data['cost_by_arena_buy'] = _s.club_diamond
+            elif _s.message.startswith('Plunder.buy_plunder_times'):
+                _data['cost_by_plunder_buy'] = _s.club_diamond
+            elif _s.message.startswith('Union.sign_in'):
+                _data['cost_by_union_signin'] = _s.club_diamond
+            elif _s.message.startswith('Party.start'):
+                _data['cost_by_party_create'] = _s.club_diamond
+
+            return _data
+
+        dates = {}
+
+        condition = Q(server_id=sid) & Q(create_at__gte=date1.format(DATE_FORMAT)) & \
+                    Q(create_at__lte=date2.format(DATE_FORMAT))
+
+        statistics = ModelStatistics.objects.filter(condition).order_by('create_at')
+        for s in statistics:
+            create_at = arrow.get(s.create_at).to(settings.TIME_ZONE)
+            create_at_str = create_at.format("YYYY-MM-DD")
+
+            data = make_data(s)
+            if create_at_str not in dates:
+                data['sid'] = sid
+                data['date'] = create_at_str
+                data['timestamp'] = create_at.timestamp
+                dates[create_at_str] = data
+            else:
+                dates[create_at_str]['spawn'] += data['spawn']
+                dates[create_at_str]['cost'] += data['cost']
+                dates[create_at_str]['cost_by_staff_recruit'] += data['cost_by_staff_recruit']
+                dates[create_at_str]['cost_by_store_buy'] += data['cost_by_store_buy']
+                dates[create_at_str]['cost_by_energy_buy'] += data['cost_by_energy_buy']
+                dates[create_at_str]['cost_by_dungeon_buy'] += data['cost_by_dungeon_buy']
+                dates[create_at_str]['cost_by_tower_reset'] += data['cost_by_tower_reset']
+                dates[create_at_str]['cost_by_arena_buy'] += data['cost_by_arena_buy']
+                dates[create_at_str]['cost_by_plunder_buy'] += data['cost_by_plunder_buy']
+                dates[create_at_str]['cost_by_union_signin'] += data['cost_by_union_signin']
+                dates[create_at_str]['cost_by_party_create'] += data['cost_by_party_create']
+
+        rows = dates.values()
+        rows.sort(key=lambda item: item['timestamp'])
+        for row in rows:
+            self.add_row(row)

@@ -30,4 +30,8 @@ urlpatterns = [
     url(r'^statistics/char/$', views.statistics.char_info),
     url(r'^statistics/union/$', views.statistics.union_info),
     url(r'^statistics/arena/$', views.statistics.arena_info),
+    url(r'^statistics/gold/$', views.statistics.gold_info),
+    url(r'^statistics/gold/download/$', views.statistics.gold_info_download),
+    url(r'^statistics/diamond/$', views.statistics.diamond_info),
+    url(r'^statistics/diamond/download/$', views.statistics.diamond_info_download),
 ]

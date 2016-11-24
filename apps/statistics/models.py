@@ -11,7 +11,7 @@ class Statistics(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     create_at = models.DateTimeField(auto_now_add=True, db_index=True)
 
-    server_id = models.IntegerField()
+    server_id = models.IntegerField(db_index=True)
     char_id = models.IntegerField(db_index=True)
 
     club_gold = models.IntegerField(default=0, verbose_name='金币')

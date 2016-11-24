@@ -290,7 +290,7 @@ class StaffRecruit(object):
 
             resource_classify = ResourceClassification.classify(cost)
             resource_classify.check_exist(self.server_id, self.char_id)
-            resource_classify.remove(self.server_id, self.char_id)
+            resource_classify.remove(self.server_id, self.char_id, message="StaffRecruit.recruit:1,1")
 
         if not self.gold_free_times:
             # 没有免费次数了， 就不判断CD，直接扣钱
@@ -325,7 +325,7 @@ class StaffRecruit(object):
 
         resource_classify = ResourceClassification.classify(cost)
         resource_classify.check_exist(self.server_id, self.char_id)
-        resource_classify.remove(self.server_id, self.char_id)
+        resource_classify.remove(self.server_id, self.char_id, message="StaffRecruit.recruit:1,2")
 
         return 10
 
@@ -339,7 +339,7 @@ class StaffRecruit(object):
 
             resource_classify = ResourceClassification.classify(cost)
             resource_classify.check_exist(self.server_id, self.char_id)
-            resource_classify.remove(self.server_id, self.char_id)
+            resource_classify.remove(self.server_id, self.char_id, message="StaffRecruit.recruit:2,1")
         else:
             self.doc['recruit_at']['2'] = arrow.utcnow().timestamp
 
@@ -360,7 +360,7 @@ class StaffRecruit(object):
 
         resource_classify = ResourceClassification.classify(cost)
         resource_classify.check_exist(self.server_id, self.char_id)
-        resource_classify.remove(self.server_id, self.char_id)
+        resource_classify.remove(self.server_id, self.char_id, message="StaffRecruit.recruit:2,2")
 
         return 10
 

@@ -128,10 +128,10 @@ class Store(object):
         item_id, item_amount, need_id, need_amount = config.content[data['index']]
         resource_classify = ResourceClassification.classify([(need_id, need_amount)])
         resource_classify.check_exist(self.server_id, self.char_id)
-        resource_classify.remove(self.server_id, self.char_id)
+        resource_classify.remove(self.server_id, self.char_id, message="Store.buy:{0}".format(goods_id))
 
         resource_classify = ResourceClassification.classify([(item_id, item_amount)])
-        resource_classify.add(self.server_id, self.char_id)
+        resource_classify.add(self.server_id, self.char_id, message="Store.buy:{0}".format(goods_id))
 
         data['times'] += 1
 
