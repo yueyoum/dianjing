@@ -943,9 +943,13 @@ class GoldInfo(BaseInfo):
 class DiamondInfo(BaseInfo):
     HEADERS = [
         'sid', 'date', 'spawn', 'cost', 'cost_by_staff_recruit',
-        'cost_by_store_buy', 'cost_by_energy_buy', 'cost_by_dungeon_buy',
-        'cost_by_tower_reset', 'cost_by_arena_buy', 'cost_by_plunder_buy',
+        'cost_by_store_buy', 'cost_by_energy_buy',
+        'cost_by_challenge_reset', 'cost_by_dungeon_buy',
+        'cost_by_tower_reset', 'cost_by_tower_buy',
+        'cost_by_arena_buy', 'cost_by_plunder_buy',
         'cost_by_union_signin', 'cost_by_party_create',
+        'cost_by_special_equip',
+        'cost_by_territory_buy',
     ]
 
     HEADER_NAME_TABLE = {
@@ -956,12 +960,16 @@ class DiamondInfo(BaseInfo):
         'cost_by_staff_recruit': '抽卡',
         'cost_by_store_buy': '神秘商店',
         'cost_by_energy_buy': '体力购买',
+        'cost_by_challenge_reset': '主线副本重置',
         'cost_by_dungeon_buy': '日常副本购买',
         'cost_by_tower_reset': '挑战塔重置',
+        'cost_by_tower_buy': '挑战塔商品购买',
         'cost_by_arena_buy': '竞技场购买',
         'cost_by_plunder_buy': '掠夺购买',
         'cost_by_union_signin': '公会签到',
         'cost_by_party_create': '宴会创建',
+        'cost_by_special_equip': '神器打造',
+        'cost_by_territory_buy': '商务中心购买',
     }
 
     def make_empty_data(self, sid, date):
@@ -973,12 +981,16 @@ class DiamondInfo(BaseInfo):
             'cost_by_staff_recruit': 0,
             'cost_by_store_buy': 0,
             'cost_by_energy_buy': 0,
+            'cost_by_challenge_reset': 0,
             'cost_by_dungeon_buy': 0,
             'cost_by_tower_reset': 0,
+            'cost_by_tower_buy': 0,
             'cost_by_arena_buy': 0,
             'cost_by_plunder_buy': 0,
             'cost_by_union_signin': 0,
             'cost_by_party_create': 0,
+            'cost_by_special_equip': 0,
+            'cost_by_territory_buy': 0,
         }
 
     def query(self, sid, date1, date2):
@@ -1006,10 +1018,14 @@ class DiamondInfo(BaseInfo):
                 _data['cost_by_store_buy'] = _s.club_diamond
             elif _s.message.startswith('Energy.buy'):
                 _data['cost_by_energy_buy'] = _s.club_diamond
+            elif _s.message.startswith('Challenge.reset'):
+                _data['cost_by_challenge_reset'] = _s.club_diamond
             elif _s.message.startswith('Dungeon.buy_times'):
                 _data['cost_by_dungeon_buy'] = _s.club_diamond
             elif _s.message.startswith('Tower.reset'):
                 _data['cost_by_tower_reset'] = _s.club_diamond
+            elif _s.message.startswith('Tower.buy_goods'):
+                _data['cost_by_tower_buy'] = _s.club_diamond
             elif _s.message.startswith('Arena.buy_times'):
                 _data['cost_by_arena_buy'] = _s.club_diamond
             elif _s.message.startswith('Plunder.buy_plunder_times'):
@@ -1018,6 +1034,10 @@ class DiamondInfo(BaseInfo):
                 _data['cost_by_union_signin'] = _s.club_diamond
             elif _s.message.startswith('Party.start'):
                 _data['cost_by_party_create'] = _s.club_diamond
+            elif _s.message.startswith('SpecialEquipmentGenerator.generate'):
+                _data['cost_by_special_equip'] = _s.club_diamond
+            elif _s.message.startswith('TerritoryStore.buy'):
+                _data['cost_by_territory_buy'] = _s.club_diamond
 
             return _data
 
@@ -1043,12 +1063,16 @@ class DiamondInfo(BaseInfo):
             dates[create_at_str]['cost_by_staff_recruit'] += data['cost_by_staff_recruit']
             dates[create_at_str]['cost_by_store_buy'] += data['cost_by_store_buy']
             dates[create_at_str]['cost_by_energy_buy'] += data['cost_by_energy_buy']
+            dates[create_at_str]['cost_by_challenge_reset'] += data['cost_by_challenge_reset']
             dates[create_at_str]['cost_by_dungeon_buy'] += data['cost_by_dungeon_buy']
             dates[create_at_str]['cost_by_tower_reset'] += data['cost_by_tower_reset']
+            dates[create_at_str]['cost_by_tower_buy'] += data['cost_by_tower_buy']
             dates[create_at_str]['cost_by_arena_buy'] += data['cost_by_arena_buy']
             dates[create_at_str]['cost_by_plunder_buy'] += data['cost_by_plunder_buy']
             dates[create_at_str]['cost_by_union_signin'] += data['cost_by_union_signin']
             dates[create_at_str]['cost_by_party_create'] += data['cost_by_party_create']
+            dates[create_at_str]['cost_by_special_equip'] += data['cost_by_special_equip']
+            dates[create_at_str]['cost_by_territory_buy'] += data['cost_by_territory_buy']
 
         for k in dates_list:
             self.add_row(dates[k])
