@@ -219,6 +219,11 @@ class Chat(object):
         rc = ResourceClassification.classify(items)
         rc.add(self.server_id, self.char_id, message="Chat.gift:{0}".format(gift.id))
 
+        GiftCodeUsingLog.objects.create(
+            char_id=self.char_id,
+            gift_code=gift.id,
+        )
+
 
     def send_notify(self):
         notify = ChatNotify()
