@@ -5,7 +5,9 @@ from apps.gift_code.models import GiftCode, GiftCodeUsingLog
 @admin.register(GiftCode)
 class AdminGiftCode(admin.ModelAdmin):
     list_display = (
-        'id', 'items', 'times_limit',
+        'id', 'items',
+        'mail_title', 'mail_content',
+        'times_limit',
         'active', 'create_at',
         'time_range1', 'time_range2',
     )

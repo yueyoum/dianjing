@@ -25,6 +25,7 @@ from core.club import Club
 from core.vip import VIP
 from core.union import Union
 from core.cooldown import ChatCD
+from core.mail import MailManager
 
 from config import ConfigErrorMessage, GlobalConfig
 from utils.message import MessagePipe, MessageFactory
@@ -57,7 +58,6 @@ class Chat(object):
             return
 
         self.gift(gift)
-
 
     def normal_chat(self, channel, text):
         from tasks import world
@@ -135,7 +135,6 @@ class Chat(object):
             server_id=self.server_id,
             char_id=self.char_id
         )
-
 
     def command(self, tp, data):
         from core.challenge import Challenge
@@ -217,13 +216,14 @@ class Chat(object):
         # ALL OK
         items = gift.get_parsed_items()
         rc = ResourceClassification.classify(items)
-        rc.add(self.server_id, self.char_id, message="Chat.gift:{0}".format(gift.id))
+
+        m = MailManager(self.server_id, self.char_id)
+        m.add(title=gift.mail_title, content=gift.mail_content, attachment=rc.to_json())
 
         GiftCodeUsingLog.objects.create(
             char_id=self.char_id,
             gift_code=gift.id,
         )
-
 
     def send_notify(self):
         notify = ChatNotify()

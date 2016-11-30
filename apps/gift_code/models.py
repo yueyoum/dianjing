@@ -9,6 +9,9 @@ class GiftCode(models.Model):
     id = models.CharField(max_length=255, primary_key=True)
     items = models.TextField()
 
+    mail_title = models.CharField(max_length=255)
+    mail_content = models.TextField()
+
     times_limit = models.IntegerField(default=1)
     active = models.BooleanField(default=True)
     create_at = models.DateTimeField(auto_now_add=True)
