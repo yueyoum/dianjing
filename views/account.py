@@ -21,7 +21,7 @@ from protomsg.account_pb2 import Account as MsgAccount, RegisterResponse, LoginR
 
 def register(request):
     if not settings.REGISTER_OPEN:
-        raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+        raise GameException(ConfigErrorMessage.get_error_id("REGISTER_NOT_OPEN"))
 
     name = request._proto.account.email
     password = request._proto.account.password
@@ -40,7 +40,7 @@ def register(request):
 
 def login(request):
     if not settings.LOGIN_OPEN:
-        raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+        raise GameException(ConfigErrorMessage.get_error_id("LOGIN_NOT_OPEN"))
 
     account = request._proto.account
 
