@@ -53,6 +53,7 @@ INSTALLED_APPS = (
     'apps.history_record',
     'apps.purchase',
     'apps.game',
+    'apps.gift_code',
 )
 
 MIDDLEWARE = [

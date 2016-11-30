@@ -10,7 +10,11 @@ Description:
 import base64
 import cPickle
 
+import arrow
+
 from django.conf import settings
+from django.db.models import Q
+from apps.gift_code.models import GiftCode, GiftCodeUsingLog
 
 from dianjing.exception import GameException
 from core.mongo import MongoCharacter
@@ -37,7 +41,6 @@ class Chat(object):
         self.char_id = char_id
 
     def send(self, tp, channel, text):
-        from tasks import world
 
         if tp != ChatSendRequest.NORMAL:
             if not settings.GM_CMD_OPEN:
@@ -45,6 +48,19 @@ class Chat(object):
 
             self.command(tp, text)
             return
+
+        # check gift code
+        try:
+            gift = GiftCode.objects.get(id=text)
+        except GiftCode.DoesNotExist:
+            self.normal_chat(channel, text)
+            return
+
+        self.gift(gift)
+
+
+    def normal_chat(self, channel, text):
+        from tasks import world
 
         char_doc = MongoCharacter.db(self.server_id).find_one(
             {'_id': self.char_id},
@@ -120,6 +136,7 @@ class Chat(object):
             char_id=self.char_id
         )
 
+
     def command(self, tp, data):
         from core.challenge import Challenge
 
@@ -171,6 +188,37 @@ class Chat(object):
             Challenge(self.server_id, self.char_id).open_all()
         else:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
+    def gift(self, gift):
+        """
+
+        :type gift: GiftCode
+        """
+
+        if not gift.active:
+            raise GameException(ConfigErrorMessage.get_error_id("GIFT_CODE_NOT_ACTIVE"))
+
+        if gift.time_range1:
+            time1 = arrow.get(gift.time_range1).timestamp
+            if arrow.utcnow().timestamp < time1:
+                raise GameException(ConfigErrorMessage.get_error_id("GIFT_CODE_NOT_STARTED"))
+
+        if gift.time_range2:
+            time2 = arrow.get(gift.time_range2).timestamp
+            if arrow.utcnow().timestamp > time2:
+                raise GameException(ConfigErrorMessage.get_error_id("GIFT_CODE_EXPIRED"))
+
+        if gift.times_limit:
+            condition = Q(char_id=self.char_id) & Q(gift_code=gift.id)
+            using_times = GiftCodeUsingLog.objects.filter(condition).count()
+            if using_times >= gift.times_limit:
+                raise GameException(ConfigErrorMessage.get_error_id("GIFT_CODE_NO_TIMES"))
+
+        # ALL OK
+        items = gift.get_parsed_items()
+        rc = ResourceClassification.classify(items)
+        rc.add(self.server_id, self.char_id, message="Chat.gift:{0}".format(gift.id))
+
 
     def send_notify(self):
         notify = ChatNotify()
