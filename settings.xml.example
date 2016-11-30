@@ -3,6 +3,9 @@
     <timezone>Asia/Shanghai</timezone>
     <!-- 是否开启gm 命令， 1 开启, 其他 关闭 -->
     <gm-cmd open="1" />
+    <!-- 是否开启注册和登陆 -->
+    <register open="1"/>
+    <login open="1"/>
 
     <!-- 这组uwsgi跑起来后， 一些任务要处理的服务器。 比如cronjob-->
     <duty-server>

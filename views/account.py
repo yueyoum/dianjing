@@ -6,6 +6,7 @@ Date Created:   2015-07-02 18:23
 Description:
 
 """
+from django.conf import settings
 
 from dianjing.exception import GameException
 
@@ -19,6 +20,9 @@ from protomsg.account_pb2 import Account as MsgAccount, RegisterResponse, LoginR
 
 
 def register(request):
+    if not settings.REGISTER_OPEN:
+        raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
     name = request._proto.account.email
     password = request._proto.account.password
 
@@ -35,6 +39,9 @@ def register(request):
 
 
 def login(request):
+    if not settings.LOGIN_OPEN:
+        raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
     account = request._proto.account
 
     if account.tp == MsgAccount.REGULAR:

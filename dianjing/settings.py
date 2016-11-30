@@ -191,6 +191,8 @@ DATABASES = {
 
 TIME_ZONE = doc.find('timezone').text
 GM_CMD_OPEN = doc.find('gm-cmd').attrib['open'] == '1'
+REGISTER_OPEN = doc.find('register').attrib['open'] == '1'
+LOGIN_OPEN = doc.find('login').attrib['open'] == '1'
 
 DUTY_SERVER_MIN = int( doc.find('duty-server/min').text )
 DUTY_SERVER_MAX = int( doc.find('duty-server/max').text )
