@@ -18,9 +18,12 @@ def staff_exists(server_id, char_id, staff_id):
 def staff_not_in_formation(server_id, char_id, staff_id):
     from core.formation import Formation
     from core.plunder import Plunder
+    from core.inspire import Inspire
 
     if Formation(server_id, char_id).is_staff_in_formation(staff_id):
         raise GameException(ConfigErrorMessage.get_error_id("STAFF_IN_FORMATION"))
 
     if Plunder(server_id, char_id).find_way_id_by_staff_id(staff_id):
         raise GameException(ConfigErrorMessage.get_error_id("STAFF_IN_PLUNDER_FORMATION"))
+
+    Inspire(server_id, char_id).check_staff_in(staff_id)

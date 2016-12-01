@@ -106,8 +106,6 @@ class Inspire(object):
             checker.staff_exists(self.server_id, self.char_id, staff_id)
             checker.staff_not_in_formation(self.server_id, self.char_id, staff_id)
 
-            self.check_staff_in(staff_id)
-
             self.doc['slots'][slot_id] = staff_id
             updater['slots.{0}'.format(slot_id)] = staff_id
 
