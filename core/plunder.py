@@ -272,7 +272,7 @@ WAY_MAP = {
 
 def get_station_next_reward_at():
     now = arrow.utcnow().to(settings.TIME_ZONE)
-    if now.hour >= 20:
+    if now.hour >= 21:
         # 第二天
         now = now.replace(days=1)
 
@@ -280,7 +280,7 @@ def get_station_next_reward_at():
         year=now.year,
         month=now.month,
         day=now.day,
-        hour=20,
+        hour=21,
         minute=0,
         second=0,
         microsecond=0,
@@ -439,7 +439,7 @@ class Plunder(object):
                 {'$set': {
                     'product_level': doc['level'],
                     'loss_percent': 0,
-                    'revenge_list': [],
+                    # 'revenge_list': [],
                     'drop': rc.to_json(),
                 }}
             )
@@ -906,6 +906,8 @@ class Plunder(object):
                 self.doc['loss_percent'] = PLUNDER_MAX_LOST
 
             self.doc['revenge_list'].append(revenge_item)
+            while len(self.doc['revenge_list']) > 20:
+                self.doc['revenge_list'].pop(0)
 
             MongoPlunder.db(self.server_id).update_one(
                 {'_id': self.char_id},

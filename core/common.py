@@ -47,7 +47,7 @@ class BaseCommon(object):
         }
 
         if slice_amount:
-            updater['$push']['value']['$slice'] = slice_amount
+            updater['$push']['value']['$slice'] = -slice_amount
 
         _id = self.get_id()
         MongoCommon.db(self.server_id).update_one(
