@@ -748,7 +748,7 @@ class RetainedInfo(BaseInfo):
         'retained_7day': '7日留存',
         'retained_15day': '15日留存',
         'purchase_char_amount': '充值人数',
-        'purchase_fee': '总充值金额',
+        'purchase_fee': '充值金额',
     }
 
     def query(self, sid, date1, date2):
@@ -760,7 +760,7 @@ class RetainedInfo(BaseInfo):
         """
         dates = []
         char_create_info = {}
-        purchase_create_info = {}
+        purchase_create_info = set()
         purchase_fee_info = {}
 
         start = date1
@@ -768,7 +768,6 @@ class RetainedInfo(BaseInfo):
             date_text = start.format("YYYY-MM-DD")
             dates.append(date_text)
             char_create_info[date_text] = []
-            purchase_create_info[date_text] = set()
             purchase_fee_info[date_text] = 0
 
             start = start.replace(days=1)
@@ -795,7 +794,7 @@ class RetainedInfo(BaseInfo):
         model_purchase = ModelPurchase.objects.filter(condition).order_by('create_at')
         for p in model_purchase:
             create_at = arrow.get(p.create_at).to(settings.TIME_ZONE).format("YYYY-MM-DD")
-            purchase_create_info[create_at].add(p.char_id)
+            purchase_create_info.add(p.char_id)
             purchase_fee_info[create_at] += p.fee
 
         rows = []
@@ -809,7 +808,7 @@ class RetainedInfo(BaseInfo):
                 'retained_7day': self.get_retained_for_date(sid, char_create_info[d], d, 7),
                 'retained_15day': self.get_retained_for_date(sid, char_create_info[d], d, 15),
 
-                'purchase_char_amount': len(purchase_create_info[d]),
+                'purchase_char_amount': len(purchase_create_info),
                 'purchase_fee': purchase_fee_info[d],
             }
 
