@@ -272,7 +272,7 @@ WAY_MAP = {
 
 def get_station_next_reward_at():
     now = arrow.utcnow().to(settings.TIME_ZONE)
-    if now.hour >= 21:
+    if now.hour >= 20:
         # 第二天
         now = now.replace(days=1)
 
@@ -280,7 +280,7 @@ def get_station_next_reward_at():
         year=now.year,
         month=now.month,
         day=now.day,
-        hour=21,
+        hour=20,
         minute=0,
         second=0,
         microsecond=0,

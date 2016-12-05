@@ -26,7 +26,7 @@ for i in PLUNDER_AUTO_ADD_HOUR:
         AUTO_CRON_HOUR.append(i-1)
 
 
-@uwsgidecorators.cron(50, 20, -1, -1, -1, target="spooler")
+@uwsgidecorators.cron(50, 19, -1, -1, -1, target="spooler")
 def plunder_reset_station(*args):
     logger = Logger("plunder_reset_station")
     logger.write("Start")
