@@ -81,7 +81,10 @@ class AbstractUnit(object):
 
     @classmethod
     def get(cls, char_id, _id):
-        # type: (str) -> AbstractUnit | None
+        """
+
+        :rtype: AbstractUnit | None
+        """
         key = 'unit:{0}:{1}'.format(char_id, _id)
         return cache.get(key)
 
@@ -249,7 +252,10 @@ class AbstractStaff(object):
 
     @classmethod
     def get(cls, _id):
-        # type: (str) -> AbstractStaff | None
+        """
+
+        :rtype: AbstractStaff | None
+        """
         key = 'staff:{0}'.format(_id)
         return cache.get(key)
 
@@ -280,11 +286,11 @@ class AbstractStaff(object):
                     talent_effect_ids.append(v.talent_effect_id)
             elif v.condition_tp == 2:
                 # 选手同时上阵
-                if not self.oid in working_staff_oids:
+                if self.oid not in working_staff_oids:
                     continue
 
                 for i in v.condition_value:
-                    if not i in working_staff_oids:
+                    if i not in working_staff_oids:
                         break
                 else:
                     qianban_ids.append(k)
@@ -562,7 +568,7 @@ class AbstractStaff(object):
             return 0
 
         # 属性参考战斗力计算表
-        hp = (self.manage * self.__unit.config.operation * self.__unit.config.param_a  + self.__unit.hp) * \
+        hp = (self.manage * self.__unit.config.operation * self.__unit.config.param_a + self.__unit.hp) * \
              (1 + self.__unit.hp_percent)
 
         attack = (self.attack * self.__unit.config.operation * self.__unit.config.param_b + self.__unit.attack) * \
@@ -572,10 +578,10 @@ class AbstractStaff(object):
                   (1 + self.__unit.defense_percent)
 
         unit_amount = self.operation / self.__unit.config.operation
-        t1 = attack * math.pow(unit_amount, 0.6) * self.__unit.attack_speed * 1 * \
-             (1 + self.__unit.hit_rate - 0.9 + self.__unit.crit_rate * (self.__unit.crit_multiple - 1) * 0.85 +
-              self.__unit.hurt_addition_to_terran * 0.3 + self.__unit.hurt_addition_to_zerg * 0.3 +
-              self.__unit.hurt_addition_to_protoss * 0.3)
+        t1 = attack * math.pow(unit_amount, 0.6) * self.__unit.attack_speed * 1 * (
+            1 + self.__unit.hit_rate - 0.9 + self.__unit.crit_rate * (self.__unit.crit_multiple - 1) * 0.85 +
+            self.__unit.hurt_addition_to_terran * 0.3 + self.__unit.hurt_addition_to_zerg * 0.3 +
+            self.__unit.hurt_addition_to_protoss * 0.3)
 
         t2 = (defense * math.pow(unit_amount, 0.6) * 0.48 + hp * unit_amount * 0.12) * \
              (1 + self.__unit.dodge_rate + self.__unit.toughness_rate * 0.6 -

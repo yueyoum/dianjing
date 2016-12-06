@@ -934,7 +934,10 @@ class StaffManger(object):
         return None
 
     def get_all_staff_object(self):
-        # type: () -> dict[str, Staff]
+        """
+
+        :rtype: dict[str, Staff]
+        """
         doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, {'staffs': 1})
         return {k: self.get_staff_object(k) for k, _ in doc['staffs'].iteritems()}
 
@@ -954,7 +957,6 @@ class StaffManger(object):
         return Staff.get(_id)
 
     def has_staff(self, ids):
-        # type: (list[str]) -> bool
         # unique id
         projection = {'staffs.{0}'.format(i): 1 for i in ids}
         doc = MongoStaff.db(self.server_id).find_one({'_id': self.char_id}, projection)
