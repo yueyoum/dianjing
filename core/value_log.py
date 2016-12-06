@@ -248,7 +248,7 @@ class ValueLogTerritoryGotHelpTimes(ValueLog):
 
 
 # 领地建筑鼓舞次数
-class ValueLogTerritoryBuildingInspireTimes(ValueLog):
+class ValueLogTerritoryBuildingInspireTimes(CategoryValueLog):
     KEY = 'territory_building_inspire'
     __slots__ = []
 
