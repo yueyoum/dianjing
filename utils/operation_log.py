@@ -12,16 +12,19 @@ from utils.functional import make_string_id
 
 from core.mongo import MongoOperationLog
 
-
 KEEP_DAYS = 3
 
+
 class OperationLog(object):
-    __slots__ = ['server_id', 'char_id',  'start_at']
+    __slots__ = ['server_id', 'char_id', 'start_timestamp', 'start_ms']
+
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
 
-        self.start_at = arrow.utcnow()
+        now = arrow.utcnow()
+        self.start_timestamp = now.timestamp
+        self.start_ms = self.start_timestamp + now.microsecond / 1000
 
     @classmethod
     def clean(cls, server_id):
@@ -35,9 +38,9 @@ class OperationLog(object):
         if keep_order:
             char_ids = []
             docs = MongoOperationLog.db(server_id).find(
-                        {'timestamp': {'$gte': limit.timestamp}},
-                        {'char_id': 1}
-                    ).sort('timestamp', -1)
+                {'timestamp': {'$gte': limit.timestamp}},
+                {'char_id': 1}
+            ).sort('timestamp', -1)
 
             for doc in docs:
                 if doc['char_id'] not in char_ids:
@@ -51,19 +54,17 @@ class OperationLog(object):
         return char_ids
 
     def record(self, action, ret):
-        start_at = self.start_at.timestamp + self.start_at.microsecond / 1000
-
         now = arrow.utcnow()
-        end_at = now.timestamp + now.microsecond / 1000
+        end_ms = now.timestamp + now.microsecond / 1000
 
-        cost = end_at - start_at
+        cost = end_ms - self.start_ms
 
         doc = MongoOperationLog.document()
         doc['_id'] = make_string_id()
         doc['char_id'] = self.char_id
         doc['action'] = action
         doc['ret'] = ret
-        doc['timestamp'] = self.start_at.timestamp
+        doc['timestamp'] = self.start_timestamp
         doc['cost_millisecond'] = cost
 
         MongoOperationLog.db(self.server_id).insert_one(doc)
