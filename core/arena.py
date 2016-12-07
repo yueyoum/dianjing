@@ -354,7 +354,7 @@ class Arena(object):
 
     def check_current_rank(self, rank):
         cur_rank = self.get_current_rank()
-        if rank > cur_rank:
+        if rank < cur_rank:
             raise GameException(ConfigErrorMessage.get_error_id("ARENA_CURRENT_RANK_CHECK_FAILURE"))
 
     def search_rival(self):
