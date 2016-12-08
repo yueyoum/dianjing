@@ -3,9 +3,15 @@
 from django.contrib import admin
 
 from apps.account.models import (
-    Account, AccountLoginLog
+    Account, AccountLoginLog,
+    AccountRegular,
 )
 
+@admin.register(AccountRegular)
+class AdminAccountRegular(admin.ModelAdmin):
+    list_display = (
+        'id', 'name', 'passwd'
+    )
 
 @admin.register(Account)
 class AccountAdmin(admin.ModelAdmin):
