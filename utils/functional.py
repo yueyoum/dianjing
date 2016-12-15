@@ -40,3 +40,9 @@ def get_start_time_of_today():
     )
 
     return start_day
+
+def make_time_of_today(hour, minute):
+    t = get_start_time_of_today()
+    t = t.replace(hour=hour)
+    t = t.replace(minute=minute)
+    return t

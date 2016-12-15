@@ -14,6 +14,7 @@ from core.unit import UnitManager
 from core.formation import Formation
 from core.welfare import Welfare
 from core.plunder import Plunder
+from core.championship import Championship
 
 from config import ConfigClubLevel
 
@@ -28,3 +29,4 @@ def club_level_up_handler(server_id, char_id, new_level, **kwargs):
     Formation(server_id, char_id).try_open_slots(new_level)
     Welfare(server_id, char_id).send_level_reward_notify()
     Plunder(server_id, char_id).try_initialize()
+    Championship(server_id, char_id).try_initialize()

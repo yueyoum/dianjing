@@ -834,3 +834,103 @@ class MongoInspire(BaseDocument):
     }
 
     COLLECTION = 'inspire'
+
+
+# 争霸赛 - 阵型 （和掠夺阵型一样）
+class MongoChampionshipFormationWay1(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # slot_id: data
+        # 只保存开了的， slot_id 从1 递增
+        'slots': {},
+        # slot_id 序列， 0 表示这个位置（index）的 slot 没有开启
+        'position': [],
+    }
+
+    DOCUMENT_SLOT = {
+        'staff_id': "",
+        'unit_id': 0,
+        'policy': 1,
+    }
+
+    @classmethod
+    def document_slot(cls):
+        return copy.deepcopy(cls.DOCUMENT_SLOT)
+
+    COLLECTION = 'championship_formation_way1'
+
+class MongoChampionshipFormationWay2(MongoChampionshipFormationWay1):
+    COLLECTION = 'championship_formation_way2'
+
+class MongoChampionshipFormationWay3(MongoChampionshipFormationWay1):
+    COLLECTION = 'championship_formation_way3'
+
+
+# 争霸赛 - 个人
+class MongoChampionship(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'active': False,
+        'applied': False,
+        # 下注, level: {'club_id': 0, 'bet_id': 0}
+        'bet': {},
+    }
+
+    COLLECTION = 'championship'
+    INDEXES = ['applied',]
+
+
+# 争霸赛 - 小组
+class MongoChampionshipGroup(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'member_ids': [],
+        # 信息, id: info
+        'info': {},
+        # 分数, id: score
+        'scores': {},
+        # 日志
+        'logs': {},
+        # 第几次
+        'match_times': 1,
+    }
+
+    MATCH_LOG_DOCUMENT = {
+        'timestamp': 0,
+        'target_name': '',
+        'got_score': 0,
+        'way_wins': [0, 0, 0]
+    }
+
+    @classmethod
+    def document_match_log(cls):
+        return copy.deepcopy(cls.MATCH_LOG_DOCUMENT)
+
+    COLLECTION = 'championship_group'
+    INDEXES = ['members',]
+
+# 争霸赛 - XX强
+class MongoChampionshipLevel(BaseDocument):
+    DOCUMENT = {
+        '_id': 'championship_level',
+        'info': {},
+        # XX强, xx: member_id_list
+        # xx就是 16, 8, 4, 2, 1
+        'levels': {},
+        # 当前level
+        'current_level': 16,
+    }
+
+    COLLECTION = 'championship_level'
+
+# 争霸赛历史前三
+class MongoChampionHistory(BaseDocument):
+    DOC_ID = 'championship_history'
+
+    DOCUMENT = {
+        '_id': DOC_ID,
+        'member_ids': [],
+        'info': {},
+    }
+
+    COLLECTION = 'championship_history'
