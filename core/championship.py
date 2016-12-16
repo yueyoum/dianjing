@@ -460,6 +460,9 @@ class ChampionshipGroup(object):
         MongoChampionshipGroup.db(self.server_id).insert_one(doc)
 
     def get_scores_sorted(self):
+        if not self.doc:
+            return []
+
         scores = self.doc['scores'].items()
         scores.sort(key=lambda item: item[1], reverse=True)
         return scores
