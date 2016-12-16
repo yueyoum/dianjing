@@ -85,26 +85,22 @@ class ConfigChampionRankReward(ConfigBase):
         cls.LIST.sort(key=lambda item: item[0], reverse=True)
 
     @classmethod
-    def get_by_rank(cls, rank):
+    def get(cls, _id):
         """
 
-        :rtype: ScoreReward | None
+        :rtype: RankReward
         """
-        for k, v in cls.LIST:
-            if rank >= k:
-                return v
-
-        return None
+        return super(ConfigChampionRankReward, cls).get(_id)
 
 
 class Bet(object):
-    __slots__ = ['id', 'round_num', 'cost',
+    __slots__ = ['id', 'level', 'cost',
                  'win_mail_title', 'win_mail_content', 'win_reward',
                  'lose_mail_title', 'lose_mail_content', 'lose_reward']
 
     def __init__(self):
         self.id = 0
-        self.round_num = 0
+        self.level = 0
         self.cost = []
         self.win_mail_title = ''
         self.win_mail_content = ''

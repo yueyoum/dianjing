@@ -874,10 +874,11 @@ class MongoChampionship(BaseDocument):
         'applied': False,
         # 下注, level: {'club_id': 0, 'bet_id': 0}
         'bet': {},
+        'has_bet': False,
     }
 
     COLLECTION = 'championship'
-    INDEXES = ['applied',]
+    INDEXES = ['applied', 'has_bet',]
 
 
 # 争霸赛 - 小组
@@ -911,8 +912,10 @@ class MongoChampionshipGroup(BaseDocument):
 
 # 争霸赛 - XX强
 class MongoChampionshipLevel(BaseDocument):
+    DOC_ID = 'championship_level'
+
     DOCUMENT = {
-        '_id': 'championship_level',
+        '_id': DOC_ID,
         'info': {},
         # XX强, xx: member_id_list
         # xx就是 16, 8, 4, 2, 1

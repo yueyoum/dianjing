@@ -23,12 +23,15 @@ from core.mongo import (
     MongoChampionHistory,
     MongoCharacter,
 )
-from core.plunder import PlunderFormation, Plunder
+from core.plunder import PlunderFormation, Plunder, is_npc
 from core.vip import VIP
 from core.club import Club, get_club_property
+from core.mail import MailManager
+from core.resource import ResourceClassification
 
 from utils.message import MessagePipe, MessageFactory
 from utils.functional import make_string_id, make_time_of_today
+from utils.operation_log import OperationLog
 
 from config import (
     GlobalConfig,
@@ -63,18 +66,10 @@ LEVEL_NEXT_TABLE = {
     4: 2,
     2: 1,
 }
+LEVEL_PREVIOUS_TABLE = {v: k for k, v in LEVEL_NEXT_TABLE.iteritems()}
 
 # 小组赛比赛时间
 GROUP_MATCH_HOUR = [14, 15, 16, 17, 18, 19]
-
-# GROUP_MATCH_TIMES_TO_HOUR_TABLE = {
-#     1: 14,
-#     2: 15,
-#     3: 16,
-#     4: 17,
-#     5: 18,
-#     6: 19,
-# }
 
 LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE = {
     16: [19, 30],
@@ -87,6 +82,14 @@ LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE = {
 APPLY_WEEKDAY = [0, 1, 2, 3, 4, 5, 6]
 # 允许报名时间 hour, minute
 APPLY_TIME_RANGE = [(8, 0), (22, 30)]
+
+
+def make_pairs_from_flat_list(items):
+    pairs = []
+    for i in range(0, len(items) - 1, 2):
+        pairs.append((items[i], items[i + 1]))
+
+    return pairs
 
 
 def check_club_level(silence=True):
@@ -130,6 +133,82 @@ WAY_MAP = {
     2: ChampionshipFormationWay2,
     3: ChampionshipFormationWay3,
 }
+
+
+# 取历史前三
+def get_history_top_clubs(server_id):
+    doc = MongoChampionHistory.db(server_id).find_one(
+        {'_id': MongoChampionHistory.DOC_ID}
+    )
+
+    if not doc:
+        return []
+
+    clubs = []
+    for i in doc['member_ids']:
+        clubs.append((i, doc['info']['name'], doc['info']['flag']))
+
+    return clubs
+
+
+# 公共相同的 ChampionNotify， applied, bet 就每个角色自己设置
+def make_common_basic_notify_msg(server_id):
+    notify = ChampionNotify()
+    notify.applied = False
+
+    for lv in LEVEL_SEQ:
+        notify_bet = notify.bet.add()
+        notify_bet.level = lv
+        # no bet info
+
+    top_clubs = get_history_top_clubs(server_id)
+    for i, name, flag in top_clubs:
+        notify_top_club = notify.top_clubs.add()
+        notify_top_club.id = i
+        notify_top_club.name = name
+        notify_top_club.flag = flag
+
+    return notify
+
+
+# 空的group消息
+def make_empty_group_notify_msg():
+    notify = ChampionGroupNotify()
+    notify.my_score = 0
+    notify.my_rank = 0
+
+    return notify
+
+
+# 清空championship 开始新的一轮
+def clean_championship(server_id, send_notify=False):
+    MongoChampionship.db(server_id).update_many(
+        {},
+        {'$set': {
+            'applied': False,
+            'bet': {},
+            'has_bet': False,
+        }}
+    )
+
+    MongoChampionshipGroup.db(server_id).drop()
+    MongoChampionshipLevel.db(server_id).drop()
+
+    if send_notify:
+        basic_notify = make_common_basic_notify_msg(server_id)
+        basic_data = MessageFactory.pack(basic_notify)
+
+        group_notify = make_empty_group_notify_msg()
+        group_data = MessageFactory.pack(group_notify)
+
+        level_notify = ChampionshipLevel(server_id).make_protomsg()
+        level_data = MessageFactory.pack(level_notify)
+
+        char_ids = OperationLog.get_recent_action_char_ids(server_id)
+        for cid in char_ids:
+            MessagePipe(cid).put(data=basic_data)
+            MessagePipe(cid).put(data=group_data)
+            MessagePipe(cid).put(data=level_data)
 
 
 class Championship(object):
@@ -205,8 +284,16 @@ class Championship(object):
         if club_id not in cl.doc['levels'].get(str(lv), []):
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
-        if not ConfigChampionBet.get(bet_id):
+        config = ConfigChampionBet.get(bet_id)
+        if not config:
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        if config.level != lv:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        rc = ResourceClassification.classify(config.cost)
+        rc.check_exist(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id, message="Champion.bet:{0}".format(bet_id))
 
         bet_info = {
             'club_id': club_id,
@@ -214,10 +301,12 @@ class Championship(object):
         }
 
         self.doc['bet'][str(lv)] = bet_info
+        self.doc['has_bet'] = True
         MongoChampionship.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
-                'bet.{0}'.format(lv): bet_info
+                'bet.{0}'.format(lv): bet_info,
+                'has_bet': True,
             }}
         )
 
@@ -269,20 +358,6 @@ class Championship(object):
         my_way.sync_slots(formation_slots)
         self.send_formation_notify()
 
-    def get_history_top_clubs(self):
-        doc = MongoChampionHistory.db(self.server_id).find_one(
-            {'_id': MongoChampionHistory.DOC_ID}
-        )
-
-        if not doc:
-            return []
-
-        clubs = []
-        for i in doc['member_ids']:
-            clubs.append((i, doc['info']['name'], doc['info']['flag']))
-
-        return clubs
-
     @check_club_level(silence=False)
     def sync_group(self):
         group_msg = ChampionshipGroup.find_by_char_id(self.server_id, self.char_id).make_protomsg()
@@ -302,31 +377,20 @@ class Championship(object):
         self.send_formation_notify()
 
         group_msg = ChampionshipGroup.find_by_char_id(self.server_id, self.char_id).make_protomsg()
-        if group_msg:
-            MessagePipe(self.char_id).put(msg=group_msg)
+        MessagePipe(self.char_id).put(msg=group_msg)
 
         level_msg = ChampionshipLevel(self.server_id).make_protomsg()
         MessagePipe(self.char_id).put(msg=level_msg)
 
     def send_basic_notify(self):
-        notify = ChampionNotify()
+        notify = make_common_basic_notify_msg(self.server_id)
         notify.applied = self.doc['applied']
 
-        for lv in LEVEL_SEQ:
-            notify_bet = notify.bet.add()
-            notify_bet.level = lv
-
-            bet_info = self.doc['bet'].get(str(lv), {})
+        for bet in notify.bet:
+            bet_info = self.doc['bet'].get(str(bet.level), {})
             if bet_info:
-                notify_bet.bet_for = bet_info['club_id']
-                notify_bet.bet_id = bet_info['bet_id']
-
-        top_clubs = self.get_history_top_clubs()
-        for i, name, flag in top_clubs:
-            notify_top_club = notify.top_clubs.add()
-            notify_top_club.id = i
-            notify_top_club.name = name
-            notify_top_club.flag = flag
+                bet.bet_for = bet_info['club_id']
+                bet.bet_id = bet_info['bet_id']
 
         MessagePipe(self.char_id).put(msg=notify)
 
@@ -406,14 +470,19 @@ class ChampionshipGroup(object):
 
     def start_match(self):
         scores = self.get_scores_sorted()
-        pairs = []
-        for i in range(0, len(scores) - 1, 2):
-            pairs.append((scores[i][0], scores[i + 1][0]))
+        pairs = make_pairs_from_flat_list(scores)
 
         # TODO real match
-        for id_one, id_two in pairs:
-            one_got_score = random.choice([0, 1, 2, 3])
-            two_got_score = 3 - one_got_score
+        for (id_one, _), (id_two, _) in pairs:
+            one_way_wins = [random.randint(0, 1), random.randint(0, 1), random.randint(0, 1)]
+            two_way_wins = [1 - _w for _w in one_way_wins]
+
+            one_way_wins_count = len([_w for _w in one_way_wins if _w == 1])
+            two_way_wins_count = len([_w for _w in two_way_wins if _w == 1])
+
+            one_got_score = ConfigChampionWinScore.get(one_way_wins_count).score
+            two_got_score = ConfigChampionWinScore.get(two_way_wins_count).score
+
             self.doc['scores'][id_one] += one_got_score
             self.doc['scores'][id_two] += two_got_score
 
@@ -425,6 +494,10 @@ class ChampionshipGroup(object):
             self.doc['logs'][id_one].append(one_log)
             self.doc['logs'][id_two].append(two_log)
 
+            # send score mail
+            self.send_score_reward_mail(id_one, self.doc['scores'][id_one])
+            self.send_score_reward_mail(id_two, self.doc['scores'][id_two])
+
         self.doc['match_times'] += 1
         MongoChampionshipGroup.db(self.server_id).update_one(
             {'_id': self.group_id},
@@ -434,6 +507,18 @@ class ChampionshipGroup(object):
                 'match_times': self.doc['match_times'],
             }}
         )
+
+    def send_score_reward_mail(self, club_id, score):
+        if is_npc(club_id):
+            return
+
+        config = ConfigChampionScoreReward.get_by_score(score)
+
+        rc = ResourceClassification.classify(config.reward)
+        attachment = rc.to_json()
+
+        m = MailManager(self.server_id, int(club_id))
+        m.add(config.mail_title, config.mail_content, attachment=attachment)
 
     def make_match_log(self, target_name, got_score, way_wins):
         match_times = self.doc['match_times']
@@ -469,7 +554,7 @@ class ChampionshipGroup(object):
 
     def make_protomsg(self):
         if not self._char_id:
-            return
+            return make_empty_group_notify_msg()
 
         notify = ChampionGroupNotify()
         clubs = self.make_clubs_msg()
@@ -610,12 +695,13 @@ class ChampionshipGroupManager(object):
 
 class ChampionshipLevel(object):
     __slots__ = ['server_id', 'doc']
-    DOC_ID = 'championship_level'
 
     def __init__(self, server_id):
         self.server_id = server_id
 
-        self.doc = MongoChampionshipLevel.db(self.server_id).find_one({'_id': self.DOC_ID})
+        self.doc = MongoChampionshipLevel.db(self.server_id).find_one(
+            {'_id': MongoChampionshipLevel.DOC_ID}
+        )
         if not self.doc:
             self.doc = MongoChampionshipLevel.document()
             MongoChampionshipLevel.db(self.server_id).insert_one(self.doc)
@@ -661,9 +747,49 @@ class ChampionshipLevel(object):
             updater['info'] = info
 
         MongoChampionshipLevel.db(self.server_id).update_one(
-            {'_id': self.DOC_ID},
+            {'_id': MongoChampionshipLevel.DOC_ID},
             {'$set': updater}
         )
+
+        self.send_rank_reward_mail(level)
+
+    def send_rank_reward_mail(self, level):
+        config = ConfigChampionRankReward.get(level)
+
+        member_ids = self.doc['levels'][str(level)]
+
+        rc = ResourceClassification.classify(config.reward)
+        attachment = rc.to_json()
+
+        for m in member_ids:
+            if is_npc(m):
+                continue
+
+            m = MailManager(self.server_id, int(m))
+            m.add(config.mail_title, config.mail_content, attachment=attachment)
+
+    def send_bet_reward_mail(self, level, win_ids, lose_ids):
+        # 找到所有bet的玩家，然后遍历
+        docs = MongoChampionship.db(self.server_id).find({'has_bet': True})
+        for doc in docs:
+            bet_info = doc['bet'].get(str(level), {})
+            if not bet_info:
+                continue
+
+            config = ConfigChampionBet.get(bet_info['bet_id'])
+            if bet_info['club_id'] in win_ids:
+                m_title = config.win_mail_title
+                m_content = config.win_mail_content
+                m_reward = config.win_reward
+            else:
+                m_title = config.lose_mail_title
+                m_content = config.lose_mail_content
+                m_reward = config.lose_reward
+
+            rc = ResourceClassification.classify(m_reward)
+            attachment = rc.to_json()
+            m = MailManager(self.server_id, doc['_id'])
+            m.add(m_title, m_content, attachment=attachment)
 
     def start_match(self):
         lv = self.doc['current_level']
@@ -671,18 +797,22 @@ class ChampionshipLevel(object):
 
         member_ids = self.doc['levels'][str(lv)]
         # TODO real match
-        pairs = []
-        for i in range(0, len(member_ids) - 1, 2):
-            pairs.append((member_ids[i], member_ids[i + 1]))
+        pairs = make_pairs_from_flat_list(member_ids)
 
-        next_level_ids = []
+        win_ids = []
+        lose_ids = []
         for id_one, id_two in pairs:
             if random.randint(1, 10) >= 5:
-                next_level_ids.append(id_one)
+                win_ids.append(id_one)
+                lose_ids.append(id_two)
             else:
-                next_level_ids.append(id_two)
+                win_ids.append(id_two)
+                lose_ids.append(id_one)
 
-        self.save(next_level, next_level_ids)
+        self.save(next_level, win_ids)
+
+        # 发送下注邮件
+        self.send_bet_reward_mail(lv, win_ids, lose_ids)
 
         if next_level == 1:
             # 已经打完了，但还要得出第三名
