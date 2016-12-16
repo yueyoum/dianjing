@@ -656,8 +656,8 @@ class ChampionshipGroupManager(object):
                 }
 
         for i in range(need_npc_amount):
-            # TODO npc id
-            npc_doc = ConfigPlunderNPC.get(2).to_simple_doc()
+            npc_config_id = random.choice([2, 3, 4])
+            npc_doc = ConfigPlunderNPC.get(npc_config_id).to_simple_doc()
             npc_id = npc_doc.pop('id')
             info[npc_id] = npc_doc
 
@@ -867,9 +867,9 @@ class ChampionshipLevel(object):
             notify_level.club_ids.extend(self.doc['levels'].get(str(lv), []))
 
             if lv == 1:
-                notify_level.next_match_at = 0
+                notify_level.match_at = 0
             else:
                 hour, minute = LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE[lv]
-                notify_level.next_match_at = make_time_of_today(hour, minute).timestamp
+                notify_level.match_at = make_time_of_today(hour, minute).timestamp
 
         return notify

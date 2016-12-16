@@ -23,7 +23,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='championship.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x12\x63hampionship.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rplunder.proto\x1a\x0f\x66ormation.proto\"b\n\x17\x43hampionFormationNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x36\n\tformation\x18\x02 \x03(\x0b\x32#.Dianjing.protocol.PlunderFormation\"c\n ChampionFormationSetStaffRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03way\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\x12\x10\n\x08staff_id\x18\x04 \x02(\t\"A\n!ChampionFormationSetStaffResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"a\n\x1f\x43hampionFormationSetUnitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03way\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\x12\x0f\n\x07unit_id\x18\x04 \x02(\x05\"@\n ChampionFormationSetUnitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"x\n#ChampionFormationSetPositionRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03way\x18\x02 \x02(\x05\x12\x33\n\x05slots\x18\x03 \x03(\x0b\x32$.Dianjing.protocol.SyncFormationSlot\"D\n$ChampionFormationSetPositionResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"S\n\x0c\x43hampionClub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\x12\x0c\n\x04rank\x18\x04 \x01(\x05\x12\r\n\x05score\x18\x05 \x01(\x05\"\xf3\x01\n\x0e\x43hampionNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x61pplied\x18\x02 \x02(\x08\x12\x32\n\x03\x62\x65t\x18\x03 \x03(\x0b\x32%.Dianjing.protocol.ChampionNotify.Bet\x12\x32\n\ttop_clubs\x18\x04 \x03(\x0b\x32\x1f.Dianjing.protocol.ChampionClub\x1aW\n\x03\x42\x65t\x12/\n\x05level\x18\x01 \x02(\x0e\x32 .Dianjing.protocol.ChampionLevel\x12\x0f\n\x07\x62\x65t_for\x18\x02 \x01(\t\x12\x0e\n\x06\x62\x65t_id\x18\x03 \x01(\x05\"\xd4\x02\n\x13\x43hampionGroupNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12.\n\x05\x63lubs\x18\x02 \x03(\x0b\x32\x1f.Dianjing.protocol.ChampionClub\x12\x10\n\x08my_score\x18\x03 \x02(\x05\x12\x0f\n\x07my_rank\x18\x04 \x02(\x05\x12\x38\n\x04logs\x18\x05 \x03(\x0b\x32*.Dianjing.protocol.ChampionGroupNotify.Log\x12\x34\n\x0bnext_target\x18\x06 \x01(\x0b\x32\x1f.Dianjing.protocol.ChampionClub\x12\x15\n\rnext_match_at\x18\x07 \x01(\x03\x1aR\n\x03Log\x12\x11\n\ttimestamp\x18\x01 \x02(\x03\x12\x13\n\x0btarget_name\x18\x02 \x02(\t\x12\x11\n\tgot_score\x18\x03 \x02(\x05\x12\x10\n\x08way_wins\x18\x04 \x03(\x05\"\x9f\x02\n\x13\x43hampionLevelNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12.\n\x05\x63lubs\x18\x03 \x03(\x0b\x32\x1f.Dianjing.protocol.ChampionClub\x12<\n\x06levels\x18\x04 \x03(\x0b\x32,.Dianjing.protocol.ChampionLevelNotify.Level\x1a\x61\n\x05Level\x12/\n\x05level\x18\x01 \x02(\x0e\x32 .Dianjing.protocol.ChampionLevel\x12\x10\n\x08\x63lub_ids\x18\x02 \x03(\t\x12\x15\n\rnext_match_at\x18\x03 \x01(\x03\"+\n\x18\x43hampionGroupSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"9\n\x19\x43hampionGroupSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"+\n\x18\x43hampionLevelSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"9\n\x19\x43hampionLevelSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\'\n\x14\x43hampionApplyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"5\n\x15\x43hampionApplyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"F\n\x12\x43hampionBetRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63lub_id\x18\x02 \x02(\t\x12\x0e\n\x06\x62\x65t_id\x18\x03 \x02(\x05\"3\n\x13\x43hampionBetResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*~\n\rChampionLevel\x12\x15\n\x11\x43HAMPION_LEVEL_16\x10\x10\x12\x14\n\x10\x43HAMPION_LEVEL_8\x10\x08\x12\x14\n\x10\x43HAMPION_LEVEL_4\x10\x04\x12\x14\n\x10\x43HAMPION_LEVEL_2\x10\x02\x12\x14\n\x10\x43HAMPION_LEVEL_1\x10\x01')
+  serialized_pb=_b('\n\x12\x63hampionship.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rplunder.proto\x1a\x0f\x66ormation.proto\"b\n\x17\x43hampionFormationNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x36\n\tformation\x18\x02 \x03(\x0b\x32#.Dianjing.protocol.PlunderFormation\"c\n ChampionFormationSetStaffRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03way\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\x12\x10\n\x08staff_id\x18\x04 \x02(\t\"A\n!ChampionFormationSetStaffResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"a\n\x1f\x43hampionFormationSetUnitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03way\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\x12\x0f\n\x07unit_id\x18\x04 \x02(\x05\"@\n ChampionFormationSetUnitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"x\n#ChampionFormationSetPositionRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03way\x18\x02 \x02(\x05\x12\x33\n\x05slots\x18\x03 \x03(\x0b\x32$.Dianjing.protocol.SyncFormationSlot\"D\n$ChampionFormationSetPositionResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"S\n\x0c\x43hampionClub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\x12\x0c\n\x04rank\x18\x04 \x01(\x05\x12\r\n\x05score\x18\x05 \x01(\x05\"\xf3\x01\n\x0e\x43hampionNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x61pplied\x18\x02 \x02(\x08\x12\x32\n\x03\x62\x65t\x18\x03 \x03(\x0b\x32%.Dianjing.protocol.ChampionNotify.Bet\x12\x32\n\ttop_clubs\x18\x04 \x03(\x0b\x32\x1f.Dianjing.protocol.ChampionClub\x1aW\n\x03\x42\x65t\x12/\n\x05level\x18\x01 \x02(\x0e\x32 .Dianjing.protocol.ChampionLevel\x12\x0f\n\x07\x62\x65t_for\x18\x02 \x01(\t\x12\x0e\n\x06\x62\x65t_id\x18\x03 \x01(\x05\"\xd4\x02\n\x13\x43hampionGroupNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12.\n\x05\x63lubs\x18\x02 \x03(\x0b\x32\x1f.Dianjing.protocol.ChampionClub\x12\x10\n\x08my_score\x18\x03 \x02(\x05\x12\x0f\n\x07my_rank\x18\x04 \x02(\x05\x12\x38\n\x04logs\x18\x05 \x03(\x0b\x32*.Dianjing.protocol.ChampionGroupNotify.Log\x12\x34\n\x0bnext_target\x18\x06 \x01(\x0b\x32\x1f.Dianjing.protocol.ChampionClub\x12\x15\n\rnext_match_at\x18\x07 \x01(\x03\x1aR\n\x03Log\x12\x11\n\ttimestamp\x18\x01 \x02(\x03\x12\x13\n\x0btarget_name\x18\x02 \x02(\t\x12\x11\n\tgot_score\x18\x03 \x02(\x05\x12\x10\n\x08way_wins\x18\x04 \x03(\x05\"\x9a\x02\n\x13\x43hampionLevelNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12.\n\x05\x63lubs\x18\x03 \x03(\x0b\x32\x1f.Dianjing.protocol.ChampionClub\x12<\n\x06levels\x18\x04 \x03(\x0b\x32,.Dianjing.protocol.ChampionLevelNotify.Level\x1a\\\n\x05Level\x12/\n\x05level\x18\x01 \x02(\x0e\x32 .Dianjing.protocol.ChampionLevel\x12\x10\n\x08\x63lub_ids\x18\x02 \x03(\t\x12\x10\n\x08match_at\x18\x03 \x01(\x03\"+\n\x18\x43hampionGroupSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"9\n\x19\x43hampionGroupSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"+\n\x18\x43hampionLevelSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"9\n\x19\x43hampionLevelSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\'\n\x14\x43hampionApplyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"5\n\x15\x43hampionApplyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"F\n\x12\x43hampionBetRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63lub_id\x18\x02 \x02(\t\x12\x0e\n\x06\x62\x65t_id\x18\x03 \x02(\x05\"3\n\x13\x43hampionBetResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*~\n\rChampionLevel\x12\x15\n\x11\x43HAMPION_LEVEL_16\x10\x10\x12\x14\n\x10\x43HAMPION_LEVEL_8\x10\x08\x12\x14\n\x10\x43HAMPION_LEVEL_4\x10\x04\x12\x14\n\x10\x43HAMPION_LEVEL_2\x10\x02\x12\x14\n\x10\x43HAMPION_LEVEL_1\x10\x01')
   ,
   dependencies=[common__pb2.DESCRIPTOR,plunder__pb2.DESCRIPTOR,formation__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -57,8 +57,8 @@ _CHAMPIONLEVEL = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=2105,
-  serialized_end=2231,
+  serialized_start=2100,
+  serialized_end=2226,
 )
 _sym_db.RegisterEnumDescriptor(_CHAMPIONLEVEL)
 
@@ -673,7 +673,7 @@ _CHAMPIONLEVELNOTIFY_LEVEL = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='next_match_at', full_name='Dianjing.protocol.ChampionLevelNotify.Level.next_match_at', index=2,
+      name='match_at', full_name='Dianjing.protocol.ChampionLevelNotify.Level.match_at', index=2,
       number=3, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -692,7 +692,7 @@ _CHAMPIONLEVELNOTIFY_LEVEL = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=1577,
-  serialized_end=1674,
+  serialized_end=1669,
 )
 
 _CHAMPIONLEVELNOTIFY = _descriptor.Descriptor(
@@ -743,7 +743,7 @@ _CHAMPIONLEVELNOTIFY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=1387,
-  serialized_end=1674,
+  serialized_end=1669,
 )
 
 
@@ -773,8 +773,8 @@ _CHAMPIONGROUPSYNCREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1676,
-  serialized_end=1719,
+  serialized_start=1671,
+  serialized_end=1714,
 )
 
 
@@ -811,8 +811,8 @@ _CHAMPIONGROUPSYNCRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1721,
-  serialized_end=1778,
+  serialized_start=1716,
+  serialized_end=1773,
 )
 
 
@@ -842,8 +842,8 @@ _CHAMPIONLEVELSYNCREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1780,
-  serialized_end=1823,
+  serialized_start=1775,
+  serialized_end=1818,
 )
 
 
@@ -880,8 +880,8 @@ _CHAMPIONLEVELSYNCRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1825,
-  serialized_end=1882,
+  serialized_start=1820,
+  serialized_end=1877,
 )
 
 
@@ -911,8 +911,8 @@ _CHAMPIONAPPLYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1884,
-  serialized_end=1923,
+  serialized_start=1879,
+  serialized_end=1918,
 )
 
 
@@ -949,8 +949,8 @@ _CHAMPIONAPPLYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1925,
-  serialized_end=1978,
+  serialized_start=1920,
+  serialized_end=1973,
 )
 
 
@@ -994,8 +994,8 @@ _CHAMPIONBETREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1980,
-  serialized_end=2050,
+  serialized_start=1975,
+  serialized_end=2045,
 )
 
 
@@ -1032,8 +1032,8 @@ _CHAMPIONBETRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2052,
-  serialized_end=2103,
+  serialized_start=2047,
+  serialized_end=2098,
 )
 
 _CHAMPIONFORMATIONNOTIFY.fields_by_name['formation'].message_type = plunder__pb2._PLUNDERFORMATION
