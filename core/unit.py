@@ -157,8 +157,8 @@ class Unit(AbstractUnit):
 
         MongoUnit.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$inc': {
-                'units.{0}.step'.format(self.id): 1
+            {'$set': {
+                'units.{0}.step'.format(self.id): self.step
             }}
         )
 

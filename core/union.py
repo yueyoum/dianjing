@@ -370,15 +370,16 @@ class UnionJoined(IUnion):
 
     def add_contribution(self, value, send_notify=True):
         # 给自己加
+        self.member_doc['contribution'] += value
+        self.member_doc['today_contribution'] += value
+
         MongoUnionMember.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$inc': {
-                'contribution': value,
-                'today_contribution': value
+            {'$set': {
+                'contribution': self.member_doc['contribution'],
+                'today_contribution': self.member_doc['today_contribution']
             }}
         )
-
-        self.member_doc = MongoUnionMember.db(self.server_id).find_one({'_id': self.char_id})
 
         # 给公会加
         union_contribution = self.union_doc['contribution'] + value

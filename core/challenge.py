@@ -343,14 +343,13 @@ class Challenge(object):
         Energy(self.server_id, self.char_id).remove(config.energy)
 
         projection = {
+            'chapters': 1,
             'challenge_star.{0}'.format(challenge_id): 1,
             'challenge_drop.{0}'.format(challenge_id): 1,
         }
 
         for i in config.next:
             projection['challenge_star.{0}'.format(i)] = 1
-            chapter_id = ConfigChallengeMatch.get(i).chapter
-            projection['chapters.{0}'.format(chapter_id)] = 1
 
         doc = MongoChallenge.db(self.server_id).find_one(
             {'_id': self.char_id},
@@ -362,12 +361,15 @@ class Challenge(object):
 
         old_star = doc['challenge_star'][str(challenge_id)]
         if star > old_star:
+            this_chapter_star = doc['chapters'].get(str(config.chapter), {}).get('star', 0)
+            this_chapter_star += star - old_star
+
             MongoChallenge.db(self.server_id).update_one(
                 {'_id': self.char_id},
-                {
-                    '$set': {'challenge_star.{0}'.format(challenge_id): star},
-                    '$inc': {'chapters.{0}.star'.format(config.chapter): star - old_star}
-                }
+                {'$set': {
+                    'challenge_star.{0}'.format(challenge_id): star,
+                    'chapters.{0}.star'.format(config.chapter): this_chapter_star
+                }}
             )
 
             updated_chapter_ids.append(config.chapter)

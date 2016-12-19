@@ -157,8 +157,8 @@ class StaffRecruit(object):
         self.doc['score'] += value
         MongoStaffRecruit.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$inc': {
-                'score': value
+            {'$set': {
+                'score': self.doc['score']
             }}
         )
         self.send_notify()
@@ -494,8 +494,8 @@ class Staff(AbstractStaff):
         self.step += 1
         MongoStaff.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'$inc': {
-                'staffs.{0}.step'.format(self.id): 1
+            {'$set': {
+                'staffs.{0}.step'.format(self.id): self.step
             }}
         )
 
