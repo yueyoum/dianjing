@@ -3,7 +3,7 @@ from core.unit import UnitManager
 
 from utils.http import ProtobufResponse
 
-from protomsg.unit_pb2 import UnitLevelUpResponse, UnitStepUpResponse
+from protomsg.unit_pb2 import UnitLevelUpResponse, UnitStepUpResponse, UnitDestroyResponse
 
 
 def level_up(request):
@@ -36,5 +36,21 @@ def step_up(request):
 
     response = UnitStepUpResponse()
     response.ret = 0
+
+    return ProtobufResponse(response)
+
+def destroy(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    uid = request._proto.id
+    using_sycee = request._proto.using_sycee
+
+    um = UnitManager(server_id, char_id)
+    rc = um.destroy(uid, using_sycee)
+
+    response = UnitDestroyResponse()
+    response.ret = 0
+    response.drop.MergeFrom(rc.make_protomsg())
 
     return ProtobufResponse(response)

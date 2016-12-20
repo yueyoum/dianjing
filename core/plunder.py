@@ -75,7 +75,7 @@ from protomsg.plunder_pb2 import (
 from protomsg.formation_pb2 import FORMATION_SLOT_EMPTY, FORMATION_SLOT_USE
 from protomsg.common_pb2 import SPECIAL_EQUIPMENT_GENERATE_NORMAL, SPECIAL_EQUIPMENT_GENERATE_ADVANCE
 
-PLUNDER_ACTIVE_CLUB_LEVEL = 23
+PLUNDER_ACTIVE_CLUB_LEVEL = 19
 REVENGE_MAX_TIMES = 3
 PLUNDER_TIMES_INIT_TIMES = 3
 PLUNDER_TIMES_RECOVER_LIMIT = 6
@@ -179,12 +179,6 @@ class PlunderFormation(BaseFormation):
             obj.formation_position = in_formation_staffs[k]['position']
             unit_id = in_formation_staffs[k]['unit_id']
             if unit_id:
-                unit_obj = um.get_unit_object(unit_id)
-                if not unit_obj:
-                    raise RuntimeError(
-                        "Plunder Formation NO unit_obj. server: {0}, char: {1}, staff: {2}, unit: {3}".format(
-                            self.server_id, self.char_id, k, unit_id
-                        ))
                 obj.set_unit(um.get_unit_object(unit_id))
 
         club = Club(self.server_id, self.char_id, load_staffs=False)

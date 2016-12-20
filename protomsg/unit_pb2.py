@@ -14,15 +14,16 @@ _sym_db = _symbol_database.Default()
 
 
 import common_pb2 as common__pb2
+import package_pb2 as package__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='unit.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\nunit.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\\\n\x04Unit\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0c\n\x04step\x18\x03 \x02(\x05\x12\n\n\x02hp\x18\x04 \x02(\x05\x12\x0e\n\x06\x61ttack\x18\x05 \x02(\x05\x12\x0f\n\x07\x64\x65\x66\x65nse\x18\x06 \x02(\x05\"m\n\nUnitNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12&\n\x05units\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Unit\"A\n\x12UnitLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\x12\x0e\n\x06single\x18\x03 \x02(\x08\"3\n\x13UnitLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"0\n\x11UnitStepUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"2\n\x12UnitStepUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+  serialized_pb=_b('\n\nunit.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\\\n\x04Unit\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\x12\x0c\n\x04step\x18\x03 \x02(\x05\x12\n\n\x02hp\x18\x04 \x02(\x05\x12\x0e\n\x06\x61ttack\x18\x05 \x02(\x05\x12\x0f\n\x07\x64\x65\x66\x65nse\x18\x06 \x02(\x05\"m\n\nUnitNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12&\n\x05units\x18\x03 \x03(\x0b\x32\x17.Dianjing.protocol.Unit\"A\n\x12UnitLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\x12\x0e\n\x06single\x18\x03 \x02(\x08\"3\n\x13UnitLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"0\n\x11UnitStepUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"2\n\x12UnitStepUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"D\n\x12UnitDestroyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\x12\x11\n\tuse_sycee\x18\x03 \x02(\x08\"Z\n\x13UnitDestroyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop')
   ,
-  dependencies=[common__pb2.DESCRIPTOR,])
+  dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
@@ -89,8 +90,8 @@ _UNIT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=47,
-  serialized_end=139,
+  serialized_start=62,
+  serialized_end=154,
 )
 
 
@@ -134,8 +135,8 @@ _UNITNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=141,
-  serialized_end=250,
+  serialized_start=156,
+  serialized_end=265,
 )
 
 
@@ -179,8 +180,8 @@ _UNITLEVELUPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=252,
-  serialized_end=317,
+  serialized_start=267,
+  serialized_end=332,
 )
 
 
@@ -217,8 +218,8 @@ _UNITLEVELUPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=319,
-  serialized_end=370,
+  serialized_start=334,
+  serialized_end=385,
 )
 
 
@@ -255,8 +256,8 @@ _UNITSTEPUPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=372,
-  serialized_end=420,
+  serialized_start=387,
+  serialized_end=435,
 )
 
 
@@ -293,18 +294,111 @@ _UNITSTEPUPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=422,
-  serialized_end=472,
+  serialized_start=437,
+  serialized_end=487,
+)
+
+
+_UNITDESTROYREQUEST = _descriptor.Descriptor(
+  name='UnitDestroyRequest',
+  full_name='Dianjing.protocol.UnitDestroyRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.UnitDestroyRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.UnitDestroyRequest.id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='use_sycee', full_name='Dianjing.protocol.UnitDestroyRequest.use_sycee', index=2,
+      number=3, type=8, cpp_type=7, label=2,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=489,
+  serialized_end=557,
+)
+
+
+_UNITDESTROYRESPONSE = _descriptor.Descriptor(
+  name='UnitDestroyResponse',
+  full_name='Dianjing.protocol.UnitDestroyResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.UnitDestroyResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.UnitDestroyResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='drop', full_name='Dianjing.protocol.UnitDestroyResponse.drop', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=559,
+  serialized_end=649,
 )
 
 _UNITNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _UNITNOTIFY.fields_by_name['units'].message_type = _UNIT
+_UNITDESTROYRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 DESCRIPTOR.message_types_by_name['Unit'] = _UNIT
 DESCRIPTOR.message_types_by_name['UnitNotify'] = _UNITNOTIFY
 DESCRIPTOR.message_types_by_name['UnitLevelUpRequest'] = _UNITLEVELUPREQUEST
 DESCRIPTOR.message_types_by_name['UnitLevelUpResponse'] = _UNITLEVELUPRESPONSE
 DESCRIPTOR.message_types_by_name['UnitStepUpRequest'] = _UNITSTEPUPREQUEST
 DESCRIPTOR.message_types_by_name['UnitStepUpResponse'] = _UNITSTEPUPRESPONSE
+DESCRIPTOR.message_types_by_name['UnitDestroyRequest'] = _UNITDESTROYREQUEST
+DESCRIPTOR.message_types_by_name['UnitDestroyResponse'] = _UNITDESTROYRESPONSE
 
 Unit = _reflection.GeneratedProtocolMessageType('Unit', (_message.Message,), dict(
   DESCRIPTOR = _UNIT,
@@ -347,6 +441,20 @@ UnitStepUpResponse = _reflection.GeneratedProtocolMessageType('UnitStepUpRespons
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.UnitStepUpResponse)
   ))
 _sym_db.RegisterMessage(UnitStepUpResponse)
+
+UnitDestroyRequest = _reflection.GeneratedProtocolMessageType('UnitDestroyRequest', (_message.Message,), dict(
+  DESCRIPTOR = _UNITDESTROYREQUEST,
+  __module__ = 'unit_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.UnitDestroyRequest)
+  ))
+_sym_db.RegisterMessage(UnitDestroyRequest)
+
+UnitDestroyResponse = _reflection.GeneratedProtocolMessageType('UnitDestroyResponse', (_message.Message,), dict(
+  DESCRIPTOR = _UNITDESTROYRESPONSE,
+  __module__ = 'unit_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.UnitDestroyResponse)
+  ))
+_sym_db.RegisterMessage(UnitDestroyResponse)
 
 
 # @@protoc_insertion_point(module_scope)

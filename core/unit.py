@@ -12,16 +12,19 @@ from dianjing.exception import GameException
 from core.abstract import AbstractUnit
 from core.mongo import MongoUnit
 from core.club import Club, get_club_property
-from core.resource import ResourceClassification
+from core.resource import ResourceClassification, money_text_to_item_id
 from core.value_log import ValueLogUnitLevelUpTimes
 from core.signals import task_condition_trig_signal
 
 from utils.message import MessagePipe
 
-from config import ConfigErrorMessage, ConfigUnitUnLock, ConfigUnitAddition
+from config import GlobalConfig, ConfigErrorMessage, ConfigUnitUnLock, ConfigUnitAddition
 
 from protomsg.unit_pb2 import UnitNotify
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
+
+UNIT_INIT_LEVEL = 1
+UNIT_INIT_STEP = 0
 
 
 class UnitAddition(object):
@@ -161,6 +164,59 @@ class Unit(AbstractUnit):
                 'units.{0}.step'.format(self.id): self.step
             }}
         )
+
+    def get_strengthen_cost(self):
+        items = {}
+        # 升级消耗
+        for i in range(self.level-1, UNIT_INIT_LEVEL-1, -1):
+            for _id, _amount in self.config.levels[i].update_item_need:
+                if _id not in items:
+                    items[_id] = _amount
+                else:
+                    items[_id] += _amount
+
+        # 升阶消耗
+        for i in range(self.step-1, UNIT_INIT_STEP-1, -1):
+            for _id, _amount in self.config.steps[i].update_item_need:
+                if _id not in items:
+                    items[_id] = _amount
+                else:
+                    items[_id] += _amount
+
+        return items.items()
+
+    def destroy(self, using_sycee):
+        if self.level == UNIT_INIT_LEVEL and self.step == UNIT_INIT_STEP:
+            raise GameException(ConfigErrorMessage.get_error_id("UNIT_IS_INIT_CANNOT_DESTROY"))
+
+        if using_sycee:
+            need_diamond = GlobalConfig.value("UNIT_DESTROY_SYCEE")
+            cost = [(money_text_to_item_id('diamond'), need_diamond), ]
+            rc = ResourceClassification.classify(cost)
+            rc.check_exist(self.server_id, self.char_id)
+            rc.remove(self.server_id, self.char_id, message="Unit.destroy:{0}".format(self.id))
+
+            percent = 1
+        else:
+            percent = 0.7
+
+        items = self.get_strengthen_cost()
+        items = [(_id, int(_amount * percent)) for _id, _amount in items]
+        rc = ResourceClassification.classify(items)
+        rc.add(self.server_id, self.char_id, message="Unit.destroy:{0}".format(self.id))
+
+        self.level = UNIT_INIT_LEVEL
+        self.step = UNIT_INIT_STEP
+
+        MongoUnit.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'units.{0}.level'.format(self.id): self.level,
+                'units.{0}.step'.format(self.id): self.step,
+            }}
+        )
+
+        return rc
 
     def send_notify(self):
         notify = UnitNotify()
@@ -339,19 +395,21 @@ class UnitManager(object):
         """
 
         :param _id:
-        :rtype: Unit | None
+        :rtype: Unit
         """
         unit = Unit.get(self.char_id, _id)
         if unit:
             return unit
 
         self.load_units()
-        return Unit.get(self.char_id, _id)
+        unit = Unit.get(self.char_id, _id)
+        if not unit:
+            raise GameException(ConfigErrorMessage.get_error_id("UNIT_NOT_EXIST"))
+
+        return unit
 
     def level_up(self, uid, add_level):
         unit = self.get_unit_object(uid)
-        if not unit:
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         changed_level = unit.level_up(add_level)
         if changed_level:
@@ -362,12 +420,18 @@ class UnitManager(object):
 
     def step_up(self, uid):
         unit = self.get_unit_object(uid)
-        if not unit:
-            raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
         unit.step_up()
         self.after_change(uid)
         self.after_units_change_for_trig_signal()
+
+    def destroy(self, uid, using_sycee):
+        unit = self.get_unit_object(uid)
+        rc = unit.destroy(using_sycee)
+        self.after_change(uid)
+        self.after_units_change_for_trig_signal()
+
+        return rc
 
     def after_change(self, uid):
         from core.formation import Formation

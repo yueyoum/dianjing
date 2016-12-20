@@ -99,6 +99,7 @@ urlpatterns = [
 
     url(r'^unit/levelup/$', views.unit.level_up),
     url(r'^unit/stepup/$', views.unit.step_up),
+    url(r'^unit/destroy/$', views.unit.destroy),
 
     url(r'^talent/levelup/$', views.talent.level_up),
     url(r'^talent/reset/$', views.talent.reset),

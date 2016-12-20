@@ -148,12 +148,6 @@ class Club(AbstractClub):
                 v.formation_position = in_formation_staffs[k]['position']
                 unit_id = in_formation_staffs[k]['unit_id']
                 if unit_id:
-                    unit_obj = um.get_unit_object(unit_id)
-                    if not unit_obj:
-                        raise RuntimeError(
-                            "Can not get unit object. server: {0}, char: {1}, staff: {2}, unit: {3}".format(
-                                self.server_id, self.char_id, k, unit_id
-                            ))
                     v.set_unit(um.get_unit_object(unit_id))
 
         working_staff_oids = fm.working_staff_oids()
