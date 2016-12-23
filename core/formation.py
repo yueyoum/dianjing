@@ -15,7 +15,6 @@ from core.unit import UnitManager
 from core.club import Club
 
 from core.resource import ResourceClassification
-from core.inspire import Inspire
 
 from utils.message import MessagePipe
 
@@ -122,6 +121,8 @@ class BaseFormation(object):
         return oids
 
     def set_staff(self, slot_id, staff_id):
+        from core.inspire import Inspire
+
         if str(slot_id) not in self.doc['slots']:
             raise GameException(ConfigErrorMessage.get_error_id("FORMATION_SLOT_NOT_OPEN"))
 
