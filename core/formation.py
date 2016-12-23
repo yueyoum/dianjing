@@ -15,6 +15,7 @@ from core.unit import UnitManager
 from core.club import Club
 
 from core.resource import ResourceClassification
+from core.inspire import Inspire
 
 from utils.message import MessagePipe
 
@@ -126,6 +127,8 @@ class BaseFormation(object):
 
         sm = StaffManger(self.server_id, self.char_id)
         sm.check_staff(ids=[staff_id])
+
+        Inspire(self.server_id, self.char_id).check_staff_in(staff_id)
 
         this_staff_obj = sm.get_staff_object(staff_id)
 
