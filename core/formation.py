@@ -18,7 +18,13 @@ from core.resource import ResourceClassification
 
 from utils.message import MessagePipe
 
-from config import ConfigErrorMessage, ConfigFormationSlot, ConfigFormation, ConfigUnitNew
+from config import (
+    ConfigErrorMessage,
+    ConfigFormationSlot,
+    ConfigFormation,
+    ConfigUnitNew,
+    ConfigQianBan,
+)
 
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 from protomsg.formation_pb2 import (
@@ -168,11 +174,24 @@ class BaseFormation(object):
         if not staff_id:
             raise GameException(ConfigErrorMessage.get_error_id("FORMATION_SLOT_NO_STAFF"))
 
-        u = UnitManager(self.server_id, self.char_id).get_unit_object(unit_id)
         s = StaffManger(self.server_id, self.char_id).get_staff_object(staff_id)
 
-        if s.config.race != u.config.race:
-            raise GameException(ConfigErrorMessage.get_error_id("FORMATION_STAFF_UNIT_RACE_NOT_MATCH"))
+        config_qianban = ConfigQianBan.get(s.oid)
+        if not config_qianban:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        allowed_unit_ids = []
+        for k, v in config_qianban.info.iteritems():
+            if v.condition_tp == 1:
+                # 装备兵种
+                allowed_unit_ids.extend(v.condition_value)
+
+        if unit_id not in allowed_unit_ids:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        # u = UnitManager(self.server_id, self.char_id).get_unit_object(unit_id)
+        # if s.config.race != u.config.race:
+        #     raise GameException(ConfigErrorMessage.get_error_id("FORMATION_STAFF_UNIT_RACE_NOT_MATCH"))
 
         self.doc['slots'][str(slot_id)]['unit_id'] = unit_id
         self.doc['slots'][str(slot_id)]['policy'] = 1

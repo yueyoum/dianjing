@@ -44,7 +44,7 @@ def destroy(request):
     char_id = request._game_session.char_id
 
     uid = request._proto.id
-    using_sycee = request._proto.using_sycee
+    using_sycee = request._proto.use_sycee
 
     um = UnitManager(server_id, char_id)
     rc = um.destroy(uid, using_sycee)
