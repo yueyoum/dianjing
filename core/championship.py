@@ -421,7 +421,7 @@ class ChampionshipGroup(object):
         obj = cls(server_id)
         obj._char_id = char_id
         obj.doc = MongoChampionshipGroup.db(server_id).find_one(
-            {'members': char_id}
+            {'member_ids': str(char_id)}
         )
 
         if obj.doc:
@@ -546,8 +546,8 @@ class ChampionshipGroup(object):
 
             msg = MsgChampionClub()
             msg.id = club_id
-            msg.name = self.doc['members'][club_id]['name']
-            msg.flag = self.doc['members'][club_id]['flag']
+            msg.name = self.doc['info'][club_id]['name']
+            msg.flag = self.doc['info'][club_id]['flag']
             msg.rank = rank
             msg.score = score
 
@@ -556,10 +556,22 @@ class ChampionshipGroup(object):
         return msgs
 
     def make_protomsg(self):
-        if not self._char_id:
+        if not self._char_id or not self.doc:
             return make_empty_group_notify_msg()
 
+        my_score = 0
+        my_rank = 0
+        scores = self.get_scores_sorted()
+        for _index, (_id, _score) in enumerate(scores):
+            if _id == str(self._char_id):
+                my_score = _score
+                my_rank = _index + 1
+                break
+
         notify = ChampionGroupNotify()
+        notify.my_score = my_score
+        notify.my_rank = my_rank
+
         clubs = self.make_clubs_msg()
 
         for c in clubs:
