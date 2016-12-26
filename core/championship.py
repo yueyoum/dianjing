@@ -392,6 +392,8 @@ class Championship(object):
                 bet.bet_for = bet_info['club_id']
                 bet.bet_id = bet_info['bet_id']
 
+        # XXX
+        print notify
         MessagePipe(self.char_id).put(msg=notify)
 
     def send_formation_notify(self):
@@ -516,6 +518,8 @@ class ChampionshipGroup(object):
             return
 
         config = ConfigChampionScoreReward.get_by_score(score)
+        if not config:
+            return
 
         rc = ResourceClassification.classify(config.reward)
         attachment = rc.to_json()
@@ -583,7 +587,7 @@ class ChampionshipGroup(object):
             notify_log.timestamp = log['timestamp']
             notify_log.target_name = log['target_name']
             notify_log.got_score = log['got_score']
-            notify_log.way_wins = log['way_wins']
+            notify_log.way_wins.extend(log['way_wins'])
 
         match_times = self.doc['match_times']
         if match_times > 6:
@@ -592,6 +596,20 @@ class ChampionshipGroup(object):
             hour = GROUP_MATCH_HOUR[match_times - 1]
             notify.next_match_at = make_time_of_today(hour, 0).timestamp
 
+            pairs = make_pairs_from_flat_list(scores)
+            for (id_one, _), (id_two, _) in pairs:
+                if id_one == str(self._char_id):
+                    notify.next_target.id = id_two
+                    notify.next_target.name = self.doc['info'][id_two]['name']
+                    notify.next_target.flag = self.doc['info'][id_two]['flag']
+
+                elif id_two == str(self._char_id):
+                    notify.next_target.id = id_one
+                    notify.next_target.name = self.doc['info'][id_one]['name']
+                    notify.next_target.flag = self.doc['info'][id_one]['flag']
+
+        # XXX
+        print notify
         return notify
 
 
@@ -887,4 +905,6 @@ class ChampionshipLevel(object):
                 hour, minute = LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE[lv]
                 notify_level.match_at = make_time_of_today(hour, minute).timestamp
 
+        # XXX
+        print notify
         return notify
