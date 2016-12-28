@@ -20,6 +20,9 @@ def account_login_handler(account_id, ip, to_server_id, **kwargs):
         login_times=F('login_times')+1
     )
 
+    if len(ip) > 32:
+        ip = ip[:32]
+
     AccountLoginLog.objects.create(
         account_id=account_id,
         ip=ip,

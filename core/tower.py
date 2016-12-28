@@ -464,7 +464,7 @@ class Tower(object):
 
         # 扫荡完下一关要可打
         next_level = self.doc['max_star_level'] + 1
-        if next_level < ConfigTowerLevel.MAX_LEVEL:
+        if next_level <= ConfigTowerLevel.MAX_LEVEL:
             self.doc['levels'][str(next_level)] = 0
             updater['levels.{0}'.format(next_level)] = 0
 

@@ -973,20 +973,32 @@ class StaffManger(object):
     def check_original_staff_is_initial_state(self, originals):
         # 原始ID， 并且匹配原始属性
         # originals: [(oid, amount)...]
-        oids = []
+        packed_originals = {}
         for _oid, _amount in originals:
-            oids.extend([_oid] * _amount)
+            if _oid not in packed_originals:
+                packed_originals[_oid] = _amount
+            else:
+                packed_originals[_oid] += _amount
 
         staffs = self.get_all_staff_object().values()
-        """:type: list[Staff]"""
-        for s in staffs:
-            for i in oids:
-                if s.oid == i and s.is_initial_state():
-                    oids.remove(i)
-                    break
+        result = {}
+        """:type: dict[int, list]"""
 
-        if oids:
-            raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
+        for _oid, _amount in originals:
+            if _oid not in result:
+                result[_oid] = []
+
+            for s in staffs:
+                if s.oid == _oid and s.is_initial_state() and \
+                        checker.staff_not_working(self.server_id, self.char_id, s.id, raise_exception=False):
+
+                    result[_oid].append(s.id)
+
+            if len(result[_oid]) < _amount:
+                # TODO replace the error code
+                raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
+
+        return result
 
     def add(self, staff_original_id, send_notify=True, trig_signal=True):
         if not ConfigStaffNew.get(staff_original_id):
@@ -1071,15 +1083,15 @@ class StaffManger(object):
         MessagePipe(self.char_id).put(msg=notify)
         self.after_staffs_change_for_trig_signal()
 
-    def remove_initial_state_staff(self, oid):
-        staffs = self.get_all_staff_object().values()
-        """:type: list[Staff]"""
-        for s in staffs:
-            if s.oid == oid and s.is_initial_state():
-                self.remove(s.id)
-                return
+    def internal_remove_by_oid(self, originals):
+        # 内部删除
+        # 现在只有 通过 ResourceClassification 的 remove
+        result = self.check_original_staff_is_initial_state(originals)
+        ids = []
+        for _, v in result.iteritems():
+            ids.extend(v)
 
-        self.after_staffs_change_for_trig_signal()
+        self.remove(ids)
 
     def find_staff_id_by_equipment_slot_id(self, slot_id):
         # type: (str) -> str
@@ -1198,7 +1210,7 @@ class StaffManger(object):
 
     def _destroy_check(self, staff_id):
         from core.territory import Territory
-        checker.staff_not_in_formation(self.server_id, self.char_id, staff_id)
+        checker.staff_not_working(self.server_id, self.char_id, staff_id)
 
         if Territory(self.server_id, self.char_id).is_staff_training_check_by_unique_id(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_CANNOT_DESTROY_IN_TERRITORY"))

@@ -317,7 +317,10 @@ class ResourceClassification(object):
         return obj
 
     def money_as_text_dict(self):
-        # type: () -> dict[str, int]
+        """
+
+        :rtype: dict[str, int]
+        """
         res = {}
         for _id, _amount in self.money:
             res[item_id_to_money_text(_id)] = _amount
@@ -374,10 +377,7 @@ class ResourceClassification(object):
                 bag.remove_by_item_id(_id, _amount)
 
         if self.staff:
-            sm = StaffManger(server_id, char_id)
-            for _id, _amount in self.staff:
-                for _ in range(_amount):
-                    sm.remove_initial_state_staff(_id)
+            StaffManger(server_id, char_id).internal_remove_by_oid(self.staff)
 
         if self.territory_product:
             Territory(server_id, char_id).remove_product(self.territory_product)
