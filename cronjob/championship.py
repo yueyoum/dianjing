@@ -64,6 +64,7 @@ def champion_level_match(*args):
     if now.hour not in []:
         pass
 
+    # 注意， 要先调用 initialize
 
     logger = Logger("champion_level_match")
     logger.write("Start")

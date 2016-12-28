@@ -146,7 +146,7 @@ def get_history_top_clubs(server_id):
 
     clubs = []
     for i in doc['member_ids']:
-        clubs.append((i, doc['info']['name'], doc['info']['flag']))
+        clubs.append((i, doc['info'][i]['name'], doc['info'][i]['flag']))
 
     return clubs
 
@@ -659,7 +659,7 @@ class ChampionshipGroupManager(object):
                 if doc['level'] >= apply_club_level_limit:
                     club_ids.add(doc['_id'])
 
-        return club_ids
+        return list(club_ids)
 
     @classmethod
     def assign_to_groups(cls, server_id, club_ids):
