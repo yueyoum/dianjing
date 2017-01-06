@@ -247,14 +247,17 @@ class Equipment(object):
                 if v:
                     setattr(self, k, v)
 
-            self.staff_attack = config.staff_attack + \
-                                int(config.staff_attack * self.level * math.pow(self.growing / 75.0, 1.25))
+            self.staff_attack = config.staff_attack + int(
+                config.staff_attack * self.level * math.pow(self.growing / 75.0, 1.25)
+            )
 
-            self.staff_defense = config.staff_defense + \
-                                 int(config.staff_defense * self.level * math.pow(self.growing / 75.0, 1.25))
+            self.staff_defense = config.staff_defense + int(
+                config.staff_defense * self.level * math.pow(self.growing / 75.0, 1.25)
+            )
 
-            self.staff_manage = config.staff_manage + \
-                                int(config.staff_manage * self.level * math.pow(self.growing / 75.0, 1.25))
+            self.staff_manage = config.staff_manage + int(
+                config.staff_manage * self.level * math.pow(self.growing / 75.0, 1.25)
+            )
 
             self.staff_attack = int(round(self.staff_attack))
             self.staff_defense = int(round(self.staff_defense))
@@ -855,16 +858,24 @@ class Bag(object):
         level = equip.level
 
         if equip.is_special:
-            max_level = min(ConfigEquipmentSpecialLevel.MAX_LEVEL,
-                            Plunder(self.server_id, self.char_id).get_station_level() * 50)
-            if level >= max_level:
+            if level >= ConfigEquipmentSpecialLevel.MAX_LEVEL:
+                raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_SELF_REACH_MAX_LEVEL"))
+
+            station_level_limit = Plunder(self.server_id, self.char_id).get_station_level() * 2
+            if level >= station_level_limit:
                 raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_SPECIAL_REACH_MAX_LEVEL"))
+
+            max_level = min(ConfigEquipmentSpecialLevel.MAX_LEVEL, station_level_limit)
         else:
             config = ConfigEquipmentNew.get(item_id)
-            max_level = min(config.max_level, get_club_property(self.server_id, self.char_id, 'level') * 2)
+            if level >= config.max_level:
+                raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_SELF_REACH_MAX_LEVEL"))
 
-            if level >= max_level:
+            club_level_limit = get_club_property(self.server_id, self.char_id, 'level') * 2
+            if level >= club_level_limit:
                 raise GameException(ConfigErrorMessage.get_error_id("EQUIPMENT_REACH_MAX_LEVEL"))
+
+            max_level = min(config.max_level, club_level_limit)
 
         can_add_level = max_level - level
         if times > can_add_level:
@@ -875,7 +886,8 @@ class Bag(object):
 
             resource_classified = ResourceClassification.classify(_item_needs)
             resource_classified.check_exist(self.server_id, self.char_id)
-            resource_classified.remove(self.server_id, self.char_id, message="Bag.equipment_level_up:{0}".format(item_id))
+            resource_classified.remove(self.server_id, self.char_id,
+                                       message="Bag.equipment_level_up:{0}".format(item_id))
 
         old_level = level
         error_code = 0
