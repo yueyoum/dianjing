@@ -6,6 +6,7 @@ from core.mongo import MongoTaskMain, MongoTaskDaily
 from core.resource import ResourceClassification
 from core.club import get_club_property
 from core.vip import VIP
+from core.challenge import Challenge
 
 from config import ConfigErrorMessage, ConfigTaskMain, ConfigTaskDaily, ConfigTaskCondition
 
@@ -87,6 +88,7 @@ class TaskDaily(object):
     def refresh(self):
         club_level = get_club_property(self.server_id, self.char_id, 'level')
         vip_level = VIP(self.server_id, self.char_id).level
+        passed_challenge_ids = Challenge(self.server_id, self.char_id).get_passed_challenge_ids()
 
         task_ids = []
         for k, v in ConfigTaskDaily.INSTANCES.iteritems():
@@ -94,6 +96,9 @@ class TaskDaily(object):
                 continue
 
             if vip_level < v.vip_level:
+                continue
+
+            if v.challenge_id not in passed_challenge_ids:
                 continue
 
             task_ids.append(k)

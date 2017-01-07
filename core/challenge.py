@@ -198,6 +198,19 @@ class Challenge(object):
 
         return max(ids)
 
+    def get_passed_challenge_ids(self):
+        doc = MongoChallenge.db(self.server_id).find_one(
+            {'_id': self.char_id},
+            {'challenge_star': 1}
+        )
+
+        ids = []
+        for k, v in doc['challenge_star'].iteritems():
+            if v:
+                ids.append(int(k))
+
+        return ids
+
     def is_challenge_id_passed(self, challenge_id):
         doc = MongoChallenge.db(self.server_id).find_one(
             {'_id': self.char_id},

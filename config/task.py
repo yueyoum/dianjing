@@ -78,13 +78,15 @@ class TaskMain(object):
 
 class TaskDaily(object):
     __slots__ = [
-        'id', 'club_level', 'vip_level', 'condition_id', 'condition_value', 'rewards'
+        'id', 'club_level', 'vip_level', 'challenge_id',
+        'condition_id', 'condition_value', 'rewards'
     ]
 
     def __init__(self):
         self.id = 0
         self.club_level = 0
         self.vip_level = 0
+        self.challenge_id = 0
         self.condition_id = 0
         self.condition_value = 0
         self.rewards = []

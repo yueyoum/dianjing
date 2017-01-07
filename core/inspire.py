@@ -47,8 +47,10 @@ class Inspire(object):
         updater = {}
 
         c = Challenge(self.server_id, self.char_id)
+        passed_challenge_ids = c.get_passed_challenge_ids()
+
         for challenge_id, slot_id in ConfigInspire.LIST:
-            if not c.is_challenge_id_passed(challenge_id):
+            if challenge_id not in passed_challenge_ids:
                 continue
 
             if str(slot_id) in self.doc['slots']:
