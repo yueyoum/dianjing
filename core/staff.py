@@ -1141,6 +1141,13 @@ class StaffManger(object):
         if staff.id in in_formation_staff_ids:
             self.after_staff_change()
 
+            task_condition_trig_signal.send(
+                sender=None,
+                server_id=self.server_id,
+                char_id=self.char_id,
+                condition_name='core.formation.Formation'
+            )
+
     def level_up(self, staff_id, up_level):
         from core.formation import Formation
         staff = self.get_staff_object(staff_id)

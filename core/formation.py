@@ -24,6 +24,7 @@ from config import (
     ConfigFormation,
     ConfigUnitNew,
     ConfigQianBan,
+    ConfigItemNew,
 )
 
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
@@ -503,6 +504,40 @@ class Formation(BaseFormation):
 
         level = self.doc['levels'][str(fid)]
         return ConfigFormation.get(fid).levels[level].talent_effects
+
+    def _get_value_for_task_condition(self):
+        # 给任务条件用的
+        # 要求上阵6人，每人都要有 键盘，鼠标，显示器装备
+        from core.bag import Bag
+
+        staffs = self.in_formation_staffs().keys()
+        if len(staffs) < 6:
+            return 0, 0
+
+        qualities = []
+        levels = []
+        sm = StaffManger(self.server_id, self.char_id)
+        bag = Bag(self.server_id, self.char_id)
+
+        for sid in staffs:
+            obj = sm.get_staff_object(sid)
+            for bag_slot_id in [obj.equip_keyboard, obj.equip_mouse, obj.equip_monitor]:
+                if not bag_slot_id:
+                    return 0, 0
+
+                item_data = bag.get_slot(bag_slot_id)
+                qualities.append(ConfigItemNew.get(item_data['item_id']).quality)
+                levels.append(item_data['level'])
+
+        return min(qualities), min(levels)
+
+    def get_min_equipment_quality_for_task_condition(self):
+        q, l = self._get_value_for_task_condition()
+        return q
+
+    def get_min_equipment_level_for_task_condition(self):
+        q, l = self._get_value_for_task_condition()
+        return l
 
     def send_slot_notify(self, slot_ids=None):
         if slot_ids:

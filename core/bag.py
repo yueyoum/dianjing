@@ -14,6 +14,7 @@ from core.mongo import MongoBag
 from core.club import Club, get_club_property
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.value_log import ValueLogEquipmentLevelUpTimes
+from core.signals import task_condition_trig_signal
 
 from utils.functional import make_string_id
 from utils.message import MessagePipe
@@ -924,6 +925,13 @@ class Bag(object):
                     s_obj.make_cache()
 
                     Club(self.server_id, self.char_id).send_notify()
+
+                    task_condition_trig_signal.send(
+                        sender=None,
+                        server_id=self.server_id,
+                        char_id=self.char_id,
+                        condition_name='core.formation.Formation'
+                    )
 
         return error_code, level != old_level, Equipment.load_from_slot_data(self.doc['slots'][slot_id])
 
