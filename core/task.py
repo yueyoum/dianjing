@@ -98,7 +98,7 @@ class TaskDaily(object):
             if vip_level < v.vip_level:
                 continue
 
-            if v.challenge_id not in passed_challenge_ids:
+            if v.challenge_id and v.challenge_id not in passed_challenge_ids:
                 continue
 
             task_ids.append(k)
