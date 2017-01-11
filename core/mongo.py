@@ -650,10 +650,12 @@ class MongoUnion(BaseDocument):
         'contribution': 0,
         'bulletin': '',
         'apply_list': [],
+
+        'explore_point': 0,
     }
 
     COLLECTION = 'union'
-    INDEXES = ['apply_list',]
+    INDEXES = ['apply_list', 'explore_point']
     UNIQUE = ['name', 'owner',]
 
 class MongoUnionMember(BaseDocument):
@@ -664,13 +666,22 @@ class MongoUnionMember(BaseDocument):
         'contribution': 0,
         'today_contribution': 0,
 
+        'explore_point': 0,
+        'explore_staff': 0,
+        'harass_staff': 0,
+
         # 当天是否退出或者被踢
         'quit_flag': False,
         'kick_flag': False,
+
+        # 公会技能， id: level
+        # 初始0级的，不在这里面记录
+        # 只记录升级过的
+        'skills': {},
     }
 
     COLLECTION = 'union_member'
-    INDEXES = ['joined',]
+    INDEXES = ['joined', 'explore_point']
 
 
 # 充值

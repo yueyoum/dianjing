@@ -77,3 +77,9 @@ class ChatCD(CD):
     __slots__ = []
     def make_key(self):
         return 'cd:chat:{0}:{1}'.format(self.server_id, self.char_id)
+
+# 公会探索CD
+class UnionExploreCD(CD):
+    __slots__ = []
+    def make_key(self):
+        return 'cd:union_explore:{0}:{1}'.format(self.server_id, self.char_id)

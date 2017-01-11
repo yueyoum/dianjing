@@ -945,7 +945,7 @@ class StaffManger(object):
         """
 
         :param _id:
-        :rtype : Staff | None
+        :rtype : Staff
         """
         from core.club import Club
 
@@ -954,7 +954,11 @@ class StaffManger(object):
             return obj
 
         Club(self.server_id, self.char_id, load_staffs=False).force_load_staffs()
-        return Staff.get(_id)
+        obj = Staff.get(_id)
+        if obj:
+            return obj
+
+        raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
 
     def has_staff(self, ids):
         # unique id

@@ -42,7 +42,7 @@ from config.energy import ConfigEnergyBuyCost
 from config.formation import ConfigFormationSlot, ConfigFormation
 from config.welfare import ConfigWelfareSignIn, ConfigWelfareLevelReward, ConfigWelfareNewPlayer
 from config.template import ConfigBroadcastTemplate
-from config.union import ConfigUnionSignin, ConfigUnionLevel
+from config.union import ConfigUnionSignin, ConfigUnionLevel, ConfigUnionExplore, ConfigUnionExploreRankReward, ConfigUnionMemberExploreRankReward, ConfigUnionHarassBuyTimesCost, ConfigUnionSkill
 from config.purchase import ConfigPurchaseYueka, ConfigPurchaseGoods, ConfigPurchaseFirstReward
 from config.activity import ConfigActivityDailyBuy, ConfigActivityNewPlayer
 from config.plunder import ConfigBaseStationLevel, ConfigPlunderBuyTimesCost, ConfigPlunderIncome, ConfigPlunderNPC, \
@@ -246,6 +246,16 @@ def load_config():
             ConfigUnionLevel.initialize(data)
         elif fname == 'union_signin.json':
             ConfigUnionSignin.initialize(data)
+        elif fname == 'union_explore.json':
+            ConfigUnionExplore.initialize(data)
+        elif fname == 'union_explore_rank_reward.json':
+            ConfigUnionExploreRankReward.initialize(data)
+        elif fname == 'union_member_explore_rank_reward.json':
+            ConfigUnionMemberExploreRankReward.initialize(data)
+        elif fname == 'union_harass_buy_times_cost.json':
+            ConfigUnionHarassBuyTimesCost.initialize(data)
+        elif fname == 'union_skill.json':
+            ConfigUnionSkill.initialize(data)
 
         elif fname == 'purchase_yueka.json':
             ConfigPurchaseYueka.initialize(data)

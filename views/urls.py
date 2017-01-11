@@ -156,6 +156,12 @@ urlpatterns = [
     url(r'^union/transfer/$', views.union.transfer),
     url(r'^union/quit/$', views.union.quit),
     url(r'^union/signin/$', views.union.signin),
+    url(r'^union/explore/leaderboard/$', views.union.explore_leader_board),
+    url(r'^union/explore/$', views.union.explore),
+    url(r'^union/harass/query/$', views.union.harass_query_union),
+    url(r'^union/harass/$', views.union.harass),
+    url(r'^union/harass/buytimes/$', views.union.harass_buy_times),
+    url(r'^union/skill/levelup/$', views.union.skill_level_up),
 
     url(r'^purchase/verify/$', views.purchase.verify),
     url(r'^purchase/getfirstreward/$', views.purchase.get_first_reward),

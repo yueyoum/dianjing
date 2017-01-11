@@ -13,6 +13,7 @@ from google.protobuf import descriptor_pb2
 _sym_db = _symbol_database.Default()
 
 
+import common_pb2 as common__pb2
 import package_pb2 as package__pb2
 
 
@@ -20,9 +21,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='union.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0bunion.proto\x12\x11\x44ianjing.protocol\x1a\rpackage.proto\"\x8b\x01\n\x0bUnionMember\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04\x66lag\x18\x02 \x02(\x05\x12\x0c\n\x04name\x18\x03 \x02(\t\x12\r\n\x05level\x18\x04 \x02(\x05\x12\r\n\x05power\x18\x05 \x02(\x05\x12\x1a\n\x12total_contribution\x18\x06 \x02(\x05\x12\x1a\n\x12today_contribution\x18\x07 \x02(\x05\"\xda\x01\n\x0bUnionNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\x12\x0c\n\x04name\x18\x03 \x02(\t\x12\x10\n\x08\x62ulletin\x18\x04 \x02(\t\x12\r\n\x05level\x18\x05 \x02(\x05\x12\x14\n\x0c\x63ontribution\x18\x06 \x02(\x05\x12\x0c\n\x04rank\x18\x07 \x02(\x05\x12\x17\n\x0fmy_contribution\x18\n \x02(\x05\x12/\n\x07members\x18\x0b \x03(\x0b\x32\x1e.Dianjing.protocol.UnionMember\x12\x11\n\tsignin_id\x18\x0c \x02(\x05\":\n\x14UnionMyAppliedNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tunion_ids\x18\x02 \x03(\t\"V\n\x12UnionMyCheckNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x07members\x18\x02 \x03(\x0b\x32\x1e.Dianjing.protocol.UnionMember\"3\n\x12UnionCreateRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\"3\n\x13UnionCreateResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"<\n\x17UnionSetBulletinRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08\x62ulletin\x18\x02 \x02(\t\"8\n\x18UnionSetBulletinResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"#\n\x10UnionListRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\xd6\x01\n\x11UnionListResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x39\n\x05union\x18\x03 \x03(\x0b\x32*.Dianjing.protocol.UnionListResponse.Union\x1ah\n\x05Union\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04rank\x18\x02 \x02(\x05\x12\r\n\x05level\x18\x03 \x02(\x05\x12\x0c\n\x04name\x18\x04 \x02(\t\x12\x16\n\x0emembers_amount\x18\x05 \x02(\x05\x12\x10\n\x08\x62ulletin\x18\x06 \x02(\t\"6\n\x11UnionApplyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08union_id\x18\x02 \x02(\t\"2\n\x12UnionApplyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"5\n\x11UnionAgreeRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63har_id\x18\x02 \x02(\t\"2\n\x12UnionAgreeResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"6\n\x12UnionRefuseRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63har_id\x18\x02 \x02(\t\"3\n\x13UnionRefuseResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"4\n\x10UnionKickRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63har_id\x18\x02 \x02(\t\"1\n\x11UnionKickResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"8\n\x14UnionTransferRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63har_id\x18\x02 \x02(\t\"5\n\x15UnionTransferResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"#\n\x10UnionQuitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"1\n\x11UnionQuitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"1\n\x12UnionSigninRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"Z\n\x13UnionSigninResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop')
+  serialized_pb=_b('\n\x0bunion.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\x8b\x01\n\x0bUnionMember\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04\x66lag\x18\x02 \x02(\x05\x12\x0c\n\x04name\x18\x03 \x02(\t\x12\r\n\x05level\x18\x04 \x02(\x05\x12\r\n\x05power\x18\x05 \x02(\x05\x12\x1a\n\x12total_contribution\x18\x06 \x02(\x05\x12\x1a\n\x12today_contribution\x18\x07 \x02(\x05\"\xda\x01\n\x0bUnionNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\t\x12\x0c\n\x04name\x18\x03 \x02(\t\x12\x10\n\x08\x62ulletin\x18\x04 \x02(\t\x12\r\n\x05level\x18\x05 \x02(\x05\x12\x14\n\x0c\x63ontribution\x18\x06 \x02(\x05\x12\x0c\n\x04rank\x18\x07 \x02(\x05\x12\x17\n\x0fmy_contribution\x18\n \x02(\x05\x12/\n\x07members\x18\x0b \x03(\x0b\x32\x1e.Dianjing.protocol.UnionMember\x12\x11\n\tsignin_id\x18\x0c \x02(\x05\":\n\x14UnionMyAppliedNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tunion_ids\x18\x02 \x03(\t\"V\n\x12UnionMyCheckNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12/\n\x07members\x18\x02 \x03(\x0b\x32\x1e.Dianjing.protocol.UnionMember\"3\n\x12UnionCreateRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\"3\n\x13UnionCreateResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"<\n\x17UnionSetBulletinRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08\x62ulletin\x18\x02 \x02(\t\"8\n\x18UnionSetBulletinResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"#\n\x10UnionListRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\xd6\x01\n\x11UnionListResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x39\n\x05union\x18\x03 \x03(\x0b\x32*.Dianjing.protocol.UnionListResponse.Union\x1ah\n\x05Union\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04rank\x18\x02 \x02(\x05\x12\r\n\x05level\x18\x03 \x02(\x05\x12\x0c\n\x04name\x18\x04 \x02(\t\x12\x16\n\x0emembers_amount\x18\x05 \x02(\x05\x12\x10\n\x08\x62ulletin\x18\x06 \x02(\t\"6\n\x11UnionApplyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08union_id\x18\x02 \x02(\t\"2\n\x12UnionApplyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"5\n\x11UnionAgreeRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63har_id\x18\x02 \x02(\t\"2\n\x12UnionAgreeResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"6\n\x12UnionRefuseRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63har_id\x18\x02 \x02(\t\"3\n\x13UnionRefuseResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"4\n\x10UnionKickRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63har_id\x18\x02 \x02(\t\"1\n\x11UnionKickResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"8\n\x14UnionTransferRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63har_id\x18\x02 \x02(\t\"5\n\x15UnionTransferResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"#\n\x10UnionQuitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"1\n\x11UnionQuitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"1\n\x12UnionSigninRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"Z\n\x13UnionSigninResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"L\n\x0b\x45xploreClub\x12\x0c\n\x04rank\x18\x01 \x02(\x05\x12\n\n\x02id\x18\x02 \x02(\t\x12\x0c\n\x04name\x18\x03 \x02(\t\x12\x15\n\rexplore_point\x18\x04 \x02(\x05\"M\n\x0c\x45xploreUnion\x12\x0c\n\x04rank\x18\x01 \x02(\x05\x12\n\n\x02id\x18\x02 \x02(\t\x12\x0c\n\x04name\x18\x03 \x02(\t\x12\x15\n\rexplore_point\x18\x04 \x02(\x05\"1\n\x1eUnionExploreLeaderboardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\x81\x02\n\x1fUnionExploreLeaderboardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12,\n\x04\x63lub\x18\x03 \x03(\x0b\x32\x1e.Dianjing.protocol.ExploreClub\x12.\n\x05union\x18\x04 \x03(\x0b\x32\x1f.Dianjing.protocol.ExploreUnion\x12/\n\x07my_club\x18\x05 \x02(\x0b\x32\x1e.Dianjing.protocol.ExploreClub\x12\x31\n\x08my_union\x18\x06 \x02(\x0b\x32\x1f.Dianjing.protocol.ExploreUnion\"\xbf\x01\n\x12UnionExploreNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x15\n\rexplore_staff\x18\x02 \x02(\x05\x12\x1e\n\x16\x65xplore_remained_times\x18\x03 \x02(\x05\x12\x12\n\nexplore_cd\x18\x04 \x02(\x05\x12\x14\n\x0charass_staff\x18\x05 \x02(\x05\x12\x1d\n\x15harass_remained_times\x18\x06 \x02(\x05\x12\x18\n\x10harass_buy_times\x18\x07 \x02(\x05\"8\n\x13UnionExploreRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08staff_id\x18\x02 \x02(\t\"r\n\x14UnionExploreResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x15\n\rexplore_point\x18\x03 \x01(\x05\x12%\n\x04\x64rop\x18\x04 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"*\n\x17UnionHarassQueryRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\x9b\x01\n\x18UnionHarassQueryResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12.\n\x05union\x18\x03 \x03(\x0b\x32\x1f.Dianjing.protocol.ExploreUnion\x12\x31\n\x08my_union\x18\x04 \x02(\x0b\x32\x1f.Dianjing.protocol.ExploreUnion\"I\n\x12UnionHarassRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08union_id\x18\x02 \x02(\t\x12\x10\n\x08staff_id\x18\x03 \x02(\t\"q\n\x13UnionHarassResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x15\n\rexplore_point\x18\x03 \x01(\x05\x12%\n\x04\x64rop\x18\x04 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"-\n\x1aUnionHarassBuyTimesRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\";\n\x1bUnionHarassBuyTimesResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\xb3\x01\n\x10UnionSkillNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12=\n\x05skill\x18\x03 \x03(\x0b\x32..Dianjing.protocol.UnionSkillNotify.UnionSkill\x1a\'\n\nUnionSkill\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\"=\n\x18UnionSkillLevelupRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x10\n\x08skill_id\x18\x02 \x02(\x05\"9\n\x19UnionSkillLevelupResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
   ,
-  dependencies=[package__pb2.DESCRIPTOR,])
+  dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
@@ -96,8 +97,8 @@ _UNIONMEMBER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=50,
-  serialized_end=189,
+  serialized_start=64,
+  serialized_end=203,
 )
 
 
@@ -190,8 +191,8 @@ _UNIONNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=192,
-  serialized_end=410,
+  serialized_start=206,
+  serialized_end=424,
 )
 
 
@@ -228,8 +229,8 @@ _UNIONMYAPPLIEDNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=412,
-  serialized_end=470,
+  serialized_start=426,
+  serialized_end=484,
 )
 
 
@@ -266,8 +267,8 @@ _UNIONMYCHECKNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=472,
-  serialized_end=558,
+  serialized_start=486,
+  serialized_end=572,
 )
 
 
@@ -304,8 +305,8 @@ _UNIONCREATEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=560,
-  serialized_end=611,
+  serialized_start=574,
+  serialized_end=625,
 )
 
 
@@ -342,8 +343,8 @@ _UNIONCREATERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=613,
-  serialized_end=664,
+  serialized_start=627,
+  serialized_end=678,
 )
 
 
@@ -380,8 +381,8 @@ _UNIONSETBULLETINREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=666,
-  serialized_end=726,
+  serialized_start=680,
+  serialized_end=740,
 )
 
 
@@ -418,8 +419,8 @@ _UNIONSETBULLETINRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=728,
-  serialized_end=784,
+  serialized_start=742,
+  serialized_end=798,
 )
 
 
@@ -449,8 +450,8 @@ _UNIONLISTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=786,
-  serialized_end=821,
+  serialized_start=800,
+  serialized_end=835,
 )
 
 
@@ -515,8 +516,8 @@ _UNIONLISTRESPONSE_UNION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=934,
-  serialized_end=1038,
+  serialized_start=948,
+  serialized_end=1052,
 )
 
 _UNIONLISTRESPONSE = _descriptor.Descriptor(
@@ -559,8 +560,8 @@ _UNIONLISTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=824,
-  serialized_end=1038,
+  serialized_start=838,
+  serialized_end=1052,
 )
 
 
@@ -597,8 +598,8 @@ _UNIONAPPLYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1040,
-  serialized_end=1094,
+  serialized_start=1054,
+  serialized_end=1108,
 )
 
 
@@ -635,8 +636,8 @@ _UNIONAPPLYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1096,
-  serialized_end=1146,
+  serialized_start=1110,
+  serialized_end=1160,
 )
 
 
@@ -673,8 +674,8 @@ _UNIONAGREEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1148,
-  serialized_end=1201,
+  serialized_start=1162,
+  serialized_end=1215,
 )
 
 
@@ -711,8 +712,8 @@ _UNIONAGREERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1203,
-  serialized_end=1253,
+  serialized_start=1217,
+  serialized_end=1267,
 )
 
 
@@ -749,8 +750,8 @@ _UNIONREFUSEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1255,
-  serialized_end=1309,
+  serialized_start=1269,
+  serialized_end=1323,
 )
 
 
@@ -787,8 +788,8 @@ _UNIONREFUSERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1311,
-  serialized_end=1362,
+  serialized_start=1325,
+  serialized_end=1376,
 )
 
 
@@ -825,8 +826,8 @@ _UNIONKICKREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1364,
-  serialized_end=1416,
+  serialized_start=1378,
+  serialized_end=1430,
 )
 
 
@@ -863,8 +864,8 @@ _UNIONKICKRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1418,
-  serialized_end=1467,
+  serialized_start=1432,
+  serialized_end=1481,
 )
 
 
@@ -901,8 +902,8 @@ _UNIONTRANSFERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1469,
-  serialized_end=1525,
+  serialized_start=1483,
+  serialized_end=1539,
 )
 
 
@@ -939,8 +940,8 @@ _UNIONTRANSFERRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1527,
-  serialized_end=1580,
+  serialized_start=1541,
+  serialized_end=1594,
 )
 
 
@@ -970,8 +971,8 @@ _UNIONQUITREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1582,
-  serialized_end=1617,
+  serialized_start=1596,
+  serialized_end=1631,
 )
 
 
@@ -1008,8 +1009,8 @@ _UNIONQUITRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1619,
-  serialized_end=1668,
+  serialized_start=1633,
+  serialized_end=1682,
 )
 
 
@@ -1046,8 +1047,8 @@ _UNIONSIGNINREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1670,
-  serialized_end=1719,
+  serialized_start=1684,
+  serialized_end=1733,
 )
 
 
@@ -1091,8 +1092,779 @@ _UNIONSIGNINRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1721,
-  serialized_end=1811,
+  serialized_start=1735,
+  serialized_end=1825,
+)
+
+
+_EXPLORECLUB = _descriptor.Descriptor(
+  name='ExploreClub',
+  full_name='Dianjing.protocol.ExploreClub',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='rank', full_name='Dianjing.protocol.ExploreClub.rank', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.ExploreClub.id', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='name', full_name='Dianjing.protocol.ExploreClub.name', index=2,
+      number=3, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='explore_point', full_name='Dianjing.protocol.ExploreClub.explore_point', index=3,
+      number=4, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1827,
+  serialized_end=1903,
+)
+
+
+_EXPLOREUNION = _descriptor.Descriptor(
+  name='ExploreUnion',
+  full_name='Dianjing.protocol.ExploreUnion',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='rank', full_name='Dianjing.protocol.ExploreUnion.rank', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.ExploreUnion.id', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='name', full_name='Dianjing.protocol.ExploreUnion.name', index=2,
+      number=3, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='explore_point', full_name='Dianjing.protocol.ExploreUnion.explore_point', index=3,
+      number=4, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1905,
+  serialized_end=1982,
+)
+
+
+_UNIONEXPLORELEADERBOARDREQUEST = _descriptor.Descriptor(
+  name='UnionExploreLeaderboardRequest',
+  full_name='Dianjing.protocol.UnionExploreLeaderboardRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.UnionExploreLeaderboardRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1984,
+  serialized_end=2033,
+)
+
+
+_UNIONEXPLORELEADERBOARDRESPONSE = _descriptor.Descriptor(
+  name='UnionExploreLeaderboardResponse',
+  full_name='Dianjing.protocol.UnionExploreLeaderboardResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.UnionExploreLeaderboardResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.UnionExploreLeaderboardResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='club', full_name='Dianjing.protocol.UnionExploreLeaderboardResponse.club', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='union', full_name='Dianjing.protocol.UnionExploreLeaderboardResponse.union', index=3,
+      number=4, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='my_club', full_name='Dianjing.protocol.UnionExploreLeaderboardResponse.my_club', index=4,
+      number=5, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='my_union', full_name='Dianjing.protocol.UnionExploreLeaderboardResponse.my_union', index=5,
+      number=6, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2036,
+  serialized_end=2293,
+)
+
+
+_UNIONEXPLORENOTIFY = _descriptor.Descriptor(
+  name='UnionExploreNotify',
+  full_name='Dianjing.protocol.UnionExploreNotify',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.UnionExploreNotify.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='explore_staff', full_name='Dianjing.protocol.UnionExploreNotify.explore_staff', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='explore_remained_times', full_name='Dianjing.protocol.UnionExploreNotify.explore_remained_times', index=2,
+      number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='explore_cd', full_name='Dianjing.protocol.UnionExploreNotify.explore_cd', index=3,
+      number=4, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='harass_staff', full_name='Dianjing.protocol.UnionExploreNotify.harass_staff', index=4,
+      number=5, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='harass_remained_times', full_name='Dianjing.protocol.UnionExploreNotify.harass_remained_times', index=5,
+      number=6, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='harass_buy_times', full_name='Dianjing.protocol.UnionExploreNotify.harass_buy_times', index=6,
+      number=7, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2296,
+  serialized_end=2487,
+)
+
+
+_UNIONEXPLOREREQUEST = _descriptor.Descriptor(
+  name='UnionExploreRequest',
+  full_name='Dianjing.protocol.UnionExploreRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.UnionExploreRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='staff_id', full_name='Dianjing.protocol.UnionExploreRequest.staff_id', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2489,
+  serialized_end=2545,
+)
+
+
+_UNIONEXPLORERESPONSE = _descriptor.Descriptor(
+  name='UnionExploreResponse',
+  full_name='Dianjing.protocol.UnionExploreResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.UnionExploreResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.UnionExploreResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='explore_point', full_name='Dianjing.protocol.UnionExploreResponse.explore_point', index=2,
+      number=3, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='drop', full_name='Dianjing.protocol.UnionExploreResponse.drop', index=3,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2547,
+  serialized_end=2661,
+)
+
+
+_UNIONHARASSQUERYREQUEST = _descriptor.Descriptor(
+  name='UnionHarassQueryRequest',
+  full_name='Dianjing.protocol.UnionHarassQueryRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.UnionHarassQueryRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2663,
+  serialized_end=2705,
+)
+
+
+_UNIONHARASSQUERYRESPONSE = _descriptor.Descriptor(
+  name='UnionHarassQueryResponse',
+  full_name='Dianjing.protocol.UnionHarassQueryResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.UnionHarassQueryResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.UnionHarassQueryResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='union', full_name='Dianjing.protocol.UnionHarassQueryResponse.union', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='my_union', full_name='Dianjing.protocol.UnionHarassQueryResponse.my_union', index=3,
+      number=4, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2708,
+  serialized_end=2863,
+)
+
+
+_UNIONHARASSREQUEST = _descriptor.Descriptor(
+  name='UnionHarassRequest',
+  full_name='Dianjing.protocol.UnionHarassRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.UnionHarassRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='union_id', full_name='Dianjing.protocol.UnionHarassRequest.union_id', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='staff_id', full_name='Dianjing.protocol.UnionHarassRequest.staff_id', index=2,
+      number=3, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2865,
+  serialized_end=2938,
+)
+
+
+_UNIONHARASSRESPONSE = _descriptor.Descriptor(
+  name='UnionHarassResponse',
+  full_name='Dianjing.protocol.UnionHarassResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.UnionHarassResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.UnionHarassResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='explore_point', full_name='Dianjing.protocol.UnionHarassResponse.explore_point', index=2,
+      number=3, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='drop', full_name='Dianjing.protocol.UnionHarassResponse.drop', index=3,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2940,
+  serialized_end=3053,
+)
+
+
+_UNIONHARASSBUYTIMESREQUEST = _descriptor.Descriptor(
+  name='UnionHarassBuyTimesRequest',
+  full_name='Dianjing.protocol.UnionHarassBuyTimesRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.UnionHarassBuyTimesRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=3055,
+  serialized_end=3100,
+)
+
+
+_UNIONHARASSBUYTIMESRESPONSE = _descriptor.Descriptor(
+  name='UnionHarassBuyTimesResponse',
+  full_name='Dianjing.protocol.UnionHarassBuyTimesResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.UnionHarassBuyTimesResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.UnionHarassBuyTimesResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=3102,
+  serialized_end=3161,
+)
+
+
+_UNIONSKILLNOTIFY_UNIONSKILL = _descriptor.Descriptor(
+  name='UnionSkill',
+  full_name='Dianjing.protocol.UnionSkillNotify.UnionSkill',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.UnionSkillNotify.UnionSkill.id', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='level', full_name='Dianjing.protocol.UnionSkillNotify.UnionSkill.level', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=3304,
+  serialized_end=3343,
+)
+
+_UNIONSKILLNOTIFY = _descriptor.Descriptor(
+  name='UnionSkillNotify',
+  full_name='Dianjing.protocol.UnionSkillNotify',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.UnionSkillNotify.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='act', full_name='Dianjing.protocol.UnionSkillNotify.act', index=1,
+      number=2, type=14, cpp_type=8, label=2,
+      has_default_value=False, default_value=1,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='skill', full_name='Dianjing.protocol.UnionSkillNotify.skill', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[_UNIONSKILLNOTIFY_UNIONSKILL, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=3164,
+  serialized_end=3343,
+)
+
+
+_UNIONSKILLLEVELUPREQUEST = _descriptor.Descriptor(
+  name='UnionSkillLevelupRequest',
+  full_name='Dianjing.protocol.UnionSkillLevelupRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.UnionSkillLevelupRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='skill_id', full_name='Dianjing.protocol.UnionSkillLevelupRequest.skill_id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=3345,
+  serialized_end=3406,
+)
+
+
+_UNIONSKILLLEVELUPRESPONSE = _descriptor.Descriptor(
+  name='UnionSkillLevelupResponse',
+  full_name='Dianjing.protocol.UnionSkillLevelupResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.UnionSkillLevelupResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.UnionSkillLevelupResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=3408,
+  serialized_end=3465,
 )
 
 _UNIONNOTIFY.fields_by_name['members'].message_type = _UNIONMEMBER
@@ -1100,6 +1872,17 @@ _UNIONMYCHECKNOTIFY.fields_by_name['members'].message_type = _UNIONMEMBER
 _UNIONLISTRESPONSE_UNION.containing_type = _UNIONLISTRESPONSE
 _UNIONLISTRESPONSE.fields_by_name['union'].message_type = _UNIONLISTRESPONSE_UNION
 _UNIONSIGNINRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
+_UNIONEXPLORELEADERBOARDRESPONSE.fields_by_name['club'].message_type = _EXPLORECLUB
+_UNIONEXPLORELEADERBOARDRESPONSE.fields_by_name['union'].message_type = _EXPLOREUNION
+_UNIONEXPLORELEADERBOARDRESPONSE.fields_by_name['my_club'].message_type = _EXPLORECLUB
+_UNIONEXPLORELEADERBOARDRESPONSE.fields_by_name['my_union'].message_type = _EXPLOREUNION
+_UNIONEXPLORERESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
+_UNIONHARASSQUERYRESPONSE.fields_by_name['union'].message_type = _EXPLOREUNION
+_UNIONHARASSQUERYRESPONSE.fields_by_name['my_union'].message_type = _EXPLOREUNION
+_UNIONHARASSRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
+_UNIONSKILLNOTIFY_UNIONSKILL.containing_type = _UNIONSKILLNOTIFY
+_UNIONSKILLNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
+_UNIONSKILLNOTIFY.fields_by_name['skill'].message_type = _UNIONSKILLNOTIFY_UNIONSKILL
 DESCRIPTOR.message_types_by_name['UnionMember'] = _UNIONMEMBER
 DESCRIPTOR.message_types_by_name['UnionNotify'] = _UNIONNOTIFY
 DESCRIPTOR.message_types_by_name['UnionMyAppliedNotify'] = _UNIONMYAPPLIEDNOTIFY
@@ -1124,6 +1907,22 @@ DESCRIPTOR.message_types_by_name['UnionQuitRequest'] = _UNIONQUITREQUEST
 DESCRIPTOR.message_types_by_name['UnionQuitResponse'] = _UNIONQUITRESPONSE
 DESCRIPTOR.message_types_by_name['UnionSigninRequest'] = _UNIONSIGNINREQUEST
 DESCRIPTOR.message_types_by_name['UnionSigninResponse'] = _UNIONSIGNINRESPONSE
+DESCRIPTOR.message_types_by_name['ExploreClub'] = _EXPLORECLUB
+DESCRIPTOR.message_types_by_name['ExploreUnion'] = _EXPLOREUNION
+DESCRIPTOR.message_types_by_name['UnionExploreLeaderboardRequest'] = _UNIONEXPLORELEADERBOARDREQUEST
+DESCRIPTOR.message_types_by_name['UnionExploreLeaderboardResponse'] = _UNIONEXPLORELEADERBOARDRESPONSE
+DESCRIPTOR.message_types_by_name['UnionExploreNotify'] = _UNIONEXPLORENOTIFY
+DESCRIPTOR.message_types_by_name['UnionExploreRequest'] = _UNIONEXPLOREREQUEST
+DESCRIPTOR.message_types_by_name['UnionExploreResponse'] = _UNIONEXPLORERESPONSE
+DESCRIPTOR.message_types_by_name['UnionHarassQueryRequest'] = _UNIONHARASSQUERYREQUEST
+DESCRIPTOR.message_types_by_name['UnionHarassQueryResponse'] = _UNIONHARASSQUERYRESPONSE
+DESCRIPTOR.message_types_by_name['UnionHarassRequest'] = _UNIONHARASSREQUEST
+DESCRIPTOR.message_types_by_name['UnionHarassResponse'] = _UNIONHARASSRESPONSE
+DESCRIPTOR.message_types_by_name['UnionHarassBuyTimesRequest'] = _UNIONHARASSBUYTIMESREQUEST
+DESCRIPTOR.message_types_by_name['UnionHarassBuyTimesResponse'] = _UNIONHARASSBUYTIMESRESPONSE
+DESCRIPTOR.message_types_by_name['UnionSkillNotify'] = _UNIONSKILLNOTIFY
+DESCRIPTOR.message_types_by_name['UnionSkillLevelupRequest'] = _UNIONSKILLLEVELUPREQUEST
+DESCRIPTOR.message_types_by_name['UnionSkillLevelupResponse'] = _UNIONSKILLLEVELUPRESPONSE
 
 UnionMember = _reflection.GeneratedProtocolMessageType('UnionMember', (_message.Message,), dict(
   DESCRIPTOR = _UNIONMEMBER,
@@ -1300,6 +2099,126 @@ UnionSigninResponse = _reflection.GeneratedProtocolMessageType('UnionSigninRespo
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.UnionSigninResponse)
   ))
 _sym_db.RegisterMessage(UnionSigninResponse)
+
+ExploreClub = _reflection.GeneratedProtocolMessageType('ExploreClub', (_message.Message,), dict(
+  DESCRIPTOR = _EXPLORECLUB,
+  __module__ = 'union_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ExploreClub)
+  ))
+_sym_db.RegisterMessage(ExploreClub)
+
+ExploreUnion = _reflection.GeneratedProtocolMessageType('ExploreUnion', (_message.Message,), dict(
+  DESCRIPTOR = _EXPLOREUNION,
+  __module__ = 'union_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ExploreUnion)
+  ))
+_sym_db.RegisterMessage(ExploreUnion)
+
+UnionExploreLeaderboardRequest = _reflection.GeneratedProtocolMessageType('UnionExploreLeaderboardRequest', (_message.Message,), dict(
+  DESCRIPTOR = _UNIONEXPLORELEADERBOARDREQUEST,
+  __module__ = 'union_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.UnionExploreLeaderboardRequest)
+  ))
+_sym_db.RegisterMessage(UnionExploreLeaderboardRequest)
+
+UnionExploreLeaderboardResponse = _reflection.GeneratedProtocolMessageType('UnionExploreLeaderboardResponse', (_message.Message,), dict(
+  DESCRIPTOR = _UNIONEXPLORELEADERBOARDRESPONSE,
+  __module__ = 'union_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.UnionExploreLeaderboardResponse)
+  ))
+_sym_db.RegisterMessage(UnionExploreLeaderboardResponse)
+
+UnionExploreNotify = _reflection.GeneratedProtocolMessageType('UnionExploreNotify', (_message.Message,), dict(
+  DESCRIPTOR = _UNIONEXPLORENOTIFY,
+  __module__ = 'union_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.UnionExploreNotify)
+  ))
+_sym_db.RegisterMessage(UnionExploreNotify)
+
+UnionExploreRequest = _reflection.GeneratedProtocolMessageType('UnionExploreRequest', (_message.Message,), dict(
+  DESCRIPTOR = _UNIONEXPLOREREQUEST,
+  __module__ = 'union_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.UnionExploreRequest)
+  ))
+_sym_db.RegisterMessage(UnionExploreRequest)
+
+UnionExploreResponse = _reflection.GeneratedProtocolMessageType('UnionExploreResponse', (_message.Message,), dict(
+  DESCRIPTOR = _UNIONEXPLORERESPONSE,
+  __module__ = 'union_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.UnionExploreResponse)
+  ))
+_sym_db.RegisterMessage(UnionExploreResponse)
+
+UnionHarassQueryRequest = _reflection.GeneratedProtocolMessageType('UnionHarassQueryRequest', (_message.Message,), dict(
+  DESCRIPTOR = _UNIONHARASSQUERYREQUEST,
+  __module__ = 'union_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.UnionHarassQueryRequest)
+  ))
+_sym_db.RegisterMessage(UnionHarassQueryRequest)
+
+UnionHarassQueryResponse = _reflection.GeneratedProtocolMessageType('UnionHarassQueryResponse', (_message.Message,), dict(
+  DESCRIPTOR = _UNIONHARASSQUERYRESPONSE,
+  __module__ = 'union_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.UnionHarassQueryResponse)
+  ))
+_sym_db.RegisterMessage(UnionHarassQueryResponse)
+
+UnionHarassRequest = _reflection.GeneratedProtocolMessageType('UnionHarassRequest', (_message.Message,), dict(
+  DESCRIPTOR = _UNIONHARASSREQUEST,
+  __module__ = 'union_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.UnionHarassRequest)
+  ))
+_sym_db.RegisterMessage(UnionHarassRequest)
+
+UnionHarassResponse = _reflection.GeneratedProtocolMessageType('UnionHarassResponse', (_message.Message,), dict(
+  DESCRIPTOR = _UNIONHARASSRESPONSE,
+  __module__ = 'union_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.UnionHarassResponse)
+  ))
+_sym_db.RegisterMessage(UnionHarassResponse)
+
+UnionHarassBuyTimesRequest = _reflection.GeneratedProtocolMessageType('UnionHarassBuyTimesRequest', (_message.Message,), dict(
+  DESCRIPTOR = _UNIONHARASSBUYTIMESREQUEST,
+  __module__ = 'union_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.UnionHarassBuyTimesRequest)
+  ))
+_sym_db.RegisterMessage(UnionHarassBuyTimesRequest)
+
+UnionHarassBuyTimesResponse = _reflection.GeneratedProtocolMessageType('UnionHarassBuyTimesResponse', (_message.Message,), dict(
+  DESCRIPTOR = _UNIONHARASSBUYTIMESRESPONSE,
+  __module__ = 'union_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.UnionHarassBuyTimesResponse)
+  ))
+_sym_db.RegisterMessage(UnionHarassBuyTimesResponse)
+
+UnionSkillNotify = _reflection.GeneratedProtocolMessageType('UnionSkillNotify', (_message.Message,), dict(
+
+  UnionSkill = _reflection.GeneratedProtocolMessageType('UnionSkill', (_message.Message,), dict(
+    DESCRIPTOR = _UNIONSKILLNOTIFY_UNIONSKILL,
+    __module__ = 'union_pb2'
+    # @@protoc_insertion_point(class_scope:Dianjing.protocol.UnionSkillNotify.UnionSkill)
+    ))
+  ,
+  DESCRIPTOR = _UNIONSKILLNOTIFY,
+  __module__ = 'union_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.UnionSkillNotify)
+  ))
+_sym_db.RegisterMessage(UnionSkillNotify)
+_sym_db.RegisterMessage(UnionSkillNotify.UnionSkill)
+
+UnionSkillLevelupRequest = _reflection.GeneratedProtocolMessageType('UnionSkillLevelupRequest', (_message.Message,), dict(
+  DESCRIPTOR = _UNIONSKILLLEVELUPREQUEST,
+  __module__ = 'union_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.UnionSkillLevelupRequest)
+  ))
+_sym_db.RegisterMessage(UnionSkillLevelupRequest)
+
+UnionSkillLevelupResponse = _reflection.GeneratedProtocolMessageType('UnionSkillLevelupResponse', (_message.Message,), dict(
+  DESCRIPTOR = _UNIONSKILLLEVELUPRESPONSE,
+  __module__ = 'union_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.UnionSkillLevelupResponse)
+  ))
+_sym_db.RegisterMessage(UnionSkillLevelupResponse)
 
 
 # @@protoc_insertion_point(module_scope)

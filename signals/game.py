@@ -67,6 +67,8 @@ def game_start_handler(server_id, char_id, **kwargs):
     msg.port = ss['tcp']
     MessagePipe(char_id).put(msg=msg)
 
+    _Resource.send_notify(server_id, char_id)
+
     UnitManager(server_id, char_id).send_notify()
 
     Bag(server_id, char_id).send_notify()
@@ -130,8 +132,8 @@ def game_start_handler(server_id, char_id, **kwargs):
     u.send_notify()
     u.send_my_check_notify()
     u.send_my_applied_notify()
-
-    _Resource.send_notify(server_id, char_id)
+    u.send_explore_notify()
+    u.send_skill_notify()
 
     Purchase(server_id, char_id).send_notify()
 

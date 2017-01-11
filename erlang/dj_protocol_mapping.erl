@@ -1,4 +1,4 @@
-% auto generate at 2016-12-20 11:04:13.
+% auto generate at 2017-01-11 16:21:27.
 
 -module(dj_protocol_mapping).
 -export([get_name/1,

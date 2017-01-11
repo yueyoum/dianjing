@@ -6,6 +6,8 @@ Date Created:   2016-07-27 15:04
 Description:
 
 """
+
+import math
 from collections import OrderedDict
 
 import arrow
@@ -15,15 +17,34 @@ from dianjing.exception import GameException
 
 from core.mongo import MongoUnion, MongoUnionMember
 from core.resource import ResourceClassification, money_text_to_item_id
-from core.value_log import ValueLogUnionSignInTimes
-from core.club import Club
+from core.value_log import (
+    ValueLogUnionSignInTimes,
+    ValueLogUnionExploreTimes,
+    ValueLogUnionHarassTimes,
+    ValueLogUnionHarassBuyTimes,
+)
+
+from core.club import Club, batch_get_club_property
 from core.vip import VIP
 from core.mail import MailManager
+from core.cooldown import UnionExploreCD
+from core.staff import StaffManger
 
 from utils.message import MessagePipe
 from utils.functional import make_string_id
 
-from config import GlobalConfig, ConfigErrorMessage, ConfigUnionSignin, ConfigUnionLevel
+from config import (
+    GlobalConfig,
+    ConfigErrorMessage,
+    ConfigUnionSignin,
+    ConfigUnionLevel,
+    ConfigUnionExplore,
+    ConfigUnionExploreRankReward,
+    ConfigUnionMemberExploreRankReward,
+    ConfigUnionHarassBuyTimesCost,
+    ConfigUnionSkill,
+)
+
 from config.text import (
     UNION_AUTO_TRANSFER_OLD_OWNER_MAIL_TITLE,
     UNION_AUTO_TRANSFER_OLD_OWNER_MAIL_CONTENT,
@@ -35,9 +56,99 @@ from config.text import (
     UNION_QUIT_TRANSFER_NEW_OWNER_MAIL_CONTENT,
 )
 
-from protomsg.union_pb2 import UnionMyAppliedNotify, UnionMyCheckNotify, UnionNotify, UnionMember as MsgMember
+from protomsg.union_pb2 import (
+    UnionMyAppliedNotify,
+    UnionMyCheckNotify,
+    UnionNotify,
+    UnionMember as MsgMember,
+    UnionExploreNotify,
+    UnionSkillNotify,
+)
+from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 BULLETIN_MAX_LENGTH = 255
+
+UNION_COIN_ID = 30020
+UNION_SKILL_POINT_ID = 30025
+
+
+class ExploreInfo(object):
+    __slots__ = ['server_id', 'char_id', 'current_times', 'max_times', 'remained_times']
+
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+
+        self.max_times = GlobalConfig.value("UNION_EXPLORE_TIMES")
+        self.current_times = ValueLogUnionExploreTimes(server_id, char_id).count_of_today()
+        self._calculate()
+
+    def _calculate(self):
+        self.remained_times = self.max_times - self.current_times
+        if self.remained_times < 0:
+            self.remained_times = 0
+
+    def get_cd(self):
+        return UnionExploreCD(self.server_id, self.char_id).get_cd_seconds()
+
+    def check_cd(self):
+        if self.get_cd():
+            raise GameException(ConfigErrorMessage.get_error_id("UNION_EXPLORE_CD"))
+
+    def record(self):
+        ValueLogUnionExploreTimes(self.server_id, self.char_id).record()
+        UnionExploreCD(self.server_id, self.char_id).set(GlobalConfig.value("UNION_EXPLORE_CD"))
+
+        self.current_times += 1
+        self._calculate()
+
+
+class HarassInfo(object):
+    __slots__ = ['server_id', 'char_id',
+                 'current_times', 'max_times', 'remained_times',
+                 'current_buy_times', 'remained_buy_times',
+                 'vip_max_buy_times',
+                 ]
+
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+
+        self.max_times = GlobalConfig.value("UNION_HARASS_TIMES")
+        self.current_times = ValueLogUnionHarassTimes(server_id, char_id).count_of_today()
+        self.current_buy_times = ValueLogUnionHarassBuyTimes(server_id, char_id).count_of_today()
+
+        self.vip_max_buy_times = VIP(server_id, char_id).union_harass_buy_times
+        self._calculate()
+
+    def _calculate(self):
+        self.remained_buy_times = self.vip_max_buy_times - self.current_buy_times
+        if self.remained_buy_times < 0:
+            self.remained_buy_times = 0
+
+        self.remained_times = self.max_times + self.current_buy_times - self.current_times
+        if self.remained_times < 0:
+            self.remained_times = 0
+
+    def buy_times(self):
+        if not self.remained_buy_times:
+            raise GameException(ConfigErrorMessage.get_error_id("UNION_HARASS_NO_BUY_TIMES"))
+
+        diamond = ConfigUnionHarassBuyTimesCost.get_cost(self.current_buy_times + 1)
+        cost = [(money_text_to_item_id('diamond'), diamond)]
+        rc = ResourceClassification.classify(cost)
+        rc.check_exist(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id, message="HarassInfo.buy_times")
+
+        ValueLogUnionHarassBuyTimes(self.server_id, self.char_id).record()
+
+        self.current_buy_times += 1
+        self._calculate()
+
+    def record(self):
+        ValueLogUnionHarassTimes(self.server_id, self.char_id).record()
+        self.current_times += 1
+        self._calculate()
 
 
 class _UnionInfo(object):
@@ -180,6 +291,24 @@ class IUnion(object):
     def check_level(self, target_level):
         raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
+    def explore(self, staff_id):
+        raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+    def harass(self, union_id, staff_id):
+        raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+    def harass_buy_times(self):
+        raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+    def add_explore_point(self, point):
+        raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+    def query_by_explore_point_rank(self):
+        raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+    def skill_level_up(self, skill_id):
+        raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
     def send_notify(self, **kwargs):
         raise NotImplementedError()
 
@@ -187,6 +316,12 @@ class IUnion(object):
         raise NotImplementedError()
 
     def send_my_check_notify(self):
+        raise NotImplementedError()
+
+    def send_explore_notify(self):
+        raise NotImplementedError()
+
+    def send_skill_notify(self):
         raise NotImplementedError()
 
 
@@ -284,9 +419,36 @@ class UnionNotJoined(IUnion):
     def send_my_check_notify(self):
         pass
 
+    def send_explore_notify(self):
+        pass
+
+    def send_skill_notify(self):
+        pass
+
 
 class UnionJoined(IUnion):
     __slots__ = []
+
+    def __init__(self, *args, **kwargs):
+        super(UnionJoined, self).__init__(*args, **kwargs)
+
+        updater = {}
+        if 'skills' not in self.member_doc:
+            self.member_doc['skills'] = {}
+            updater['skills'] = {}
+
+        if not self.member_doc.get('explore_staff', 0):
+            self.member_doc['explore_staff'] = ConfigUnionExplore.get_staff_id()
+            self.member_doc['harass_staff'] = ConfigUnionExplore.get_staff_id()
+
+            updater['explore_staff'] = self.member_doc['explore_staff']
+            updater['harass_staff'] = self.member_doc['harass_staff']
+
+        if updater:
+            MongoUnionMember.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': updater}
+            )
 
     def get_joined_union_id(self):
         return self.member_doc['joined']
@@ -454,6 +616,155 @@ class UnionJoined(IUnion):
         unions = get_all_unions(self.server_id)
         return unions[self.union_doc['_id']].rank
 
+    def explore(self, staff_id):
+        staff = StaffManger(self.server_id, self.char_id).get_staff_object(staff_id)
+
+        ei = ExploreInfo(self.server_id, self.char_id)
+        ei.check_cd()
+        if not ei.remained_times:
+            raise GameException(ConfigErrorMessage.get_error_id("UNION_EXPLORE_NO_TIMES"))
+
+        if staff.oid == self.member_doc['explore_staff']:
+            param = 2
+        else:
+            param = 1
+
+        ei.record()
+
+        union_coin = int((math.pow(staff.level, 0.2) + math.pow(staff.step, 0.5)) * 8 * param)
+        explore_point = int((math.pow(staff.level, 0.2) + math.pow(staff.step, 0.5)) * 13 * param)
+        union_skill_point = int((math.pow(staff.level, 0.2) + math.pow(staff.step, 0.5)) * 5 * param)
+
+        self.add_explore_point(explore_point)
+
+        reward = ConfigUnionExplore.get_explore_reward()
+        reward = [(_id, _amount * param) for _id, _amount in reward]
+        reward.append((UNION_COIN_ID, union_coin))
+        reward.append((UNION_SKILL_POINT_ID, union_skill_point))
+
+        rc = ResourceClassification.classify(reward)
+        rc.add(self.server_id, self.char_id, message="UnionJoined.explore")
+
+        self.member_doc['explore_staff'] = ConfigUnionExplore.get_staff_id()
+        MongoUnionMember.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'explore_staff': self.member_doc['explore_staff']
+            }}
+        )
+
+        self.send_explore_notify()
+        return explore_point, rc
+
+    def harass(self, union_id, staff_id):
+        doc = MongoUnion.db(self.server_id).find_one({'_id': union_id}, {'owner': 1})
+        if not doc:
+            raise GameException(ConfigErrorMessage.get_error_id("UNION_NOT_EXIST"))
+
+        staff = StaffManger(self.server_id, self.char_id).get_staff_object(staff_id)
+
+        hi = HarassInfo(self.server_id, self.char_id)
+        if not hi.remained_times:
+            hi.buy_times()
+
+        if staff.oid == self.member_doc['harass_staff']:
+            param = 2
+        else:
+            param = 1
+
+        hi.record()
+
+        union_coin = int((math.pow(staff.level, 0.2) + math.pow(staff.step, 0.5)) * 4 * param)
+        explore_point = int((math.pow(staff.level, 0.2) + math.pow(staff.step, 0.5)) * 6 * param)
+        union_skill_point = int((math.pow(staff.level, 0.2) + math.pow(staff.step, 0.5)) * 2.5 * param)
+
+        Union(self.server_id, doc['owner']).add_explore_point(-explore_point)
+
+        reward = ConfigUnionExplore.get_harass_reward()
+        reward = [(_id, _amount * param) for _id, _amount in reward]
+        reward.append((UNION_COIN_ID, union_coin))
+        reward.append((UNION_SKILL_POINT_ID, union_skill_point))
+
+        rc = ResourceClassification.classify(reward)
+        rc.add(self.server_id, self.char_id, message="UnionJoined.harass")
+
+        self.member_doc['harass_staff'] = ConfigUnionExplore.get_harass_reward()
+        MongoUnionMember.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'explore_staff': self.member_doc['explore_staff']
+            }}
+        )
+
+        self.send_explore_notify()
+        return explore_point, rc
+
+    def harass_buy_times(self):
+        hi = HarassInfo(self.server_id, self.char_id)
+        hi.buy_times()
+        self.send_explore_notify()
+
+    def add_explore_point(self, point):
+        # point 如果大于零，就是给自己和公会都加
+        # 如果小于零，只减公会的
+        if point > 0:
+            self.member_doc['explore_point'] = self.member_doc.get('explore_point', 0) + point
+            MongoUnionMember.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$inc': {
+                    'explore_point': point
+                }}
+            )
+
+            self.union_doc['explore_point'] = self.union_doc.get('explore_point', 0) + point
+            MongoUnion.db(self.server_id).update_one(
+                {'_id': self.union_doc['_id']},
+                {'$inc': {
+                    'explore_point': point
+                }}
+            )
+
+        elif point < 0:
+            old_point = self.union_doc.get('explore_point', 0)
+            if abs(point) > old_point:
+                point = -old_point
+
+            self.union_doc['explore_point'] = old_point + point
+            MongoUnion.db(self.server_id).update_one(
+                {'_id': self.union_doc['_id']},
+                {'$inc': {
+                    'explore_point': point
+                }}
+            )
+
+    def query_by_explore_point_rank(self):
+        result, self_info = get_unions_ordered_by_explore_point(self.server_id, self.char_id, around_rank=2)
+        return result, self_info
+
+    def skill_level_up(self, skill_id):
+        config = ConfigUnionSkill.get(skill_id)
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("UNION_SKILL_NOT_EXIST"))
+
+        current_level = self.member_doc['skills'].get(str(skill_id), 0)
+        if current_level >= config.max_level:
+            raise GameException(ConfigErrorMessage.get_error_id("UNION_SKILL_REACH_SELF_MAX_LEVEL"))
+
+        if current_level >= self.union_doc['level'] * 3:
+            raise GameException(ConfigErrorMessage.get_error_id("UNION_SKILL_LEVEL_LIMITED_BY_UNION_LEVEL"))
+
+        rc = ResourceClassification.classify(config.levels[current_level].cost)
+        rc.check_exist(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id, message="UnionJoined.skill_level_up")
+
+        self.member_doc['skills'][str(skill_id)] = current_level + 1
+        MongoUnionMember.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'skills.{0}'.format(skill_id): current_level}
+        )
+
+        self.send_skill_notify(skill_id=skill_id)
+
     def send_notify_to_all_members(self, rank=None, send_my_check_notify=False):
         if rank is None:
             rank = self.get_rank()
@@ -488,6 +799,41 @@ class UnionJoined(IUnion):
 
     def send_my_applied_notify(self):
         notify = UnionMyAppliedNotify()
+        MessagePipe(self.char_id).put(msg=notify)
+
+    def send_explore_notify(self):
+        ei = ExploreInfo(self.server_id, self.char_id)
+        hi = HarassInfo(self.server_id, self.char_id)
+
+        notify = UnionExploreNotify()
+        notify.explore_staff = self.member_doc['explore_staff']
+        notify.explore_remained_times = ei.remained_times
+        notify.explore_cd = ei.get_cd()
+        notify.harass_staff = self.member_doc['harass_staff']
+        notify.harass_remained_times = hi.remained_times
+        notify.harass_buy_times = hi.current_buy_times
+
+        MessagePipe(self.char_id).put(msg=notify)
+
+    def send_skill_notify(self, skill_id=None):
+        if skill_id:
+            act = ACT_UPDATE
+            ids = [skill_id]
+        else:
+            act = ACT_INIT
+            ids = ConfigUnionSkill.INSTANCES.keys()
+
+        notify = UnionSkillNotify()
+        notify.act = act
+
+        skills = self.member_doc['skills']
+        for i in ids:
+            lv = skills.get(str(i), 0)
+
+            notify_skill = notify.skills.add()
+            notify_skill.id = i
+            notify_skill.level = lv
+
         MessagePipe(self.char_id).put(msg=notify)
 
 
@@ -660,3 +1006,135 @@ class UnionOwner(UnionJoined):
             notify_member.MergeFrom(m.make_member_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)
+
+
+class _ExploreMember(object):
+    __slots__ = ['rank', 'id', 'name', 'explore_point']
+
+    def __init__(self):
+        self.rank = 0
+        self.id = 0
+        self.name = ''
+        self.explore_point = 0
+
+
+class _ExploreUnion(object):
+    __slots__ = ['rank', 'id', 'name', 'explore_point']
+
+    def __init__(self):
+        self.rank = 0
+        self.id = ''
+        self.name = ''
+        self.explore_point = 0
+
+
+def get_members_ordered_by_explore_point(server_id, char_id, limit=None):
+    """
+
+    :rtype: (list[_ExploreMember], _ExploreMember | None)
+    """
+    docs = MongoUnionMember.db(server_id).find(
+        {'explore_point': {'$gt': 0}}
+    ).sort('explore_point', -1)
+
+    result = []
+    """:type: list[_ExploreMember]"""
+    self_info = None
+    """:type: _ExploreMember | None"""
+
+    for index, doc in enumerate(docs):
+        rank = index + 1
+        if limit and rank > limit:
+            break
+
+        obj = _ExploreMember()
+        obj.rank = rank
+        obj.id = doc['_id']
+        obj.explore_point = doc['explore_point']
+
+        result.append(obj)
+
+        if doc['_id'] == char_id:
+            self_info = obj
+
+    # find names
+    char_ids = [r.id for r in result]
+    names = batch_get_club_property(server_id, char_ids, 'name')
+    for r in result:
+        r.name = names[r.id]
+
+    if self_info:
+        return result, self_info
+
+    doc = MongoUnionMember.db(server_id).find_one({'_id': char_id}, {'explore_point': 1})
+    if not doc:
+        return result, None
+
+    self_info = _ExploreMember()
+    self_info.id = char_id
+    self_info.explore_point = doc.get('explore_point', 0)
+    if not self_info.explore_point:
+        self_info.rank = 0
+        return result, self_info
+
+    rank = MongoUnionMember.db(server_id).find(
+        {'explore_point': {'$gt': self_info.explore_point}}
+    ).count()
+
+    self_info.rank = rank
+    return result, rank
+
+
+def get_unions_ordered_by_explore_point(server_id, char_id, around_rank=None):
+    """
+
+    :rtype: (list[_ExploreUnion], _ExploreUnion | None)
+    """
+    docs = MongoUnion.db(server_id).find(
+        {'explore_point': {'$gt': 0}}
+    ).sort('explore_point', -1)
+
+    member_doc = MongoUnionMember.db(server_id).find_one(
+        {'_id': char_id},
+        {'joined': 1}
+    )
+
+    if not member_doc:
+        self_union_id = ''
+    else:
+        self_union_id = member_doc['joined']
+
+    result = []
+    """:type: list[_ExploreUnion]"""
+    self_info = None
+    """:type: _ExploreUnion | None"""
+
+    for index, doc in enumerate(docs):
+        obj = _ExploreUnion()
+        obj.rank = index + 1
+        obj.id = doc['_id']
+        obj.name = doc['name']
+        obj.explore_point = doc['explore_point']
+
+        result.append(obj)
+
+        if doc['_id'] == self_union_id:
+            self_info = obj
+
+    if not self_info:
+        return result, self_info
+
+    if not around_rank:
+        return result, self_info
+
+    around_result = []
+    for i in range(self_info.rank - 1 - around_rank, self_info.rank + around_rank):
+        try:
+            this_obj = result[i]
+        except IndexError:
+            continue
+
+        if not this_obj == self_union_id:
+            around_result.append(result[i])
+
+    return around_result, self_info

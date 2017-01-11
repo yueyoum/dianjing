@@ -7,9 +7,16 @@ Description:
 
 """
 
+from dianjing.exception import GameException
 from utils.http import ProtobufResponse
+from config import ConfigErrorMessage
 
-from core.union import Union, get_all_unions
+from core.union import (
+    Union,
+    get_all_unions,
+    get_unions_ordered_by_explore_point,
+    get_members_ordered_by_explore_point,
+)
 
 from protomsg.union_pb2 import (
     UnionAgreeResponse,
@@ -22,6 +29,13 @@ from protomsg.union_pb2 import (
     UnionSetBulletinResponse,
     UnionSigninResponse,
     UnionTransferResponse,
+
+    UnionExploreLeaderboardResponse,
+    UnionExploreResponse,
+    UnionHarassQueryResponse,
+    UnionHarassResponse,
+    UnionHarassBuyTimesResponse,
+    UnionSkillLevelupResponse,
 )
 
 def get_list(request):
@@ -161,4 +175,133 @@ def signin(request):
     response = UnionSigninResponse()
     response.ret = 0
     response.drop.MergeFrom(rc.make_protomsg())
+    return ProtobufResponse(response)
+
+def explore_leader_board(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    members, self_member = get_members_ordered_by_explore_point(server_id, char_id, limit=10)
+    unions, self_union = get_unions_ordered_by_explore_point(server_id, char_id)
+
+    if not self_member or not self_union:
+        raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+    response = UnionExploreLeaderboardResponse()
+    response.ret = 0
+
+    response.my_club.rank = self_member.rank
+    response.my_club.id = self_member.id
+    response.my_club.name = self_member.name
+    response.my_club.explore_point = self_member.explore_point
+
+    response.my_union.rank = self_union.rank
+    response.my_union.id = self_union.id
+    response.my_union.name = self_union.name
+    response.my_union.explore_point = self_union.explore_point
+
+    for i in range(10):
+        try:
+            m = members[i]
+        except IndexError:
+            break
+
+        res_club = response.club.add()
+        res_club.rank = m.rank
+        res_club.id = str(m.id)
+        res_club.name = m.name
+        res_club.explore_point = m.explore_point
+
+    for i in range(10):
+        try:
+            u = unions[i]
+        except IndexError:
+            break
+
+        res_union = response.union.add()
+        res_union.rank = u.rank
+        res_union.id = u.id
+        res_union.name = u.name
+        res_union.explore_point = u.explore_point
+
+    return ProtobufResponse(response)
+
+def explore(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    staff_id = request._proto.staff_id
+
+    u = Union(server_id, char_id)
+    explore_point, rc = u.explore(staff_id)
+
+    response = UnionExploreResponse()
+    response.ret = 0
+    response.explore_point = explore_point
+    response.drop.MergeFrom(rc.make_protomsg())
+
+    return ProtobufResponse(response)
+
+def harass_query_union(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    u = Union(server_id, char_id)
+    unions, self_union = u.query_by_explore_point_rank()
+
+    response = UnionHarassQueryResponse()
+    response.ret = 0
+
+    response.my_union.rank = self_union.rank
+    response.my_union.id = self_union.id
+    response.my_union.name = self_union.name
+    response.my_union.explore_point = self_union.explore_point
+
+    for u in unions:
+        res_union = response.union.add()
+        res_union.rank = u.rank
+        res_union.id = u.id
+        res_union.name = u.name
+        res_union.explore_point = u.explore_point
+
+    return ProtobufResponse(response)
+
+def harass(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    union_id = request._proto.union_id
+    staff_id = request._proto.staff_id
+
+    u = Union(server_id, char_id)
+    explore_point, rc = u.harass(union_id, staff_id)
+
+    response = UnionHarassResponse()
+    response.ret = 0
+    response.explore_point = explore_point
+    response.drop.MergeFrom(rc.make_protomsg())
+
+    return ProtobufResponse(response)
+
+def harass_buy_times(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    u = Union(server_id, char_id)
+    u.harass_buy_times()
+
+    response = UnionHarassBuyTimesResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+def skill_level_up(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    skill_id = request._proto.skill_id
+    u = Union(server_id, char_id)
+    u.skill_level_up(skill_id)
+
+    response = UnionSkillLevelupResponse()
+    response.ret = 0
     return ProtobufResponse(response)

@@ -155,3 +155,7 @@ class VIP(object):
     @property
     def plunder_buy_times(self):
         return ConfigVIP.get(self.doc['vip']).plunder_buy_times
+
+    @property
+    def union_harass_buy_times(self):
+        return ConfigVIP.get(self.doc['vip']).union_harass_buy_times

@@ -346,3 +346,18 @@ class ValueLogPartyJoinTimes(ValueLog):
 class ValueLogPartyEngageTimes(ValueLog):
     KEY = 'party_engage_times'
     __slots__ = []
+
+# 公会探索次数
+class ValueLogUnionExploreTimes(ValueLog):
+    KEY = 'union_explore_times'
+    __slots__ = []
+
+# 公会骚扰次数
+class ValueLogUnionHarassTimes(ValueLog):
+    KEY = 'union_harass_times'
+    __slots__ = []
+
+# 公会骚扰购买次数
+class ValueLogUnionHarassBuyTimes(ValueLog):
+    KEY = 'union_harass_buy_times'
+    __slots__ = []

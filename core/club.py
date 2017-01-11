@@ -62,6 +62,17 @@ def get_club_property(server_id, char_id, key, default_value=0):
 
     return doc.get(key, default_value)
 
+def batch_get_club_property(server_id, ids, key, default_value=0):
+    docs = MongoCharacter.db(server_id).find(
+        {'_id': {'$in': ids}},
+        {key: 1}
+    )
+
+    result = {}
+    for doc in docs:
+        result[doc['_id']] = doc.get(key, default_value)
+
+    return result
 
 # 为了兼容任务条件
 class _ClubProperty(object):
