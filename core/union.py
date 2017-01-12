@@ -24,7 +24,7 @@ from core.value_log import (
     ValueLogUnionHarassBuyTimes,
 )
 
-from core.club import Club, batch_get_club_property
+from core.club import Club, batch_get_club_property, get_club_property
 from core.vip import VIP
 from core.mail import MailManager
 from core.cooldown import UnionExploreCD
@@ -770,7 +770,12 @@ class UnionJoined(IUnion):
         if rank is None:
             rank = self.get_rank()
 
-        for doc in MongoUnionMember.db(self.server_id).find({'joined': self.union_doc['_id']}):
+        docs = MongoUnionMember.db(self.server_id).find(
+            {'joined': self.union_doc['_id']},
+            {'_id': 1}
+        )
+
+        for doc in docs:
             u = Union(self.server_id, doc['_id'])
             u.send_notify(rank=rank)
             if send_my_check_notify:
@@ -832,7 +837,7 @@ class UnionJoined(IUnion):
         for i in ids:
             lv = skills.get(str(i), 0)
 
-            notify_skill = notify.skills.add()
+            notify_skill = notify.skill.add()
             notify_skill.id = i
             notify_skill.level = lv
 
@@ -1030,7 +1035,7 @@ class _ExploreUnion(object):
         self.explore_point = 0
 
 
-def get_members_ordered_by_explore_point(server_id, char_id, limit=None):
+def get_members_ordered_by_explore_point(server_id, char_id, names=True, limit=None):
     """
 
     :rtype: (list[_ExploreMember], _ExploreMember | None)
@@ -1059,11 +1064,15 @@ def get_members_ordered_by_explore_point(server_id, char_id, limit=None):
         if doc['_id'] == char_id:
             self_info = obj
 
-    # find names
-    char_ids = [r.id for r in result]
-    names = batch_get_club_property(server_id, char_ids, 'name')
-    for r in result:
-        r.name = names[r.id]
+    if names:
+        # find names
+        char_ids = [r.id for r in result]
+        names = batch_get_club_property(server_id, char_ids, 'name')
+        for r in result:
+            r.name = names[r.id]
+
+    if char_id == 0:
+        return result, None
 
     if self_info:
         return result, self_info
@@ -1074,6 +1083,7 @@ def get_members_ordered_by_explore_point(server_id, char_id, limit=None):
 
     self_info = _ExploreMember()
     self_info.id = char_id
+    self_info.name = get_club_property(server_id, char_id, 'name')
     self_info.explore_point = doc.get('explore_point', 0)
     if not self_info.explore_point:
         self_info.rank = 0
@@ -1123,9 +1133,6 @@ def get_unions_ordered_by_explore_point(server_id, char_id, around_rank=None):
         if doc['_id'] == self_union_id:
             self_info = obj
 
-    if not self_info:
-        return result, self_info
-
     if not around_rank:
         return result, self_info
 
@@ -1140,3 +1147,46 @@ def get_unions_ordered_by_explore_point(server_id, char_id, around_rank=None):
             around_result.append(result[i])
 
     return around_result, self_info
+
+
+def cronjob_of_union_explore(server_id):
+    members, _ = get_members_ordered_by_explore_point(server_id, 0, names=False)
+    unions, _ = get_unions_ordered_by_explore_point(server_id, 0)
+
+    MongoUnionMember.db(server_id).update_many(
+        {},
+        {'$set': {
+            'explore_point': 0,
+        }}
+    )
+
+    MongoUnion.db(server_id).update_many(
+        {},
+        {'$set': {
+            'explore_point': 0,
+        }}
+    )
+
+    for m in members:
+        reward = ConfigUnionMemberExploreRankReward.get_by_rank(m.rank)
+        if not reward:
+            continue
+
+        attachment = ResourceClassification.classify(reward.reward).to_json()
+        m = MailManager(server_id, m.id)
+        m.add(reward.mail_title, reward.mail_content, attachment=attachment)
+
+    for u in unions:
+        reward = ConfigUnionExploreRankReward.get_by_rank(u.rank)
+        if not reward:
+            continue
+
+        attachment = ResourceClassification.classify(reward.reward).to_json()
+        docs = MongoUnionMember.db(server_id).find(
+            {'joined': u.id},
+            {'_id': 1}
+        )
+
+        for doc in docs:
+            m = MailManager(server_id, doc['_id'])
+            m.add(reward.mail_title, reward.mail_content, attachment=attachment)

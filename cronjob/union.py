@@ -13,7 +13,7 @@ import uwsgidecorators
 from apps.server.models import Server
 from core.mongo import MongoUnionMember
 
-from core.union import UnionOwner
+from core.union import UnionOwner, cronjob_of_union_explore
 from cronjob.log import Logger
 
 @uwsgidecorators.cron(0, 0, -1, -1, -1, target="spooler")
@@ -33,6 +33,21 @@ def union_reset(*args):
             )
 
             logger.write("Server {0} Finish".format(sid))
+    except:
+        logger.error(traceback.format_exc())
+    else:
+        logger.write("Done")
+    finally:
+        logger.close()
+
+@uwsgidecorators.cron(0, 0, -1, -1, -1, target="spooler")
+def union_explore_reset(*args):
+    logger = Logger("union_explore_reset")
+    logger.write("Start")
+
+    try:
+        for sid in Server.duty_server_ids():
+            cronjob_of_union_explore(sid)
     except:
         logger.error(traceback.format_exc())
     else:
