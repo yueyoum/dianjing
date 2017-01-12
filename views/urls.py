@@ -37,6 +37,7 @@ import views.purchase
 import views.activity
 import views.plunder
 import views.inspire
+import views.championship
 
 urlpatterns = [
     url(r'^sync/$', views.common.sync),
@@ -185,5 +186,14 @@ urlpatterns = [
     url(r'^plunder/specialequip/speedup/$', views.plunder.special_equipment_speedup),
     url(r'^plunder/specialequip/get/$', views.plunder.special_equipment_get),
 
-    url(r'^inspire/setstaff/$', views.inspire.set_staff)
+    url(r'^inspire/setstaff/$', views.inspire.set_staff),
+
+    url(r'^champion/formation/setstaff/$', views.championship.set_staff),
+    url(r'^champion/formation/setunit/$', views.championship.set_unit),
+    url(r'^champion/formation/setposition/$', views.championship.set_position),
+    url(r'^champion/apply/$', views.championship.apply_in),
+    url(r'^champion/bet/$', views.championship.bet),
+    url(r'^champion/group/sync/$', views.championship.sync_group),
+    url(r'^champion/level/sync/$', views.championship.sync_level),
+
 ]

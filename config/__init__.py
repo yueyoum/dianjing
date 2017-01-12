@@ -49,6 +49,7 @@ from config.plunder import ConfigBaseStationLevel, ConfigPlunderBuyTimesCost, Co
     ConfigPlunderDailyReward
 from config.name import ConfigFirstName, ConfigLastName, ConfigName
 from config.party import ConfigPartyLevel, ConfigPartyBuyItem
+from config.championship import ConfigChampionWinScore, ConfigChampionScoreReward, ConfigChampionRankReward, ConfigChampionBet
 
 _has_configed = False
 
@@ -284,6 +285,15 @@ def load_config():
             ConfigPartyLevel.initialize(data)
         elif fname == 'party_buy_item.json':
             ConfigPartyBuyItem.initialize(data)
+
+        elif fname == 'championship_win_score.json':
+            ConfigChampionWinScore.initialize(data)
+        elif fname == 'championship_score_reward.json':
+            ConfigChampionScoreReward.initialize(data)
+        elif fname == 'championship_rank_reward.json':
+            ConfigChampionRankReward.initialize(data)
+        elif fname == 'championship_bet.json':
+            ConfigChampionBet.initialize(data)
 
     _has_configed = True
     sys.stderr.write("LOAD CONFIG FROM {0}\n".format(z_file))

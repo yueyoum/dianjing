@@ -6,7 +6,7 @@ Date Created:   2015-07-28 15:38
 Description:
 
 """
-
+import random
 from config.base import ConfigBase
 
 
@@ -23,7 +23,7 @@ class ClubFlag(object):
 
     def __init__(self):
         self.id = 0
-        self.flag = 0
+        self.flag = ''
 
 
 class ConfigClubLevel(ConfigBase):
@@ -59,3 +59,7 @@ class ConfigClubFlag(ConfigBase):
         :rtype : ClubFlag
         """
         return super(ConfigClubFlag, cls).get(_id)
+
+    @classmethod
+    def get_random_flag_id(cls):
+        return random.choice(cls.INSTANCES.keys())

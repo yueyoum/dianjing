@@ -62,10 +62,19 @@ class NPC(object):
     def get_way_info(self):
         return random.choice(self.way_one), random.choice(self.way_two), random.choice(self.way_three)
 
-    def to_doc(self, station_level):
+    def to_simple_doc(self):
         from utils.functional import make_string_id
         from config import ConfigName
+        from config import ConfigClubFlag
 
+        return {
+            'id': 'npc:{0}'.format(make_string_id()),
+            'name': ConfigName.get_random_name(),
+            'flag': ConfigClubFlag.get_random_flag_id(),
+            'ways_npc': self.get_way_info()
+        }
+
+    def to_doc(self, station_level):
         station_level_range = range(station_level-1, station_level+2)
         level = random.choice(station_level_range)
         if level < 1:
@@ -73,13 +82,11 @@ class NPC(object):
         if level > ConfigBaseStationLevel.MAX_LEVEL:
             level = ConfigBaseStationLevel.MAX_LEVEL
 
-        return {
-            'id': 'npc:{0}'.format(make_string_id()),
-            'spied': False,
-            'name': ConfigName.get_random_name(),
-            'station_level': level,
-            'ways_npc': self.get_way_info()
-        }
+        doc = self.to_simple_doc()
+        doc['spied'] = False
+        doc['station_level'] = level
+        doc.pop('flag')
+        return doc
 
 
 class DailyReward(object):
@@ -152,6 +159,14 @@ class ConfigPlunderNPC(ConfigBase):
     FILTER_CACHE = {}
 
     MAP = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: NPC
+        """
+        return super(ConfigPlunderNPC, cls).get(_id)
 
     @classmethod
     def get_by_level(cls, lv):
