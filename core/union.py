@@ -107,7 +107,7 @@ class HarassInfo(object):
     __slots__ = ['server_id', 'char_id',
                  'current_times', 'max_times', 'remained_times',
                  'current_buy_times', 'remained_buy_times',
-                 'vip_max_buy_times',
+                 'vip_max_buy_times', 'buy_cost',
                  ]
 
     def __init__(self, server_id, char_id):
@@ -122,6 +122,8 @@ class HarassInfo(object):
         self._calculate()
 
     def _calculate(self):
+        self.buy_cost = ConfigUnionHarassBuyTimesCost.get_cost(self.current_buy_times + 1)
+
         self.remained_buy_times = self.vip_max_buy_times - self.current_buy_times
         if self.remained_buy_times < 0:
             self.remained_buy_times = 0
@@ -134,8 +136,7 @@ class HarassInfo(object):
         if not self.remained_buy_times:
             raise GameException(ConfigErrorMessage.get_error_id("UNION_HARASS_NO_BUY_TIMES"))
 
-        diamond = ConfigUnionHarassBuyTimesCost.get_cost(self.current_buy_times + 1)
-        cost = [(money_text_to_item_id('diamond'), diamond)]
+        cost = [(money_text_to_item_id('diamond'), self.buy_cost)]
         rc = ResourceClassification.classify(cost)
         rc.check_exist(self.server_id, self.char_id)
         rc.remove(self.server_id, self.char_id, message="HarassInfo.buy_times")
@@ -812,6 +813,7 @@ class UnionJoined(IUnion):
         notify.harass_staff = self.member_doc['harass_staff']
         notify.harass_remained_times = hi.remained_times
         notify.harass_buy_times = hi.current_buy_times
+        notify.harass_buy_cost = hi.buy_cost
 
         MessagePipe(self.char_id).put(msg=notify)
 

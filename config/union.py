@@ -209,7 +209,7 @@ class UnionSkillLevel(object):
     @classmethod
     def create(cls, data):
         obj = cls()
-        obj.cost = data['cost']
+        obj.cost = data['level_up_cost']
         obj.talent_id = data['talent_id']
         return obj
 
