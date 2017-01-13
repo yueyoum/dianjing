@@ -135,7 +135,7 @@ class FriendManager(object):
         match = ClubMatch(club_one, club_two)
         msg = match.start()
         msg.key = ""
-        msg.map_name = GlobalConfig.value_of_string("MATCH_MAP_FRIEND")
+        msg.map_name = GlobalConfig.value_string("MATCH_MAP_FRIEND")
 
         friend_match_signal.send(
             sender=None,

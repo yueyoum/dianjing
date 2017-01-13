@@ -11,11 +11,12 @@ from config.base import ConfigBase
 
 
 class _global_config(object):
-    __slots__ = ['id', 'value']
+    __slots__ = ['id', 'value', 'value_string']
 
     def __init__(self):
         self.id = ''
-        self.value = ''
+        self.value = 0
+        self.value_string = ''
 
 
 class GlobalConfig(ConfigBase):
@@ -29,8 +30,8 @@ class GlobalConfig(ConfigBase):
 
         :rtype: int
         """
-        return int(cls.INSTANCES[_id].value)
+        return cls.INSTANCES[_id].value
 
     @classmethod
-    def value_of_string(cls, _id):
-        return cls.INSTANCES[_id].value
+    def value_string(cls, _id):
+        return cls.INSTANCES[_id].value_string
