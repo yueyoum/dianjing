@@ -174,8 +174,7 @@ get_name(%s) ->
 get_id(#'Proto%s'{}) ->
     %s;"""
 
-        template_file = """%% auto generate at %s.
-
+        template_file = """
 -module(%s).
 -export([get_name/1,
     get_id/1]).
@@ -204,7 +203,6 @@ get_id(#'Proto%s'{}) ->
 
         file_name = 'dj_protocol_mapping'
         content = template_file % (
-            arrow.now().format("YYYY-MM-DD HH:mm:ss"),
             file_name,
             '\n'.join(get_name),
             '\n'.join(get_id)

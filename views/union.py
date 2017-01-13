@@ -191,7 +191,7 @@ def explore_leader_board(request):
     response.ret = 0
 
     response.my_club.rank = self_member.rank
-    response.my_club.id = self_member.id
+    response.my_club.id = str(self_member.id)
     response.my_club.name = self_member.name
     response.my_club.explore_point = self_member.explore_point
 
