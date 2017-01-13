@@ -18,7 +18,7 @@ from core.signals import friend_match_signal, friend_ok_signal
 from utils.message import MessagePipe
 from utils.operation_log import OperationLog
 
-from config import ConfigErrorMessage
+from config import ConfigErrorMessage, GlobalConfig
 from config.settings import FRIEND_CANDIDATES_AMOUNT
 
 from protomsg import friend_pb2
@@ -135,6 +135,7 @@ class FriendManager(object):
         match = ClubMatch(club_one, club_two)
         msg = match.start()
         msg.key = ""
+        msg.map_name = GlobalConfig.value_of_string("MATCH_MAP_FRIEND")
 
         friend_match_signal.send(
             sender=None,

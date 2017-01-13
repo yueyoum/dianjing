@@ -11,12 +11,13 @@ from config.base import ConfigBase
 
 
 class Dungeon(object):
-    __slots__ = ['id', 'cost', 'open_time']
+    __slots__ = ['id', 'cost', 'open_time', 'map_name']
 
     def __init__(self):
         self.id = 0
         self.cost = 0
         self.open_time = []
+        self.map_name = ''
 
 
 class ConfigDungeon(ConfigBase):

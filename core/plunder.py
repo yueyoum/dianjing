@@ -782,6 +782,7 @@ class Plunder(object):
         match = ClubMatch(my_club, None)
         msg = match.start(auto_load_staffs=False)
         msg.key = str(way)
+        msg.map_name = GlobalConfig.value_of_string("MATCH_MAP_PLUNDER")
 
         return msg
 

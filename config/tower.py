@@ -46,6 +46,7 @@ class TowerLevel(object):
         'star_reward',
         'turntable',
         'sale_goods',
+        'map_name',
     ]
 
     def __init__(self):
@@ -55,6 +56,7 @@ class TowerLevel(object):
         self.star_reward = {}
         self.turntable = {}
         self.sale_goods = []
+        self.map_name = ''
 
     def get_star_reward(self, star):
         return self.star_reward[str(star)]

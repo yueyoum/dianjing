@@ -15,7 +15,7 @@ class _global_config(object):
 
     def __init__(self):
         self.id = ''
-        self.value = 0
+        self.value = ''
 
 
 class GlobalConfig(ConfigBase):
@@ -29,4 +29,8 @@ class GlobalConfig(ConfigBase):
 
         :rtype: int
         """
+        return int(cls.INSTANCES[_id].value)
+
+    @classmethod
+    def value_of_string(cls, _id):
         return cls.INSTANCES[_id].value

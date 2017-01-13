@@ -578,6 +578,7 @@ class Arena(object):
         club_match = ClubMatch(club_one, club_two)
         msg = club_match.start()
         msg.key = rival_id
+        msg.map_name = GlobalConfig.value_of_string("MATCH_MAP_ARENA")
         return msg
 
     def report(self, key, win):

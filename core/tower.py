@@ -213,6 +213,7 @@ class Tower(object):
         club_match = ClubMatch(club_one, club_two)
         msg = club_match.start()
         msg.key = str(level)
+        msg.map_name = config.map_name
         return msg
 
     def report(self, key, star):

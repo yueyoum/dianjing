@@ -12,13 +12,14 @@ from config.base import ConfigBase
 
 class Chapter(object):
     __slots__ = [
-        'id', 'tp', 'star_reward'
+        'id', 'tp', 'star_reward', 'map_name',
     ]
 
     def __init__(self):
         self.id = 0
         self.tp = 0
         self.star_reward = []
+        self.map_name = ''
 
 
 class ChallengeMatch(object):

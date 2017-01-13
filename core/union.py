@@ -761,7 +761,9 @@ class UnionJoined(IUnion):
         self.member_doc['skills'][str(skill_id)] = current_level + 1
         MongoUnionMember.db(self.server_id).update_one(
             {'_id': self.char_id},
-            {'skills.{0}'.format(skill_id): current_level}
+            {'$set': {
+                'skills.{0}'.format(skill_id): current_level
+            }}
         )
 
         self.send_skill_notify(skill_id=skill_id)

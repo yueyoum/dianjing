@@ -88,6 +88,8 @@ class Dungeon(object):
         if not grade_conf:
             raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_NOT_EXIST"))
 
+        map_name = ConfigDungeon.get(grade_conf.belong).map_name
+
         club_level = get_club_property(self.server_id, self.char_id, 'level')
         if grade_conf.need_level > club_level:
             raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_CLUB_LEVEL_NOT_ENOUGH"))
@@ -106,6 +108,7 @@ class Dungeon(object):
         club_two = ConfigNPCFormation.get(grade_conf.npc)
         msg = ClubMatch(club_one, club_two).start()
         msg.key = str(dungeon_id)
+        msg.map_name = map_name
         return msg
 
     def report(self, key, star):
