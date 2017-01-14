@@ -8,6 +8,10 @@ Description:
 """
 
 import random
+import arrow
+
+from core.mongo import MongoMatchRecord
+from utils.functional import make_string_id
 
 from protomsg.match_pb2 import (
     ClubMatch as MessageClubMatch,
@@ -134,3 +138,52 @@ class ClubMatch(object):
             msg.club_two.MergeFrom(self.make_club_troop_msg(self.club_two))
 
         return msg
+
+
+class MatchRecord(object):
+    __slots__ = ['server_id', 'id_one', 'id_two', 'club_match', 'record', 'create_at']
+
+    @classmethod
+    def get(cls, server_id, record_id):
+        doc = MongoMatchRecord.db(server_id).find_one({'_id': record_id})
+        if not doc:
+            return None
+
+        obj = cls()
+        obj.server_id = server_id
+        obj.id_one = doc['id_one']
+        obj.id_two = doc['id_two']
+        obj.club_match = doc['club_match']
+        obj.record = doc['record']
+        obj.create_at = doc['create_at']
+        return obj
+
+    @classmethod
+    def create(cls, server_id, id_one, id_two, club_match, record=''):
+        id_one = str(id_one)
+        id_two = str(id_two)
+
+        doc = MongoMatchRecord.document()
+        doc['_id'] = make_string_id()
+        doc['id_one'] = id_one
+        doc['id_two'] = id_two
+        doc['club_match'] = club_match
+        doc['record'] = record
+        doc['create_at'] = arrow.utcnow().timestamp
+
+        MongoMatchRecord.db(server_id).insert_one(doc)
+        return doc['_id']
+
+    @classmethod
+    def update_record(cls, server_id, record_id, record):
+        MongoMatchRecord.db(server_id).update_one(
+            {'_id': record_id},
+            {'$set': {
+                'record': record
+            }}
+        )
+
+    @classmethod
+    def query_by_char_id(cls, server_id, char_id):
+        pass
+

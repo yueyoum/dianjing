@@ -8,6 +8,7 @@ Description:
 """
 import random
 import arrow
+import requests
 
 from django.conf import settings
 
@@ -23,11 +24,13 @@ from core.mongo import (
     MongoChampionHistory,
     MongoCharacter,
 )
+
 from core.plunder import PlunderFormation, Plunder, is_npc
 from core.vip import VIP
 from core.club import Club, get_club_property
 from core.mail import MailManager
 from core.resource import ResourceClassification
+from core.match import ClubMatch, MatchRecord
 
 from utils.message import MessagePipe, MessageFactory
 from utils.functional import make_string_id, make_time_of_today
@@ -41,6 +44,7 @@ from config import (
     ConfigChampionScoreReward,
     ConfigChampionWinScore,
     ConfigPlunderNPC,
+    ConfigNPCFormation,
 )
 
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
@@ -57,6 +61,7 @@ from protomsg.championship_pb2 import (
     ChampionNotify,
     ChampionClub as MsgChampionClub,
 )
+from protomsg.match_pb2 import ClubMatchServerSideRequest, ClubMatchServerSideResponse
 
 # XX强 进阶顺序
 LEVEL_SEQ = [16, 8, 4, 2, 1]
@@ -80,8 +85,10 @@ LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE = {
 
 # 允许报名 周几. 星期一从0开始
 APPLY_WEEKDAY = [0, 1, 2, 3, 4, 5, 6]
-# 允许报名时间 hour, minute
+# 允许报名时间范围 hour, minute
 APPLY_TIME_RANGE = [(8, 0), (22, 30)]
+
+MATCH_SERVER_REQ_HEADERS = {'NMVC_APIRequest': 'StartCombat'}
 
 
 def make_pairs_from_flat_list(items):
@@ -135,7 +142,7 @@ WAY_MAP = {
 }
 
 
-# 取历史前三
+# 取历史前四
 def get_history_top_clubs(server_id):
     doc = MongoChampionHistory.db(server_id).find_one(
         {'_id': MongoChampionHistory.DOC_ID}
@@ -181,7 +188,7 @@ def make_empty_group_notify_msg():
 
 
 # 清空championship 开始新的一轮
-def clean_championship(server_id, send_notify=False):
+def reset_championship(server_id, send_notify=False):
     MongoChampionship.db(server_id).update_many(
         {},
         {'$set': {
@@ -206,9 +213,94 @@ def clean_championship(server_id, send_notify=False):
 
         char_ids = OperationLog.get_recent_action_char_ids(server_id)
         for cid in char_ids:
-            MessagePipe(cid).put(data=basic_data)
-            MessagePipe(cid).put(data=group_data)
-            MessagePipe(cid).put(data=level_data)
+            mp = MessagePipe(cid)
+            mp.put(data=basic_data)
+            mp.put(data=group_data)
+            mp.put(data=level_data)
+
+
+class Match(object):
+    __slots__ = ['server_id', 'id_one', 'info_one', 'id_two', 'info_two']
+
+    def __init__(self, server_id, id_one, info_one, id_two, info_two):
+        self.server_id = server_id
+        self.id_one = id_one
+        self.info_one = info_one
+        self.id_two = id_two
+        self.info_two = info_two
+
+    def make_3_way_clubs(self, _id, _info):
+        """
+
+        :rtype: [core.abstract.AbstractClub]
+        """
+        clubs = []
+
+        if is_npc(_id):
+            for i in range(1, 4):
+                npc_id = _info['ways_npc'][i - 1]
+                club = ConfigNPCFormation.get(npc_id)
+                club.id = _id
+                club.name = _info['name']
+                club.flag = _info['flag']
+
+                clubs.append(club)
+        else:
+            cs = Championship(self.server_id, int(_id))
+            for i in range(1, 4):
+                way = cs.get_way_object(i)
+                club = Club(self.server_id, int(_id), load_staffs=False)
+                club.formation_staffs = way.formation_staffs
+
+                clubs.append(club)
+
+        return clubs
+
+    def start(self):
+        def one_way_match(_club_one, _club_two):
+            match = ClubMatch(_club_one, _club_two)
+            msg = match.start()
+            msg.key = ""
+            msg.map_name = GlobalConfig.value_string("MATCH_MAP_CHAMPIONSHIP")
+
+            req = ClubMatchServerSideRequest()
+            req.match.MergeFrom(msg)
+
+            data = req.SerializeToString()
+
+            host, port = random.choice(settings.MATCH_SERVERS)
+            url = 'http://{0}:{1}/'.format(host, port)
+
+            res = requests.post(url, headers=MATCH_SERVER_REQ_HEADERS, data=data)
+
+            response = ClubMatchServerSideResponse()
+            response.ParseFromString(res.content)
+
+            _record_id = MatchRecord.create(
+                self.server_id, _club_one.id, _club_two.id,
+                msg.SerializeToString(),
+                record=response.record
+            )
+
+            if response.star > 0:
+                _win = 1
+            else:
+                _win = 0
+
+            return _win, _record_id
+
+        one_clubs = self.make_3_way_clubs(self.id_one, self.info_one)
+        two_clubs = self.make_3_way_clubs(self.id_two, self.info_two)
+
+        # [one_wins, record_ids]
+        one_wins = []
+        record_ids = []
+        for i in range(3):
+            win, record_id = one_way_match(one_clubs[i], two_clubs[i])
+            one_wins.append(win)
+            record_ids.append(record_id)
+
+        return one_wins, record_ids
 
 
 class Championship(object):
@@ -360,9 +452,10 @@ class Championship(object):
 
     @check_club_level(silence=False)
     def sync_group(self):
-        group_msg = ChampionshipGroup.find_by_char_id(self.server_id, self.char_id).make_protomsg()
-        if group_msg:
-            MessagePipe(self.char_id).put(msg=group_msg)
+        cg = ChampionshipGroup(self.server_id)
+        cg.find_by_char_id(self.char_id)
+        group_msg = cg.make_protomsg()
+        MessagePipe(self.char_id).put(msg=group_msg)
 
     @check_club_level(silence=False)
     def sync_level(self):
@@ -376,10 +469,13 @@ class Championship(object):
         self.send_basic_notify()
         self.send_formation_notify()
 
-        group_msg = ChampionshipGroup.find_by_char_id(self.server_id, self.char_id).make_protomsg()
+        cg = ChampionshipGroup(self.server_id)
+        cg.find_by_char_id(self.char_id)
+        group_msg = cg.make_protomsg()
         MessagePipe(self.char_id).put(msg=group_msg)
 
-        level_msg = ChampionshipLevel(self.server_id).make_protomsg()
+        cl = ChampionshipLevel(self.server_id)
+        level_msg = cl.make_protomsg()
         MessagePipe(self.char_id).put(msg=level_msg)
 
     def send_basic_notify(self):
@@ -392,8 +488,6 @@ class Championship(object):
                 bet.bet_for = bet_info['club_id']
                 bet.bet_id = bet_info['bet_id']
 
-        # XXX
-        print notify
         MessagePipe(self.char_id).put(msg=notify)
 
     def send_formation_notify(self):
@@ -414,35 +508,33 @@ class ChampionshipGroup(object):
         self.group_id = None
         self.doc = None
 
+        # 只有在 find_by_char_id 并且找到group的清空下，才填充 _char_id
         self._char_id = None
+
+        # 这两个仅仅是初始化group的适合保存信息的，
+        # 后面查询到的数据，这两个并不填充
         self._member_ids = []
         self._info = {}
 
-    @classmethod
-    def find_by_char_id(cls, server_id, char_id):
-        obj = cls(server_id)
-        obj._char_id = char_id
-        obj.doc = MongoChampionshipGroup.db(server_id).find_one(
+    def find_by_char_id(self, char_id):
+        self.doc = MongoChampionshipGroup.db(self.server_id).find_one(
             {'member_ids': str(char_id)}
         )
 
-        if obj.doc:
-            obj.group_id = obj.doc['_id']
+        if self.doc:
+            self.group_id = self.doc['_id']
+            self._char_id = char_id
 
-        return obj
-
-    @classmethod
-    def find_by_group_id(cls, server_id, group_id):
-        obj = cls(server_id)
-        obj.group_id = group_id
-        obj.doc = MongoChampionshipGroup.db(server_id).find_one(
+    def find_by_group_id(self, group_id):
+        self.doc = MongoChampionshipGroup.db(self.server_id).find_one(
             {'_id': group_id}
         )
 
-        return obj
+        if self.doc:
+            self.group_id = group_id
 
     @classmethod
-    def make_group(cls, server_id):
+    def new(cls, server_id):
         obj = cls(server_id)
         obj.group_id = make_string_id()
 
@@ -459,6 +551,7 @@ class ChampionshipGroup(object):
         doc['info'] = self._info
         doc['scores'] = {i: 0 for i in self._member_ids}
         doc['logs'] = {i: [] for i in self._member_ids}
+        doc['match_times'] = 1
         MongoChampionshipGroup.db(self.server_id).insert_one(doc)
 
     def get_scores_sorted(self):
@@ -477,9 +570,13 @@ class ChampionshipGroup(object):
         scores = self.get_scores_sorted()
         pairs = make_pairs_from_flat_list(scores)
 
-        # TODO real match
         for (id_one, _), (id_two, _) in pairs:
-            one_way_wins = [random.randint(0, 1), random.randint(0, 1), random.randint(0, 1)]
+            info_one = self.doc['info'][id_one]
+            info_two = self.doc['info'][id_two]
+
+            m = Match(self.server_id, id_one, info_one, id_two, info_two)
+            one_way_wins, record_ids = m.start()
+
             two_way_wins = [1 - _w for _w in one_way_wins]
 
             one_way_wins_count = len([_w for _w in one_way_wins if _w == 1])
@@ -493,13 +590,12 @@ class ChampionshipGroup(object):
 
             one_name = self.doc['info'][id_one]['name']
             two_name = self.doc['info'][id_two]['name']
-            one_log = self.make_match_log(one_name, one_got_score, [1, 1, 1])
-            two_log = self.make_match_log(two_name, two_got_score, [1, 1, 1])
+            one_log = self.make_match_log(one_name, one_got_score, one_way_wins, record_ids)
+            two_log = self.make_match_log(two_name, two_got_score, two_way_wins, record_ids)
 
             self.doc['logs'][id_one].append(one_log)
             self.doc['logs'][id_two].append(two_log)
 
-            # send score mail
             self.send_score_reward_mail(id_one, self.doc['scores'][id_one])
             self.send_score_reward_mail(id_two, self.doc['scores'][id_two])
 
@@ -527,7 +623,7 @@ class ChampionshipGroup(object):
         m = MailManager(self.server_id, int(club_id))
         m.add(config.mail_title, config.mail_content, attachment=attachment)
 
-    def make_match_log(self, target_name, got_score, way_wins):
+    def make_match_log(self, target_name, got_score, way_wins, record_ids):
         match_times = self.doc['match_times']
         hour = GROUP_MATCH_HOUR[match_times - 1]
 
@@ -536,11 +632,13 @@ class ChampionshipGroup(object):
         doc['target_name'] = target_name
         doc['got_score'] = got_score
         doc['way_wins'] = way_wins
+        doc['record_ids'] = record_ids
         return doc
 
-    def make_clubs_msg(self):
+    def make_clubs_msg(self, scores=None):
         msgs = []
-        scores = self.get_scores_sorted()
+        if not scores:
+            scores = self.get_scores_sorted()
 
         for index, (club_id, score) in enumerate(scores):
             rank = index + 1
@@ -560,7 +658,7 @@ class ChampionshipGroup(object):
         return msgs
 
     def make_protomsg(self):
-        if not self._char_id or not self.doc:
+        if not self.doc:
             return make_empty_group_notify_msg()
 
         my_score = 0
@@ -576,7 +674,7 @@ class ChampionshipGroup(object):
         notify.my_score = my_score
         notify.my_rank = my_rank
 
-        clubs = self.make_clubs_msg()
+        clubs = self.make_clubs_msg(scores=scores)
 
         for c in clubs:
             notify_club = notify.clubs.add()
@@ -588,6 +686,7 @@ class ChampionshipGroup(object):
             notify_log.target_name = log['target_name']
             notify_log.got_score = log['got_score']
             notify_log.way_wins.extend(log['way_wins'])
+            notify_log.match_record_ids.extend(log['record_ids'])
 
         match_times = self.doc['match_times']
         if match_times > 6:
@@ -608,8 +707,6 @@ class ChampionshipGroup(object):
                     notify.next_target.name = self.doc['info'][id_one]['name']
                     notify.next_target.flag = self.doc['info'][id_one]['flag']
 
-        # XXX
-        print notify
         return notify
 
 
@@ -701,7 +798,7 @@ class ChampionshipGroupManager(object):
         groups = []
         """:type: list[ChampionshipGroup]"""
         for i in range(8):
-            g = ChampionshipGroup.make_group(server_id)
+            g = ChampionshipGroup.new(server_id)
             groups.append(g)
 
         g_index = 0
@@ -744,12 +841,20 @@ class ChampionshipLevel(object):
         groups = ChampionshipGroupManager.find_all_groups(self.server_id)
         info = {}
         tops = []
+        way_wins = {}
+        record_ids = {}
+
         for g in groups:
             id_one, id_two = g.get_top_two()
             info[id_one] = g.doc['info'][id_one]
             info[id_two] = g.doc['info'][id_two]
 
             tops.append((id_one, id_two))
+            way_wins[id_one] = g.doc['logs'][id_one][-1]['way_wins']
+            record_ids[id_one] = g.doc['logs'][id_one][-1]['record_ids']
+
+            way_wins[id_two] = g.doc['logs'][id_two][-1]['way_wins']
+            record_ids[id_two] = g.doc['logs'][id_two][-1]['record_ids']
 
         # 1~4组第一名 vs 5~8组第二名
         # 1~4组第二名 vs 5~8组第一名
@@ -763,17 +868,22 @@ class ChampionshipLevel(object):
             member_ids.append(tops[i + 4][0])
 
         self.doc['info'] = info
-        self.save(16, member_ids, info=info)
+        self.save(16, member_ids, way_wins, record_ids, info=info)
 
     def get_current_level(self):
         return self.doc['current_level']
 
-    def save(self, level, member_ids, info=None):
-        self.doc['levels'][str(level)] = member_ids
+    def save(self, level, member_ids, way_wins, record_ids, info=None):
+        level_doc = MongoChampionshipLevel.document_level()
+        level_doc['member_ids'] = member_ids
+        level_doc['way_wins'] = way_wins
+        level_doc['record_ids'] = record_ids
+
+        self.doc['levels'][str(level)] = level_doc
         self.doc['current_level'] = level
 
         updater = {
-            'levels.{0}'.format(level): member_ids,
+            'levels.{0}'.format(level): level_doc,
             'current_level': level,
         }
         if info:
@@ -789,7 +899,7 @@ class ChampionshipLevel(object):
     def send_rank_reward_mail(self, level):
         config = ConfigChampionRankReward.get(level)
 
-        member_ids = self.doc['levels'][str(level)]
+        member_ids = self.doc['levels'][str(level)]['member_ids']
 
         rc = ResourceClassification.classify(config.reward)
         attachment = rc.to_json()
@@ -828,48 +938,78 @@ class ChampionshipLevel(object):
         lv = self.doc['current_level']
         next_level = LEVEL_NEXT_TABLE[lv]
 
-        member_ids = self.doc['levels'][str(lv)]
-        # TODO real match
+        member_ids = self.doc['levels'][str(lv)]['member_ids']
         pairs = make_pairs_from_flat_list(member_ids)
 
         win_ids = []
         lose_ids = []
+
+        way_wins = {}
+        record_ids = {}
         for id_one, id_two in pairs:
-            if random.randint(1, 10) >= 5:
+            info_one = self.doc['info'][id_one]
+            info_two = self.doc['info'][id_two]
+
+            m = Match(self.server_id, id_one, info_one, id_two, info_two)
+            one_way_wins, one_record_ids = m.start()
+            two_way_wins = [1 - _w for _w in one_way_wins]
+            one_way_wins_count = len([_w for _w in one_way_wins if _w == 1])
+
+            if one_way_wins_count >= 2:
                 win_ids.append(id_one)
                 lose_ids.append(id_two)
+
+                way_wins[id_one] = one_way_wins
+                record_ids[id_one] = one_record_ids
             else:
                 win_ids.append(id_two)
                 lose_ids.append(id_one)
 
-        self.save(next_level, win_ids)
+                way_wins[id_two] = two_way_wins
+                record_ids[id_two] = one_record_ids
+
+        self.save(next_level, win_ids, way_wins, record_ids)
 
         # 发送下注邮件
         self.send_bet_reward_mail(lv, win_ids, lose_ids)
 
         if next_level == 1:
-            # 已经打完了，但还要得出第三名
-            level_4_member_ids = self.doc['levels']['4'][:]
-            level_2_member_ids = self.doc['levels']['2'][:]
+            # 已经打完了，但还要得出第三四名
+            level_4_member_ids = self.doc['levels']['4']['member_ids'][:]
+            level_2_member_ids = self.doc['levels']['2']['member_ids'][:]
             for i in level_2_member_ids:
                 level_4_member_ids.remove(i)
 
-            if random.randint(1, 10) >= 5:
-                third = level_4_member_ids[0]
-            else:
-                third = level_4_member_ids[1]
+            id_one = level_4_member_ids[0]
+            id_two = level_4_member_ids[1]
 
-            first = self.doc['levels']['1'][0]
+            info_one = self.doc['info'][id_one]
+            info_two = self.doc['info'][id_two]
+
+            m = Match(self.server_id, id_one, info_one, id_two, info_two)
+            one_way_wins, one_record_ids = m.start()
+            # two_way_wins = [1 - _w for _w in one_way_wins]
+            one_way_wins_count = len([_w for _w in one_way_wins if _w == 1])
+
+            if one_way_wins_count >= 2:
+                third = id_one
+                fourth = id_two
+            else:
+                third = id_two
+                fourth = id_one
+
+            first = self.doc['levels']['1']['member_ids'][0]
             level_2_member_ids.remove(first)
             second = level_2_member_ids[0]
 
             MongoChampionHistory.db(self.server_id).drop()
             history_doc = MongoChampionHistory.document()
-            history_doc['member_ids'] = [first, second, third]
+            history_doc['member_ids'] = [first, second, third, fourth]
             history_doc['info'] = {
                 first: self.doc['info'][first],
                 second: self.doc['info'][second],
                 third: self.doc['info'][third],
+                fourth: self.doc['info'][fourth],
             }
 
             MongoChampionHistory.db(self.server_id).insert_one(history_doc)
@@ -886,18 +1026,25 @@ class ChampionshipLevel(object):
         notify.act = act
 
         if act == ACT_INIT:
-            level16_member_ids = self.doc['levels'].get('16', [])
-            for i in level16_member_ids:
-                notify_club = notify.clubs.add()
-                notify_club.id = i
-                notify_club.name = self.doc['info'][i]['name']
-                notify_club.flag = self.doc['info'][i]['flag']
+            level16 = self.doc['levels'].get('16', {})
+            if level16:
+                for i in level16['member_ids']:
+                    notify_club = notify.clubs.add()
+                    notify_club.id = i
+                    notify_club.name = self.doc['info'][i]['name']
+                    notify_club.flag = self.doc['info'][i]['flag']
 
         for lv in levels:
             notify_level = notify.levels.add()
 
             notify_level.level = lv
-            notify_level.club_ids.extend(self.doc['levels'].get(str(lv), []))
+            this_level = self.doc['levels'].get(str(lv), {})
+            if this_level:
+                for _mid in this_level['member_ids']:
+                    notify_level_club = notify_level.clubs.add()
+                    notify_level_club.id = _mid
+                    notify_level_club.way_wins.extend(this_level['way_wins'][str(_mid)])
+                    notify_level_club.match_record_ids.extend(this_level['record_ids'][str(_mid)])
 
             if lv == 1:
                 notify_level.match_at = 0
@@ -905,6 +1052,4 @@ class ChampionshipLevel(object):
                 hour, minute = LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE[lv]
                 notify_level.match_at = make_time_of_today(hour, minute).timestamp
 
-        # XXX
-        print notify
         return notify

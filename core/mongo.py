@@ -903,7 +903,7 @@ class MongoChampionshipGroup(BaseDocument):
         'scores': {},
         # 日志
         'logs': {},
-        # 第几次
+        # 将要进行第几次
         'match_times': 1,
     }
 
@@ -911,7 +911,8 @@ class MongoChampionshipGroup(BaseDocument):
         'timestamp': 0,
         'target_name': '',
         'got_score': 0,
-        'way_wins': [0, 0, 0]
+        'way_wins': [0, 0, 0],
+        'record_ids': ['', '', ''],
     }
 
     @classmethod
@@ -919,7 +920,7 @@ class MongoChampionshipGroup(BaseDocument):
         return copy.deepcopy(cls.MATCH_LOG_DOCUMENT)
 
     COLLECTION = 'championship_group'
-    INDEXES = ['members',]
+    INDEXES = ['member_ids',]
 
 # 争霸赛 - XX强
 class MongoChampionshipLevel(BaseDocument):
@@ -928,14 +929,24 @@ class MongoChampionshipLevel(BaseDocument):
     DOCUMENT = {
         '_id': DOC_ID,
         'info': {},
-        # XX强, xx: member_id_list
+        # XX强, xx: level_doc
         # xx就是 16, 8, 4, 2, 1
         'levels': {},
         # 当前level
         'current_level': 16,
     }
 
+    LEVEL_DOCUMENT = {
+        'member_ids': [],
+        'way_wins': {},
+        'record_ids': {},
+    }
+
     COLLECTION = 'championship_level'
+
+    @classmethod
+    def document_level(cls):
+        return copy.deepcopy(cls.LEVEL_DOCUMENT)
 
 # 争霸赛历史前三
 class MongoChampionHistory(BaseDocument):
@@ -948,3 +959,18 @@ class MongoChampionHistory(BaseDocument):
     }
 
     COLLECTION = 'championship_history'
+
+
+# 战斗录像
+class MongoMatchRecord(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'id_one': '',
+        'id_two': '',
+        'club_match': '',
+        'record': '',
+        'create_at': 0,
+    }
+
+    COLLECTION = 'match_record'
+    INDEXES = ['id_one', 'id_two',]

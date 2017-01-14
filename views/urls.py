@@ -38,6 +38,7 @@ import views.activity
 import views.plunder
 import views.inspire
 import views.championship
+import views.misc
 
 urlpatterns = [
     url(r'^sync/$', views.common.sync),
@@ -196,4 +197,5 @@ urlpatterns = [
     url(r'^champion/group/sync/$', views.championship.sync_group),
     url(r'^champion/level/sync/$', views.championship.sync_level),
 
+    url(r'^match/log/$', views.misc.get_match_log),
 ]

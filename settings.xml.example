@@ -17,6 +17,11 @@
         <s1 host="127.0.0.1" http="7898" tcp="7999" />
     </sockets>
 
+    <match-servers>
+        <s1 host="127.0.0.1" port="0"/>
+        <s2 host="127.0.0.1" port="0"/>
+    </match-servers>
+
     <mysql>
         <host>127.0.0.1</host>
         <port>3306</port>

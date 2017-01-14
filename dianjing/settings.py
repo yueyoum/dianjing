@@ -205,6 +205,10 @@ for _s in doc.find('sockets').getchildren():
     attrib['tcp'] = int(attrib['tcp'])
     SOCKET_SERVERS.append(attrib)
 
+MATCH_SERVERS = []
+for _s in doc.find('match-servers').getchildren():
+    MATCH_SERVERS.append((_s.attrib['host'], int(_s.attrib['port'])))
+
 AES_KEY = doc.find('crypto/key').text
 AES_CBC_IV = doc.find('crypto/iv').text
 
