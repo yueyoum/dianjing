@@ -7,6 +7,7 @@ Description:
 
 """
 
+import base64
 import random
 import arrow
 
@@ -167,8 +168,12 @@ class MatchRecord(object):
         doc['_id'] = make_string_id()
         doc['id_one'] = id_one
         doc['id_two'] = id_two
-        doc['club_match'] = club_match
-        doc['record'] = record
+        doc['club_match'] = base64.b64encode(club_match)
+        if record:
+            doc['record'] = base64.b64encode(record)
+        else:
+            doc['record'] = ''
+
         doc['create_at'] = arrow.utcnow().timestamp
 
         MongoMatchRecord.db(server_id).insert_one(doc)
@@ -179,7 +184,7 @@ class MatchRecord(object):
         MongoMatchRecord.db(server_id).update_one(
             {'_id': record_id},
             {'$set': {
-                'record': record
+                'record': base64.b64encode(record)
             }}
         )
 
