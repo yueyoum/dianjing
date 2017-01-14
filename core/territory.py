@@ -1003,6 +1003,7 @@ class TerritoryFriend(object):
         match = ClubMatch(my_club, npc_club)
         msg = match.start()
         msg.key = "{0}:{1}:{2}".format(friend_id, building_id, event_id)
+        msg.map_name = GlobalConfig.value_string("MATCH_MAP_TERRITORY_FRIEND")
         return msg, None
 
     def match_start(self, key, formation_slots=None):
