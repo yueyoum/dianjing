@@ -41,6 +41,12 @@
         <instance user="" password="" host="127.0.0.1" port="27017" sid-min="1" sid-max="100" />
     </mongodb>
 
+    <!-- 第三方配置 -->
+    <third-provider>
+        <p1 provider="1sdk" />
+        <p2 provider="stars-cloud" appid="" pmsecret=""/>
+    </third-provider>
+
     <mailgun>
         <sender></sender>
         <key></key>

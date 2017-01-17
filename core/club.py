@@ -22,7 +22,7 @@ from dianjing.exception import GameException
 
 from utils.message import MessagePipe
 from utils.stdvalue import MAX_INT
-from utils.functional import make_string_id
+from utils.functional import make_string_id, days_passed
 
 from config import (
     ConfigClubLevel,
@@ -39,11 +39,12 @@ from config.settings import (
 
 from protomsg.club_pb2 import ClubNotify
 
+
 def get_total_property(server_id, key):
     q = MongoCharacter.db(server_id).aggregate([
         {'$group': {
             '_id': 'null',
-            'total': {'$sum': '$'+key}
+            'total': {'$sum': '$' + key}
         }}
     ])
 
@@ -62,6 +63,7 @@ def get_club_property(server_id, char_id, key, default_value=0):
 
     return doc.get(key, default_value)
 
+
 def batch_get_club_property(server_id, ids, key, default_value=0):
     docs = MongoCharacter.db(server_id).find(
         {'_id': {'$in': ids}},
@@ -73,6 +75,7 @@ def batch_get_club_property(server_id, ids, key, default_value=0):
         result[doc['_id']] = doc.get(key, default_value)
 
     return result
+
 
 # 为了兼容任务条件
 class _ClubProperty(object):
@@ -87,7 +90,7 @@ class _ClubProperty(object):
 
 
 class Club(AbstractClub):
-    __slots__ = ['last_login']
+    __slots__ = ['last_login', 'create_at']
 
     def __init__(self, server_id, char_id, load_staffs=True):
         super(Club, self).__init__()
@@ -111,6 +114,7 @@ class Club(AbstractClub):
         self.gas = doc['gas']
 
         self.last_login = doc['last_login']
+        self.create_at = doc['create_at']
 
         if load_staffs:
             self.load_staffs()
@@ -274,10 +278,7 @@ class Club(AbstractClub):
             {'create_at': 1}
         )
 
-        create_at = arrow.get(doc['create_at']).to(settings.TIME_ZONE)
-        now = arrow.utcnow().to(settings.TIME_ZONE)
-        days = (now.date() - create_at.date()).days
-        return days + 1
+        return days_passed(doc['create_at'])
 
     @classmethod
     def days_since_last_login(cls, server_id, char_id):

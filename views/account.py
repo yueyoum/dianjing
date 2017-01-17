@@ -47,7 +47,7 @@ def login(request):
     if account.tp == MsgAccount.REGULAR:
         account = regular_login(account.regular.email, account.regular.password)
     elif account.tp == MsgAccount.THIRD:
-        account = third_login(account.third.platform, account.third.uid, account.third.param)
+        account = third_login(account.third.provider, account.third.platform, account.third.uid, account.third.param)
     else:
         raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 

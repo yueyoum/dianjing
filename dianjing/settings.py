@@ -223,6 +223,13 @@ for _m in doc.find('mongodb').getchildren():
     attrib['sid-max'] = int(attrib['sid-max'])
     MONGODB.append(attrib)
 
+# THIRD CONFIG
+THIRD_PROVIDER = {}
+for _t in doc.find('third-provider').getchildren():
+    attrib = _t.attrib
+    _p = attrib.pop('provider')
+    THIRD_PROVIDER[_p] = attrib
+
 # MAILGUN
 ANYMAIL = {
     'MAILGUN_API_KEY': doc.find('mailgun/key').text

@@ -16,7 +16,7 @@ class AdminAccountRegular(admin.ModelAdmin):
 @admin.register(Account)
 class AccountAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'tp', 'Name', 'Password', 'Platform', 'Puid',
+        'id', 'tp', 'Name', 'Password', 'Provider', 'Platform',
         'register_at', 'last_login', 'login_times',
     )
 
@@ -34,23 +34,26 @@ class AccountAdmin(admin.ModelAdmin):
             return obj.info_regular.passwd
         return ''
 
+    def Provider(self, obj):
+        if obj.tp == 'third':
+            return obj.info_third.provider
+        return ''
 
     def Platform(self, obj):
         if obj.tp == 'third':
             return obj.info_third.platform
         return ''
 
-    def Puid(self, obj):
-        if obj.tp == 'third':
-            return obj.info_third.uid
-        return ''
+    # def Puid(self, obj):
+    #     if obj.tp == 'third':
+    #         return obj.info_third.uid
+    #     return ''
 
     def has_add_permission(self, request):
         return False
 
     def has_delete_permission(self, request, obj=None):
         return False
-
 
 
 @admin.register(AccountLoginLog)

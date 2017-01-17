@@ -14,12 +14,15 @@ import arrow
 
 from django.conf import settings
 
+
 def make_string_id():
     return str(uuid.uuid4())
+
 
 def make_short_random_string():
     data = os.urandom(6)
     return hashlib.md5(data).hexdigest()[:6]
+
 
 def get_start_time_of_today():
     # 今天的起始时间
@@ -41,8 +44,16 @@ def get_start_time_of_today():
 
     return start_day
 
+
 def make_time_of_today(hour, minute):
     t = get_start_time_of_today()
     t = t.replace(hour=hour)
     t = t.replace(minute=minute)
     return t
+
+
+def days_passed(timestamp):
+    create_at = arrow.get(timestamp).to(settings.TIME_ZONE)
+    now = arrow.utcnow().to(settings.TIME_ZONE)
+    days = (now.date() - create_at.date()).days
+    return days + 1

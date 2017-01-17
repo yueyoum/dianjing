@@ -51,15 +51,16 @@ class AccountRegular(models.Model):
 
 
 class AccountThird(models.Model):
-    platform = models.CharField(max_length=255)
-    uid = models.CharField(max_length=255)
+    provider = models.CharField(max_length=255) # 集成接入供应商，比如1sdk 这些
+    platform = models.CharField(max_length=255) # 各种渠道，小米，360 这些
+    uid = models.CharField(max_length=255) # 用户在渠道上的唯一id
     account = models.OneToOneField(Account, related_name='info_third')
 
     objects = ThirdManager()
 
     class Meta:
         db_table = 'account_third'
-        unique_together = (('platform', 'uid'),)
+        unique_together = (('provider', 'platform', 'uid'),)
 
 
 class AccountLoginLog(models.Model):

@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='club.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\nclub.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xa6\x01\n\x04\x43lub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\x12\r\n\x05level\x18\x04 \x02(\x05\x12\x0b\n\x03\x65xp\x18\x05 \x02(\x05\x12\x0c\n\x04gold\x18\x06 \x02(\x05\x12\x0f\n\x07\x64iamond\x18\x07 \x02(\x05\x12\x0f\n\x07\x63rystal\x18\x08 \x02(\x05\x12\x0b\n\x03gas\x18\t \x02(\x05\x12\x0e\n\x06renown\x18\n \x02(\x05\x12\r\n\x05power\x18\x0b \x02(\x05\"D\n\nClubNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12%\n\x04\x63lub\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\"1\n\x10\x43reateDaysNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04\x64\x61ys\x18\x02 \x02(\x05\"@\n\x11\x43reateClubRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\"2\n\x12\x43reateClubResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\")\n\x16\x43lubLeaderBoardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\xdf\x01\n\x17\x43lubLeaderBoardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x16\n\x0enext_update_at\x18\x03 \x02(\x03\x12/\n\x0e\x63lubs_by_level\x18\x04 \x03(\x0b\x32\x17.Dianjing.protocol.Club\x12/\n\x0e\x63lubs_by_power\x18\x05 \x03(\x0b\x32\x17.Dianjing.protocol.Club\x12\x15\n\rmy_level_rank\x18\x06 \x02(\x05\x12\x15\n\rmy_power_rank\x18\x07 \x02(\x05')
+  serialized_pb=_b('\n\nclub.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xa6\x01\n\x04\x43lub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\x12\r\n\x05level\x18\x04 \x02(\x05\x12\x0b\n\x03\x65xp\x18\x05 \x02(\x05\x12\x0c\n\x04gold\x18\x06 \x02(\x05\x12\x0f\n\x07\x64iamond\x18\x07 \x02(\x05\x12\x0f\n\x07\x63rystal\x18\x08 \x02(\x05\x12\x0b\n\x03gas\x18\t \x02(\x05\x12\x0e\n\x06renown\x18\n \x02(\x05\x12\r\n\x05power\x18\x0b \x02(\x05\"D\n\nClubNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12%\n\x04\x63lub\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Club\"D\n\x10\x43reateDaysNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04\x64\x61ys\x18\x02 \x02(\x05\x12\x11\n\tcreate_at\x18\x03 \x02(\x03\"@\n\x11\x43reateClubRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\"2\n\x12\x43reateClubResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\")\n\x16\x43lubLeaderBoardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\xdf\x01\n\x17\x43lubLeaderBoardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x16\n\x0enext_update_at\x18\x03 \x02(\x03\x12/\n\x0e\x63lubs_by_level\x18\x04 \x03(\x0b\x32\x17.Dianjing.protocol.Club\x12/\n\x0e\x63lubs_by_power\x18\x05 \x03(\x0b\x32\x17.Dianjing.protocol.Club\x12\x15\n\rmy_level_rank\x18\x06 \x02(\x05\x12\x15\n\rmy_power_rank\x18\x07 \x02(\x05')
   ,
   dependencies=[common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -188,6 +188,13 @@ _CREATEDAYSNOTIFY = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='create_at', full_name='Dianjing.protocol.CreateDaysNotify.create_at', index=2,
+      number=3, type=3, cpp_type=2, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -201,7 +208,7 @@ _CREATEDAYSNOTIFY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=286,
-  serialized_end=335,
+  serialized_end=354,
 )
 
 
@@ -245,8 +252,8 @@ _CREATECLUBREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=337,
-  serialized_end=401,
+  serialized_start=356,
+  serialized_end=420,
 )
 
 
@@ -283,8 +290,8 @@ _CREATECLUBRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=403,
-  serialized_end=453,
+  serialized_start=422,
+  serialized_end=472,
 )
 
 
@@ -314,8 +321,8 @@ _CLUBLEADERBOARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=455,
-  serialized_end=496,
+  serialized_start=474,
+  serialized_end=515,
 )
 
 
@@ -387,8 +394,8 @@ _CLUBLEADERBOARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=499,
-  serialized_end=722,
+  serialized_start=518,
+  serialized_end=741,
 )
 
 _CLUBNOTIFY.fields_by_name['club'].message_type = _CLUB
