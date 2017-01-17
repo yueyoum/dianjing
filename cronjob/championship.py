@@ -14,21 +14,38 @@ import uwsgidecorators
 
 from django.conf import settings
 from apps.server.models import Server
-from core.championship import ChampionshipLevel, ChampionshipGroupManager
+from core.championship import (
+    APPLY_WEEKDAY,
+    APPLY_TIME_RANGE,
+    GROUP_MATCH_HOUR,
+    LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE,
+    before_apply,
+    ChampionshipLevel,
+    ChampionshipGroupManager,
+)
+
+from utils.functional import make_time_of_today
 
 from cronjob.log import Logger
 
-# 分组
-# @uwsgidecorators.cron(0, 0, -1, -1, -1, target="spooler")
-def champion_make_group(*args):
-    logger = Logger("champion_make_group")
+_SHIFT_GROUP_MATCH_HOUR = [i-1 for i in GROUP_MATCH_HOUR]
+
+# 报名前清理，提前10分钟启动
+_time1 = make_time_of_today(APPLY_TIME_RANGE[0][0], APPLY_TIME_RANGE[0][1])
+_time1 = _time1.replace(minutes=-10)
+# @uwsgidecorators.cron(_time1.minute, _time1.hour, -1, -1, -1, target="spooler")
+def champion_before_apply(*args):
+    now = arrow.utcnow().to(settings.TIME_ZONE)
+    if now.weekday() not in APPLY_WEEKDAY:
+        return
+
+    logger = Logger("champion_before_apply")
     logger.write("Start")
 
     try:
         for sid in Server.duty_server_ids():
-            club_ids = ChampionshipGroupManager.find_applied_clubs(sid)
-            ChampionshipGroupManager.assign_to_groups(sid, club_ids)
-            logger.write("Server {0} Finish. Club Amount: {0}".format(len(club_ids)))
+            before_apply(sid)
+            logger.write("Server {0} Finish.".format(sid))
     except:
         logger.error(traceback.format_exc())
     else:
@@ -36,12 +53,40 @@ def champion_make_group(*args):
     finally:
         logger.close()
 
-# 小组赛
-# @uwsgidecorators.cron(0, -1, -1, -1, -1, target="spooler")
+# 分组
+# 报名结束后10分钟开始
+_time2 = make_time_of_today(APPLY_TIME_RANGE[1][0], APPLY_TIME_RANGE[1][1])
+_time2 = _time2.replace(minutes=10)
+# @uwsgidecorators.cron(_time2.minute, _time2.hour, -1, -1, -1, target="spooler")
+def champion_make_group(*args):
+    now = arrow.utcnow().to(settings.TIME_ZONE)
+    if now.weekday() not in APPLY_WEEKDAY:
+        return
+
+    logger = Logger("champion_make_group")
+    logger.write("Start")
+
+    try:
+        for sid in Server.duty_server_ids():
+            club_ids = ChampionshipGroupManager.find_applied_clubs(sid)
+            ChampionshipGroupManager.assign_to_groups(sid, club_ids)
+            logger.write("Server {0} Finish. Real Club Amount: {0}".format(len(club_ids)))
+    except:
+        logger.error(traceback.format_exc())
+    else:
+        logger.write("Done")
+    finally:
+        logger.close()
+
+# 小组赛 提前9分钟启动
+# @uwsgidecorators.cron(51, -1, -1, -1, -1, target="spooler")
 def champion_group_match(*args):
     # 注意，提前启动
     now = arrow.utcnow().to(settings.TIME_ZONE)
-    if now.hour not in [14,15,16,17,18,19]:
+    if now.weekday() not in APPLY_WEEKDAY:
+        return
+
+    if now.hour not in _SHIFT_GROUP_MATCH_HOUR:
         return
 
     logger = Logger("champion_group_match")
@@ -49,7 +94,8 @@ def champion_group_match(*args):
 
     try:
         for sid in Server.duty_server_ids():
-            ChampionshipGroupManager.start_match(sid)
+            match_times = ChampionshipGroupManager.start_match(sid)
+            logger.write("Server {0} Finish Match {1}".format(sid, match_times))
     except:
         logger.error(traceback.format_exc())
     else:
@@ -63,8 +109,6 @@ def champion_level_match(*args):
     now = arrow.utcnow().to(settings.TIME_ZONE)
     if now.hour not in []:
         pass
-
-    # 注意， 要先调用 initialize
 
     logger = Logger("champion_level_match")
     logger.write("Start")

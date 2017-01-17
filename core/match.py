@@ -154,8 +154,8 @@ class MatchRecord(object):
         obj.server_id = server_id
         obj.id_one = doc['id_one']
         obj.id_two = doc['id_two']
-        obj.club_match = doc['club_match']
-        obj.record = doc['record']
+        obj.club_match = base64.b64decode(doc['club_match'])
+        obj.record = base64.b64decode(doc['record'])
         obj.create_at = doc['create_at']
         return obj
 
@@ -164,20 +164,36 @@ class MatchRecord(object):
         id_one = str(id_one)
         id_two = str(id_two)
 
+        doc = cls._make_doc(id_one, id_two, club_match, record=record)
+        MongoMatchRecord.db(server_id).insert_one(doc)
+        return doc['_id']
+
+    @classmethod
+    def batch_create(cls, server_id, info_sets):
+        docs = []
+        record_ids = []
+
+        for id_one, id_two, club_match, record in info_sets:
+            id_one = str(id_one)
+            id_two = str(id_two)
+
+            doc = cls._make_doc(id_one, id_two, club_match, record=record)
+            docs.append(doc)
+            record_ids.append(doc['_id'])
+
+        MongoMatchRecord.db(server_id).insert_many(docs)
+        return record_ids
+
+    @classmethod
+    def _make_doc(cls, id_one, id_two, club_match, record=''):
         doc = MongoMatchRecord.document()
         doc['_id'] = make_string_id()
         doc['id_one'] = id_one
         doc['id_two'] = id_two
         doc['club_match'] = base64.b64encode(club_match)
-        if record:
-            doc['record'] = base64.b64encode(record)
-        else:
-            doc['record'] = ''
-
+        doc['record'] = base64.b64encode(record)
         doc['create_at'] = arrow.utcnow().timestamp
-
-        MongoMatchRecord.db(server_id).insert_one(doc)
-        return doc['_id']
+        return doc
 
     @classmethod
     def update_record(cls, server_id, record_id, record):
@@ -191,4 +207,3 @@ class MatchRecord(object):
     @classmethod
     def query_by_char_id(cls, server_id, char_id):
         pass
-

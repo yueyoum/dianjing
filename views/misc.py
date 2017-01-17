@@ -7,7 +7,6 @@ Description:
 
 """
 
-import base64
 from dianjing.exception import GameException
 
 from utils.http import ProtobufResponse
@@ -28,7 +27,7 @@ def get_match_log(request):
 
     response = ClubMatchLogResponse()
     response.ret = 0
-    response.match.MergeFromString(base64.b64decode(obj.club_match))
-    response.record.MergeFromString(base64.b64decode(obj.record))
+    response.match.MergeFromString(obj.club_match)
+    response.record.MergeFromString(obj.record)
 
     return ProtobufResponse(response)
