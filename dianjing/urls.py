@@ -21,6 +21,7 @@ urlpatterns = [
 
     url(r'^flushcache/$', views.admin.flushcache),
     url(r'^callback/1sdk/$', views.purchase.callback_1sdk),
+    url(r'^callback/stars_cloud/$', views.purchase.callback_stars_cloud),
 
     url(r'^statistics/$', views.statistics.index),
     url(r'^statistics/purchase/$', views.statistics.purchase_info),

@@ -10,7 +10,7 @@ from django.http import HttpResponse
 
 from utils.http import ProtobufResponse
 
-from core.purchase import Purchase, platform_callback_1sdk
+from core.purchase import Purchase, platform_callback_1sdk, platform_callback_stars_cloud
 from protomsg.purchase_pb2 import PurchaseVerifyResponse, PurchaseGetFirstRewardResponse
 from protomsg.common_pb2 import PLATFORM_1SDK, PLATFORM_IOS
 
@@ -51,4 +51,8 @@ def get_first_reward(request):
 
 def callback_1sdk(request):
     content = platform_callback_1sdk(request.GET)
+    return HttpResponse(content=content)
+
+def callback_stars_cloud(request):
+    content = platform_callback_stars_cloud(request.POST)
     return HttpResponse(content=content)

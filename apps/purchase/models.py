@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 
+
 # 这是公共信息
 class Purchase(models.Model):
     id = models.CharField(primary_key=True, max_length=255)
@@ -47,6 +48,21 @@ class Purchase1SDK(models.Model):
         db_table = 'purchase_1sdk'
         verbose_name = '充值-1sdk'
         verbose_name_plural = '充值-1sdk'
+
+
+class PurchaseStarsCloud(models.Model):
+    id = models.CharField(primary_key=True, max_length=255)
+    amount = models.IntegerField()
+    channOrderId = models.CharField(max_length=255)
+    channType = models.CharField(max_length=255)
+    # 星云服务分配的订单号
+    pmOrderId = models.CharField(max_length=255, unique=True)
+    uid = models.CharField(max_length=255)
+
+    class Meta:
+        db_table = 'purchase_stars_cloud'
+        verbose_name = '充值-Stars-Cloud'
+        verbose_name_plural = '充值-Stars-Cloud'
 
 
 class PurchaseIOS(models.Model):

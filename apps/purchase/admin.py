@@ -3,7 +3,7 @@ from django.conf import settings
 
 from django.contrib import admin
 
-from apps.purchase.models import Purchase, Purchase1SDK, PurchaseIOS
+from apps.purchase.models import Purchase, Purchase1SDK, PurchaseIOS, PurchaseStarsCloud
 
 @admin.register(Purchase)
 class AdminPurchase(admin.ModelAdmin):
@@ -37,6 +37,18 @@ class AdminPurchase1SDK(admin.ModelAdmin):
 
     def pt_date(self, obj):
         return arrow.get(obj.pt).to(settings.TIME_ZONE).format("YYYY-MM-DD HH:mm:ss")
+
+
+@admin.register(PurchaseStarsCloud)
+class AdminPurchaseStarsCloud(admin.ModelAdmin):
+    list_display = (
+        'id', 'amount', 'channOrderId', 'channType',
+        'pmOrderId', 'uid',
+    )
+
+    search_fields = ('id', 'pmOrderId')
+    readonly_fields = list_display
+
 
 @admin.register(PurchaseIOS)
 class AdminPurchaseIOS(admin.ModelAdmin):

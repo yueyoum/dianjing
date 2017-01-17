@@ -13,6 +13,7 @@ import arrow
 import requests
 
 from django.db.models import Q
+from django.conf import settings
 
 from dianjing.exception import GameException
 
@@ -21,6 +22,7 @@ from apps.purchase.models import (
     Purchase as ModelPurchase,
     Purchase1SDK as ModelPurchase1SDK,
     PurchaseIOS as ModelPurchaseIOS,
+    PurchaseStarsCloud as ModelPurchaseStarsCloud,
 )
 
 from core.mongo import MongoPurchase, MongoPurchaseLog
@@ -160,6 +162,7 @@ class Purchase(object):
         self.send_reward(goods_id)
         return goods_id, PURCHASE_DONE
 
+    # TODO verify 代码可以优化
     def verify_other(self, param):
         condition = Q(char_id=self.char_id) & Q(verified=False)
         query = ModelPurchase.objects.filter(condition).order_by('-create_at')
@@ -171,6 +174,8 @@ class Purchase(object):
 
         if p.platform == '1sdk':
             status = verify_1sdk(p.id)
+        elif p.platform == 'stars-cloud':
+            status = PURCHASE_DONE
         else:
             raise RuntimeError("Platform {0} NOT support!".format(p.platform))
 
@@ -423,3 +428,67 @@ def platform_callback_1sdk(params):
 
     p.send_reward(goods_id)
     return 'SUCCESS'
+
+
+def platform_callback_stars_cloud(params):
+    print "<< PLATFORM CALLBACK STARS-CLOUD >>"
+    print params
+
+    tp = params['type']
+    if tp != 'pay':
+        return 'ok'
+
+    amount = params['amount']  # 金额 分
+    channOrderId = params['channOrderId']
+    channType = params['channType']
+    pmOrderId = params['pmOrderId']
+    uid = params['uid']
+    pmAppId = params['pmAppId']
+    extraInfo = params['extraInfo']
+    sign = params['sign']
+
+    if ModelPurchaseStarsCloud.objects.filter(pmOrderId=pmOrderId).exists():
+        return 'ok'
+
+    pmSecret = settings.THIRD_PROVIDER['stars-cloud']['pmsecret']
+
+    text = "amount={0}&channOrderId={1}&channType={2}&pmOrderId={3}&uid={4}&pmAppId={5}&pmSecret={6}".format(
+        amount, channOrderId, channType, pmOrderId, uid, pmAppId, pmSecret
+    )
+
+    result = hashlib.md5(text).hexdigest()
+    if result != sign:
+        print "<< PLATFORM CALLBACK STARS-CLOUD >>"
+        print "sign not match"
+        return 'fail'
+
+    char_id, goods_id = extraInfo.split(',')
+    char_id = int(char_id)
+    goods_id = int(goods_id)
+
+    try:
+        c = ModelCharacter.objects.get(id=char_id)
+    except ModelCharacter.DoesNotExist:
+        print "<< PLATFORM CALLBACK STARS-CLOUD >>"
+        print "char id not found. {0}".format(char_id)
+        return 'fail'
+
+    if goods_id != YUEKA_ID and not ConfigPurchaseGoods.get(goods_id):
+        print "<< PLATFORM CALLBACK STARS-CLOUD >>"
+        print "goods id not found. {0}".format(goods_id)
+        return 'fail'
+
+    p = Purchase(c.server_id, char_id)
+    _id = p.record('stars-cloud', goods_id)
+
+    ModelPurchaseStarsCloud.objects.create(
+        id=_id,
+        amount=int(amount),
+        channOrderId=channOrderId,
+        channType=channType,
+        pmOrderId=pmOrderId,
+        uid=uid
+    )
+
+    p.send_reward(goods_id)
+    return 'ok'
