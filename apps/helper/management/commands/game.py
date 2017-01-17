@@ -67,7 +67,7 @@ class Command(BaseCommand):
             'qq_group': '123456',
             'email': 'a@b.c',
             '1sdk_callback': 'DOMAIN/callback/1sdk/',
-            'stars_cloud_callback': 'DOMAIN/callback/stars_cloud/',
+            # 'stars_cloud_callback': 'DOMAIN/callback/stars_cloud/',
         }
 
         for n, v in name_values.iteritems():

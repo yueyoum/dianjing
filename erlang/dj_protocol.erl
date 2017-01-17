@@ -7766,7 +7766,8 @@ cons(Elem, Acc, _TrUserData) -> [Elem | Acc].
 
 get_msg_defs() ->
     [{{enum, 'GamePlatform'},
-      [{'PLATFORM_1SDK', 1}, {'PLATFORM_IOS', 2}]},
+      [{'PLATFORM_1SDK', 1}, {'PLATFORM_IOS', 2},
+       {'PLATFORM_STARS_CLOUD', 3}]},
      {{enum, 'NextOperate'},
       [{'OPT_OK', 1}, {'OPT_CREATE_CLUB', 2}]},
      {{enum, 'Action'},
@@ -8271,7 +8272,8 @@ find_msg_def(_) -> error.
 
 
 find_enum_def('GamePlatform') ->
-    [{'PLATFORM_1SDK', 1}, {'PLATFORM_IOS', 2}];
+    [{'PLATFORM_1SDK', 1}, {'PLATFORM_IOS', 2},
+     {'PLATFORM_STARS_CLOUD', 3}];
 find_enum_def('NextOperate') ->
     [{'OPT_OK', 1}, {'OPT_CREATE_CLUB', 2}];
 find_enum_def('Action') ->
@@ -8343,11 +8345,15 @@ enum_value_by_symbol('PartyMessageType', Sym) ->
 
 
 enum_symbol_by_value_GamePlatform(1) -> 'PLATFORM_1SDK';
-enum_symbol_by_value_GamePlatform(2) -> 'PLATFORM_IOS'.
+enum_symbol_by_value_GamePlatform(2) -> 'PLATFORM_IOS';
+enum_symbol_by_value_GamePlatform(3) ->
+    'PLATFORM_STARS_CLOUD'.
 
 
 enum_value_by_symbol_GamePlatform('PLATFORM_1SDK') -> 1;
-enum_value_by_symbol_GamePlatform('PLATFORM_IOS') -> 2.
+enum_value_by_symbol_GamePlatform('PLATFORM_IOS') -> 2;
+enum_value_by_symbol_GamePlatform('PLATFORM_STARS_CLOUD') ->
+    3.
 
 enum_symbol_by_value_NextOperate(1) -> 'OPT_OK';
 enum_symbol_by_value_NextOperate(2) ->

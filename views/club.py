@@ -55,9 +55,12 @@ def create(request):
         char_id=char.id,
     )
 
+    club = Club(server_id, char.id, load_staffs=False)
     response = CreateClubResponse()
     response.ret = 0
     response.session = session.serialize()
+    response.club.MergeFrom(club.make_protomsg())
+    response.create_at = club.create_at
     return ProtobufResponse(response)
 
 
