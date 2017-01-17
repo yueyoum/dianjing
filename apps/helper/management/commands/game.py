@@ -12,6 +12,7 @@ from apps.account.models import Account, AccountBan, AccountLoginLog, AccountReg
 from apps.character.models import Character
 from apps.statistics.models import Statistics
 from apps.history_record.models import MailHistoryRecord
+from apps.config.models import CustomerServiceInformation
 from core.db import MongoDB, RedisDB
 
 
@@ -33,6 +34,8 @@ class Command(BaseCommand):
             self._reset()
         elif options['cmd'] == 'empty_cache':
             self._empty_cache()
+        elif options['cmd'] == 'initmodel':
+            self._init_model()
         else:
             self.stderr.write("unknown command!")
 
@@ -57,3 +60,19 @@ class Command(BaseCommand):
     def _empty_cache(self):
         RedisDB.connect()
         RedisDB.get().flushall()
+
+    def _init_model(self):
+        name_values = {
+            'qq': '123456',
+            'qq_group': '123456',
+            'email': 'a@b.c',
+            '1sdk_callback': 'DOMAIN/callback/1sdk/',
+            'stars_cloud_callback': 'DOMAIN/callback/stars_cloud/',
+        }
+
+        for n, v in name_values.iteritems():
+            if not CustomerServiceInformation.objects.filter(name=n).exists():
+                CustomerServiceInformation.objects.create(
+                    name=n,
+                    value=v,
+                )
