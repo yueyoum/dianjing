@@ -43,8 +43,9 @@ def login(request):
         raise GameException(ConfigErrorMessage.get_error_id("LOGIN_NOT_OPEN"))
 
     account = request._proto.account
+    provider = account.provider
 
-    if account.provider in ['debug', 'ios']:
+    if provider in ['debug', 'ios']:
         account = regular_login(account.regular.email, account.regular.password)
     else:
         account = third_login(account.provider, account.third.platform, account.third.uid, account.third.param)
@@ -53,7 +54,7 @@ def login(request):
 
     response = LoginResponse()
     response.ret = 0
-    response.session = GameSession.dumps(account_id=account.account.id, login_id=login_id, provider=account.provider)
+    response.session = GameSession.dumps(account_id=account.account.id, login_id=login_id, provider=provider)
     response.account.MergeFrom(request._proto.account)
 
     return ProtobufResponse(response)
