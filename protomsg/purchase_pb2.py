@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='purchase.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0epurchase.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\x96\x01\n\x0ePurchaseNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x1b\n\x13yueka_remained_days\x18\x02 \x02(\x05\x12\r\n\x05\x66irst\x18\x03 \x02(\x08\x12-\n\x0c\x66rist_reward\x18\x04 \x02(\x0b\x32\x17.Dianjing.protocol.Drop\x12\x18\n\x10\x66irst_reward_got\x18\x05 \x02(\x08\"j\n\x15PurchaseVerifyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x31\n\x08platform\x18\x02 \x02(\x0e\x32\x1f.Dianjing.protocol.GamePlatform\x12\r\n\x05param\x18\x03 \x02(\t\"{\n\x16PurchaseVerifyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x31\n\x06status\x18\x03 \x01(\x0e\x32!.Dianjing.protocol.PurchaseStatus\x12\x10\n\x08goods_id\x18\x04 \x01(\x05\"0\n\x1dPurchaseGetFirstRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"e\n\x1ePurchaseGetFirstRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*O\n\x0ePurchaseStatus\x12\x11\n\rPURCHASE_DONE\x10\x01\x12\x14\n\x10PURCHASE_WAITING\x10\x02\x12\x14\n\x10PURCHASE_FAILURE\x10\x03')
+  serialized_pb=_b('\n\x0epurchase.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\x96\x01\n\x0ePurchaseNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x1b\n\x13yueka_remained_days\x18\x02 \x02(\x05\x12\r\n\x05\x66irst\x18\x03 \x02(\x08\x12-\n\x0c\x66rist_reward\x18\x04 \x02(\x0b\x32\x17.Dianjing.protocol.Drop\x12\x18\n\x10\x66irst_reward_got\x18\x05 \x02(\x08\"7\n\x15PurchaseVerifyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\r\n\x05param\x18\x02 \x02(\t\"{\n\x16PurchaseVerifyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x31\n\x06status\x18\x03 \x01(\x0e\x32!.Dianjing.protocol.PurchaseStatus\x12\x10\n\x08goods_id\x18\x04 \x01(\x05\"0\n\x1dPurchaseGetFirstRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"e\n\x1ePurchaseGetFirstRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*O\n\x0ePurchaseStatus\x12\x11\n\rPURCHASE_DONE\x10\x01\x12\x14\n\x10PURCHASE_WAITING\x10\x02\x12\x14\n\x10PURCHASE_FAILURE\x10\x03')
   ,
   dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -48,8 +48,8 @@ _PURCHASESTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=605,
-  serialized_end=684,
+  serialized_start=554,
+  serialized_end=633,
 )
 _sym_db.RegisterEnumDescriptor(_PURCHASESTATUS)
 
@@ -134,15 +134,8 @@ _PURCHASEVERIFYREQUEST = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='platform', full_name='Dianjing.protocol.PurchaseVerifyRequest.platform', index=1,
-      number=2, type=14, cpp_type=8, label=2,
-      has_default_value=False, default_value=1,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='param', full_name='Dianjing.protocol.PurchaseVerifyRequest.param', index=2,
-      number=3, type=9, cpp_type=9, label=2,
+      name='param', full_name='Dianjing.protocol.PurchaseVerifyRequest.param', index=1,
+      number=2, type=9, cpp_type=9, label=2,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -160,7 +153,7 @@ _PURCHASEVERIFYREQUEST = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=219,
-  serialized_end=325,
+  serialized_end=274,
 )
 
 
@@ -211,8 +204,8 @@ _PURCHASEVERIFYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=327,
-  serialized_end=450,
+  serialized_start=276,
+  serialized_end=399,
 )
 
 
@@ -242,8 +235,8 @@ _PURCHASEGETFIRSTREWARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=452,
-  serialized_end=500,
+  serialized_start=401,
+  serialized_end=449,
 )
 
 
@@ -287,12 +280,11 @@ _PURCHASEGETFIRSTREWARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=502,
-  serialized_end=603,
+  serialized_start=451,
+  serialized_end=552,
 )
 
 _PURCHASENOTIFY.fields_by_name['frist_reward'].message_type = package__pb2._DROP
-_PURCHASEVERIFYREQUEST.fields_by_name['platform'].enum_type = common__pb2._GAMEPLATFORM
 _PURCHASEVERIFYRESPONSE.fields_by_name['status'].enum_type = _PURCHASESTATUS
 _PURCHASEGETFIRSTREWARDRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 DESCRIPTOR.message_types_by_name['PurchaseNotify'] = _PURCHASENOTIFY

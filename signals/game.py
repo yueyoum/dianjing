@@ -60,12 +60,6 @@ def game_start_handler(server_id, char_id, **kwargs):
     msg.timestamp = arrow.utcnow().timestamp
     MessagePipe(char_id).put(msg=msg)
 
-    club = Club(server_id, char_id)
-
-    msg = CreateDaysNotify()
-    msg.days = days_passed(club.create_at)
-    msg.create_at = club.create_at
-    MessagePipe(char_id).put(msg=msg)
 
     msg = SocketServerNotify()
     ss = random.choice(settings.SOCKET_SERVERS)
@@ -86,8 +80,14 @@ def game_start_handler(server_id, char_id, **kwargs):
     f.send_formation_notify()
     f.send_slot_notify()
 
+    club = Club(server_id, char_id)
     club.set_login()
     club.send_notify()
+
+    msg = CreateDaysNotify()
+    msg.days = days_passed(club.create_at)
+    msg.create_at = club.create_at
+    MessagePipe(char_id).put(msg=msg)
 
     chall = Challenge(server_id, char_id)
     chall.send_chapter_notify()

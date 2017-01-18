@@ -107,6 +107,8 @@ class Purchase(object):
 
         return amount
 
+
+
     def verify_ios(self, param):
         def _do_error_record(_status):
             ModelPurchaseIOS.objects.create(

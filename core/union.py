@@ -762,7 +762,7 @@ class UnionJoined(IUnion):
         MongoUnionMember.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
-                'skills.{0}'.format(skill_id): current_level
+                'skills.{0}'.format(skill_id): current_level + 1
             }}
         )
 

@@ -7,24 +7,28 @@ Description:
 
 """
 from django.http import HttpResponse
-
+from dianjing.exception import GameException
 from utils.http import ProtobufResponse
+from config import ConfigErrorMessage
 
 from core.purchase import Purchase, platform_callback_1sdk, platform_callback_stars_cloud
 from protomsg.purchase_pb2 import PurchaseVerifyResponse, PurchaseGetFirstRewardResponse
-from protomsg.common_pb2 import PLATFORM_1SDK, PLATFORM_IOS
 
 
 def verify(request):
     server_id = request._game_session.server_id
     char_id = request._game_session.char_id
 
-    platform = request._proto.platform
+    provider = request._game_session.provider
+
     param = request._proto.param
 
     p = Purchase(server_id, char_id)
 
-    if platform == PLATFORM_IOS:
+    if provider == 'debug':
+        raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+    if provider == 'ios':
         goods_id, status = p.verify_ios(param)
     else:
         goods_id, status = p.verify_other(param)

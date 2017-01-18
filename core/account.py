@@ -91,7 +91,7 @@ def verify_stars_cloud(platform, uid, param):
 
 def get_or_create_third_account(provider, platform, uid):
     try:
-        condition = Q(provider) & Q(platform=platform) & Q(uid=uid)
+        condition = Q(provider=provider) & Q(platform=platform) & Q(uid=uid)
         account = AccountThird.objects.select_related('account').get(condition)
     except AccountThird.DoesNotExist:
         # 这是第一次登陆，创建

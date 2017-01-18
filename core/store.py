@@ -142,7 +142,7 @@ class Store(object):
             }}
         )
 
-        self.send_notify(tp=tp, goods_id=goods_id)
+        self.send_notify(tp=tp)
         return resource_classify
 
     def refresh(self, tp):
@@ -170,31 +170,13 @@ class Store(object):
 
         self.make_refresh(tp, set_timestamp=True)
 
-    def send_notify(self, tp=None, goods_id=None):
-        # tp没有， goods_id没有：  全部同步
-        # tp 有，goods_id 没有 ： 更新这个tp的
-        # tp 有，goods_id 有：    更新这个tp中的 这个goods_id
-        # tp 没有， goods_id 有： 错误情况
-
-        tp_goods_id_table = {}
-
-        def _get_goods_id_of_tp(_tp):
-            try:
-                return tp_goods_id_table[_tp]
-            except KeyError:
-                ids = self.doc['tp'][str(_tp)]['goods'].keys()
-                return [int(i) for i in ids]
-
+    def send_notify(self, tp=None):
         if tp:
             act = ACT_UPDATE
             tps = [tp]
-            if goods_id:
-                tp_goods_id_table[tp] = [goods_id]
         else:
             act = ACT_INIT
             tps = ConfigStoreType.INSTANCES.keys()
-            if goods_id:
-                raise RuntimeError("Store.send_notify, Invalid arguments")
 
         notify = StoreNotify()
         notify.act = act
@@ -207,11 +189,11 @@ class Store(object):
             notify_type.remained_refresh_times = ri.remained_refresh_times
             notify_type.refresh_cost = ri.refresh_cost
 
-            for _g in _get_goods_id_of_tp(_t):
+            for _g in self.doc['tp'][str(_t)]['goods'].keys():
                 _g_data = self.doc['tp'][str(_t)]['goods'][str(_g)]
                 notify_type_goods = notify_type.goods.add()
-                notify_type_goods.id = _g
+                notify_type_goods.id = int(_g)
                 notify_type_goods.content_index = _g_data['index']
-                notify_type_goods.remained_times = ConfigStore.get(_g).times_limit - _g_data['times']
+                notify_type_goods.remained_times = ConfigStore.get(int(_g)).times_limit - _g_data['times']
 
         MessagePipe(self.char_id).put(msg=notify)

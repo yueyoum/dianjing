@@ -16,7 +16,7 @@ from utils.session import GameSession, LoginID
 from core.account import register as register_func, regular_login, third_login
 from config import ConfigErrorMessage
 
-from protomsg.account_pb2 import Account as MsgAccount, RegisterResponse, LoginResponse
+from protomsg.account_pb2 import RegisterResponse, LoginResponse
 
 
 def register(request):
@@ -44,18 +44,16 @@ def login(request):
 
     account = request._proto.account
 
-    if account.tp == MsgAccount.REGULAR:
+    if account.provider in ['debug', 'ios']:
         account = regular_login(account.regular.email, account.regular.password)
-    elif account.tp == MsgAccount.THIRD:
-        account = third_login(account.third.provider, account.third.platform, account.third.uid, account.third.param)
     else:
-        raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+        account = third_login(account.provider, account.third.platform, account.third.uid, account.third.param)
 
     login_id = LoginID.new(account.account.id)
 
     response = LoginResponse()
     response.ret = 0
-    response.session = GameSession.dumps(account_id=account.account.id, login_id=login_id)
+    response.session = GameSession.dumps(account_id=account.account.id, login_id=login_id, provider=account.provider)
     response.account.MergeFrom(request._proto.account)
 
     return ProtobufResponse(response)
