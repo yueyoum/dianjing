@@ -1139,14 +1139,24 @@ def get_unions_ordered_by_explore_point(server_id, char_id, around_rank=None):
         return result, self_info
 
     around_result = []
-    for i in range(self_info.rank - 1 - around_rank, self_info.rank + around_rank):
-        try:
-            this_obj = result[i]
-        except IndexError:
-            continue
 
-        if this_obj not in around_result and this_obj.id != self_union_id:
+    if not self_info:
+        for i in [-1, -2]:
+            try:
+                this_obj = result[i]
+            except IndexError:
+                continue
+
             around_result.append(this_obj)
+    else:
+        for i in range(self_info.rank - 1 - around_rank, self_info.rank + around_rank):
+            try:
+                this_obj = result[i]
+            except IndexError:
+                continue
+
+            if this_obj not in around_result and this_obj.id != self_union_id:
+                around_result.append(this_obj)
 
     return around_result, self_info
 

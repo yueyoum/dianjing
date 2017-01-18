@@ -252,10 +252,16 @@ def harass_query_union(request):
     response = UnionHarassQueryResponse()
     response.ret = 0
 
-    response.my_union.rank = self_union.rank
-    response.my_union.id = self_union.id
-    response.my_union.name = self_union.name
-    response.my_union.explore_point = self_union.explore_point
+    if not self_union:
+        response.my_union.rank = 0
+        response.my_union.id = u.union_doc['_id']
+        response.my_union.name = u.union_doc['name']
+        response.my_union.explore_point = 0
+    else:
+        response.my_union.rank = self_union.rank
+        response.my_union.id = self_union.id
+        response.my_union.name = self_union.name
+        response.my_union.explore_point = self_union.explore_point
 
     for u in unions:
         res_union = response.union.add()
