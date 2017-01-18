@@ -1145,8 +1145,8 @@ def get_unions_ordered_by_explore_point(server_id, char_id, around_rank=None):
         except IndexError:
             continue
 
-        if not this_obj == self_union_id:
-            around_result.append(result[i])
+        if this_obj not in around_result and this_obj.id != self_union_id:
+            around_result.append(this_obj)
 
     return around_result, self_info
 
