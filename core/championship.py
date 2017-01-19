@@ -296,7 +296,7 @@ class Match(object):
     def start(self):
         def one_way_match(_club_one, _club_two):
             _match = ClubMatch(_club_one, _club_two)
-            _msg = _match.start()
+            _msg = _match.start(auto_load_staffs=False)
             _msg.key = ""
             _msg.map_name = GlobalConfig.value_string("MATCH_MAP_CHAMPIONSHIP")
 
@@ -419,10 +419,13 @@ class Championship(object):
     def bet(self, club_id, bet_id):
         cl = ChampionshipLevel(self.server_id)
         lv = cl.get_current_level()
+        if lv == 1:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
         if str(lv) in self.doc['bet']:
             raise GameException(ConfigErrorMessage.get_error_id("CHAMPIONSHIP_ALREADY_BET"))
 
-        if club_id not in cl.doc['levels'].get(str(lv), []):
+        if club_id not in cl.doc['levels'].get(str(lv), {}).get('member_ids', []):
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
         config = ConfigChampionBet.get(bet_id)
@@ -1041,6 +1044,8 @@ class ChampionshipLevel(object):
 
         if next_level == 1:
             self.after_final_match()
+
+        return lv
 
     def after_final_match(self):
         # 已经打完了，但还要得出第三四名，并记录前四名
