@@ -647,9 +647,9 @@ class UnionJoined(IUnion):
 
         ei.record()
 
-        union_coin = int((math.pow(staff.level, 0.2) + math.pow(staff.step, 0.5)) * 8 * param)
-        explore_point = int((math.pow(staff.level, 0.2) + math.pow(staff.step, 0.5)) * 13 * param)
-        union_skill_point = int((math.pow(staff.level, 0.2) + math.pow(staff.step, 0.5)) * 5 * param)
+        union_coin = int((math.pow(staff.level, 0.2) + math.pow(staff.step, 0.5)) * 3 * param)
+        explore_point = int((math.pow(staff.level, 0.2) + math.pow(staff.step, 0.5)) * 10 * param)
+        union_skill_point = int((math.pow(staff.level, 0.2) + math.pow(staff.step, 0.5)) * 4 * param)
 
         self.add_explore_point(explore_point)
 
@@ -690,9 +690,9 @@ class UnionJoined(IUnion):
 
         hi.record()
 
-        union_coin = int((math.pow(staff.level, 0.2) + math.pow(staff.step, 0.5)) * 4 * param)
-        explore_point = int((math.pow(staff.level, 0.2) + math.pow(staff.step, 0.5)) * 6 * param)
-        union_skill_point = int((math.pow(staff.level, 0.2) + math.pow(staff.step, 0.5)) * 2.5 * param)
+        union_coin = int((math.pow(staff.level, 0.2) + math.pow(staff.step, 0.5)) * 3.5 * param)
+        explore_point = int((math.pow(staff.level, 0.2) + math.pow(staff.step, 0.5)) * 7 * param)
+        union_skill_point = int((math.pow(staff.level, 0.2) + math.pow(staff.step, 0.5)) * 5 * param)
 
         Union(self.server_id, doc['owner']).add_explore_point(-explore_point)
 
