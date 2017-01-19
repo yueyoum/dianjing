@@ -704,7 +704,7 @@ class UnionJoined(IUnion):
         rc = ResourceClassification.classify(reward)
         rc.add(self.server_id, self.char_id, message="UnionJoined.harass")
 
-        self.member_doc['harass_staff'] = ConfigUnionExplore.get_harass_reward()
+        self.member_doc['harass_staff'] = ConfigUnionExplore.get_staff_id()
         MongoUnionMember.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
