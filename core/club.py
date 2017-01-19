@@ -139,6 +139,7 @@ class Club(AbstractClub):
         from core.collection import Collection
         from core.party import Party
         from core.inspire import Inspire
+        from core.union import Union
 
         self.formation_staffs = []
 
@@ -175,11 +176,13 @@ class Club(AbstractClub):
         talent_effects_2 = Collection(self.server_id, self.char_id).get_talent_effects()
         talent_effects_3 = fm.get_talent_effects()
         talent_effects_4 = Party(self.server_id, self.char_id).get_talent_effects()
+        talent_effects_5 = Union(self.server_id, self.char_id).get_union_skill_talent_effects()
 
         self.add_talent_effects(talent_effects_1)
         self.add_talent_effects(talent_effects_2)
         self.add_talent_effects(talent_effects_3)
         self.add_talent_effects(talent_effects_4)
+        self.add_talent_effects(talent_effects_5)
 
         config_inspire_level_addition, config_inspire_step_addition = ins.get_addition_config()
 

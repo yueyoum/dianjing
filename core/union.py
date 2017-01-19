@@ -310,6 +310,9 @@ class IUnion(object):
     def skill_level_up(self, skill_id):
         raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
+    def get_union_skill_talent_effects(self):
+        raise NotImplementedError()
+
     def send_notify(self, **kwargs):
         raise NotImplementedError()
 
@@ -337,6 +340,9 @@ class UnionNotJoined(IUnion):
         return 0
 
     def get_member_ids(self):
+        return []
+
+    def get_union_skill_talent_effects(self):
         return []
 
     def create(self, name):
@@ -464,6 +470,15 @@ class UnionJoined(IUnion):
         )
 
         return [d['_id'] for d in docs]
+
+    def get_union_skill_talent_effects(self):
+        talent_ids = []
+        for k, v in self.member_doc['skills'].iteritems():
+            _id = ConfigUnionSkill.get(int(k)).levels[v].talent_id
+            if _id:
+                talent_ids.append(_id)
+
+        return talent_ids
 
     def create(self, name):
         raise GameException(ConfigErrorMessage.get_error_id("UNION_CANNOT_CREATE_ALREADY_IN"))
@@ -766,6 +781,7 @@ class UnionJoined(IUnion):
             }}
         )
 
+        Club(self.server_id, self.char_id, load_staffs=False).force_load_staffs(send_notify=True)
         self.send_skill_notify(skill_id=skill_id)
 
     def send_notify_to_all_members(self, rank=None, send_my_check_notify=False):
