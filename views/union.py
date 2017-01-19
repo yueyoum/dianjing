@@ -17,6 +17,7 @@ from core.union import (
     get_unions_ordered_by_explore_point,
     get_members_ordered_by_explore_point,
 )
+from core.club import get_club_property
 
 from protomsg.union_pb2 import (
     UnionAgreeResponse,
@@ -184,21 +185,35 @@ def explore_leader_board(request):
     members, self_member = get_members_ordered_by_explore_point(server_id, char_id, limit=10)
     unions, self_union = get_unions_ordered_by_explore_point(server_id, char_id)
 
-    if not self_member or not self_union:
-        raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
-
     response = UnionExploreLeaderboardResponse()
     response.ret = 0
 
-    response.my_club.rank = self_member.rank
-    response.my_club.id = str(self_member.id)
-    response.my_club.name = self_member.name
-    response.my_club.explore_point = self_member.explore_point
+    if self_member:
+        response.my_club.rank = self_member.rank
+        response.my_club.id = str(self_member.id)
+        response.my_club.name = self_member.name
+        response.my_club.explore_point = self_member.explore_point
+    else:
+        response.my_club.rank = 0
+        response.my_club.id = str(char_id)
+        response.my_club.name = get_club_property(server_id, char_id, 'name')
+        response.my_club.explore_point = 0
 
-    response.my_union.rank = self_union.rank
-    response.my_union.id = self_union.id
-    response.my_union.name = self_union.name
-    response.my_union.explore_point = self_union.explore_point
+    if self_union:
+        response.my_union.rank = self_union.rank
+        response.my_union.id = self_union.id
+        response.my_union.name = self_union.name
+        response.my_union.explore_point = self_union.explore_point
+    else:
+        _union = Union(server_id, char_id)
+        _union_id = _union.get_joined_union_id()
+        if not _union_id:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        response.my_union.rank = 0
+        response.my_union.id = _union_id
+        response.my_union.name = _union.union_doc['name']
+        response.my_union.explore_point = 0
 
     for i in range(10):
         try:
