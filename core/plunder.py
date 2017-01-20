@@ -236,6 +236,7 @@ class PlunderFormation(BaseFormation):
                     msg_slot.position = -1
 
                 msg_slot.staff_oid = sm.get_staff_object(v['staff_id']).oid
+                msg_slot.policy = v.get('policy', 1)
             else:
                 msg_slot.status = FORMATION_SLOT_EMPTY
 

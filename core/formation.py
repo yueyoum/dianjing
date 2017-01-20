@@ -572,6 +572,7 @@ class Formation(BaseFormation):
                         notify_slot.position = -1
 
                     notify_slot.staff_oid = sm.get_staff_object(data['staff_id']).oid
+                    notify_slot.policy = data.get('policy', 1)
 
         MessagePipe(self.char_id).put(msg=notify)
 
