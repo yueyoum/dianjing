@@ -708,7 +708,7 @@ class UnionJoined(IUnion):
         MongoUnionMember.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': {
-                'explore_staff': self.member_doc['explore_staff']
+                'harass_staff': self.member_doc['harass_staff']
             }}
         )
 

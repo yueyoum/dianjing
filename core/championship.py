@@ -95,12 +95,28 @@ APPLY_WEEKDAY = [
 ]
 
 # 允许报名时间范围 hour, minute
-APPLY_TIME_RANGE = [(8, 0), (22, 30)]
+APPLY_TIME_RANGE = [(8, 0), (12, 30)]
 
 MATCH_SERVER_REQ_HEADERS = {'NMVC_APIRequest': 'StartCombat'}
 
 AUTO_APPLY_VIP_LEVEL = GlobalConfig.value("CHAMPIONSHIP_AUTO_APPLY_VIP_LEVEL")
 APPLY_CLUB_LEVEL_LIMIT = GlobalConfig.value("CHAMPIONSHIP_APPLY_LEVEL_LIMIT")
+
+ALL_MATCH_TIME_RANGE_1 = {
+    13: [50, 60],
+    14: [50, 60],
+    15: [50, 60],
+    16: [50, 60],
+    17: [50, 60],
+    18: [50, 60],
+    19: [20, 30],
+    20: [20, 30],
+}
+
+ALL_MATCH_TIME_RANGE_2 = {
+    19: [50, 60],
+    20: [50, 60],
+}
 
 
 def make_pairs_from_flat_list(items):
@@ -130,6 +146,17 @@ def check_club_level(silence=True):
         return wrap
 
     return deco
+
+def check_set_formation_time_limit(fun):
+    def wrap(self, *args, **kwargs):
+        now = arrow.utcnow().to(settings.TIME_ZONE)
+        for time_range in [ALL_MATCH_TIME_RANGE_1, ALL_MATCH_TIME_RANGE_2]:
+            if now.hour in time_range:
+                if now.minute in time_range[now.hour]:
+                    raise GameException(ConfigErrorMessage.get_error_id("CHAMPIONSHIP_FORMATION_FORBIDDEN"))
+
+        return fun(self, *args, **kwargs)
+    return wrap
 
 
 class ChampionshipFormationWay1(PlunderFormation):
@@ -468,6 +495,7 @@ class Championship(object):
 
         return way_class(self.server_id, self.char_id, way_id)
 
+    @check_set_formation_time_limit
     @check_club_level(silence=False)
     def set_staff(self, way_id, slot_id, staff_id):
         way_list = [1, 2, 3]
@@ -487,6 +515,7 @@ class Championship(object):
 
         self.send_formation_notify()
 
+    @check_set_formation_time_limit
     @check_club_level(silence=False)
     def set_unit(self, way_id, slot_id, unit_id):
         if slot_id not in [1, 2, 3]:
@@ -496,6 +525,7 @@ class Championship(object):
         w.set_unit(slot_id, unit_id)
         self.send_formation_notify()
 
+    @check_set_formation_time_limit
     @check_club_level(silence=False)
     def set_position(self, way_id, formation_slots):
         my_way = self.get_way_object(way_id)
