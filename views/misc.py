@@ -6,7 +6,7 @@ Date Created:   2017-01-14 17:52
 Description:
 
 """
-
+import base64
 from dianjing.exception import GameException
 
 from utils.http import ProtobufResponse
@@ -26,7 +26,7 @@ def get_match_log(request):
         raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
     # TODO
-    if obj.record == 'AAAAAA==':
+    if obj.record == base64.b64decode('AAAAAA=='):
         raise GameException(ConfigErrorMessage.get_error_id("EMPTY_MATCH"))
 
     response = ClubMatchLogResponse()

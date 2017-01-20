@@ -674,8 +674,8 @@ class ChampionshipGroup(object):
 
             one_name = self.doc['info'][id_one]['name']
             two_name = self.doc['info'][id_two]['name']
-            one_log = self.make_match_log(one_name, one_got_score, one_way_wins, record_ids)
-            two_log = self.make_match_log(two_name, two_got_score, two_way_wins, record_ids)
+            one_log = self.make_match_log(two_name, one_got_score, one_way_wins, record_ids)
+            two_log = self.make_match_log(one_name, two_got_score, two_way_wins, record_ids)
 
             self.doc['logs'][id_one].append(one_log)
             self.doc['logs'][id_two].append(two_log)
