@@ -32,6 +32,6 @@ def get_match_log(request):
     response = ClubMatchLogResponse()
     response.ret = 0
     response.match.MergeFromString(obj.club_match)
-    response.record.MergeFromString(obj.record)
+    response.record = obj.record
 
     return ProtobufResponse(response)
