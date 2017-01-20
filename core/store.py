@@ -89,12 +89,17 @@ class Store(object):
         if not config.refresh_hour_interval:
             return 0
 
+        now_timestamp = arrow.utcnow().timestamp
         last_at = self.doc['tp'][str(tp)]['refresh_at']
         if not last_at:
             # 立即可刷
-            return arrow.utcnow().timestamp - 1
+            return now_timestamp - 1
 
-        return last_at + config.refresh_hour_interval * 3600
+        last_at += config.refresh_hour_interval * 3600
+        if last_at <= now_timestamp:
+            return now_timestamp - 1
+        else:
+            return last_at
 
     def buy(self, tp, goods_id):
         if tp not in ALL_TYPES:
