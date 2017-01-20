@@ -25,6 +25,10 @@ def get_match_log(request):
     if not obj:
         raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
+    # TODO
+    if obj.record == 'AAAAAA==':
+        raise GameException(ConfigErrorMessage.get_error_id("EMPTY_MATCH"))
+
     response = ClubMatchLogResponse()
     response.ret = 0
     response.match.MergeFromString(obj.club_match)
