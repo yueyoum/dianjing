@@ -84,12 +84,12 @@ LEVEL_PREVIOUS_TABLE = {v: k for k, v in LEVEL_NEXT_TABLE.iteritems()}
 #     [19, 0],
 # ]
 GROUP_MATCH_TIME = [
-    [11, 42],
-    [11, 44],
-    [11, 46],
-    [11, 48],
-    [11, 50],
-    [11, 52],
+    [14, 25],
+    [14, 30],
+    [14, 35],
+    [14, 40],
+    [14, 45],
+    [14, 50],
 ]
 
 # LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE = {
@@ -99,10 +99,10 @@ GROUP_MATCH_TIME = [
 #     2: [21, 0],
 # }
 LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE = {
-    16: [11, 54],
-    8: [11, 56],
-    4: [11, 58],
-    2: [12, 0],
+    16: [14, 55],
+    8: [15, 0],
+    4: [15, 5],
+    2: [15, 10],
 }
 
 # 开战前几分钟不能调整阵型和下注
@@ -138,7 +138,7 @@ APPLY_WEEKDAY = [
 ]
 
 # 允许报名时间范围 hour, minute
-APPLY_TIME_RANGE = [(11, 40), (11, 41)]
+APPLY_TIME_RANGE = [(14, 20), (14, 22)]
 
 MATCH_SERVER_REQ_HEADERS = {'NMVC_APIRequest': 'StartCombat'}
 
@@ -179,7 +179,7 @@ def check_time_limit(fun):
     def wrap(self, *args, **kwargs):
         now = arrow.utcnow().to(settings.TIME_ZONE)
         for (_h1, _m1), (_h2, _m2) in TIME_LIMIT:
-            if _h1 <= now.hour <= _h2 and _m1 <= now.minute <= _m2:
+            if _h1 <= now.hour <= _h2 and _m1 <= now.minute < _m2:
                 raise GameException(ConfigErrorMessage.get_error_id("CHAMPIONSHIP_FORMATION_FORBIDDEN"))
 
         return fun(self, *args, **kwargs)
