@@ -31,7 +31,7 @@ from cronjob.log import Logger
 
 # 报名前清理，提前5分钟启动
 _time1 = make_time_of_today(APPLY_TIME_RANGE[0][0], APPLY_TIME_RANGE[0][1])
-_time1 = _time1.replace(minutes=-5)
+_time1 = _time1.replace(minutes=-2)
 
 
 @uwsgidecorators.cron(_time1.minute, _time1.hour, -1, -1, -1, target="spooler")
@@ -57,7 +57,7 @@ def champion_before_apply(*args):
 
 # 分组
 # 报名结束后开始
-@uwsgidecorators.cron(APPLY_TIME_RANGE[1][0], APPLY_TIME_RANGE[1][1], -1, -1, -1, target="spooler")
+@uwsgidecorators.cron(APPLY_TIME_RANGE[1][1], APPLY_TIME_RANGE[1][0], -1, -1, -1, target="spooler")
 def champion_make_group(*args):
     now = arrow.utcnow().to(settings.TIME_ZONE)
     if now.weekday() not in APPLY_WEEKDAY:
@@ -102,7 +102,7 @@ def champion_group_match(*args):
 
 for _h, _m in GROUP_MATCH_TIME:
     _time2 = make_time_of_today(_h, _m)
-    _time2.replace(minutes=-MATCH_AHEAD_MINUTE)
+    _time2 = _time2.replace(minutes=-MATCH_AHEAD_MINUTE)
     uwsgidecorators.cron(_time2.minute, _time2.hour, -1, -1, -1, target="spooler")(champion_group_match)
 
 
@@ -129,5 +129,5 @@ def champion_level_match(*args):
 
 for _, (_h, _m) in LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE.iteritems():
     _time3 = make_time_of_today(_h, _m)
-    _time3.replace(minutes=-MATCH_AHEAD_MINUTE)
+    _time3 = _time3.replace(minutes=-MATCH_AHEAD_MINUTE)
     uwsgidecorators.cron(_time3.minute, _time3.hour, -1, -1, -1, target="spooler")(champion_level_match)

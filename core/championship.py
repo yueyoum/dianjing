@@ -84,12 +84,12 @@ LEVEL_PREVIOUS_TABLE = {v: k for k, v in LEVEL_NEXT_TABLE.iteritems()}
 #     [19, 0],
 # ]
 GROUP_MATCH_TIME = [
-    [11, 15],
-    [11, 17],
-    [11, 19],
-    [11, 21],
-    [11, 23],
-    [11, 25],
+    [11, 42],
+    [11, 44],
+    [11, 46],
+    [11, 48],
+    [11, 50],
+    [11, 52],
 ]
 
 # LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE = {
@@ -99,10 +99,10 @@ GROUP_MATCH_TIME = [
 #     2: [21, 0],
 # }
 LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE = {
-    16: [11, 27],
-    8: [11, 29],
-    4: [11, 31],
-    2: [11, 33],
+    16: [11, 54],
+    8: [11, 56],
+    4: [11, 58],
+    2: [12, 0],
 }
 
 # 开战前几分钟不能调整阵型和下注
@@ -138,7 +138,7 @@ APPLY_WEEKDAY = [
 ]
 
 # 允许报名时间范围 hour, minute
-APPLY_TIME_RANGE = [(8, 0), (11, 10)]
+APPLY_TIME_RANGE = [(11, 40), (11, 41)]
 
 MATCH_SERVER_REQ_HEADERS = {'NMVC_APIRequest': 'StartCombat'}
 
@@ -454,7 +454,7 @@ class Championship(object):
         range_start = make_time_of_today(APPLY_TIME_RANGE[0][0], APPLY_TIME_RANGE[0][1])
         range_end = make_time_of_today(APPLY_TIME_RANGE[1][0], APPLY_TIME_RANGE[1][1])
 
-        if now < range_start or now > range_end:
+        if now < range_start or now >= range_end:
             raise GameException(ConfigErrorMessage.get_error_id("CHAMPIONSHIP_APPLY_NOT_OPEN"))
 
         if self.is_applied():
@@ -931,6 +931,13 @@ class ChampionshipGroupManager(object):
 
         for g in groups:
             g.finish()
+
+        char_ids = OperationLog.get_recent_action_char_ids(server_id)
+        for cid in char_ids:
+            g = ChampionshipGroup(server_id)
+            g.find_by_char_id(cid)
+            msg = g.make_protomsg()
+            MessagePipe(cid).put(msg=msg)
 
     @classmethod
     def start_match(cls, server_id):
