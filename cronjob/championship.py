@@ -17,7 +17,8 @@ from apps.server.models import Server
 from core.championship import (
     APPLY_WEEKDAY,
     APPLY_TIME_RANGE,
-    GROUP_MATCH_HOUR,
+    GROUP_MATCH_TIME,
+    MATCH_AHEAD_MINUTE,
     LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE,
     before_apply,
     ChampionshipLevel,
@@ -28,11 +29,11 @@ from utils.functional import make_time_of_today
 
 from cronjob.log import Logger
 
-_SHIFT_GROUP_MATCH_HOUR = [i-1 for i in GROUP_MATCH_HOUR]
-
-# 报名前清理，提前10分钟启动
+# 报名前清理，提前5分钟启动
 _time1 = make_time_of_today(APPLY_TIME_RANGE[0][0], APPLY_TIME_RANGE[0][1])
-_time1 = _time1.replace(minutes=-10)
+_time1 = _time1.replace(minutes=-5)
+
+
 @uwsgidecorators.cron(_time1.minute, _time1.hour, -1, -1, -1, target="spooler")
 def champion_before_apply(*args):
     now = arrow.utcnow().to(settings.TIME_ZONE)
@@ -53,11 +54,10 @@ def champion_before_apply(*args):
     finally:
         logger.close()
 
+
 # 分组
-# 报名结束后10分钟开始
-_time2 = make_time_of_today(APPLY_TIME_RANGE[1][0], APPLY_TIME_RANGE[1][1])
-_time2 = _time2.replace(minutes=10)
-@uwsgidecorators.cron(_time2.minute, _time2.hour, -1, -1, -1, target="spooler")
+# 报名结束后开始
+@uwsgidecorators.cron(APPLY_TIME_RANGE[1][0], APPLY_TIME_RANGE[1][1], -1, -1, -1, target="spooler")
 def champion_make_group(*args):
     now = arrow.utcnow().to(settings.TIME_ZONE)
     if now.weekday() not in APPLY_WEEKDAY:
@@ -78,15 +78,11 @@ def champion_make_group(*args):
     finally:
         logger.close()
 
-# 小组赛 提前9分钟启动
-@uwsgidecorators.cron(51, -1, -1, -1, -1, target="spooler")
+
+# 小组赛
 def champion_group_match(*args):
-    # 注意，提前启动
     now = arrow.utcnow().to(settings.TIME_ZONE)
     if now.weekday() not in APPLY_WEEKDAY:
-        return
-
-    if now.hour not in _SHIFT_GROUP_MATCH_HOUR:
         return
 
     logger = Logger("champion_group_match")
@@ -103,8 +99,19 @@ def champion_group_match(*args):
     finally:
         logger.close()
 
+
+for _h, _m in GROUP_MATCH_TIME:
+    _time2 = make_time_of_today(_h, _m)
+    _time2.replace(minutes=-MATCH_AHEAD_MINUTE)
+    uwsgidecorators.cron(_time2.minute, _time2.hour, -1, -1, -1, target="spooler")(champion_group_match)
+
+
 # XX强赛
 def champion_level_match(*args):
+    now = arrow.utcnow().to(settings.TIME_ZONE)
+    if now.weekday() not in APPLY_WEEKDAY:
+        return
+
     logger = Logger("champion_level_match")
     logger.write("Start")
 
@@ -119,7 +126,8 @@ def champion_level_match(*args):
     finally:
         logger.close()
 
+
 for _, (_h, _m) in LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE.iteritems():
     _time3 = make_time_of_today(_h, _m)
-    _time3.replace(minutes=-10)
+    _time3.replace(minutes=-MATCH_AHEAD_MINUTE)
     uwsgidecorators.cron(_time3.minute, _time3.hour, -1, -1, -1, target="spooler")(champion_level_match)

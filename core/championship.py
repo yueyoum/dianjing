@@ -8,6 +8,7 @@ Description:
 """
 import random
 import arrow
+import itertools
 import requests
 
 from django.conf import settings
@@ -74,14 +75,56 @@ LEVEL_NEXT_TABLE = {
 LEVEL_PREVIOUS_TABLE = {v: k for k, v in LEVEL_NEXT_TABLE.iteritems()}
 
 # 小组赛比赛时间
-GROUP_MATCH_HOUR = [14, 15, 16, 17, 18, 19]
+# GROUP_MATCH_TIME = [
+#     [14, 0],
+#     [15, 0],
+#     [16, 0],
+#     [17, 0],
+#     [18, 0],
+#     [19, 0],
+# ]
+GROUP_MATCH_TIME = [
+    [11, 15],
+    [11, 17],
+    [11, 19],
+    [11, 21],
+    [11, 23],
+    [11, 25],
+]
 
+# LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE = {
+#     16: [19, 30],
+#     8: [20, 0],
+#     4: [20, 30],
+#     2: [21, 0],
+# }
 LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE = {
-    16: [19, 30],
-    8: [20, 0],
-    4: [20, 30],
-    2: [21, 0],
+    16: [11, 27],
+    8: [11, 29],
+    4: [11, 31],
+    2: [11, 33],
 }
+
+# 开战前几分钟不能调整阵型和下注
+MINUTES_LIMIT_FOR_FORMATION_AND_BET = 1
+
+# [[(hour, minute), (hour, minute)] ...]
+# 每个元素是两个 h, m 的组合
+# 表示 在他们之间 的时间 是禁止的
+TIME_LIMIT = []
+for __h, __m in itertools.chain(GROUP_MATCH_TIME, LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE.values()):
+    __m1 = __m - MINUTES_LIMIT_FOR_FORMATION_AND_BET
+    if __m1 < 0:
+        __m1 += 60
+        __h1 = __h - 1
+        assert __h1 >= 0
+    else:
+        __h1 = __h
+
+    TIME_LIMIT.append(((__h1, __m1), (__h, __m)))
+
+# 提前几分钟开打
+MATCH_AHEAD_MINUTE = 1
 
 # 允许报名 周几
 APPLY_WEEKDAY = [
@@ -95,28 +138,12 @@ APPLY_WEEKDAY = [
 ]
 
 # 允许报名时间范围 hour, minute
-APPLY_TIME_RANGE = [(8, 0), (12, 30)]
+APPLY_TIME_RANGE = [(8, 0), (11, 10)]
 
 MATCH_SERVER_REQ_HEADERS = {'NMVC_APIRequest': 'StartCombat'}
 
 AUTO_APPLY_VIP_LEVEL = GlobalConfig.value("CHAMPIONSHIP_AUTO_APPLY_VIP_LEVEL")
 APPLY_CLUB_LEVEL_LIMIT = GlobalConfig.value("CHAMPIONSHIP_APPLY_LEVEL_LIMIT")
-
-ALL_MATCH_TIME_RANGE_1 = {
-    13: [50, 60],
-    14: [50, 60],
-    15: [50, 60],
-    16: [50, 60],
-    17: [50, 60],
-    18: [50, 60],
-    19: [20, 30],
-    20: [20, 30],
-}
-
-ALL_MATCH_TIME_RANGE_2 = {
-    19: [50, 60],
-    20: [50, 60],
-}
 
 
 def make_pairs_from_flat_list(items):
@@ -147,15 +174,16 @@ def check_club_level(silence=True):
 
     return deco
 
-def check_set_formation_time_limit(fun):
+
+def check_time_limit(fun):
     def wrap(self, *args, **kwargs):
         now = arrow.utcnow().to(settings.TIME_ZONE)
-        for time_range in [ALL_MATCH_TIME_RANGE_1, ALL_MATCH_TIME_RANGE_2]:
-            if now.hour in time_range:
-                if now.minute in time_range[now.hour]:
-                    raise GameException(ConfigErrorMessage.get_error_id("CHAMPIONSHIP_FORMATION_FORBIDDEN"))
+        for (_h1, _m1), (_h2, _m2) in TIME_LIMIT:
+            if _h1 <= now.hour <= _h2 and _m1 <= now.minute <= _m2:
+                raise GameException(ConfigErrorMessage.get_error_id("CHAMPIONSHIP_FORMATION_FORBIDDEN"))
 
         return fun(self, *args, **kwargs)
+
     return wrap
 
 
@@ -442,6 +470,7 @@ class Championship(object):
 
         self.send_basic_notify()
 
+    @check_time_limit
     @check_club_level(silence=False)
     def bet(self, club_id, bet_id):
         cl = ChampionshipLevel(self.server_id)
@@ -495,7 +524,7 @@ class Championship(object):
 
         return way_class(self.server_id, self.char_id, way_id)
 
-    @check_set_formation_time_limit
+    @check_time_limit
     @check_club_level(silence=False)
     def set_staff(self, way_id, slot_id, staff_id):
         way_list = [1, 2, 3]
@@ -515,7 +544,7 @@ class Championship(object):
 
         self.send_formation_notify()
 
-    @check_set_formation_time_limit
+    @check_time_limit
     @check_club_level(silence=False)
     def set_unit(self, way_id, slot_id, unit_id):
         if slot_id not in [1, 2, 3]:
@@ -525,7 +554,7 @@ class Championship(object):
         w.set_unit(slot_id, unit_id)
         self.send_formation_notify()
 
-    @check_set_formation_time_limit
+    @check_time_limit
     @check_club_level(silence=False)
     def set_position(self, way_id, formation_slots):
         my_way = self.get_way_object(way_id)
@@ -651,6 +680,13 @@ class ChampionshipGroup(object):
         return [scores[0][0], scores[1][0]]
 
     def start_match(self):
+        match_times = self.doc['match_times']
+        if match_times == 7:
+            return match_times
+
+        hour, minute = GROUP_MATCH_TIME[match_times - 1]
+        match_at = make_time_of_today(hour, minute).timestamp
+
         scores = self.get_scores_sorted()
         pairs = make_pairs_from_flat_list(scores)
 
@@ -674,8 +710,8 @@ class ChampionshipGroup(object):
 
             one_name = self.doc['info'][id_one]['name']
             two_name = self.doc['info'][id_two]['name']
-            one_log = self.make_match_log(two_name, one_got_score, one_way_wins, record_ids)
-            two_log = self.make_match_log(one_name, two_got_score, two_way_wins, record_ids)
+            one_log = self.make_match_log(match_at, two_name, one_got_score, one_way_wins, record_ids)
+            two_log = self.make_match_log(match_at, one_name, two_got_score, two_way_wins, record_ids)
 
             self.doc['logs'][id_one].append(one_log)
             self.doc['logs'][id_two].append(two_log)
@@ -709,12 +745,10 @@ class ChampionshipGroup(object):
         m = MailManager(self.server_id, int(club_id))
         m.add(config.mail_title, config.mail_content, attachment=attachment)
 
-    def make_match_log(self, target_name, got_score, way_wins, record_ids):
-        match_times = self.doc['match_times']
-        hour = GROUP_MATCH_HOUR[match_times - 1]
-
+    @staticmethod
+    def make_match_log(match_at, target_name, got_score, way_wins, record_ids):
         doc = MongoChampionshipGroup.document_match_log()
-        doc['timestamp'] = make_time_of_today(hour, 0).timestamp
+        doc['timestamp'] = match_at
         doc['target_name'] = target_name
         doc['got_score'] = got_score
         doc['way_wins'] = way_wins
@@ -778,8 +812,8 @@ class ChampionshipGroup(object):
         if match_times > 6:
             notify.next_match_at = 0
         else:
-            hour = GROUP_MATCH_HOUR[match_times - 1]
-            notify.next_match_at = make_time_of_today(hour, 0).timestamp
+            hour, minute = GROUP_MATCH_TIME[match_times - 1]
+            notify.next_match_at = make_time_of_today(hour, minute).timestamp
 
             pairs = make_pairs_from_flat_list(scores)
             for (id_one, _), (id_two, _) in pairs:
@@ -920,7 +954,8 @@ class ChampionshipGroupManager(object):
             for cid in char_ids:
                 MessagePipe(cid).put(data=level_data)
 
-        return match_times-1
+        return match_times - 1
+
 
 class ChampionshipLevel(object):
     __slots__ = ['server_id', 'doc']
@@ -1010,7 +1045,7 @@ class ChampionshipLevel(object):
             m = MailManager(self.server_id, int(m))
             m.add(config.mail_title, config.mail_content, attachment=attachment)
 
-    def send_bet_reward_mail(self, level, win_ids, lose_ids):
+    def send_bet_reward_mail(self, level, win_ids):
         # 找到所有bet的玩家，然后遍历
         docs = MongoChampionship.db(self.server_id).find({'has_bet': True})
         for doc in docs:
@@ -1035,6 +1070,9 @@ class ChampionshipLevel(object):
 
     def start_match(self):
         lv = self.doc['current_level']
+        if lv == 1:
+            return None
+
         next_level = LEVEL_NEXT_TABLE[lv]
 
         member_ids = self.doc['levels'][str(lv)]['member_ids']
@@ -1070,7 +1108,7 @@ class ChampionshipLevel(object):
         self.save(next_level, win_ids, way_wins, record_ids)
 
         # 发送下注邮件
-        self.send_bet_reward_mail(lv, win_ids, lose_ids)
+        self.send_bet_reward_mail(lv, win_ids)
 
         if next_level == 1:
             self.after_final_match()
