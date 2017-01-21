@@ -1214,8 +1214,11 @@ class ChampionshipLevel(object):
                     notify_level_club.way_wins.extend(this_level['way_wins'][str(_mid)])
                     notify_level_club.match_record_ids.extend(this_level['record_ids'][str(_mid)])
 
-                prev_lv = LEVEL_PREVIOUS_TABLE[lv]
-                hour, minute = LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE[prev_lv]
-                notify_level.match_at = make_time_of_today(hour, minute).timestamp
+                if lv == 16:
+                    notify_level.match_at = 0
+                else:
+                    prev_lv = LEVEL_PREVIOUS_TABLE[lv]
+                    hour, minute = LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE[prev_lv]
+                    notify_level.match_at = make_time_of_today(hour, minute).timestamp
 
         return notify
