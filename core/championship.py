@@ -84,12 +84,12 @@ LEVEL_PREVIOUS_TABLE = {v: k for k, v in LEVEL_NEXT_TABLE.iteritems()}
 #     [19, 0],
 # ]
 GROUP_MATCH_TIME = [
-    [14, 25],
-    [14, 30],
-    [14, 35],
-    [14, 40],
-    [14, 45],
-    [14, 50],
+    [16, 5],
+    [16, 7],
+    [16, 9],
+    [16, 11],
+    [16, 13],
+    [16, 15],
 ]
 
 # LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE = {
@@ -99,10 +99,10 @@ GROUP_MATCH_TIME = [
 #     2: [21, 0],
 # }
 LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE = {
-    16: [14, 55],
-    8: [15, 0],
-    4: [15, 5],
-    2: [15, 10],
+    16: [16, 20],
+    8: [16, 25],
+    4: [16, 30],
+    2: [16, 35],
 }
 
 # 开战前几分钟不能调整阵型和下注
@@ -138,7 +138,7 @@ APPLY_WEEKDAY = [
 ]
 
 # 允许报名时间范围 hour, minute
-APPLY_TIME_RANGE = [(14, 20), (14, 22)]
+APPLY_TIME_RANGE = [(16, 0), (16, 2)]
 
 MATCH_SERVER_REQ_HEADERS = {'NMVC_APIRequest': 'StartCombat'}
 
@@ -1214,10 +1214,8 @@ class ChampionshipLevel(object):
                     notify_level_club.way_wins.extend(this_level['way_wins'][str(_mid)])
                     notify_level_club.match_record_ids.extend(this_level['record_ids'][str(_mid)])
 
-            if lv == 1:
-                notify_level.match_at = 0
-            else:
-                hour, minute = LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE[lv]
+                prev_lv = LEVEL_PREVIOUS_TABLE[lv]
+                hour, minute = LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE[prev_lv]
                 notify_level.match_at = make_time_of_today(hour, minute).timestamp
 
         return notify
