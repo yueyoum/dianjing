@@ -29,7 +29,7 @@ from utils.functional import make_time_of_today
 
 from cronjob.log import Logger
 
-# 报名前清理，提前5分钟启动
+# 报名前清理，提前启动
 _time1 = make_time_of_today(APPLY_TIME_RANGE[0][0], APPLY_TIME_RANGE[0][1])
 _time1 = _time1.replace(minutes=-2)
 
