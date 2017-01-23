@@ -180,23 +180,32 @@ class Challenge(object):
 
         return sum(doc['challenge_star'].values())
 
-    def get_max_passed_challenge_id(self, chapter_tp):
-        doc = MongoChallenge.db(self.server_id).find_one(
-            {'_id': self.char_id},
-            {'challenge_star': 1}
-        )
+    def get_max_passed_challenge_id(self, chapter_tp=None):
+        if chapter_tp:
+            doc = MongoChallenge.db(self.server_id).find_one(
+                {'_id': self.char_id},
+                {'challenge_star': 1}
+            )
 
-        ids = []
-        for k in doc['challenge_star'].keys():
-            k = int(k)
-            chapter_id = ConfigChallengeMatch.get(k).chapter
-            if ConfigChapter.get(chapter_id).tp == chapter_tp:
-                ids.append(k)
+            ids = []
+            for k, v in doc['challenge_star'].iteritems():
+                if not v:
+                    continue
 
+                k = int(k)
+                chapter_id = ConfigChallengeMatch.get(k).chapter
+                if ConfigChapter.get(chapter_id).tp == chapter_tp:
+                    ids.append(k)
+
+            if not ids:
+                return 0
+            return max(ids)
+
+        ids = self.get_passed_challenge_ids()
         if not ids:
             return 0
-
         return max(ids)
+
 
     def get_passed_challenge_ids(self):
         doc = MongoChallenge.db(self.server_id).find_one(
