@@ -942,6 +942,8 @@ class ChampionshipGroupManager(object):
     @classmethod
     def start_match(cls, server_id):
         groups = cls.find_all_groups(server_id)
+        if not groups:
+            return 0
 
         match_times = 0
         for g in groups:
@@ -1076,6 +1078,9 @@ class ChampionshipLevel(object):
             m.add(m_title, m_content, attachment=attachment)
 
     def start_match(self):
+        if not self.doc['levels']:
+            return 0
+
         lv = self.doc['current_level']
         if lv == 1:
             return None
