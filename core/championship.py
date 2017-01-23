@@ -735,7 +735,7 @@ class ChampionshipGroup(object):
         if is_npc(club_id):
             return
 
-        config = ConfigChampionScoreReward.get_by_score(score)
+        config = ConfigChampionScoreReward.get(score)
         if not config:
             return
 

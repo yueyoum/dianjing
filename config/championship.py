@@ -50,26 +50,9 @@ class ConfigChampionScoreReward(ConfigBase):
     INSTANCES = {}
     FILTER_CACHE = {}
 
-    LIST = []
-
     @classmethod
-    def initialize(cls, fixture):
-        super(ConfigChampionScoreReward, cls).initialize(fixture)
-        cls.LIST = cls.INSTANCES.items()
-        cls.LIST.sort(key=lambda item: item[0], reverse=True)
-
-    @classmethod
-    def get_by_score(cls, score):
-        """
-
-        :rtype: ScoreReward | None
-        """
-        for k, v in cls.LIST:
-            if score >= k:
-                return v
-
-        return None
-
+    def get(cls, _id):
+        return super(ConfigChampionScoreReward, cls).get(_id)
 
 class ConfigChampionRankReward(ConfigBase):
     EntityClass = RankReward
