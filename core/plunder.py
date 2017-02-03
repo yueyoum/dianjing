@@ -34,6 +34,7 @@ from core.value_log import ValueLogPlunderRevengeTimes, ValueLogPlunderTimes, Va
 from core.resource import ResourceClassification, STATION_EXP_ID, money_text_to_item_id
 from core.bag import Bag, Equipment, PROPERTY_TO_NAME_MAP, SPECIAL_EQUIPMENT_BASE_PROPERTY
 from core.vip import VIP
+from core.challenge import Challenge
 
 from utils.message import MessagePipe
 from utils.functional import make_string_id, get_start_time_of_today
@@ -75,7 +76,7 @@ from protomsg.plunder_pb2 import (
 from protomsg.formation_pb2 import FORMATION_SLOT_EMPTY, FORMATION_SLOT_USE
 from protomsg.common_pb2 import SPECIAL_EQUIPMENT_GENERATE_NORMAL, SPECIAL_EQUIPMENT_GENERATE_ADVANCE
 
-PLUNDER_ACTIVE_CLUB_LEVEL = 19
+PLUNDER_ACTIVE_CHALLENGE_ID = 65
 REVENGE_MAX_TIMES = 3
 PLUNDER_TIMES_INIT_TIMES = 3
 PLUNDER_TIMES_RECOVER_LIMIT = 6
@@ -315,7 +316,7 @@ def get_plunder_times_next_recover_at():
     return recover_at.timestamp
 
 
-def check_club_level(silence=True):
+def check_plunder_active(silence=True):
     def deco(fun):
         def wrap(self, *args, **kwargs):
             """
@@ -323,11 +324,12 @@ def check_club_level(silence=True):
             :type self: Plunder
             """
 
-            if self.club_level < PLUNDER_ACTIVE_CLUB_LEVEL:
+            if not self.is_active:
                 if silence:
                     return
 
-                raise GameException(ConfigErrorMessage.get_error_id("CLUB_LEVEL_NOT_ENOUGH"))
+                # TODO replace to PLUNDER_NOT_ACTIVE
+                raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
             return fun(self, *args, **kwargs)
 
@@ -394,13 +396,13 @@ class PlunderNPC(object):
 
 
 class Plunder(object):
-    __slots__ = ['server_id', 'char_id', 'club_level', 'doc']
+    __slots__ = ['server_id', 'char_id', 'doc', 'is_active']
 
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
 
-        self.club_level = get_club_property(self.server_id, self.char_id, 'level')
+        self.is_active = Challenge(server_id, char_id).is_challenge_id_passed(PLUNDER_ACTIVE_CHALLENGE_ID)
 
         self.doc = MongoPlunder.db(self.server_id).find_one({'_id': self.char_id})
         if not self.doc:
@@ -464,7 +466,7 @@ class Plunder(object):
             {'$inc': {'plunder_remained_times': 1}}
         )
 
-    @check_club_level(silence=True)
+    @check_plunder_active(silence=True)
     def try_initialize(self):
         if self.doc['active']:
             return
@@ -529,7 +531,7 @@ class Plunder(object):
 
         return 0
 
-    @check_club_level(silence=False)
+    @check_plunder_active(silence=False)
     @check_plunder_in_process
     def set_staff(self, way_id, slot_id, staff_id):
         way_list = [1, 2, 3]
@@ -549,7 +551,7 @@ class Plunder(object):
 
         self.send_formation_notify()
 
-    @check_club_level(silence=False)
+    @check_plunder_active(silence=False)
     @check_plunder_in_process
     def set_unit(self, way_id, slot_id, unit_id):
         if slot_id not in [1, 2, 3]:
@@ -566,7 +568,7 @@ class Plunder(object):
         cd = GlobalConfig.value("PLUNDER_SEARCH_CD")
         PlunderSearchCD(self.server_id, self.char_id).set(cd)
 
-    @check_club_level(silence=False)
+    @check_plunder_active(silence=False)
     @check_plunder_in_process
     def search(self, check_cd=True, replace_search_index=None, send_notify=True):
         if check_cd and self.get_search_cd():
@@ -589,16 +591,15 @@ class Plunder(object):
 
             return _ids
 
-        level_low = self.club_level - GlobalConfig.value("PLUNDER_SEARCH_LEVEL_RANGE_LOW")
-        level_high = self.club_level + GlobalConfig.value("PLUNDER_SEARCH_LEVEL_RANGE_HIGH")
-
-        if level_low < PLUNDER_ACTIVE_CLUB_LEVEL:
-            level_low = PLUNDER_ACTIVE_CLUB_LEVEL
+        self_club_level = get_club_property(self.server_id, self.char_id, 'level')
+        level_low = self_club_level - GlobalConfig.value("PLUNDER_SEARCH_LEVEL_RANGE_LOW")
+        level_high = self_club_level + GlobalConfig.value("PLUNDER_SEARCH_LEVEL_RANGE_HIGH")
 
         real_ids = _query_real(level_low, level_high)
-        # filter by loss_percent
+        # filter by active and loss_percent
         condition = {'$and': [
             {'_id': {'$in': real_ids}},
+            {'active': True},
             {'loss_percent': {'$lt': PLUNDER_MAX_LOST}}
         ]}
 
@@ -621,7 +622,7 @@ class Plunder(object):
         need_npc_amount = 2 - len(search_docs)
         if need_npc_amount:
             for i in range(need_npc_amount):
-                config_plunder_npc = ConfigPlunderNPC.get_by_level(self.club_level)
+                config_plunder_npc = ConfigPlunderNPC.get_by_level(self_club_level)
                 npc_doc = config_plunder_npc.to_doc(self.doc['level'])
 
                 search_docs.append(npc_doc)
@@ -661,7 +662,7 @@ class Plunder(object):
 
         raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_CANNOT_FIND_TARGET"))
 
-    @check_club_level(silence=False)
+    @check_plunder_active(silence=False)
     @check_plunder_in_process
     def spy(self, target_id):
         index = self.find_search_target_index_by_target_id(target_id)
@@ -714,7 +715,7 @@ class Plunder(object):
         )
         self.send_plunder_times_notify()
 
-    @check_club_level(silence=False)
+    @check_plunder_active(silence=False)
     def plunder_start(self, _id, tp, formation_slots=None, win=None):
         if tp not in [PLUNDER_TYPE_PLUNDER, PLUNDER_TYPE_REVENGE]:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
@@ -787,7 +788,7 @@ class Plunder(object):
 
         return msg
 
-    @check_club_level(silence=False)
+    @check_plunder_active(silence=False)
     def plunder_report(self, key, win):
         try:
             way = int(key)
@@ -822,7 +823,7 @@ class Plunder(object):
         self.send_plunder_daily_reward_notify()
         self.send_result_notify()
 
-    @check_club_level(silence=False)
+    @check_plunder_active(silence=False)
     def get_reward(self):
         target_id = self.doc['matching']['id']
         tp = self.doc['matching']['tp']
@@ -988,7 +989,7 @@ class Plunder(object):
         self.send_plunder_daily_reward_notify(info=info)
         return rc
 
-    @check_club_level(silence=False)
+    @check_plunder_active(silence=False)
     def get_station_product(self):
         drop = self.doc.get('drop', '')
         if not drop:
@@ -1007,7 +1008,7 @@ class Plunder(object):
         self.send_station_notify()
         return rc
 
-    @check_club_level(silence=True)
+    @check_plunder_active(silence=True)
     def send_formation_notify(self):
         notify = PlunderFormationNotify()
         for i in [1, 2, 3]:
@@ -1017,7 +1018,7 @@ class Plunder(object):
 
         MessagePipe(self.char_id).put(msg=notify)
 
-    @check_club_level(silence=True)
+    @check_plunder_active(silence=True)
     def send_search_notify(self):
         if not self.doc['search']:
             try:
@@ -1047,7 +1048,7 @@ class Plunder(object):
                 notify_target_troop.MergeFrom(ClubMatch.make_club_troop_msg(club))
         MessagePipe(self.char_id).put(msg=notify)
 
-    @check_club_level(silence=True)
+    @check_plunder_active(silence=True)
     def send_result_notify(self):
         notify = PlunderResultNotify()
         if self.doc['matching']['id']:
@@ -1056,7 +1057,7 @@ class Plunder(object):
 
         MessagePipe(self.char_id).put(msg=notify)
 
-    @check_club_level(silence=True)
+    @check_plunder_active(silence=True)
     def send_plunder_times_notify(self):
         ti = PlunderTimesBuyInfo(self.server_id, self.char_id)
 
@@ -1069,7 +1070,7 @@ class Plunder(object):
 
         MessagePipe(self.char_id).put(msg=notify)
 
-    @check_club_level(silence=True)
+    @check_plunder_active(silence=True)
     def send_plunder_daily_reward_notify(self, info=None):
         if info is None:
             _, info = self.get_daily_reward_info()
@@ -1092,7 +1093,7 @@ class Plunder(object):
 
         MessagePipe(self.char_id).put(msg=notify)
 
-    @check_club_level(silence=True)
+    @check_plunder_active(silence=True)
     def send_station_notify(self):
         notify = BaseStationNotify()
         notify.level = self.doc['level']
@@ -1107,7 +1108,7 @@ class Plunder(object):
         notify.product_lost_percent = self.doc['loss_percent']
         MessagePipe(self.char_id).put(msg=notify)
 
-    @check_club_level(silence=True)
+    @check_plunder_active(silence=True)
     def send_revenge_notify(self):
         notify = PlunderRevengeNotify()
         notify.remained_times = self.get_revenge_remained_times()

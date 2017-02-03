@@ -12,6 +12,7 @@ from core.signals import challenge_match_signal
 
 from core.task import TaskMain, TaskDaily
 from core.inspire import Inspire
+from core.plunder import Plunder
 
 
 @receiver(challenge_match_signal, dispatch_uid='signals.challenge.challenge_match_signal')
@@ -20,3 +21,4 @@ def challenge_match_handler(server_id, char_id, challenge_id, star, **kwargs):
     if star > 0:
         Inspire(server_id, char_id).try_open_slots()
         TaskDaily(server_id, char_id).try_open()
+        Plunder(server_id, char_id).try_initialize()

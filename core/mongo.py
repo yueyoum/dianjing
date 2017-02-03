@@ -821,7 +821,7 @@ class MongoPlunder(BaseDocument):
     }
 
     COLLECTION = 'plunder'
-    INDEXES = ['plunder_remained_times', 'loss_percent',]
+    INDEXES = ['active', 'plunder_remained_times', 'loss_percent',]
 
 
 # 宴会 这部分功能用 socket 实现

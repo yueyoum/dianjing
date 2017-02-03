@@ -694,6 +694,9 @@ class UnionJoined(IUnion):
         explore_point = int((math.pow(staff.level, 0.2) + math.pow(staff.step + 1, 0.5)) * 7 * param)
         union_skill_point = int((math.pow(staff.level, 0.2) + math.pow(staff.step + 1, 0.5)) * 5 * param)
 
+        self_explore_point = int((math.pow(staff.level, 0.2) + math.pow(staff.step + 1, 0.5)) * 5 * param)
+        self.add_explore_point(self_explore_point)
+
         Union(self.server_id, doc['owner']).add_explore_point(-explore_point)
 
         reward = ConfigUnionExplore.get_harass_reward()
