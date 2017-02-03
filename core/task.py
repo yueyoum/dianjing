@@ -40,7 +40,7 @@ class TaskMain(object):
             return
 
         config = ConfigTaskMain.get(self.doing)
-        if challenge_id < config.challenge_id:
+        if not Challenge(self.server_id, self.char_id).is_challenge_id_passed(config.challenge_id):
             return
 
         if self.doing >= ConfigTaskMain.MAX_ID:
@@ -157,7 +157,7 @@ class TaskDaily(object):
         if task_id not in self.doc['tasks']:
             return None, None
 
-        if config_condition.compare_value(current_value, config.condition_value):
+        if config_condition.compare_value(self.server_id, self.char_id, current_value, config.condition_value):
             return current_value, TASK_FINISH
 
         return current_value, TASK_DOING

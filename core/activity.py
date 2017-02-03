@@ -68,7 +68,7 @@ class ActivityNewPlayer(object):
         if _id in self.doc['done']:
             return value, ACTIVITY_COMPLETE
 
-        if config_condition.compare_value(value, config.condition_value):
+        if config_condition.compare_value(self.server_id, self.char_id, value, config.condition_value):
             return value, ACTIVITY_REWARD
 
         return value, ACTIVITY_DOING

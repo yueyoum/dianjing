@@ -31,6 +31,9 @@ class TaskCondition(object):
         return self.CLASS, self.FUNCTION
 
     def get_value(self, server_id, char_id, start_at=None, end_at=None):
+        if self.id == 21:
+            return 0
+
         if self.time_limit:
             if not start_at and not end_at:
                 # 对于有 时间范围的 条件， 一定得有 start_at 或者 end_at
@@ -51,7 +54,11 @@ class TaskCondition(object):
             return fn(self.param)
         return fn()
 
-    def compare_value(self, value, target_value):
+    def compare_value(self, server_id, char_id, value, target_value):
+        from core.challenge import Challenge
+        if self.id == 21:
+            return Challenge(server_id, char_id).is_challenge_id_passed(target_value)
+
         if self.compare_type == '>=':
             op = operator.ge
         elif self.compare_type == '<=':
