@@ -902,8 +902,7 @@ class ChampionshipGroupManager(object):
                 }
 
         for i in range(need_npc_amount):
-            npc_config_id = random.choice([2, 3, 4])
-            npc_doc = ConfigPlunderNPC.get(npc_config_id).to_simple_doc()
+            npc_doc = ConfigPlunderNPC.get(2).to_simple_doc()
             npc_id = npc_doc.pop('id')
             info[npc_id] = npc_doc
 
