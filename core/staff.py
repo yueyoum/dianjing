@@ -823,14 +823,6 @@ class Staff(AbstractStaff):
 
         return results
 
-    def send_notify(self):
-        notify = StaffNotify()
-        notify.act = ACT_UPDATE
-        notify_staff = notify.staffs.add()
-        notify_staff.MergeFrom(self.make_protomsg())
-        MessagePipe(self.char_id).put(msg=notify)
-
-
 class StaffManger(object):
     __slots__ = ['server_id', 'char_id']
 

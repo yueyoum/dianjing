@@ -921,7 +921,7 @@ class Bag(object):
                 s_obj = sm.get_staff_object(staff_id)
                 s_obj.calculate()
                 s_obj.make_cache()
-                s_obj.send_notify()
+                sm.send_notify(ids=[staff_id])
 
                 fm = Formation(self.server_id, self.char_id)
                 if staff_id in fm.in_formation_staffs():
