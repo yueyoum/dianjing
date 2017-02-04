@@ -1142,7 +1142,7 @@ class StaffManger(object):
         self.send_notify(ids=changed)
 
         in_formation_staff_ids = Formation(self.server_id, self.char_id).in_formation_staffs().keys()
-        if staff.id in in_formation_staff_ids:
+        if staff.id in in_formation_staff_ids or other_staff_id in in_formation_staff_ids:
             self.after_staff_change()
 
             task_condition_trig_signal.send(
