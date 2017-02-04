@@ -13,8 +13,8 @@ import cPickle
 import arrow
 
 from django.conf import settings
-from django.db.models import Q
-from apps.gift_code.models import GiftCode, GiftCodeUsingLog
+from django.db.models import Q, F
+from apps.gift_code.models import GiftCode, GiftCodeGen, GiftCodeRecord, GiftCodeUsingLog
 
 from dianjing.exception import GameException
 from core.mongo import MongoCharacter
@@ -29,6 +29,7 @@ from core.mail import MailManager
 
 from config import ConfigErrorMessage, GlobalConfig
 from utils.message import MessagePipe, MessageFactory
+from utils.functional import check_signed_string
 
 from protomsg.chat_pb2 import CHAT_CHANNEL_PUBLIC, CHAT_CHANNEL_UNION, ChatNotify, ChatMessage, ChatSendRequest
 from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
@@ -42,7 +43,6 @@ class Chat(object):
         self.char_id = char_id
 
     def send(self, tp, channel, text):
-
         if tp != ChatSendRequest.NORMAL:
             if not settings.GM_CMD_OPEN:
                 raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
@@ -51,13 +51,16 @@ class Chat(object):
             return
 
         # check gift code
-        try:
-            gift = GiftCode.objects.get(id=text)
-        except GiftCode.DoesNotExist:
-            self.normal_chat(channel, text)
-            return
+        if check_signed_string(text):
+            try:
+                gift_code_record = GiftCodeRecord.objects.get(id=text)
+            except GiftCodeRecord.DoesNotExist:
+                pass
+            else:
+                self.gift(gift_code_record)
+                return
 
-        self.gift(gift)
+        self.normal_chat(channel, text)
 
     def normal_chat(self, channel, text):
         from tasks import world
@@ -188,11 +191,15 @@ class Chat(object):
         else:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
-    def gift(self, gift):
+    def gift(self, gift_code_record):
         """
 
-        :type gift: GiftCode
+        :type gift_code_record: GiftCodeRecord
         """
+
+        gen_id = gift_code_record.gen_id
+        gift = GiftCode.objects.get(id=gift_code_record.category)
+        """:type: GiftCode"""
 
         if not gift.active:
             raise GameException(ConfigErrorMessage.get_error_id("GIFT_CODE_NOT_ACTIVE"))
@@ -208,10 +215,19 @@ class Chat(object):
                 raise GameException(ConfigErrorMessage.get_error_id("GIFT_CODE_EXPIRED"))
 
         if gift.times_limit:
-            condition = Q(char_id=self.char_id) & Q(gift_code=gift.id)
-            using_times = GiftCodeUsingLog.objects.filter(condition).count()
+            using_times = GiftCodeUsingLog.objects.filter(gift_code=gift_code_record.id).count()
             if using_times >= gift.times_limit:
                 raise GameException(ConfigErrorMessage.get_error_id("GIFT_CODE_NO_TIMES"))
+
+        # 每个礼品码默认每个玩家每个服只能用一次
+        condition = Q(server_id=self.server_id) & Q(char_id=self.char_id) & Q(gift_code=gift_code_record.id)
+        if GiftCodeUsingLog.objects.filter(condition).exists():
+            raise GameException(ConfigErrorMessage.get_error_id("GIFT_CODE_ALREADY_USED"))
+
+        # 同类同服不可以多次使用
+        condition = Q(server_id=self.server_id) & Q(char_id=self.char_id) & Q(category=gift.id)
+        if GiftCodeUsingLog.objects.filter(condition).exists():
+            raise GameException(ConfigErrorMessage.get_error_id("GIFT_CODE_CATEGORY_ALREADY_USED"))
 
         # ALL OK
         items = gift.get_parsed_items()
@@ -221,9 +237,13 @@ class Chat(object):
         m.add(title=gift.mail_title, content=gift.mail_content, attachment=rc.to_json())
 
         GiftCodeUsingLog.objects.create(
+            server_id=self.server_id,
             char_id=self.char_id,
-            gift_code=gift.id,
+            gift_code=gift_code_record.id,
+            category=gift.id,
         )
+
+        GiftCodeGen.objects.filter(id=gen_id).update(used_amount=F('used_amount') + 1)
 
     def send_notify(self):
         notify = ChatNotify()

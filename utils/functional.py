@@ -24,6 +24,27 @@ def make_short_random_string():
     return hashlib.md5(data).hexdigest()[:6]
 
 
+def make_signed_random_string():
+    text = os.urandom(4).encode('hex')
+
+    number = int(text, 16)
+    sign = str(number)[:2]
+    return '{0}{1}'.format(text, sign)
+
+
+def check_signed_string(data):
+    if len(data) != 10:
+        return False
+
+    try:
+        text = data[:-2]
+        sign = data[8:]
+        number = int(text, 16)
+        return str(number)[:2] == sign
+    except:
+        return False
+
+
 def get_start_time_of_today():
     # 今天的起始时间
     """
