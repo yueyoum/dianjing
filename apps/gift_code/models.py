@@ -67,7 +67,6 @@ class GiftCodeGen(models.Model):
 class GiftCodeRecord(models.Model):
     id = models.CharField(max_length=255, primary_key=True)
     gen_id = models.IntegerField(db_index=True)
-    category = models.CharField(max_length=255)
 
     class Meta:
         db_table = 'gift_code_record'

@@ -22,7 +22,6 @@ def generate_gift_code(instance, **kwargs):
         return
 
     gen_id = instance.id
-    category = instance.category.id
 
     code_text_sets = set()
     data = []
@@ -37,7 +36,6 @@ def generate_gift_code(instance, **kwargs):
         obj = GiftCodeRecord(
             id=code_text,
             gen_id=gen_id,
-            category=category,
         )
 
         data.append(obj)

@@ -198,7 +198,8 @@ class Chat(object):
         """
 
         gen_id = gift_code_record.gen_id
-        gift = GiftCode.objects.get(id=gift_code_record.category)
+        category = GiftCodeGen.objects.get(id=gen_id).category.id
+        gift = GiftCode.objects.get(id=category)
         """:type: GiftCode"""
 
         if not gift.active:
@@ -240,7 +241,7 @@ class Chat(object):
             server_id=self.server_id,
             char_id=self.char_id,
             gift_code=gift_code_record.id,
-            category=gift.id,
+            category=category,
         )
 
         GiftCodeGen.objects.filter(id=gen_id).update(used_amount=F('used_amount') + 1)

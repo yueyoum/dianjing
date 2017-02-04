@@ -2,6 +2,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 
 import apps.config.views
+import apps.gift_code.views
 
 import views.admin
 import views.purchase
@@ -35,4 +36,6 @@ urlpatterns = [
     url(r'^statistics/gold/download/$', views.statistics.gold_info_download),
     url(r'^statistics/diamond/$', views.statistics.diamond_info),
     url(r'^statistics/diamond/download/$', views.statistics.diamond_info_download),
+
+    url(r'^gift_code/download/$', apps.gift_code.views.download_gift_code),
 ]

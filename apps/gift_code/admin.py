@@ -19,8 +19,10 @@ class AdminGiftCodeGen(admin.ModelAdmin):
         'Download'
     )
 
+    readonly_fields = ('used_amount',)
+
     def Download(self, obj):
-        return '<a href="/gift_code/download?gen_id={0}" target="_blank">Download</a>'.format(obj.id)
+        return '<a href="/gift_code/download/?gen_id={0}" target="_blank">Download</a>'.format(obj.id)
     Download.allow_tags = True
 
 
