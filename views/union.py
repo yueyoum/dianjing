@@ -295,11 +295,12 @@ def harass(request):
     staff_id = request._proto.staff_id
 
     u = Union(server_id, char_id)
-    explore_point, rc = u.harass(union_id, staff_id)
+    explore_point, rc, my_explore_point = u.harass(union_id, staff_id)
 
     response = UnionHarassResponse()
     response.ret = 0
     response.explore_point = explore_point
+    response.my_explore_point = my_explore_point
     response.drop.MergeFrom(rc.make_protomsg())
 
     return ProtobufResponse(response)

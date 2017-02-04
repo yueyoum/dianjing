@@ -694,8 +694,8 @@ class UnionJoined(IUnion):
         explore_point = int((math.pow(staff.level, 0.2) + math.pow(staff.step + 1, 0.5)) * 7 * param)
         union_skill_point = int((math.pow(staff.level, 0.2) + math.pow(staff.step + 1, 0.5)) * 5 * param)
 
-        self_explore_point = int((math.pow(staff.level, 0.2) + math.pow(staff.step + 1, 0.5)) * 5 * param)
-        self.add_explore_point(self_explore_point)
+        my_explore_point = int((math.pow(staff.level, 0.2) + math.pow(staff.step + 1, 0.5)) * 5 * param)
+        self.add_explore_point(my_explore_point)
 
         Union(self.server_id, doc['owner']).add_explore_point(-explore_point)
 
@@ -716,7 +716,7 @@ class UnionJoined(IUnion):
         )
 
         self.send_explore_notify()
-        return explore_point, rc
+        return explore_point, rc, my_explore_point
 
     def harass_buy_times(self):
         hi = HarassInfo(self.server_id, self.char_id)
