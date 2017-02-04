@@ -918,12 +918,13 @@ class Bag(object):
             sm = StaffManger(self.server_id, self.char_id)
             staff_id = sm.find_staff_id_with_equip(slot_id)
             if staff_id:
+                s_obj = sm.get_staff_object(staff_id)
+                s_obj.calculate()
+                s_obj.make_cache()
+                s_obj.send_notify()
+
                 fm = Formation(self.server_id, self.char_id)
                 if staff_id in fm.in_formation_staffs():
-                    s_obj = sm.get_staff_object(staff_id)
-                    s_obj.calculate()
-                    s_obj.make_cache()
-
                     Club(self.server_id, self.char_id).send_notify()
 
                     task_condition_trig_signal.send(
