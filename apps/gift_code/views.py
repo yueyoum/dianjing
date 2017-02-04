@@ -21,7 +21,6 @@ def download_gift_code(request):
         ws.append([_id])
 
     response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = u'attachment;filename={0}.xlsx'.format(category)
+    response['Content-Disposition'] = 'attachment;filename="{0}.xlsx"'.format(category.encode('utf-8'))
     wb.save(response)
     return response
-

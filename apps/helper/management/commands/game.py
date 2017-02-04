@@ -13,6 +13,7 @@ from apps.character.models import Character
 from apps.statistics.models import Statistics
 from apps.history_record.models import MailHistoryRecord
 from apps.config.models import CustomerServiceInformation
+from apps.gift_code.models import GiftCode, GiftCodeGen, GiftCodeRecord, GiftCodeUsingLog
 from core.db import MongoDB, RedisDB
 
 
@@ -42,6 +43,11 @@ class Command(BaseCommand):
     def _reset(self):
         RedisDB.connect()
         MongoDB.connect()
+
+        GiftCodeUsingLog.objects.all().delete()
+        GiftCodeRecord.objects.all().delete()
+        GiftCodeGen.objects.all().delete()
+        GiftCode.objects.all().delete()
 
         MailHistoryRecord.objects.all().delete()
         Statistics.objects.all().delete()
