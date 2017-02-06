@@ -328,8 +328,7 @@ def check_plunder_active(silence=True):
                 if silence:
                     return
 
-                # TODO replace to PLUNDER_NOT_ACTIVE
-                raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+                raise GameException(ConfigErrorMessage.get_error_id("PLUNDER_NOT_ACTIVE"))
 
             return fun(self, *args, **kwargs)
 

@@ -524,6 +524,13 @@ class Championship(object):
 
         return way_class(self.server_id, self.char_id, way_id)
 
+    def find_way_id_by_staff_id(self, staff_id):
+        for i in [1, 2, 3]:
+            if self.get_way_object(i).is_staff_in_formation(staff_id):
+                return i
+
+        return 0
+
     @check_time_limit
     @check_club_level(silence=False)
     def set_staff(self, way_id, slot_id, staff_id):

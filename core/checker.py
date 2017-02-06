@@ -21,6 +21,7 @@ def staff_not_working(server_id, char_id, staff_id, raise_exception=True):
     from core.formation import Formation
     from core.plunder import Plunder
     from core.inspire import Inspire
+    from core.championship import Championship
 
     if Formation(server_id, char_id).is_staff_in_formation(staff_id):
         if raise_exception:
@@ -34,7 +35,11 @@ def staff_not_working(server_id, char_id, staff_id, raise_exception=True):
 
         return False
 
-    # TODO championship formation check
+    if Championship(server_id, char_id).find_way_id_by_staff_id(staff_id):
+        if raise_exception:
+            raise GameException(ConfigErrorMessage.get_error_id("STAFF_IN_CHAMPIONSHIP_FORMATION"))
+
+        return False
 
     if Inspire(server_id, char_id).is_staff_in(staff_id):
         if raise_exception:
