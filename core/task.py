@@ -113,14 +113,15 @@ class TaskDaily(object):
                 self.doc['tasks'].append(i)
                 new_task_ids.append(i)
 
-        MongoTaskDaily.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': {
-                'tasks': self.doc['tasks']
-            }}
-        )
+        if new_task_ids:
+            MongoTaskDaily.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': {
+                    'tasks': self.doc['tasks']
+                }}
+            )
 
-        self.send_notify(task_ids=new_task_ids)
+            self.send_notify(task_ids=new_task_ids)
 
     def trig(self, condition_id):
         task_ids = ConfigTaskDaily.get_task_ids_by_condition_id(condition_id)
