@@ -568,7 +568,7 @@ class AbstractStaff(object):
             return 0
 
         # 属性参考战斗力计算表
-        hp = (self.manage * self.__unit.config.operation * self.__unit.config.param_a + self.__unit.hp) * \
+        hp = (self.manage * 1.2 * self.__unit.config.operation * self.__unit.config.param_a + self.__unit.hp) * \
              (1 + self.__unit.hp_percent)
 
         attack = (self.attack * self.__unit.config.operation * self.__unit.config.param_b + self.__unit.attack) * \
