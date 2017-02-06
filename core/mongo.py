@@ -973,4 +973,4 @@ class MongoMatchRecord(BaseDocument):
     }
 
     COLLECTION = 'match_record'
-    INDEXES = ['id_one', 'id_two',]
+    INDEXES = ['id_one', 'id_two', 'create_at',]

@@ -141,8 +141,16 @@ class ClubMatch(object):
         return msg
 
 
+KEEP_DAYS = 30
+
+
 class MatchRecord(object):
     __slots__ = ['server_id', 'id_one', 'id_two', 'club_match', 'record', 'create_at']
+
+    @classmethod
+    def clean(cls, server_id):
+        now = arrow.utcnow().replace(days=-KEEP_DAYS)
+        MongoMatchRecord.db(server_id).delete_many({'timestamp': {'$lte': now.timestamp}})
 
     @classmethod
     def get(cls, server_id, record_id):

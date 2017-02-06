@@ -14,6 +14,7 @@ from apps.statistics.models import Statistics
 from apps.account.models import AccountLoginLog
 
 from core.value_log import ValueLog
+from core.match import MatchRecord
 from utils.operation_log import OperationLog
 
 from cronjob.log import Logger
@@ -74,6 +75,23 @@ def clean_operation_log(*args):
     try:
         for sid in Server.duty_server_ids():
             OperationLog.clean(sid)
+            logger.write("Server {0} Done.".format(sid))
+    except:
+        logger.error(traceback.format_exc())
+    else:
+        logger.write("Done")
+    finally:
+        logger.close()
+
+
+@uwsgidecorators.cron(0, 5, -1, -1, -1, target="spooler")
+def clean_match_record(*args):
+    logger = Logger("clean_match_record")
+    logger.write("Start")
+
+    try:
+        for sid in Server.duty_server_ids():
+            MatchRecord.clean(sid)
             logger.write("Server {0} Done.".format(sid))
     except:
         logger.error(traceback.format_exc())
