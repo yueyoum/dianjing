@@ -133,12 +133,7 @@ def game_start_handler(server_id, char_id, **kwargs):
     w.send_level_reward_notify()
     w.send_energy_reward_notify()
 
-    u = Union(server_id, char_id)
-    u.send_notify()
-    u.send_my_check_notify()
-    u.send_my_applied_notify()
-    u.send_explore_notify()
-    u.send_skill_notify()
+    Union(server_id, char_id).send_all_notify()
 
     Purchase(server_id, char_id).send_notify()
 

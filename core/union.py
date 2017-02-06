@@ -313,6 +313,13 @@ class IUnion(object):
     def get_union_skill_talent_effects(self):
         raise NotImplementedError()
 
+    def send_all_notify(self):
+        self.send_notify()
+        self.send_my_applied_notify()
+        self.send_my_check_notify()
+        self.send_explore_notify()
+        self.send_skill_notify()
+
     def send_notify(self, **kwargs):
         raise NotImplementedError()
 
@@ -370,10 +377,7 @@ class UnionNotJoined(IUnion):
         )
 
         rc.remove(self.server_id, self.char_id, message="Union.create")
-
-        u = Union(self.server_id, self.char_id)
-        u.send_notify()
-        u.send_my_applied_notify()
+        Union(self.server_id, self.char_id).send_all_notify()
 
     def apply_union(self, union_id):
         kick_flag = self.member_doc.get('kick_flag', False)
@@ -955,10 +959,7 @@ class UnionOwner(UnionJoined):
         )
 
         self.send_notify()
-
-        u = Union(self.server_id, char_id)
-        u.send_notify()
-        u.send_my_applied_notify()
+        Union(self.server_id, char_id).send_all_notify()
 
     def refuse(self, char_id):
         try:
