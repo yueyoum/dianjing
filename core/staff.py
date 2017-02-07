@@ -823,6 +823,7 @@ class Staff(AbstractStaff):
 
         return results
 
+
 class StaffManger(object):
     __slots__ = ['server_id', 'char_id']
 
@@ -993,6 +994,8 @@ class StaffManger(object):
             if len(result[_oid]) < _amount:
                 # TODO replace the error code
                 raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
+
+            result[_oid] = result[_oid][:_amount]
 
         return result
 
