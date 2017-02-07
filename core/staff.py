@@ -1063,7 +1063,7 @@ class StaffManger(object):
         self.after_staffs_change_for_trig_signal()
 
     def remove(self, staff_id):
-        if isinstance(staff_id, list):
+        if isinstance(staff_id, (list, tuple)):
             staff_ids = staff_id
         else:
             staff_ids = [staff_id]
@@ -1073,6 +1073,9 @@ class StaffManger(object):
             {'_id': self.char_id},
             {'$unset': updater}
         )
+
+        for i in staff_ids:
+            Staff.clean_cache(i)
 
         notify = StaffRemoveNotify()
         notify.ids.extend(staff_ids)

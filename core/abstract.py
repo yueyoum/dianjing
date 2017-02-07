@@ -263,6 +263,11 @@ class AbstractStaff(object):
         key = 'staff:{0}'.format(self.id)
         cache.set(key, self)
 
+    @classmethod
+    def clean_cache(cls, _id):
+        key = 'staff:{0}'.format(_id)
+        cache.delete(key)
+
     def after_init(self):
         from config import ConfigStaffNew
         self.config = ConfigStaffNew.get(self.oid)
