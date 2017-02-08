@@ -362,6 +362,7 @@ class Challenge(object):
         ValueLogChallengeMatchTimes(self.server_id, self.char_id).record(sub_id=challenge_id)
 
         if star <= 0:
+            self.send_challenge_notify(ids=[challenge_id])
             return None
 
         ValueLogAllChallengeWinTimes(self.server_id, self.char_id).record()
