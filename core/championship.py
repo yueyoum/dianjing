@@ -419,6 +419,7 @@ class Championship(object):
             way = p.get_way_object(i)
             doc = way.get_or_create_doc()
 
+            WAY_MAP[i].MONGO_COLLECTION.db(self.server_id).delete_one({'_id': self.char_id})
             WAY_MAP[i].MONGO_COLLECTION.db(self.server_id).insert_one(doc)
 
         self.doc['active'] = True
