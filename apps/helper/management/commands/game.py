@@ -45,9 +45,9 @@ class Command(BaseCommand):
         MongoDB.connect()
 
         GiftCodeUsingLog.objects.all().delete()
-        GiftCodeRecord.objects.all().delete()
-        GiftCodeGen.objects.all().delete()
-        GiftCode.objects.all().delete()
+        # GiftCodeRecord.objects.all().delete()
+        # GiftCodeGen.objects.all().delete()
+        # GiftCode.objects.all().delete()
 
         MailHistoryRecord.objects.all().delete()
         Statistics.objects.all().delete()
