@@ -92,13 +92,14 @@ class WinningArena(_Winning):
         from core.club import Club
         from core.formation import Formation
 
+        notify = cls.NOTIFY()
+        notify.session = ""
+
         docs = cls.MONGO_DOCUMENT.db(sid).find({}).sort('winning', -1).limit(10)
         if not docs:
-            value = None
-            notify = cls.NOTIFY()
             data = notify.SerializeToString()
+            value = None
         else:
-            notify = cls.NOTIFY()
             for doc in docs:
                 msg_club = Club(sid, doc['_id']).make_protomsg()
                 msg_slots = Formation(sid, doc['_id']).make_slot_msg()
@@ -132,13 +133,14 @@ class WinningPlunder(_Winning):
         from core.club import Club
         from core.plunder import Plunder
 
+        notify = cls.NOTIFY()
+        notify.session = ""
+
         docs = cls.MONGO_DOCUMENT.db(sid).find({}).sort('winning', -1).limit(3)
         if not docs:
-            value = None
-            notify = cls.NOTIFY()
             data = notify.SerializeToString()
+            value = None
         else:
-            notify = cls.NOTIFY()
             for doc in docs:
                 msg_club = Club(sid, doc['_id']).make_protomsg()
                 _plunder = Plunder(sid, doc['_id'])

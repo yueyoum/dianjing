@@ -1231,6 +1231,7 @@ class ChampionshipLevel(object):
 
         # 设置winning
         winning_notify = LeaderboardChampionshipNotify()
+        winning_notify.session = ""
         for __id, __info in [(first, first_info), (second, second_info), (third, third_info)]:
             __match = Match(self.server_id, None, None, None, None)
             __clubs = __match.make_3_way_clubs(__id, __info)
