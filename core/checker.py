@@ -17,34 +17,76 @@ def staff_exists(server_id, char_id, staff_id):
     StaffManger(server_id, char_id).check_staff(ids=[staff_id])
 
 
-def staff_not_working(server_id, char_id, staff_id, raise_exception=True):
-    from core.formation import Formation
-    from core.plunder import Plunder
-    from core.inspire import Inspire
-    from core.championship import Championship
+class StaffWorkingChecker(object):
+    def __init__(self, server_id, char_id):
+        from core.formation import Formation
+        from core.plunder import Plunder
+        from core.inspire import Inspire
+        from core.championship import Championship
 
-    if Formation(server_id, char_id).is_staff_in_formation(staff_id):
-        if raise_exception:
-            raise GameException(ConfigErrorMessage.get_error_id("STAFF_IN_FORMATION"))
+        self.server_id = server_id
+        self.char_id = char_id
 
-        return False
+        self.formation = Formation(server_id, char_id)
 
-    if Plunder(server_id, char_id).find_way_id_by_staff_id(staff_id):
-        if raise_exception:
-            raise GameException(ConfigErrorMessage.get_error_id("STAFF_IN_PLUNDER_FORMATION"))
+        p = Plunder(server_id, char_id)
+        self.plunder_formation_1 = p.get_way_object(1)
+        self.plunder_formation_2 = p.get_way_object(2)
+        self.plunder_formation_3 = p.get_way_object(3)
 
-        return False
+        c = Championship(server_id, char_id)
+        self.championship_formation_1 = c.get_way_object(1)
+        self.championship_formation_2 = c.get_way_object(2)
+        self.championship_formation_3 = c.get_way_object(3)
 
-    if Championship(server_id, char_id).find_way_id_by_staff_id(staff_id):
-        if raise_exception:
-            raise GameException(ConfigErrorMessage.get_error_id("STAFF_IN_CHAMPIONSHIP_FORMATION"))
+        self.inspire = Inspire(server_id, char_id)
 
-        return False
+    def is_not_working(self, staff_id, raise_exception=True):
+        if self.formation.is_staff_in_formation(staff_id):
+            if raise_exception:
+                raise GameException(ConfigErrorMessage.get_error_id("STAFF_IN_FORMATION"))
 
-    if Inspire(server_id, char_id).is_staff_in(staff_id):
-        if raise_exception:
-            raise GameException(ConfigErrorMessage.get_error_id("INSPIRE_STAFF_IN"))
+            return False
 
-        return False
+        if self.plunder_formation_1.is_staff_in_formation(staff_id):
+            if raise_exception:
+                raise GameException(ConfigErrorMessage.get_error_id("STAFF_IN_PLUNDER_FORMATION"))
 
-    return True
+            return False
+
+        if self.plunder_formation_2.is_staff_in_formation(staff_id):
+            if raise_exception:
+                raise GameException(ConfigErrorMessage.get_error_id("STAFF_IN_PLUNDER_FORMATION"))
+
+            return False
+        if self.plunder_formation_3.is_staff_in_formation(staff_id):
+            if raise_exception:
+                raise GameException(ConfigErrorMessage.get_error_id("STAFF_IN_PLUNDER_FORMATION"))
+
+            return False
+
+        if self.championship_formation_1.is_staff_in_formation(staff_id):
+            if raise_exception:
+                raise GameException(ConfigErrorMessage.get_error_id("STAFF_IN_CHAMPIONSHIP_FORMATION"))
+
+            return False
+
+        if self.championship_formation_2.is_staff_in_formation(staff_id):
+            if raise_exception:
+                raise GameException(ConfigErrorMessage.get_error_id("STAFF_IN_CHAMPIONSHIP_FORMATION"))
+
+            return False
+
+        if self.championship_formation_3.is_staff_in_formation(staff_id):
+            if raise_exception:
+                raise GameException(ConfigErrorMessage.get_error_id("STAFF_IN_CHAMPIONSHIP_FORMATION"))
+
+            return False
+
+        if self.inspire.is_staff_in(staff_id):
+            if raise_exception:
+                raise GameException(ConfigErrorMessage.get_error_id("INSPIRE_STAFF_IN"))
+
+            return False
+
+        return True
