@@ -32,6 +32,7 @@ from core.club import Club, get_club_property
 from core.mail import MailManager
 from core.resource import ResourceClassification
 from core.match import ClubMatch, MatchRecord
+from core.winning import WinningChampionship
 
 from utils.message import MessagePipe, MessageFactory
 from utils.functional import make_string_id, make_time_of_today
@@ -63,6 +64,9 @@ from protomsg.championship_pb2 import (
     ChampionClub as MsgChampionClub,
 )
 from protomsg.match_pb2 import ClubMatchServerSideRequest, ClubMatchServerSideResponse
+from protomsg.plunder_pb2 import PlunderFormation as MsgPlunderFormation
+from protomsg.formation_pb2 import FORMATION_SLOT_USE
+from protomsg.leaderboard_pb2 import LeaderboardChampionshipNotify
 
 # XX强 进阶顺序
 LEVEL_SEQ = [16, 8, 4, 2, 1]
@@ -311,6 +315,32 @@ def totally_reset(server_id, send_notify=False):
             mp.put(data=level_data)
 
 
+def make_plunder_formation_msg(club, way_id):
+    """
+
+    :type club: core.abstract.AbstractClub
+    :type way_id: int
+    """
+    msg = MsgPlunderFormation()
+    msg.way = way_id
+
+    power = 0
+    for index, s in enumerate(club.formation_staffs):
+        power += s.power
+
+        msg_slot = msg.formation.add()
+        msg_slot.slot_id = index + 1
+        msg_slot.status = FORMATION_SLOT_USE
+        msg_slot.staff_id = s.id
+        msg_slot.unit_id = s.unit.id
+        msg_slot.position = s.formation_position
+        msg_slot.staff_oid = s.oid
+        msg_slot.policy = 1
+
+    msg.power = power
+    return msg
+
+
 class Match(object):
     __slots__ = ['server_id', 'id_one', 'info_one', 'id_two', 'info_two']
 
@@ -324,7 +354,7 @@ class Match(object):
     def make_3_way_clubs(self, _id, _info):
         """
 
-        :rtype: [core.abstract.AbstractClub]
+        :rtype: list[core.abstract.AbstractClub]
         """
         clubs = []
 
@@ -1163,14 +1193,19 @@ class ChampionshipLevel(object):
         level_2_member_ids.remove(first)
         second = level_2_member_ids[0]
 
+        first_info = self.doc['info'][first]
+        second_info = self.doc['info'][second]
+        third_info = self.doc['info'][third]
+        fourth_info = self.doc['info'][fourth]
+
         MongoChampionHistory.db(self.server_id).drop()
         history_doc = MongoChampionHistory.document()
         history_doc['member_ids'] = [first, second, third, fourth]
         history_doc['info'] = {
-            first: self.doc['info'][first],
-            second: self.doc['info'][second],
-            third: self.doc['info'][third],
-            fourth: self.doc['info'][fourth],
+            first: first_info,
+            second: second_info,
+            third: third_info,
+            fourth: fourth_info,
         }
 
         MongoChampionHistory.db(self.server_id).insert_one(history_doc)
@@ -1193,6 +1228,20 @@ class ChampionshipLevel(object):
         for _cid in char_ids:
             MessagePipe(_cid).put(data=group_data)
             Championship(self.server_id, _cid).send_basic_notify(basic_notify=basic_notify)
+
+        # 设置winning
+        winning_notify = LeaderboardChampionshipNotify()
+        for __id, __info in [(first, first_info), (second, second_info), (third, third_info)]:
+            __match = Match(self.server_id, None, None, None, None)
+            __clubs = __match.make_3_way_clubs(__id, __info)
+
+            winning_notify_club = winning_notify.clubs.add()
+            winning_notify_club.club.MergeFrom(__clubs[0].make_protomsg())
+            for __way_id in [1, 2, 3]:
+                winning_notify_club_formation = winning_notify_club.formation.add()
+                winning_notify_club_formation.MergeFrom(make_plunder_formation_msg(__clubs[__way_id - 1], __way_id))
+
+        WinningChampionship.set_to_common(self.server_id, winning_notify)
 
     def make_protomsg(self, level=None):
         if level:

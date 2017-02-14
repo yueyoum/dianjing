@@ -44,6 +44,8 @@ from core.plunder import Plunder, SpecialEquipmentGenerator
 from core.party import Party
 from core.inspire import Inspire
 from core.championship import Championship
+from core.winning import WinningPlunder, WinningArena, WinningChampionship, Worship
+from core.common import CommonArenaWinningChat, CommonPlunderWinningChat, CommonChampionshipChat
 
 from utils.message import MessagePipe
 from utils.functional import days_passed
@@ -162,6 +164,14 @@ def game_start_handler(server_id, char_id, **kwargs):
     cs = Championship(server_id, char_id)
     cs.try_initialize(send_notify=False)
     cs.send_notify()
+
+    WinningPlunder(server_id, char_id).send_notify()
+    WinningArena(server_id, char_id).send_notify()
+    WinningChampionship(server_id, char_id).send_notify()
+    Worship(server_id, char_id).send_notify()
+    CommonArenaWinningChat(server_id, char_id).send_notify()
+    CommonPlunderWinningChat(server_id, char_id).send_notify()
+    CommonChampionshipChat(server_id, char_id).send_notify()
 
     send_system_notify(server_id, char_id)
     BroadCast(server_id, char_id).try_cast_login_notify()

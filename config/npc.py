@@ -10,8 +10,10 @@ Description:
 from core.abstract import AbstractClub, AbstractStaff
 from config.base import ConfigBase
 
+
 class _Staff(AbstractStaff):
     __slots__ = []
+
     def __init__(self, _id):
         super(_Staff, self).__init__()
         from utils.functional import make_string_id
@@ -19,8 +21,10 @@ class _Staff(AbstractStaff):
         self.oid = _id
         self.after_init()
 
+
 class _Club(AbstractClub):
     __slots__ = ['npc_staffs']
+
     def __init__(self, _id, npc_staffs):
         super(_Club, self).__init__()
         self.id = _id
@@ -32,6 +36,7 @@ class _Club(AbstractClub):
         from core.unit import NPCUnit
 
         self.formation_staffs = []
+        """:type: list[_Staff]"""
         for pos, staff_id, unit_id in self.npc_staffs:
             s = _Staff(staff_id)
             s.formation_position = pos
@@ -43,6 +48,7 @@ class _Club(AbstractClub):
 
 class NPCFormation(object):
     __slots__ = ['id', 'staffs']
+
     def __init__(self):
         self.id = 0
         self.staffs = []
@@ -68,4 +74,3 @@ class ConfigNPCFormation(ConfigBase):
         :rtype: _Club
         """
         return cls.INSTANCES[_id].make_club()
-

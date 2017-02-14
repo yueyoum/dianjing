@@ -411,7 +411,7 @@ class MongoArena(BaseDocument):
 
         # 连胜次数
         'continue_win': 0,
-        # 打的次数
+        # 总共打的次数
         'match_times': 0,
     }
 
@@ -453,6 +453,18 @@ class MongoArenaScore(BaseDocument):
 
     COLLECTION = 'arena_score'
     INDEXES = ['char_ids',]
+
+# 每日胜率
+class MongoArenaWinning(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'total_count': 0,
+        'win_count': 0,
+        'winning': 0,
+    }
+
+    COLLECTION = 'arena_winning'
+    INDEXES = ['winning',]
 
 
 # 塔
@@ -822,6 +834,19 @@ class MongoPlunder(BaseDocument):
 
     COLLECTION = 'plunder'
     INDEXES = ['active', 'plunder_remained_times', 'loss_percent',]
+
+
+# 每日胜率
+class MongoPlunderWinning(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'total_count': 0,
+        'win_count': 0,
+        'winning': 0,
+    }
+
+    COLLECTION = 'plunder_winning'
+    INDEXES = ['winning',]
 
 
 # 宴会 这部分功能用 socket 实现

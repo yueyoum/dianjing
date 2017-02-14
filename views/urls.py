@@ -38,6 +38,7 @@ import views.activity
 import views.plunder
 import views.inspire
 import views.championship
+import views.leaderboard
 import views.misc
 
 urlpatterns = [
@@ -196,6 +197,14 @@ urlpatterns = [
     url(r'^champion/bet/$', views.championship.bet),
     url(r'^champion/group/sync/$', views.championship.sync_group),
     url(r'^champion/level/sync/$', views.championship.sync_level),
+
+    url(r'^leaderboard/worship/$', views.leaderboard.worship),
+    url(r'^leaderboard/arena/chat/$', views.leaderboard.arena_chat),
+    url(r'^leaderboard/arena/approval/$', views.leaderboard.arena_approval),
+    url(r'^leaderboard/plunder/chat/$', views.leaderboard.plunder_chat),
+    url(r'^leaderboard/plunder/approval/$', views.leaderboard.plunder_approval),
+    url(r'^leaderboard/championship/chat/$', views.leaderboard.championship_chat),
+    url(r'^leaderboard/championship/approval/$', views.leaderboard.championship_approval),
 
     url(r'^match/log/$', views.misc.get_match_log),
 ]

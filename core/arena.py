@@ -31,6 +31,7 @@ from core.value_log import (
     ValueLogArenaWinTimes,
     ValueLogArenaSearchResetTimes,
 )
+from core.winning import WinningArena
 
 from config import (
     GlobalConfig,
@@ -682,6 +683,8 @@ class Arena(object):
                 char_id=self.char_id,
                 condition_name='core.arena.Arena'
             )
+
+        WinningArena(self.server_id, self.char_id).set(win)
 
         return resource_classified, score_changed, -rank_changed, my_max_rank, new_rank, ass.score
 
