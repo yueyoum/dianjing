@@ -26,8 +26,8 @@ def get_match_log(request):
         raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
     # TODO
-    if obj.record == base64.b64decode('AAAAAA=='):
-        raise GameException(ConfigErrorMessage.get_error_id("EMPTY_MATCH"))
+    # if obj.record == base64.b64decode('AAAAAA=='):
+    #     raise GameException(ConfigErrorMessage.get_error_id("EMPTY_MATCH"))
 
     response = ClubMatchLogResponse()
     response.ret = 0

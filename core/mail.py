@@ -178,9 +178,10 @@ class SharedMail(object):
         MongoSharedMail.db(self.server_id).insert_one(doc)
 
         # 立即给最近登陆操作的人发送通知
-        recent_char_ids = OperationLog.get_recent_action_char_ids(self.server_id)
+        recent_char_ids = OperationLog.get_recent_action_char_ids(self.server_id, recent_minutes=30)
         for cid in recent_char_ids:
-            MailManager(self.server_id, cid).send_notify()
+            if cid in for_char_ids:
+                MailManager(self.server_id, cid).send_notify()
 
     def fetch(self, char_id):
         return MongoSharedMail.db(self.server_id).find({'for_char_ids': {'$in': [char_id]}})

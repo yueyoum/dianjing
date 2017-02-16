@@ -262,6 +262,19 @@ def harass_query_union(request):
     char_id = request._game_session.char_id
 
     u = Union(server_id, char_id)
+
+    # TODO 这里是消息把 my_union 定义成 required 的了。
+    if not u.get_joined_union_id():
+        response = UnionHarassQueryResponse()
+        response.ret = ConfigErrorMessage.get_error_id("INVALID_OPERATE")
+
+        response.my_union.rank = 0
+        response.my_union.id = ""
+        response.my_union.name = ""
+        response.my_union.explore_point = 0
+
+        return ProtobufResponse(response)
+
     unions, self_union = u.query_by_explore_point_rank()
 
     response = UnionHarassQueryResponse()

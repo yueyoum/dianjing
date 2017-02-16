@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 
 from django.http import JsonResponse
@@ -11,6 +13,8 @@ def get_config(request):
         'version': c.version,
         'url': "http://{0}/upload/{1}".format(request.get_host(), os.path.basename(c.client_config.path))
     }
+    # NOTE: 如果是 负载均衡 部署到其他机器，如果目录结构不一样 这里 c.client_config.path 就要报错
+    # 解决办法就是 nginx 负载规则把 /system/ 的请求都发送到 Master 服务器
 
     for cs in CustomerServiceInformation.objects.all():
         data[cs.name] = cs.value

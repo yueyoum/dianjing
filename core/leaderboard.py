@@ -6,7 +6,11 @@ Date Created:   2016-08-09 15:29
 Description:
 
 """
+
+import pprint
 import arrow
+
+from pymongo.errors import BulkWriteError
 
 from core.mongo import MongoClubLeaderboard
 from core.club import Club
@@ -38,7 +42,11 @@ class ClubLeaderBoard(object):
         db.delete_many({})
 
         if leaderboard_docs:
-            db.insert_many(leaderboard_docs)
+            try:
+                db.insert_many(leaderboard_docs)
+            except BulkWriteError as e:
+                pprint.pprint(e)
+                raise e
 
     def make_cache_key(self):
         return 'club_leaderboard:{0}:{1}'.format(self.server_id, self.char_id)

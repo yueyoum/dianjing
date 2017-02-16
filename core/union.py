@@ -1116,7 +1116,7 @@ def get_members_ordered_by_explore_point(server_id, char_id, names=True, limit=N
     ).count()
 
     self_info.rank = rank
-    return result, rank
+    return result, self_info
 
 
 def get_unions_ordered_by_explore_point(server_id, char_id, around_rank=None):
