@@ -7,7 +7,13 @@
     <register open="1"/>
     <login open="1"/>
 
-    <!-- 这组uwsgi跑起来后， 一些任务要处理的服务器。 比如cronjob-->
+    <!-- 指定使用的confi, 没有这个配置就是默认规则 -->
+    <config>
+        <file></file>
+    </config>
+
+    <!-- 这组uwsgi跑起来后， 一些任务要处理的服务器。 比如cronjob -->
+    <!-- min 和 max 都是0 表示这组服务器不跑 cronjob -->
     <duty-server>
         <min>1</min>
         <max>9999</max>

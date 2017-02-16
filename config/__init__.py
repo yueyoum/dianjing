@@ -62,13 +62,17 @@ def load_config():
     if _has_configed:
         return
 
-    z_file = os.path.join(settings.BASE_DIR, 'config', 'config.zip')
-    if os.environ.get('DIANJING_CONFIG', '') != 'local':
-        c = ModelConfig.get_config()
-        if c:
-            z_file = c.config.path
+    if os.environ.get('DIANJING_CONFIG', '') == 'local':
+        z_file = os.path.join(settings.BASE_DIR, 'config', 'config.zip')
+    else:
+        if settings.CONFIG_FILE:
+            z_file = settings.CONFIG_FILE
         else:
-            raise Exception("No config in db. Should set env: DIANJING_CONFIG=local")
+            c = ModelConfig.get_config()
+            if c:
+                z_file = c.config.path
+            else:
+                raise Exception("No config in db. Should set env: DIANJING_CONFIG=local, or CONFIG_FILE in settings.xml")
 
     z = zipfile.ZipFile(z_file)
     for fname in z.namelist():
