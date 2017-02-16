@@ -8,7 +8,9 @@ Description:
 """
 
 import os
+from django.conf import settings
 from django.apps import AppConfig
+
 
 class ProjectConfig(AppConfig):
     name = 'apps.helper'
@@ -18,5 +20,6 @@ class ProjectConfig(AppConfig):
         load_config()
 
         import signals
-        if os.environ.get('UWSGI_RUNNING', '0') == '1':
+
+        if not (settings.DUTY_SERVER_MIN == 0 and settings.DUTY_SERVER_MAX == 0) and os.environ.get('UWSGI_RUNNING', '0') == '1':
             import cronjob
