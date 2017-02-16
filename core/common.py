@@ -21,7 +21,7 @@ from core.lock import (
 
 from core.cooldown import LeaderboardArenaChatCD, LeaderboardPlunderChatCD, LeaderboardChampionshipChatCD
 
-from utils.message import MessagePipe
+from utils.message import MessagePipe, MessageFactory
 from utils.operation_log import OperationLog
 
 from config import GlobalConfig, ConfigErrorMessage
@@ -142,6 +142,7 @@ class _CommonWinningChat(BaseCommon):
         _id = self.get_id()
         self.doc = MongoCommon.db(self.server_id).find_one({'_id': _id})
         if not self.doc:
+            self.doc = MongoCommon.document()
             self.doc['_id'] = _id
             self.doc['value'] = []
             MongoCommon.db(self.server_id).insert_one(self.doc)
@@ -195,8 +196,7 @@ class _CommonWinningChat(BaseCommon):
 
                     remove_notify = self.REMOVE_NOTIFY()
                     remove_notify.msg_id = removed['msg_id']
-                    _data = remove_notify.SerializeToString()
-                    self.broadcast(_data)
+                    self.broadcast(MessageFactory.pack(remove_notify))
 
                 MongoCommon.db(self.server_id).update_one(
                     {'_id': self.get_id()},
@@ -250,6 +250,8 @@ class _CommonWinningChat(BaseCommon):
 
         notify = self.NOTIFY()
         notify.act = act
+        notify.session = ""
+
         for v in value:
             notify_message = notify.messages.add()
             notify_message.msg_id = v['msg_id']
@@ -259,8 +261,7 @@ class _CommonWinningChat(BaseCommon):
             notify_message.timestamp = v['post_at']
             notify_message.approval = v['approval']
 
-        data = notify.SerializeToString()
-        return data
+        return MessageFactory.pack(notify)
 
     def broadcast(self, data):
         char_ids = OperationLog.get_recent_action_char_ids(self.server_id, recent_minutes=5)
@@ -281,6 +282,9 @@ class CommonArenaWinningChat(_CommonWinningChat):
     NOTIFY = LeaderboardArenaChatNotify
     REMOVE_NOTIFY = LeaderboardArenaChatRemoveNotify
 
+    def get_id(self):
+        return 'winning_arena_chat'
+
 
 class CommonPlunderWinningChat(_CommonWinningChat):
     LOCK = LeaderboardPlunderChatLock
@@ -288,9 +292,15 @@ class CommonPlunderWinningChat(_CommonWinningChat):
     NOTIFY = LeaderboardPlunderChatNotify
     REMOVE_NOTIFY = LeaderboardPlunderChatRemoveNotify
 
+    def get_id(self):
+        return 'winning_plunder_chat'
+
 
 class CommonChampionshipChat(_CommonWinningChat):
     LOCK = LeaderboardChampionshipChatLock
     CD = LeaderboardChampionshipChatCD
     NOTIFY = LeaderboardChampionshipChatNotify
     REMOVE_NOTIFY = LeaderboardChampionshipChatRemoveNotify
+
+    def get_id(self):
+        return 'winning_championship_chat'
