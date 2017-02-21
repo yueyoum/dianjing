@@ -351,7 +351,7 @@ class Match(object):
     def start(self):
         def one_way_match(_club_one, _club_two):
             _match = ClubMatch(_club_one, _club_two)
-            _msg = _match.start(auto_load_staffs=False)
+            _msg = _match.start(auto_load_staffs=False, check_empty=False)
             _msg.key = ""
             _msg.map_name = GlobalConfig.value_string("MATCH_MAP_CHAMPIONSHIP")
 

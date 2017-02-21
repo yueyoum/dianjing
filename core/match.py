@@ -11,8 +11,12 @@ import base64
 import random
 import arrow
 
+from dianjing.exception import GameException
+
 from core.mongo import MongoMatchRecord
 from utils.functional import make_string_id
+
+from config import ConfigErrorMessage
 
 from protomsg.match_pb2 import (
     ClubMatch as MessageClubMatch,
@@ -110,7 +114,10 @@ class ClubMatch(object):
 
         return msg
 
-    def start(self, auto_load_staffs=True):
+    def start(self, auto_load_staffs=True, check_empty=True):
+        if check_empty and self.club_one.power == 0:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
         if auto_load_staffs:
             if self.club_one and not self.club_one.formation_staffs:
                 self.club_one.load_staffs()
