@@ -241,6 +241,17 @@ class Club(AbstractClub):
             if not m_obj.welfare:
                 continue
 
+            ok = False
+            if m_obj.condition_type == 1:
+                ok = True
+            elif m_obj.condition_type == 2 and server_id in m_obj.get_parsed_condition_value():
+                ok = True
+            elif m_obj.condition_type == 3 and server_id not in m_obj.get_parsed_condition_value():
+                ok = True
+
+            if not ok:
+                continue
+
             if m_obj.items:
                 rc = ResourceClassification.classify(m_obj.get_parsed_items())
                 attachment = rc.to_json()
