@@ -39,7 +39,7 @@ class AdminMail(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': (
-                'title', 'content', 'items', 'send_at',
+                'title', 'content', 'items', 'send_at', 'welfare',
                 'condition_type', 'condition_value',
             )
         }),
