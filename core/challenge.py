@@ -250,8 +250,6 @@ class Challenge(object):
         if formation_slots:
             Formation(self.server_id, self.char_id).sync_slots(formation_slots)
 
-        map_name = ConfigChapter.get(config.chapter).map_name
-
         Energy(self.server_id, self.char_id).check(config.energy)
 
         club_one = Club(self.server_id, self.char_id)
@@ -259,7 +257,7 @@ class Challenge(object):
         match = ClubMatch(club_one, club_two)
         msg = match.start()
         msg.key = str(challenge_id)
-        msg.map_name = map_name
+        msg.map_name = config.map_name
         return msg
 
     def reset(self, challenge_id):
