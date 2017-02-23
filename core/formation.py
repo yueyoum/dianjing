@@ -270,7 +270,7 @@ class Formation(BaseFormation):
         if not doc:
             doc = self.MONGO_COLLECTION.document()
             doc['_id'] = self.char_id
-            doc['position'] = [0] * 30
+            doc['position'] = [0] * 9
             self.MONGO_COLLECTION.db(self.server_id).insert_one(doc)
 
         return doc
