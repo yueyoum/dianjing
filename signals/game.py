@@ -39,7 +39,7 @@ from core.welfare import Welfare
 from core.resource import _Resource
 from core.union import Union
 from core.purchase import Purchase
-from core.activity import ActivityNewPlayer
+from core.activity import ActivityNewPlayer, ActivityChallenge, ActivityOnlineTime
 from core.plunder import Plunder, SpecialEquipmentGenerator
 from core.party import Party
 from core.inspire import Inspire
@@ -142,6 +142,9 @@ def game_start_handler(server_id, char_id, **kwargs):
     ac = ActivityNewPlayer(server_id, char_id)
     ac.send_notify()
     ac.send_daily_buy_notify()
+
+    ActivityOnlineTime(server_id, char_id).send_notify()
+    ActivityChallenge(server_id, char_id).send_notify()
 
     p = Plunder(server_id, char_id)
 
