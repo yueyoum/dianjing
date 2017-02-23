@@ -25,7 +25,7 @@ from core.value_log import ValueLogChallengeMatchTimes, ValueLogAllChallengeWinT
 from utils.message import MessagePipe
 from utils.functional import make_string_id
 
-from config import ConfigChapter, ConfigChallengeMatch, ConfigErrorMessage, ConfigChallengeResetCost
+from config import GlobalConfig, ConfigChapter, ConfigChallengeMatch, ConfigErrorMessage, ConfigChallengeResetCost
 
 from protomsg.challenge_pb2 import (
     ChallengeNotify,
@@ -33,6 +33,7 @@ from protomsg.challenge_pb2 import (
     CHAPTER_REWARD_DONE,
     CHAPTER_REWARD_NOT,
     CHAPTER_REWARD_OK,
+    CHALLENGE_SWEEP_TYPE_ONE,
 )
 
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
@@ -281,7 +282,7 @@ class Challenge(object):
 
         self.send_challenge_notify(ids=[challenge_id])
 
-    def sweep(self, challenge_id):
+    def sweep(self, challenge_id, tp):
         # 扫荡
         config = ConfigChallengeMatch.get(challenge_id)
         if not config:
@@ -301,14 +302,19 @@ class Challenge(object):
         if star != 3:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_NOT_3_STAR"))
 
+        if tp == CHALLENGE_SWEEP_TYPE_ONE:
+            sweep_times = 1
+        else:
+            sweep_times = 10
+            need_vip_level = GlobalConfig.value("CHALLENGE_SWEEP_10_VIP_LEVEL")
+            VIP(self.server_id, self.char_id).check(need_vip_level)
+
         rt = RemainedTimes(self.server_id, self.char_id, challenge_id)
         if not rt.remained_match_times:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_WITHOUT_TIMES"))
 
         # 剩余次数限制
-        if rt.remained_match_times > 5:
-            sweep_times = 5
-        else:
+        if rt.remained_match_times < sweep_times:
             sweep_times = rt.remained_match_times
 
         # 体力限制

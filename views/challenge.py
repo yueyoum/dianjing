@@ -58,9 +58,10 @@ def sweep(request):
     char_id = request._game_session.char_id
 
     challenge_id = request._proto.id
+    tp = request._proto.tp
 
     c = Challenge(server_id, char_id)
-    resource_classified_list = c.sweep(challenge_id)
+    resource_classified_list = c.sweep(challenge_id, tp)
 
     response = ChallengeSweepResponse()
     response.ret = 0
