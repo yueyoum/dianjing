@@ -11,18 +11,21 @@ Description:
 # import dill
 import arrow
 
+from django.db.models import Q
+
 from django.conf import settings
 
 from core.mongo import MongoCharacter, MongoCharacterLoginLog
 from core.abstract import AbstractClub
 from core.signals import club_level_up_signal, task_condition_trig_signal
 from core.statistics import FinanceStatistics
+from core.resource import ResourceClassification
 
 from dianjing.exception import GameException
 
 from utils.message import MessagePipe
 from utils.stdvalue import MAX_INT
-from utils.functional import make_string_id, days_passed
+from utils.functional import make_string_id, days_passed, get_start_time_of_today
 
 from config import (
     ConfigClubLevel,
@@ -201,6 +204,8 @@ class Club(AbstractClub):
     def create(cls, server_id, char_id, club_name, club_flag):
         from core.staff import StaffManger
         from core.formation import Formation
+        from core.mail import MailManager
+        from apps.config.models import Mail as ModelMail
 
         doc = MongoCharacter.document()
         doc['_id'] = char_id
@@ -224,6 +229,26 @@ class Club(AbstractClub):
         fm.initialize(formation_init_data)
 
         MongoCharacter.db(server_id).insert_one(doc)
+
+        # add welfare mail
+        start_time = get_start_time_of_today()
+        condition = Q(send_at__gte=start_time.format("YYYY-MM-DD HH:mm:ssZ")) &\
+                    Q(send_at__lte=arrow.utcnow().format("YYYY-MM-DD HH:mm:ssZ"))
+        mails = ModelMail.objects.filter(condition)
+
+        m = MailManager(server_id, char_id)
+        for m_obj in mails:
+            if not m_obj.welfare:
+                continue
+
+            if m_obj.items:
+                rc = ResourceClassification.classify(m_obj.get_parsed_items())
+                attachment = rc.to_json()
+            else:
+                attachment = ""
+
+            m.add(m_obj.title, m_obj.contentm, attachment=attachment, send_notify=False)
+
 
     @classmethod
     def query_char_ids(cls, server_id, min_level=None, login_range=None):

@@ -31,7 +31,7 @@ class BroadcastAdmin(admin.ModelAdmin):
 @admin.register(Mail)
 class AdminMail(admin.ModelAdmin):
     list_display = (
-        'id', 'title', 'send_at',
+        'id', 'title', 'send_at', 'welfare',
         'condition_type', 'condition_value',
         'create_at', 'status'
     )
