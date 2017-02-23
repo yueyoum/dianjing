@@ -26,6 +26,66 @@ class DailyBuy(object):
         self.items = []
         self.diamond_now = 0
 
+class OnlineTimeActivity(object):
+    __slots__ = ['id', 'rewards']
+    def __init__(self):
+        self.id = 0
+        self.rewards = []
+
+class ChallengeActivity(object):
+    __slots__ = ['id', 'rewards']
+    def __init__(self):
+        self.id = 0
+        self.rewards = []
+
+
+class ConfigActivityOnlineTime(ConfigBase):
+    EntityClass = OnlineTimeActivity
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    IDS = []
+    MIN_ID = 0
+    MAX_ID = 0
+
+    @classmethod
+    def initialize(cls, fixture):
+        super(ConfigActivityOnlineTime, cls).initialize(fixture)
+        cls.IDS = cls.INSTANCES.keys()
+        cls.MIN_ID = min(cls.IDS)
+        cls.MAX_ID = max(cls.IDS)
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: OnlineTimeActivity
+        """
+        return super(ConfigActivityOnlineTime, cls).get(_id)
+
+    @classmethod
+    def find_next_id(cls, _id):
+        index = cls.IDS.index(_id)
+        if index == len(cls.IDS) - 1:
+            return 0
+
+        return cls.IDS[index+1]
+
+
+class ConfigActivityChallenge(ConfigBase):
+    EntityClass = ChallengeActivity
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: ChallengeActivity
+        """
+        return super(ConfigActivityChallenge, cls).get(_id)
+
+
 class ConfigActivityNewPlayer(ConfigBase):
     EntityClass = NewPlayer
     INSTANCES = {}

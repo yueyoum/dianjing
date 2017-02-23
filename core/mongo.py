@@ -743,6 +743,27 @@ class MongoActivityNewPlayer(BaseDocument):
 
     COLLECTION = 'activity_new_player'
 
+# 每日在线时长
+class MongoActivityOnlineTime(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # 可以领奖的ID，初始化就是配置中最小的ID，0表示当天的已经全部领完了
+        'doing': 0,
+    }
+
+    COLLECTION = 'activity_online_time'
+
+# 冲关
+class MongoActivityChallenge(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # 已经完成领奖的
+        'done': [],
+    }
+
+    COLLECTION = 'activity_challenge'
+
+
 # 俱乐部排行榜
 class MongoClubLeaderboard(BaseDocument):
     DOCUMENT = {

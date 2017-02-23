@@ -171,6 +171,8 @@ urlpatterns = [
 
     url(r'^activity/newplayer/getreward/$', views.activity.newplayer_getreward),
     url(r'^activity/newplayer/dailybuy/$', views.activity.newplayer_dailybuy),
+    url(r'^activity/onlinetime/getreward/$', views.activity.online_time_get_reward),
+    url(r'^activity/challenge/getreward/$', views.activity.activity_challenge_get_reward),
 
     url(r'^plunder/formation/setstaff/$', views.plunder.set_staff),
     url(r'^plunder/formation/setunit/$', views.plunder.set_unit),
