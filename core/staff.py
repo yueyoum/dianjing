@@ -653,8 +653,9 @@ class Staff(AbstractStaff):
 
         return other_staff_id
 
-    def add_equipment_property_for_staff(self):
-        bag = Bag(self.server_id, self.char_id)
+    def add_equipment_property_for_staff(self, bag=None):
+        if not bag:
+            bag = Bag(self.server_id, self.char_id)
 
         levels = []
         qualities = []

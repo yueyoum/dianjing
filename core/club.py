@@ -143,6 +143,7 @@ class Club(AbstractClub):
         from core.party import Party
         from core.inspire import Inspire
         from core.union import Union
+        from core.bag import Bag
 
         self.formation_staffs = []
 
@@ -189,10 +190,11 @@ class Club(AbstractClub):
 
         config_inspire_level_addition, config_inspire_step_addition = ins.get_addition_config()
 
+        bag = Bag(self.server_id, self.char_id)
         for _, v in staff_objs.iteritems():
             v.config_inspire_level_addition = config_inspire_level_addition
             v.config_inspire_step_addition = config_inspire_step_addition
-            v.calculate()
+            v.calculate(bag=bag)
             v.make_cache()
 
         if send_notify:

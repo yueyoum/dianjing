@@ -315,7 +315,7 @@ class AbstractStaff(object):
         # 牵绊的天赋效果可能会频繁变动，比如兵种变化
         return self.self_talent_ids + self.other_talent_ids + self.qianban_talent_ids
 
-    def calculate(self):
+    def calculate(self, **kwargs):
         from config import ConfigStaffStar, ConfigTalentSkill
 
         # 等级
@@ -353,7 +353,7 @@ class AbstractStaff(object):
         self.operation_percent += star_config.operation_percent
 
         # 装备
-        self.add_equipment_property_for_staff()
+        self.add_equipment_property_for_staff(**kwargs)
         self.add_inspire_addition_for_staff()
 
         # 天赋
@@ -406,7 +406,7 @@ class AbstractStaff(object):
 
         self.__unit.final_calculate()
 
-    def add_equipment_property_for_staff(self):
+    def add_equipment_property_for_staff(self, bag=None):
         # 加上装备属性
         pass
 
