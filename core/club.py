@@ -194,7 +194,7 @@ class Club(AbstractClub):
         for _, v in staff_objs.iteritems():
             v.config_inspire_level_addition = config_inspire_level_addition
             v.config_inspire_step_addition = config_inspire_step_addition
-            v.calculate(bag=bag)
+            v.calculate(bag=bag, um=um)
             v.make_cache()
 
         if send_notify:
