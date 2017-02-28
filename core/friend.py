@@ -305,7 +305,7 @@ class FriendManager(object):
             notify_friend = notify.friends.add()
             notify_friend.status = FRIEND_STATUS_TABLE[doc['friends'][str(f)]]
 
-            friend_club = Club(self.server_id, f)
+            friend_club = Club(self.server_id, f, load_staffs=False)
             notify_friend.club.MergeFrom(friend_club.make_protomsg())
 
             notify_friend.online = f in online_char_ids

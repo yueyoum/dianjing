@@ -12,20 +12,20 @@ from config.base import ConfigBase
 
 class Chapter(object):
     __slots__ = [
-        'id', 'tp', 'star_reward', 'map_name',
+        'id', 'tp', 'star_reward',
     ]
 
     def __init__(self):
         self.id = 0
         self.tp = 0
         self.star_reward = []
-        self.map_name = ''
 
 
 class ChallengeMatch(object):
     __slots__ = [
         'id', 'chapter', 'name', 'club_flag', 'energy', 'club_exp', 'staffs', 'drop',
-        'condition_challenge', 'times_limit', 'next',
+        'condition_challenge', 'times_limit', 'map_name',
+        'next',
     ]
 
     def __init__(self):
@@ -39,6 +39,7 @@ class ChallengeMatch(object):
         self.drop = ""
         self.condition_challenge = 0
         self.times_limit = 0
+        self.map_name = ""
         self.next = []
 
     def get_drop(self, drop_times):

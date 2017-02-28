@@ -35,6 +35,7 @@ from core.resource import ResourceClassification, STATION_EXP_ID, money_text_to_
 from core.bag import Bag, Equipment, PROPERTY_TO_NAME_MAP, SPECIAL_EQUIPMENT_BASE_PROPERTY
 from core.vip import VIP
 from core.challenge import Challenge
+from core.winning import WinningPlunder
 
 from utils.message import MessagePipe
 from utils.functional import make_string_id, get_start_time_of_today
@@ -821,6 +822,8 @@ class Plunder(object):
 
         self.send_plunder_daily_reward_notify()
         self.send_result_notify()
+
+        WinningPlunder(self.server_id, self.char_id).set(win)
 
     @check_plunder_active(silence=False)
     def get_reward(self):

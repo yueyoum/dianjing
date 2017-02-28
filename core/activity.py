@@ -10,7 +10,7 @@ Description:
 import arrow
 from dianjing.exception import GameException
 
-from core.mongo import MongoActivityNewPlayer
+from core.mongo import MongoActivityNewPlayer, MongoActivityOnlineTime, MongoActivityChallenge
 
 from core.club import Club
 from core.resource import ResourceClassification, money_text_to_item_id
@@ -18,7 +18,14 @@ from core.resource import ResourceClassification, money_text_to_item_id
 from utils.message import MessagePipe
 from utils.functional import get_start_time_of_today
 
-from config import ConfigErrorMessage, ConfigActivityNewPlayer, ConfigActivityDailyBuy, ConfigTaskCondition
+from config import (
+    ConfigErrorMessage,
+    ConfigActivityNewPlayer,
+    ConfigActivityDailyBuy,
+    ConfigTaskCondition,
+    ConfigActivityOnlineTime,
+    ConfigActivityChallenge,
+)
 
 from protomsg.activity_pb2 import (
     ACTIVITY_COMPLETE,
@@ -26,7 +33,10 @@ from protomsg.activity_pb2 import (
     ACTIVITY_REWARD,
     ActivityNewPlayerDailyBuyNotify,
     ActivityNewPlayerNotify,
+    ActivityOnlineTimeNotify,
+    ActivityChallengeNotify,
 )
+
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
 
 
@@ -45,7 +55,7 @@ class ActivityNewPlayer(object):
         self.create_day = Club.create_days(server_id, char_id)
 
         today = get_start_time_of_today()
-        self.create_start_date = today.replace(days=-(self.create_day-1))
+        self.create_start_date = today.replace(days=-(self.create_day - 1))
 
         self.activity_end_at = self.create_start_date.replace(days=7).timestamp
         self.reward_end_at = self.create_start_date.replace(days=8).timestamp
@@ -60,7 +70,7 @@ class ActivityNewPlayer(object):
         # NOTE 新手活动是 活动开始的那一天，到第7天结束
         # 而不是 建立账号就开始算
 
-        start_at = self.create_start_date.replace(days=config.day-1).timestamp
+        start_at = self.create_start_date.replace(days=config.day - 1).timestamp
 
         config_condition = ConfigTaskCondition.get(config.condition_id)
         value = config_condition.get_value(self.server_id, self.char_id, start_at=start_at, end_at=self.activity_end_at)
@@ -149,7 +159,7 @@ class ActivityNewPlayer(object):
             return
 
         notify = ActivityNewPlayerDailyBuyNotify()
-        for i in range(1, self.create_day+1):
+        for i in range(1, self.create_day + 1):
             notify_status = notify.status.add()
             notify_status.day = i
             notify_status.has_bought = i in self.doc['daily_buy']
@@ -182,5 +192,117 @@ class ActivityNewPlayer(object):
 
         notify.activity_end_at = self.activity_end_at
         notify.reward_end_at = self.reward_end_at
+
+        MessagePipe(self.char_id).put(msg=notify)
+
+
+class ActivityOnlineTime(object):
+    __slots__ = ['server_id', 'char_id', 'doc']
+
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+        self.doc = MongoActivityOnlineTime.db(self.server_id).find_one({'_id': self.char_id})
+        if not self.doc:
+            self.doc = MongoActivityOnlineTime.document()
+            self.doc['_id'] = self.char_id
+            self.doc['doing'] = ConfigActivityOnlineTime.MIN_ID
+            MongoActivityOnlineTime.db(self.server_id).insert_one(self.doc)
+
+    def get_reward(self):
+        if not self.doc['doing']:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        config = ConfigActivityOnlineTime.get(self.doc['doing'])
+        rc = ResourceClassification.classify(config.rewards)
+        rc.add(self.server_id, self.char_id)
+
+        next_id = ConfigActivityOnlineTime.find_next_id(self.doc['doing'])
+        self.doc['doing'] = next_id
+        MongoActivityOnlineTime.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'doing': next_id
+            }}
+        )
+
+        return rc
+
+    def send_notify(self):
+        notify = ActivityOnlineTimeNotify()
+        notify.id = self.doc['doing']
+        MessagePipe(self.char_id).put(msg=notify)
+
+
+class ActivityChallenge(object):
+    __slots__ = ['server_id', 'char_id', 'doc', 'passed_challenge_ids']
+
+    def __init__(self, server_id, char_id, passed_challenge_ids=None):
+        from core.challenge import Challenge
+
+        self.server_id = server_id
+        self.char_id = char_id
+        self.doc = MongoActivityChallenge.db(self.server_id).find_one({'_id': self.char_id})
+        if not self.doc:
+            self.doc = MongoActivityChallenge.document()
+            self.doc['_id'] = self.char_id
+            self.doc['done'] = []
+            MongoActivityChallenge.db(self.server_id).insert_one(self.doc)
+
+        self.passed_challenge_ids = passed_challenge_ids
+        if not self.passed_challenge_ids:
+            self.passed_challenge_ids = Challenge(self.server_id, self.char_id).get_passed_challenge_ids()
+
+    def trig_notify(self, passed_id):
+        if passed_id in self.doc['done']:
+            return
+
+        self.send_notify(passed_id)
+
+    def get_reward(self, _id):
+        config = ConfigActivityChallenge.get(_id)
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        if self.get_status(_id) != ACTIVITY_REWARD:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        rc = ResourceClassification.classify(config.rewards)
+        rc.add(self.server_id, self.char_id)
+
+        self.doc['done'].append(_id)
+        MongoActivityChallenge.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$push': {
+                'done': _id,
+            }}
+        )
+
+        self.send_notify(_id)
+        return rc
+
+    def get_status(self, _id):
+        if _id in self.doc['done']:
+            return ACTIVITY_COMPLETE
+
+        if _id in self.passed_challenge_ids:
+            return ACTIVITY_REWARD
+
+        return ACTIVITY_DOING
+
+    def send_notify(self, _id=None):
+        if not _id:
+            act = ACT_INIT
+            ids = ConfigActivityChallenge.INSTANCES.keys()
+        else:
+            act = ACT_UPDATE
+            ids = [_id]
+
+        notify = ActivityChallengeNotify()
+        notify.act = act
+        for i in ids:
+            notify_item = notify.items.add()
+            notify_item.id = i
+            notify_item.status = self.get_status(i)
 
         MessagePipe(self.char_id).put(msg=notify)

@@ -315,7 +315,7 @@ class AbstractStaff(object):
         # 牵绊的天赋效果可能会频繁变动，比如兵种变化
         return self.self_talent_ids + self.other_talent_ids + self.qianban_talent_ids
 
-    def calculate(self):
+    def calculate(self, **kwargs):
         from config import ConfigStaffStar, ConfigTalentSkill
 
         # 等级
@@ -353,7 +353,7 @@ class AbstractStaff(object):
         self.operation_percent += star_config.operation_percent
 
         # 装备
-        self.add_equipment_property_for_staff()
+        self.add_equipment_property_for_staff(bag=kwargs.get('bag', None))
         self.add_inspire_addition_for_staff()
 
         # 天赋
@@ -369,13 +369,20 @@ class AbstractStaff(object):
         self.manage = int(self.manage * (1 + self.manage_percent))
         self.operation = int(self.operation * (1 + self.operation_percent))
 
-        self.calculate_unit()
+        self.calculate_unit(um=kwargs.get('um', None))
 
     def set_unit(self, unit):
-        # type: (AbstractUnit) -> None
+        """
+
+        :type unit: AbstractUnit
+        """
         self.__unit = unit.clone()
 
-    def calculate_unit(self):
+    def calculate_unit(self, um=None):
+        """
+
+        :type um: core.unit.UnitManager | None
+        """
         from config import ConfigTalentSkill
 
         if not self.server_id:
@@ -385,7 +392,10 @@ class AbstractStaff(object):
         if not self.__unit:
             return
 
-        unit = UnitManager(self.server_id, self.char_id).get_unit_object(self.__unit.id)
+        if not um:
+            um = UnitManager(self.server_id, self.char_id)
+
+        unit = um.get_unit_object(self.__unit.id)
         self.__unit = unit.clone()
 
         self.add_equipment_property_for_unit()
@@ -406,7 +416,7 @@ class AbstractStaff(object):
 
         self.__unit.final_calculate()
 
-    def add_equipment_property_for_staff(self):
+    def add_equipment_property_for_staff(self, bag=None):
         # 加上装备属性
         pass
 

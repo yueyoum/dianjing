@@ -36,7 +36,7 @@ from core.signals import (
     task_condition_trig_signal,
 )
 
-from core import checker
+from core.checker import StaffWorkingChecker
 
 from config import (
     ConfigStaffRecruit,
@@ -653,8 +653,9 @@ class Staff(AbstractStaff):
 
         return other_staff_id
 
-    def add_equipment_property_for_staff(self):
-        bag = Bag(self.server_id, self.char_id)
+    def add_equipment_property_for_staff(self, bag=None):
+        if not bag:
+            bag = Bag(self.server_id, self.char_id)
 
         levels = []
         qualities = []
@@ -981,21 +982,21 @@ class StaffManger(object):
         result = {}
         """:type: dict[int, list]"""
 
-        for _oid, _amount in originals:
+        _checker = StaffWorkingChecker(self.server_id, self.char_id)
+
+        for _oid, _amount in packed_originals.iteritems():
             if _oid not in result:
                 result[_oid] = []
 
             for s in staffs:
-                if s.oid == _oid and s.is_initial_state() and \
-                        checker.staff_not_working(self.server_id, self.char_id, s.id, raise_exception=False):
+                if s.oid == _oid and s.is_initial_state() and _checker.is_not_working(s.id, raise_exception=False):
 
                     result[_oid].append(s.id)
+                    if len(result[_oid]) >= _amount:
+                        break
 
             if len(result[_oid]) < _amount:
-                # TODO replace the error code
                 raise GameException(ConfigErrorMessage.get_error_id("STAFF_NOT_EXIST"))
-
-            result[_oid] = result[_oid][:_amount]
 
         return result
 
@@ -1219,7 +1220,9 @@ class StaffManger(object):
 
     def _destroy_check(self, staff_id):
         from core.territory import Territory
-        checker.staff_not_working(self.server_id, self.char_id, staff_id)
+
+        _checker = StaffWorkingChecker(self.server_id, self.char_id)
+        _checker.is_not_working(staff_id)
 
         if Territory(self.server_id, self.char_id).is_staff_training_check_by_unique_id(staff_id):
             raise GameException(ConfigErrorMessage.get_error_id("STAFF_CANNOT_DESTROY_IN_TERRITORY"))

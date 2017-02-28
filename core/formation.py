@@ -32,6 +32,7 @@ from protomsg.formation_pb2 import (
     FORMATION_SLOT_EMPTY,
     FORMATION_SLOT_NOT_OPEN,
     FORMATION_SLOT_USE,
+    FormationSlot as MsgFormationSlot,
     FormationNotify,
     FormationSlotNotify,
 )
@@ -539,6 +540,40 @@ class Formation(BaseFormation):
         q, l = self._get_value_for_task_condition()
         return l
 
+    def make_slot_msg(self, slot_ids=None):
+        if not slot_ids:
+            slot_ids = range(1, MAX_SLOT_AMOUNT + 1)
+
+        sm = StaffManger(self.server_id, self.char_id)
+
+        msgs = []
+        for _id in slot_ids:
+            msg_slot = MsgFormationSlot()
+            msg_slot.slot_id = int(_id)
+
+            try:
+                data = self.doc['slots'][str(_id)]
+            except KeyError:
+                msg_slot.status = FORMATION_SLOT_NOT_OPEN
+            else:
+                if not data['staff_id']:
+                    msg_slot.status = FORMATION_SLOT_EMPTY
+                else:
+                    msg_slot.status = FORMATION_SLOT_USE
+                    msg_slot.staff_id = data['staff_id']
+                    msg_slot.unit_id = data['unit_id']
+                    if data['unit_id']:
+                        msg_slot.position = self.doc['position'].index(int(_id))
+                    else:
+                        msg_slot.position = -1
+
+                    msg_slot.staff_oid = sm.get_staff_object(data['staff_id']).oid
+                    msg_slot.policy = data.get('policy', 1)
+
+            msgs.append(msg_slot)
+
+        return msgs
+
     def send_slot_notify(self, slot_ids=None):
         if slot_ids:
             act = ACT_UPDATE
@@ -546,33 +581,14 @@ class Formation(BaseFormation):
             act = ACT_INIT
             slot_ids = range(1, MAX_SLOT_AMOUNT + 1)
 
-        sm = StaffManger(self.server_id, self.char_id)
+        slot_msgs = self.make_slot_msg(slot_ids=slot_ids)
 
         notify = FormationSlotNotify()
         notify.act = act
 
-        for _id in slot_ids:
+        for _msg in slot_msgs:
             notify_slot = notify.slots.add()
-            notify_slot.slot_id = int(_id)
-
-            try:
-                data = self.doc['slots'][str(_id)]
-            except KeyError:
-                notify_slot.status = FORMATION_SLOT_NOT_OPEN
-            else:
-                if not data['staff_id']:
-                    notify_slot.status = FORMATION_SLOT_EMPTY
-                else:
-                    notify_slot.status = FORMATION_SLOT_USE
-                    notify_slot.staff_id = data['staff_id']
-                    notify_slot.unit_id = data['unit_id']
-                    if data['unit_id']:
-                        notify_slot.position = self.doc['position'].index(int(_id))
-                    else:
-                        notify_slot.position = -1
-
-                    notify_slot.staff_oid = sm.get_staff_object(data['staff_id']).oid
-                    notify_slot.policy = data.get('policy', 1)
+            notify_slot.MergeFrom(_msg)
 
         MessagePipe(self.char_id).put(msg=notify)
 

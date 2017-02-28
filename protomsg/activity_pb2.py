@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='activity.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0e\x61\x63tivity.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\xb2\x02\n\x17\x41\x63tivityNewPlayerNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12G\n\x05items\x18\x03 \x03(\x0b\x32\x38.Dianjing.protocol.ActivityNewPlayerNotify.NewPlayerItem\x12\x17\n\x0f\x61\x63tivity_end_at\x18\x04 \x02(\x03\x12\x15\n\rreward_end_at\x18\x05 \x02(\x03\x1a\x65\n\rNewPlayerItem\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x15\n\rcurrent_value\x18\x02 \x02(\x05\x12\x31\n\x06status\x18\x03 \x02(\x0e\x32!.Dianjing.protocol.ActivityStatus\"\xb8\x01\n\x1f\x41\x63tivityNewPlayerDailyBuyNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12Q\n\x06status\x18\x02 \x03(\x0b\x32\x41.Dianjing.protocol.ActivityNewPlayerDailyBuyNotify.DailyBuyStatus\x1a\x31\n\x0e\x44\x61ilyBuyStatus\x12\x0b\n\x03\x64\x61y\x18\x01 \x02(\x05\x12\x12\n\nhas_bought\x18\x02 \x02(\x08\"@\n!ActivityNewPlayerGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"i\n\"ActivityNewPlayerGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"3\n ActivityNewPlayerDailyBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"h\n!ActivityNewPlayerDailyBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*P\n\x0e\x41\x63tivityStatus\x12\x12\n\x0e\x41\x43TIVITY_DOING\x10\x01\x12\x13\n\x0f\x41\x43TIVITY_REWARD\x10\x02\x12\x15\n\x11\x41\x43TIVITY_COMPLETE\x10\x03')
+  serialized_pb=_b('\n\x0e\x61\x63tivity.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\xb2\x02\n\x17\x41\x63tivityNewPlayerNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12G\n\x05items\x18\x03 \x03(\x0b\x32\x38.Dianjing.protocol.ActivityNewPlayerNotify.NewPlayerItem\x12\x17\n\x0f\x61\x63tivity_end_at\x18\x04 \x02(\x03\x12\x15\n\rreward_end_at\x18\x05 \x02(\x03\x1a\x65\n\rNewPlayerItem\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x15\n\rcurrent_value\x18\x02 \x02(\x05\x12\x31\n\x06status\x18\x03 \x02(\x0e\x32!.Dianjing.protocol.ActivityStatus\"\xb8\x01\n\x1f\x41\x63tivityNewPlayerDailyBuyNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12Q\n\x06status\x18\x02 \x03(\x0b\x32\x41.Dianjing.protocol.ActivityNewPlayerDailyBuyNotify.DailyBuyStatus\x1a\x31\n\x0e\x44\x61ilyBuyStatus\x12\x0b\n\x03\x64\x61y\x18\x01 \x02(\x05\x12\x12\n\nhas_bought\x18\x02 \x02(\x08\"@\n!ActivityNewPlayerGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"i\n\"ActivityNewPlayerGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"3\n ActivityNewPlayerDailyBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"h\n!ActivityNewPlayerDailyBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"7\n\x18\x41\x63tivityOnlineTimeNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"5\n\"ActivityOnlineTimeGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"j\n#ActivityOnlineTimeGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\xeb\x01\n\x17\x41\x63tivityChallengeNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12G\n\x05items\x18\x03 \x03(\x0b\x32\x38.Dianjing.protocol.ActivityChallengeNotify.ChallengeItem\x1aN\n\rChallengeItem\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x31\n\x06status\x18\x02 \x02(\x0e\x32!.Dianjing.protocol.ActivityStatus\"@\n!ActivityChallengeGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"i\n\"ActivityChallengeGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*P\n\x0e\x41\x63tivityStatus\x12\x12\n\x0e\x41\x43TIVITY_DOING\x10\x01\x12\x13\n\x0f\x41\x43TIVITY_REWARD\x10\x02\x12\x15\n\x11\x41\x43TIVITY_COMPLETE\x10\x03')
   ,
   dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -48,8 +48,8 @@ _ACTIVITYSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=894,
-  serialized_end=974,
+  serialized_start=1525,
+  serialized_end=1605,
 )
 _sym_db.RegisterEnumDescriptor(_ACTIVITYSTATUS)
 
@@ -396,6 +396,285 @@ _ACTIVITYNEWPLAYERDAILYBUYRESPONSE = _descriptor.Descriptor(
   serialized_end=892,
 )
 
+
+_ACTIVITYONLINETIMENOTIFY = _descriptor.Descriptor(
+  name='ActivityOnlineTimeNotify',
+  full_name='Dianjing.protocol.ActivityOnlineTimeNotify',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ActivityOnlineTimeNotify.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.ActivityOnlineTimeNotify.id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=894,
+  serialized_end=949,
+)
+
+
+_ACTIVITYONLINETIMEGETREWARDREQUEST = _descriptor.Descriptor(
+  name='ActivityOnlineTimeGetRewardRequest',
+  full_name='Dianjing.protocol.ActivityOnlineTimeGetRewardRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ActivityOnlineTimeGetRewardRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=951,
+  serialized_end=1004,
+)
+
+
+_ACTIVITYONLINETIMEGETREWARDRESPONSE = _descriptor.Descriptor(
+  name='ActivityOnlineTimeGetRewardResponse',
+  full_name='Dianjing.protocol.ActivityOnlineTimeGetRewardResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.ActivityOnlineTimeGetRewardResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ActivityOnlineTimeGetRewardResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='drop', full_name='Dianjing.protocol.ActivityOnlineTimeGetRewardResponse.drop', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1006,
+  serialized_end=1112,
+)
+
+
+_ACTIVITYCHALLENGENOTIFY_CHALLENGEITEM = _descriptor.Descriptor(
+  name='ChallengeItem',
+  full_name='Dianjing.protocol.ActivityChallengeNotify.ChallengeItem',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.ActivityChallengeNotify.ChallengeItem.id', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='status', full_name='Dianjing.protocol.ActivityChallengeNotify.ChallengeItem.status', index=1,
+      number=2, type=14, cpp_type=8, label=2,
+      has_default_value=False, default_value=1,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1272,
+  serialized_end=1350,
+)
+
+_ACTIVITYCHALLENGENOTIFY = _descriptor.Descriptor(
+  name='ActivityChallengeNotify',
+  full_name='Dianjing.protocol.ActivityChallengeNotify',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ActivityChallengeNotify.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='act', full_name='Dianjing.protocol.ActivityChallengeNotify.act', index=1,
+      number=2, type=14, cpp_type=8, label=2,
+      has_default_value=False, default_value=1,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='items', full_name='Dianjing.protocol.ActivityChallengeNotify.items', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[_ACTIVITYCHALLENGENOTIFY_CHALLENGEITEM, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1115,
+  serialized_end=1350,
+)
+
+
+_ACTIVITYCHALLENGEGETREWARDREQUEST = _descriptor.Descriptor(
+  name='ActivityChallengeGetRewardRequest',
+  full_name='Dianjing.protocol.ActivityChallengeGetRewardRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ActivityChallengeGetRewardRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.ActivityChallengeGetRewardRequest.id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1352,
+  serialized_end=1416,
+)
+
+
+_ACTIVITYCHALLENGEGETREWARDRESPONSE = _descriptor.Descriptor(
+  name='ActivityChallengeGetRewardResponse',
+  full_name='Dianjing.protocol.ActivityChallengeGetRewardResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.ActivityChallengeGetRewardResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ActivityChallengeGetRewardResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='drop', full_name='Dianjing.protocol.ActivityChallengeGetRewardResponse.drop', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1418,
+  serialized_end=1523,
+)
+
 _ACTIVITYNEWPLAYERNOTIFY_NEWPLAYERITEM.fields_by_name['status'].enum_type = _ACTIVITYSTATUS
 _ACTIVITYNEWPLAYERNOTIFY_NEWPLAYERITEM.containing_type = _ACTIVITYNEWPLAYERNOTIFY
 _ACTIVITYNEWPLAYERNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
@@ -404,12 +683,24 @@ _ACTIVITYNEWPLAYERDAILYBUYNOTIFY_DAILYBUYSTATUS.containing_type = _ACTIVITYNEWPL
 _ACTIVITYNEWPLAYERDAILYBUYNOTIFY.fields_by_name['status'].message_type = _ACTIVITYNEWPLAYERDAILYBUYNOTIFY_DAILYBUYSTATUS
 _ACTIVITYNEWPLAYERGETREWARDRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 _ACTIVITYNEWPLAYERDAILYBUYRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
+_ACTIVITYONLINETIMEGETREWARDRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
+_ACTIVITYCHALLENGENOTIFY_CHALLENGEITEM.fields_by_name['status'].enum_type = _ACTIVITYSTATUS
+_ACTIVITYCHALLENGENOTIFY_CHALLENGEITEM.containing_type = _ACTIVITYCHALLENGENOTIFY
+_ACTIVITYCHALLENGENOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
+_ACTIVITYCHALLENGENOTIFY.fields_by_name['items'].message_type = _ACTIVITYCHALLENGENOTIFY_CHALLENGEITEM
+_ACTIVITYCHALLENGEGETREWARDRESPONSE.fields_by_name['drop'].message_type = package__pb2._DROP
 DESCRIPTOR.message_types_by_name['ActivityNewPlayerNotify'] = _ACTIVITYNEWPLAYERNOTIFY
 DESCRIPTOR.message_types_by_name['ActivityNewPlayerDailyBuyNotify'] = _ACTIVITYNEWPLAYERDAILYBUYNOTIFY
 DESCRIPTOR.message_types_by_name['ActivityNewPlayerGetRewardRequest'] = _ACTIVITYNEWPLAYERGETREWARDREQUEST
 DESCRIPTOR.message_types_by_name['ActivityNewPlayerGetRewardResponse'] = _ACTIVITYNEWPLAYERGETREWARDRESPONSE
 DESCRIPTOR.message_types_by_name['ActivityNewPlayerDailyBuyRequest'] = _ACTIVITYNEWPLAYERDAILYBUYREQUEST
 DESCRIPTOR.message_types_by_name['ActivityNewPlayerDailyBuyResponse'] = _ACTIVITYNEWPLAYERDAILYBUYRESPONSE
+DESCRIPTOR.message_types_by_name['ActivityOnlineTimeNotify'] = _ACTIVITYONLINETIMENOTIFY
+DESCRIPTOR.message_types_by_name['ActivityOnlineTimeGetRewardRequest'] = _ACTIVITYONLINETIMEGETREWARDREQUEST
+DESCRIPTOR.message_types_by_name['ActivityOnlineTimeGetRewardResponse'] = _ACTIVITYONLINETIMEGETREWARDRESPONSE
+DESCRIPTOR.message_types_by_name['ActivityChallengeNotify'] = _ACTIVITYCHALLENGENOTIFY
+DESCRIPTOR.message_types_by_name['ActivityChallengeGetRewardRequest'] = _ACTIVITYCHALLENGEGETREWARDREQUEST
+DESCRIPTOR.message_types_by_name['ActivityChallengeGetRewardResponse'] = _ACTIVITYCHALLENGEGETREWARDRESPONSE
 DESCRIPTOR.enum_types_by_name['ActivityStatus'] = _ACTIVITYSTATUS
 
 ActivityNewPlayerNotify = _reflection.GeneratedProtocolMessageType('ActivityNewPlayerNotify', (_message.Message,), dict(
@@ -469,6 +760,56 @@ ActivityNewPlayerDailyBuyResponse = _reflection.GeneratedProtocolMessageType('Ac
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.ActivityNewPlayerDailyBuyResponse)
   ))
 _sym_db.RegisterMessage(ActivityNewPlayerDailyBuyResponse)
+
+ActivityOnlineTimeNotify = _reflection.GeneratedProtocolMessageType('ActivityOnlineTimeNotify', (_message.Message,), dict(
+  DESCRIPTOR = _ACTIVITYONLINETIMENOTIFY,
+  __module__ = 'activity_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ActivityOnlineTimeNotify)
+  ))
+_sym_db.RegisterMessage(ActivityOnlineTimeNotify)
+
+ActivityOnlineTimeGetRewardRequest = _reflection.GeneratedProtocolMessageType('ActivityOnlineTimeGetRewardRequest', (_message.Message,), dict(
+  DESCRIPTOR = _ACTIVITYONLINETIMEGETREWARDREQUEST,
+  __module__ = 'activity_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ActivityOnlineTimeGetRewardRequest)
+  ))
+_sym_db.RegisterMessage(ActivityOnlineTimeGetRewardRequest)
+
+ActivityOnlineTimeGetRewardResponse = _reflection.GeneratedProtocolMessageType('ActivityOnlineTimeGetRewardResponse', (_message.Message,), dict(
+  DESCRIPTOR = _ACTIVITYONLINETIMEGETREWARDRESPONSE,
+  __module__ = 'activity_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ActivityOnlineTimeGetRewardResponse)
+  ))
+_sym_db.RegisterMessage(ActivityOnlineTimeGetRewardResponse)
+
+ActivityChallengeNotify = _reflection.GeneratedProtocolMessageType('ActivityChallengeNotify', (_message.Message,), dict(
+
+  ChallengeItem = _reflection.GeneratedProtocolMessageType('ChallengeItem', (_message.Message,), dict(
+    DESCRIPTOR = _ACTIVITYCHALLENGENOTIFY_CHALLENGEITEM,
+    __module__ = 'activity_pb2'
+    # @@protoc_insertion_point(class_scope:Dianjing.protocol.ActivityChallengeNotify.ChallengeItem)
+    ))
+  ,
+  DESCRIPTOR = _ACTIVITYCHALLENGENOTIFY,
+  __module__ = 'activity_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ActivityChallengeNotify)
+  ))
+_sym_db.RegisterMessage(ActivityChallengeNotify)
+_sym_db.RegisterMessage(ActivityChallengeNotify.ChallengeItem)
+
+ActivityChallengeGetRewardRequest = _reflection.GeneratedProtocolMessageType('ActivityChallengeGetRewardRequest', (_message.Message,), dict(
+  DESCRIPTOR = _ACTIVITYCHALLENGEGETREWARDREQUEST,
+  __module__ = 'activity_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ActivityChallengeGetRewardRequest)
+  ))
+_sym_db.RegisterMessage(ActivityChallengeGetRewardRequest)
+
+ActivityChallengeGetRewardResponse = _reflection.GeneratedProtocolMessageType('ActivityChallengeGetRewardResponse', (_message.Message,), dict(
+  DESCRIPTOR = _ACTIVITYCHALLENGEGETREWARDRESPONSE,
+  __module__ = 'activity_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ActivityChallengeGetRewardResponse)
+  ))
+_sym_db.RegisterMessage(ActivityChallengeGetRewardResponse)
 
 
 # @@protoc_insertion_point(module_scope)

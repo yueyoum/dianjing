@@ -411,7 +411,7 @@ class MongoArena(BaseDocument):
 
         # 连胜次数
         'continue_win': 0,
-        # 打的次数
+        # 总共打的次数
         'match_times': 0,
     }
 
@@ -453,6 +453,18 @@ class MongoArenaScore(BaseDocument):
 
     COLLECTION = 'arena_score'
     INDEXES = ['char_ids',]
+
+# 每日胜率
+class MongoArenaWinning(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'total_count': 0,
+        'win_count': 0,
+        'winning': 0,
+    }
+
+    COLLECTION = 'arena_winning'
+    INDEXES = ['winning',]
 
 
 # 塔
@@ -731,6 +743,27 @@ class MongoActivityNewPlayer(BaseDocument):
 
     COLLECTION = 'activity_new_player'
 
+# 每日在线时长
+class MongoActivityOnlineTime(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # 可以领奖的ID，初始化就是配置中最小的ID，0表示当天的已经全部领完了
+        'doing': 0,
+    }
+
+    COLLECTION = 'activity_online_time'
+
+# 冲关
+class MongoActivityChallenge(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # 已经完成领奖的
+        'done': [],
+    }
+
+    COLLECTION = 'activity_challenge'
+
+
 # 俱乐部排行榜
 class MongoClubLeaderboard(BaseDocument):
     DOCUMENT = {
@@ -822,6 +855,19 @@ class MongoPlunder(BaseDocument):
 
     COLLECTION = 'plunder'
     INDEXES = ['active', 'plunder_remained_times', 'loss_percent',]
+
+
+# 每日胜率
+class MongoPlunderWinning(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'total_count': 0,
+        'win_count': 0,
+        'winning': 0,
+    }
+
+    COLLECTION = 'plunder_winning'
+    INDEXES = ['winning',]
 
 
 # 宴会 这部分功能用 socket 实现

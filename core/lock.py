@@ -12,6 +12,7 @@ import time
 from contextlib import contextmanager
 from core.db import RedisDB
 
+
 def remove_lock_key(key):
     RedisDB.get().delete(key)
 
@@ -71,3 +72,19 @@ class RedisLock(object):
 class ArenaLock(RedisLock):
     def make_key(self):
         return 'lock:arena:{0}'.format(self.server_id)
+
+
+# 排行榜聊天，这里牵扯到排序，所以得锁
+class LeaderboardArenaChatLock(RedisLock):
+    def make_key(self):
+        return 'lock:lbarenachat:{0}'.format(self.server_id)
+
+
+class LeaderboardPlunderChatLock(RedisLock):
+    def make_key(self):
+        return 'lock:lbplunderchat:{0}'.format(self.server_id)
+
+
+class LeaderboardChampionshipChatLock(RedisLock):
+    def make_key(self):
+        return 'lock:lbchampionshipchat:{0}'.format(self.server_id)

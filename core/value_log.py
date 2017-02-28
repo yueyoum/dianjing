@@ -361,3 +361,8 @@ class ValueLogUnionHarassTimes(ValueLog):
 class ValueLogUnionHarassBuyTimes(ValueLog):
     KEY = 'union_harass_buy_times'
     __slots__ = []
+
+# 膜拜次数
+class ValueLogWorshipTimes(ValueLog):
+    KEY = 'worship'
+    __slots__ = []

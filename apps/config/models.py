@@ -139,6 +139,8 @@ class Mail(models.Model):
     items = models.TextField(blank=True, verbose_name='附件')
 
     send_at = models.DateTimeField(db_index=True, verbose_name='发送时间')
+    welfare = models.BooleanField(default=False, verbose_name='福利邮件',
+                                  help_text='当天发送的福利邮件，在当天新创建的角色都会收到')
 
     condition_type = models.IntegerField(choices=CONDITION_TYPE, verbose_name='发送条件')
     condition_value = models.CharField(max_length=255, blank=True, null=True,
