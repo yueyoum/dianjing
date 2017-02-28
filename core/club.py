@@ -258,7 +258,7 @@ class Club(AbstractClub):
             else:
                 attachment = ""
 
-            m.add(m_obj.title, m_obj.contentm, attachment=attachment, send_notify=False)
+            m.add(m_obj.title, m_obj.content, attachment=attachment, send_notify=False)
 
 
     @classmethod

@@ -230,7 +230,7 @@ class ActivityOnlineTime(object):
 
     def send_notify(self):
         notify = ActivityOnlineTimeNotify()
-        notify.doing = self.doc['doing']
+        notify.id = self.doc['doing']
         MessagePipe(self.char_id).put(msg=notify)
 
 
@@ -279,6 +279,7 @@ class ActivityChallenge(object):
         )
 
         self.send_notify(_id)
+        return rc
 
     def get_status(self, _id):
         if _id in self.doc['done']:
