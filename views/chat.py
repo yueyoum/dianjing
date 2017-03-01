@@ -23,8 +23,8 @@ def send(request):
     tp = request._proto.tp
 
     chat = Chat(server_id, char_id)
-    chat.send(tp, channel, msg)
+    ret = chat.send(tp, channel, msg)
 
     response = ChatSendResponse()
-    response.ret = 0
+    response.ret = ret
     return ProtobufResponse(response)

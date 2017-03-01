@@ -48,7 +48,7 @@ class Chat(object):
                 raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
             self.command(tp, text)
-            return
+            return 0
 
         # check gift code
         if check_signed_string(text):
@@ -58,9 +58,10 @@ class Chat(object):
                 pass
             else:
                 self.gift(gift_code_record)
-                return
+                return -1
 
         self.normal_chat(channel, text)
+        return 0
 
     def normal_chat(self, channel, text):
         from tasks import world
