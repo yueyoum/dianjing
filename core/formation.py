@@ -279,7 +279,7 @@ class Formation(BaseFormation):
     def initialize(self, init_data):
         # [(staff_unique_id, unit_id), ...]
 
-        opened_slot_ids = ConfigFormationSlot.get_opened_slot_ids(1)
+        opened_slot_ids = ConfigFormationSlot.get_opened_slot_ids([])
 
         updater = {}
         for index, (staff_unique_id, unit_id) in enumerate(init_data):
@@ -302,8 +302,11 @@ class Formation(BaseFormation):
             {'$set': updater}
         )
 
-    def try_open_slots(self, new_club_level):
-        opened_slot_ids = ConfigFormationSlot.get_opened_slot_ids(new_club_level)
+    def try_open_slots(self):
+        from core.challenge import Challenge
+
+        passed_challenge_ids = Challenge(self.server_id, self.char_id).get_passed_challenge_ids()
+        opened_slot_ids = ConfigFormationSlot.get_opened_slot_ids(passed_challenge_ids)
 
         new_slot_ids = []
         updater = {}

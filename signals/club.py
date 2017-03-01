@@ -11,7 +11,6 @@ from core.signals import club_level_up_signal
 from core.task import TaskDaily
 from core.energy import Energy
 from core.unit import UnitManager
-from core.formation import Formation
 from core.welfare import Welfare
 from core.championship import Championship
 
@@ -25,6 +24,5 @@ def club_level_up_handler(server_id, char_id, new_level, **kwargs):
     Energy(server_id, char_id).add(energy_add)
 
     UnitManager(server_id, char_id).try_unlock()
-    Formation(server_id, char_id).try_open_slots(new_level)
     Welfare(server_id, char_id).send_level_reward_notify()
     Championship(server_id, char_id).try_initialize()

@@ -10,10 +10,10 @@ Description:
 from config.base import ConfigBase
 
 class Slot(object):
-    __slots__ = ['id', 'club_level']
+    __slots__ = ['id', 'challenge_id']
     def __init__(self):
         self.id = 0
-        self.club_level = 0
+        self.challenge_id = 0
 
 
 class ConfigFormationSlot(ConfigBase):
@@ -23,10 +23,10 @@ class ConfigFormationSlot(ConfigBase):
     FILTER_CACHE = {}
 
     @classmethod
-    def get_opened_slot_ids(cls, club_level):
+    def get_opened_slot_ids(cls, passed_challenge_ids):
         ids = []
         for k, v in cls.INSTANCES.iteritems():
-            if club_level >= v.club_level:
+            if v.challenge_id == 0 or v.challenge_id in passed_challenge_ids:
                 ids.append(k)
 
         ids.sort()
