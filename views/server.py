@@ -31,6 +31,7 @@ def get_server_list(request):
         s.id = server.id
         s.name = server.name
         s.status = server.status
+        s.is_new = server.is_new
 
     return ProtobufResponse(response)
 

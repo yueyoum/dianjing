@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='server.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0cserver.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"|\n\x06Server\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x36\n\x06status\x18\x03 \x02(\x0e\x32&.Dianjing.protocol.Server.ServerStatus\" \n\x0cServerStatus\x12\x07\n\x03NEW\x10\x01\x12\x07\n\x03HOT\x10\x02\"\'\n\x14GetServerListRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"a\n\x15GetServerListResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12*\n\x07servers\x18\x03 \x03(\x0b\x32\x19.Dianjing.protocol.Server\"6\n\x10StartGameRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tserver_id\x18\x02 \x02(\x05\"g\n\x11StartGameResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x34\n\x04next\x18\x03 \x01(\x0e\x32\x1e.Dianjing.protocol.NextOperate:\x06OPT_OK')
+  serialized_pb=_b('\n\x0cserver.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\x9d\x01\n\x06Server\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x36\n\x06status\x18\x03 \x02(\x0e\x32&.Dianjing.protocol.Server.ServerStatus\x12\x0e\n\x06is_new\x18\x04 \x02(\x08\"1\n\x0cServerStatus\x12\n\n\x06NORMAL\x10\x01\x12\x07\n\x03HOT\x10\x02\x12\x0c\n\x08MAINTAIN\x10\x03\"\'\n\x14GetServerListRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"a\n\x15GetServerListResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12*\n\x07servers\x18\x03 \x03(\x0b\x32\x19.Dianjing.protocol.Server\"6\n\x10StartGameRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tserver_id\x18\x02 \x02(\x05\"g\n\x11StartGameResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x34\n\x04next\x18\x03 \x01(\x0e\x32\x1e.Dianjing.protocol.NextOperate:\x06OPT_OK')
   ,
   dependencies=[common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -34,18 +34,22 @@ _SERVER_SERVERSTATUS = _descriptor.EnumDescriptor(
   file=DESCRIPTOR,
   values=[
     _descriptor.EnumValueDescriptor(
-      name='NEW', index=0, number=1,
+      name='NORMAL', index=0, number=1,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='HOT', index=1, number=2,
       options=None,
       type=None),
+    _descriptor.EnumValueDescriptor(
+      name='MAINTAIN', index=2, number=3,
+      options=None,
+      type=None),
   ],
   containing_type=None,
   options=None,
-  serialized_start=141,
-  serialized_end=173,
+  serialized_start=158,
+  serialized_end=207,
 )
 _sym_db.RegisterEnumDescriptor(_SERVER_SERVERSTATUS)
 
@@ -78,6 +82,13 @@ _SERVER = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='is_new', full_name='Dianjing.protocol.Server.is_new', index=3,
+      number=4, type=8, cpp_type=7, label=2,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -91,8 +102,8 @@ _SERVER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=49,
-  serialized_end=173,
+  serialized_start=50,
+  serialized_end=207,
 )
 
 
@@ -122,8 +133,8 @@ _GETSERVERLISTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=175,
-  serialized_end=214,
+  serialized_start=209,
+  serialized_end=248,
 )
 
 
@@ -167,8 +178,8 @@ _GETSERVERLISTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=216,
-  serialized_end=313,
+  serialized_start=250,
+  serialized_end=347,
 )
 
 
@@ -205,8 +216,8 @@ _STARTGAMEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=315,
-  serialized_end=369,
+  serialized_start=349,
+  serialized_end=403,
 )
 
 
@@ -250,8 +261,8 @@ _STARTGAMERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=371,
-  serialized_end=474,
+  serialized_start=405,
+  serialized_end=508,
 )
 
 _SERVER.fields_by_name['status'].enum_type = _SERVER_SERVERSTATUS

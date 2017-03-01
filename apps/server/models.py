@@ -9,13 +9,15 @@ from django.db import connection
 
 class Server(models.Model):
     STATUS = (
-        (1, "新"),
-        (2, "火"),
+        (1, "正常"),
+        (2, "火爆"),
+        (3, "维护"),
     )
 
     id = models.IntegerField(primary_key=True)
     name = models.CharField(unique=True, max_length=32)
     status = models.IntegerField(choices=STATUS, default=1)
+    is_new = models.BooleanField(default=False)
 
     open_at = models.DateTimeField(db_index=True)
 

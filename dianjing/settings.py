@@ -221,7 +221,7 @@ REDIS_PORT = int( doc.find('redis/port').text )
 
 MONGODB_PREFIX = doc.find('mongodb/prefix').text
 MONGODB = []
-for _m in doc.find('mongodb').getchildren():
+for _m in doc.findall('mongodb/instance'):
     attrib = _m.attrib
     attrib['port'] = int(attrib['port'])
     attrib['sid-min'] = int(attrib['sid-min'])
