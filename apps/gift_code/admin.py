@@ -15,6 +15,7 @@ class AdminGiftCode(admin.ModelAdmin):
 @admin.register(GiftCodeGen)
 class AdminGiftCodeGen(admin.ModelAdmin):
     list_display = (
+        'id',
         'category', 'amount', 'used_amount', 'create_at',
         'Download'
     )
