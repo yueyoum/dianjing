@@ -60,7 +60,7 @@ class MongoDB(object):
 
             client = MongoClient(mongo_url)
             for i in range(mongo_config['sid-min'], mongo_config['sid-max'] + 1):
-                db = 'dianjing{0}'.format(i)
+                db = '{0}{1}'.format(settings.MONGODB_PREFIX, i)
                 cls.DBS[i] = client[db]
 
     @classmethod

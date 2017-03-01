@@ -42,8 +42,10 @@
     </redis>
 
     <!-- mongodb 组, 每组的 sid-min 和 sid-max 表示这个范围内的 server 连接的都是这个 instance -->
-    <!-- db的名字就是 dianjingN N就是 server id -->
+    <!-- db的名字就是 <prefix>N N就是 server id -->
+    <!-- 当开新服的id已经超过这里配置的最大ID的时候，要增加配置，重启服务器 -->
     <mongodb>
+        <prefix></prefix>
         <instance user="" password="" host="127.0.0.1" port="27017" sid-min="1" sid-max="100" />
     </mongodb>
 

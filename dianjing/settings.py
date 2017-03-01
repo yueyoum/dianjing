@@ -219,6 +219,7 @@ AES_CBC_IV = doc.find('crypto/iv').text
 REDIS_HOST = doc.find('redis/host').text
 REDIS_PORT = int( doc.find('redis/port').text )
 
+MONGODB_PREFIX = doc.find('mongodb/prefix').text
 MONGODB = []
 for _m in doc.find('mongodb').getchildren():
     attrib = _m.attrib
