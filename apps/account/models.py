@@ -83,6 +83,21 @@ class AccountLoginLog(models.Model):
         limit = arrow.utcnow().replace(days=-60).format("YYYY-MM-DD HH:mm:ssZ")
         cls.objects.filter(login_at__lte=limit).delete()
 
+    @classmethod
+    def get_recent_login_account_ids(cls, recent_days):
+        from utils.functional import get_start_time_of_today
+
+        assert recent_days > 0
+        recent_days -= 1
+
+        limit = get_start_time_of_today()
+        limit = limit.replace(days=-recent_days)
+        account_ids = {}
+
+        for log in cls.objects.filter(login_at__gte=limit.format("YYYY-MM-DD HH:mm:ssZ")).order_by('login_at'):
+            account_ids[log.account_id] = log.to_server_id
+
+        return account_ids
 
 class AccountBan(models.Model):
     account_id = models.IntegerField(verbose_name="帐号ID")
@@ -98,3 +113,13 @@ class AccountBan(models.Model):
 
         verbose_name = "帐号冻结"
         verbose_name_plural = "账号冻结"
+
+
+class GeTuiClientID(models.Model):
+    id = models.IntegerField(primary_key=True)  # 就是 account id
+    client_id = models.CharField(max_length=255)
+
+    class Meta:
+        db_table = 'getui_clientid'
+        verbose_name = "个推clientid"
+        verbose_name_plural = "个推clientid"

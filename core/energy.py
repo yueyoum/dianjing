@@ -96,6 +96,9 @@ class Energy(object):
 
         return self.doc['last_add_at'] + RECOVER_INTERVAL
 
+    def is_full(self):
+        return self.doc['current'] >= MAX_ENERGY_SOFT_LIMIT
+
     def check(self, value):
         new_value = self.doc['current'] - value
         if new_value < 0:

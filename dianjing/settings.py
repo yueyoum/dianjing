@@ -235,6 +235,11 @@ for _t in doc.find('third-provider').getchildren():
     _p = attrib.pop('provider')
     THIRD_PROVIDER[_p] = attrib
 
+# GETUI
+GETUI_APPID = doc.find('getui/appid').text
+GETUI_APPKEY = doc.find('getui/appkey').text
+GETUI_MASTERSECRET = doc.find('getui/mastersecret').text
+
 # MAILGUN
 ANYMAIL = {
     'MAILGUN_API_KEY': doc.find('mailgun/key').text

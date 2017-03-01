@@ -104,7 +104,7 @@ class PlunderFormation(BaseFormation):
 
             doc = self.MONGO_COLLECTION.document()
             doc['_id'] = self.char_id
-            doc['position'] = [0] * 30
+            doc['position'] = [0] * 9
             doc['slots'] = {
                 '1': slot_doc,
                 '2': slot_doc,

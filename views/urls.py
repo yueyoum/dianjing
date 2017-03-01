@@ -47,6 +47,7 @@ urlpatterns = [
 
     url(r'^account/register/$', views.account.register),
     url(r'^account/login/$', views.account.login),
+    url(r'^account/getui/clientid/$', views.account.set_getui_client_id),
 
     url(r'^servers/$', views.server.get_server_list),
     url(r'^start/$', views.server.start_game),

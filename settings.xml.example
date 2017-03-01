@@ -55,6 +55,13 @@
         <p2 provider="stars-cloud" appid="" pmsecret=""/>
     </third-provider>
 
+    <!-- 个推 设置 -->
+    <getui>
+        <appid></appid>
+        <appkey></appkey>
+        <mastersecret></mastersecret>
+    </getui>
+
     <mailgun>
         <sender></sender>
         <key></key>

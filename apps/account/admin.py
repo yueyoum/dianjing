@@ -5,6 +5,7 @@ from django.contrib import admin
 from apps.account.models import (
     Account, AccountLoginLog,
     AccountRegular,
+    GeTuiClientID,
 )
 
 @admin.register(AccountRegular)
@@ -60,3 +61,10 @@ class AccountAdmin(admin.ModelAdmin):
 class AccountLoginLogAdmin(admin.ModelAdmin):
     list_display = ('id', 'account_id', 'login_at', 'ip', 'to_server_id')
     search_fields = ('account_id',)
+
+
+@admin.register(GeTuiClientID)
+class AdminGeTuiClientID(admin.ModelAdmin):
+    list_display = ('id', 'client_id')
+    search_fields = ('id',)
+    readonly_fields = ('id', 'client_id')

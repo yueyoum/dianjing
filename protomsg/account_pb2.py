@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='account.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\raccount.proto\x12\x11\x44ianjing.protocol\"1\n\x0eRegularAccount\x12\r\n\x05\x65mail\x18\x01 \x02(\t\x12\x10\n\x08password\x18\x02 \x02(\t\"<\n\x0cThirdAccount\x12\x10\n\x08platform\x18\x01 \x02(\t\x12\x0b\n\x03uid\x18\x02 \x02(\t\x12\r\n\x05param\x18\x03 \x01(\t\"\x7f\n\x07\x41\x63\x63ount\x12\x10\n\x08provider\x18\x01 \x02(\t\x12\x32\n\x07regular\x18\x02 \x01(\x0b\x32!.Dianjing.protocol.RegularAccount\x12.\n\x05third\x18\x03 \x01(\x0b\x32\x1f.Dianjing.protocol.ThirdAccount\"V\n\x0fRegisterRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x32\n\x07\x61\x63\x63ount\x18\x02 \x02(\x0b\x32!.Dianjing.protocol.RegularAccount\"d\n\x10RegisterResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x32\n\x07\x61\x63\x63ount\x18\x03 \x01(\x0b\x32!.Dianjing.protocol.RegularAccount\"L\n\x0cLoginRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12+\n\x07\x61\x63\x63ount\x18\x02 \x02(\x0b\x32\x1a.Dianjing.protocol.Account\"Z\n\rLoginResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x07\x61\x63\x63ount\x18\x03 \x01(\x0b\x32\x1a.Dianjing.protocol.Account')
+  serialized_pb=_b('\n\raccount.proto\x12\x11\x44ianjing.protocol\"1\n\x0eRegularAccount\x12\r\n\x05\x65mail\x18\x01 \x02(\t\x12\x10\n\x08password\x18\x02 \x02(\t\"<\n\x0cThirdAccount\x12\x10\n\x08platform\x18\x01 \x02(\t\x12\x0b\n\x03uid\x18\x02 \x02(\t\x12\r\n\x05param\x18\x03 \x01(\t\"\x7f\n\x07\x41\x63\x63ount\x12\x10\n\x08provider\x18\x01 \x02(\t\x12\x32\n\x07regular\x18\x02 \x01(\x0b\x32!.Dianjing.protocol.RegularAccount\x12.\n\x05third\x18\x03 \x01(\x0b\x32\x1f.Dianjing.protocol.ThirdAccount\"V\n\x0fRegisterRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x32\n\x07\x61\x63\x63ount\x18\x02 \x02(\x0b\x32!.Dianjing.protocol.RegularAccount\"d\n\x10RegisterResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x32\n\x07\x61\x63\x63ount\x18\x03 \x01(\x0b\x32!.Dianjing.protocol.RegularAccount\"L\n\x0cLoginRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12+\n\x07\x61\x63\x63ount\x18\x02 \x02(\x0b\x32\x1a.Dianjing.protocol.Account\"Z\n\rLoginResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x07\x61\x63\x63ount\x18\x03 \x01(\x0b\x32\x1a.Dianjing.protocol.Account\":\n\x14GeTuiClientIdRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tclient_id\x18\x02 \x02(\t\"5\n\x15GeTuiClientIdResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -319,6 +319,82 @@ _LOGINRESPONSE = _descriptor.Descriptor(
   serialized_end=636,
 )
 
+
+_GETUICLIENTIDREQUEST = _descriptor.Descriptor(
+  name='GeTuiClientIdRequest',
+  full_name='Dianjing.protocol.GeTuiClientIdRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.GeTuiClientIdRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='client_id', full_name='Dianjing.protocol.GeTuiClientIdRequest.client_id', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=638,
+  serialized_end=696,
+)
+
+
+_GETUICLIENTIDRESPONSE = _descriptor.Descriptor(
+  name='GeTuiClientIdResponse',
+  full_name='Dianjing.protocol.GeTuiClientIdResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.GeTuiClientIdResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.GeTuiClientIdResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=698,
+  serialized_end=751,
+)
+
 _ACCOUNT.fields_by_name['regular'].message_type = _REGULARACCOUNT
 _ACCOUNT.fields_by_name['third'].message_type = _THIRDACCOUNT
 _REGISTERREQUEST.fields_by_name['account'].message_type = _REGULARACCOUNT
@@ -332,6 +408,8 @@ DESCRIPTOR.message_types_by_name['RegisterRequest'] = _REGISTERREQUEST
 DESCRIPTOR.message_types_by_name['RegisterResponse'] = _REGISTERRESPONSE
 DESCRIPTOR.message_types_by_name['LoginRequest'] = _LOGINREQUEST
 DESCRIPTOR.message_types_by_name['LoginResponse'] = _LOGINRESPONSE
+DESCRIPTOR.message_types_by_name['GeTuiClientIdRequest'] = _GETUICLIENTIDREQUEST
+DESCRIPTOR.message_types_by_name['GeTuiClientIdResponse'] = _GETUICLIENTIDRESPONSE
 
 RegularAccount = _reflection.GeneratedProtocolMessageType('RegularAccount', (_message.Message,), dict(
   DESCRIPTOR = _REGULARACCOUNT,
@@ -381,6 +459,20 @@ LoginResponse = _reflection.GeneratedProtocolMessageType('LoginResponse', (_mess
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.LoginResponse)
   ))
 _sym_db.RegisterMessage(LoginResponse)
+
+GeTuiClientIdRequest = _reflection.GeneratedProtocolMessageType('GeTuiClientIdRequest', (_message.Message,), dict(
+  DESCRIPTOR = _GETUICLIENTIDREQUEST,
+  __module__ = 'account_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.GeTuiClientIdRequest)
+  ))
+_sym_db.RegisterMessage(GeTuiClientIdRequest)
+
+GeTuiClientIdResponse = _reflection.GeneratedProtocolMessageType('GeTuiClientIdResponse', (_message.Message,), dict(
+  DESCRIPTOR = _GETUICLIENTIDRESPONSE,
+  __module__ = 'account_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.GeTuiClientIdResponse)
+  ))
+_sym_db.RegisterMessage(GeTuiClientIdResponse)
 
 
 # @@protoc_insertion_point(module_scope)

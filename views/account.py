@@ -12,11 +12,12 @@ from dianjing.exception import GameException
 
 from utils.http import ProtobufResponse
 from utils.session import GameSession, LoginID
+from utils.push_notification import GeTui
 
 from core.account import register as register_func, regular_login, third_login
 from config import ConfigErrorMessage
 
-from protomsg.account_pb2 import RegisterResponse, LoginResponse
+from protomsg.account_pb2 import RegisterResponse, LoginResponse, GeTuiClientIdResponse
 
 
 def register(request):
@@ -57,4 +58,16 @@ def login(request):
     response.session = GameSession.dumps(account_id=account.account.id, login_id=login_id, provider=provider)
     response.account.MergeFrom(request._proto.account)
 
+    return ProtobufResponse(response)
+
+
+def set_getui_client_id(request):
+    account_id = request._game_session.account_id
+    client_id = request._proto.client_id
+
+    if account_id:
+        GeTui(account_id).set_client_id(client_id)
+
+    response = GeTuiClientIdResponse()
+    response.ret = 0
     return ProtobufResponse(response)

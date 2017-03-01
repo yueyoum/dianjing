@@ -53,6 +53,19 @@ class OperationLog(object):
 
         return char_ids
 
+    @classmethod
+    def get_char_last_action_at(cls, server_id, char_id):
+        docs = MongoOperationLog.db(server_id).find(
+            {'char_id': char_id},
+            {'timestamp': 1}
+        ).sort('timestamp', -1).limit(1)
+
+        try:
+            doc = docs[0]
+            return doc['timestamp']
+        except IndexError:
+            return 0
+
     def record(self, action, ret):
         now = arrow.utcnow()
         end_ms = now.timestamp + now.microsecond / 1000
