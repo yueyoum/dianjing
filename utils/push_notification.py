@@ -44,7 +44,11 @@ class GeTui(object):
 
         count = 0
         for account_id, server_id in account_ids.iteritems():
-            model_char = ModelCharacter.objects.get(Q(account_id=account_id) & Q(server_id=server_id))
+            try:
+                model_char = ModelCharacter.objects.get(Q(account_id=account_id) & Q(server_id=server_id))
+            except ModelCharacter.DoesNotExist:
+                continue
+
             char_id = model_char.id
 
             if OperationLog.get_char_last_action_at(server_id, char_id) > action_limit:
