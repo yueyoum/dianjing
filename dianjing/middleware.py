@@ -143,12 +143,12 @@ class ResponseMiddleware(object):
         all_msgs.insert(0, response.content)
 
         # FOR DEBUG
-        _msg_names = []
-        for _msg in all_msgs:
-            _msg_id = NUM_FILED.unpack(_msg[4:8])[0]
-            _msg_names.append(ID_TO_MESSAGE[_msg_id])
-
-        print _msg_names
+        # _msg_names = []
+        # for _msg in all_msgs:
+        #     _msg_id = NUM_FILED.unpack(_msg[4:8])[0]
+        #     _msg_names.append(ID_TO_MESSAGE[_msg_id])
+        #
+        # print _msg_names
         # END DEBUG
 
         return HttpResponse(''.join(all_msgs), content_type='text/plain')
