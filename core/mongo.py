@@ -9,6 +9,8 @@ Description:
 
 import copy
 from core.db import MongoDB
+from pymongo.collection import Collection
+from pymongo.write_concern import WriteConcern
 
 # NOTE:
 # 需要 mongodb 3.2 及以上版本
@@ -17,6 +19,7 @@ def ensure_index(server_id):
     for i in BaseDocument.__subclasses__():
         i.create_indexes(server_id)
 
+collection_cache = {}
 
 class BaseDocument(object):
     DOCUMENT = {}
@@ -38,7 +41,17 @@ class BaseDocument(object):
 
         :rtype : pymongo.collection.Collection
         """
-        return MongoDB.get(server_id)[cls.COLLECTION]
+
+        if cls.__name__ not in collection_cache:
+            write_concern = cls.get_write_concern()
+            coll = Collection(MongoDB.get(server_id), cls.COLLECTION, write_concern=write_concern)
+            collection_cache[cls.__name__] = coll
+
+        return collection_cache[cls.__name__]
+
+    @classmethod
+    def get_write_concern(cls):
+        return None
 
     @classmethod
     def exist(cls, server_id, _id):
@@ -636,6 +649,10 @@ class MongoOperationLog(BaseDocument):
 
     COLLECTION = 'operation_log'
     INDEXES = ['char_id', 'timestamp', 'cost_millisecond']
+
+    @classmethod
+    def get_write_concern(cls):
+        return WriteConcern(w=0, j=False)
 
 # 资源代币
 # 现在所有的东西都是配置在item里面的，其实这些代币资源应该同意放在一起
