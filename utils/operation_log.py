@@ -24,7 +24,7 @@ class OperationLog(object):
 
         now = arrow.utcnow()
         self.start_timestamp = now.timestamp
-        self.start_ms = self.start_timestamp + now.microsecond / 1000
+        self.start_ms = self.start_timestamp * 1000 + now.microsecond / 1000
 
     @classmethod
     def clean(cls, server_id):
@@ -68,7 +68,7 @@ class OperationLog(object):
 
     def record(self, action, ret):
         now = arrow.utcnow()
-        end_ms = now.timestamp + now.microsecond / 1000
+        end_ms = now.timestamp * 1000 + now.microsecond / 1000
 
         cost = end_ms - self.start_ms
 
