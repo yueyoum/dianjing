@@ -65,7 +65,7 @@ def set_getui_client_id(request):
     account_id = request._game_session.account_id
     client_id = request._proto.client_id
 
-    if account_id:
+    if account_id and client_id:
         GeTui(account_id).set_client_id(client_id)
 
     response = GeTuiClientIdResponse()

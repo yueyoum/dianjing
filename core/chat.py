@@ -58,7 +58,7 @@ class Chat(object):
                 pass
             else:
                 self.gift(gift_code_record)
-                return -1
+                return ConfigErrorMessage.get_error_id("GIFT_CODE_DONE")
 
         self.normal_chat(channel, text)
         return 0
