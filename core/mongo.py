@@ -652,7 +652,7 @@ class MongoOperationLog(BaseDocument):
 
     @classmethod
     def get_write_concern(cls):
-        return WriteConcern(w=0, j=False)
+        return WriteConcern(w=0)
 
 # 资源代币
 # 现在所有的东西都是配置在item里面的，其实这些代币资源应该同意放在一起
