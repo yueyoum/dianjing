@@ -20,6 +20,7 @@ from core.lock import (
 )
 
 from core.cooldown import LeaderboardArenaChatCD, LeaderboardPlunderChatCD, LeaderboardChampionshipChatCD
+from core.mark import WinningChatApprovalMark
 
 from utils.message import MessagePipe, MessageFactory
 from utils.operation_log import OperationLog
@@ -196,6 +197,9 @@ class _CommonWinningChat(BaseCommon):
 
                     remove_notify = self.REMOVE_NOTIFY()
                     remove_notify.msg_id = removed['msg_id']
+
+                    WinningChatApprovalMark(self.server_id, self.char_id, removed['msg_id']).delete()
+
                     self.broadcast(MessageFactory.pack(remove_notify))
 
                 MongoCommon.db(self.server_id).update_one(
@@ -211,6 +215,10 @@ class _CommonWinningChat(BaseCommon):
         self.CD(self.server_id, self.char_id).set(GlobalConfig.value("LEADERBOARD_CHAT_INTERVAL"))
 
     def approval(self, msg_id):
+        mark = WinningChatApprovalMark(self.server_id, self.char_id, msg_id)
+        if mark.is_marked():
+            raise GameException(ConfigErrorMessage.get_error_id("APPROVAL_ONLY_ONCE"))
+
         index = -1
         for _index, message in enumerate(self.doc['value']):
             if message['msg_id'] == msg_id:
@@ -237,6 +245,8 @@ class _CommonWinningChat(BaseCommon):
 
         except LockTimeOut:
             raise GameException(ConfigErrorMessage.get_error_id("SERVER_BUSY"))
+
+        mark.mark()
 
     def make_notify_data(self, message=None):
         if message:

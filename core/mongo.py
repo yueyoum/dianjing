@@ -1038,3 +1038,13 @@ class MongoMatchRecord(BaseDocument):
 
     COLLECTION = 'match_record'
     INDEXES = ['id_one', 'id_two', 'create_at',]
+
+
+# 标志
+class MongoMark(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'create_at': 0,
+    }
+
+    COLLECTION = 'mark'
