@@ -41,13 +41,14 @@ class BaseDocument(object):
 
         :rtype : pymongo.collection.Collection
         """
+        key = "{0}{1}".format(cls.__name__, server_id)
 
-        if cls.__name__ not in collection_cache:
+        if key not in collection_cache:
             write_concern = cls.get_write_concern()
             coll = Collection(MongoDB.get(server_id), cls.COLLECTION, write_concern=write_concern)
-            collection_cache[cls.__name__] = coll
+            collection_cache[key] = coll
 
-        return collection_cache[cls.__name__]
+        return collection_cache[key]
 
     @classmethod
     def get_write_concern(cls):
