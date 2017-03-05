@@ -257,6 +257,9 @@ class ActivityChallenge(object):
         if passed_id in self.doc['done']:
             return
 
+        if passed_id not in ConfigActivityChallenge.INSTANCES.keys():
+            return
+
         self.send_notify(passed_id)
 
     def get_reward(self, _id):
