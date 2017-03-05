@@ -15,6 +15,7 @@ import requests
 
 from django.conf import settings
 from django.db.models import Q
+from django.db import connection
 
 from apps.account.models import AccountLoginLog
 from apps.character.models import Character as ModelCharacter
@@ -39,6 +40,8 @@ class GeTui(object):
     @classmethod
     def job_of_energy_notification(cls):
         # 找最近登陆的，并且在多少时间内没操作的（认为已经下线了
+        connection.close()
+
         account_ids = AccountLoginLog.get_recent_login_account_ids(2)
         action_limit = arrow.utcnow().timestamp - 60 * 30
 
@@ -68,6 +71,8 @@ class GeTui(object):
 
     @classmethod
     def job_of_login_notification(cls):
+        connection.close()
+
         today = get_start_time_of_today()
         yesterday = today.replace(days=-1)
         day_before_yesterday = yesterday.replace(days=-1)
