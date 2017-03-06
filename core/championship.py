@@ -1306,6 +1306,6 @@ class ChampionshipLevel(object):
             if lv == 16:
                 notify_level.match_at = 0
             else:
-                notify_level.match_at = find_level_match_at(lv)
+                notify_level.match_at = find_level_match_at(lv).timestamp
 
         return notify
