@@ -531,6 +531,13 @@ class Plunder(object):
 
         return 0
 
+    def find_way_id_by_unit_id(self, unit_id):
+        for i in [1, 2, 3]:
+            if self.get_way_object(i).is_unit_in_formation(unit_id):
+                return i
+
+        return 0
+
     @check_plunder_active(silence=False)
     @check_plunder_in_process
     def set_staff(self, way_id, slot_id, staff_id):

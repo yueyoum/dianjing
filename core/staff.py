@@ -1115,9 +1115,24 @@ class StaffManger(object):
 
         return ""
 
-    def after_staff_change(self):
+    def after_staff_change(self, staff_id, force_load_staffs=False):
+        # force_load_staffs: 只有这个staff的改变可能会影响到其他staff的时候，才为True
         from core.club import Club
-        Club(self.server_id, self.char_id).send_notify()
+        from core.plunder import Plunder
+        from core.championship import Championship
+
+        if force_load_staffs:
+            Club(self.server_id, self.char_id, load_staffs=False).force_load_staffs(send_notify=True)
+        else:
+            Club(self.server_id, self.char_id).send_notify()
+
+        p = Plunder(self.server_id, self.char_id)
+        if p.find_way_id_by_staff_id(staff_id):
+            p.send_formation_notify()
+
+        c = Championship(self.server_id, self.char_id)
+        if c.find_way_id_by_staff_id(staff_id):
+            c.send_formation_notify()
 
     def equipment_change(self, staff_id, slot_id, tp):
         from core.formation import Formation
@@ -1142,7 +1157,7 @@ class StaffManger(object):
 
         in_formation_staff_ids = Formation(self.server_id, self.char_id).in_formation_staffs().keys()
         if staff.id in in_formation_staff_ids or other_staff_id in in_formation_staff_ids:
-            self.after_staff_change()
+            self.after_staff_change(staff_id)
 
             task_condition_trig_signal.send(
                 sender=None,
@@ -1179,12 +1194,11 @@ class StaffManger(object):
 
             in_formation_staff_ids = Formation(self.server_id, self.char_id).in_formation_staffs().keys()
             if staff.id in in_formation_staff_ids:
-                self.after_staff_change()
+                self.after_staff_change(staff_id)
 
             self.after_staffs_change_for_trig_signal()
 
     def step_up(self, staff_id):
-        from core.club import Club
         from core.formation import Formation
         staff = self.get_staff_object(staff_id)
         if not staff:
@@ -1193,7 +1207,7 @@ class StaffManger(object):
         staff.step_up()
         in_formation_staff_ids = Formation(self.server_id, self.char_id).in_formation_staffs().keys()
         if staff.id in in_formation_staff_ids:
-            Club(self.server_id, self.char_id, load_staffs=False).force_load_staffs(send_notify=True)
+            self.after_staff_change(staff_id, force_load_staffs=True)
         else:
             staff.calculate()
             staff.make_cache()
@@ -1213,7 +1227,7 @@ class StaffManger(object):
 
         in_formation_staff_ids = Formation(self.server_id, self.char_id).in_formation_staffs().keys()
         if _star_up and staff.id in in_formation_staff_ids:
-            self.after_staff_change()
+            self.after_staff_change(staff_id)
             self.after_staffs_change_for_trig_signal()
 
         return crit, inc_exp, cost_item_id, cost_item_amount

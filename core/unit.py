@@ -435,6 +435,8 @@ class UnitManager(object):
 
     def after_change(self, uid):
         from core.formation import Formation
+        from core.plunder import Plunder
+        from core.championship import Championship
 
         self.load_units()
         unit = self.get_unit_object(uid)
@@ -461,6 +463,15 @@ class UnitManager(object):
         if _changed:
             club = Club(self.server_id, self.char_id, load_staffs=False)
             club.force_load_staffs(send_notify=True)
+
+        _p = Plunder(self.server_id, self.char_id)
+        if _p.find_way_id_by_unit_id(uid):
+            _p.send_formation_notify()
+
+        _c = Championship(self.server_id, self.char_id)
+        if _c.find_way_id_by_unit_id(uid):
+            _c.send_formation_notify()
+
 
     def send_notify(self, ids=None):
         if not ids:

@@ -76,6 +76,13 @@ class BaseFormation(object):
 
         return False
 
+    def is_unit_in_formation(self, unit_id):
+        for _, v in self.doc['slots'].iteritems():
+            if v['unit_id'] and v['unit_id'] == unit_id:
+                return True
+
+        return False
+
     def in_formation_staffs(self):
         """
 

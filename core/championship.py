@@ -589,6 +589,13 @@ class Championship(object):
 
         return 0
 
+    def find_way_id_by_unit_id(self, unit_id):
+        for i in [1, 2, 3]:
+            if self.get_way_object(i).is_unit_in_formation(unit_id):
+                return i
+
+        return 0
+
     @check_time_limit
     @check_club_level(silence=False)
     def set_staff(self, way_id, slot_id, staff_id):
@@ -668,6 +675,7 @@ class Championship(object):
 
         MessagePipe(self.char_id).put(msg=basic_notify)
 
+    @check_club_level(silence=True)
     def send_formation_notify(self):
         notify = ChampionFormationNotify()
         for i in [1, 2, 3]:
