@@ -35,7 +35,7 @@ from core.match import ClubMatch, MatchRecord
 from core.winning import WinningChampionship
 
 from utils.message import MessagePipe, MessageFactory
-from utils.functional import make_string_id, make_time_of_today
+from utils.functional import make_string_id, make_time_of_today, get_start_time_of_today
 from utils.operation_log import OperationLog
 
 from config import (
@@ -148,6 +148,33 @@ MATCH_SERVER_REQ_HEADERS = {'NMVC_APIRequest': 'StartCombat'}
 
 AUTO_APPLY_VIP_LEVEL = GlobalConfig.value("CHAMPIONSHIP_AUTO_APPLY_VIP_LEVEL")
 APPLY_CLUB_LEVEL_LIMIT = GlobalConfig.value("CHAMPIONSHIP_APPLY_LEVEL_LIMIT")
+
+
+def find_level_match_at(lv):
+    today = get_start_time_of_today()
+    weekday = today.weekday()
+
+    days_shift = 0
+    while True:
+        if weekday in APPLY_WEEKDAY:
+            break
+
+        weekday -= 1
+        if weekday < 0:
+            weekday = 6
+
+        days_shift += 1
+        if days_shift >= 7:
+            raise RuntimeError("ChampionshipLevel find match at error!")
+
+    that_day = today.replace(days=-days_shift)
+
+    prev_lv = LEVEL_PREVIOUS_TABLE[lv]
+    hour, minute = LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE[prev_lv]
+
+    that_day = that_day.replace(hour=hour)
+    that_day = that_day.replace(minute=minute)
+    return that_day
 
 
 def make_pairs_from_flat_list(items):
@@ -1279,8 +1306,6 @@ class ChampionshipLevel(object):
             if lv == 16:
                 notify_level.match_at = 0
             else:
-                prev_lv = LEVEL_PREVIOUS_TABLE[lv]
-                hour, minute = LEVEL_MATCH_TIMES_TO_HOUR_MINUTE_TABLE[prev_lv]
-                notify_level.match_at = make_time_of_today(hour, minute).timestamp
+                notify_level.match_at = find_level_match_at(lv)
 
         return notify
