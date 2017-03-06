@@ -9,7 +9,15 @@ Description:
 from django.core.management.base import BaseCommand
 
 from apps.server.models import Server
-from apps.account.models import Account, AccountBan, AccountLoginLog, AccountRegular, AccountThird
+from apps.account.models import (
+    Account,
+    AccountBan,
+    AccountLoginLog,
+    AccountRegular,
+    AccountThird,
+    GeTuiClientID,
+)
+
 from apps.character.models import Character
 from apps.statistics.models import Statistics
 from apps.history_record.models import MailHistoryRecord
@@ -60,6 +68,7 @@ class Command(BaseCommand):
         AccountThird.objects.all().delete()
         AccountRegular.objects.all().delete()
         Account.objects.all().delete()
+        GeTuiClientID.objects.all().delete()
 
         RedisDB.get().flushall()
 
