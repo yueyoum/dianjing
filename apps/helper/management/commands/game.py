@@ -8,13 +8,16 @@ Description:
 """
 from django.core.management.base import BaseCommand
 
+from apps.server.models import Server
 from apps.account.models import Account, AccountBan, AccountLoginLog, AccountRegular, AccountThird
 from apps.character.models import Character
 from apps.statistics.models import Statistics
 from apps.history_record.models import MailHistoryRecord
 from apps.config.models import CustomerServiceInformation
-from apps.gift_code.models import GiftCode, GiftCodeGen, GiftCodeRecord, GiftCodeUsingLog
+from apps.gift_code.models import GiftCodeUsingLog
+
 from core.db import MongoDB, RedisDB
+from core.mongo import ensure_index
 
 
 class Command(BaseCommand):
@@ -62,6 +65,9 @@ class Command(BaseCommand):
 
         for mc in MongoDB.DBS.values():
             mc.client.drop_database(mc.name)
+
+        for s in Server.objects.all():
+            ensure_index(s.id)
 
     def _empty_cache(self):
         RedisDB.connect()
