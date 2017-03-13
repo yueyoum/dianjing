@@ -9,9 +9,14 @@ Description:
 
 from django.http import HttpResponse
 
+from core.db import RedisDB
 from utils import cache
 
 def flushcache(request):
     cache.flush()
 
+    return HttpResponse("Success!")
+
+def relogin(request):
+    RedisDB.get(1).flushdb()
     return HttpResponse("Success!")

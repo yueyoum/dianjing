@@ -27,6 +27,6 @@ class CharacterAdmin(admin.ModelAdmin):
 
 @admin.register(ForbidChat)
 class AdminForbidChat(admin.ModelAdmin):
-    list_display = ('id', 'char_id', 'unforbidden_at', 'create_at',  'reason')
+    list_display = ('id', 'char_id', 'create_at', 'unforbidden_at', 'reason')
 
     search_fields = ('char_id',)

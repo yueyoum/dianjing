@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^system/bulletin/$', apps.config.views.get_bulletins),
 
     url(r'^flushcache/$', views.admin.flushcache),
+    url(r'^relogin/$', views.admin.relogin),
     url(r'^callback/1sdk/$', views.purchase.callback_1sdk),
     url(r'^callback/stars_cloud/$', views.purchase.callback_stars_cloud),
 
