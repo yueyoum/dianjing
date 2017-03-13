@@ -105,7 +105,9 @@ class LoginIDMiddleware(object):
             login_id = LoginID.get(session.account_id)
             if not login_id:
                 # cache被清空，或者login_id过期
-                raise GameException(ConfigErrorMessage.get_error_id("RELOGIN"))
+                error_proto = make_response_with_error_id(request.path,
+                                                          ConfigErrorMessage.get_error_id("RELOGIN"))
+                return ProtobufResponse(error_proto)
 
             elif session.login_id != login_id:
                 error_proto = make_response_with_error_id(request.path,
