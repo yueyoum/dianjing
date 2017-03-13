@@ -18,7 +18,7 @@ from apps.account.models import (
     GeTuiClientID,
 )
 
-from apps.character.models import Character
+from apps.character.models import Character, ForbidChat
 from apps.statistics.models import Statistics
 from apps.history_record.models import MailHistoryRecord
 from apps.config.models import CustomerServiceInformation
@@ -63,6 +63,7 @@ class Command(BaseCommand):
         MailHistoryRecord.objects.all().delete()
         Statistics.objects.all().delete()
         Character.objects.all().delete()
+        ForbidChat.objects.all().delete()
         AccountBan.objects.all().delete()
         AccountLoginLog.objects.all().delete()
         AccountThird.objects.all().delete()
@@ -70,8 +71,7 @@ class Command(BaseCommand):
         Account.objects.all().delete()
         GeTuiClientID.objects.all().delete()
 
-        RedisDB.get().flushdb()
-        RedisDB.get(1).flushdb()
+        RedisDB.get().flushall()
 
         for mc in MongoDB.DBS.values():
             mc.client.drop_database(mc.name)

@@ -2,7 +2,7 @@
 
 from django.contrib import admin
 
-from apps.character.models import Character
+from apps.character.models import Character, ForbidChat
 
 
 @admin.register(Character)
@@ -23,3 +23,10 @@ class CharacterAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+@admin.register(ForbidChat)
+class AdminForbidChat(admin.ModelAdmin):
+    list_display = ('id', 'char_id', 'unforbidden_at', 'create_at',  'reason')
+
+    search_fields = ('char_id',)

@@ -17,6 +17,7 @@ from django.db.models import Q, F
 from apps.gift_code.models import GiftCode, GiftCodeGen, GiftCodeRecord, GiftCodeUsingLog
 
 from dianjing.exception import GameException
+from core.db import RedisDB
 from core.mongo import MongoCharacter
 from core.common import CommonPublicChat, CommonUnionChat
 from core.signals import chat_signal
@@ -37,12 +38,36 @@ from protomsg.common_pb2 import ACT_UPDATE, ACT_INIT
 CHAT_MAX_SIZE = 2000
 
 
+def make_forbidden_key(char_id):
+    return 'chat_forbidden:{0}'.format(char_id)
+
+
 class Chat(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
 
+    def set_forbidden(self, expire_at):
+        key = make_forbidden_key(self.char_id)
+
+        expire = expire_at - arrow.utcnow().timestamp
+        if expire <= 0:
+            return
+
+        RedisDB.get(2).setex(key, 1, expire)
+
+    def remove_forbidden(self):
+        key = make_forbidden_key(self.char_id)
+        RedisDB.get(2).delete(key)
+
+    def check_forbidden(self):
+        key = make_forbidden_key(self.char_id)
+        if RedisDB.get(2).get(key):
+            raise GameException(ConfigErrorMessage.get_error_id("CHAT_FORBIDDEN"))
+
     def send(self, tp, channel, text):
+        self.check_forbidden()
+
         if tp != ChatSendRequest.NORMAL:
             if not settings.GM_CMD_OPEN:
                 raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))

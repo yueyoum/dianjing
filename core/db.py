@@ -19,6 +19,7 @@ class RedisDB(object):
     # 分开的原因是 可以单独清空某个db
     # db 0: 默认db，常规使用
     # db 1: login id
+    # db 2: chat forbidden
 
     @classmethod
     def connect(cls):
@@ -29,6 +30,7 @@ class RedisDB(object):
         cls.DBS[0].ping()
 
         cls.DBS[1] = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=1)
+        cls.DBS[2] = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=2)
 
     @classmethod
     def get(cls, db=0):
