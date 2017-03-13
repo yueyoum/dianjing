@@ -48,7 +48,7 @@ def server_save(instance, created, **kwargs):
 
 @receiver(post_save, sender=ForbidChat, dispatch_uid='ForbidChat.post_save')
 def chat_forbidden_change(instance, **kwargs):
-    expire_at = arrow.get(instance.unforbidden_at).to(settings.TIME_ZONE).replace(seconds=-1)
+    expire_at = arrow.get(instance.unforbidden_at).to(settings.TIME_ZONE).replace(seconds=-1).timestamp
 
     char_id = instance.char_id
     server_id = Character.objects.get(id=char_id).server_id

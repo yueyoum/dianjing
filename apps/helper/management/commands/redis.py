@@ -33,7 +33,7 @@ class Command(BaseCommand):
     def _sync_from_db(self):
         now = arrow.utcnow().format("YYYY-MM-DD HH:mm:ssZ")
         for obj in ForbidChat.objects.filter(unforbidden_at__gt=now):
-            expire_at = arrow.get(obj.unforbidden_at).to(settings.TIME_ZONE).replace(seconds=-1)
+            expire_at = arrow.get(obj.unforbidden_at).to(settings.TIME_ZONE).replace(seconds=-1).timestamp
             char_id = obj.char_id
             server_id = Character.objects.get(id=char_id).server_id
 
