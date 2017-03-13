@@ -18,6 +18,7 @@ class Server(models.Model):
     name = models.CharField(unique=True, max_length=32)
     status = models.IntegerField(choices=STATUS, default=1)
     is_new = models.BooleanField(default=False)
+    recommend = models.BooleanField(default=False, verbose_name='推荐服')
 
     open_at = models.DateTimeField(db_index=True)
 

@@ -35,6 +35,6 @@ post_delete.connect(
 )
 
 @receiver(post_save, sender=Server, dispatch_uid='Server.post_save')
-def server_save(instance, **kwargs):
-    ensure_index(instance.id)
-
+def server_save(instance, created, **kwargs):
+    if created:
+        ensure_index(instance.id)

@@ -99,6 +99,18 @@ class AccountLoginLog(models.Model):
 
         return account_ids
 
+    @classmethod
+    def get_account_recent_server_ids(cls, account_id, limit=5):
+        ids = []
+        for log in cls.objects.filter(account_id=account_id).order_by('-login_at'):
+            if log.to_server_id not in ids:
+                ids.append(log.to_server_id)
+
+            if len(ids) >= limit:
+                break
+
+        return ids
+
 class AccountBan(models.Model):
     account_id = models.IntegerField(verbose_name="帐号ID")
     ban = models.BooleanField(verbose_name="是否冻结")

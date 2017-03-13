@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='server.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0cserver.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\x9d\x01\n\x06Server\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x36\n\x06status\x18\x03 \x02(\x0e\x32&.Dianjing.protocol.Server.ServerStatus\x12\x0e\n\x06is_new\x18\x04 \x02(\x08\"1\n\x0cServerStatus\x12\n\n\x06NORMAL\x10\x01\x12\x07\n\x03HOT\x10\x02\x12\x0c\n\x08MAINTAIN\x10\x03\"\'\n\x14GetServerListRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"a\n\x15GetServerListResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12*\n\x07servers\x18\x03 \x03(\x0b\x32\x19.Dianjing.protocol.Server\"6\n\x10StartGameRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tserver_id\x18\x02 \x02(\x05\"g\n\x11StartGameResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x34\n\x04next\x18\x03 \x01(\x0e\x32\x1e.Dianjing.protocol.NextOperate:\x06OPT_OK')
+  serialized_pb=_b('\n\x0cserver.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\x9d\x01\n\x06Server\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x36\n\x06status\x18\x03 \x02(\x0e\x32&.Dianjing.protocol.Server.ServerStatus\x12\x0e\n\x06is_new\x18\x04 \x02(\x08\"1\n\x0cServerStatus\x12\n\n\x06NORMAL\x10\x01\x12\x07\n\x03HOT\x10\x02\x12\x0c\n\x08MAINTAIN\x10\x03\"\'\n\x14GetServerListRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"\x8b\x01\n\x15GetServerListResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12*\n\x07servers\x18\x03 \x03(\x0b\x32\x19.Dianjing.protocol.Server\x12\x14\n\x0crecommend_id\x18\x04 \x02(\x05\x12\x12\n\nrecent_ids\x18\x05 \x03(\x05\"6\n\x10StartGameRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tserver_id\x18\x02 \x02(\x05\"g\n\x11StartGameResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x34\n\x04next\x18\x03 \x01(\x0e\x32\x1e.Dianjing.protocol.NextOperate:\x06OPT_OK')
   ,
   dependencies=[common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -166,6 +166,20 @@ _GETSERVERLISTRESPONSE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='recommend_id', full_name='Dianjing.protocol.GetServerListResponse.recommend_id', index=3,
+      number=4, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='recent_ids', full_name='Dianjing.protocol.GetServerListResponse.recent_ids', index=4,
+      number=5, type=5, cpp_type=1, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -178,8 +192,8 @@ _GETSERVERLISTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=250,
-  serialized_end=347,
+  serialized_start=251,
+  serialized_end=390,
 )
 
 
@@ -216,8 +230,8 @@ _STARTGAMEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=349,
-  serialized_end=403,
+  serialized_start=392,
+  serialized_end=446,
 )
 
 
@@ -261,8 +275,8 @@ _STARTGAMERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=405,
-  serialized_end=508,
+  serialized_start=448,
+  serialized_end=551,
 )
 
 _SERVER.fields_by_name['status'].enum_type = _SERVER_SERVERSTATUS

@@ -6,8 +6,8 @@ from apps.character.models import Character
 @admin.register(Server)
 class ServerAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'name', 'status', 'is_new', 'open_at', 'Characters',
+        'id', 'name', 'status', 'is_new', 'recommend', 'open_at',
     )
 
-    def Characters(self, obj):
-        return Character.objects.filter(server_id=obj.id).count()
+    # def Characters(self, obj):
+    #     return Character.objects.filter(server_id=obj.id).count()
