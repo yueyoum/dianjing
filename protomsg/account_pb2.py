@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='account.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\raccount.proto\x12\x11\x44ianjing.protocol\"1\n\x0eRegularAccount\x12\r\n\x05\x65mail\x18\x01 \x02(\t\x12\x10\n\x08password\x18\x02 \x02(\t\"<\n\x0cThirdAccount\x12\x10\n\x08platform\x18\x01 \x02(\t\x12\x0b\n\x03uid\x18\x02 \x02(\t\x12\r\n\x05param\x18\x03 \x01(\t\"\x7f\n\x07\x41\x63\x63ount\x12\x10\n\x08provider\x18\x01 \x02(\t\x12\x32\n\x07regular\x18\x02 \x01(\x0b\x32!.Dianjing.protocol.RegularAccount\x12.\n\x05third\x18\x03 \x01(\x0b\x32\x1f.Dianjing.protocol.ThirdAccount\"V\n\x0fRegisterRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x32\n\x07\x61\x63\x63ount\x18\x02 \x02(\x0b\x32!.Dianjing.protocol.RegularAccount\"d\n\x10RegisterResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x32\n\x07\x61\x63\x63ount\x18\x03 \x01(\x0b\x32!.Dianjing.protocol.RegularAccount\"L\n\x0cLoginRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12+\n\x07\x61\x63\x63ount\x18\x02 \x02(\x0b\x32\x1a.Dianjing.protocol.Account\"Z\n\rLoginResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x07\x61\x63\x63ount\x18\x03 \x01(\x0b\x32\x1a.Dianjing.protocol.Account\":\n\x14GeTuiClientIdRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tclient_id\x18\x02 \x02(\t\"5\n\x15GeTuiClientIdResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
+  serialized_pb=_b('\n\raccount.proto\x12\x11\x44ianjing.protocol\"1\n\x0eRegularAccount\x12\r\n\x05\x65mail\x18\x01 \x02(\t\x12\x10\n\x08password\x18\x02 \x02(\t\"<\n\x0cThirdAccount\x12\x10\n\x08platform\x18\x01 \x02(\t\x12\x0b\n\x03uid\x18\x02 \x02(\t\x12\r\n\x05param\x18\x03 \x01(\t\"\x7f\n\x07\x41\x63\x63ount\x12\x10\n\x08provider\x18\x01 \x02(\t\x12\x32\n\x07regular\x18\x02 \x01(\x0b\x32!.Dianjing.protocol.RegularAccount\x12.\n\x05third\x18\x03 \x01(\x0b\x32\x1f.Dianjing.protocol.ThirdAccount\"h\n\x0fRegisterRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x32\n\x07\x61\x63\x63ount\x18\x02 \x02(\x0b\x32!.Dianjing.protocol.RegularAccount\x12\x10\n\x08provider\x18\x03 \x02(\t\"d\n\x10RegisterResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12\x32\n\x07\x61\x63\x63ount\x18\x03 \x01(\x0b\x32!.Dianjing.protocol.RegularAccount\"L\n\x0cLoginRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12+\n\x07\x61\x63\x63ount\x18\x02 \x02(\x0b\x32\x1a.Dianjing.protocol.Account\"Z\n\rLoginResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x07\x61\x63\x63ount\x18\x03 \x01(\x0b\x32\x1a.Dianjing.protocol.Account\":\n\x14GeTuiClientIdRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x11\n\tclient_id\x18\x02 \x02(\t\"5\n\x15GeTuiClientIdResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -175,6 +175,13 @@ _REGISTERREQUEST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='provider', full_name='Dianjing.protocol.RegisterRequest.provider', index=2,
+      number=3, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -188,7 +195,7 @@ _REGISTERREQUEST = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=278,
-  serialized_end=364,
+  serialized_end=382,
 )
 
 
@@ -232,8 +239,8 @@ _REGISTERRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=366,
-  serialized_end=466,
+  serialized_start=384,
+  serialized_end=484,
 )
 
 
@@ -270,8 +277,8 @@ _LOGINREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=468,
-  serialized_end=544,
+  serialized_start=486,
+  serialized_end=562,
 )
 
 
@@ -315,8 +322,8 @@ _LOGINRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=546,
-  serialized_end=636,
+  serialized_start=564,
+  serialized_end=654,
 )
 
 
@@ -353,8 +360,8 @@ _GETUICLIENTIDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=638,
-  serialized_end=696,
+  serialized_start=656,
+  serialized_end=714,
 )
 
 
@@ -391,8 +398,8 @@ _GETUICLIENTIDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=698,
-  serialized_end=751,
+  serialized_start=716,
+  serialized_end=769,
 )
 
 _ACCOUNT.fields_by_name['regular'].message_type = _REGULARACCOUNT

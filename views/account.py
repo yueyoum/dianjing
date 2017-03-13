@@ -26,6 +26,7 @@ def register(request):
 
     name = request._proto.account.email
     password = request._proto.account.password
+    provider = request._proto.provider
 
     account = register_func(name, password)
 
@@ -33,7 +34,7 @@ def register(request):
 
     response = RegisterResponse()
     response.ret = 0
-    response.session = GameSession.dumps(account_id=account.account.id, login_id=login_id)
+    response.session = GameSession.dumps(account_id=account.account.id, login_id=login_id, provider=provider)
     response.account.MergeFrom(request._proto.account)
 
     return ProtobufResponse(response)
