@@ -70,7 +70,8 @@ class Command(BaseCommand):
         Account.objects.all().delete()
         GeTuiClientID.objects.all().delete()
 
-        RedisDB.get().flushall()
+        RedisDB.get().flushdb()
+        RedisDB.get(1).flushdb()
 
         for mc in MongoDB.DBS.values():
             mc.client.drop_database(mc.name)

@@ -105,12 +105,14 @@ class LoginIDMiddleware(object):
             login_id = LoginID.get(session.account_id)
             if not login_id:
                 # cache被清空，或者login_id过期
-                LoginID.new(session.account_id, value=session.login_id)
+                raise GameException(ConfigErrorMessage.get_error_id("RELOGIN"))
 
             elif session.login_id != login_id:
                 error_proto = make_response_with_error_id(request.path,
                                                           ConfigErrorMessage.get_error_id("INVALID_LOGIN_ID"))
                 return ProtobufResponse(error_proto)
+
+            LoginID.update_expire(session.account_id)
 
         return self.get_response(request)
 

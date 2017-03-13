@@ -49,18 +49,27 @@ class GameSession(object):
 
 
 class LoginID(object):
-    ID_EXPIRE = 3600 * 24 * 2 # 2 days
+    ID_EXPIRE = 60 * 30 # 30 minutes
+
+    @staticmethod
+    def make_key(account_id):
+        return 'login_id:{0}'.format(account_id)
 
     @classmethod
     def new(cls, account_id, value=None):
-        key = 'login_id:{0}'.format(account_id)
+        key = LoginID.make_key(account_id)
         if not value:
             value = make_short_random_string()
 
-        RedisDB.get().setex(key, value, cls.ID_EXPIRE)
+        RedisDB.get(1).setex(key, value, cls.ID_EXPIRE)
         return value
 
     @classmethod
     def get(cls, account_id,):
-        key = 'login_id:{0}'.format(account_id)
-        return RedisDB.get().get(key)
+        key = LoginID.make_key(account_id)
+        return RedisDB.get(1).get(key)
+
+    @classmethod
+    def update_expire(cls, account_id):
+        key = LoginID.make_key(account_id)
+        RedisDB.get(1).expire(key, cls.ID_EXPIRE)

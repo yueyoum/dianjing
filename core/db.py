@@ -13,28 +13,34 @@ from django.conf import settings
 
 
 class RedisDB(object):
-    DB = None
+    DBS = {}
+    """:type: dict[int, redis.Redis]"""
+
+    # 分开的原因是 可以单独清空某个db
+    # db 0: 默认db，常规使用
+    # db 1: login id
 
     @classmethod
     def connect(cls):
-        if cls.DB:
+        if cls.DBS:
             return
 
-        pool = redis.ConnectionPool(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
-        cls.DB = redis.Redis(connection_pool=pool)
-        cls.DB.ping()
+        cls.DBS[0] = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
+        cls.DBS[0].ping()
+
+        cls.DBS[1] = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=1)
 
     @classmethod
-    def get(cls):
+    def get(cls, db=0):
         """
 
         :rtype : redis.Redis
         """
 
-        if not cls.DB:
+        if not cls.DBS:
             cls.connect()
 
-        return cls.DB
+        return cls.DBS[db]
 
 
 class MongoDB(object):
