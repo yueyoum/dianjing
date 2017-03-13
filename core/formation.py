@@ -226,14 +226,14 @@ class BaseFormation(object):
         )
 
     def sync_slots(self, slots_data):
-        positions = [0] * 30
+        positions = [0] * 9
         updater = {}
 
         for slot_id, index, policy in slots_data:
             if str(slot_id) not in self.doc['slots']:
                 raise GameException(ConfigErrorMessage.get_error_id("FORMATION_SLOT_NOT_OPEN"))
 
-            if index < 0 or index > 29:
+            if index < 0 or index > 8:
                 raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
             if policy not in [1, 2]:

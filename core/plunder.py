@@ -77,7 +77,6 @@ from protomsg.plunder_pb2 import (
 from protomsg.formation_pb2 import FORMATION_SLOT_EMPTY, FORMATION_SLOT_USE
 from protomsg.common_pb2 import SPECIAL_EQUIPMENT_GENERATE_NORMAL, SPECIAL_EQUIPMENT_GENERATE_ADVANCE
 
-PLUNDER_ACTIVE_CHALLENGE_ID = 65
 REVENGE_MAX_TIMES = 3
 PLUNDER_TIMES_INIT_TIMES = 3
 PLUNDER_TIMES_RECOVER_LIMIT = 6
@@ -402,7 +401,8 @@ class Plunder(object):
         self.server_id = server_id
         self.char_id = char_id
 
-        self.is_active = Challenge(server_id, char_id).is_challenge_id_passed(PLUNDER_ACTIVE_CHALLENGE_ID)
+        self.is_active = Challenge(server_id, char_id).is_challenge_id_passed(
+            GlobalConfig.value("PLUNDER_ACTIVE_CHALLENGE_ID"))
 
         self.doc = MongoPlunder.db(self.server_id).find_one({'_id': self.char_id})
         if not self.doc:
