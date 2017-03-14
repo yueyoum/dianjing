@@ -94,8 +94,9 @@ class Dungeon(object):
         if grade_conf.need_level > club_level:
             raise GameException(ConfigErrorMessage.get_error_id("DUNGEON_CLUB_LEVEL_NOT_ENOUGH"))
 
+        f = Formation(self.server_id, self.char_id)
         if formation_slots:
-            Formation(self.server_id, self.char_id).sync_slots(formation_slots)
+            f.sync_slots(formation_slots)
 
         Energy(self.server_id, self.char_id).check(ConfigDungeon.get(grade_conf.belong).cost)
 
@@ -106,7 +107,7 @@ class Dungeon(object):
 
         club_one = Club(self.server_id, self.char_id)
         club_two = ConfigNPCFormation.get(grade_conf.npc)
-        msg = ClubMatch(club_one, club_two).start()
+        msg = ClubMatch(club_one, club_two, 6, f.get_skill_sequence(), {}).start()
         msg.key = str(dungeon_id)
         msg.map_name = map_name
         return msg

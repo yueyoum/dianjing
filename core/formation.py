@@ -52,6 +52,8 @@ FORMATION_DEFAULT_POSITION = {
 class BaseFormation(object):
     __slots__ = ['server_id', 'char_id', 'doc']
     MONGO_COLLECTION = None
+    SKILL_SEQUENCE_IDS = [1, 2, 3, 4, 5, 6]
+    SKILL_SEQUENCE_INDEX_RANGE = [0, 1, 2]
 
     def __init__(self, server_id, char_id):
         self.server_id = server_id
@@ -129,6 +131,13 @@ class BaseFormation(object):
 
         return oids
 
+    def get_skill_sequence(self):
+        sequence = {}
+        for i in self.SKILL_SEQUENCE_IDS:
+            sequence[i] = self.doc.get('skill_sequence', {}).get(str(i), ["", "", ""])
+
+        return sequence
+
     def set_staff(self, slot_id, staff_id):
         from core.inspire import Inspire
 
@@ -174,6 +183,9 @@ class BaseFormation(object):
             {'_id': self.char_id},
             {'$set': updater}
         )
+
+        if old_staff_id:
+            self.skill_sequence_try_unset_staff(old_staff_id)
 
         return old_staff_id
 
@@ -266,6 +278,56 @@ class BaseFormation(object):
         self.MONGO_COLLECTION.db(self.server_id).update_one(
             {'_id': self.char_id},
             {'$set': updater}
+        )
+
+    def skill_sequence_set_staff(self, seq_id, index_id, staff_id):
+        if seq_id not in self.SKILL_SEQUENCE_IDS:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        if index_id not in self.SKILL_SEQUENCE_INDEX_RANGE:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        skill_sequence = self.doc.get('skill_sequence', {})
+        if staff_id == "":
+            # 下人
+            try:
+                skill_sequence[str(seq_id)][index_id] = ""
+            except (KeyError, IndexError):
+                raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+        else:
+            # 上人，检查是否在阵型中
+            if not self.is_staff_in_formation(staff_id):
+                raise GameException(ConfigErrorMessage.get_error_id("FORMATION_STAFF_NOT_IN"))
+
+            staffs = skill_sequence.get(str(seq_id), ["", "", ""])
+            if staff_id in staffs:
+                raise GameException(ConfigErrorMessage.get_error_id("SKILL_SEQUENCE_CAN_NOT_SAME"))
+
+            staffs[index_id] = staff_id
+            skill_sequence[str(seq_id)] = staffs
+
+        self.doc['skill_sequence'] = skill_sequence
+        self.MONGO_COLLECTION.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'skill_sequence': skill_sequence
+            }}
+        )
+
+    def skill_sequence_try_unset_staff(self, staff_id):
+        skill_sequence = self.doc.get('skill_sequence', {})
+        for k, v in skill_sequence.items():
+            if staff_id in v:
+                index = v.index(staff_id)
+                v[index] = ""
+                skill_sequence[k] = v
+
+        self.doc['skill_sequence'] = skill_sequence
+        self.MONGO_COLLECTION.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'skill_sequence': skill_sequence
+            }}
         )
 
 
@@ -383,6 +445,10 @@ class Formation(BaseFormation):
         # 所以这里暴力重新加载staffs
         club = Club(self.server_id, self.char_id, load_staffs=False)
         club.force_load_staffs(send_notify=True)
+
+    def skill_sequence_set_staff(self, seq_id, index_id, staff_id):
+        super(Formation, self).skill_sequence_set_staff(seq_id, index_id, staff_id)
+        self.send_slot_notify()
 
     def active_formation(self, fid):
         from core.challenge import Challenge
@@ -599,6 +665,12 @@ class Formation(BaseFormation):
         for _msg in slot_msgs:
             notify_slot = notify.slots.add()
             notify_slot.MergeFrom(_msg)
+
+        skill_sequence = self.get_skill_sequence()
+        for k, v in skill_sequence.iteritems():
+            notify_skill_sequence = notify.skill_sequence.add()
+            notify_skill_sequence.id = str(k)
+            notify_skill_sequence.staff_id.extend(v)
 
         MessagePipe(self.char_id).put(msg=notify)
 

@@ -86,6 +86,7 @@ PLUNDER_MAX_LOST = 75
 class PlunderFormation(BaseFormation):
     __slots__ = ['way_id', 'formation_staffs']
     MONGO_COLLECTION = None
+    SKILL_SEQUENCE_IDS = [1, 2, 3]
 
     def __init__(self, server_id, char_id, way_id):
         super(PlunderFormation, self).__init__(server_id, char_id)
@@ -142,6 +143,7 @@ class PlunderFormation(BaseFormation):
             {'$set': updater}
         )
 
+        self.skill_sequence_try_unset_staff(staff_id)
         return True
 
     def set_staff(self, slot_id, staff_id):
@@ -240,6 +242,12 @@ class PlunderFormation(BaseFormation):
                 msg_slot.policy = v.get('policy', 1)
             else:
                 msg_slot.status = FORMATION_SLOT_EMPTY
+
+        skill_sequence = self.get_skill_sequence()
+        for k, v in skill_sequence.iteritems():
+            notify_skill_sequence = msg.skill_sequence.add()
+            notify_skill_sequence.id = str(k)
+            notify_skill_sequence.staff_id.extend(v)
 
         return msg
 
@@ -568,6 +576,13 @@ class Plunder(object):
         w.set_unit(slot_id, unit_id)
         self.send_formation_notify()
 
+    @check_plunder_active(silence=False)
+    @check_plunder_in_process
+    def skill_sequence_set_staff(self, way_id, seq_id, index, staff_id):
+        w = self.get_way_object(way_id)
+        w.skill_sequence_set_staff(seq_id, index, staff_id)
+        self.send_formation_notify()
+
     def get_search_cd(self):
         return PlunderSearchCD(self.server_id, self.char_id).get_cd_seconds()
 
@@ -788,7 +803,7 @@ class Plunder(object):
         my_club = Club(self.server_id, self.char_id, load_staffs=False)
         my_club.formation_staffs = my_way.formation_staffs
 
-        match = ClubMatch(my_club, None)
+        match = ClubMatch(my_club, None, 3, my_way.get_skill_sequence(), {})
         msg = match.start(auto_load_staffs=False)
         msg.key = str(way)
         msg.map_name = GlobalConfig.value_string("MATCH_MAP_PLUNDER")
@@ -1054,7 +1069,14 @@ class Plunder(object):
             for way in [1, 2, 3]:
                 notify_target_troop = notify_target.troop.add()
                 club = target_plunder.make_way_club(way)
-                notify_target_troop.MergeFrom(ClubMatch.make_club_troop_msg(club))
+
+                if isinstance(target_plunder, Plunder):
+                    skill_sequence = target_plunder.get_way_object(way).get_skill_sequence()
+                else:
+                    skill_sequence = {}
+
+                _club_match = ClubMatch(None, None, 3, None, None)
+                notify_target_troop.MergeFrom(_club_match.make_club_troop_msg(club, skill_sequence))
         MessagePipe(self.char_id).put(msg=notify)
 
     @check_plunder_active(silence=True)
@@ -1132,9 +1154,12 @@ class Plunder(object):
             for way_id in [1, 2, 3]:
                 way_object = target_plunder.get_way_object(way_id)
                 club.formation_staffs = way_object.formation_staffs
+                skill_sequence = way_object.get_skill_sequence()
+
+                _club_match = ClubMatch(None, None, 3, None, None)
 
                 notify_target_troop = notify_target.troop.add()
-                notify_target_troop.MergeFrom(ClubMatch.make_club_troop_msg(club))
+                notify_target_troop.MergeFrom(_club_match.make_club_troop_msg(club, skill_sequence))
 
         MessagePipe(self.char_id).put(msg=notify)
 

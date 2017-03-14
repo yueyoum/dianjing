@@ -26,9 +26,9 @@ from protomsg.match_pb2 import (
 
 class ClubMatch(object):
     # 俱乐部比赛
-    __slot__ = ['club_one', 'club_two']
+    __slots__ = ['club_one', 'club_two', 'skill_sequence_amount', 'skill_sequence_one', 'skill_sequence_two', 'seed']
 
-    def __init__(self, club_one, club_two):
+    def __init__(self, club_one, club_two, skill_sequence_amount, skill_sequence_one, skill_sequence_two):
         """
 
         :type club_one: core.abstract.AbstractClub | None
@@ -36,13 +36,16 @@ class ClubMatch(object):
         """
         self.club_one = club_one
         self.club_two = club_two
+        self.skill_sequence_amount = skill_sequence_amount
+        self.skill_sequence_one = skill_sequence_one
+        self.skill_sequence_two = skill_sequence_two
         self.seed = random.randint(1, 10000)
 
-    @classmethod
-    def make_club_troop_msg(cls, club_obj):
+    def make_club_troop_msg(self, club_obj, skill_sequence):
         """
 
         :type club_obj: core.abstract.AbstractClub
+        :type skill_sequence: dict[int, list]
         """
         from core.club import Club
         from core.bag import Bag, Equipment
@@ -112,6 +115,11 @@ class ClubMatch(object):
                     equip = Equipment.load_from_slot_data(slot_data)
                     msg_troop.special_equipment_skills.extend(equip.get_active_skills_ids())
 
+        for i in range(1, self.skill_sequence_amount+1):
+            notify_skill_sequence = msg.skill_sequence.add()
+            notify_skill_sequence.id = str(i)
+            notify_skill_sequence.staff_id.extend(skill_sequence.get(str(i), ["", "", ""]))
+
         return msg
 
     def start(self, auto_load_staffs=True, check_empty=True):
@@ -141,9 +149,9 @@ class ClubMatch(object):
         msg.key = ""
 
         if self.club_one:
-            msg.club_one.MergeFrom(self.make_club_troop_msg(self.club_one))
+            msg.club_one.MergeFrom(self.make_club_troop_msg(self.club_one, self.skill_sequence_one))
         if self.club_two:
-            msg.club_two.MergeFrom(self.make_club_troop_msg(self.club_two))
+            msg.club_two.MergeFrom(self.make_club_troop_msg(self.club_two, self.skill_sequence_two))
 
         return msg
 

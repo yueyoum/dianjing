@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='formation.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0f\x66ormation.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"\xb0\x01\n\rFormationSlot\x12\x0f\n\x07slot_id\x18\x01 \x02(\x05\x12\x36\n\x06status\x18\x02 \x02(\x0e\x32&.Dianjing.protocol.FormationSlotStatus\x12\x10\n\x08position\x18\x03 \x01(\x05\x12\x10\n\x08staff_id\x18\x04 \x01(\t\x12\x0f\n\x07unit_id\x18\x05 \x01(\x05\x12\x11\n\tstaff_oid\x18\x06 \x01(\x05\x12\x0e\n\x06policy\x18\x07 \x01(\x05\"\x7f\n\x13\x46ormationSlotNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12/\n\x05slots\x18\x03 \x03(\x0b\x32 .Dianjing.protocol.FormationSlot\"\xcc\x01\n\x0f\x46ormationNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12?\n\tformation\x18\x03 \x03(\x0b\x32,.Dianjing.protocol.FormationNotify.Formation\x12\x17\n\x0fusing_formation\x18\x04 \x02(\x05\x1a&\n\tFormation\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\"N\n\x18\x46ormationSetStaffRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x10\n\x08staff_id\x18\x03 \x02(\t\"9\n\x19\x46ormationSetStaffResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"L\n\x17\x46ormationSetUnitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x0f\n\x07unit_id\x18\x03 \x02(\x05\"8\n\x18\x46ormationSetUnitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\">\n\x11SyncFormationSlot\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05index\x18\x02 \x02(\x05\x12\x0e\n\x06policy\x18\x03 \x02(\x05\"5\n\x16\x46ormationActiveRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"7\n\x17\x46ormationActiveResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"6\n\x17\x46ormationLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"8\n\x18\x46ormationLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"2\n\x13\x46ormationUseRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"4\n\x14\x46ormationUseResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*d\n\x13\x46ormationSlotStatus\x12\x1b\n\x17\x46ORMATION_SLOT_NOT_OPEN\x10\x00\x12\x18\n\x14\x46ORMATION_SLOT_EMPTY\x10\x01\x12\x16\n\x12\x46ORMATION_SLOT_USE\x10\x02')
+  serialized_pb=_b('\n\x0f\x66ormation.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\"-\n\rSkillSequence\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x10\n\x08staff_id\x18\x02 \x03(\t\"`\n\x1cSkillSequenceSetStaffRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0e\n\x06seq_id\x18\x02 \x02(\x05\x12\r\n\x05index\x18\x03 \x02(\x05\x12\x10\n\x08staff_id\x18\x04 \x02(\t\"=\n\x1dSkillSequenceSetStaffResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\xb0\x01\n\rFormationSlot\x12\x0f\n\x07slot_id\x18\x01 \x02(\x05\x12\x36\n\x06status\x18\x02 \x02(\x0e\x32&.Dianjing.protocol.FormationSlotStatus\x12\x10\n\x08position\x18\x03 \x01(\x05\x12\x10\n\x08staff_id\x18\x04 \x01(\t\x12\x0f\n\x07unit_id\x18\x05 \x01(\x05\x12\x11\n\tstaff_oid\x18\x06 \x01(\x05\x12\x0e\n\x06policy\x18\x07 \x01(\x05\"\xb9\x01\n\x13\x46ormationSlotNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12/\n\x05slots\x18\x03 \x03(\x0b\x32 .Dianjing.protocol.FormationSlot\x12\x38\n\x0eskill_sequence\x18\x04 \x03(\x0b\x32 .Dianjing.protocol.SkillSequence\"\xcc\x01\n\x0f\x46ormationNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12?\n\tformation\x18\x03 \x03(\x0b\x32,.Dianjing.protocol.FormationNotify.Formation\x12\x17\n\x0fusing_formation\x18\x04 \x02(\x05\x1a&\n\tFormation\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x02 \x02(\x05\"N\n\x18\x46ormationSetStaffRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x10\n\x08staff_id\x18\x03 \x02(\t\"9\n\x19\x46ormationSetStaffResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"L\n\x17\x46ormationSetUnitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07slot_id\x18\x02 \x02(\x05\x12\x0f\n\x07unit_id\x18\x03 \x02(\x05\"8\n\x18\x46ormationSetUnitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\">\n\x11SyncFormationSlot\x12\n\n\x02id\x18\x01 \x02(\x05\x12\r\n\x05index\x18\x02 \x02(\x05\x12\x0e\n\x06policy\x18\x03 \x02(\x05\"5\n\x16\x46ormationActiveRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"7\n\x17\x46ormationActiveResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"6\n\x17\x46ormationLevelUpRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"8\n\x18\x46ormationLevelUpResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"2\n\x13\x46ormationUseRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"4\n\x14\x46ormationUseResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*d\n\x13\x46ormationSlotStatus\x12\x1b\n\x17\x46ORMATION_SLOT_NOT_OPEN\x10\x00\x12\x18\n\x14\x46ORMATION_SLOT_EMPTY\x10\x01\x12\x16\n\x12\x46ORMATION_SLOT_USE\x10\x02')
   ,
   dependencies=[common__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -47,8 +47,8 @@ _FORMATIONSLOTSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1238,
-  serialized_end=1338,
+  serialized_start=1505,
+  serialized_end=1605,
 )
 _sym_db.RegisterEnumDescriptor(_FORMATIONSLOTSTATUS)
 
@@ -57,6 +57,134 @@ FORMATION_SLOT_NOT_OPEN = 0
 FORMATION_SLOT_EMPTY = 1
 FORMATION_SLOT_USE = 2
 
+
+
+_SKILLSEQUENCE = _descriptor.Descriptor(
+  name='SkillSequence',
+  full_name='Dianjing.protocol.SkillSequence',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='Dianjing.protocol.SkillSequence.id', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='staff_id', full_name='Dianjing.protocol.SkillSequence.staff_id', index=1,
+      number=2, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=52,
+  serialized_end=97,
+)
+
+
+_SKILLSEQUENCESETSTAFFREQUEST = _descriptor.Descriptor(
+  name='SkillSequenceSetStaffRequest',
+  full_name='Dianjing.protocol.SkillSequenceSetStaffRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.SkillSequenceSetStaffRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='seq_id', full_name='Dianjing.protocol.SkillSequenceSetStaffRequest.seq_id', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='index', full_name='Dianjing.protocol.SkillSequenceSetStaffRequest.index', index=2,
+      number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='staff_id', full_name='Dianjing.protocol.SkillSequenceSetStaffRequest.staff_id', index=3,
+      number=4, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=99,
+  serialized_end=195,
+)
+
+
+_SKILLSEQUENCESETSTAFFRESPONSE = _descriptor.Descriptor(
+  name='SkillSequenceSetStaffResponse',
+  full_name='Dianjing.protocol.SkillSequenceSetStaffResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.SkillSequenceSetStaffResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.SkillSequenceSetStaffResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=197,
+  serialized_end=258,
+)
 
 
 _FORMATIONSLOT = _descriptor.Descriptor(
@@ -127,8 +255,8 @@ _FORMATIONSLOT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=53,
-  serialized_end=229,
+  serialized_start=261,
+  serialized_end=437,
 )
 
 
@@ -160,6 +288,13 @@ _FORMATIONSLOTNOTIFY = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='skill_sequence', full_name='Dianjing.protocol.FormationSlotNotify.skill_sequence', index=3,
+      number=4, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -172,8 +307,8 @@ _FORMATIONSLOTNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=231,
-  serialized_end=358,
+  serialized_start=440,
+  serialized_end=625,
 )
 
 
@@ -210,8 +345,8 @@ _FORMATIONNOTIFY_FORMATION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=527,
-  serialized_end=565,
+  serialized_start=794,
+  serialized_end=832,
 )
 
 _FORMATIONNOTIFY = _descriptor.Descriptor(
@@ -261,8 +396,8 @@ _FORMATIONNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=361,
-  serialized_end=565,
+  serialized_start=628,
+  serialized_end=832,
 )
 
 
@@ -306,8 +441,8 @@ _FORMATIONSETSTAFFREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=567,
-  serialized_end=645,
+  serialized_start=834,
+  serialized_end=912,
 )
 
 
@@ -344,8 +479,8 @@ _FORMATIONSETSTAFFRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=647,
-  serialized_end=704,
+  serialized_start=914,
+  serialized_end=971,
 )
 
 
@@ -389,8 +524,8 @@ _FORMATIONSETUNITREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=706,
-  serialized_end=782,
+  serialized_start=973,
+  serialized_end=1049,
 )
 
 
@@ -427,8 +562,8 @@ _FORMATIONSETUNITRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=784,
-  serialized_end=840,
+  serialized_start=1051,
+  serialized_end=1107,
 )
 
 
@@ -472,8 +607,8 @@ _SYNCFORMATIONSLOT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=842,
-  serialized_end=904,
+  serialized_start=1109,
+  serialized_end=1171,
 )
 
 
@@ -510,8 +645,8 @@ _FORMATIONACTIVEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=906,
-  serialized_end=959,
+  serialized_start=1173,
+  serialized_end=1226,
 )
 
 
@@ -548,8 +683,8 @@ _FORMATIONACTIVERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=961,
-  serialized_end=1016,
+  serialized_start=1228,
+  serialized_end=1283,
 )
 
 
@@ -586,8 +721,8 @@ _FORMATIONLEVELUPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1018,
-  serialized_end=1072,
+  serialized_start=1285,
+  serialized_end=1339,
 )
 
 
@@ -624,8 +759,8 @@ _FORMATIONLEVELUPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1074,
-  serialized_end=1130,
+  serialized_start=1341,
+  serialized_end=1397,
 )
 
 
@@ -662,8 +797,8 @@ _FORMATIONUSEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1132,
-  serialized_end=1182,
+  serialized_start=1399,
+  serialized_end=1449,
 )
 
 
@@ -700,16 +835,20 @@ _FORMATIONUSERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1184,
-  serialized_end=1236,
+  serialized_start=1451,
+  serialized_end=1503,
 )
 
 _FORMATIONSLOT.fields_by_name['status'].enum_type = _FORMATIONSLOTSTATUS
 _FORMATIONSLOTNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _FORMATIONSLOTNOTIFY.fields_by_name['slots'].message_type = _FORMATIONSLOT
+_FORMATIONSLOTNOTIFY.fields_by_name['skill_sequence'].message_type = _SKILLSEQUENCE
 _FORMATIONNOTIFY_FORMATION.containing_type = _FORMATIONNOTIFY
 _FORMATIONNOTIFY.fields_by_name['act'].enum_type = common__pb2._ACTION
 _FORMATIONNOTIFY.fields_by_name['formation'].message_type = _FORMATIONNOTIFY_FORMATION
+DESCRIPTOR.message_types_by_name['SkillSequence'] = _SKILLSEQUENCE
+DESCRIPTOR.message_types_by_name['SkillSequenceSetStaffRequest'] = _SKILLSEQUENCESETSTAFFREQUEST
+DESCRIPTOR.message_types_by_name['SkillSequenceSetStaffResponse'] = _SKILLSEQUENCESETSTAFFRESPONSE
 DESCRIPTOR.message_types_by_name['FormationSlot'] = _FORMATIONSLOT
 DESCRIPTOR.message_types_by_name['FormationSlotNotify'] = _FORMATIONSLOTNOTIFY
 DESCRIPTOR.message_types_by_name['FormationNotify'] = _FORMATIONNOTIFY
@@ -725,6 +864,27 @@ DESCRIPTOR.message_types_by_name['FormationLevelUpResponse'] = _FORMATIONLEVELUP
 DESCRIPTOR.message_types_by_name['FormationUseRequest'] = _FORMATIONUSEREQUEST
 DESCRIPTOR.message_types_by_name['FormationUseResponse'] = _FORMATIONUSERESPONSE
 DESCRIPTOR.enum_types_by_name['FormationSlotStatus'] = _FORMATIONSLOTSTATUS
+
+SkillSequence = _reflection.GeneratedProtocolMessageType('SkillSequence', (_message.Message,), dict(
+  DESCRIPTOR = _SKILLSEQUENCE,
+  __module__ = 'formation_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.SkillSequence)
+  ))
+_sym_db.RegisterMessage(SkillSequence)
+
+SkillSequenceSetStaffRequest = _reflection.GeneratedProtocolMessageType('SkillSequenceSetStaffRequest', (_message.Message,), dict(
+  DESCRIPTOR = _SKILLSEQUENCESETSTAFFREQUEST,
+  __module__ = 'formation_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.SkillSequenceSetStaffRequest)
+  ))
+_sym_db.RegisterMessage(SkillSequenceSetStaffRequest)
+
+SkillSequenceSetStaffResponse = _reflection.GeneratedProtocolMessageType('SkillSequenceSetStaffResponse', (_message.Message,), dict(
+  DESCRIPTOR = _SKILLSEQUENCESETSTAFFRESPONSE,
+  __module__ = 'formation_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.SkillSequenceSetStaffResponse)
+  ))
+_sym_db.RegisterMessage(SkillSequenceSetStaffResponse)
 
 FormationSlot = _reflection.GeneratedProtocolMessageType('FormationSlot', (_message.Message,), dict(
   DESCRIPTOR = _FORMATIONSLOT,

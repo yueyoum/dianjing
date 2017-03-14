@@ -569,14 +569,15 @@ class Arena(object):
         if not rival_id:
             raise GameException(ConfigErrorMessage.get_error_id("ARENA_MATCH_NO_RIVAL"))
 
+        f = Formation(self.server_id, self.char_id)
         if formation_slots:
-            Formation(self.server_id, self.char_id).sync_slots(formation_slots)
+            f.sync_slots(formation_slots)
 
         self.check_and_buy_times()
 
         club_one = Club(self.server_id, self.char_id)
         club_two = ArenaClub(self.server_id, rival_id)
-        club_match = ClubMatch(club_one, club_two)
+        club_match = ClubMatch(club_one, club_two, 6, f.get_skill_sequence(), {})
         msg = club_match.start()
         msg.key = rival_id
         msg.map_name = GlobalConfig.value_string("MATCH_MAP_ARENA")

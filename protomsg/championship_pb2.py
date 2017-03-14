@@ -23,7 +23,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='championship.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x12\x63hampionship.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rplunder.proto\x1a\x0f\x66ormation.proto\"b\n\x17\x43hampionFormationNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x36\n\tformation\x18\x02 \x03(\x0b\x32#.Dianjing.protocol.PlunderFormation\"c\n ChampionFormationSetStaffRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03way\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\x12\x10\n\x08staff_id\x18\x04 \x02(\t\"A\n!ChampionFormationSetStaffResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"a\n\x1f\x43hampionFormationSetUnitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03way\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\x12\x0f\n\x07unit_id\x18\x04 \x02(\x05\"@\n ChampionFormationSetUnitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"x\n#ChampionFormationSetPositionRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03way\x18\x02 \x02(\x05\x12\x33\n\x05slots\x18\x03 \x03(\x0b\x32$.Dianjing.protocol.SyncFormationSlot\"D\n$ChampionFormationSetPositionResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"S\n\x0c\x43hampionClub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\x12\x0c\n\x04rank\x18\x04 \x01(\x05\x12\r\n\x05score\x18\x05 \x01(\x05\"\xf3\x01\n\x0e\x43hampionNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x61pplied\x18\x02 \x02(\x08\x12\x32\n\x03\x62\x65t\x18\x03 \x03(\x0b\x32%.Dianjing.protocol.ChampionNotify.Bet\x12\x32\n\ttop_clubs\x18\x04 \x03(\x0b\x32\x1f.Dianjing.protocol.ChampionClub\x1aW\n\x03\x42\x65t\x12/\n\x05level\x18\x01 \x02(\x0e\x32 .Dianjing.protocol.ChampionLevel\x12\x0f\n\x07\x62\x65t_for\x18\x02 \x01(\t\x12\x0e\n\x06\x62\x65t_id\x18\x03 \x01(\x05\"\xee\x02\n\x13\x43hampionGroupNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12.\n\x05\x63lubs\x18\x02 \x03(\x0b\x32\x1f.Dianjing.protocol.ChampionClub\x12\x10\n\x08my_score\x18\x03 \x02(\x05\x12\x0f\n\x07my_rank\x18\x04 \x02(\x05\x12\x38\n\x04logs\x18\x05 \x03(\x0b\x32*.Dianjing.protocol.ChampionGroupNotify.Log\x12\x34\n\x0bnext_target\x18\x06 \x01(\x0b\x32\x1f.Dianjing.protocol.ChampionClub\x12\x15\n\rnext_match_at\x18\x07 \x01(\x03\x1al\n\x03Log\x12\x11\n\ttimestamp\x18\x01 \x02(\x03\x12\x13\n\x0btarget_name\x18\x02 \x02(\t\x12\x11\n\tgot_score\x18\x03 \x02(\x05\x12\x10\n\x08way_wins\x18\x04 \x03(\x05\x12\x18\n\x10match_record_ids\x18\x05 \x03(\t\"\x8d\x03\n\x13\x43hampionLevelNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12.\n\x05\x63lubs\x18\x03 \x03(\x0b\x32\x1f.Dianjing.protocol.ChampionClub\x12<\n\x06levels\x18\x04 \x03(\x0b\x32,.Dianjing.protocol.ChampionLevelNotify.Level\x1a\xce\x01\n\x05Level\x12/\n\x05level\x18\x01 \x02(\x0e\x32 .Dianjing.protocol.ChampionLevel\x12\x41\n\x05\x63lubs\x18\x02 \x03(\x0b\x32\x32.Dianjing.protocol.ChampionLevelNotify.Level._Club\x12\x10\n\x08match_at\x18\x03 \x01(\x03\x1a?\n\x05_Club\x12\n\n\x02id\x18\x01 \x02(\t\x12\x10\n\x08way_wins\x18\x02 \x03(\x05\x12\x18\n\x10match_record_ids\x18\x03 \x03(\t\"+\n\x18\x43hampionGroupSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"9\n\x19\x43hampionGroupSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"+\n\x18\x43hampionLevelSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"9\n\x19\x43hampionLevelSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\'\n\x14\x43hampionApplyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"5\n\x15\x43hampionApplyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"F\n\x12\x43hampionBetRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63lub_id\x18\x02 \x02(\t\x12\x0e\n\x06\x62\x65t_id\x18\x03 \x02(\x05\"3\n\x13\x43hampionBetResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*~\n\rChampionLevel\x12\x15\n\x11\x43HAMPION_LEVEL_16\x10\x10\x12\x14\n\x10\x43HAMPION_LEVEL_8\x10\x08\x12\x14\n\x10\x43HAMPION_LEVEL_4\x10\x04\x12\x14\n\x10\x43HAMPION_LEVEL_2\x10\x02\x12\x14\n\x10\x43HAMPION_LEVEL_1\x10\x01')
+  serialized_pb=_b('\n\x12\x63hampionship.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rplunder.proto\x1a\x0f\x66ormation.proto\"\x9c\x01\n\x17\x43hampionFormationNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x36\n\tformation\x18\x02 \x03(\x0b\x32#.Dianjing.protocol.PlunderFormation\x12\x38\n\x0eskill_sequence\x18\x03 \x03(\x0b\x32 .Dianjing.protocol.SkillSequence\"c\n ChampionFormationSetStaffRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03way\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\x12\x10\n\x08staff_id\x18\x04 \x02(\t\"A\n!ChampionFormationSetStaffResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"a\n\x1f\x43hampionFormationSetUnitRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03way\x18\x02 \x02(\x05\x12\x0f\n\x07slot_id\x18\x03 \x02(\x05\x12\x0f\n\x07unit_id\x18\x04 \x02(\x05\"@\n ChampionFormationSetUnitResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"x\n#ChampionFormationSetPositionRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03way\x18\x02 \x02(\x05\x12\x33\n\x05slots\x18\x03 \x03(\x0b\x32$.Dianjing.protocol.SyncFormationSlot\"D\n$ChampionFormationSetPositionResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"u\n$ChampionSkillSequenceSetStaffRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0b\n\x03way\x18\x02 \x02(\x05\x12\x0e\n\x06seq_id\x18\x03 \x02(\x05\x12\r\n\x05index\x18\x04 \x02(\x05\x12\x10\n\x08staff_id\x18\x05 \x02(\t\"E\n%ChampionSkillSequenceSetStaffResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"S\n\x0c\x43hampionClub\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0c\n\x04\x66lag\x18\x03 \x02(\x05\x12\x0c\n\x04rank\x18\x04 \x01(\x05\x12\r\n\x05score\x18\x05 \x01(\x05\"\xf3\x01\n\x0e\x43hampionNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x61pplied\x18\x02 \x02(\x08\x12\x32\n\x03\x62\x65t\x18\x03 \x03(\x0b\x32%.Dianjing.protocol.ChampionNotify.Bet\x12\x32\n\ttop_clubs\x18\x04 \x03(\x0b\x32\x1f.Dianjing.protocol.ChampionClub\x1aW\n\x03\x42\x65t\x12/\n\x05level\x18\x01 \x02(\x0e\x32 .Dianjing.protocol.ChampionLevel\x12\x0f\n\x07\x62\x65t_for\x18\x02 \x01(\t\x12\x0e\n\x06\x62\x65t_id\x18\x03 \x01(\x05\"\xee\x02\n\x13\x43hampionGroupNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12.\n\x05\x63lubs\x18\x02 \x03(\x0b\x32\x1f.Dianjing.protocol.ChampionClub\x12\x10\n\x08my_score\x18\x03 \x02(\x05\x12\x0f\n\x07my_rank\x18\x04 \x02(\x05\x12\x38\n\x04logs\x18\x05 \x03(\x0b\x32*.Dianjing.protocol.ChampionGroupNotify.Log\x12\x34\n\x0bnext_target\x18\x06 \x01(\x0b\x32\x1f.Dianjing.protocol.ChampionClub\x12\x15\n\rnext_match_at\x18\x07 \x01(\x03\x1al\n\x03Log\x12\x11\n\ttimestamp\x18\x01 \x02(\x03\x12\x13\n\x0btarget_name\x18\x02 \x02(\t\x12\x11\n\tgot_score\x18\x03 \x02(\x05\x12\x10\n\x08way_wins\x18\x04 \x03(\x05\x12\x18\n\x10match_record_ids\x18\x05 \x03(\t\"\x8d\x03\n\x13\x43hampionLevelNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12.\n\x05\x63lubs\x18\x03 \x03(\x0b\x32\x1f.Dianjing.protocol.ChampionClub\x12<\n\x06levels\x18\x04 \x03(\x0b\x32,.Dianjing.protocol.ChampionLevelNotify.Level\x1a\xce\x01\n\x05Level\x12/\n\x05level\x18\x01 \x02(\x0e\x32 .Dianjing.protocol.ChampionLevel\x12\x41\n\x05\x63lubs\x18\x02 \x03(\x0b\x32\x32.Dianjing.protocol.ChampionLevelNotify.Level._Club\x12\x10\n\x08match_at\x18\x03 \x01(\x03\x1a?\n\x05_Club\x12\n\n\x02id\x18\x01 \x02(\t\x12\x10\n\x08way_wins\x18\x02 \x03(\x05\x12\x18\n\x10match_record_ids\x18\x03 \x03(\t\"+\n\x18\x43hampionGroupSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"9\n\x19\x43hampionGroupSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"+\n\x18\x43hampionLevelSyncRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"9\n\x19\x43hampionLevelSyncResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"\'\n\x14\x43hampionApplyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"5\n\x15\x43hampionApplyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"F\n\x12\x43hampionBetRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0f\n\x07\x63lub_id\x18\x02 \x02(\t\x12\x0e\n\x06\x62\x65t_id\x18\x03 \x02(\x05\"3\n\x13\x43hampionBetResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c*~\n\rChampionLevel\x12\x15\n\x11\x43HAMPION_LEVEL_16\x10\x10\x12\x14\n\x10\x43HAMPION_LEVEL_8\x10\x08\x12\x14\n\x10\x43HAMPION_LEVEL_4\x10\x04\x12\x14\n\x10\x43HAMPION_LEVEL_2\x10\x02\x12\x14\n\x10\x43HAMPION_LEVEL_1\x10\x01')
   ,
   dependencies=[common__pb2.DESCRIPTOR,plunder__pb2.DESCRIPTOR,formation__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -57,8 +57,8 @@ _CHAMPIONLEVEL = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=2241,
-  serialized_end=2367,
+  serialized_start=2490,
+  serialized_end=2616,
 )
 _sym_db.RegisterEnumDescriptor(_CHAMPIONLEVEL)
 
@@ -92,6 +92,13 @@ _CHAMPIONFORMATIONNOTIFY = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='skill_sequence', full_name='Dianjing.protocol.ChampionFormationNotify.skill_sequence', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -104,8 +111,8 @@ _CHAMPIONFORMATIONNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=87,
-  serialized_end=185,
+  serialized_start=88,
+  serialized_end=244,
 )
 
 
@@ -156,8 +163,8 @@ _CHAMPIONFORMATIONSETSTAFFREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=187,
-  serialized_end=286,
+  serialized_start=246,
+  serialized_end=345,
 )
 
 
@@ -194,8 +201,8 @@ _CHAMPIONFORMATIONSETSTAFFRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=288,
-  serialized_end=353,
+  serialized_start=347,
+  serialized_end=412,
 )
 
 
@@ -246,8 +253,8 @@ _CHAMPIONFORMATIONSETUNITREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=355,
-  serialized_end=452,
+  serialized_start=414,
+  serialized_end=511,
 )
 
 
@@ -284,8 +291,8 @@ _CHAMPIONFORMATIONSETUNITRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=454,
-  serialized_end=518,
+  serialized_start=513,
+  serialized_end=577,
 )
 
 
@@ -329,8 +336,8 @@ _CHAMPIONFORMATIONSETPOSITIONREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=520,
-  serialized_end=640,
+  serialized_start=579,
+  serialized_end=699,
 )
 
 
@@ -367,8 +374,105 @@ _CHAMPIONFORMATIONSETPOSITIONRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=642,
-  serialized_end=710,
+  serialized_start=701,
+  serialized_end=769,
+)
+
+
+_CHAMPIONSKILLSEQUENCESETSTAFFREQUEST = _descriptor.Descriptor(
+  name='ChampionSkillSequenceSetStaffRequest',
+  full_name='Dianjing.protocol.ChampionSkillSequenceSetStaffRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ChampionSkillSequenceSetStaffRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='way', full_name='Dianjing.protocol.ChampionSkillSequenceSetStaffRequest.way', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='seq_id', full_name='Dianjing.protocol.ChampionSkillSequenceSetStaffRequest.seq_id', index=2,
+      number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='index', full_name='Dianjing.protocol.ChampionSkillSequenceSetStaffRequest.index', index=3,
+      number=4, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='staff_id', full_name='Dianjing.protocol.ChampionSkillSequenceSetStaffRequest.staff_id', index=4,
+      number=5, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=771,
+  serialized_end=888,
+)
+
+
+_CHAMPIONSKILLSEQUENCESETSTAFFRESPONSE = _descriptor.Descriptor(
+  name='ChampionSkillSequenceSetStaffResponse',
+  full_name='Dianjing.protocol.ChampionSkillSequenceSetStaffResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.ChampionSkillSequenceSetStaffResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ChampionSkillSequenceSetStaffResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=890,
+  serialized_end=959,
 )
 
 
@@ -426,8 +530,8 @@ _CHAMPIONCLUB = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=712,
-  serialized_end=795,
+  serialized_start=961,
+  serialized_end=1044,
 )
 
 
@@ -471,8 +575,8 @@ _CHAMPIONNOTIFY_BET = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=954,
-  serialized_end=1041,
+  serialized_start=1203,
+  serialized_end=1290,
 )
 
 _CHAMPIONNOTIFY = _descriptor.Descriptor(
@@ -522,8 +626,8 @@ _CHAMPIONNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=798,
-  serialized_end=1041,
+  serialized_start=1047,
+  serialized_end=1290,
 )
 
 
@@ -581,8 +685,8 @@ _CHAMPIONGROUPNOTIFY_LOG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1302,
-  serialized_end=1410,
+  serialized_start=1551,
+  serialized_end=1659,
 )
 
 _CHAMPIONGROUPNOTIFY = _descriptor.Descriptor(
@@ -653,8 +757,8 @@ _CHAMPIONGROUPNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1044,
-  serialized_end=1410,
+  serialized_start=1293,
+  serialized_end=1659,
 )
 
 
@@ -698,8 +802,8 @@ _CHAMPIONLEVELNOTIFY_LEVEL__CLUB = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1747,
-  serialized_end=1810,
+  serialized_start=1996,
+  serialized_end=2059,
 )
 
 _CHAMPIONLEVELNOTIFY_LEVEL = _descriptor.Descriptor(
@@ -742,8 +846,8 @@ _CHAMPIONLEVELNOTIFY_LEVEL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1604,
-  serialized_end=1810,
+  serialized_start=1853,
+  serialized_end=2059,
 )
 
 _CHAMPIONLEVELNOTIFY = _descriptor.Descriptor(
@@ -793,8 +897,8 @@ _CHAMPIONLEVELNOTIFY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1413,
-  serialized_end=1810,
+  serialized_start=1662,
+  serialized_end=2059,
 )
 
 
@@ -824,8 +928,8 @@ _CHAMPIONGROUPSYNCREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1812,
-  serialized_end=1855,
+  serialized_start=2061,
+  serialized_end=2104,
 )
 
 
@@ -862,8 +966,8 @@ _CHAMPIONGROUPSYNCRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1857,
-  serialized_end=1914,
+  serialized_start=2106,
+  serialized_end=2163,
 )
 
 
@@ -893,8 +997,8 @@ _CHAMPIONLEVELSYNCREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1916,
-  serialized_end=1959,
+  serialized_start=2165,
+  serialized_end=2208,
 )
 
 
@@ -931,8 +1035,8 @@ _CHAMPIONLEVELSYNCRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1961,
-  serialized_end=2018,
+  serialized_start=2210,
+  serialized_end=2267,
 )
 
 
@@ -962,8 +1066,8 @@ _CHAMPIONAPPLYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2020,
-  serialized_end=2059,
+  serialized_start=2269,
+  serialized_end=2308,
 )
 
 
@@ -1000,8 +1104,8 @@ _CHAMPIONAPPLYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2061,
-  serialized_end=2114,
+  serialized_start=2310,
+  serialized_end=2363,
 )
 
 
@@ -1045,8 +1149,8 @@ _CHAMPIONBETREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2116,
-  serialized_end=2186,
+  serialized_start=2365,
+  serialized_end=2435,
 )
 
 
@@ -1083,11 +1187,12 @@ _CHAMPIONBETRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2188,
-  serialized_end=2239,
+  serialized_start=2437,
+  serialized_end=2488,
 )
 
 _CHAMPIONFORMATIONNOTIFY.fields_by_name['formation'].message_type = plunder__pb2._PLUNDERFORMATION
+_CHAMPIONFORMATIONNOTIFY.fields_by_name['skill_sequence'].message_type = formation__pb2._SKILLSEQUENCE
 _CHAMPIONFORMATIONSETPOSITIONREQUEST.fields_by_name['slots'].message_type = formation__pb2._SYNCFORMATIONSLOT
 _CHAMPIONNOTIFY_BET.fields_by_name['level'].enum_type = _CHAMPIONLEVEL
 _CHAMPIONNOTIFY_BET.containing_type = _CHAMPIONNOTIFY
@@ -1111,6 +1216,8 @@ DESCRIPTOR.message_types_by_name['ChampionFormationSetUnitRequest'] = _CHAMPIONF
 DESCRIPTOR.message_types_by_name['ChampionFormationSetUnitResponse'] = _CHAMPIONFORMATIONSETUNITRESPONSE
 DESCRIPTOR.message_types_by_name['ChampionFormationSetPositionRequest'] = _CHAMPIONFORMATIONSETPOSITIONREQUEST
 DESCRIPTOR.message_types_by_name['ChampionFormationSetPositionResponse'] = _CHAMPIONFORMATIONSETPOSITIONRESPONSE
+DESCRIPTOR.message_types_by_name['ChampionSkillSequenceSetStaffRequest'] = _CHAMPIONSKILLSEQUENCESETSTAFFREQUEST
+DESCRIPTOR.message_types_by_name['ChampionSkillSequenceSetStaffResponse'] = _CHAMPIONSKILLSEQUENCESETSTAFFRESPONSE
 DESCRIPTOR.message_types_by_name['ChampionClub'] = _CHAMPIONCLUB
 DESCRIPTOR.message_types_by_name['ChampionNotify'] = _CHAMPIONNOTIFY
 DESCRIPTOR.message_types_by_name['ChampionGroupNotify'] = _CHAMPIONGROUPNOTIFY
@@ -1173,6 +1280,20 @@ ChampionFormationSetPositionResponse = _reflection.GeneratedProtocolMessageType(
   # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChampionFormationSetPositionResponse)
   ))
 _sym_db.RegisterMessage(ChampionFormationSetPositionResponse)
+
+ChampionSkillSequenceSetStaffRequest = _reflection.GeneratedProtocolMessageType('ChampionSkillSequenceSetStaffRequest', (_message.Message,), dict(
+  DESCRIPTOR = _CHAMPIONSKILLSEQUENCESETSTAFFREQUEST,
+  __module__ = 'championship_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChampionSkillSequenceSetStaffRequest)
+  ))
+_sym_db.RegisterMessage(ChampionSkillSequenceSetStaffRequest)
+
+ChampionSkillSequenceSetStaffResponse = _reflection.GeneratedProtocolMessageType('ChampionSkillSequenceSetStaffResponse', (_message.Message,), dict(
+  DESCRIPTOR = _CHAMPIONSKILLSEQUENCESETSTAFFRESPONSE,
+  __module__ = 'championship_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ChampionSkillSequenceSetStaffResponse)
+  ))
+_sym_db.RegisterMessage(ChampionSkillSequenceSetStaffResponse)
 
 ChampionClub = _reflection.GeneratedProtocolMessageType('ChampionClub', (_message.Message,), dict(
   DESCRIPTOR = _CHAMPIONCLUB,

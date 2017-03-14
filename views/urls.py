@@ -60,6 +60,7 @@ urlpatterns = [
     url(r'^formation/active/$', views.formation.active),
     url(r'^formation/levelup/$', views.formation.level_up),
     url(r'^formation/use/$', views.formation.use),
+    url(r'^formation/skillsequence/setstaff/$', views.formation.skill_sequence_set_staff),
 
     url(r'^staff/recruit/$', views.staff.recruit),
 
@@ -191,6 +192,8 @@ urlpatterns = [
     url(r'^plunder/specialequip/speedup/$', views.plunder.special_equipment_speedup),
     url(r'^plunder/specialequip/get/$', views.plunder.special_equipment_get),
 
+    url(r'^plunder/skillsequence/setstaff/$', views.plunder.skill_sequence_set_staff),
+
     url(r'^inspire/setstaff/$', views.inspire.set_staff),
 
     url(r'^champion/formation/setstaff/$', views.championship.set_staff),
@@ -200,6 +203,8 @@ urlpatterns = [
     url(r'^champion/bet/$', views.championship.bet),
     url(r'^champion/group/sync/$', views.championship.sync_group),
     url(r'^champion/level/sync/$', views.championship.sync_level),
+
+    url(r'^champion/skillsequence/setstaff/$', views.championship.skill_sequence_set_staff),
 
     url(r'^leaderboard/worship/$', views.leaderboard.worship),
     url(r'^leaderboard/arena/chat/$', views.leaderboard.arena_chat),

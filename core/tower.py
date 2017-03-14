@@ -188,8 +188,9 @@ class Tower(object):
         if not level:
             raise GameException(ConfigErrorMessage.get_error_id("TOWER_ALREADY_ALL_PASSED"))
 
+        f = Formation(self.server_id, self.char_id)
         if formation_slots:
-            Formation(self.server_id, self.char_id).sync_slots(formation_slots)
+            f.sync_slots(formation_slots)
 
         config = ConfigTowerLevel.get(level)
 
@@ -210,7 +211,7 @@ class Tower(object):
         club_two.add_tower_temporary_talent_effects()
         club_two.make_temporary_staff_calculate()
 
-        club_match = ClubMatch(club_one, club_two)
+        club_match = ClubMatch(club_one, club_two, 6, f.get_skill_sequence(), {})
         msg = club_match.start()
         msg.key = str(level)
         msg.map_name = config.map_name

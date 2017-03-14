@@ -248,14 +248,15 @@ class Challenge(object):
         if not rt.remained_match_times:
             raise GameException(ConfigErrorMessage.get_error_id("CHALLENGE_WITHOUT_TIMES"))
 
+        f = Formation(self.server_id, self.char_id)
         if formation_slots:
-            Formation(self.server_id, self.char_id).sync_slots(formation_slots)
+            f.sync_slots(formation_slots)
 
         Energy(self.server_id, self.char_id).check(config.energy)
 
         club_one = Club(self.server_id, self.char_id)
         club_two = ChallengeNPCClub(challenge_id)
-        match = ClubMatch(club_one, club_two)
+        match = ClubMatch(club_one, club_two, 6, f.get_skill_sequence(), {})
         msg = match.start()
         msg.key = str(challenge_id)
         msg.map_name = config.map_name

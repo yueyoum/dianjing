@@ -14,15 +14,16 @@ _sym_db = _symbol_database.Default()
 
 
 import club_pb2 as club__pb2
+import formation_pb2 as formation__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='match.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0bmatch.proto\x12\x11\x44ianjing.protocol\x1a\nclub.proto\"\x98\x01\n\tClubMatch\x12.\n\x08\x63lub_one\x18\x01 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubTroop\x12.\n\x08\x63lub_two\x18\x02 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubTroop\x12\x0c\n\x04seed\x18\x03 \x02(\x05\x12\x0b\n\x03key\x18\x04 \x02(\t\x12\x10\n\x08map_name\x18\x05 \x02(\t\"<\n\x0f\x43lubMatchResult\x12\x0b\n\x03key\x18\x01 \x02(\t\x12\x0c\n\x04star\x18\x02 \x02(\x05\x12\x0e\n\x06record\x18\x03 \x02(\x0c\"[\n\tClubTroop\x12%\n\x04\x63lub\x18\x01 \x02(\x0b\x32\x17.Dianjing.protocol.Club\x12\'\n\x05troop\x18\x02 \x03(\x0b\x32\x18.Dianjing.protocol.Troop\"\xd5\x07\n\x05Troop\x12+\n\x04hero\x18\x01 \x02(\x0b\x32\x1d.Dianjing.protocol.Troop.Hero\x12+\n\x04\x61rmy\x18\x02 \x02(\x0b\x32\x1d.Dianjing.protocol.Troop.Army\x12\x0e\n\x06policy\x18\x03 \x02(\x05\x12 \n\x18special_equipment_skills\x18\x04 \x03(\x05\x1a\xe3\x01\n\x04Hero\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0b\n\x03oid\x18\x02 \x02(\x05\x12\x10\n\x08position\x18\x03 \x02(\x05\x12\x0e\n\x06\x61ttack\x18\x04 \x02(\x05\x12\x15\n\rattackPercent\x18\x05 \x02(\x02\x12\x0f\n\x07\x64\x65\x66\x65nse\x18\x06 \x02(\x05\x12\x16\n\x0e\x64\x65\x66\x65nsePercent\x18\x07 \x02(\x02\x12\x0e\n\x06manage\x18\x08 \x02(\x05\x12\x15\n\rmanagePercent\x18\t \x02(\x02\x12\x11\n\toperation\x18\n \x02(\x05\x12\x18\n\x10operationPercent\x18\x0b \x02(\x02\x12\x0c\n\x04star\x18\x0c \x02(\x05\x1a\xd9\x04\n\x04\x41rmy\x12\n\n\x02id\x18\x01 \x02(\x05\x12\n\n\x02hp\x18\x02 \x02(\x05\x12\x11\n\thpPercent\x18\x03 \x02(\x02\x12\x0e\n\x06\x61ttack\x18\x04 \x02(\x05\x12\x15\n\rattackPercent\x18\x05 \x02(\x02\x12\x0f\n\x07\x64\x65\x66\x65nse\x18\x06 \x02(\x05\x12\x16\n\x0e\x64\x65\x66\x65nsePercent\x18\x07 \x02(\x02\x12\x13\n\x0b\x61ttackSpeed\x18\x08 \x02(\x02\x12\x1a\n\x12\x61ttackSpeedPercent\x18\t \x02(\x02\x12\x16\n\x0e\x61ttackDistance\x18\n \x02(\x02\x12\x1d\n\x15\x61ttackDistancePercent\x18\x0b \x02(\x02\x12\x11\n\tmoveSpeed\x18\x0c \x02(\x02\x12\x18\n\x10moveSpeedPercent\x18\r \x02(\x02\x12\x0f\n\x07hitRate\x18\x0e \x02(\x02\x12\x11\n\tdodgeRate\x18\x0f \x02(\x02\x12\x10\n\x08\x63ritRate\x18\x10 \x02(\x02\x12\x11\n\tcritMulti\x18\x11 \x02(\x02\x12\x14\n\x0c\x63ritAntiRate\x18\x12 \x02(\x02\x12\x1a\n\x12\x61ppendAttackTerran\x18\x13 \x02(\x02\x12\x1b\n\x13\x61ppendAttackProtoss\x18\x14 \x02(\x02\x12\x18\n\x10\x61ppendAttackZerg\x18\x15 \x02(\x02\x12\x1e\n\x16\x61ppendAttackedByTerran\x18\x16 \x02(\x02\x12\x1f\n\x17\x61ppendAttackedByProtoss\x18\x17 \x02(\x02\x12\x1c\n\x14\x61ppendAttackedByZerg\x18\x18 \x02(\x02\x12\x17\n\x0f\x66inalHurtAppend\x18\x19 \x02(\x05\x12\x17\n\x0f\x66inalHurtReduce\x18\x1a \x02(\x05\"Y\n\x1a\x43lubMatchServerSideRequest\x12+\n\x05match\x18\x01 \x02(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\x12\x0e\n\x06record\x18\x02 \x01(\x0c\";\n\x1b\x43lubMatchServerSideResponse\x12\x0c\n\x04star\x18\x01 \x02(\x05\x12\x0e\n\x06record\x18\x02 \x02(\x0c\"6\n\x13\x43lubMatchLogRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0e\n\x06log_id\x18\x02 \x02(\t\"q\n\x14\x43lubMatchLogResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\x12\x0e\n\x06record\x18\x04 \x01(\x0c')
+  serialized_pb=_b('\n\x0bmatch.proto\x12\x11\x44ianjing.protocol\x1a\nclub.proto\x1a\x0f\x66ormation.proto\"\x98\x01\n\tClubMatch\x12.\n\x08\x63lub_one\x18\x01 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubTroop\x12.\n\x08\x63lub_two\x18\x02 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubTroop\x12\x0c\n\x04seed\x18\x03 \x02(\x05\x12\x0b\n\x03key\x18\x04 \x02(\t\x12\x10\n\x08map_name\x18\x05 \x02(\t\"<\n\x0f\x43lubMatchResult\x12\x0b\n\x03key\x18\x01 \x02(\t\x12\x0c\n\x04star\x18\x02 \x02(\x05\x12\x0e\n\x06record\x18\x03 \x02(\x0c\"\x8f\x01\n\tClubTroop\x12%\n\x04\x63lub\x18\x01 \x02(\x0b\x32\x17.Dianjing.protocol.Club\x12\'\n\x05troop\x18\x02 \x03(\x0b\x32\x18.Dianjing.protocol.Troop\x12\x32\n\x08sequence\x18\x03 \x03(\x0b\x32 .Dianjing.protocol.SkillSequence\"\xd5\x07\n\x05Troop\x12+\n\x04hero\x18\x01 \x02(\x0b\x32\x1d.Dianjing.protocol.Troop.Hero\x12+\n\x04\x61rmy\x18\x02 \x02(\x0b\x32\x1d.Dianjing.protocol.Troop.Army\x12\x0e\n\x06policy\x18\x03 \x02(\x05\x12 \n\x18special_equipment_skills\x18\x04 \x03(\x05\x1a\xe3\x01\n\x04Hero\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0b\n\x03oid\x18\x02 \x02(\x05\x12\x10\n\x08position\x18\x03 \x02(\x05\x12\x0e\n\x06\x61ttack\x18\x04 \x02(\x05\x12\x15\n\rattackPercent\x18\x05 \x02(\x02\x12\x0f\n\x07\x64\x65\x66\x65nse\x18\x06 \x02(\x05\x12\x16\n\x0e\x64\x65\x66\x65nsePercent\x18\x07 \x02(\x02\x12\x0e\n\x06manage\x18\x08 \x02(\x05\x12\x15\n\rmanagePercent\x18\t \x02(\x02\x12\x11\n\toperation\x18\n \x02(\x05\x12\x18\n\x10operationPercent\x18\x0b \x02(\x02\x12\x0c\n\x04star\x18\x0c \x02(\x05\x1a\xd9\x04\n\x04\x41rmy\x12\n\n\x02id\x18\x01 \x02(\x05\x12\n\n\x02hp\x18\x02 \x02(\x05\x12\x11\n\thpPercent\x18\x03 \x02(\x02\x12\x0e\n\x06\x61ttack\x18\x04 \x02(\x05\x12\x15\n\rattackPercent\x18\x05 \x02(\x02\x12\x0f\n\x07\x64\x65\x66\x65nse\x18\x06 \x02(\x05\x12\x16\n\x0e\x64\x65\x66\x65nsePercent\x18\x07 \x02(\x02\x12\x13\n\x0b\x61ttackSpeed\x18\x08 \x02(\x02\x12\x1a\n\x12\x61ttackSpeedPercent\x18\t \x02(\x02\x12\x16\n\x0e\x61ttackDistance\x18\n \x02(\x02\x12\x1d\n\x15\x61ttackDistancePercent\x18\x0b \x02(\x02\x12\x11\n\tmoveSpeed\x18\x0c \x02(\x02\x12\x18\n\x10moveSpeedPercent\x18\r \x02(\x02\x12\x0f\n\x07hitRate\x18\x0e \x02(\x02\x12\x11\n\tdodgeRate\x18\x0f \x02(\x02\x12\x10\n\x08\x63ritRate\x18\x10 \x02(\x02\x12\x11\n\tcritMulti\x18\x11 \x02(\x02\x12\x14\n\x0c\x63ritAntiRate\x18\x12 \x02(\x02\x12\x1a\n\x12\x61ppendAttackTerran\x18\x13 \x02(\x02\x12\x1b\n\x13\x61ppendAttackProtoss\x18\x14 \x02(\x02\x12\x18\n\x10\x61ppendAttackZerg\x18\x15 \x02(\x02\x12\x1e\n\x16\x61ppendAttackedByTerran\x18\x16 \x02(\x02\x12\x1f\n\x17\x61ppendAttackedByProtoss\x18\x17 \x02(\x02\x12\x1c\n\x14\x61ppendAttackedByZerg\x18\x18 \x02(\x02\x12\x17\n\x0f\x66inalHurtAppend\x18\x19 \x02(\x05\x12\x17\n\x0f\x66inalHurtReduce\x18\x1a \x02(\x05\"Y\n\x1a\x43lubMatchServerSideRequest\x12+\n\x05match\x18\x01 \x02(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\x12\x0e\n\x06record\x18\x02 \x01(\x0c\";\n\x1b\x43lubMatchServerSideResponse\x12\x0c\n\x04star\x18\x01 \x02(\x05\x12\x0e\n\x06record\x18\x02 \x02(\x0c\"6\n\x13\x43lubMatchLogRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\x0e\n\x06log_id\x18\x02 \x02(\t\"q\n\x14\x43lubMatchLogResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12+\n\x05match\x18\x03 \x01(\x0b\x32\x1c.Dianjing.protocol.ClubMatch\x12\x0e\n\x06record\x18\x04 \x01(\x0c')
   ,
-  dependencies=[club__pb2.DESCRIPTOR,])
+  dependencies=[club__pb2.DESCRIPTOR,formation__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
@@ -82,8 +83,8 @@ _CLUBMATCH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=47,
-  serialized_end=199,
+  serialized_start=64,
+  serialized_end=216,
 )
 
 
@@ -127,8 +128,8 @@ _CLUBMATCHRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=201,
-  serialized_end=261,
+  serialized_start=218,
+  serialized_end=278,
 )
 
 
@@ -153,6 +154,13 @@ _CLUBTROOP = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='sequence', full_name='Dianjing.protocol.ClubTroop.sequence', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -165,8 +173,8 @@ _CLUBTROOP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=263,
-  serialized_end=354,
+  serialized_start=281,
+  serialized_end=424,
 )
 
 
@@ -273,8 +281,8 @@ _TROOP_HERO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=507,
-  serialized_end=734,
+  serialized_start=577,
+  serialized_end=804,
 )
 
 _TROOP_ARMY = _descriptor.Descriptor(
@@ -478,8 +486,8 @@ _TROOP_ARMY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=737,
-  serialized_end=1338,
+  serialized_start=807,
+  serialized_end=1408,
 )
 
 _TROOP = _descriptor.Descriptor(
@@ -529,8 +537,8 @@ _TROOP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=357,
-  serialized_end=1338,
+  serialized_start=427,
+  serialized_end=1408,
 )
 
 
@@ -567,8 +575,8 @@ _CLUBMATCHSERVERSIDEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1340,
-  serialized_end=1429,
+  serialized_start=1410,
+  serialized_end=1499,
 )
 
 
@@ -605,8 +613,8 @@ _CLUBMATCHSERVERSIDERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1431,
-  serialized_end=1490,
+  serialized_start=1501,
+  serialized_end=1560,
 )
 
 
@@ -643,8 +651,8 @@ _CLUBMATCHLOGREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1492,
-  serialized_end=1546,
+  serialized_start=1562,
+  serialized_end=1616,
 )
 
 
@@ -695,14 +703,15 @@ _CLUBMATCHLOGRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1548,
-  serialized_end=1661,
+  serialized_start=1618,
+  serialized_end=1731,
 )
 
 _CLUBMATCH.fields_by_name['club_one'].message_type = _CLUBTROOP
 _CLUBMATCH.fields_by_name['club_two'].message_type = _CLUBTROOP
 _CLUBTROOP.fields_by_name['club'].message_type = club__pb2._CLUB
 _CLUBTROOP.fields_by_name['troop'].message_type = _TROOP
+_CLUBTROOP.fields_by_name['sequence'].message_type = formation__pb2._SKILLSEQUENCE
 _TROOP_HERO.containing_type = _TROOP
 _TROOP_ARMY.containing_type = _TROOP
 _TROOP.fields_by_name['hero'].message_type = _TROOP_HERO

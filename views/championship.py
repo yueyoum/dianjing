@@ -20,6 +20,7 @@ from protomsg.championship_pb2 import (
     ChampionFormationSetUnitResponse,
     ChampionGroupSyncResponse,
     ChampionLevelSyncResponse,
+    ChampionSkillSequenceSetStaffResponse,
 )
 
 
@@ -114,5 +115,20 @@ def sync_level(request):
     c.sync_level()
 
     response = ChampionLevelSyncResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+def skill_sequence_set_staff(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    way = request._proto.way
+    seq_id = request._proto.seq_id
+    index = request._proto.index
+    staff_id = request._proto.staff_id
+
+    Championship(server_id, char_id).skill_sequence_set_staff(way, seq_id, index, staff_id)
+
+    response = ChampionSkillSequenceSetStaffResponse()
     response.ret = 0
     return ProtobufResponse(response)

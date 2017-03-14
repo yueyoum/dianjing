@@ -153,6 +153,10 @@ class MongoFormation(BaseDocument):
         # 新加 选择阵型，升级
         'levels': {},
         'using': 0,
+
+        # 技能序列 key 是 seq_id, value 是一个list 保存staff_id
+        # 这个惰性设置就行，如果某个seq_id不在这个里面，肯定就是这个序列没有设置
+        'skill_sequence': {}
     }
 
     DOCUMENT_SLOT = {
@@ -802,6 +806,7 @@ class MongoPlunderFormationWay1(BaseDocument):
         'slots': {},
         # slot_id 序列， 0 表示这个位置（index）的 slot 没有开启
         'position': [],
+        'skill_sequence': {},
     }
 
     DOCUMENT_SLOT = {
@@ -920,6 +925,7 @@ class MongoChampionshipFormationWay1(BaseDocument):
         'slots': {},
         # slot_id 序列， 0 表示这个位置（index）的 slot 没有开启
         'position': [],
+        'skill_sequence': {},
     }
 
     DOCUMENT_SLOT = {

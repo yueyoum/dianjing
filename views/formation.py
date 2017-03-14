@@ -17,6 +17,7 @@ from protomsg.formation_pb2 import (
     FormationActiveResponse,
     FormationLevelUpResponse,
     FormationUseResponse,
+    SkillSequenceSetStaffResponse,
 )
 
 def set_staff(request):
@@ -82,5 +83,19 @@ def use(request):
     Formation(server_id, char_id).use_formation(fid)
 
     response = FormationUseResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+def skill_sequence_set_staff(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    seq_id = request._proto.seq_id
+    index = request._proto.index
+    staff_id = request._proto.staff_id
+
+    Formation(server_id, char_id).skill_sequence_set_staff(seq_id, index, staff_id)
+
+    response = SkillSequenceSetStaffResponse()
     response.ret = 0
     return ProtobufResponse(response)

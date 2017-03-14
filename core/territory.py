@@ -1000,7 +1000,8 @@ class TerritoryFriend(object):
         npc_club = ConfigNPCFormation.get(config.npc)
         my_club = Club(self.server_id, self.char_id)
 
-        match = ClubMatch(my_club, npc_club)
+        f = Formation(self.server_id, self.char_id)
+        match = ClubMatch(my_club, npc_club, 6, f.get_skill_sequence(), {})
         msg = match.start()
         msg.key = "{0}:{1}:{2}".format(friend_id, building_id, event_id)
         msg.map_name = GlobalConfig.value_string("MATCH_MAP_TERRITORY_FRIEND")
@@ -1015,14 +1016,15 @@ class TerritoryFriend(object):
         except:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 
+        f = Formation(self.server_id, self.char_id)
         if formation_slots:
-            Formation(self.server_id, self.char_id).sync_slots(formation_slots)
+            f.sync_slots(formation_slots)
 
         config = ConfigTerritoryEvent.get(event_id)
         npc_club = ConfigNPCFormation.get(config.npc)
         my_club = Club(self.server_id, self.char_id)
 
-        match = ClubMatch(my_club, npc_club)
+        match = ClubMatch(my_club, npc_club, 6, f.get_skill_sequence(), {})
         msg = match.start()
         msg.key = "{0}:{1}:{2}".format(friend_id, building_id, event_id)
         msg.map_name = GlobalConfig.value_string("MATCH_MAP_TERRITORY_FRIEND")

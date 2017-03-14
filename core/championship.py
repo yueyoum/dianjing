@@ -384,6 +384,7 @@ class Match(object):
         :rtype: list[core.abstract.AbstractClub]
         """
         clubs = []
+        skill_sequences = []
 
         if is_npc(_id):
             for i in range(1, 4):
@@ -394,6 +395,7 @@ class Match(object):
                 club.flag = _info['flag']
 
                 clubs.append(club)
+                skill_sequences.append({})
         else:
             cs = Championship(self.server_id, int(_id))
             for i in range(1, 4):
@@ -402,12 +404,13 @@ class Match(object):
                 club.formation_staffs = way.formation_staffs
 
                 clubs.append(club)
+                skill_sequences.append(way.get_skill_sequence())
 
-        return clubs
+        return clubs, skill_sequences
 
     def start(self):
-        def one_way_match(_club_one, _club_two):
-            _match = ClubMatch(_club_one, _club_two)
+        def one_way_match(_club_one, _club_two, _skill_sequence_one, _skill_sequence_two):
+            _match = ClubMatch(_club_one, _club_two, 3, _skill_sequence_one, _skill_sequence_two)
             _msg = _match.start(auto_load_staffs=False, check_empty=False)
             _msg.key = ""
             _msg.map_name = GlobalConfig.value_string("MATCH_MAP_CHAMPIONSHIP")
@@ -432,8 +435,8 @@ class Match(object):
         host, port = random.choice(settings.MATCH_SERVERS)
         match_server_url = 'http://{0}:{1}/'.format(host, port)
 
-        one_clubs = self.make_3_way_clubs(self.id_one, self.info_one)
-        two_clubs = self.make_3_way_clubs(self.id_two, self.info_two)
+        one_clubs, one_skill_sequences = self.make_3_way_clubs(self.id_one, self.info_one)
+        two_clubs, two_skill_sequences = self.make_3_way_clubs(self.id_two, self.info_two)
 
         # [one_wins, record_ids]
         one_wins = []
@@ -442,7 +445,11 @@ class Match(object):
             club_one = one_clubs[i]
             club_two = two_clubs[i]
 
-            win, club_match, record = one_way_match(one_clubs[i], two_clubs[i])
+            win, club_match, record = one_way_match(
+                one_clubs[i], two_clubs[i],
+                one_skill_sequences[i], two_skill_sequences[i]
+            )
+
             one_wins.append(win)
 
             info_sets.append((club_one.id, club_two.id, club_match, record))
@@ -631,6 +638,13 @@ class Championship(object):
     def set_position(self, way_id, formation_slots):
         my_way = self.get_way_object(way_id)
         my_way.sync_slots(formation_slots)
+        self.send_formation_notify()
+
+    @check_time_limit
+    @check_club_level(silence=False)
+    def skill_sequence_set_staff(self, way_id, seq_id, index, staff_id):
+        w = self.get_way_object(way_id)
+        w.skill_sequence_set_staff(seq_id, index, staff_id)
         self.send_formation_notify()
 
     @check_club_level(silence=False)

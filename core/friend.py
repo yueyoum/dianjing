@@ -13,6 +13,7 @@ from dianjing.exception import GameException
 from core.mongo import MongoFriend, MongoCharacter
 from core.club import Club
 from core.match import ClubMatch
+from core.formation import Formation
 from core.signals import friend_match_signal, friend_ok_signal
 
 from utils.message import MessagePipe
@@ -43,6 +44,7 @@ FRIEND_STATUS_TABLE = {
 }
 
 MAX_FRIEND_AMOUNT = 50
+
 
 class FriendManager(object):
     def __init__(self, server_id, char_id):
@@ -132,7 +134,10 @@ class FriendManager(object):
         club_one = Club(self.server_id, self.char_id)
         club_two = Club(self.server_id, friend_id)
 
-        match = ClubMatch(club_one, club_two)
+        f_one = Formation(self.server_id, self.char_id)
+        f_two = Formation(self.server_id, self.char_id)
+
+        match = ClubMatch(club_one, club_two, 6, f_one.get_skill_sequence(), f_two.get_skill_sequence())
         msg = match.start()
         msg.key = ""
         msg.map_name = GlobalConfig.value_string("MATCH_MAP_FRIEND")

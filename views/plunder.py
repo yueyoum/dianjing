@@ -29,6 +29,8 @@ from protomsg.plunder_pb2 import (
     SpecialEquipmentGenerateResponse,
     SpecialEquipmentGenerateSpeedUpResponse,
     SpecialEquipmentGetResponse,
+
+    PlunderSkillSequenceSetStaffResponse,
 )
 
 def set_staff(request):
@@ -227,4 +229,20 @@ def special_equipment_get(request):
     response = SpecialEquipmentGetResponse()
     response.ret = 0
     response.equipment.MergeFrom(equip.make_protomsg())
+    return ProtobufResponse(response)
+
+
+def skill_sequence_set_staff(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    way = request._proto.way
+    seq_id = request._proto.seq_id
+    index = request._proto.index
+    staff_id = request._proto.staff_id
+
+    Plunder(server_id, char_id).skill_sequence_set_staff(way, seq_id, index, staff_id)
+
+    response = PlunderSkillSequenceSetStaffResponse()
+    response.ret = 0
     return ProtobufResponse(response)
