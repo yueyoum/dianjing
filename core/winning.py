@@ -194,13 +194,13 @@ class Worship(object):
 
         self.can_worship = ValueLogWorshipTimes(self.server_id, self.char_id).count_of_today() == 0
         if self.can_worship:
-            self.can_worship = WinningArena(self.server_id, self.char_id).get() is not None
+            self.can_worship = bool(WinningArena(self.server_id, self.char_id).get())
 
         if self.can_worship:
-            self.can_worship = WinningPlunder(self.server_id, self.char_id).get() is not None
+            self.can_worship = bool(WinningPlunder(self.server_id, self.char_id).get())
 
         if self.can_worship:
-            self.can_worship = WinningChampionship(self.server_id, self.char_id).get() is not None
+            self.can_worship = bool(WinningChampionship(self.server_id, self.char_id).get())
 
     def worship(self):
         if not self.can_worship:
