@@ -73,3 +73,8 @@ class LoginID(object):
     def update_expire(cls, account_id):
         key = LoginID.make_key(account_id)
         RedisDB.get(1).expire(key, cls.ID_EXPIRE)
+
+    @classmethod
+    def delete(cls, account_id):
+        key = LoginID.make_key(account_id)
+        RedisDB.get(1).delete(key)

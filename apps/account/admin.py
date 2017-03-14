@@ -8,6 +8,14 @@ from apps.account.models import (
     GeTuiClientID,
 )
 
+from utils.session import LoginID
+
+def make_account_relogin(modeladmin, request, queryset):
+    for q in queryset:
+        LoginID.delete(q.id)
+make_account_relogin.short_description = u"强制重登陆"
+
+
 @admin.register(AccountRegular)
 class AdminAccountRegular(admin.ModelAdmin):
     list_display = (
@@ -24,6 +32,8 @@ class AccountAdmin(admin.ModelAdmin):
     readonly_fields = (
         'tp', 'register_at', 'last_login', 'login_times',
     )
+
+    actions = [make_account_relogin,]
 
     def Name(self, obj):
         if obj.tp == 'regular':

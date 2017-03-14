@@ -3,7 +3,12 @@
 from django.contrib import admin
 
 from apps.character.models import Character, ForbidChat
+from utils.session import LoginID
 
+def make_char_relogin(modeladmin, request, queryset):
+    for q in queryset:
+        LoginID.delete(q.account_id)
+make_char_relogin.short_description = u"强制重登陆"
 
 @admin.register(Character)
 class CharacterAdmin(admin.ModelAdmin):
@@ -17,6 +22,7 @@ class CharacterAdmin(admin.ModelAdmin):
     )
 
     search_fields = ['name', ]
+    actions = [make_char_relogin,]
 
     def has_add_permission(self, request):
         return False
