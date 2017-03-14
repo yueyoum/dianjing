@@ -13,6 +13,8 @@ from django.http import HttpResponse
 
 from dianjing.exception import GameException
 
+from apps.config.models import Config
+
 from core.db import RedisDB, MongoDB
 from utils.http import ProtobufResponse
 from utils.session import GameSession, LoginID
@@ -31,6 +33,29 @@ class LazyMiddleware(object):
     def __call__(self, request):
         RedisDB.connect()
         MongoDB.connect()
+
+        return self.get_response(request)
+
+
+class VersionMiddleware(object):
+    def __init__(self, get_response):
+        self.get_response = get_response
+        self.version = None
+
+    def __call__(self, request):
+        if not request.path.startswith('/game/'):
+            return self.get_response(request)
+
+        if not self.version:
+            self.version = Config.get_config().version
+
+        client_version = request.META.get("HTTP_X_VERSION", "")
+        if client_version != self.version:
+            print "==== VERSION_NOT_MATCH ===="
+            print "SERVER VERSION: {0}, CLIENT VERSION: {1}".format(self.version, client_version)
+            error_proto = make_response_with_error_id(request.path,
+                                                      ConfigErrorMessage.get_error_id("VERSION_NOT_MATCH"))
+            return ProtobufResponse(error_proto)
 
         return self.get_response(request)
 
@@ -105,11 +130,13 @@ class LoginIDMiddleware(object):
             login_id = LoginID.get(session.account_id)
             if not login_id:
                 # cache被清空，或者login_id过期
+                print "==== RELOGIN ===="
                 error_proto = make_response_with_error_id(request.path,
                                                           ConfigErrorMessage.get_error_id("RELOGIN"))
                 return ProtobufResponse(error_proto)
 
             elif session.login_id != login_id:
+                print "==== INVALID_LOGIN_ID ===="
                 error_proto = make_response_with_error_id(request.path,
                                                           ConfigErrorMessage.get_error_id("INVALID_LOGIN_ID"))
                 return ProtobufResponse(error_proto)

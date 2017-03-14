@@ -65,6 +65,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'dianjing.middleware.LazyMiddleware',
+    'dianjing.middleware.VersionMiddleware',
     'dianjing.middleware.RequestMiddleware',
     'dianjing.middleware.LoginIDMiddleware',
     'dianjing.middleware.ResponseMiddleware',
