@@ -1291,7 +1291,7 @@ class ChampionshipLevel(object):
                 winning_notify_club_formation = winning_notify_club.formation.add()
                 winning_notify_club_formation.MergeFrom(make_plunder_formation_msg(__clubs[__way_id - 1], __way_id))
 
-        WinningChampionship.set_to_common(self.server_id, winning_notify)
+        WinningChampionship(self.server_id, None).set_to_common(winning_notify)
 
     def make_protomsg(self, level=None):
         if level:

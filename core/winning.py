@@ -68,8 +68,11 @@ class _Winning(object):
             }}
         )
 
+    def get(self):
+        return self.COMMON(self.server_id).get()
+
     def send_notify(self):
-        value = self.COMMON(self.server_id).get()
+        value = self.get()
 
         notify = self.NOTIFY()
         if value:
@@ -95,8 +98,8 @@ class WinningArena(_Winning):
         notify = cls.NOTIFY()
         notify.session = ""
 
-        docs = cls.MONGO_DOCUMENT.db(sid).find({}).sort('winning', -1).limit(10)
-        if not docs:
+        docs = cls.MONGO_DOCUMENT.db(sid).find({'winning': {'$gt': 0}}).sort('winning', -1).limit(10)
+        if docs.count() == 0:
             data = notify.SerializeToString()
             value = None
         else:
@@ -136,8 +139,8 @@ class WinningPlunder(_Winning):
         notify = cls.NOTIFY()
         notify.session = ""
 
-        docs = cls.MONGO_DOCUMENT.db(sid).find({}).sort('winning', -1).limit(3)
-        if not docs:
+        docs = cls.MONGO_DOCUMENT.db(sid).find({'winning': {'$gt': 0}}).sort('winning', -1).limit(3)
+        if docs.count() == 0:
             data = notify.SerializeToString()
             value = None
         else:
@@ -174,13 +177,12 @@ class WinningChampionship(_Winning):
     def set(self, win):
         raise RuntimeError("should be here")
 
-    @classmethod
-    def set_to_common(cls, sid, msg):
+    def set_to_common(self, msg):
         data = msg.SerializeToString()
         value = base64.b64encode(data)
-        cls.COMMON(sid).set(value)
+        self.COMMON(self.server_id).set(value)
 
-        for _cid in OperationLog.get_recent_action_char_ids(sid, recent_minutes=5):
+        for _cid in OperationLog.get_recent_action_char_ids(self.server_id, recent_minutes=5):
             MessagePipe(_cid).put(data=data)
 
 
@@ -189,7 +191,16 @@ class Worship(object):
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
+
         self.can_worship = ValueLogWorshipTimes(self.server_id, self.char_id).count_of_today() == 0
+        if self.can_worship:
+            self.can_worship = WinningArena(self.server_id, self.char_id).get() is not None
+
+        if self.can_worship:
+            self.can_worship = WinningPlunder(self.server_id, self.char_id).get() is not None
+
+        if self.can_worship:
+            self.can_worship = WinningChampionship(self.server_id, self.char_id).get() is not None
 
     def worship(self):
         if not self.can_worship:
