@@ -246,7 +246,7 @@ class PlunderFormation(BaseFormation):
         skill_sequence = self.get_skill_sequence()
         for k, v in skill_sequence.iteritems():
             notify_skill_sequence = msg.skill_sequence.add()
-            notify_skill_sequence.id = str(k)
+            notify_skill_sequence.id = k
             notify_skill_sequence.staff_id.extend(v)
 
         return msg

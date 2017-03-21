@@ -76,17 +76,28 @@ def verify_1sdk(platform, uid, param):
 
 
 def verify_stars_cloud(platform, uid, param):
-    ixToken, ixTime, ixSign = json.loads(param)
     AppId = settings.THIRD_PROVIDER['stars-cloud']['appid']
     pmSecret = settings.THIRD_PROVIDER['stars-cloud']['pmsecret']
 
-    text = "{0}{1}{2}{3}{4}{5}".format(
-        AppId, platform, uid, ixToken, ixTime, pmSecret
-    )
+    if platform == 'uc':
+        try:
+            ixToken, ixTime, ixSign = json.loads(param)
+        except ValueError:
+            raise GameException(ConfigErrorMessage.get_error_id("ACCOUNT_LOGIN_FAILURE"))
 
-    result = hashlib.md5(text).hexdigest()
-    if result != ixSign:
-        raise GameException(ConfigErrorMessage.get_error_id("ACCOUNT_LOGIN_FAILURE"))
+        text = "{0}{1}{2}{3}{4}{5}".format(
+            AppId, platform, uid, ixToken, ixTime, pmSecret
+        )
+
+        result = hashlib.md5(text).hexdigest()
+        if result != ixSign:
+            raise GameException(ConfigErrorMessage.get_error_id("ACCOUNT_LOGIN_FAILURE"))
+        return
+
+    if platform == 'SNOWFISH':
+        return
+
+    raise GameException(ConfigErrorMessage.get_error_id("UNSUPPORTED_PLATFORM"))
 
 
 def get_or_create_third_account(provider, platform, uid):

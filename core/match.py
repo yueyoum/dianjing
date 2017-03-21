@@ -117,8 +117,8 @@ class ClubMatch(object):
 
         for i in range(1, self.skill_sequence_amount+1):
             notify_skill_sequence = msg.skill_sequence.add()
-            notify_skill_sequence.id = str(i)
-            notify_skill_sequence.staff_id.extend(skill_sequence.get(str(i), ["", "", ""]))
+            notify_skill_sequence.id = i
+            notify_skill_sequence.staff_id.extend(skill_sequence.get(i, ["", "", ""]))
 
         return msg
 

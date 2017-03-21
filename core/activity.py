@@ -226,6 +226,7 @@ class ActivityOnlineTime(object):
             }}
         )
 
+        self.send_notify()
         return rc
 
     def send_notify(self):
