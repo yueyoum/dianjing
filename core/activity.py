@@ -325,7 +325,7 @@ class ActivityChallenge(object):
         MessagePipe(self.char_id).put(msg=notify)
 
 
-PURCHASE_DAILY_ITEM_ID = GlobalConfig.value("PURCHASE_DAILY_REWARD_ITEM_ID")
+
 
 class ActivityPurchaseDaily(object):
     __slots__ = ['server_id', 'char_id', 'doc']
@@ -353,7 +353,9 @@ class ActivityPurchaseDaily(object):
             raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
 
         self.add_count(-1)
-        rc = ResourceClassification.classify(ConfigItemUse.get(PURCHASE_DAILY_ITEM_ID).using_result())
+
+        item_id = GlobalConfig.value("PURCHASE_DAILY_REWARD_ITEM_ID")
+        rc = ResourceClassification.classify(ConfigItemUse.get(item_id).using_result())
         rc.add(self.server_id, self.char_id)
         return rc.make_protomsg()
 
@@ -368,7 +370,8 @@ class ActivityPurchaseDaily(object):
                 status = ACTIVITY_DOING
 
         notify.status = status
-        rc = ResourceClassification.classify(ConfigItemUse.get(PURCHASE_DAILY_ITEM_ID).using_result())
+        item_id = GlobalConfig.value("PURCHASE_DAILY_REWARD_ITEM_ID")
+        rc = ResourceClassification.classify(ConfigItemUse.get(item_id).using_result())
         notify.items.MergeFrom(rc.make_protomsg())
 
         MessagePipe(self.char_id).put(msg=notify)
