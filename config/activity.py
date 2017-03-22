@@ -38,6 +38,18 @@ class ChallengeActivity(object):
         self.id = 0
         self.rewards = []
 
+class PurchaseContinues(object):
+    __slots__ = ['id', 'rewards']
+    def __init__(self):
+        self.id = 0
+        self.rewards = []
+
+class LevelGrowing(object):
+    __slots__ = ['id', 'rewards']
+    def __init__(self):
+        self.id = 0
+        self.rewards = []
+
 
 class ConfigActivityOnlineTime(ConfigBase):
     EntityClass = OnlineTimeActivity
@@ -126,3 +138,31 @@ class ConfigActivityDailyBuy(ConfigBase):
         :rtype: DailyBuy
         """
         return super(ConfigActivityDailyBuy, cls).get(_id)
+
+
+class ConfigActivityPurchaseContinues(ConfigBase):
+    EntityClass = PurchaseContinues
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: PurchaseContinues
+        """
+        return super(ConfigActivityPurchaseContinues, cls).get(_id)
+
+
+class ConfigActivityLevelGrowing(ConfigBase):
+    EntityClass = LevelGrowing
+    INSTANCES = {}
+    FILTER_CACHE = {}
+
+    @classmethod
+    def get(cls, _id):
+        """
+
+        :rtype: LevelGrowing
+        """
+        return super(ConfigActivityLevelGrowing, cls).get(_id)

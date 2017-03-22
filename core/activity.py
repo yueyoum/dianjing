@@ -10,21 +10,31 @@ Description:
 import arrow
 from dianjing.exception import GameException
 
-from core.mongo import MongoActivityNewPlayer, MongoActivityOnlineTime, MongoActivityChallenge
+from core.mongo import (
+    MongoActivityNewPlayer,
+    MongoActivityOnlineTime,
+    MongoActivityChallenge,
+    MongoActivityPurchaseDailyCount,
+)
 
 from core.club import Club
 from core.resource import ResourceClassification, money_text_to_item_id
+from core.purchase import Purchase
 
 from utils.message import MessagePipe
 from utils.functional import get_start_time_of_today
 
 from config import (
+    GlobalConfig,
+    ConfigItemUse,
     ConfigErrorMessage,
     ConfigActivityNewPlayer,
     ConfigActivityDailyBuy,
     ConfigTaskCondition,
     ConfigActivityOnlineTime,
     ConfigActivityChallenge,
+    ConfigActivityLevelGrowing,
+    ConfigActivityPurchaseContinues,
 )
 
 from protomsg.activity_pb2 import (
@@ -35,6 +45,9 @@ from protomsg.activity_pb2 import (
     ActivityNewPlayerNotify,
     ActivityOnlineTimeNotify,
     ActivityChallengeNotify,
+    ActivityPurchaseDailyNotify,
+    ActivityPurchaseContinuesNotify,
+    ActivityLevelGrowingNotify,
 )
 
 from protomsg.common_pb2 import ACT_INIT, ACT_UPDATE
@@ -310,3 +323,53 @@ class ActivityChallenge(object):
             notify_item.status = self.get_status(i)
 
         MessagePipe(self.char_id).put(msg=notify)
+
+
+PURCHASE_DAILY_ITEM_ID = GlobalConfig.value("PURCHASE_DAILY_REWARD_ITEM_ID")
+
+class ActivityPurchaseDaily(object):
+    __slots__ = ['server_id', 'char_id', 'doc']
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+        self.doc = MongoActivityPurchaseDailyCount.db(self.server_id).find_one({'_id': self.char_id})
+        if not self.doc:
+            self.doc = MongoActivityPurchaseDailyCount.document()
+            self.doc['_id'] = self.char_id
+            MongoActivityPurchaseDailyCount.db(self.server_id).insert_one(self.doc)
+
+    def add_count(self, count=1):
+        self.doc['count'] += count
+        MongoActivityPurchaseDailyCount.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$inc': {
+                'count': count
+            }}
+        )
+        self.send_notify()
+
+    def get_reward(self):
+        if self.doc['count'] < 1:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        self.add_count(-1)
+        rc = ResourceClassification.classify(ConfigItemUse.get(PURCHASE_DAILY_ITEM_ID).using_result())
+        rc.add(self.server_id, self.char_id)
+        return rc.make_protomsg()
+
+    def send_notify(self):
+        notify = ActivityPurchaseDailyNotify()
+        if self.doc['count'] > 0:
+            status = ACTIVITY_REWARD
+        else:
+            if Purchase(self.server_id, self.char_id).get_purchase_info_of_day_shift():
+                status = ACTIVITY_COMPLETE
+            else:
+                status = ACTIVITY_DOING
+
+        notify.status = status
+        rc = ResourceClassification.classify(ConfigItemUse.get(PURCHASE_DAILY_ITEM_ID).using_result())
+        notify.items.MergeFrom(rc.make_protomsg())
+
+        MessagePipe(self.char_id).put(msg=notify)
+

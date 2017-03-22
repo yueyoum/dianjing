@@ -28,9 +28,10 @@ from apps.purchase.models import (
 from core.mongo import MongoPurchase, MongoPurchaseLog
 from core.resource import ResourceClassification, money_text_to_item_id, VIP_EXP_ITEM_ID
 from core.mail import MailManager
+from core.signals import purchase_done_signal
 
 from utils.message import MessagePipe
-from utils.functional import make_string_id
+from utils.functional import make_string_id, get_start_time_of_today
 
 from config import ConfigPurchaseYueka, ConfigPurchaseGoods, ConfigErrorMessage, ConfigPurchaseFirstReward
 
@@ -191,6 +192,31 @@ class Purchase(object):
         # 充值次数
         return MongoPurchaseLog.db(self.server_id).find({'char_id': self.char_id}).count()
 
+    def get_purchase_info_of_day_shift(self, days=0):
+        today = get_start_time_of_today()
+        start = today.replace(days=days)
+        end = start.replace(days=1)
+        return self._get_purchase_info(start.timestamp, end.timestamp)
+
+    def get_purchase_info_of_date(self, date):
+        start = date
+        end = start.replace(days=1)
+        return self._get_purchase_info(start.timestamp, end.timestamp)
+
+    def _get_purchase_info(self, start_timestamp, end_timestamp):
+        info = []
+        condition = {'$and': [
+            {'char_id': self.char_id},
+            {'timestamp': {'$gte': start_timestamp}},
+            {'timestamp': {'$lt': end_timestamp}}
+        ]}
+
+        docs = MongoPurchaseLog.db(self.server_id).find_one(condition)
+        for doc in docs:
+            info.append((doc['goods_id'], doc['actual_got']))
+
+        return info
+
     def get_first_reward(self):
         if self.get_purchase_times() == 0:
             raise GameException(ConfigErrorMessage.get_error_id("PURCHASE_NOT_FIRST_REWARD"))
@@ -278,6 +304,15 @@ class Purchase(object):
 
         rc = ResourceClassification.classify(reward)
         rc.add(self.server_id, self.char_id, message="Purchase.send_reward:{0}".format(goods_id))
+
+        purchase_done_signal.send(
+            sender=None,
+            server_id=self.server_id,
+            char_id=self.char_id,
+            goods_id=goods_id,
+            got=got,
+            actual_got=actual_got,
+        )
 
         self.send_notify()
 

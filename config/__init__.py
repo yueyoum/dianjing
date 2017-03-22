@@ -44,7 +44,7 @@ from config.welfare import ConfigWelfareSignIn, ConfigWelfareLevelReward, Config
 from config.template import ConfigBroadcastTemplate
 from config.union import ConfigUnionSignin, ConfigUnionLevel, ConfigUnionExplore, ConfigUnionExploreRankReward, ConfigUnionMemberExploreRankReward, ConfigUnionHarassBuyTimesCost, ConfigUnionSkill
 from config.purchase import ConfigPurchaseYueka, ConfigPurchaseGoods, ConfigPurchaseFirstReward
-from config.activity import ConfigActivityDailyBuy, ConfigActivityNewPlayer, ConfigActivityOnlineTime, ConfigActivityChallenge
+from config.activity import ConfigActivityDailyBuy, ConfigActivityNewPlayer, ConfigActivityOnlineTime, ConfigActivityChallenge, ConfigActivityPurchaseContinues, ConfigActivityLevelGrowing
 from config.plunder import ConfigBaseStationLevel, ConfigPlunderBuyTimesCost, ConfigPlunderIncome, ConfigPlunderNPC, \
     ConfigPlunderDailyReward
 from config.name import ConfigFirstName, ConfigLastName, ConfigName
@@ -277,6 +277,10 @@ def load_config():
             ConfigActivityOnlineTime.initialize(data)
         elif fname == 'activity_challenge.json':
             ConfigActivityChallenge.initialize(data)
+        elif fname == 'activity_purchase_continues.json':
+            ConfigActivityPurchaseContinues.initialize(data)
+        elif fname == 'activity_level_growing.json':
+            ConfigActivityLevelGrowing.initialize(data)
 
         elif fname == 'base_station_level.json':
             ConfigBaseStationLevel.initialize(data)

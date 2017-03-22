@@ -27,6 +27,7 @@ from core.vip import VIP
 from core.union import Union
 from core.cooldown import ChatCD
 from core.mail import MailManager
+from core.purchase import Purchase
 
 from config import ConfigErrorMessage, GlobalConfig
 from utils.message import MessagePipe, MessageFactory
@@ -203,7 +204,11 @@ class Chat(object):
             Club(self.server_id, self.char_id).send_notify()
 
         elif tp == ChatSendRequest.SET_CLUB_LEVEL:
-            level = int(data)
+            try:
+                level = int(data)
+            except ValueError:
+                raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
             MongoCharacter.db(self.server_id).update_one(
                 {'_id': self.char_id},
                 {'$set': {
@@ -214,6 +219,14 @@ class Chat(object):
             Club(self.server_id, self.char_id).send_notify()
         elif tp == ChatSendRequest.OPEN_ALL_CHALLENGE:
             Challenge(self.server_id, self.char_id).open_all()
+        elif tp == ChatSendRequest.TEST_PURCHASE:
+            try:
+                goods_id = int(data)
+            except ValueError:
+                raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
+
+            Purchase(self.server_id, self.char_id).send_reward(goods_id)
+
         else:
             raise GameException(ConfigErrorMessage.get_error_id("BAD_MESSAGE"))
 

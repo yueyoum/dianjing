@@ -786,6 +786,14 @@ class MongoActivityChallenge(BaseDocument):
     COLLECTION = 'activity_challenge'
 
 
+class MongoActivityPurchaseDailyCount(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'count': 0,
+    }
+
+    COLLECTION = 'activity_purchase_daily'
+
 # 俱乐部排行榜
 class MongoClubLeaderboard(BaseDocument):
     DOCUMENT = {

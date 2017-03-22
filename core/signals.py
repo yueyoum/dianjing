@@ -49,7 +49,7 @@ recruit_staff_diamond_signal = Signal(providing_args=['server_id', 'char_id', 't
 recruit_staff_gold_signal = Signal(providing_args=['server_id', 'char_id', 'times', 'staffs'])
 
 # 充值
-purchase_done_signal = Signal(providing_args=['server_id', 'char_id', 'diamond'])
+purchase_done_signal = Signal(providing_args=['server_id', 'char_id', 'goods_id', 'got', 'actual_got'])
 
 # 任务条件触发
 task_condition_trig_signal = Signal(providing_args=['server_id', 'char_id', 'condition_name'])
