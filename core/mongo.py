@@ -794,6 +794,18 @@ class MongoActivityPurchaseDailyCount(BaseDocument):
 
     COLLECTION = 'activity_purchase_daily'
 
+
+class MongoActivityPurchaseContinues(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        # key id, value int. 0 表示id这天的充值了, 1 表示并且领奖了
+        # 只记录充值了的
+        'record': {}
+    }
+
+    COLLECTION = 'activity_purchase_continues'
+
+
 # 俱乐部排行榜
 class MongoClubLeaderboard(BaseDocument):
     DOCUMENT = {

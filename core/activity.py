@@ -15,6 +15,7 @@ from core.mongo import (
     MongoActivityOnlineTime,
     MongoActivityChallenge,
     MongoActivityPurchaseDailyCount,
+    MongoActivityPurchaseContinues,
 )
 
 from core.club import Club
@@ -325,10 +326,9 @@ class ActivityChallenge(object):
         MessagePipe(self.char_id).put(msg=notify)
 
 
-
-
 class ActivityPurchaseDaily(object):
     __slots__ = ['server_id', 'char_id', 'doc']
+
     def __init__(self, server_id, char_id):
         self.server_id = server_id
         self.char_id = char_id
@@ -357,7 +357,7 @@ class ActivityPurchaseDaily(object):
         item_id = GlobalConfig.value("PURCHASE_DAILY_REWARD_ITEM_ID")
         rc = ResourceClassification.classify(ConfigItemUse.get(item_id).using_result())
         rc.add(self.server_id, self.char_id)
-        return rc.make_protomsg()
+        return rc
 
     def send_notify(self):
         notify = ActivityPurchaseDailyNotify()
@@ -376,3 +376,95 @@ class ActivityPurchaseDaily(object):
 
         MessagePipe(self.char_id).put(msg=notify)
 
+
+class ActivityPurchaseContinues(object):
+    __slots__ = ['server_id', 'char_id', 'doc', 'create_days']
+
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+        self.doc = MongoActivityPurchaseContinues.db(self.server_id).find_one({'_id': self.char_id})
+        if not self.doc:
+            self.doc = MongoActivityPurchaseContinues.document()
+            self.doc['_id'] = self.char_id
+            MongoActivityPurchaseContinues.db(self.server_id).insert_one(self.doc)
+
+        self.create_days = Club.create_days(self.server_id, self.char_id)
+
+    def record(self, day=None):
+        if not day:
+            day = self.create_days
+
+        if day not in ConfigActivityPurchaseContinues.INSTANCES.keys():
+            return
+
+        if str(day) in self.doc['record']:
+            return
+
+        self.doc['record'][str(day)] = 0
+        MongoActivityPurchaseContinues.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'record.{0}'.format(day): 0
+            }}
+        )
+
+        self.send_notify(day)
+
+    def get_reward(self, _id):
+        config = ConfigActivityPurchaseContinues.get(_id)
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        status = self.get_status(_id)
+        if status != ACTIVITY_REWARD:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        self.doc['record'][str(_id)] = 1
+        MongoActivityPurchaseContinues.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'record.{0}'.format(_id): 1
+            }}
+        )
+
+        self.send_notify(_id)
+
+        rc = ResourceClassification.classify(config.rewards)
+        rc.add(self.server_id, self.char_id)
+        return rc
+
+    def get_status(self, _id):
+        if _id == 0:
+            if str(_id) in self.doc['record']:
+                return ACTIVITY_COMPLETE
+
+            if len(self.doc['record']) < 7:
+                return ACTIVITY_DOING
+
+            return ACTIVITY_REWARD
+
+        value = self.doc['record'].get(str(_id), -1)
+        if value == -1:
+            return ACTIVITY_DOING
+        if value == 0:
+            return ACTIVITY_REWARD
+        if value == 1:
+            return ACTIVITY_COMPLETE
+
+    def send_notify(self, _id=None):
+        if _id:
+            ids = [0, _id]
+            act = ACT_UPDATE
+        else:
+            ids = ConfigActivityPurchaseContinues.INSTANCES.keys()
+            act = ACT_INIT
+
+        notify = ActivityPurchaseContinuesNotify()
+        notify.act = act
+        for i in ids:
+            notify_item = notify.items.add()
+            notify_item.id = i
+            notify_item.status = self.get_status(i)
+
+        MessagePipe(self.char_id).put(msg=notify)

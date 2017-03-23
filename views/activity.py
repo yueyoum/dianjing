@@ -14,6 +14,7 @@ from core.activity import (
     ActivityChallenge,
     ActivityOnlineTime,
     ActivityPurchaseDaily,
+    ActivityPurchaseContinues,
 )
 
 from protomsg.activity_pb2 import (
@@ -88,6 +89,20 @@ def purchase_daily_get_reward(request):
     rc = p.get_reward()
 
     response = ActivityPurchaseDailyGetRewardResponse()
+    response.ret = 0
+    response.drop.MergeFrom(rc.make_protomsg())
+    return ProtobufResponse(response)
+
+def purchase_continues_get_reward(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    _id = request._proto.id
+
+    p = ActivityPurchaseContinues(server_id, char_id)
+    rc = p.get_reward(_id)
+
+    response = ActivityPurchaseContinuesGetRewardResponse()
     response.ret = 0
     response.drop.MergeFrom(rc.make_protomsg())
     return ProtobufResponse(response)

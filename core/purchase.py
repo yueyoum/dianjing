@@ -211,7 +211,7 @@ class Purchase(object):
             {'timestamp': {'$lt': end_timestamp}}
         ]}
 
-        docs = MongoPurchaseLog.db(self.server_id).find_one(condition)
+        docs = MongoPurchaseLog.db(self.server_id).find(condition)
         for doc in docs:
             info.append((doc['goods_id'], doc['actual_got']))
 
