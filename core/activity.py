@@ -16,11 +16,13 @@ from core.mongo import (
     MongoActivityChallenge,
     MongoActivityPurchaseDailyCount,
     MongoActivityPurchaseContinues,
+    MongoActivityLevelGrowing,
 )
 
-from core.club import Club
+from core.club import Club, get_club_property
 from core.resource import ResourceClassification, money_text_to_item_id
 from core.purchase import Purchase
+from core.vip import VIP
 
 from utils.message import MessagePipe
 from utils.functional import get_start_time_of_today
@@ -395,7 +397,7 @@ class ActivityPurchaseContinues(object):
         if not day:
             day = self.create_days
 
-        if day not in ConfigActivityPurchaseContinues.INSTANCES.keys():
+        if day not in ConfigActivityPurchaseContinues.INSTANCES:
             return
 
         if str(day) in self.doc['record']:
@@ -466,5 +468,122 @@ class ActivityPurchaseContinues(object):
             notify_item = notify.items.add()
             notify_item.id = i
             notify_item.status = self.get_status(i)
+
+        MessagePipe(self.char_id).put(msg=notify)
+
+
+class ActivityLevelGrowing(object):
+    __slots__ = ['server_id', 'char_id', 'doc']
+
+    def __init__(self, server_id, char_id):
+        self.server_id = server_id
+        self.char_id = char_id
+        self.doc = MongoActivityLevelGrowing.db(self.server_id).find_one({'_id': self.char_id})
+        if not self.doc:
+            self.doc = MongoActivityLevelGrowing.document()
+            self.doc['_id'] = self.char_id
+            self.doc['joined'] = False
+            MongoActivityLevelGrowing.db(self.server_id).insert_one(self.doc)
+
+    def join(self):
+        if self.doc['joined']:
+            return
+
+        diamond = GlobalConfig.value("LEVEL_GROWING_ACTIVITY_JOIN_COST_DIAMOND")
+        vip_need = GlobalConfig.value("LEVEL_GROWING_ACTIVITY_JOIN_VIP_LIMIT")
+
+        VIP(self.server_id, self.char_id).check(vip_need)
+
+        cost = [(money_text_to_item_id('diamond'), diamond), ]
+        rc = ResourceClassification.classify(cost)
+        rc.check_exist(self.server_id, self.char_id)
+        rc.remove(self.server_id, self.char_id)
+
+        levels = {}
+        current_level = get_club_property(self.server_id, self.char_id, 'level')
+        for i in ConfigActivityLevelGrowing.INSTANCES.keys():
+            if current_level >= i:
+                levels[str(i)] = 0
+
+        self.doc['joined'] = True
+        self.doc['levels'] = levels
+        MongoActivityLevelGrowing.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'joined': True,
+                'levels': levels
+            }}
+        )
+
+        self.send_notify()
+
+    def record(self, level):
+        if not self.doc['joined']:
+            return
+
+        if level not in ConfigActivityLevelGrowing.INSTANCES:
+            return
+
+        if str(level) in self.doc['levels']:
+            return
+
+        self.doc['levels'][str(level)] = 0
+        MongoActivityLevelGrowing.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'levels.{0}'.format(level): 0,
+            }}
+        )
+
+        self.send_notify(level)
+
+    def get_reward(self, _id):
+        config = ConfigActivityLevelGrowing.get(_id)
+        if not config:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        status = self.get_status(_id)
+        if status != ACTIVITY_REWARD:
+            raise GameException(ConfigErrorMessage.get_error_id("INVALID_OPERATE"))
+
+        rc = ResourceClassification.classify(config.rewards)
+        rc.add(self.server_id, self.char_id)
+
+        self.doc['levels'][str(_id)] = 1
+        MongoActivityLevelGrowing.db(self.server_id).update_one(
+            {'_id': self.char_id},
+            {'$set': {
+                'levels.{0}'.format(_id): 1
+            }}
+        )
+
+        self.send_notify(_id)
+        return rc
+
+    def get_status(self, _id):
+        value = self.doc['levels'].get(str(_id), -1)
+        if value == -1:
+            return ACTIVITY_DOING
+        if value == 0:
+            return ACTIVITY_REWARD
+        if value == 1:
+            return ACTIVITY_COMPLETE
+
+    def send_notify(self, _id=None):
+        if _id:
+            ids = [_id]
+            act = ACT_UPDATE
+        else:
+            ids = ConfigActivityLevelGrowing.INSTANCES.keys()
+            act = ACT_INIT
+
+        notify = ActivityLevelGrowingNotify()
+        notify.act = act
+        notify.has_joined = self.doc['joined']
+
+        for i in ids:
+            notify_item = notify.items.add()
+            notify_item.id = i
+            notify_item.status = self.get_status(_id)
 
         MessagePipe(self.char_id).put(msg=notify)

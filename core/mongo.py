@@ -806,6 +806,18 @@ class MongoActivityPurchaseContinues(BaseDocument):
     COLLECTION = 'activity_purchase_continues'
 
 
+# 成长计划
+class MongoActivityLevelGrowing(BaseDocument):
+    DOCUMENT = {
+        '_id': null,
+        'joined': False,
+        # 只记录达到的, value 0 没有领取, 1 领取了
+        'levels': {}
+    }
+
+    COLLECTION = 'activity_level_growing'
+
+
 # 俱乐部排行榜
 class MongoClubLeaderboard(BaseDocument):
     DOCUMENT = {

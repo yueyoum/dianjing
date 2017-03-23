@@ -15,6 +15,7 @@ from core.activity import (
     ActivityOnlineTime,
     ActivityPurchaseDaily,
     ActivityPurchaseContinues,
+    ActivityLevelGrowing,
 )
 
 from protomsg.activity_pb2 import (
@@ -25,6 +26,7 @@ from protomsg.activity_pb2 import (
     ActivityLevelGrowingGetRewardResponse,
     ActivityPurchaseContinuesGetRewardResponse,
     ActivityPurchaseDailyGetRewardResponse,
+    ActivityLevelGrowingJoinResponse,
 )
 
 def newplayer_getreward(request):
@@ -103,6 +105,31 @@ def purchase_continues_get_reward(request):
     rc = p.get_reward(_id)
 
     response = ActivityPurchaseContinuesGetRewardResponse()
+    response.ret = 0
+    response.drop.MergeFrom(rc.make_protomsg())
+    return ProtobufResponse(response)
+
+def level_growing_join(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+
+    ActivityLevelGrowing(server_id, char_id).join()
+
+    response = ActivityLevelGrowingJoinResponse()
+    response.ret = 0
+    return ProtobufResponse(response)
+
+def level_growing_get_reward(request):
+    server_id = request._game_session.server_id
+    char_id = request._game_session.char_id
+
+    _id = request._proto.id
+
+    l = ActivityLevelGrowing(server_id, char_id)
+    rc = l.get_reward(_id)
+
+    response = ActivityLevelGrowingGetRewardResponse()
     response.ret = 0
     response.drop.MergeFrom(rc.make_protomsg())
     return ProtobufResponse(response)

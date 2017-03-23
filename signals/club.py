@@ -13,6 +13,7 @@ from core.energy import Energy
 from core.unit import UnitManager
 from core.welfare import Welfare
 from core.championship import Championship
+from core.activity import ActivityLevelGrowing
 
 from config import ConfigClubLevel
 
@@ -26,3 +27,4 @@ def club_level_up_handler(server_id, char_id, new_level, **kwargs):
     UnitManager(server_id, char_id).try_unlock()
     Welfare(server_id, char_id).send_level_reward_notify()
     Championship(server_id, char_id).try_initialize()
+    ActivityLevelGrowing(server_id, char_id).record(new_level)

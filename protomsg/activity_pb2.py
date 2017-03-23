@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='activity.proto',
   package='Dianjing.protocol',
   syntax='proto2',
-  serialized_pb=_b('\n\x0e\x61\x63tivity.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\xb2\x02\n\x17\x41\x63tivityNewPlayerNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12G\n\x05items\x18\x03 \x03(\x0b\x32\x38.Dianjing.protocol.ActivityNewPlayerNotify.NewPlayerItem\x12\x17\n\x0f\x61\x63tivity_end_at\x18\x04 \x02(\x03\x12\x15\n\rreward_end_at\x18\x05 \x02(\x03\x1a\x65\n\rNewPlayerItem\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x15\n\rcurrent_value\x18\x02 \x02(\x05\x12\x31\n\x06status\x18\x03 \x02(\x0e\x32!.Dianjing.protocol.ActivityStatus\"\xb8\x01\n\x1f\x41\x63tivityNewPlayerDailyBuyNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12Q\n\x06status\x18\x02 \x03(\x0b\x32\x41.Dianjing.protocol.ActivityNewPlayerDailyBuyNotify.DailyBuyStatus\x1a\x31\n\x0e\x44\x61ilyBuyStatus\x12\x0b\n\x03\x64\x61y\x18\x01 \x02(\x05\x12\x12\n\nhas_bought\x18\x02 \x02(\x08\"@\n!ActivityNewPlayerGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"i\n\"ActivityNewPlayerGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"3\n ActivityNewPlayerDailyBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"h\n!ActivityNewPlayerDailyBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"7\n\x18\x41\x63tivityOnlineTimeNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"5\n\"ActivityOnlineTimeGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"j\n#ActivityOnlineTimeGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\xeb\x01\n\x17\x41\x63tivityChallengeNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12G\n\x05items\x18\x03 \x03(\x0b\x32\x38.Dianjing.protocol.ActivityChallengeNotify.ChallengeItem\x1aN\n\rChallengeItem\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x31\n\x06status\x18\x02 \x02(\x0e\x32!.Dianjing.protocol.ActivityStatus\"@\n!ActivityChallengeGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"i\n\"ActivityChallengeGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\x89\x01\n\x1b\x41\x63tivityPurchaseDailyNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x05items\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Drop\x12\x31\n\x06status\x18\x03 \x02(\x0e\x32!.Dianjing.protocol.ActivityStatus\"8\n%ActivityPurchaseDailyGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"m\n&ActivityPurchaseDailyGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\x8b\x02\n\x1f\x41\x63tivityPurchaseContinuesNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12W\n\x05items\x18\x03 \x03(\x0b\x32H.Dianjing.protocol.ActivityPurchaseContinuesNotify.PurchaseContinuesItem\x1aV\n\x15PurchaseContinuesItem\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x31\n\x06status\x18\x02 \x02(\x0e\x32!.Dianjing.protocol.ActivityStatus\"H\n)ActivityPurchaseContinuesGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"q\n*ActivityPurchaseContinuesGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\x8b\x02\n\x1a\x41\x63tivityLevelGrowingNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x12\n\nhas_joined\x18\x03 \x02(\x08\x12M\n\x05items\x18\x04 \x03(\x0b\x32>.Dianjing.protocol.ActivityLevelGrowingNotify.LevelGrowingItem\x1aQ\n\x10LevelGrowingItem\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x31\n\x06status\x18\x02 \x02(\x0e\x32!.Dianjing.protocol.ActivityStatus\"C\n$ActivityLevelGrowingGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"l\n%ActivityLevelGrowingGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*P\n\x0e\x41\x63tivityStatus\x12\x12\n\x0e\x41\x43TIVITY_DOING\x10\x01\x12\x13\n\x0f\x41\x43TIVITY_REWARD\x10\x02\x12\x15\n\x11\x41\x43TIVITY_COMPLETE\x10\x03')
+  serialized_pb=_b('\n\x0e\x61\x63tivity.proto\x12\x11\x44ianjing.protocol\x1a\x0c\x63ommon.proto\x1a\rpackage.proto\"\xb2\x02\n\x17\x41\x63tivityNewPlayerNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12G\n\x05items\x18\x03 \x03(\x0b\x32\x38.Dianjing.protocol.ActivityNewPlayerNotify.NewPlayerItem\x12\x17\n\x0f\x61\x63tivity_end_at\x18\x04 \x02(\x03\x12\x15\n\rreward_end_at\x18\x05 \x02(\x03\x1a\x65\n\rNewPlayerItem\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x15\n\rcurrent_value\x18\x02 \x02(\x05\x12\x31\n\x06status\x18\x03 \x02(\x0e\x32!.Dianjing.protocol.ActivityStatus\"\xb8\x01\n\x1f\x41\x63tivityNewPlayerDailyBuyNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12Q\n\x06status\x18\x02 \x03(\x0b\x32\x41.Dianjing.protocol.ActivityNewPlayerDailyBuyNotify.DailyBuyStatus\x1a\x31\n\x0e\x44\x61ilyBuyStatus\x12\x0b\n\x03\x64\x61y\x18\x01 \x02(\x05\x12\x12\n\nhas_bought\x18\x02 \x02(\x08\"@\n!ActivityNewPlayerGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"i\n\"ActivityNewPlayerGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"3\n ActivityNewPlayerDailyBuyRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"h\n!ActivityNewPlayerDailyBuyResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"7\n\x18\x41\x63tivityOnlineTimeNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"5\n\"ActivityOnlineTimeGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"j\n#ActivityOnlineTimeGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\xeb\x01\n\x17\x41\x63tivityChallengeNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12G\n\x05items\x18\x03 \x03(\x0b\x32\x38.Dianjing.protocol.ActivityChallengeNotify.ChallengeItem\x1aN\n\rChallengeItem\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x31\n\x06status\x18\x02 \x02(\x0e\x32!.Dianjing.protocol.ActivityStatus\"@\n!ActivityChallengeGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"i\n\"ActivityChallengeGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\x89\x01\n\x1b\x41\x63tivityPurchaseDailyNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x05items\x18\x02 \x02(\x0b\x32\x17.Dianjing.protocol.Drop\x12\x31\n\x06status\x18\x03 \x02(\x0e\x32!.Dianjing.protocol.ActivityStatus\"8\n%ActivityPurchaseDailyGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"m\n&ActivityPurchaseDailyGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\x8b\x02\n\x1f\x41\x63tivityPurchaseContinuesNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12W\n\x05items\x18\x03 \x03(\x0b\x32H.Dianjing.protocol.ActivityPurchaseContinuesNotify.PurchaseContinuesItem\x1aV\n\x15PurchaseContinuesItem\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x31\n\x06status\x18\x02 \x02(\x0e\x32!.Dianjing.protocol.ActivityStatus\"H\n)ActivityPurchaseContinuesGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"q\n*ActivityPurchaseContinuesGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop\"\x8b\x02\n\x1a\x41\x63tivityLevelGrowingNotify\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12&\n\x03\x61\x63t\x18\x02 \x02(\x0e\x32\x19.Dianjing.protocol.Action\x12\x12\n\nhas_joined\x18\x03 \x02(\x08\x12M\n\x05items\x18\x04 \x03(\x0b\x32>.Dianjing.protocol.ActivityLevelGrowingNotify.LevelGrowingItem\x1aQ\n\x10LevelGrowingItem\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x31\n\x06status\x18\x02 \x02(\x0e\x32!.Dianjing.protocol.ActivityStatus\"2\n\x1f\x41\x63tivityLevelGrowingJoinRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\"@\n ActivityLevelGrowingJoinResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\"C\n$ActivityLevelGrowingGetRewardRequest\x12\x0f\n\x07session\x18\x01 \x02(\x0c\x12\n\n\x02id\x18\x02 \x02(\x05\"l\n%ActivityLevelGrowingGetRewardResponse\x12\x0b\n\x03ret\x18\x01 \x02(\x05\x12\x0f\n\x07session\x18\x02 \x02(\x0c\x12%\n\x04\x64rop\x18\x03 \x01(\x0b\x32\x17.Dianjing.protocol.Drop*P\n\x0e\x41\x63tivityStatus\x12\x12\n\x0e\x41\x43TIVITY_DOING\x10\x01\x12\x13\n\x0f\x41\x43TIVITY_REWARD\x10\x02\x12\x15\n\x11\x41\x43TIVITY_COMPLETE\x10\x03')
   ,
   dependencies=[common__pb2.DESCRIPTOR,package__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -48,8 +48,8 @@ _ACTIVITYSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=2742,
-  serialized_end=2822,
+  serialized_start=2860,
+  serialized_end=2940,
 )
 _sym_db.RegisterEnumDescriptor(_ACTIVITYSTATUS)
 
@@ -1051,6 +1051,75 @@ _ACTIVITYLEVELGROWINGNOTIFY = _descriptor.Descriptor(
 )
 
 
+_ACTIVITYLEVELGROWINGJOINREQUEST = _descriptor.Descriptor(
+  name='ActivityLevelGrowingJoinRequest',
+  full_name='Dianjing.protocol.ActivityLevelGrowingJoinRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ActivityLevelGrowingJoinRequest.session', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2563,
+  serialized_end=2613,
+)
+
+
+_ACTIVITYLEVELGROWINGJOINRESPONSE = _descriptor.Descriptor(
+  name='ActivityLevelGrowingJoinResponse',
+  full_name='Dianjing.protocol.ActivityLevelGrowingJoinResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ret', full_name='Dianjing.protocol.ActivityLevelGrowingJoinResponse.ret', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='session', full_name='Dianjing.protocol.ActivityLevelGrowingJoinResponse.session', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2615,
+  serialized_end=2679,
+)
+
+
 _ACTIVITYLEVELGROWINGGETREWARDREQUEST = _descriptor.Descriptor(
   name='ActivityLevelGrowingGetRewardRequest',
   full_name='Dianjing.protocol.ActivityLevelGrowingGetRewardRequest',
@@ -1084,8 +1153,8 @@ _ACTIVITYLEVELGROWINGGETREWARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2563,
-  serialized_end=2630,
+  serialized_start=2681,
+  serialized_end=2748,
 )
 
 
@@ -1129,8 +1198,8 @@ _ACTIVITYLEVELGROWINGGETREWARDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2632,
-  serialized_end=2740,
+  serialized_start=2750,
+  serialized_end=2858,
 )
 
 _ACTIVITYNEWPLAYERNOTIFY_NEWPLAYERITEM.fields_by_name['status'].enum_type = _ACTIVITYSTATUS
@@ -1179,6 +1248,8 @@ DESCRIPTOR.message_types_by_name['ActivityPurchaseContinuesNotify'] = _ACTIVITYP
 DESCRIPTOR.message_types_by_name['ActivityPurchaseContinuesGetRewardRequest'] = _ACTIVITYPURCHASECONTINUESGETREWARDREQUEST
 DESCRIPTOR.message_types_by_name['ActivityPurchaseContinuesGetRewardResponse'] = _ACTIVITYPURCHASECONTINUESGETREWARDRESPONSE
 DESCRIPTOR.message_types_by_name['ActivityLevelGrowingNotify'] = _ACTIVITYLEVELGROWINGNOTIFY
+DESCRIPTOR.message_types_by_name['ActivityLevelGrowingJoinRequest'] = _ACTIVITYLEVELGROWINGJOINREQUEST
+DESCRIPTOR.message_types_by_name['ActivityLevelGrowingJoinResponse'] = _ACTIVITYLEVELGROWINGJOINRESPONSE
 DESCRIPTOR.message_types_by_name['ActivityLevelGrowingGetRewardRequest'] = _ACTIVITYLEVELGROWINGGETREWARDREQUEST
 DESCRIPTOR.message_types_by_name['ActivityLevelGrowingGetRewardResponse'] = _ACTIVITYLEVELGROWINGGETREWARDRESPONSE
 DESCRIPTOR.enum_types_by_name['ActivityStatus'] = _ACTIVITYSTATUS
@@ -1355,6 +1426,20 @@ ActivityLevelGrowingNotify = _reflection.GeneratedProtocolMessageType('ActivityL
   ))
 _sym_db.RegisterMessage(ActivityLevelGrowingNotify)
 _sym_db.RegisterMessage(ActivityLevelGrowingNotify.LevelGrowingItem)
+
+ActivityLevelGrowingJoinRequest = _reflection.GeneratedProtocolMessageType('ActivityLevelGrowingJoinRequest', (_message.Message,), dict(
+  DESCRIPTOR = _ACTIVITYLEVELGROWINGJOINREQUEST,
+  __module__ = 'activity_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ActivityLevelGrowingJoinRequest)
+  ))
+_sym_db.RegisterMessage(ActivityLevelGrowingJoinRequest)
+
+ActivityLevelGrowingJoinResponse = _reflection.GeneratedProtocolMessageType('ActivityLevelGrowingJoinResponse', (_message.Message,), dict(
+  DESCRIPTOR = _ACTIVITYLEVELGROWINGJOINRESPONSE,
+  __module__ = 'activity_pb2'
+  # @@protoc_insertion_point(class_scope:Dianjing.protocol.ActivityLevelGrowingJoinResponse)
+  ))
+_sym_db.RegisterMessage(ActivityLevelGrowingJoinResponse)
 
 ActivityLevelGrowingGetRewardRequest = _reflection.GeneratedProtocolMessageType('ActivityLevelGrowingGetRewardRequest', (_message.Message,), dict(
   DESCRIPTOR = _ACTIVITYLEVELGROWINGGETREWARDREQUEST,
