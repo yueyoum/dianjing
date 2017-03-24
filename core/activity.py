@@ -570,7 +570,10 @@ class ActivityLevelGrowing(object):
 
     def send_notify(self, _id=None):
         if _id:
-            ids = [_id]
+            if isinstance(_id, (list, tuple)):
+                ids = _id
+            else:
+                ids = [_id]
             act = ACT_UPDATE
         else:
             ids = ConfigActivityLevelGrowing.INSTANCES.keys()
