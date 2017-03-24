@@ -499,43 +499,42 @@ class ActivityLevelGrowing(object):
         rc.check_exist(self.server_id, self.char_id)
         rc.remove(self.server_id, self.char_id)
 
-        levels = {}
         current_level = get_club_property(self.server_id, self.char_id, 'level')
-        for i in ConfigActivityLevelGrowing.INSTANCES.keys():
-            if current_level >= i:
-                levels[str(i)] = 0
-
-        self.doc['joined'] = True
-        self.doc['levels'] = levels
-        MongoActivityLevelGrowing.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': {
-                'joined': True,
-                'levels': levels
-            }}
-        )
-
+        self._update(current_level, joined=True)
         self.send_notify()
 
     def record(self, level):
         if not self.doc['joined']:
             return
 
-        if level not in ConfigActivityLevelGrowing.INSTANCES:
-            return
+        ids = self._update(level)
+        if ids:
+            self.send_notify(ids)
 
-        if str(level) in self.doc['levels']:
-            return
+    def _update(self, level, joined=None):
+        updater = {}
+        new_ids = []
 
-        self.doc['levels'][str(level)] = 0
-        MongoActivityLevelGrowing.db(self.server_id).update_one(
-            {'_id': self.char_id},
-            {'$set': {
-                'levels.{0}'.format(level): 0,
-            }}
-        )
+        for i in ConfigActivityLevelGrowing.INSTANCES.keys():
+            if str(i) in self.doc['levels']:
+                continue
 
-        self.send_notify(level)
+            if level >= i:
+                self.doc['levels'][str(i)] = 0
+                updater['levels.{0}'.format(i)] = 0
+                new_ids.append(i)
+
+        if joined is not None:
+            self.doc['joined'] = joined
+            updater['joined'] = joined
+
+        if updater:
+            MongoActivityLevelGrowing.db(self.server_id).update_one(
+                {'_id': self.char_id},
+                {'$set': updater}
+            )
+
+        return new_ids
 
     def get_reward(self, _id):
         config = ConfigActivityLevelGrowing.get(_id)
@@ -584,6 +583,6 @@ class ActivityLevelGrowing(object):
         for i in ids:
             notify_item = notify.items.add()
             notify_item.id = i
-            notify_item.status = self.get_status(_id)
+            notify_item.status = self.get_status(i)
 
         MessagePipe(self.char_id).put(msg=notify)
